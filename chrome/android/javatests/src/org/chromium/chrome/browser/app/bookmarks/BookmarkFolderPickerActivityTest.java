@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -92,7 +92,7 @@ public class BookmarkFolderPickerActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkModel =
-                            BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+                            BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
                     sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
                 });
 

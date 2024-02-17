@@ -8,7 +8,7 @@ import com.google.protobuf.CodedOutputStream;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.WebServer;
@@ -31,9 +31,9 @@ public class TestFeedServer implements WebServer.RequestHandler {
             mServer = new WebServer(0, false);
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setString(Pref.HOST_OVERRIDE_HOST, getBaseUrl());
-                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setString(Pref.DISCOVER_API_ENDPOINT_OVERRIDE, getBaseUrl());
                     });
             mServer.setRequestHandler(this);

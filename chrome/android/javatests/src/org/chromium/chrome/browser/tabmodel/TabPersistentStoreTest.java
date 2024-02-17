@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.MockTabAttributes;
@@ -171,7 +172,7 @@ public class TabPersistentStoreTest {
                         @Override
                         public TabModelImpl call() {
                             return new TabModelImpl(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     NO_RESTORE_TYPE,
                                     getTabCreatorManager().getTabCreator(false),
                                     getTabCreatorManager().getTabCreator(true),
@@ -438,7 +439,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
                                     profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
@@ -502,7 +503,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
                                     profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
@@ -548,7 +549,7 @@ public class TabPersistentStoreTest {
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             MockTab newTab =
-                                    new MockTab(tabId, Profile.getLastUsedRegularProfile());
+                                    new MockTab(tabId, ProfileManager.getLastUsedRegularProfile());
                             ObservableSupplierImpl<Boolean> observableSupplier =
                                     new ObservableSupplierImpl<>();
                             observableSupplier.set(true);
@@ -595,7 +596,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector firstSelector =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
                                     profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
@@ -623,7 +624,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector secondSelector =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
                                     profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
@@ -702,7 +703,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
                                     profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
@@ -761,7 +762,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
                                     profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
@@ -808,7 +809,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
                                     profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
@@ -888,7 +889,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
                                     profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });

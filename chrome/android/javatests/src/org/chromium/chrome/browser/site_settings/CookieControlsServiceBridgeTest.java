@@ -20,7 +20,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -81,7 +81,8 @@ public class CookieControlsServiceBridgeTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(PrefNames.COOKIE_CONTROLS_MODE);
                 });
     }
@@ -89,7 +90,8 @@ public class CookieControlsServiceBridgeTest {
     private void setCookieControlsMode(@CookieControlsMode int mode) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setInteger(PrefNames.COOKIE_CONTROLS_MODE, mode);
                 });
     }
@@ -165,7 +167,7 @@ public class CookieControlsServiceBridgeTest {
 
                     Assert.assertEquals(
                             "CookieControlsMode should be incognito_only",
-                            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                     .getInteger(PrefNames.COOKIE_CONTROLS_MODE),
                             CookieControlsMode.INCOGNITO_ONLY);
                 });

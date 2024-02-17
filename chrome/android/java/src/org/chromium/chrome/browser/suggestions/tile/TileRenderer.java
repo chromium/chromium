@@ -25,7 +25,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -172,7 +172,8 @@ public class TileRenderer {
 
     /** Record that a tile was clicked for IPH reasons. */
     private void recordTileClickedForIPH(String eventName) {
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        Tracker tracker =
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         tracker.notifyEvent(eventName);
     }
 
@@ -253,7 +254,7 @@ public class TileRenderer {
     /** @return True, if the tile represents a Search query. */
     private boolean isSearchTile(Tile tile) {
         TemplateUrlService searchService =
-                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
         return searchService != null
                 && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getUrl());
     }

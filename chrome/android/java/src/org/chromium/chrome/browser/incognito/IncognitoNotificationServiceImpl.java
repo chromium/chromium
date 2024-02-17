@@ -22,7 +22,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -67,9 +66,9 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
                     IncognitoNotificationManager.dismissIncognitoNotification();
 
                     if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                        if (Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
+                        if (ProfileManager.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
                             ProfileManager.destroyWhenAppropriate(
-                                    Profile.getLastUsedRegularProfile()
+                                    ProfileManager.getLastUsedRegularProfile()
                                             .getPrimaryOTRProfile(/* createIfNeeded= */ false));
                         }
                     }

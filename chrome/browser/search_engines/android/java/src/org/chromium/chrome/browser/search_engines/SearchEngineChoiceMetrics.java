@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 
@@ -146,7 +146,7 @@ public class SearchEngineChoiceMetrics {
     @VisibleForTesting
     static @SearchEngineType int getDefaultSearchEngineType() {
         TemplateUrlService templateUrlService =
-                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
         TemplateUrl currentSearchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
         if (currentSearchEngine == null) return SearchEngineType.SEARCH_ENGINE_UNKNOWN;
         return templateUrlService.getSearchEngineTypeFromTemplateUrl(

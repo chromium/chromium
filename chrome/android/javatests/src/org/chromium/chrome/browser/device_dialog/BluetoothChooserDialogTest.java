@@ -37,7 +37,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -166,7 +166,7 @@ public class BluetoothChooserDialogTest {
                                     "https://origin.example.com/",
                                     ConnectionSecurityLevel.SECURE,
                                     new ChromeBluetoothChooserAndroidDelegate(
-                                            Profile.getLastUsedRegularProfile()),
+                                            ProfileManager.getLastUsedRegularProfile()),
                                     /* nativeBluetoothChooserDialogPtr= */ 42);
                     dialog.show();
                     return dialog;

@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.privacy_sandbox.FakeTrackingProtectionBridge;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridgeJni;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -72,7 +72,7 @@ public class AllSiteSettingsTest {
     private FakeTrackingProtectionBridge mFakeTrackingProtectionBridge;
 
     private static BrowserContextHandle getBrowserContextHandle() {
-        return Profile.getLastUsedRegularProfile();
+        return ProfileManager.getLastUsedRegularProfile();
     }
 
     @Before

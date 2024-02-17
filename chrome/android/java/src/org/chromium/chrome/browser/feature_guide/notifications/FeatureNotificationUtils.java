@@ -15,7 +15,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoDeps;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -57,7 +56,7 @@ public final class FeatureNotificationUtils {
                         () -> {
                             Tracker tracker =
                                     TrackerFactory.getTrackerForProfile(
-                                            Profile.getLastUsedRegularProfile());
+                                            ProfileManager.getLastUsedRegularProfile());
                             tracker.setPriorityNotification(
                                     FeatureNotificationUtils
                                             .getIPHFeatureForNotificationFeatureType(featureType));
@@ -67,7 +66,8 @@ public final class FeatureNotificationUtils {
     /** Helper method to register an IPH show callback for the feature type to show the IPH. */
     public static void registerIPHCallback(@FeatureType int featureType, Runnable showIphCallback) {
         if (!ProfileManager.isInitialized()) return;
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        Tracker tracker =
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         tracker.registerPriorityNotificationHandler(
                 getIPHFeatureForNotificationFeatureType(featureType), showIphCallback);
     }
@@ -75,7 +75,8 @@ public final class FeatureNotificationUtils {
     /** Unregisters any IPH callbacks associated with the feature type. */
     public static void unregisterIPHCallback(@FeatureType int featureType) {
         if (!ProfileManager.isInitialized()) return;
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        Tracker tracker =
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         tracker.unregisterPriorityNotificationHandler(
                 getIPHFeatureForNotificationFeatureType(featureType));
     }
@@ -86,7 +87,8 @@ public final class FeatureNotificationUtils {
      */
     public static boolean willShowIPH(@FeatureType int featureType) {
         String iphFeature = getIPHFeatureForNotificationFeatureType(featureType);
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        Tracker tracker =
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         return TextUtils.equals(tracker.getPendingPriorityNotification(), iphFeature);
     }
 
@@ -179,7 +181,7 @@ public final class FeatureNotificationUtils {
         if (featureType == FeatureType.DEFAULT_BROWSER) {
             return !shouldShowDefaultBrowserPromo();
         } else if (featureType == FeatureType.NTP_SUGGESTION_CARD) {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            PrefService prefService = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
             return !prefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE);
         }
         return false;

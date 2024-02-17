@@ -20,7 +20,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.ConnectivityTask.FeedbackData;
 import org.chromium.chrome.browser.feedback.ConnectivityTask.Type;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 
@@ -58,7 +58,9 @@ public class ConnectivityTaskTest {
                                         mConnectivityCheckerTestRule.getGenerated404Url());
                                 // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                                 return ConnectivityTask.create(
-                                        Profile.getLastUsedRegularProfile(), TIMEOUT_MS, null);
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        TIMEOUT_MS,
+                                        null);
                             }
                         });
 
@@ -125,7 +127,7 @@ public class ConnectivityTaskTest {
                             mConnectivityCheckerTestRule.getGenerated404Url());
                     // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                     ConnectivityTask.create(
-                            Profile.getLastUsedRegularProfile(), TIMEOUT_MS, callback);
+                            ProfileManager.getLastUsedRegularProfile(), TIMEOUT_MS, callback);
                 });
         if (!semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             Assert.fail("Failed to acquire semaphore.");
@@ -158,7 +160,7 @@ public class ConnectivityTaskTest {
                             mConnectivityCheckerTestRule.getGeneratedSlowUrl());
                     // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                     ConnectivityTask.create(
-                            Profile.getLastUsedRegularProfile(), checkTimeoutMs, callback);
+                            ProfileManager.getLastUsedRegularProfile(), checkTimeoutMs, callback);
                 });
         if (!semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             Assert.fail("Failed to acquire semaphore.");
@@ -187,7 +189,9 @@ public class ConnectivityTaskTest {
                                         mConnectivityCheckerTestRule.getGeneratedSlowUrl());
                                 // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                                 return ConnectivityTask.create(
-                                        Profile.getLastUsedRegularProfile(), TIMEOUT_MS, null);
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        TIMEOUT_MS,
+                                        null);
                             }
                         });
         thrown.expect(AssertionError.class);

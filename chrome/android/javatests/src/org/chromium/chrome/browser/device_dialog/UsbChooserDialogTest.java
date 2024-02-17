@@ -30,7 +30,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -93,7 +93,7 @@ public class UsbChooserDialogTest {
                     UsbChooserDialog dialog =
                             new UsbChooserDialog(
                                     /* nativeUsbChooserDialogPtr= */ 42,
-                                    Profile.getLastUsedRegularProfile());
+                                    ProfileManager.getLastUsedRegularProfile());
                     dialog.show(
                             sActivityTestRule.getActivity(),
                             "https://origin.example.com/",
@@ -218,7 +218,7 @@ public class UsbChooserDialogTest {
                                     mockWindowAndroid,
                                     "https://origin.example.com/",
                                     ConnectionSecurityLevel.SECURE,
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     /* nativeUsbChooserDialogPtr= */ 42);
                         });
         Assert.assertNull(dialog);

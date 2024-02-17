@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Related
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -214,7 +215,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                         touchHighlightVisible,
                         touchHighlightXOffset,
                         touchHighlightWidth,
-                        Profile.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile(),
                         roundedBarTopResourceId,
                         separatorLineColor);
     }

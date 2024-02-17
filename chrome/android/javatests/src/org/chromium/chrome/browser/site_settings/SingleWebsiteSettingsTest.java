@@ -37,7 +37,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -258,7 +258,7 @@ public class SingleWebsiteSettingsTest {
                 () -> {
                     result[0] =
                             WebsitePreferenceBridge.getContentSetting(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     contentSettingType,
                                     primaryUrl,
                                     secondaryUrl);
@@ -356,7 +356,7 @@ public class SingleWebsiteSettingsTest {
         // Set setting explicitly to write it to prefs.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    info.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
+                    info.setContentSetting(ProfileManager.getLastUsedRegularProfile(), setting);
                 });
         website.addEmbeddedPermission(info);
         return website;

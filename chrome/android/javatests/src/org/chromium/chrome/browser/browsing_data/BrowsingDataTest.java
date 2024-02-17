@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBack
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendFactory;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -74,7 +74,7 @@ public class BrowsingDataTest {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     helper::notifyCalled, new int[] {dataType}, timePeriod);
                 });
@@ -95,7 +95,7 @@ public class BrowsingDataTest {
                 () -> {
                     counter[0] =
                             new BrowsingDataCounterBridge(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     callback,
                                     BrowsingDataType.COOKIES,
                                     ClearBrowsingDataTab.ADVANCED);
@@ -178,7 +178,7 @@ public class BrowsingDataTest {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingDataIncognitoForTesting(
                                     helper::notifyCalled,
                                     new int[] {

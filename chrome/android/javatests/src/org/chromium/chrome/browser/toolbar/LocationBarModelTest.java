@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -292,7 +292,7 @@ public class LocationBarModelTest {
             initializeWithNative();
 
             Tab tab =
-                    new MockTab(0, Profile.getLastUsedRegularProfile()) {
+                    new MockTab(0, ProfileManager.getLastUsedRegularProfile()) {
                         @Override
                         public boolean isInitialized() {
                             return true;

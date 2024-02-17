@@ -75,7 +75,7 @@ import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.partnercustomizations.BasePartnerBrowserCustomizationIntegrationTestRule;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
@@ -897,7 +897,7 @@ public class FirstRunIntegrationTest {
                     @Override
                     public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
                         return TemplateUrlServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile())
+                                        ProfileManager.getLastUsedRegularProfile())
                                 .getTemplateUrls();
                     }
                 };

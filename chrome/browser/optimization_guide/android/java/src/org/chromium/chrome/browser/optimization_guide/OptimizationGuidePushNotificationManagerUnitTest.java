@@ -37,6 +37,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto.KeyRepresentation;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
@@ -83,7 +84,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         mocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
         when(mOptimizationGuideBridgeJniMock.init()).thenReturn(1L);
 
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }

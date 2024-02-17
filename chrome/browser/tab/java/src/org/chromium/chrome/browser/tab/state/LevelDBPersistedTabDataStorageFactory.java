@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab.state;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 
 /** Creates {@link LevelDBPersistedTabDataStorage} instances per profile */
 public class LevelDBPersistedTabDataStorageFactory
@@ -20,7 +21,7 @@ public class LevelDBPersistedTabDataStorageFactory
 
     @Override
     public LevelDBPersistedTabDataStorage create() {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         return sProfileToLevelDBStorageMap.getForProfile(
                 profile, () -> new LevelDBPersistedTabDataStorage(profile));
     }

@@ -260,7 +260,7 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
-      'Profile.getLastUsedRegularProfile()',
+      'ProfileManager.getLastUsedRegularProfile()',
       (
        'Prefer passing in the Profile reference instead of relying on the '
        'static getLastUsedRegularProfile() call. Only top level entry points '

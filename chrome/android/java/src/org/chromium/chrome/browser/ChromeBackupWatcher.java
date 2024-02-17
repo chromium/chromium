@@ -17,7 +17,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
@@ -67,7 +67,7 @@ public class ChromeBackupWatcher {
         // Update the backup if the sign-in status changes.
         IdentityManager identityManager =
                 IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile());
+                        .getIdentityManager(ProfileManager.getLastUsedRegularProfile());
         identityManager.addObserver(
                 new IdentityManager.Observer() {
                     @Override

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.history.TestBrowsingHistoryObserver;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -95,7 +96,9 @@ public class IncognitoHistoryLeakageTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
-                            (tab == null) ? Profile.getLastUsedRegularProfile() : tab.getProfile();
+                            (tab == null)
+                                    ? ProfileManager.getLastUsedRegularProfile()
+                                    : tab.getProfile();
                     BrowsingHistoryBridge historyService = new BrowsingHistoryBridge(profile);
                     historyService.setObserver(historyObserver);
                     String historyQueryFilter = "";

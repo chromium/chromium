@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
@@ -140,7 +141,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
             TileGroup.Delegate tileGroupDelegate,
             TouchEnabledDelegate touchEnabledDelegate) {
         mActivityLifecycleDispatcher.register(this);
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         if (mRenderer == null) {
             mRenderer =
                     new TileRenderer(

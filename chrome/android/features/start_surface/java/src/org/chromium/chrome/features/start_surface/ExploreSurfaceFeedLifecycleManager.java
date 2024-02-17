@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Explore surface feed lifecycle manager. */
@@ -32,7 +32,7 @@ class ExploreSurfaceFeedLifecycleManager extends FeedSurfaceLifecycleManager {
     }
 
     private boolean shouldShowFeed() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile())
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                 .getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
 

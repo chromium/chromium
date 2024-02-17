@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluationBridge;
 import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluationBridge.OfflinePageEvaluationObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.offlinepages.BackgroundSavePageResult;
@@ -226,7 +227,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
                 () -> {
                     // TODO (https://crbug.com/714249):  Add incognito mode tests to check that
                     // OfflinePageEvaluationBridge is null for incognito.
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     mBridge = new OfflinePageEvaluationBridge(profile, useTestingScheduler);
                     if (mBridge == null) {
                         Assert.fail("OfflinePageEvaluationBridge initialization failed!");

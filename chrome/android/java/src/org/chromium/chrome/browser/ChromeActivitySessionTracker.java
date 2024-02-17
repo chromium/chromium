@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLifecycleHelp
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -157,9 +157,10 @@ public class ChromeActivitySessionTracker {
                 TraceEvent.scoped("ChromeActivitySessionTracker.onForegroundSessionStart")) {
             UmaUtils.recordForegroundStartTimeWithNative();
             updatePasswordEchoState();
-            FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
+            FontSizePrefs.getInstance(ProfileManager.getLastUsedRegularProfile())
                     .onSystemFontScaleChanged();
-            DeviceAccessibilitySettingsHandler.getInstance(Profile.getLastUsedRegularProfile())
+            DeviceAccessibilitySettingsHandler.getInstance(
+                            ProfileManager.getLastUsedRegularProfile())
                     .updateFontWeightAdjustment();
             ChromeLocalizationUtils.recordUiLanguageStatus();
             updateAcceptLanguages();
@@ -192,7 +193,8 @@ public class ChromeActivitySessionTracker {
         IntentHandler.clearPendingReferrer();
         IntentHandler.clearPendingIncognitoUrl();
 
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        Tracker tracker =
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         tracker.notifyEvent(EventConstants.FOREGROUND_SESSION_DESTROYED);
     }
 
@@ -235,7 +237,7 @@ public class ChromeActivitySessionTracker {
                 // call. So cache-clearing may not be effective if URL rendering can happen before
                 // OnBrowsingDataRemoverDone() is called, in which case we may have to reload as
                 // well. Check if it can happen.
-                BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                         .clearBrowsingData(
                                 null, new int[] {BrowsingDataType.CACHE}, TimePeriod.ALL_TIME);
             }
@@ -253,13 +255,13 @@ public class ChromeActivitySessionTracker {
                                 Settings.System.TEXT_SHOW_PASSWORD,
                                 1)
                         == 1;
-        if (UserPrefs.get(Profile.getLastUsedRegularProfile())
+        if (UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                         .getBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED)
                 == systemEnabled) {
             return;
         }
 
-        UserPrefs.get(Profile.getLastUsedRegularProfile())
+        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                 .setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED, systemEnabled);
     }
 

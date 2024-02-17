@@ -12,6 +12,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 
 import java.util.HashMap;
@@ -229,7 +230,7 @@ public class AdaptiveToolbarFeatures {
         return ReadAloudFeatures.isAllowed(
                 sProfileForTesting != null
                         ? sProfileForTesting
-                        : Profile.getLastUsedRegularProfile());
+                        : ProfileManager.getLastUsedRegularProfile());
     }
 
     /**

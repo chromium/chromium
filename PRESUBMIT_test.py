@@ -2800,7 +2800,7 @@ class BannedTypeCheckTest(unittest.TestCase):
       MockFile('some/java/problematic/requestlayout.java',
                ['requestLayout();']),
       MockFile('some/java/problematic/lastprofile.java',
-               ['Profile.getLastUsedRegularProfile();']),
+               ['ProfileManager.getLastUsedRegularProfile();']),
       MockFile('some/java/problematic/getdrawable1.java',
                ['ResourcesCompat.getDrawable();']),
       MockFile('some/java/problematic/getdrawable2.java',

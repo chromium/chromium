@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -156,7 +157,7 @@ public class IncognitoDownloadLeakageTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // This skips the download prompt dialog for tests.
-                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setInteger(
                                     Pref.PROMPT_FOR_DOWNLOAD_ANDROID,
                                     DownloadPromptStatus.DONT_SHOW);

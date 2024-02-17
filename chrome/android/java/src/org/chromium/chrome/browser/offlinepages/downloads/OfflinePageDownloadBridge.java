@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -103,7 +103,7 @@ public class OfflinePageDownloadBridge {
                         openItemInNewTab(offlineId, params, isIncognito);
                     }
                 },
-                Profile.getLastUsedRegularProfile());
+                ProfileManager.getLastUsedRegularProfile());
     }
 
     /**

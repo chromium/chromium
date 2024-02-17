@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -39,10 +40,10 @@ class DownloadManagerCoordinatorFactoryHelper {
             ModalDialogManager modalDialogManager) {
         Profile profile =
                 OTRProfileID.isOffTheRecord(config.otrProfileID)
-                        ? Profile.getLastUsedRegularProfile()
+                        ? ProfileManager.getLastUsedRegularProfile()
                                 .getOffTheRecordProfile(
                                         config.otrProfileID, /* createIfNeeded= */ true)
-                        : Profile.getLastUsedRegularProfile();
+                        : ProfileManager.getLastUsedRegularProfile();
         Callback<Context> settingsLaunchHelper =
                 DownloadManagerCoordinatorFactoryHelper::settingsLaunchHelper;
         return DownloadManagerCoordinatorFactory.create(

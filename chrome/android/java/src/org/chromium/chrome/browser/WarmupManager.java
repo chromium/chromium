@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -563,7 +564,7 @@ public class WarmupManager {
             mSpareWebContents =
                     new WebContentsFactory()
                             .createWebContentsWithWarmRenderer(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     /* initiallyHidden= */ true);
             mObserver = new RenderProcessGoneObserver();
             mSpareWebContents.addObserver(mObserver);

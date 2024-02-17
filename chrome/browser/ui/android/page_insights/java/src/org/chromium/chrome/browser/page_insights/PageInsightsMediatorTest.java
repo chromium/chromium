@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekCond
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -190,7 +191,7 @@ public class PageInsightsMediatorTest {
                         });
         jniMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         XSurfaceProcessScopeProvider.setProcessScopeForTesting(mProcessScope);
         when(mProcessScope.obtainPageInsightsSurfaceScope(
                         any(PageInsightsSurfaceScopeDependencyProviderImpl.class)))

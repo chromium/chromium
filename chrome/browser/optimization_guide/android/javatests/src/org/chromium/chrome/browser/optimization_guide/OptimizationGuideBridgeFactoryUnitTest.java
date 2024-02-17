@@ -20,6 +20,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 
@@ -56,26 +57,26 @@ public class OptimizationGuideBridgeFactoryUnitTest {
         OptimizationGuideBridge bridgeRegularProfile = bridgeFactory.create();
         Assert.assertEquals(bridgeRegularProfile, bridgeFactory.create());
 
-        Profile.setLastUsedProfileForTesting(mProfile1);
+        ProfileManager.setLastUsedProfileForTesting(mProfile1);
         OptimizationGuideBridge bridgeRegularMockProfile1 = bridgeFactory.create();
         Assert.assertNotEquals(bridgeRegularProfile, bridgeRegularMockProfile1);
         Assert.assertEquals(bridgeRegularMockProfile1, bridgeFactory.create());
 
-        Profile.setLastUsedProfileForTesting(mProfile2);
+        ProfileManager.setLastUsedProfileForTesting(mProfile2);
         OptimizationGuideBridge bridgeRegularMockProfile2 = bridgeFactory.create();
         Assert.assertNotEquals(bridgeRegularProfile, bridgeRegularMockProfile2);
         Assert.assertEquals(bridgeRegularMockProfile2, bridgeFactory.create());
 
         // Back to regular profile
-        Profile.setLastUsedProfileForTesting(null);
+        ProfileManager.setLastUsedProfileForTesting(null);
         Assert.assertEquals(bridgeRegularProfile, bridgeFactory.create());
 
         // Mock profile 1 again
-        Profile.setLastUsedProfileForTesting(mProfile1);
+        ProfileManager.setLastUsedProfileForTesting(mProfile1);
         Assert.assertEquals(bridgeRegularMockProfile1, bridgeFactory.create());
 
         // Mock profile 2 again
-        Profile.setLastUsedProfileForTesting(mProfile2);
+        ProfileManager.setLastUsedProfileForTesting(mProfile2);
         Assert.assertEquals(bridgeRegularMockProfile2, bridgeFactory.create());
     }
 }

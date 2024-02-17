@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -173,13 +173,14 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mCallback = callback;
 
             Resources res = context.getResources();
-            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+            mLargeIconBridge = new LargeIconBridge(ProfileManager.getLastUsedRegularProfile());
             mMinIconSizeDp = (int) res.getDimension(R.dimen.default_favicon_min_size);
             mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
             mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
 
             mRemainingTaskCount = 1;
-            mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+            mBookmarkModel =
+                    BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
             mBookmarkModel.finishLoadingBookmarkModel(
                     new Runnable() {
                         @Override
@@ -306,7 +307,8 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                 RecordUserAction.record("BookmarkNavigatorWidgetAdded");
             }
 
-            mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+            mBookmarkModel =
+                    BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
             mBookmarkModel.addObserver(
                     new BookmarkModelObserver() {
                         @Override

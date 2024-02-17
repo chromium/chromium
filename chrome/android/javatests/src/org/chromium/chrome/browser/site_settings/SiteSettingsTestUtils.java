@@ -15,7 +15,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -63,7 +63,7 @@ public class SiteSettingsTestUtils {
                                     InstrumentationRegistry.getInstrumentation().getContext();
                             var delegate =
                                     new ChromeSiteSettingsDelegate(
-                                            context, Profile.getLastUsedRegularProfile());
+                                            context, ProfileManager.getLastUsedRegularProfile());
                             return context.getResources()
                                     .getString(
                                             ContentSettingsResources.getTitleForCategory(
@@ -146,7 +146,7 @@ public class SiteSettingsTestUtils {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     helper::notifyCalled,
                                     new int[] {

@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Del
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -187,7 +188,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                             .thenReturn(true);
                     PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
 
-                    Profile.setLastUsedProfileForTesting(mProfile);
+                    ProfileManager.setLastUsedProfileForTesting(mProfile);
                     IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
                     when(mIdentityServicesProvider.getIdentityManager(mProfile))
                             .thenReturn(mIdentityManager);

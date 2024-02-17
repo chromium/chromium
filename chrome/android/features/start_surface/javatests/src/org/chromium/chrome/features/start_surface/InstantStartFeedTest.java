@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -147,7 +147,7 @@ public class InstantStartFeedTest {
         // FEED_ARTICLES_LIST_VISIBLE should equal to ARTICLES_LIST_VISIBLE.
         CriteriaHelper.pollUiThread(
                 () ->
-                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.ARTICLES_LIST_VISIBLE)
                                 == ReturnToChromeUtil.getFeedArticlesVisibility());
 
@@ -158,7 +158,7 @@ public class InstantStartFeedTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertEquals(
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.ARTICLES_LIST_VISIBLE),
                                 ReturnToChromeUtil.getFeedArticlesVisibility()));
 
@@ -169,7 +169,7 @@ public class InstantStartFeedTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertEquals(
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.ARTICLES_LIST_VISIBLE),
                                 ReturnToChromeUtil.getFeedArticlesVisibility()));
     }

@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.preferences.AllPreferenceKeyRegistries;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -359,7 +359,7 @@ public class ChromeBrowserInitializer {
                             LibraryProcessType.PROCESS_BROWSER,
                             /* singleProcess= */ false,
                             /* startGpuProcess= */ startGpuProcess);
-            SigninCheckerProvider.get(Profile.getLastUsedRegularProfile());
+            SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile());
         } finally {
             TraceEvent.end("ChromeBrowserInitializer.startChromeBrowserProcessesSync");
         }

@@ -17,6 +17,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.site_engagement.SiteEngagementService;
@@ -39,7 +40,7 @@ public class SiteEngagementServiceTest {
     public void testSettingAndRetrievingScore() throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowserContextHandle handle = Profile.getLastUsedRegularProfile();
+                    BrowserContextHandle handle = ProfileManager.getLastUsedRegularProfile();
                     SiteEngagementService service =
                             SiteEngagementService.getForBrowserContext(handle);
 
@@ -59,7 +60,7 @@ public class SiteEngagementServiceTest {
     public void testRepeatedlyGettingService() throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
 
                     Assert.assertEquals(
                             0.0,
@@ -85,7 +86,7 @@ public class SiteEngagementServiceTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowserContextHandle handle = Profile.getLastUsedRegularProfile();
+                    BrowserContextHandle handle = ProfileManager.getLastUsedRegularProfile();
                     SiteEngagementService service =
                             SiteEngagementService.getForBrowserContext(handle);
                     service.resetBaseScoreForUrl(URL, 0.0);

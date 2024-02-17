@@ -81,7 +81,7 @@ import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -230,7 +230,7 @@ public class NewTabPageTest {
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile()));
+                                        ProfileManager.getLastUsedRegularProfile()));
         mTemplateUrlService = Mockito.spy(originalService);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         Assume.assumeFalse(mActivityTestRule.getActivity().isTablet() && mEnableScrollableMVT);

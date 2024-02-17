@@ -57,7 +57,7 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -185,7 +185,7 @@ public class FirstRunActivitySigninAndSyncTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
                 });
@@ -388,7 +388,7 @@ public class FirstRunActivitySigninAndSyncTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
@@ -402,7 +402,7 @@ public class FirstRunActivitySigninAndSyncTest {
                 () -> {
                     IdentityManager identityManager =
                             IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                                     .getIdentityManager();
                     return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                             && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);

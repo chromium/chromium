@@ -24,7 +24,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
@@ -100,7 +100,7 @@ public class SyncErrorCardPreferenceTest {
                         () ->
                                 SyncSettingsUtils.getSyncError(
                                         SyncServiceFactory.getForProfile(
-                                                Profile.getLastUsedRegularProfile())));
+                                                ProfileManager.getLastUsedRegularProfile())));
         Assert.assertEquals(
                 "SyncError did not match expected value", expectedSyncError, currentSyncError);
     }

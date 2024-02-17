@@ -21,7 +21,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.android.httpclient.SimpleHttpClient.HttpResponse;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -65,7 +65,9 @@ public class SimpleHttpClientTest {
                 };
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHttpClient = new SimpleHttpClient(Profile.getLastUsedRegularProfile()));
+                () ->
+                        mHttpClient =
+                                new SimpleHttpClient(ProfileManager.getLastUsedRegularProfile()));
     }
 
     @Test

@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.partnercustomizations.HomepageCharacterizatio
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -117,8 +116,8 @@ public class HomepageManager
      * this function will fallback to return {@link ChromeUrlConstants.nativeNtpGurl()}. If the
      * default search engine (DSE) isn't Google, may fallback to the DSE's new Tab URL.
      *
-     * <p>This function needs to be called on UI thread since Profile.getLastUsedRegularProfile() is
-     * called.
+     * <p>This function needs to be called on UI thread since
+     * ProfileManager.getLastUsedRegularProfile() is called.
      *
      * <p>This function checks different sources to get the current homepage, which is listed below
      * according to their priority:
@@ -138,13 +137,14 @@ public class HomepageManager
             homepageGurl = ChromeUrlConstants.nativeNtpGurl();
         }
 
-        // We have to use Profile.getLastUsedRegularProfile() to get the last used regular Profile
+        // We have to use ProfileManager.getLastUsedRegularProfile() to get the last used regular
+        // Profile
         // before HomepageManager supports multiple Profiles. Thus, if DSE isn't Google, pressing
         // the home button may redirect to the DSE's new Tab URL, rather than showing an incognito
         // NTP.
         return DseNewTabUrlManager.maybeGetOverrideUrl(
                 homepageGurl,
-                ProfileManager.isInitialized() ? Profile.getLastUsedRegularProfile() : null);
+                ProfileManager.isInitialized() ? ProfileManager.getLastUsedRegularProfile() : null);
     }
 
     /**

@@ -76,7 +76,7 @@ import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -209,7 +209,7 @@ public class SigninFirstRunFragmentTest {
                             OneshotSupplierImpl<ProfileProvider> supplier =
                                     new OneshotSupplierImpl<>();
                             when(mProfileProvider.getOriginalProfile())
-                                    .thenReturn(Profile.getLastUsedRegularProfile());
+                                    .thenReturn(ProfileManager.getLastUsedRegularProfile());
                             supplier.set(mProfileProvider);
                             return supplier;
                         });
@@ -339,7 +339,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile()))
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                 });
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
@@ -360,12 +360,12 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile()))
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                     // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
                     // SigninFirstRunMediator.
                     when(IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile()))
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mIdentityManagerMock);
                 });
         doCallback(/* index= */ 2, (SignInCallback callback) -> callback.onSignInAborted())
@@ -394,7 +394,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile()))
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                 });
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
@@ -520,7 +520,7 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
                 });
         final CoreAccountInfo primaryAccount =
@@ -564,7 +564,7 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
                 });
         final CoreAccountInfo primaryAccount =
@@ -605,7 +605,7 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
                 });
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
@@ -634,7 +634,7 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
                 });
         final CoreAccountInfo primaryAccount =
@@ -669,7 +669,7 @@ public class SigninFirstRunFragmentTest {
                 () -> {
                     return targetPrimaryAccount.equals(
                             IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                                     .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
                 });
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
@@ -686,12 +686,12 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile()))
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                     // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
                     // SigninFirstRunMediator.
                     when(IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile()))
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mIdentityManagerMock);
                 });
         launchActivityWithFragment();
@@ -723,7 +723,7 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
                 });
         waitForEvent(mFirstRunPageDelegateMock).acceptTermsOfService(true);
@@ -753,7 +753,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile()))
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                 });
 
@@ -783,7 +783,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile()))
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                 });
 
@@ -805,7 +805,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile()))
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                 });
 
@@ -827,12 +827,12 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile()))
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                     // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
                     // SigninFirstRunMediator.
                     when(IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile()))
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mIdentityManagerMock);
                 });
         launchActivityWithFragment();

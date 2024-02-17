@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -78,7 +79,7 @@ public class SigninManagerIntegrationTest {
         mSigninTestRule.waitForSeeding();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
                     mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
                     mSigninManager.addSignInStateObserver(mSignInStateObserverMock);

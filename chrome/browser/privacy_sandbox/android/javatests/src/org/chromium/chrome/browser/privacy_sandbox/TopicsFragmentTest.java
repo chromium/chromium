@@ -47,7 +47,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -98,7 +98,8 @@ public final class TopicsFragmentTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
                 });
 
@@ -138,12 +139,14 @@ public final class TopicsFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TopicsFragment.setTopicsPrefEnabled(
-                                Profile.getLastUsedRegularProfile(), isEnabled));
+                                ProfileManager.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isTopicsPrefEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> TopicsFragment.isTopicsPrefEnabled(Profile.getLastUsedRegularProfile()));
+                () ->
+                        TopicsFragment.isTopicsPrefEnabled(
+                                ProfileManager.getLastUsedRegularProfile()));
     }
 
     @Test

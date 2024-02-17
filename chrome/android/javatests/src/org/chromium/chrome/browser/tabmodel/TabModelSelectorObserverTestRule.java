@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -133,7 +134,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         mNormalTabModel =
                 new TabModelSelectorTestTabModel(
-                        Profile.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile(),
                         orderController,
                         tabContentManager,
                         nextTabPolicySupplier,
@@ -143,7 +144,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         mIncognitoTabModel =
                 new TabModelSelectorTestIncognitoTabModel(
-                        Profile.getLastUsedRegularProfile()
+                        ProfileManager.getLastUsedRegularProfile()
                                 .getPrimaryOTRProfile(/* createIfNeeded= */ true),
                         orderController,
                         tabContentManager,
@@ -207,7 +208,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 AsyncTabParamsManager asyncTabParamsManager,
                 TabModelDelegate modelDelegate) {
             super(
-                    Profile.getLastUsedRegularProfile()
+                    ProfileManager.getLastUsedRegularProfile()
                             .getPrimaryOTRProfile(/* createIfNeeded= */ true),
                     orderController,
                     tabContentManager,

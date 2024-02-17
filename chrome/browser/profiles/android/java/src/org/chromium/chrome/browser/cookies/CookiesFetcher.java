@@ -14,7 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -155,7 +155,7 @@ public class CookiesFetcher {
      */
     public static boolean deleteCookiesIfNecessary() {
         try {
-            if (Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile()) return false;
+            if (ProfileManager.getLastUsedRegularProfile().hasPrimaryOTRProfile()) return false;
             scheduleDeleteCookiesFile();
         } catch (RuntimeException e) {
             e.printStackTrace();

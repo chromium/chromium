@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNo
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
@@ -249,7 +249,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
         } else if (actionId.equals(ACTION_ID_TURN_OFF_ALERT)) {
             if (offerId == null && clusterId == null) return;
             ShoppingService shoppingService =
-                    ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+                    ShoppingServiceFactory.getForProfile(
+                            ProfileManager.getLastUsedRegularProfile());
             Callback<Boolean> callback =
                     (status) -> {
                         assert status : "Failed to remove subscriptions.";
@@ -259,7 +260,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             if (sBookmarkModelForTesting != null) {
                 bookmarkModel = sBookmarkModelForTesting;
             } else {
-                bookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+                bookmarkModel =
+                        BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
             }
 
             Runnable unsubscribeRunnable =

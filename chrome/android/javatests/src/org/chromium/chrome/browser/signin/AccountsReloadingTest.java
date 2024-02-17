@@ -18,7 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -77,7 +77,7 @@ public class AccountsReloadingTest {
                 () -> {
                     mIdentityManager =
                             IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile());
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile());
                     mIdentityManager.setRefreshTokenUpdateObserverForTests(mObserver);
                 });
     }

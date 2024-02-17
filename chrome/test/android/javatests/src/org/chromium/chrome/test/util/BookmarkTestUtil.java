@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -113,7 +113,8 @@ public class BookmarkTestUtil {
         final BookmarkModel bookmarkModel =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            return BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+                            return BookmarkModel.getForProfile(
+                                    ProfileManager.getLastUsedRegularProfile());
                         });
 
         CriteriaHelper.pollUiThread(bookmarkModel::isBookmarkModelLoaded);

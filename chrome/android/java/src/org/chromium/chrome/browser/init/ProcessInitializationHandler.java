@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
@@ -432,7 +433,7 @@ public class ProcessInitializationHandler {
                 new Runnable() {
                     @Override
                     public void run() {
-                        SigninCheckerProvider.get(Profile.getLastUsedRegularProfile())
+                        SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile())
                                 .onMainActivityStart();
                         RevenueStats.getInstance().retrieveAndApplyTrackingIds();
                     }
@@ -489,7 +490,7 @@ public class ProcessInitializationHandler {
                 () -> {
                     // OptimizationTypes which we give a guarantee will be registered when we pass
                     // the onDeferredStartup() signal to OptimizationGuide.
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     List<HintsProto.OptimizationType> registeredTypesAllowList = new ArrayList<>();
                     registeredTypesAllowList.addAll(
                             ShoppingPersistedTabData.getShoppingHintsToRegisterOnDeferredStartup(
@@ -508,7 +509,7 @@ public class ProcessInitializationHandler {
                 () -> {
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEATURE_NOTIFICATION_GUIDE)) {
                         FeatureNotificationGuideServiceFactory.getForProfile(
-                                Profile.getLastUsedRegularProfile());
+                                ProfileManager.getLastUsedRegularProfile());
                     }
                 });
         deferredStartupHandler.addDeferredTask(

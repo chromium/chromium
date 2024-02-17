@@ -27,6 +27,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -57,7 +58,7 @@ public class WebContentsDarkModeControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
 
-        Profile.setLastUsedProfileForTesting(mMockProfile);
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         UmaRecorderHolder.resetForTesting();
 
         Mockito.doAnswer(

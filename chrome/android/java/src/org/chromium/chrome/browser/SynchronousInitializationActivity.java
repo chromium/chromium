@@ -40,7 +40,7 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
         assert ProfileManager.isInitialized();
         // TODO(crbug/1410601): Pass the Profile information via the launching Intent and remove
         // getLastUsedRegularProfile below.
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         return new ProfileProvider() {
             @NonNull
             @Override

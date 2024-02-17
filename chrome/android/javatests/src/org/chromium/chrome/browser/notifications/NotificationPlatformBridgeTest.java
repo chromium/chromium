@@ -39,7 +39,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -118,7 +118,7 @@ public class NotificationPlatformBridgeTest {
                         public Double call() {
                             // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                             return SiteEngagementService.getForBrowserContext(
-                                            Profile.getLastUsedRegularProfile())
+                                            ProfileManager.getLastUsedRegularProfile())
                                     .getScore(mPermissionTestRule.getOrigin());
                         }
                     });
@@ -494,7 +494,7 @@ public class NotificationPlatformBridgeTest {
         // Disable notification vibration in preferences.
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setBoolean(NOTIFICATIONS_VIBRATE_ENABLED, false));
 
         Notification notification = showAndGetNotification("MyNotification", notificationOptions);
@@ -552,7 +552,7 @@ public class NotificationPlatformBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertTrue(
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(NOTIFICATIONS_VIBRATE_ENABLED)));
 
         Notification notification = showAndGetNotification("MyNotification", "{ vibrate: 42 }");

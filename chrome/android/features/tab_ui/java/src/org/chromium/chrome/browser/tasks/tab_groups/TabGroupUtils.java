@@ -13,7 +13,7 @@ import androidx.annotation.StringRes;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -64,7 +64,7 @@ public class TabGroupUtils {
         }
 
         final Tracker tracker =
-                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         if (!tracker.isInitialized()) return;
         if (!tracker.shouldTriggerHelpUI(featureName)) return;
 

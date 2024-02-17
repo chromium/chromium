@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -166,7 +166,7 @@ public class WebFeedSnackbarController {
                 FeedFeatures.isFeedFollowUiUpdateEnabled()
                         ? FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE
                         : FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE;
-        if (TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+        if (TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile())
                 .shouldTriggerHelpUI(feature)) {
             if (followFromFeed == StreamKind.FOLLOWING) {
                 Runnable launchSnackbar = null;

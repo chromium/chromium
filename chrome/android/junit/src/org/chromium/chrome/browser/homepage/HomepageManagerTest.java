@@ -245,7 +245,7 @@ public class HomepageManagerTest {
         doReturn(templateUrl).when(templateUrlService).getDefaultSearchEngineTemplateUrl();
         doReturn(JUnitTestGURLs.SEARCH_URL.getSpec()).when(templateUrl).getNewTabURL();
 
-        Profile.setLastUsedProfileForTesting(profile);
+        ProfileManager.setLastUsedProfileForTesting(profile);
         TemplateUrlServiceFactory.setInstanceForTesting(templateUrlService);
         ProfileManager.onProfileAdded(profile);
 

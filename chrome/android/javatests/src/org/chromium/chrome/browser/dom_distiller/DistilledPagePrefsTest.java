@@ -19,7 +19,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
@@ -63,7 +63,7 @@ public class DistilledPagePrefsTest {
                     // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                     DomDistillerService domDistillerService =
                             DomDistillerServiceFactory.getForProfile(
-                                    Profile.getLastUsedRegularProfile());
+                                    ProfileManager.getLastUsedRegularProfile());
                     mDistilledPagePrefs = domDistillerService.getDistilledPagePrefs();
                 });
     }

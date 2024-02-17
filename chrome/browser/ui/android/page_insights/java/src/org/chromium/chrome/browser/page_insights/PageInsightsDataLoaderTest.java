@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekCond
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto;
 import org.chromium.components.optimization_guide.proto.HintsProto;
@@ -73,7 +74,7 @@ public class PageInsightsDataLoaderTest {
         MockitoAnnotations.initMocks(this);
         jniMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         mockOptimizationGuideResponse(
                 mUrl, anyPageInsights(mPageInsightsMetadata), OptimizationGuideDecision.TRUE);
         createDataLoader();

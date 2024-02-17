@@ -19,7 +19,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoUtils;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -262,7 +262,7 @@ public class StartSurfaceToolbarCoordinator {
                 !mShouldCreateLogoInToolbar
                         && mIsNativeInitialized
                         && TemplateUrlServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile())
+                                        ProfileManager.getLastUsedRegularProfile())
                                 .doesDefaultSearchEngineHaveLogo();
         int fakeSearchBoxMarginToScreenTop;
         if (mIsSurfacePolishEnabled) {

@@ -22,6 +22,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.ui.base.TestActivity;
@@ -49,7 +50,7 @@ public class FollowManagementCoordinatorTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
         mocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
 

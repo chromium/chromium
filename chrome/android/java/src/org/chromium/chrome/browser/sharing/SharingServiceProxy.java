@@ -9,6 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.sync.protocol.SharingSpecificFields;
 import org.chromium.components.sync_device_info.FormFactor;
 
@@ -31,7 +32,7 @@ public class SharingServiceProxy {
         if (sNativeSharingServiceProxyAndroid == 0) {
             // The service hasn't been created yet.
             Natives jni = SharingServiceProxyJni.get();
-            jni.initSharingService(Profile.getLastUsedRegularProfile());
+            jni.initSharingService(ProfileManager.getLastUsedRegularProfile());
         }
 
         sInstance = new SharingServiceProxy();

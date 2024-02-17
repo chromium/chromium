@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 
@@ -42,7 +43,7 @@ public class ChromeAppModule {
     @Provides
     @Named(LAST_USED_REGULAR_PROFILE)
     public Profile provideLastUsedRegularProfile() {
-        return Profile.getLastUsedRegularProfile();
+        return ProfileManager.getLastUsedRegularProfile();
     }
 
     @Provides

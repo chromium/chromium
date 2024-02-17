@@ -29,7 +29,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -307,7 +307,7 @@ public class InfoBarTest {
                 () -> {
                     WebContents newContents =
                             WebContentsFactory.createWebContents(
-                                    Profile.getLastUsedRegularProfile(), false, false);
+                                    ProfileManager.getLastUsedRegularProfile(), false, false);
                     TabTestUtils.swapWebContents(
                             sActivityTestRule.getActivity().getActivityTab(),
                             newContents,

@@ -25,7 +25,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
@@ -142,7 +142,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         mTileGroup.startObserving(MAX_RESULTS);
 
         mTemplateUrlService =
-                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
         mTemplateUrlService.addObserver(this);
 
         onSearchEngineHasLogoChanged();

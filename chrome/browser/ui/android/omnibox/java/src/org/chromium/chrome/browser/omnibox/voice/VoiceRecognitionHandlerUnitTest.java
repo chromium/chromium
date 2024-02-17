@@ -111,7 +111,7 @@ public class VoiceRecognitionHandlerUnitTest {
         AutocompleteControllerProvider.setControllerForTesting(mAutocompleteController);
         RecognitionTestHelper.ShadowUserPrefs.setPrefService(mPrefs);
         ProfileManager.onProfileAdded(mProfile);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         doReturn(DEFAULT_SEARCH_URL).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
 

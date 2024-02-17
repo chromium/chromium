@@ -31,7 +31,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
@@ -89,7 +89,7 @@ public class BrowsingDataBridgeTest {
 
     private BrowsingDataBridge getBrowsingDataBridge() {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile()));
+                () -> BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile()));
     }
 
     /** Test no clear browsing data calls. */

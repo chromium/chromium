@@ -38,7 +38,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -72,7 +72,9 @@ public class AccountBookmarkTest {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         mBookmarkModel =
                 runOnUiThreadBlocking(
-                        () -> BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile()));
+                        () ->
+                                BookmarkModel.getForProfile(
+                                        ProfileManager.getLastUsedRegularProfile()));
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mBookmarkManagerCoordinator =
                 mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());

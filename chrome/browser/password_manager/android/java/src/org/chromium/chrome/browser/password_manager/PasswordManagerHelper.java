@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
@@ -201,7 +202,7 @@ public class PasswordManagerHelper {
      * @return True if Unified Password Manager can be used, false otherwise.
      */
     public static boolean canUseUpm() {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         PrefService prefService = UserPrefs.get(profile);
         // TODO(crbug.com/1327294): Reevaluate if passing the syncService instead of the boolean is
@@ -392,7 +393,7 @@ public class PasswordManagerHelper {
     // TODO(http://crbug.com/1371422): Remove method and manage eviction from native code
     // as this is covered by chrome://password-manager-internals page.
     public static void resetUpmUnenrollment() {
-        PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        PrefService prefs = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
 
         // Exit early if the user is not unenrolled.
         if (!prefs.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)) return;

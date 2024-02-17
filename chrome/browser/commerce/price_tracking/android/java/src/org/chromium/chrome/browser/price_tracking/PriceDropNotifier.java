@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker.ActionTy
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -134,7 +134,7 @@ public class PriceDropNotifier {
             mImageFetcher =
                     ImageFetcherFactory.createImageFetcher(
                             ImageFetcherConfig.NETWORK_ONLY,
-                            Profile.getLastUsedRegularProfile().getProfileKey());
+                            ProfileManager.getLastUsedRegularProfile().getProfileKey());
         }
         return mImageFetcher;
     }

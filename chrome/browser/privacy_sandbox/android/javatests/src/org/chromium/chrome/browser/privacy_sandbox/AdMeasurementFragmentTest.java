@@ -38,7 +38,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -80,7 +80,8 @@ public final class AdMeasurementFragmentTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
                 });
 
@@ -117,14 +118,14 @@ public final class AdMeasurementFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AdMeasurementFragment.setAdMeasurementPrefEnabled(
-                                Profile.getLastUsedRegularProfile(), isEnabled));
+                                ProfileManager.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isAdMeasurementPrefEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         AdMeasurementFragment.isAdMeasurementPrefEnabled(
-                                Profile.getLastUsedRegularProfile()));
+                                ProfileManager.getLastUsedRegularProfile()));
     }
 
     @Test

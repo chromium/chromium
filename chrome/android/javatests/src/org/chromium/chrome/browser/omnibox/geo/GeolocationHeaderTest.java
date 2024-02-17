@@ -25,7 +25,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -244,7 +244,7 @@ public class GeolocationHeaderTest {
                                     /* isEmbargo= */ false,
                                     SessionModel.DURABLE);
                     infoHttps.setContentSetting(
-                            Profile.getLastUsedRegularProfile(), httpsPermission);
+                            ProfileManager.getLastUsedRegularProfile(), httpsPermission);
                     String header =
                             GeolocationHeader.getGeoHeader(
                                     SEARCH_URL_1, sActivityTestRule.getActivity().getActivityTab());
@@ -379,11 +379,12 @@ public class GeolocationHeaderTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    infoHttps.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
+                    infoHttps.setContentSetting(
+                            ProfileManager.getLastUsedRegularProfile(), setting);
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return infoHttps.getContentSetting(Profile.getLastUsedRegularProfile())
+                    return infoHttps.getContentSetting(ProfileManager.getLastUsedRegularProfile())
                             == setting;
                 });
     }

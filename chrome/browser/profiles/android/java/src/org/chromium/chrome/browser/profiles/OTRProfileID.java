@@ -66,7 +66,8 @@ public class OTRProfileID {
         // profile for the id. If OTR profile is not available, deserialize function should not be
         // called.
         if (otrProfileId != null
-                && !Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileId)) {
+                && !ProfileManager.getLastUsedRegularProfile()
+                        .hasOffTheRecordProfile(otrProfileId)) {
             throw new IllegalStateException("The OTR profile should exist for otr profile id.");
         }
 

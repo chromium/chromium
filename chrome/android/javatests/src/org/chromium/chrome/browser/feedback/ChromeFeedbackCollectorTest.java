@@ -20,6 +20,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.ChromeFeedbackCollector.InitParams;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -48,7 +49,7 @@ public class ChromeFeedbackCollectorTest {
     public void testRegularProfile() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     InitParams params = new InitParams(profile, FEEDBACK_URL, FEEDBACK_CONSTANT);
                     mCollector =
                             new ChromeFeedbackCollector(
@@ -66,7 +67,7 @@ public class ChromeFeedbackCollectorTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
-                            Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true);
+                            ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true);
                     InitParams params = new InitParams(profile, FEEDBACK_URL, FEEDBACK_CONSTANT);
                     mCollector =
                             new ChromeFeedbackCollector(

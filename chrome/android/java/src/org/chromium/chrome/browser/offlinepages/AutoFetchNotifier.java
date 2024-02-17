@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -294,7 +295,7 @@ public class AutoFetchNotifier {
                     showCompleteNotificationWithParams(
                             pageTitle, tabId, offlineId, originalUrl, finalUrl, params);
                 },
-                Profile.getLastUsedRegularProfile());
+                ProfileManager.getLastUsedRegularProfile());
     }
 
     private static void showCompleteNotificationWithParams(
@@ -384,7 +385,7 @@ public class AutoFetchNotifier {
 
     private static void cancelInProgress() {
         // Using regular profile here, since this function is only called in regular mode.
-        AutoFetchNotifierJni.get().cancelInProgress(Profile.getLastUsedRegularProfile());
+        AutoFetchNotifierJni.get().cancelInProgress(ProfileManager.getLastUsedRegularProfile());
     }
 
     @NativeMethods

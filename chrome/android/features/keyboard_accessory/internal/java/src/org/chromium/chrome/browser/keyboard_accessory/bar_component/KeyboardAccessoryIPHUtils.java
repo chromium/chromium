@@ -12,7 +12,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -189,7 +189,7 @@ class KeyboardAccessoryIPHUtils {
         // incognito profile) instead of always using regular profile. It works correctly now,
         // but it is not safe.
         final Tracker tracker =
-                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         if (!tracker.isInitialized()) return null;
         return tracker;
     }

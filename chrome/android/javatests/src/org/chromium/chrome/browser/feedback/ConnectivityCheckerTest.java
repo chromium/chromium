@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.Semaphore;
@@ -187,7 +187,10 @@ public class ConnectivityCheckerTest {
                     } else {
                         // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                         ConnectivityChecker.checkConnectivityChromeNetworkStack(
-                                Profile.getLastUsedRegularProfile(), url, timeoutMs, callback);
+                                ProfileManager.getLastUsedRegularProfile(),
+                                url,
+                                timeoutMs,
+                                callback);
                     }
                 });
 

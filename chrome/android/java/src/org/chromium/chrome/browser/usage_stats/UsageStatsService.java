@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
@@ -80,7 +81,7 @@ public class UsageStatsService {
 
     @VisibleForTesting
     UsageStatsService() {
-        mProfile = Profile.getLastUsedRegularProfile();
+        mProfile = ProfileManager.getLastUsedRegularProfile();
         mBridge = new UsageStatsBridge(mProfile, this);
         mEventTracker = new EventTracker(mBridge);
         mSuspensionTracker = new SuspensionTracker(mBridge, mProfile);

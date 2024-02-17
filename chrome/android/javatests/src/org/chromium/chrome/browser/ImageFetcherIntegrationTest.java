@@ -21,7 +21,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -76,7 +76,7 @@ public class ImageFetcherIntegrationTest {
                         ImageFetcher imageFetcher =
                                 ImageFetcherFactory.createImageFetcher(
                                         ImageFetcherConfig.NETWORK_ONLY,
-                                        Profile.getLastUsedRegularProfile().getProfileKey());
+                                        ProfileManager.getLastUsedRegularProfile().getProfileKey());
                         imageFetcher.fetchImage(params, callbackWaiter);
                         return null;
                     }

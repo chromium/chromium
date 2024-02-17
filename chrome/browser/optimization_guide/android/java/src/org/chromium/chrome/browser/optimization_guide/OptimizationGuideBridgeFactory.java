@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.optimization_guide;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class OptimizationGuideBridgeFactory {
      * @return {@link OptimizationGuideBridge} for the current last used regular profile
      */
     public OptimizationGuideBridge create() {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         return mProfileToOptimizationGuideBridgeMap.getForProfile(
                 profile,
                 () -> {

@@ -43,7 +43,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
@@ -281,7 +281,8 @@ public class AccountManagementFragmentTest {
                         Assert.assertFalse(
                                 "Account should be signed out!",
                                 IdentityServicesProvider.get()
-                                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                        .getIdentityManager(
+                                                ProfileManager.getLastUsedRegularProfile())
                                         .hasPrimaryAccount(ConsentLevel.SIGNIN)));
     }
 

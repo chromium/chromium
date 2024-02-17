@@ -17,7 +17,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -144,7 +144,8 @@ public class OfflineTestUtil {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     OfflinePageBridge bridge =
-                            OfflinePageBridge.getForProfile(Profile.getLastUsedRegularProfile());
+                            OfflinePageBridge.getForProfile(
+                                    ProfileManager.getLastUsedRegularProfile());
                     if (bridge == null || bridge.isOfflinePageModelLoaded()) {
                         result.set(bridge);
                         ready.notifyCalled();

@@ -23,7 +23,7 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -80,7 +80,7 @@ public class DownloadSettingsTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         DownloadDialogBridge.isLocationDialogManaged(
-                                Profile.getLastUsedRegularProfile()));
+                                ProfileManager.getLastUsedRegularProfile()));
     }
 
     private void verifyLocationPromptPolicy(boolean promptForDownload) {
@@ -88,7 +88,7 @@ public class DownloadSettingsTest {
                 () -> {
                     Assert.assertTrue(
                             DownloadDialogBridge.isLocationDialogManaged(
-                                    Profile.getLastUsedRegularProfile()));
+                                    ProfileManager.getLastUsedRegularProfile()));
                     Assert.assertTrue(
                             getPrefService().isManagedPreference(Pref.PROMPT_FOR_DOWNLOAD));
                     DownloadSettings downloadSettings = mSettingsActivityTestRule.getFragment();
@@ -104,7 +104,7 @@ public class DownloadSettingsTest {
     }
 
     PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 
     @Test

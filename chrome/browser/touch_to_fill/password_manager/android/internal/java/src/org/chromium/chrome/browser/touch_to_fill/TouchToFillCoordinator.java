@@ -8,8 +8,8 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
@@ -49,7 +49,7 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
                 context,
                 delegate,
                 mModel,
-                new LargeIconBridge(Profile.getLastUsedRegularProfile()),
+                new LargeIconBridge(ProfileManager.getLastUsedRegularProfile()),
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.touch_to_fill_favicon_size_modern),
                 bottomSheetFocusHelper);

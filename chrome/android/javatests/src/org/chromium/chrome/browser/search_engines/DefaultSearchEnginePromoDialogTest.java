@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -64,7 +64,7 @@ public class DefaultSearchEnginePromoDialogTest {
     }
 
     private TemplateUrlService getTemplateUrlService() {
-        return TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        return TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
     }
 
     @Test

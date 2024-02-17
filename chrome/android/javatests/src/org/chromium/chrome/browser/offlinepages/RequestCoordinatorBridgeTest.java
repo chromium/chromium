@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -77,7 +78,7 @@ public class RequestCoordinatorBridgeTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfile = Profile.getLastUsedRegularProfile();
+                    mProfile = ProfileManager.getLastUsedRegularProfile();
                 });
 
         initializeBridgeForProfile();
@@ -128,7 +129,7 @@ public class RequestCoordinatorBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true);
                 });
         initializeBridgeForProfile();
@@ -142,7 +143,7 @@ public class RequestCoordinatorBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                 });

@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
@@ -146,7 +146,7 @@ public class SigninTestRule extends AccountManagerTestRule {
                 () -> {
                     Criteria.checkThat(
                             IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                                     .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
                             is(coreAccountInfo));
                 });
@@ -179,7 +179,8 @@ public class SigninTestRule extends AccountManagerTestRule {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assert IdentityServicesProvider.get()
-                                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                            .getIdentityManager(
+                                                    ProfileManager.getLastUsedRegularProfile())
                                             .getPrimaryAccountInfo(ConsentLevel.SYNC)
                                     == null
                             : "Sync should not be enabled";

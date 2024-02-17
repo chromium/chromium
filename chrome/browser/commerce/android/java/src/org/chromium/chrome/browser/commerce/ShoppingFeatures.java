@@ -19,7 +19,7 @@ public class ShoppingFeatures {
         if (sShoppingListEligibleForTestsing != null) return sShoppingListEligibleForTestsing;
 
         if (!ProfileManager.isInitialized()) return false;
-        return isShoppingListEligible(Profile.getLastUsedRegularProfile());
+        return isShoppingListEligible(ProfileManager.getLastUsedRegularProfile());
     }
 
     /** Wrapper function for ShoppingService.isShoppingListEligibile(). */

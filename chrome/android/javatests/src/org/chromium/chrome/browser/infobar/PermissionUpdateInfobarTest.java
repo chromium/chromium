@@ -23,7 +23,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -116,7 +116,7 @@ public class PermissionUpdateInfobarTest {
             TestThreadUtils.runOnUiThreadBlocking(
                     () ->
                             geolocationSettings.setContentSetting(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     ContentSettingValues.ALLOW));
 
             mActivityTestRule.loadUrl(mTestServer.getURL(GEOLOCATION_PAGE));
@@ -154,7 +154,7 @@ public class PermissionUpdateInfobarTest {
             TestThreadUtils.runOnUiThreadBlocking(
                     () ->
                             geolocationSettings.setContentSetting(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     ContentSettingValues.DEFAULT));
         }
     }

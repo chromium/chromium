@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl.DismissNotificationChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -109,7 +110,7 @@ public class PriceDropNotificationManagerTest {
         when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
         PriceDropNotificationManagerImpl.setBookmarkModelForTesting(mMockBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
-        Profile.setLastUsedProfileForTesting(mMockProfile);
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
     }
 

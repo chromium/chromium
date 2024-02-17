@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
@@ -122,7 +123,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
         static {
             List<HintsProto.OptimizationType> optimizationTypes;
-            if (isPriceTrackingWithOptimizationGuideEnabled(Profile.getLastUsedRegularProfile())) {
+            if (isPriceTrackingWithOptimizationGuideEnabled(
+                    ProfileManager.getLastUsedRegularProfile())) {
                 optimizationTypes =
                         Arrays.asList(
                                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
@@ -383,7 +385,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         }
 
                         if (isPriceTrackingWithOptimizationGuideEnabled(
-                                Profile.getLastUsedRegularProfile())) {
+                                ProfileManager.getLastUsedRegularProfile())) {
                             prefetchOnNewNavigation(tab, navigationHandle);
                         }
                     }

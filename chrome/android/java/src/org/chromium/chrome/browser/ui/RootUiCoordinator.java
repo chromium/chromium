@@ -100,6 +100,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -547,7 +548,7 @@ public class RootUiCoordinator
 
                             @Override
                             public BrowserContextHandle getBrowserContextHandle() {
-                                return Profile.getLastUsedRegularProfile();
+                                return ProfileManager.getLastUsedRegularProfile();
                             }
                         });
         mFoldTransitionController =
@@ -872,7 +873,7 @@ public class RootUiCoordinator
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
                 && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                         getPrimaryDisplaySizeInInches(),
-                        Profile.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile(),
                         mActivity))) {
             // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
             if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
@@ -883,7 +884,7 @@ public class RootUiCoordinator
         }
 
         RequestDesktopUtils.maybeDefaultEnableWindowSetting(
-                mActivity, Profile.getLastUsedRegularProfile());
+                mActivity, ProfileManager.getLastUsedRegularProfile());
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
@@ -1001,7 +1002,7 @@ public class RootUiCoordinator
     }
 
     private void initMerchantTrustSignals() {
-        if (ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+        if (ShoppingServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
                         .isMerchantViewerEnabled()
                 && shouldInitializeMerchantTrustSignals()) {
             MerchantTrustSignalsCoordinator merchantTrustSignalsCoordinator =

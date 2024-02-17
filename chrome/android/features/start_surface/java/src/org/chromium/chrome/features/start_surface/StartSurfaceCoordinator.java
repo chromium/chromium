@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
@@ -572,7 +573,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
                 mExploreSurfaceCoordinatorFactory,
-                UserPrefs.get(Profile.getLastUsedRegularProfile()),
+                UserPrefs.get(ProfileManager.getLastUsedRegularProfile()),
                 mSnackbarManager);
 
         if (mGridTabSwitcher != null) {
@@ -1340,7 +1341,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             return;
         }
 
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         MostVisitedTileNavigationDelegate navigationDelegate =
                 new MostVisitedTileNavigationDelegate(mActivity, profile, mParentTabSupplier);
         mSuggestionsUiDelegate =

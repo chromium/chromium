@@ -62,25 +62,25 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
     @SmallTest
     @Test
     public void testFactoryMethod() {
-        Profile realProfile = Profile.getLastUsedRegularProfile();
+        Profile realProfile = ProfileManager.getLastUsedRegularProfile();
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
-        Profile.setLastUsedProfileForTesting(mProfile1);
+        ProfileManager.setLastUsedProfileForTesting(mProfile1);
         LevelDBPersistedTabDataStorage profile1Storage = factory.create();
-        Profile.setLastUsedProfileForTesting(mProfile2);
+        ProfileManager.setLastUsedProfileForTesting(mProfile2);
         LevelDBPersistedTabDataStorage profile2Storage = factory.create();
-        Profile.setLastUsedProfileForTesting(mProfile1);
+        ProfileManager.setLastUsedProfileForTesting(mProfile1);
         LevelDBPersistedTabDataStorage profile1StorageAgain = factory.create();
         Assert.assertEquals(profile1Storage, profile1StorageAgain);
         Assert.assertNotEquals(profile1Storage, profile2Storage);
         // Restore the original profile so the Activity can shut down correctly.
-        Profile.setLastUsedProfileForTesting(realProfile);
+        ProfileManager.setLastUsedProfileForTesting(realProfile);
     }
 
     @UiThreadTest
     @SmallTest
     @Test
     public void testStorageDestroyedWhenProfileDestroyed() {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
         LevelDBPersistedTabDataStorage storage = factory.create();
         ProfileManager.onProfileDestroyed(profile);

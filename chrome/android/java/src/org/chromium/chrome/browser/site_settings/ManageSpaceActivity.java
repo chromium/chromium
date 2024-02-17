@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -189,7 +190,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
 
     /** This refreshes the storage numbers by fetching all site permissions. */
     private void refreshStorageNumbers() {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(profile);
         fetcher.fetchPreferencesForCategory(
                 SiteSettingsCategory.createFromType(profile, SiteSettingsCategory.Type.USE_STORAGE),
@@ -299,7 +300,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
          * asynchronously, and at the end we update the UI with the new storage numbers.
          */
         public void clearData() {
-            Profile profile = Profile.getLastUsedRegularProfile();
+            Profile profile = ProfileManager.getLastUsedRegularProfile();
             WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(profile, true);
             fetcher.fetchPreferencesForCategory(
                     SiteSettingsCategory.createFromType(
@@ -322,7 +323,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
                 if (site.getLocalStorageInfo() == null
                         || !site.getLocalStorageInfo().isDomainImportant()) {
                     mNumSitesClearing++;
-                    site.clearAllStoredData(Profile.getLastUsedRegularProfile(), this);
+                    site.clearAllStoredData(ProfileManager.getLastUsedRegularProfile(), this);
                 } else {
                     siteStorageLeft += site.getTotalUsage();
                 }

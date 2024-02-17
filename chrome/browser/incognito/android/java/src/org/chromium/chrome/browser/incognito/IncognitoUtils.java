@@ -8,9 +8,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 
 /** Utilities for working with incognito tabs spread across multiple activities. */
 public class IncognitoUtils {
@@ -46,7 +46,7 @@ public class IncognitoUtils {
         // If off-the-record is not requested, the request might be before native initialization.
         if (otrProfileID == null) return ProfileKeyUtil.getLastUsedRegularProfileKey();
 
-        return Profile.getLastUsedRegularProfile()
+        return ProfileManager.getLastUsedRegularProfile()
                 .getOffTheRecordProfile(otrProfileID, /* createIfNeeded= */ true)
                 .getProfileKey();
     }

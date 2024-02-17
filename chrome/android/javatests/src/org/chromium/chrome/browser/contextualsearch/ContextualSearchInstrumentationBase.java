@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -137,7 +138,7 @@ public class ContextualSearchInstrumentationBase {
                     () -> activity.getLastUserInteractionTime(),
                     activity.getEdgeToEdgeControllerSupplierForTesting());
             setSelectionController(new MockCSSelectionController(activity, this));
-            Profile profile = Profile.getLastUsedRegularProfile();
+            Profile profile = ProfileManager.getLastUsedRegularProfile();
             WebContents webContents = WebContentsFactory.createWebContents(profile, false, false);
             ContentView cv =
                     ContentView.createContentView(

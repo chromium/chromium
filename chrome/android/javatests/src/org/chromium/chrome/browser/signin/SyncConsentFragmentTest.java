@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
@@ -171,7 +172,7 @@ public class SyncConsentFragmentTest {
                                         @NonNull
                                         @Override
                                         public Profile getOriginalProfile() {
-                                            return Profile.getLastUsedRegularProfile();
+                                            return ProfileManager.getLastUsedRegularProfile();
                                         }
 
                                         @Nullable
@@ -513,7 +514,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
@@ -539,7 +540,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
@@ -560,7 +561,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
@@ -577,7 +578,7 @@ public class SyncConsentFragmentTest {
                 () -> {
                     IdentityManager identityManager =
                             IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                                     .getIdentityManager();
                     return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                             && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
@@ -816,7 +817,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
@@ -860,7 +861,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
@@ -902,7 +903,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
@@ -962,7 +963,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });

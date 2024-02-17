@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
@@ -86,7 +87,7 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
     private void saveUrlForOffline(String url) {
         // TODO(crbug.com/1193816): Namespace shouldn't be NTP_SUGGESTIONS_NAMESPACE since it's
         // not on NTP.
-        RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
+        RequestCoordinatorBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                 .savePageLater(
                         url,
                         OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,

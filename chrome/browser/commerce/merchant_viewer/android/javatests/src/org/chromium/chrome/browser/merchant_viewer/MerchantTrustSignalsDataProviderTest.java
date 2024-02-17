@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfoCallback;
@@ -52,7 +53,7 @@ public class MerchantTrustSignalsDataProviderTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(false).when(mMockProfile).isOffTheRecord();
-        Profile.setLastUsedProfileForTesting(mMockProfile);
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
     }
 

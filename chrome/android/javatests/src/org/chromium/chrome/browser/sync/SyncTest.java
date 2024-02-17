@@ -19,7 +19,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -74,7 +74,7 @@ public class SyncTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         IdentityServicesProvider.get()
-                                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                                 .hasPrimaryAccount(ConsentLevel.SYNC),
                 "Timed out checking that hasPrimaryAccount(ConsentLevel.SYNC) == true",
                 SyncTestUtil.TIMEOUT_MS,
@@ -88,7 +88,7 @@ public class SyncTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         !IdentityServicesProvider.get()
-                                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                                 .hasPrimaryAccount(ConsentLevel.SYNC),
                 "Timed out checking that hasPrimaryAccount(ConsentLevel.SYNC) == false",
                 SyncTestUtil.TIMEOUT_MS,

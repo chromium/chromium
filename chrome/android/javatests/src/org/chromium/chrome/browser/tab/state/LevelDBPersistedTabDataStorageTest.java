@@ -18,7 +18,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -67,7 +67,8 @@ public class LevelDBPersistedTabDataStorageTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPersistedTabDataStorage =
-                            new LevelDBPersistedTabDataStorage(Profile.getLastUsedRegularProfile());
+                            new LevelDBPersistedTabDataStorage(
+                                    ProfileManager.getLastUsedRegularProfile());
                 });
     }
 

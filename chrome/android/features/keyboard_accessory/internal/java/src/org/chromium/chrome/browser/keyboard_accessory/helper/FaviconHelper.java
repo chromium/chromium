@@ -12,7 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -74,7 +74,7 @@ public class FaviconHelper {
      */
     public void fetchFavicon(String origin, Callback<Drawable> setIconCallback) {
         final LargeIconBridge mIconBridge =
-                new LargeIconBridge(Profile.getLastUsedRegularProfile());
+                new LargeIconBridge(ProfileManager.getLastUsedRegularProfile());
         final GURL gurlOrigin = new GURL(origin);
         if (!gurlOrigin.isValid()) return;
         mIconBridge.getLargeIconForUrl(

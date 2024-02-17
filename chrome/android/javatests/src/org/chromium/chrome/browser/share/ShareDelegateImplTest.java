@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.SadTabRule;
@@ -107,7 +107,7 @@ public class ShareDelegateImplTest {
         public boolean isShowingErrorPage;
 
         public MockUrlTab() {
-            super(INVALID_TAB_ID, Profile.getLastUsedRegularProfile());
+            super(INVALID_TAB_ID, ProfileManager.getLastUsedRegularProfile());
         }
 
         @Override

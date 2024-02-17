@@ -20,7 +20,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -234,7 +234,8 @@ public final class PeriodicBackgroundSyncTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                    SiteEngagementService.getForBrowserContext(Profile.getLastUsedRegularProfile())
+                    SiteEngagementService.getForBrowserContext(
+                                    ProfileManager.getLastUsedRegularProfile())
                             .resetBaseScoreForUrl(url, engagement);
                 });
     }

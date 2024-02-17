@@ -32,6 +32,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -276,7 +277,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
             mFaviconURLs = new String[0];
             dismiss();
         }
-        mProfile = Profile.getLastUsedRegularProfile();
+        mProfile = ProfileManager.getLastUsedRegularProfile();
         mLargeIconBridge = new LargeIconBridge(mProfile);
         ActivityManager activityManager =
                 ((ActivityManager)

@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -50,7 +51,7 @@ public class OmniboxUrlEmphasizerTest {
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfile = Profile.getLastUsedRegularProfile();
+                    mProfile = ProfileManager.getLastUsedRegularProfile();
                     mChromeAutocompleteSchemeClassifier =
                             new ChromeAutocompleteSchemeClassifier(mProfile);
                     mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();

@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
@@ -592,7 +593,7 @@ public class NotificationPlatformBridge {
             final boolean silent,
             final ActionInfo[] actions) {
         final boolean vibrateEnabled =
-                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                         .getBoolean(NOTIFICATIONS_VIBRATE_ENABLED);
         final boolean incognito = profile.isOffTheRecord();
         // TODO(peter): by-pass this check for non-Web Notification types.
@@ -1203,7 +1204,7 @@ public class NotificationPlatformBridge {
             NotificationIdentifyingAttributes identifyingAttributes) {
         // TODO(crbug.com/1521432): Verify if we can/need to use the correct profile here.
         NotificationSuspender suspender =
-                new NotificationSuspender(Profile.getLastUsedRegularProfile());
+                new NotificationSuspender(ProfileManager.getLastUsedRegularProfile());
         List<String> notificationIdsToCancel =
                 suspender.storeNotificationResourcesFromOrigins(
                         Collections.singletonList(Uri.parse(identifyingAttributes.origin)));
@@ -1236,7 +1237,7 @@ public class NotificationPlatformBridge {
 
         // TODO(crbug.com/1521432): Verify if we can/need to use the correct profile here.
         NotificationSuspender suspender =
-                new NotificationSuspender(Profile.getLastUsedRegularProfile());
+                new NotificationSuspender(ProfileManager.getLastUsedRegularProfile());
         suspender.unsuspendNotificationsFromOrigins(
                 Collections.singletonList(Uri.parse(identifyingAttributes.origin)));
     }

@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -217,12 +217,14 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
                             syncAccount.set(
                                     IdentityServicesProvider.get()
-                                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                            .getIdentityManager(
+                                                    ProfileManager.getLastUsedRegularProfile())
                                             .getPrimaryAccountInfo(ConsentLevel.SYNC));
 
                             signedInAccount.set(
                                     IdentityServicesProvider.get()
-                                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                            .getIdentityManager(
+                                                    ProfileManager.getLastUsedRegularProfile())
                                             .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
 
                             if (syncAccount.get() != null
@@ -599,7 +601,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     final AccountManagerFacade accountManagerFacade =
                             AccountManagerFacadeProvider.getInstance();
 

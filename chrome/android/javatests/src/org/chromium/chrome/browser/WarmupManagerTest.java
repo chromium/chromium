@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -232,7 +233,7 @@ public class WarmupManagerTest {
                 (Callable<Profile>)
                         () -> {
                             OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
-                            return Profile.getLastUsedRegularProfile()
+                            return ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                         });
@@ -242,13 +243,13 @@ public class WarmupManagerTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 (Callable<Profile>)
                         () ->
-                                Profile.getLastUsedRegularProfile()
+                                ProfileManager.getLastUsedRegularProfile()
                                         .getPrimaryOTRProfile(/* createIfNeeded= */ true));
     }
 
     private static Profile getRegularProfile() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                (Callable<Profile>) () -> Profile.getLastUsedRegularProfile());
+                (Callable<Profile>) () -> ProfileManager.getLastUsedRegularProfile());
     }
 
     private static Profile getProfile(ProfileType profileType) {

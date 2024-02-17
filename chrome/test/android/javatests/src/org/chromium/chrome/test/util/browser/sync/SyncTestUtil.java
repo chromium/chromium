@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -35,11 +35,14 @@ public final class SyncTestUtil {
 
     private SyncTestUtil() {}
 
-    /** Return the {@link SyncService} for the {@link Profile#getLastUsedRegularProfile()}. */
+    /**
+     * Return the {@link SyncService} for the {@link ProfileManager#getLastUsedRegularProfile()}.
+     */
     public static SyncService getSyncServiceForLastUsedProfile() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
-                    return SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+                    return SyncServiceFactory.getForProfile(
+                            ProfileManager.getLastUsedRegularProfile());
                 });
     }
 

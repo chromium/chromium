@@ -19,7 +19,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
@@ -172,7 +172,7 @@ public class LocaleManagerDelegate {
             final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
         assert LibraryLoader.getInstance().isInitialized();
         TemplateUrlService templateUrlService =
-                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
         templateUrlService.runWhenLoaded(
                 () -> {
                     handleSearchEnginePromoWithTemplateUrlsLoaded(
@@ -338,7 +338,7 @@ public class LocaleManagerDelegate {
     /** @see LocaleManager#onUserSearchEngineChoice */
     public void onUserSearchEngineChoiceFromPromoDialog(
             @SearchEnginePromoType int type, List<String> keywords, String keyword) {
-        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+        TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
                 .setSearchEngine(keyword);
         ChromeSharedPreferences.getInstance()
                 .writeInt(

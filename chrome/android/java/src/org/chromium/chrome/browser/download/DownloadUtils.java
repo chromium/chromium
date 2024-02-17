@@ -139,7 +139,8 @@ public class DownloadUtils {
 
         // If the profile is off-the-record and it does not exist, then do not start the activity.
         if (OTRProfileID.isOffTheRecord(otrProfileID)
-                && !Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID)) {
+                && !ProfileManager.getLastUsedRegularProfile()
+                        .hasOffTheRecordProfile(otrProfileID)) {
             return false;
         }
 
@@ -173,8 +174,8 @@ public class DownloadUtils {
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
             Profile profile =
                     otrProfileID == null
-                            ? Profile.getLastUsedRegularProfile()
-                            : Profile.getLastUsedRegularProfile()
+                            ? ProfileManager.getLastUsedRegularProfile()
+                            : ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
@@ -207,7 +208,7 @@ public class DownloadUtils {
         OTRProfileID otrProfileID = OTRProfileID.deserializeWithoutVerify(serializedId);
 
         return otrProfileID == null
-                || Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID);
+                || ProfileManager.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID);
     }
 
     /**

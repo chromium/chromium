@@ -19,7 +19,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -85,7 +85,7 @@ public class SelectPopupOtherContentViewTest {
                 () -> {
                     WebContents webContents =
                             WebContentsFactory.createWebContents(
-                                    Profile.getLastUsedRegularProfile(), false, false);
+                                    ProfileManager.getLastUsedRegularProfile(), false, false);
                     ChromeActivity activity = mActivityTestRule.getActivity();
 
                     ContentView cv =

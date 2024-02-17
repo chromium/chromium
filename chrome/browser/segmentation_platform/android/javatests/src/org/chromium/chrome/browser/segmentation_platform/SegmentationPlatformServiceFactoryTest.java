@@ -25,7 +25,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.Constants;
@@ -61,7 +61,7 @@ public class SegmentationPlatformServiceFactoryTest {
                     public void run() {
                         SegmentationPlatformService segmentationPlatformService =
                                 SegmentationPlatformServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
 
                         PredictionOptions options = new PredictionOptions(true);
                         segmentationPlatformService.getClassificationResult(
@@ -97,7 +97,7 @@ public class SegmentationPlatformServiceFactoryTest {
                     public void run() {
                         SegmentationPlatformService segmentationPlatformService =
                                 SegmentationPlatformServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
 
                         PredictionOptions options = new PredictionOptions(true);
                         InputContext inputContext = new InputContext();

@@ -11,7 +11,7 @@ import org.json.JSONArray;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.SyncService;
@@ -41,7 +41,7 @@ public class FakeSyncServiceImpl implements SyncService {
     @GoogleServiceAuthError.State private int mAuthError;
 
     public FakeSyncServiceImpl() {
-        mDelegate = SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        mDelegate = SyncServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
     }
 
     @Override

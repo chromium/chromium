@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -799,7 +799,7 @@ public class DownloadNotificationService {
     public void cancelOffTheRecordDownloads() {
         boolean cancelActualDownload =
                 BrowserStartupController.getInstance().isFullBrowserStarted()
-                        && Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile();
+                        && ProfileManager.getLastUsedRegularProfile().hasPrimaryOTRProfile();
 
         List<DownloadSharedPreferenceEntry> entries = mDownloadSharedPreferenceHelper.getEntries();
         List<DownloadSharedPreferenceEntry> copies =

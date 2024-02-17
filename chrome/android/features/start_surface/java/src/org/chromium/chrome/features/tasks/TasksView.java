@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
@@ -471,7 +472,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
 
     boolean shouldShowTrackingProtectionNtp() {
         Profile profile =
-                Profile.getLastUsedRegularProfile()
+                ProfileManager.getLastUsedRegularProfile()
                         .getPrimaryOTRProfile(/* createIfNeeded= */ true);
         return (UserPrefs.get(profile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD));

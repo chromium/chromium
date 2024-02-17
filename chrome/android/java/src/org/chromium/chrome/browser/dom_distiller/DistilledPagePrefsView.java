@@ -24,7 +24,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
@@ -74,7 +74,7 @@ public class DistilledPagePrefsView extends LinearLayout
         // incognito profile) instead of always using regular profile. It works correctly now, but
         // it is not safe.
         mDistilledPagePrefs =
-                DomDistillerServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                DomDistillerServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
                         .getDistilledPagePrefs();
         mColorModeButtons = new HashMap<Integer /* Theme */, RadioButton>();
         mPercentageFormatter = NumberFormat.getPercentInstance(Locale.getDefault());

@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
@@ -209,7 +209,7 @@ public class AdaptiveToolbarStatePredictor {
 
         // TODO(shaktisahu): Try decoupling profile from this class.
         AdaptiveToolbarBridge.getSessionVariantButton(
-                Profile.getLastUsedRegularProfile(), result -> callback.onResult(result));
+                ProfileManager.getLastUsedRegularProfile(), result -> callback.onResult(result));
     }
 
     /**

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
@@ -42,7 +43,7 @@ public final class BackupSigninProcessor {
         // TODO(crbug.com/1336196): Delete comment above once the dependency is gone.
         SigninManager signinManager =
                 IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile());
+                        .getSigninManager(ProfileManager.getLastUsedRegularProfile());
         final String accountEmail = getBackupFlowSigninAccountEmail();
         if (!signinManager.isSyncOptInAllowed() || TextUtils.isEmpty(accountEmail)) {
             setBackupFlowSigninComplete();
@@ -85,7 +86,7 @@ public final class BackupSigninProcessor {
 
     private static void signinAndEnableSync(
             @NonNull CoreAccountInfo coreAccountInfo, Activity activity) {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         signinManager.runAfterOperationInProgress(
                 () -> {

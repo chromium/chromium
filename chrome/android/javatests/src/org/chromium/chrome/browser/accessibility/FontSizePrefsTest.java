@@ -20,7 +20,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
@@ -190,7 +190,7 @@ public class FontSizePrefsTest {
 
     private FontSizePrefs getFontSizePrefs(final Context context) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile()));
+                () -> FontSizePrefs.getInstance(ProfileManager.getLastUsedRegularProfile()));
     }
 
     private TestingObserver createAndAddFontSizePrefsObserver() {

@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -70,7 +71,7 @@ public class SearchActivityPreferencesManagerTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         LibraryLoader.setLibraryLoaderForTesting(mLibraryLoaderMock);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         doAnswer(
                         invocation -> {

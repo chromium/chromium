@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -70,7 +70,7 @@ public class HistoryTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     helper.getLocalFaviconImageForURL(
-                            Profile.getLastUsedRegularProfile(), pageUrl, 0, waiter);
+                            ProfileManager.getLastUsedRegularProfile(), pageUrl, 0, waiter);
                 });
         return waiter.waitForFavicon();
     }

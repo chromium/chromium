@@ -39,7 +39,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
@@ -366,7 +366,7 @@ public class SyncPromoControllerUITest {
                             activity.setContentView(content);
                             SyncPromoController syncPromoController =
                                     new SyncPromoController(
-                                            Profile.getLastUsedRegularProfile(),
+                                            ProfileManager.getLastUsedRegularProfile(),
                                             accessPoint,
                                             mSyncConsentActivityLauncher);
                             syncPromoController.setUpSyncPromoView(

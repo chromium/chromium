@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -130,7 +130,7 @@ public class TabbedAppMenuTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setCategoryEnabled(
-                            Profile.getLastUsedRegularProfile(),
+                            ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.REQUEST_DESKTOP_SITE,
                             false);
                 });
@@ -358,7 +358,7 @@ public class TabbedAppMenuTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridge.setCategoryEnabled(
-                            Profile.getLastUsedRegularProfile(),
+                            ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.REQUEST_DESKTOP_SITE,
                             true);
                     tab.reload();

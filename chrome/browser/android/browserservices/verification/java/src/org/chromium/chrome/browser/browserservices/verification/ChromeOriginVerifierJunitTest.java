@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.content_relationship_verification.OriginVerifierJni;
@@ -83,7 +84,7 @@ public class ChromeOriginVerifierJunitTest {
 
     @Before
     public void setUp() throws Exception {
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         OriginVerifierUnitTestSupport.registerPackageWithSignature(
                 shadowOf(ApplicationProvider.getApplicationContext().getPackageManager()),
                 PACKAGE_NAME,

@@ -22,7 +22,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -189,7 +189,7 @@ public class SearchEngineSettingsTest {
                     if (mTemplateUrlService == null) {
                         mTemplateUrlService =
                                 TemplateUrlServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
                     }
                     if (mTemplateUrlService.isLoaded()) {
                         onTemplateUrlServiceLoadedHelper.notifyCalled();

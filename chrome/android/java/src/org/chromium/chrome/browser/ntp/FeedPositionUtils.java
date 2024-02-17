@@ -11,7 +11,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
@@ -121,7 +121,7 @@ public class FeedPositionUtils {
     public static void cacheSegmentationResult() {
         SegmentationPlatformService segmentationPlatformService =
                 SegmentationPlatformServiceFactory.getForProfile(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         PredictionOptions options = new PredictionOptions(/* onDemandExecution= */ false);
         segmentationPlatformService.getClassificationResult(
                 FEED_USER_SEGMENT_KEY,

@@ -12,9 +12,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.hasItems;
 
-import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
 import static org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment.setAdMeasurementPrefEnabled;
 import static org.chromium.chrome.browser.privacy_sandbox.FledgeFragment.setFledgePrefEnabled;
+import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
 import static org.chromium.chrome.browser.privacy_sandbox.TopicsFragment.setTopicsPrefEnabled;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -35,7 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -74,7 +74,8 @@ public final class PrivacySandboxSettingsFragmentTest {
     public void tearDown() {
         runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
                     prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
                     prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
@@ -106,7 +107,7 @@ public final class PrivacySandboxSettingsFragmentTest {
     @SmallTest
     public void testTopicsPrefDisabledDescription() {
         runOnUiThreadBlocking(
-                () -> setTopicsPrefEnabled(Profile.getLastUsedRegularProfile(), false));
+                () -> setTopicsPrefEnabled(ProfileManager.getLastUsedRegularProfile(), false));
         startPrivacySandboxSettingsV4();
 
         onView(withText(R.string.ad_privacy_page_topics_link_row_sub_label_disabled))
@@ -117,7 +118,7 @@ public final class PrivacySandboxSettingsFragmentTest {
     @SmallTest
     public void testTopicsPrefEnabledDescription() {
         runOnUiThreadBlocking(
-                () -> setTopicsPrefEnabled(Profile.getLastUsedRegularProfile(), true));
+                () -> setTopicsPrefEnabled(ProfileManager.getLastUsedRegularProfile(), true));
         startPrivacySandboxSettingsV4();
 
         onView(withText(R.string.ad_privacy_page_topics_link_row_sub_label_enabled))
@@ -128,7 +129,7 @@ public final class PrivacySandboxSettingsFragmentTest {
     @SmallTest
     public void testFledgePrefDisabledDescription() {
         runOnUiThreadBlocking(
-                () -> setFledgePrefEnabled(Profile.getLastUsedRegularProfile(), false));
+                () -> setFledgePrefEnabled(ProfileManager.getLastUsedRegularProfile(), false));
         startPrivacySandboxSettingsV4();
 
         onView(withText(R.string.ad_privacy_page_fledge_link_row_sub_label_disabled))
@@ -139,7 +140,7 @@ public final class PrivacySandboxSettingsFragmentTest {
     @SmallTest
     public void testFledgePrefEnabledDescription() {
         runOnUiThreadBlocking(
-                () -> setFledgePrefEnabled(Profile.getLastUsedRegularProfile(), true));
+                () -> setFledgePrefEnabled(ProfileManager.getLastUsedRegularProfile(), true));
         startPrivacySandboxSettingsV4();
 
         onView(withText(R.string.ad_privacy_page_fledge_link_row_sub_label_enabled))
@@ -150,7 +151,9 @@ public final class PrivacySandboxSettingsFragmentTest {
     @SmallTest
     public void testAdMeasurementPrefDisabledDescription() {
         runOnUiThreadBlocking(
-                () -> setAdMeasurementPrefEnabled(Profile.getLastUsedRegularProfile(), false));
+                () ->
+                        setAdMeasurementPrefEnabled(
+                                ProfileManager.getLastUsedRegularProfile(), false));
         startPrivacySandboxSettingsV4();
 
         onView(withText(R.string.ad_privacy_page_ad_measurement_link_row_sub_label_disabled))
@@ -161,7 +164,9 @@ public final class PrivacySandboxSettingsFragmentTest {
     @SmallTest
     public void testAdMeasurementPrefEnabledDescription() {
         runOnUiThreadBlocking(
-                () -> setAdMeasurementPrefEnabled(Profile.getLastUsedRegularProfile(), true));
+                () ->
+                        setAdMeasurementPrefEnabled(
+                                ProfileManager.getLastUsedRegularProfile(), true));
         startPrivacySandboxSettingsV4();
 
         onView(withText(R.string.ad_privacy_page_ad_measurement_link_row_sub_label_enabled))

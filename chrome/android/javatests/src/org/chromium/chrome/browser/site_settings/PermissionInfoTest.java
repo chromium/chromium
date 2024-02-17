@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -83,7 +84,7 @@ public class PermissionInfoTest {
 
     private static Profile getRegularProfile() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                (Callable<Profile>) () -> Profile.getLastUsedRegularProfile());
+                (Callable<Profile>) () -> ProfileManager.getLastUsedRegularProfile());
     }
 
     private static Profile getNonPrimaryOTRProfile() {
@@ -91,7 +92,7 @@ public class PermissionInfoTest {
                 (Callable<Profile>)
                         () -> {
                             OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
-                            return Profile.getLastUsedRegularProfile()
+                            return ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                         });
@@ -101,7 +102,7 @@ public class PermissionInfoTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 (Callable<Profile>)
                         () ->
-                                Profile.getLastUsedRegularProfile()
+                                ProfileManager.getLastUsedRegularProfile()
                                         .getPrimaryOTRProfile(/* createIfNeeded= */ true));
     }
 
@@ -128,7 +129,8 @@ public class PermissionInfoTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridgeJni.get()
-                            .resetNotificationsSettingsForTest(Profile.getLastUsedRegularProfile());
+                            .resetNotificationsSettingsForTest(
+                                    ProfileManager.getLastUsedRegularProfile());
                 });
     }
 

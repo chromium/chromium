@@ -20,7 +20,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -82,7 +82,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     mRecentlyClosedBridge =
                             new RecentlyClosedBridge(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     mActivity.getTabModelSelectorSupplier().get());
                     mRecentlyClosedBridge.clearRecentlyClosedEntries();
                     Assert.assertEquals(

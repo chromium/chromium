@@ -1075,7 +1075,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         }
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            Profile profile = Profile.getLastUsedRegularProfile();
+            Profile profile = ProfileManager.getLastUsedRegularProfile();
             if (OTRProfileID.isOffTheRecord(info.getOTRProfileId())) {
                 profile =
                         profile.getOffTheRecordProfile(
@@ -1310,7 +1310,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      */
     // TODO(shaktisahu): Drive this from a similar observer.
     private void maybeShowMissingSdCardError(List<DownloadItem> list) {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        PrefService prefService = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
         // Only show the missing directory snackbar once.
         if (!prefService.getBoolean(Pref.SHOW_MISSING_SD_CARD_ERROR_ANDROID)) return;
 

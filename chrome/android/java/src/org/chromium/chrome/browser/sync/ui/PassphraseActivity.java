@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentTransaction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -48,7 +49,7 @@ public class PassphraseActivity extends AppCompatActivity
         // During a normal user flow the ChromeTabbedActivity would start the Chrome browser
         // process and this wouldn't be necessary.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-        mProfile = Profile.getLastUsedRegularProfile();
+        mProfile = ProfileManager.getLastUsedRegularProfile();
         mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         assert mSyncService != null;

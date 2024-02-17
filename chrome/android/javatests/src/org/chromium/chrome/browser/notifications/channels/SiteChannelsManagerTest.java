@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -214,7 +215,7 @@ public class SiteChannelsManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     info.setContentSetting(
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true),
                             ContentSettingValues.BLOCK);
                 });
@@ -236,7 +237,7 @@ public class SiteChannelsManagerTest {
                 () -> {
                     OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
                     Profile nonPrimaryOTRProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                     assertNotNull(nonPrimaryOTRProfile);

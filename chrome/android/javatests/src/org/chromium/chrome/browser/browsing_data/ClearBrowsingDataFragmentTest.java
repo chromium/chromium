@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -212,7 +213,7 @@ public class ClearBrowsingDataFragmentTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         !IdentityServicesProvider.get()
-                                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                                 .hasPrimaryAccount(ConsentLevel.SIGNIN),
                 "Account should be signed out!");
 

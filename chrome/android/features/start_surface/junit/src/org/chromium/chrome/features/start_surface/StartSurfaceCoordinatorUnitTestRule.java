@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
@@ -113,8 +114,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
             List<TabModel> tabModels = new ArrayList<>();
             MockTabModelSelector selector =
                     new MockTabModelSelector(
-                            Profile.getLastUsedRegularProfile(),
-                            Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                            ProfileManager.getLastUsedRegularProfile(),
+                            ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
                             0,
                             0,
                             null);
@@ -180,7 +181,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         Mockito.when(profile.getPrimaryOTRProfile(Mockito.anyBoolean()))
                 .thenReturn(incognitoProfile);
         PrefService prefService = Mockito.mock(PrefService.class);
-        Profile.setLastUsedProfileForTesting(profile);
+        ProfileManager.setLastUsedProfileForTesting(profile);
 
         mSuggestionsDeps.getFactory().offlinePageBridge = new FakeOfflinePageBridge();
         mSuggestionsDeps.getFactory().mostVisitedSites = new FakeMostVisitedSites();

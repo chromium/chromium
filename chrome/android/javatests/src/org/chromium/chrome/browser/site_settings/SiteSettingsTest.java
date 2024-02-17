@@ -95,7 +95,7 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.privacy_sandbox.FakeTrackingProtectionBridge;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridgeJni;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -266,7 +266,7 @@ public class SiteSettingsTest {
     }
 
     private static BrowserContextHandle getBrowserContextHandle() {
-        return Profile.getLastUsedRegularProfile();
+        return ProfileManager.getLastUsedRegularProfile();
     }
 
     private void initializeUpdateWaiter(final boolean expectGranted) {
@@ -305,7 +305,7 @@ public class SiteSettingsTest {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     helper::notifyCalled,
                                     new int[] {
@@ -484,7 +484,7 @@ public class SiteSettingsTest {
                     }
 
                     private boolean doesAcceptCookies() {
-                        return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getInteger(COOKIE_CONTROLS_MODE)
                                 == CookieControlsMode.OFF;
                     }
@@ -541,7 +541,7 @@ public class SiteSettingsTest {
                             "Third Party Cookie Blocking should be "
                                     + (expected ? "managed" : "unmanaged"),
                             expected,
-                            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                     .isManagedPreference(COOKIE_CONTROLS_MODE));
                 });
     }
@@ -2948,7 +2948,7 @@ public class SiteSettingsTest {
 
             var delegate =
                     new ChromeSiteSettingsDelegate(
-                            toggle.getContext(), Profile.getLastUsedRegularProfile());
+                            toggle.getContext(), ProfileManager.getLastUsedRegularProfile());
 
             Assert.assertEquals(
                     "Preference title is not set correctly.",

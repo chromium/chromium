@@ -41,7 +41,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -522,7 +522,7 @@ public class AccessibilitySettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FontSizePrefs fontSizePrefs =
-                            FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile());
+                            FontSizePrefs.getInstance(ProfileManager.getLastUsedRegularProfile());
                     Assert.assertEquals(
                             expectedForceEnableZoom, fontSizePrefs.getForceEnableZoom());
                     Assert.assertEquals(

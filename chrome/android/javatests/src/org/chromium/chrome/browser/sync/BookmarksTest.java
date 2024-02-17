@@ -25,7 +25,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -86,7 +86,7 @@ public class BookmarksTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel =
-                            BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+                            BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
                     // The BookmarkModel needs to know how to handle partner bookmarks.
                     // Without this call to fake that knowledge for testing, it crashes.
                     mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();

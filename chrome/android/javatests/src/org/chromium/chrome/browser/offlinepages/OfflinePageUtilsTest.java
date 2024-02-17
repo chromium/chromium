@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -105,7 +106,7 @@ public class OfflinePageUtilsTest {
                     // Ensure we start in an online state.
                     NetworkChangeNotifier.forceConnectivityState(true);
 
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     mOfflinePageBridge = OfflinePageBridge.getForProfile(profile);
                     if (!NetworkChangeNotifier.isInitialized()) {
                         NetworkChangeNotifier.init();

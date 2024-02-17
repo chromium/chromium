@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBri
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -146,7 +147,7 @@ public class OfflinePageBridgeTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfile = Profile.getLastUsedRegularProfile();
+                    mProfile = ProfileManager.getLastUsedRegularProfile();
                 });
 
         initializeBridgeForProfile();
@@ -226,7 +227,7 @@ public class OfflinePageBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true);
                 });
         initializeBridgeForProfile();
@@ -240,7 +241,7 @@ public class OfflinePageBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true);
                 });
         OfflinePageBridge offlinePageBridgeRetrievedByKey = getBridgeForProfileKey();
@@ -254,7 +255,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
                     mProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                     Assert.assertTrue(mProfile.isOffTheRecord());
@@ -271,7 +272,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
                     mProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                     Assert.assertTrue(mProfile.isOffTheRecord());

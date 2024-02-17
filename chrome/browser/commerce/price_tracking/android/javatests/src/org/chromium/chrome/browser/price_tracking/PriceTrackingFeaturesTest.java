@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -76,7 +77,8 @@ public class PriceTrackingFeaturesTest {
     @SmallTest
     public void testIsPriceTrackingEligible() {
         Assert.assertTrue(
-                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
+                PriceTrackingFeatures.isPriceTrackingEligible(
+                        ProfileManager.getLastUsedRegularProfile()));
     }
 
     @UiThreadTest
@@ -85,7 +87,8 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleFlagIsDisabled() {
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
+                PriceTrackingFeatures.isPriceTrackingEligible(
+                        ProfileManager.getLastUsedRegularProfile()));
     }
 
     @UiThreadTest
@@ -94,7 +97,8 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleNoMbb() {
         setMbbStatus(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
+                PriceTrackingFeatures.isPriceTrackingEligible(
+                        ProfileManager.getLastUsedRegularProfile()));
     }
 
     @UiThreadTest
@@ -103,7 +107,8 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleNotSignedIn() {
         setSignedInStatus(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
+                PriceTrackingFeatures.isPriceTrackingEligible(
+                        ProfileManager.getLastUsedRegularProfile()));
     }
 
     @UiThreadTest
@@ -112,7 +117,7 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleIncognitoProfile() {
         OTRProfileID otrProfileID = OTRProfileID.createUnique("test:Incognito");
         Profile incognitoProfile =
-                Profile.getLastUsedRegularProfile()
+                ProfileManager.getLastUsedRegularProfile()
                         .getOffTheRecordProfile(otrProfileID, /* createIfNeeded= */ true);
         Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible(incognitoProfile));
     }
@@ -127,14 +132,15 @@ public class PriceTrackingFeaturesTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         Assert.assertTrue(
-                PriceTrackingFeatures.isPriceTrackingEligible(Profile.getLastUsedRegularProfile()));
+                PriceTrackingFeatures.isPriceTrackingEligible(
+                        ProfileManager.getLastUsedRegularProfile()));
     }
 
     private void setMbbStatus(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                Profile.getLastUsedRegularProfile(), isEnabled));
+                                ProfileManager.getLastUsedRegularProfile(), isEnabled));
     }
 
     private void setSignedInStatus(boolean isSignedIn) {

@@ -22,7 +22,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -115,7 +115,7 @@ class ManageAccountDevicesLinkView extends LinearLayout {
     private static AccountInfo getSharingAccountInfo() {
         IdentityManager identityManager =
                 IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile());
+                        .getIdentityManager(ProfileManager.getLastUsedRegularProfile());
         return identityManager.findExtendedAccountInfoByEmailAddress(
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail());
     }

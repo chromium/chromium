@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -94,7 +95,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     }
 
     private void createWebContents() {
-        final Profile profile = Profile.getLastUsedRegularProfile();
+        final Profile profile = ProfileManager.getLastUsedRegularProfile();
         mWebContents = WebContentsFactory.createWebContents(profile, false, false);
         mWebContentView = ContentView.createContentView(mContext, null, mWebContents);
         final ViewAndroidDelegate delegate =

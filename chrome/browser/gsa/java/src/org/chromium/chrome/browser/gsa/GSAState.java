@@ -20,7 +20,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -118,7 +117,7 @@ public class GSAState {
         if (!ProfileManager.isInitialized()) return false;
         IdentityManager identityManager =
                 IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile());
+                        .getIdentityManager(ProfileManager.getLastUsedRegularProfile());
         CoreAccountInfo chromeAccountInfo =
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
         return chromeAccountInfo != null

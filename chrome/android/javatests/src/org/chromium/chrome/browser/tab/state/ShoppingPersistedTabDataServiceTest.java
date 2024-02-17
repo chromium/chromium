@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -85,7 +86,7 @@ public class ShoppingPersistedTabDataServiceTest {
                 () -> {
                     PersistedTabDataConfiguration.setUseTestConfig(true);
                 });
-        Profile.setLastUsedProfileForTesting(mProfileMock);
+        ProfileManager.setLastUsedProfileForTesting(mProfileMock);
         mService = new ShoppingPersistedTabDataService();
         mSharedPrefsManager = ChromeSharedPreferences.getInstance();
         ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
@@ -210,7 +211,7 @@ public class ShoppingPersistedTabDataServiceTest {
     })
     public void testGetAllShoppingPersistedTabDataWithPriceDrop() throws TimeoutException {
         // tab1 is not eligible as there is no price drop.
-        Profile.setLastUsedProfileForTesting(mProfileMock);
+        ProfileManager.setLastUsedProfileForTesting(mProfileMock);
         MockTab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(123, mProfileMock);
         GURL url1 = ShoppingPersistedTabDataTestUtils.DEFAULT_GURL;
         tab1.setGurlOverrideForTesting(url1);

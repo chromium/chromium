@@ -64,7 +64,7 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageDisableReason;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -135,7 +135,7 @@ public class PriceAlertsMessageCardTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
-                            Profile.getLastUsedRegularProfile());
+                            ProfileManager.getLastUsedRegularProfile());
                 });
     }
 

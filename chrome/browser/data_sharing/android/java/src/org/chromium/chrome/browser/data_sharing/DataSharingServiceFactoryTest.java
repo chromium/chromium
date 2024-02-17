@@ -22,7 +22,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.data_sharing.DataSharingNetworkLoader;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -64,7 +64,7 @@ public class DataSharingServiceFactoryTest {
                     public void run() {
                         DataSharingService dataSharingService =
                                 DataSharingServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
                         Assert.assertTrue(dataSharingService.isEmptyService());
                         Assert.assertEquals(dataSharingService, testService);
                     }
@@ -84,7 +84,7 @@ public class DataSharingServiceFactoryTest {
                     public void run() {
                         DataSharingService dataSharingService =
                                 DataSharingServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
                         Assert.assertFalse(dataSharingService.isEmptyService());
                     }
                 });
@@ -103,7 +103,7 @@ public class DataSharingServiceFactoryTest {
                     public void run() {
                         DataSharingService dataSharingService =
                                 DataSharingServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
                         Assert.assertTrue(dataSharingService.isEmptyService());
                     }
                 });

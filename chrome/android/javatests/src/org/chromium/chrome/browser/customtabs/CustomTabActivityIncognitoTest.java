@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -589,7 +590,7 @@ public class CustomTabActivityIncognitoTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
                     IncognitoReauthController incognitoReauthController =
                             customTabActivity
@@ -610,7 +611,7 @@ public class CustomTabActivityIncognitoTest {
                     assertTrue(
                             "Re-auth screen should be shown.",
                             incognitoReauthController.isReauthPageShowing());
-                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
                 });
 

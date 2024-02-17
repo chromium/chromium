@@ -27,7 +27,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -64,7 +64,7 @@ public class SettingsActivityTest {
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    return UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
                 });
 

@@ -30,7 +30,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -459,7 +459,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     // Outside of tests, URL-keyed anonymized data collection is enabled by sign-in
                     // UI.
                     UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                            Profile.getLastUsedRegularProfile(), true);
+                            ProfileManager.getLastUsedRegularProfile(), true);
                 });
     }
 

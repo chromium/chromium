@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -73,7 +74,7 @@ public class NotificationManager {
         // If this feature ever supports incognito mode, we need to modify
         // this method to obtain the current profile, rather than the last-used
         // regular profile.
-        final Profile profile = Profile.getLastUsedRegularProfile();
+        final Profile profile = ProfileManager.getLastUsedRegularProfile();
         switch (action) {
             case NOTIFICATION_ACTION_TAP:
                 openUrl(intent.getData());

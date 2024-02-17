@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -97,7 +97,8 @@ public class WebFeedFollowIntroController {
     private final Activity mActivity;
     private final CurrentTabObserver mCurrentTabObserver;
     private final EmptyTabObserver mTabObserver;
-    private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    private final PrefService mPrefService =
+            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
     private final Tracker mFeatureEngagementTracker;
@@ -151,7 +152,7 @@ public class WebFeedFollowIntroController {
         mActivity = activity;
         mTabSupplier = tabSupplier;
         mFeatureEngagementTracker =
-                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         mWebFeedSnackbarController =
                 new WebFeedSnackbarController(
                         activity, feedLauncher, dialogManager, snackbarManager);
@@ -506,8 +507,8 @@ public class WebFeedFollowIntroController {
                         if (!meetsVisitRequirement) {
                             Log.i(
                                     TAG,
-                                    "No intro: visit requirement not met. totalVisits=%s (minToShow=%s), "
-                                            + " dailyVisits=%s (minToShow=%s)",
+                                    "No intro: visit requirement not met. totalVisits=%s"
+                                            + " (minToShow=%s),  dailyVisits=%s (minToShow=%s)",
                                     result.visits,
                                     mNumVisitMin,
                                     result.dailyVisits,

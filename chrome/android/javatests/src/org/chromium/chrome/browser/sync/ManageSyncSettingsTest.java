@@ -48,6 +48,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -130,7 +131,7 @@ public class ManageSyncSettingsTest {
                     Mockito.when(
                                     mUnifiedConsentServiceBridgeMock
                                             .isUrlKeyedAnonymizedDataCollectionEnabled(
-                                                    Profile.getLastUsedRegularProfile()))
+                                                    ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(true);
                 });
     }
@@ -925,12 +926,12 @@ public class ManageSyncSettingsTest {
                     Mockito.when(
                                     mUnifiedConsentServiceBridgeMock
                                             .isUrlKeyedAnonymizedDataCollectionManaged(
-                                                    Profile.getLastUsedRegularProfile()))
+                                                    ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(true);
                     Mockito.when(
                                     mUnifiedConsentServiceBridgeMock
                                             .isUrlKeyedAnonymizedDataCollectionEnabled(
-                                                    Profile.getLastUsedRegularProfile()))
+                                                    ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(true);
                 });
 
@@ -951,12 +952,12 @@ public class ManageSyncSettingsTest {
                     Mockito.when(
                                     mUnifiedConsentServiceBridgeMock
                                             .isUrlKeyedAnonymizedDataCollectionManaged(
-                                                    Profile.getLastUsedRegularProfile()))
+                                                    ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(true);
                     Mockito.when(
                                     mUnifiedConsentServiceBridgeMock
                                             .isUrlKeyedAnonymizedDataCollectionEnabled(
-                                                    Profile.getLastUsedRegularProfile()))
+                                                    ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(false);
                 });
 
@@ -1164,7 +1165,7 @@ public class ManageSyncSettingsTest {
     private void verifyUrlKeyedAnonymizedDataCollectionSet() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     Mockito.verify(mUnifiedConsentServiceBridgeMock, Mockito.atLeastOnce())
                             .setUrlKeyedAnonymizedDataCollectionEnabled(profile, true);
                 });
@@ -1173,7 +1174,7 @@ public class ManageSyncSettingsTest {
     private void verifyUrlKeyedAnonymizedDataCollectionNotSet() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     Mockito.verify(mUnifiedConsentServiceBridgeMock, Mockito.never())
                             .setUrlKeyedAnonymizedDataCollectionEnabled(profile, true);
                 });

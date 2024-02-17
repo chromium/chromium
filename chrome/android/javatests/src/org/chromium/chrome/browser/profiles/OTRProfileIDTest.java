@@ -44,7 +44,7 @@ public class OTRProfileIDTest {
     public void testOTRProfileIdForRegularProfile() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
 
                     // OTRProfileId should be null for regular profile.
                     assert profile.getOTRProfileID() == null;
@@ -57,7 +57,7 @@ public class OTRProfileIDTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true);
 
                     // OTRProfileId should not be null for primary OTR profile and it should be the
@@ -74,7 +74,7 @@ public class OTRProfileIDTest {
                 () -> {
                     OTRProfileID otrProfileID = new OTRProfileID(TEST_OTR_PROFILE_ID_ONE);
                     Profile profile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
 
@@ -92,7 +92,7 @@ public class OTRProfileIDTest {
                 () -> {
                     OTRProfileID otrProfileID = new OTRProfileID(TEST_OTR_PROFILE_ID_ONE);
                     Profile profile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                     String serializedId = OTRProfileID.serialize(profile.getOTRProfileID());
@@ -111,7 +111,7 @@ public class OTRProfileIDTest {
                 () -> {
                     OTRProfileID otrProfileID = new OTRProfileID(TEST_OTR_PROFILE_ID_ONE);
                     Profile profile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                     String serializedId = OTRProfileID.serialize(profile.getOTRProfileID());
@@ -139,7 +139,7 @@ public class OTRProfileIDTest {
                     // Create first OTRProfileID and profile for TEST_OTR_PROFILE_ID_ONE
                     OTRProfileID otrProfileIDOne = new OTRProfileID(TEST_OTR_PROFILE_ID_ONE);
                     Profile profileOne =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileIDOne, /* createIfNeeded= */ true);
                     String serializedIdOne = OTRProfileID.serialize(profileOne.getOTRProfileID());
@@ -147,7 +147,7 @@ public class OTRProfileIDTest {
                     // Create second OTRProfileID and profile for TEST_OTR_PROFILE_ID_TWO
                     OTRProfileID otrProfileIDTwo = new OTRProfileID(TEST_OTR_PROFILE_ID_TWO);
                     Profile profileTwo =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileIDTwo, /* createIfNeeded= */ true);
                     String serializedIdTwo = OTRProfileID.serialize(profileTwo.getOTRProfileID());
@@ -185,11 +185,11 @@ public class OTRProfileIDTest {
                     assert otrProfileIDJava.equals(otrProfileIDNative);
 
                     Profile profileJava =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileIDJava, /* createIfNeeded= */ true);
                     Profile profileNative =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileIDNative, /* createIfNeeded= */ true);
                     assert profileJava.equals(profileNative);

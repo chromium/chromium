@@ -18,7 +18,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -60,7 +60,7 @@ public class LevelDBPersistedDataStorageTest {
                     for (int i = 0; i < mPersistedDataStorage.length; i++) {
                         mPersistedDataStorage[i] =
                                 new LevelDBPersistedDataStorage(
-                                        Profile.getLastUsedRegularProfile(), NAMESPACES[i]);
+                                        ProfileManager.getLastUsedRegularProfile(), NAMESPACES[i]);
                     }
                 });
     }

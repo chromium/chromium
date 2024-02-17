@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
@@ -80,7 +80,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacy() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
         // Prices unknown is not a price drop
         Assert.assertNull(shoppingPersistedTabData.getPriceDropLegacy());
@@ -116,7 +116,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterSamePrice() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $10 -> $10 is not a price drop (same price)
@@ -131,7 +131,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterNoFormattedPriceDifference() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $10.40 -> $10 (which would be displayed $10 -> $10 is not a price drop)
@@ -146,7 +146,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAbsoluteDifferenceTooSmall() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $2 -> $1 ($1 price drop - less than $2. Not big enough)
@@ -161,7 +161,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterPriceIncrease() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $9.33 -> $9.66 price increase is not a price drop
@@ -176,7 +176,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterPercentageDropNotEnough() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $50 -> $46 (8% price drop (less than 10%) not big enough)
@@ -191,7 +191,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop1() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $10 -> $7 (30% and $3 price drop is big enough)
@@ -208,7 +208,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop2() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $15.72 -> $4.80 (70% and $10.92 price drop is big enough)
@@ -225,7 +225,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop3() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $20 -> $10 (50% and $10 price drop is big enough)
@@ -242,7 +242,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop4() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $30 -> $27 (10% and $3 price drop is big enough)
@@ -259,7 +259,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop5() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $30.65 -> $25.50 (17% and $5.15 price drop is big enough)
@@ -276,7 +276,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop6() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
 
         // $9.65 -> $3.80 (40% and $5.85 price drop is big enough)
@@ -293,7 +293,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop7() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
         // $9.33 -> $0.90 (96% price drop and $8.43 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(9_330_000L);
@@ -309,7 +309,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop8() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
         // $20 -> $18 (10% price drop and $2 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(20_000_000L);
@@ -325,7 +325,7 @@ public class ShoppingPersistedTabDataLegacyTest {
     public void testPriceDropLegacyFilterAllowedPriceDrop9() {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithDefaults(
-                        Profile.getLastUsedRegularProfile());
+                        ProfileManager.getLastUsedRegularProfile());
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
         // $2 -> $0 ($2 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(2_000_000L);
@@ -342,7 +342,7 @@ public class ShoppingPersistedTabDataLegacyTest {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithCurrencyCode(
                         ShoppingPersistedTabDataTestUtils.TAB_ID,
-                        Profile.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile(),
                         ShoppingPersistedTabDataTestUtils.GREAT_BRITAIN_CURRENCY_CODE);
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(15_000_000L);
@@ -359,7 +359,7 @@ public class ShoppingPersistedTabDataLegacyTest {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithCurrencyCode(
                         ShoppingPersistedTabDataTestUtils.TAB_ID,
-                        Profile.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile(),
                         ShoppingPersistedTabDataTestUtils.JAPAN_CURRENCY_CODE);
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(3_140_000_000_000L);
@@ -377,7 +377,7 @@ public class ShoppingPersistedTabDataLegacyTest {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 ShoppingPersistedTabDataTestUtils.createShoppingPersistedTabDataWithCurrencyCode(
                         ShoppingPersistedTabDataTestUtils.TAB_ID,
-                        Profile.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile(),
                         ShoppingPersistedTabDataTestUtils.UNITED_STATES_CURRENCY_CODE);
         shoppingPersistedTabData.mPriceDropMethod = ShoppingPersistedTabData.PriceDropMethod.LEGACY;
         // $10 -> $5 (50% and $5 price drop is big enough)

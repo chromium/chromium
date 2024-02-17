@@ -11,6 +11,7 @@ import android.view.View;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -66,7 +67,7 @@ public class UserEducationHelper {
             // incognito profile) instead of always using regular profile. Currently always original
             // profile is used not to start popping IPH messages as soon as opening an incognito
             // tab.
-            Profile profile = Profile.getLastUsedRegularProfile();
+            Profile profile = ProfileManager.getLastUsedRegularProfile();
             final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
         }

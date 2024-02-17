@@ -11,7 +11,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
@@ -69,7 +69,7 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                                     /* isEmbargoed= */ false,
                                     SessionModel.DURABLE);
                     notificationInfo.setContentSetting(
-                            Profile.getLastUsedRegularProfile(), setting);
+                            ProfileManager.getLastUsedRegularProfile(), setting);
                 });
 
         String permission = runJavaScriptCodeInCurrentTab("Notification.permission");

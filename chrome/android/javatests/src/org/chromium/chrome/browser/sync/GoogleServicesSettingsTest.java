@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
@@ -76,7 +77,7 @@ public class GoogleServicesSettingsTest {
                 () ->
                         Assert.assertTrue(
                                 "SIGNIN_ALLOWED pref should be set by default",
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
     }
 
@@ -84,7 +85,8 @@ public class GoogleServicesSettingsTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(Pref.SIGNIN_ALLOWED);
                 });
     }
@@ -124,13 +126,14 @@ public class GoogleServicesSettingsTest {
                         Assert.assertFalse(
                                 "Account should be signed out!",
                                 IdentityServicesProvider.get()
-                                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                        .getIdentityManager(
+                                                ProfileManager.getLastUsedRegularProfile())
                                         .hasPrimaryAccount(ConsentLevel.SIGNIN)));
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertFalse(
                                 "SIGNIN_ALLOWED pref should be unset",
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
         Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
     }
@@ -153,7 +156,7 @@ public class GoogleServicesSettingsTest {
                 () ->
                         Assert.assertFalse(
                                 "Accepting the sign-out dialog should set SIGNIN_ALLOWED to false",
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
         Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
     }
@@ -187,11 +190,11 @@ public class GoogleServicesSettingsTest {
                     priceAnnotationsSwitch.performClick();
                     Assert.assertFalse(
                             PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
-                                    Profile.getLastUsedRegularProfile()));
+                                    ProfileManager.getLastUsedRegularProfile()));
                     priceAnnotationsSwitch.performClick();
                     Assert.assertTrue(
                             PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
-                                    Profile.getLastUsedRegularProfile()));
+                                    ProfileManager.getLastUsedRegularProfile()));
                 });
     }
 
@@ -253,7 +256,8 @@ public class GoogleServicesSettingsTest {
     public void testUsageStatsReportingShown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setBoolean(Pref.USAGE_STATS_ENABLED, true);
                 });
 
@@ -276,7 +280,8 @@ public class GoogleServicesSettingsTest {
     public void testUsageStatsReportingNotShown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setBoolean(Pref.USAGE_STATS_ENABLED, false);
                 });
 

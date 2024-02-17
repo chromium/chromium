@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -240,7 +241,7 @@ public class AppBannerManagerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     TrackerFactory.setTestingFactory(profile, mTracker);
                 });
 
@@ -271,7 +272,8 @@ public class AppBannerManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                    SiteEngagementService.getForBrowserContext(Profile.getLastUsedRegularProfile())
+                    SiteEngagementService.getForBrowserContext(
+                                    ProfileManager.getLastUsedRegularProfile())
                             .resetBaseScoreForUrl(url, engagement);
                 });
     }

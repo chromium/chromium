@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -268,7 +268,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             if (!IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
                 WarmupManager.getInstance()
                         .maybePreconnectUrlAndSubResources(
-                                Profile.getLastUsedRegularProfile(), url);
+                                ProfileManager.getLastUsedRegularProfile(), url);
             }
         } finally {
             TraceEvent.end("maybePreconnect");

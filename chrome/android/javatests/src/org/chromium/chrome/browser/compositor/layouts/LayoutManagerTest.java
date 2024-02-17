@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -219,8 +220,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         mTabModelSelector =
                 new MockTabModelSelector(
-                        Profile.getLastUsedRegularProfile(),
-                        Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                        ProfileManager.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
                         standardTabCount,
                         incognitoTabCount,
                         this);
@@ -901,7 +902,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Override
     public MockTab createTab(int id, boolean incognito) {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         return MockTab.createAndInitialize(
                 id, incognito ? profile.getPrimaryOTRProfile(true) : profile);
     }
