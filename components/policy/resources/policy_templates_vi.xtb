@@ -3512,7 +3512,7 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
       Mỗi mục nhập trong danh sách chứa một từ điển. Từ điển này phải bao gồm ID tiện ích trong trường 'extension-id' và URL cập nhật trong trường 'update-url'.</translation>
 <translation id="3869180930654347954">Tắt First-Party Sets cho mọi người dùng trong phạm vi tác động</translation>
 <translation id="3869566220234507038">Luôn tải trình duyệt <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
-<translation id="3870035799352372700">Chặn Trợ lý Google truy cập vào ngữ cảnh trên màn hình trong quá trình tương tác</translation>
+<translation id="3870035799352372700">Chặn Trợ lý Google truy cập vào bối cảnh trên màn hình trong quá trình tương tác</translation>
 <translation id="3870059789954671543">Bật tính năng hỗ trợ tiếp cận về làm nổi bật tiêu điểm bằng bàn phím trên màn hình đăng nhập.
 
           Khi bật tính năng này, hệ thống sẽ tự động làm nổi bật đối tượng được lấy tiêu điểm bằng bàn phím.
