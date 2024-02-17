@@ -47,12 +47,14 @@ def download_chrome_symbols(version, channel, arch, dest_dir):
     if channel is None:
         channel = _identify_channel(version, arch)
         if channel:
-            print('Using release channel {} for {}'.format(channel, version),
-                  file=sys.stderr)
+            print(
+                'Using release channel {} for {}'.format(channel, version),
+                file=sys.stderr)
         else:
-            print('Could not identify channel for Chrome version {}'.format(
-                version),
-                  file=sys.stderr)
+            print(
+                'Could not identify channel for Chrome version {}'.format(
+                    version),
+                file=sys.stderr)
             return None
 
     # The symbol storage uses "arm64" rather than "aarch64".
@@ -61,8 +63,9 @@ def download_chrome_symbols(version, channel, arch, dest_dir):
 
     extracted_dir = _download_and_extract(version, channel, arch, dest_dir)
     if not extracted_dir:
-        print('Could not find dSYMs for Chrome {} {}'.format(version, arch),
-              file=sys.stderr)
+        print(
+            'Could not find dSYMs for Chrome {} {}'.format(version, arch),
+            file=sys.stderr)
     return extracted_dir
 
 
@@ -92,8 +95,8 @@ def _identify_channel(version, arch):
     # Fall back to sending HEAD HTTP requests to each of the possible symbol
     # locations.
     print(
-        'Unable to identify release channel for {}, now brute-force searching'.
-        format(version),
+        'Unable to identify release channel for {}, now brute-force searching'
+        .format(version),
         file=sys.stderr)
     for channel in ('stable', 'beta', 'dev', 'canary'):
         url, _ = _get_url_and_dest(version, channel, arch, '')
@@ -130,8 +133,9 @@ def _download_and_extract(version, channel, arch, dest_dir):
 
     try:
         with request.urlopen(url) as symbol_request:
-            print('Downloading and extracting symbols to {}'.format(dest_dir),
-                  file=sys.stderr)
+            print(
+                'Downloading and extracting symbols to {}'.format(dest_dir),
+                file=sys.stderr)
             print('This will take a minute...', file=sys.stderr)
             if _extract_symbols_to(symbol_request, dest_dir):
                 return dest_dir
@@ -171,10 +175,8 @@ def _extract_symbols_to(symbol_request, dest_dir):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--version',
-                        '-v',
-                        required=True,
-                        help='Version to download.')
+    parser.add_argument(
+        '--version', '-v', required=True, help='Version to download.')
     parser.add_argument(
         '--channel',
         '-c',
@@ -188,10 +190,11 @@ def main():
         choices=['aarch64', 'arm64', 'x86_64'],
         help='CPU architecture to download. Defaults to that of the current OS.'
     )
-    parser.add_argument('--out',
-                        '-o',
-                        required=True,
-                        help='Directory to download the symbols to.')
+    parser.add_argument(
+        '--out',
+        '-o',
+        required=True,
+        help='Directory to download the symbols to.')
     args = parser.parse_args()
 
     arch = args.arch
