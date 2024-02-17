@@ -3990,6 +3990,9 @@ extern const char kMeteredShowToggleDescription[];
 extern const char kMicrophoneMuteSwitchDeviceName[];
 extern const char kMicrophoneMuteSwitchDeviceDescription[];
 
+extern const char kMultiCalendarSupportName[];
+extern const char kMultiCalendarSupportDescription[];
+
 extern const char kMultiZoneRgbKeyboardName[];
 extern const char kMultiZoneRgbKeyboardDescription[];
 

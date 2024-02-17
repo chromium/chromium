@@ -11062,6 +11062,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAndroidOpenPdfInline)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"multi-calendar-in-quick-settings",
+     flag_descriptions::kMultiCalendarSupportName,
+     flag_descriptions::kMultiCalendarSupportDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMultiCalendarSupport)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -1894,6 +1894,12 @@ const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOffTime{
     &kEcheShorterScanningDutyCycle, "EcheScanningCycleOffTime",
     base::Seconds(30)};
 
+// Enables events from multiple calendars to be displayed in the Quick
+// Settings Calendar.
+BASE_FEATURE(kMultiCalendarSupport,
+             "MultiCalendarSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables multi-zone rgb keyboard customization.
 BASE_FEATURE(kMultiZoneRgbKeyboard,
              "MultiZoneRgbKeyboard",
@@ -3829,6 +3835,10 @@ bool IsMacAddressRandomizationEnabled() {
 
 bool IsMinimumChromeVersionEnabled() {
   return base::FeatureList::IsEnabled(kMinimumChromeVersion);
+}
+
+bool IsMultiCalendarSupportEnabled() {
+  return base::FeatureList::IsEnabled(kMultiCalendarSupport);
 }
 
 bool IsMultiZoneRgbKeyboardEnabled() {

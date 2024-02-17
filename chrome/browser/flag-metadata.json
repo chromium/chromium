@@ -5561,6 +5561,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "multi-calendar-in-quick-settings",
+    "owners": [ "jiamingc@chromium.org", "amberhaynes@chromium.org", "cros-status-area-eng@google.com" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "multi-zone-rgb-keyboard",
     "owners": [ "jasontt@chromium.org", "assistive-eng@google.com"],
     "expiry_milestone": 120

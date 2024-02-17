@@ -6938,6 +6938,12 @@ const char kMicrophoneMuteSwitchDeviceDescription[] =
     "flag does not affect the toggle functionality, it only affects how the "
     "System UI handles the mute toggle state.";
 
+const char kMultiCalendarSupportName[] =
+    "Multi-Calendar Support in Quick Settings";
+const char kMultiCalendarSupportDescription[] =
+    "Enables the Quick Settings Calendar to display Google Calendar events for "
+    "up to 10 of the user's calendars.";
+
 const char kMultiZoneRgbKeyboardName[] =
     "Enable multi-zone RGB keyboard customization";
 const char kMultiZoneRgbKeyboardDescription[] =
