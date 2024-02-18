@@ -245,42 +245,7 @@ String String::Format(const char* format, ...) {
 }
 
 String String::EncodeForDebugging() const {
-  if (IsNull())
-    return "<null>";
-
-  StringBuilder builder;
-  builder.Append('"');
-  for (unsigned index = 0; index < length(); ++index) {
-    // Print shorthands for select cases.
-    UChar character = (*impl_)[index];
-    switch (character) {
-      case '\t':
-        builder.Append("\\t");
-        break;
-      case '\n':
-        builder.Append("\\n");
-        break;
-      case '\r':
-        builder.Append("\\r");
-        break;
-      case '"':
-        builder.Append("\\\"");
-        break;
-      case '\\':
-        builder.Append("\\\\");
-        break;
-      default:
-        if (IsASCIIPrintable(character)) {
-          builder.Append(static_cast<char>(character));
-        } else {
-          // Print "\uXXXX" for control or non-ASCII characters.
-          builder.AppendFormat("\\u%04X", character);
-        }
-        break;
-    }
-  }
-  builder.Append('"');
-  return builder.ToString();
+  return StringView(*this).EncodeForDebugging();
 }
 
 String String::Number(float number) {

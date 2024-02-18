@@ -234,6 +234,10 @@ class WTF_EXPORT StringView {
   String ToString() const;
   AtomicString ToAtomicString() const;
 
+  // Returns a version suitable for gtest and base/logging.*.  It prepends and
+  // appends double-quotes, and escapes characters other than ASCII printables.
+  [[nodiscard]] String EncodeForDebugging() const;
+
   template <bool isSpecialCharacter(UChar)>
   bool IsAllSpecialCharacters() const;
 
@@ -381,6 +385,8 @@ inline bool StringView::IsAllSpecialCharacters() const {
                   : WTF::IsAllSpecialCharacters<isSpecialCharacter, UChar>(
                         Characters16(), len);
 }
+
+WTF_EXPORT std::ostream& operator<<(std::ostream&, const StringView&);
 
 }  // namespace WTF
 
