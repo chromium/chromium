@@ -40,6 +40,14 @@ enum Status {
   kHttpError, // Every other HTTP response status code
 };
 
+// Different categories within the emoji picker
+enum Category {
+  kEmojis,
+  kSymbols,
+  kEmoticons,
+  kGifs,
+};
+
 struct TenorGifResponse {
   string next;
   array<GifResponse> results;
@@ -110,4 +118,7 @@ interface PageHandler {
 
   // Send a signal that emoji UI is fully loaded for metrics.
   OnUiFullyLoaded();
+
+  // Find out the initial category to show for the emoji piicker
+  GetInitialCategory() => (Category category);
 };

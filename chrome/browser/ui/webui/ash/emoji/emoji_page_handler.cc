@@ -243,11 +243,13 @@ EmojiPageHandler::EmojiPageHandler(
     content::WebUI* web_ui,
     EmojiUI* webui_controller,
     bool incognito_mode,
-    bool no_text_field)
+    bool no_text_field,
+    emoji_picker::mojom::Category initial_category)
     : receiver_(this, std::move(receiver)),
       webui_controller_(webui_controller),
       incognito_mode_(incognito_mode),
-      no_text_field_(no_text_field) {
+      no_text_field_(no_text_field),
+      initial_category_(initial_category) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
   // There are two conditions to control the GIF support:
@@ -404,6 +406,10 @@ void EmojiPageHandler::InsertGif(const GURL& gif) {
 
 void EmojiPageHandler::OnUiFullyLoaded() {
   LogLoadTime(base::TimeTicks::Now() - shown_time_);
+}
+
+void EmojiPageHandler::GetInitialCategory(GetInitialCategoryCallback callback) {
+  std::move(callback).Run(initial_category_);
 }
 
 }  // namespace ash

@@ -95,6 +95,7 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
       page_factory_receiver_{this};
   bool incognito_mode_ = false;
   bool no_text_field_ = false;
+  emoji_picker::mojom::Category initial_category_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
