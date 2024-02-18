@@ -1,7 +1,6 @@
 This is a testharness.js-based test.
-[FAIL] Fully unlocking the screen orientation causes a pending lock to be aborted
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-[FAIL] Fully unlocking the screen orientation causes a pending lock in a nested browsing context to be aborted
-  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] fullscreen and orientation support
+  promise_test: Unhandled rejection with value: object "NotSupportedError: screen.orientation.lock() is not available on this device."
+[FAIL] Iframe can't itself know if it's parent is fullscreen when changing orientation
+  promise_rejects_dom: function "function() { throw e }" threw object "NotSupportedError: screen.orientation.lock() is not available on this device." that is not a DOMException SecurityError: property "code" is equal to 9, expected 18
 Harness: the test ran to completion.
-

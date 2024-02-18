@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] This tests for a bug in ReplaceSelectionCommand where styles are lost during paste.
+  assert_equals: expected "<span style=\\"font-weight: 700;\\">copy this</span>" but got ""
+Harness: the test ran to completion.

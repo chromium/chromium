@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test pointer capture.
+  assert_equals: Move to button from origin: Event  mismatch expected "pointerover@captureButton" but got "pointerout@target1"
+Harness: the test ran to completion.

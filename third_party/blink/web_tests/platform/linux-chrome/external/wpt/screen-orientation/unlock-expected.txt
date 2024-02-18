@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] unlock() aborts a pending lock request across documents
+  promise_rejects_dom: function "function() { throw e }" threw object "NotSupportedError: screen.orientation.lock() is not available on this device." that is not a DOMException AbortError: property "code" is equal to 9, expected 20
+Harness: the test ran to completion.
