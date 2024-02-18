@@ -159,7 +159,7 @@ std::unique_ptr<views::Background> CreateNotificationBackground(
                                                   background_radii);
 }
 
-void StyleNotificationPopup(views::View* notification_view) {
+void StyleNotificationPopup(message_center::MessageView* notification_view) {
   notification_view->SetPaintToLayer();
   auto* layer = notification_view->layer();
   layer->SetFillsBoundsOpaquely(false);
@@ -175,6 +175,8 @@ void StyleNotificationPopup(views::View* notification_view) {
   notification_view->SetBorder(std::make_unique<views::HighlightBorder>(
       kMessagePopupCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  notification_view->UpdateCornerRadius(kMessagePopupCornerRadius,
+                                        kMessagePopupCornerRadius);
 }
 
 std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(

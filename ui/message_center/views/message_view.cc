@@ -4,7 +4,6 @@
 
 #include "ui/message_center/views/message_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -20,6 +19,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/shadow_util.h"
 #include "ui/gfx/shadow_value.h"
@@ -32,6 +32,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
@@ -53,16 +54,22 @@ bool ShouldShowAeroShadowBorder() {
 #endif
 }
 
-}  // namespace
-
-// static
-
-MessageView::HighlightPathGenerator::HighlightPathGenerator() = default;
-
-SkPath MessageView::HighlightPathGenerator::GetHighlightPath(
-    const views::View* view) {
-  return static_cast<const MessageView*>(view)->GetHighlightPath();
+// Helper function to setup focus ring shapes for `MessageView`.
+void InstallHighlightPathGenerator(views::View* view,
+                                   float top_radius,
+                                   float bottom_radius) {
+  auto corners = gfx::RoundedCornersF{top_radius, top_radius, bottom_radius,
+                                      bottom_radius};
+  // Shrink focus ring size by -`kDefaultHaloInset` on each side to draw
+  // them on top of the notifications. We need to do this because
+  // `TrayBubbleView` and `MessagePopupView` has a layer that masks to bounds
+  // due to which the focus ring can not extend outside the view.
+  views::HighlightPathGenerator::Install(
+      view, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                gfx::Insets(-views::FocusRing::kDefaultHaloInset), corners));
 }
+
+}  // namespace
 
 MessageView::MessageView(const Notification& notification)
     : notification_id_(notification.id()),
@@ -76,9 +83,7 @@ MessageView::MessageView(const Notification& notification)
   }
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
-  views::HighlightPathGenerator::Install(
-      this, std::make_unique<HighlightPathGenerator>());
-
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   // Paint to a dedicated layer to make the layer non-opaque.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -204,25 +209,6 @@ void MessageView::UpdateCornerRadius(int top_radius, int bottom_radius) {
   }
   UpdateBackgroundPainter();
   SchedulePaint();
-}
-
-SkPath MessageView::GetHighlightPath() const {
-  gfx::Rect rect(GetBoundsInScreen().size());
-  // Shrink focus ring size by -kFocusHaloInset on each side to draw
-  // them on top of the notifications. We need to do this because TrayBubbleView
-  // has a layer that masks to bounds due to which the focus ring can not extend
-  // outside the view.
-  int inset = -views::FocusRing::kDefaultHaloInset;
-  rect.Inset(gfx::Insets(inset));
-
-  SkScalar top_radius = std::max(0, top_radius_ - inset);
-  SkScalar bottom_radius = std::max(0, bottom_radius_ - inset);
-  SkScalar radii[8] = {top_radius,    top_radius,      // top-left
-                       top_radius,    top_radius,      // top-right
-                       bottom_radius, bottom_radius,   // bottom-right
-                       bottom_radius, bottom_radius};  // bottom-left
-
-  return SkPath().addRoundRect(gfx::RectToSkRect(rect), radii);
 }
 
 void MessageView::OnContainerAnimationStarted() {
@@ -510,6 +496,8 @@ void MessageView::SetSlideButtonWidth(int control_button_width) {
 void MessageView::SetCornerRadius(int top_radius, int bottom_radius) {
   top_radius_ = top_radius;
   bottom_radius_ = bottom_radius;
+
+  InstallHighlightPathGenerator(this, top_radius, bottom_radius);
 }
 
 void MessageView::OnCloseButtonPressed() {

@@ -12,21 +12,13 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/notification_list.h"
-#include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
-#include "ui/views/controls/focus_ring.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
@@ -254,16 +246,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   }
 
  protected:
-  class HighlightPathGenerator : public views::HighlightPathGenerator {
-   public:
-    HighlightPathGenerator();
-    HighlightPathGenerator(const HighlightPathGenerator&) = delete;
-    HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
-
-    // views::HighlightPathGenerator:
-    SkPath GetHighlightPath(const views::View* view) override;
-  };
-
   virtual void UpdateControlButtonsVisibility();
 
   // Updates the background painter using the themed background color and radii.
@@ -289,10 +271,6 @@ class MESSAGE_CENTER_EXPORT MessageView
 
  private:
   friend class test::MessagePopupCollectionTest;
-
-  // Gets the highlight path for the notification based on bounds and corner
-  // radii.
-  SkPath GetHighlightPath() const;
 
   // Returns the ideal slide mode by calculating the current status.
   views::SlideOutController::SlideMode CalculateSlideMode() const;
