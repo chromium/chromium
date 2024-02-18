@@ -380,16 +380,18 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
       "ui", "ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier");
   if (identifier == chrome::kChromeUINewTabURL) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    return std::make_optional<gfx::ImageSkia>(apps::CreateStandardIconImage(
-        rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia()));
+    return apps::CreateStandardIconImage(
+        rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia());
   } else if (identifier == ash::DeskTemplate::kIncognitoWindowIdentifier) {
     DCHECK(color_provider);
-    return apps::CreateStandardIconImage(
+    gfx::ImageSkia icon =
         ui::ThemedVectorIcon(
             ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
                                            ui::kColorAvatarIconIncognito)
                 .GetVectorIcon())
-            .GetImageSkia(color_provider));
+            .GetImageSkia(color_provider);
+    icon.EnsureRepsForSupportedScales();
+    return apps::CreateStandardIconImage(icon);
   }
 
   return std::nullopt;
