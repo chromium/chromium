@@ -211,6 +211,10 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy implements
     this.addDiscoveredFailedPrinter = printer;
   }
 
+  setPpdReferenceResolved(resolved: boolean): void {
+    this.printerInfo.ppdReferenceResolved = resolved;
+  }
+
   addPrinterStatus(
       printerId: string, reason: PrinterStatusReason,
       severity: PrinterStatusSeverity): void {

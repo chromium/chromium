@@ -82,6 +82,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.AddPrinterManuallyResult" enum="BooleanSuccess"
+    expires_after="2024-08-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the result of attempting to add a printer manually from the OS
+    Settings Printers page. A failed result is recorded each time the user
+    clicks the Add button and the attempt fails.
+  </summary>
+</histogram>
+
 <histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
     expires_after="2024-06-30">
   <owner>bmgordon@chromium.org</owner>
