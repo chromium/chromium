@@ -1329,7 +1329,7 @@ TEST_F(SavedDeskTest, IconsOrder) {
   for (size_t i = 0; i < icon_views.size() - 1; ++i) {
     int current_id;
     ASSERT_TRUE(base::StringToInt(
-        GetSavedDeskRegularIconView(icon_views[i])->icon_identifier(),
+        GetSavedDeskRegularIconView(icon_views[i])->icon_identifier().url_or_id,
         &current_id));
 
     if (i)
@@ -1443,14 +1443,18 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   // with the lowest activation indices, i.e. the rest of the tabs from the
   // first browser instance.
   ASSERT_EQ(7u, icon_views.size());
-  EXPECT_EQ(kTabs1[kActiveTabIndex1].spec(),
-            GetSavedDeskRegularIconView(icon_views[0])->icon_identifier());
-  EXPECT_EQ(kTabs2[kActiveTabIndex2].spec(),
-            GetSavedDeskRegularIconView(icon_views[1])->icon_identifier());
-  EXPECT_EQ(kTabs1[0].spec(),
-            GetSavedDeskRegularIconView(icon_views[2])->icon_identifier());
-  EXPECT_EQ(kTabs1[2].spec(),
-            GetSavedDeskRegularIconView(icon_views[3])->icon_identifier());
+  EXPECT_EQ(
+      kTabs1[kActiveTabIndex1].spec(),
+      GetSavedDeskRegularIconView(icon_views[0])->icon_identifier().url_or_id);
+  EXPECT_EQ(
+      kTabs2[kActiveTabIndex2].spec(),
+      GetSavedDeskRegularIconView(icon_views[1])->icon_identifier().url_or_id);
+  EXPECT_EQ(
+      kTabs1[0].spec(),
+      GetSavedDeskRegularIconView(icon_views[2])->icon_identifier().url_or_id);
+  EXPECT_EQ(
+      kTabs1[2].spec(),
+      GetSavedDeskRegularIconView(icon_views[3])->icon_identifier().url_or_id);
 }
 
 // Tests that when two tabs are put into a desk template that have the same
@@ -1494,8 +1498,9 @@ TEST_F(SavedDeskTest, IdenticalURL) {
   // The first icon view should have the first url including the query parameter
   // as its identifier, and have a count of 2 because its representing both
   // urls.
-  EXPECT_EQ(kTabs[0].spec(),
-            GetSavedDeskRegularIconView(icon_views[0])->icon_identifier());
+  EXPECT_EQ(
+      kTabs[0].spec(),
+      GetSavedDeskRegularIconView(icon_views[0])->icon_identifier().url_or_id);
   EXPECT_EQ(2, icon_views[0]->GetCount());
   // The second icon view should have a count of 0, because there are no
   // overflow windows.
