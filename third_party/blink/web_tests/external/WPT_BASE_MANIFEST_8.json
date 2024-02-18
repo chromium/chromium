@@ -399086,6 +399086,14 @@
      "9b4696afb657b1e3f51ba2eac4109b9341cae542",
      []
     ],
+    "constant.https.any-expected.txt": [
+     "f1e5051ab903e205575c1ddcd637d0f2860cc9c3",
+     []
+    ],
+    "constant.https.any.worker-expected.txt": [
+     "f1e5051ab903e205575c1ddcd637d0f2860cc9c3",
+     []
+    ],
     "conv2d.https.any-expected.txt": [
      "f2ab788fee7af0fa4affb55e9da84b7aa8df2597",
      []
@@ -399211,11 +399219,11 @@
      []
     ],
     "pooling.https.any-expected.txt": [
-     "2a9fb8993385380aef74b3f217b46171aaab45b3",
+     "7cf96aa069b82b5b560500d95195c7399c02b9b9",
      []
     ],
     "pooling.https.any.worker-expected.txt": [
-     "2a9fb8993385380aef74b3f217b46171aaab45b3",
+     "7cf96aa069b82b5b560500d95195c7399c02b9b9",
      []
     ],
     "prelu.https.any-expected.txt": [
@@ -399274,6 +399282,10 @@
       ],
       "concat.json": [
        "5e2285b75a0a0c17198832d9193855e6560474fc",
+       []
+      ],
+      "constant.json": [
+       "06fe0a7a958e749efd4c0213104f22437561e7ea",
        []
       ],
       "conv2d.json": [
@@ -399346,6 +399358,10 @@
       ],
       "instance_normalization.json": [
        "a9fd493c9924ed5c73a56de61ed80b71670ebd4f",
+       []
+      ],
+      "l2_pool2d.json": [
+       "bab89e0e3940b980f4d6206ffa46cff841d5e277",
        []
       ],
       "layer_normalization.json": [
@@ -399512,13 +399528,17 @@
        "f7e6a7d2dd2f74089f38cd7d43dd847bef452f6a",
        []
       ],
+      "triangular.json": [
+       "652f780d58b6f1c79b9d9cb503359570beefc029",
+       []
+      ],
       "where.json": [
        "7c55b3171aed789df628396d6999dfdaad40a749",
        []
       ]
      },
      "utils.js": [
-      "b653c16469b2545d53a7d5947eec94f5bfd47cf4",
+      "002ddbd706c0c86d26036483de4b769bc825108f",
       []
      ]
     },
@@ -399544,6 +399564,14 @@
     ],
     "squeeze.https.any.worker-expected.txt": [
      "e1a2e675c721944ac46c12517a6cceb968824d43",
+     []
+    ],
+    "triangular.https.any-expected.txt": [
+     "d1b95c65a9d3858125789c418cd56f60910e2058",
+     []
+    ],
+    "triangular.https.any.worker-expected.txt": [
+     "d1b95c65a9d3858125789c418cd56f60910e2058",
      []
     ],
     "where.https.any-expected.txt": [
@@ -668092,6 +668120,57 @@
       }
      ]
     ],
+    "constant.https.any.js": [
+     "afb020d275cd1578cae83ffb2c5d2cb1c1329285",
+     [
+      "webnn/constant.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API constant"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/constant.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API constant"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
     "conv2d.https.any.js": [
      "b26b35ec676457d4d21c5f20fd0aff9eab3baf8e",
      [
@@ -668789,6 +668868,57 @@
          [
           "title",
           "test WebNN API concat operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "constant.https.any.js": [
+      "7e0933f2f1b333e5043ddfd823faf420cc156e94",
+      [
+       "webnn/gpu/constant.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API constant"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/gpu/constant.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API constant"
          ],
          [
           "global",
@@ -669675,7 +669805,7 @@
       ]
      ],
      "pooling.https.any.js": [
-      "ab12881881249537f7523d26efaed8eb6606a635",
+      "e174bb5186a87f24fcfeeb28d48406fed38bf732",
       [
        "webnn/gpu/pooling.https.any.html",
        {
@@ -670337,6 +670467,57 @@
        }
       ]
      ],
+     "triangular.https.any.js": [
+      "3b779fabd31ee547a7ce9622b4a2960ae3bb3e3d",
+      [
+       "webnn/gpu/triangular.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API triangular operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/gpu/triangular.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API triangular operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "where.https.any.js": [
       "ec0c5530a044b4b44077743eede15f75fea0afe3",
       [
@@ -670857,7 +671038,7 @@
      ]
     ],
     "pooling.https.any.js": [
-     "df19e5770948402356177c8a0b11b88814912c0e",
+     "c34ae2bba2422594ce03bea07dfe57ce794432fd",
      [
       "webnn/pooling.https.any.html",
       {
@@ -671501,6 +671682,57 @@
         [
          "title",
          "test WebNN API transpose operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "triangular.https.any.js": [
+     "1f1af6dcab6b87338c8466685ea6921290dc02cd",
+     [
+      "webnn/triangular.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API triangular operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/triangular.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API triangular operation"
         ],
         [
          "global",
