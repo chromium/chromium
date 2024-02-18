@@ -83,7 +83,7 @@ class GbmSurfaceless : public gl::Presenter {
 
   void SubmitFrame();
 
-  EGLSyncKHR InsertFence(bool implicit);
+  EGLSyncKHR InsertFence();
   void FenceRetired(PendingFrame* frame);
 
   void OnSubmission(gfx::SwapResult result, gfx::GpuFenceHandle release_fence);
@@ -100,7 +100,6 @@ class GbmSurfaceless : public gl::Presenter {
   std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
   std::unique_ptr<PendingFrame> submitted_frame_;
   std::unique_ptr<gfx::GpuFence> submitted_frame_gpu_fence_;
-  const bool has_implicit_external_sync_;
   bool last_swap_buffers_result_ = true;
   bool supports_plane_gpu_fences_ = false;
   bool use_egl_fence_sync_ = true;

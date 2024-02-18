@@ -490,6 +490,9 @@ using Window = XID;
 
 #define GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT 0x8868
 
+// EGL_ANGLE_global_fence_sync
+#define EGL_SYNC_GLOBAL_FENCE_ANGLE 0x34DE
+
 // Forward declare EGL types.
 typedef uint64_t EGLuint64CHROMIUM;
 

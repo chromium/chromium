@@ -2941,6 +2941,7 @@ EGL_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_create_context_backwards_compatible',
   'EGL_ANGLE_create_context_client_arrays',
   'EGL_ANGLE_create_context_webgl_compatibility',
+  'EGL_ANGLE_global_fence_sync',
   'EGL_ANGLE_iosurface_client_buffer',
   'EGL_ANGLE_keyed_mutex',
   'EGL_ANGLE_robust_resource_initialization',

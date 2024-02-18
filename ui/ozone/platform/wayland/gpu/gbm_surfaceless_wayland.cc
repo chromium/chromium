@@ -293,14 +293,6 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
   }
 }
 
-EGLSyncKHR GbmSurfacelessWayland::InsertFence(bool implicit) {
-  const EGLint attrib_list[] = {EGL_SYNC_CONDITION_KHR,
-                                EGL_SYNC_PRIOR_COMMANDS_IMPLICIT_EXTERNAL_ARM,
-                                EGL_NONE};
-  return eglCreateSyncKHR(GetEGLDisplay(), EGL_SYNC_FENCE_KHR,
-                          implicit ? attrib_list : nullptr);
-}
-
 void GbmSurfacelessWayland::FenceRetired(PendingFrame* frame) {
   frame->ready = true;
   MaybeSubmitFrames();
