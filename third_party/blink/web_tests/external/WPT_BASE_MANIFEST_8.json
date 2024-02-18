@@ -277948,6 +277948,19 @@
          {}
         ]
        ],
+       "top-layer-remove-popover-attribute.html": [
+        "3827e90c5bdb01c1b59fc159bd312a2afbd09342",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-remove-popover-attribute-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "top-layer-stacking-correct-order-remove-readd.html": [
         "4fdd28820dbb27af2d397d747573e0bd7cbecf35",
         [
@@ -372552,6 +372565,10 @@
        ],
        "top-layer-position-ref.html": [
         "01eff8c4de5f1f5e6a951f177fd0e920ca289d4b",
+        []
+       ],
+       "top-layer-remove-popover-attribute-ref.html": [
+        "7aadaf51b72692f99f0e391d8c6a6be807e243c7",
         []
        ],
        "top-layer-stacking-correct-order-remove-readd-ref.html": [
