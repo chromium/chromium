@@ -25,7 +25,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
 
 import {getTemplate} from './add_child.html.js';
 
@@ -114,7 +114,7 @@ export class AddChildScreen extends AddChildScreenElementBase {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override getOobeUIInitialState() {
-    return OOBE_UI_STATE.GAIA_SIGNIN;
+    return OobeUiState.GAIA_SIGNIN;
   }
 
   private cancel(): void {

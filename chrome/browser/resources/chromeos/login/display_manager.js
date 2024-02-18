@@ -10,7 +10,7 @@ import {assert} from '//resources/ash/common/assert.js';
 import {$, ensureTransitionEndEvent} from '//resources/ash/common/util.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DISPLAY_TYPE, OOBE_UI_STATE, SCREEN_DEVICE_DISABLED, SCREEN_WELCOME} from './components/display_manager_types.js';
+import {DisplayType, OobeUiState, SCREEN_DEVICE_DISABLED, SCREEN_WELCOME} from './components/display_manager_types.js';
 import {globalOobeKeyboard} from './components/keyboard_utils_oobe.js';
 import {OobeTypes} from './components/oobe_types.js';
 import {loadTimeData} from './i18n_setup.js';
@@ -104,7 +104,7 @@ export function invokePolymerMethod(element, name, ...args) {
        * Type of UI.
        * @type {string}
        */
-      this.displayType_ = DISPLAY_TYPE.UNKNOWN;
+      this.displayType_ = DisplayType.UNKNOWN;
 
       /**
        * Stored OOBE configuration for newly registered screens.
@@ -244,7 +244,7 @@ export function invokePolymerMethod(element, name, ...args) {
       if (newStep.getOobeUIInitialState) {
         this.setOobeUIState(newStep.getOobeUIInitialState());
       } else {
-        this.setOobeUIState(OOBE_UI_STATE.HIDDEN);
+        this.setOobeUIState(OobeUiState.HIDDEN);
       }
 
       invokePolymerMethod(newStep, 'onBeforeShow', screenData);
@@ -444,7 +444,7 @@ export function invokePolymerMethod(element, name, ...args) {
      * TODO(crbug.com/1229130) - Remove this suppression.
      */
     initializeDemoModeMultiTapListener() {
-      if (this.displayType_ === DISPLAY_TYPE.OOBE) {
+      if (this.displayType_ === DisplayType.OOBE) {
         this.demoModeStartListener_ =
             new MultiTapDetector($('outer-container'), 10, () => {
               const currentScreen = this.currentScreen;
@@ -467,7 +467,7 @@ export function invokePolymerMethod(element, name, ...args) {
      * Notifies the C++ handler in views login that the OOBE signin state has
      * been updated. This information is primarily used by the login shelf to
      * update button visibility state.
-     * @param {number} state The state (see OOBE_UI_STATE) of the OOBE UI.
+     * @param {number} state The state (see OobeUiState) of the OOBE UI.
      */
     setOobeUIState(state) {
       chrome.send('updateOobeUIState', [state]);
@@ -477,7 +477,7 @@ export function invokePolymerMethod(element, name, ...args) {
      * Initializes display manager.
      */
     initialize() {
-      let givenDisplayType = DISPLAY_TYPE.UNKNOWN;
+      let givenDisplayType = DisplayType.UNKNOWN;
       if (document.documentElement.hasAttribute('screen')) {
         // Display type set in HTML property.
         givenDisplayType = document.documentElement.getAttribute('screen');
@@ -485,16 +485,16 @@ export function invokePolymerMethod(element, name, ...args) {
         // Extracting display type from URL.
         givenDisplayType = window.location.pathname.substr(1);
       }
-      Object.getOwnPropertyNames(DISPLAY_TYPE).forEach( type => {
-        if (DISPLAY_TYPE[type] === givenDisplayType) {
+      Object.getOwnPropertyNames(DisplayType).forEach(type => {
+        if (DisplayType[type] === givenDisplayType) {
           this.displayType = givenDisplayType;
         }
       });
-      if (this.displayType === DISPLAY_TYPE.UNKNOWN) {
+      if (this.displayType === DisplayType.UNKNOWN) {
         console.error(
             'Unknown display type "' + givenDisplayType +
             '". Setting default.');
-        this.displayType = DISPLAY_TYPE.LOGIN;
+        this.displayType = DisplayType.LOGIN;
       }
       this.initializeDemoModeMultiTapListener();
     }

@@ -10,7 +10,6 @@ import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {GaiaDialog} from '../../components/gaia_dialog.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
@@ -19,8 +18,6 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
-import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {OfflineAdLogin} from '../common/offline_ad_login.js';
 
 import {Authenticator, AuthFlow, AuthMode, AuthParams} from '//oobe/gaia_auth_host/authenticator.js';
 import {assert} from '//resources/js/assert.js';
@@ -32,13 +29,16 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {GaiaDialog} from '../../components/gaia_dialog.js';
 import {InjectedKeyboardUtils} from '../../components/keyboard_utils.js';
 import {globalOobeKeyboard, KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_oobe.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import * as OobeDebugger from '../../debug/debug.js';
 import {invokePolymerMethod} from '../../display_manager.js';
+import {OfflineAdLogin} from '../common/offline_ad_login.js';
 import type {ActiveDirectoryErrorState, JoinConfigType} from '../common/offline_ad_login.js';
 import {ADLoginStep} from '../common/offline_ad_login.js';
 
@@ -447,8 +447,8 @@ export class EnterpriseEnrollmentElement extends
    * Initial UI State for screen
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.ENROLLMENT_CANCEL_DISABLED;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.ENROLLMENT_CANCEL_DISABLED;
   }
 
   /**
@@ -521,13 +521,12 @@ export class EnterpriseEnrollmentElement extends
     // otherwise the manual fallback button does nothing.
     if (this.isCancelDisabled ||
         step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
-      Oobe.getInstance().setOobeUIState(
-          OOBE_UI_STATE.ENROLLMENT_CANCEL_DISABLED);
+      Oobe.getInstance().setOobeUIState(OobeUiState.ENROLLMENT_CANCEL_DISABLED);
     } else {
       Oobe.getInstance().setOobeUIState(
           step === OobeTypes.EnrollmentStep.SUCCESS ?
-              OOBE_UI_STATE.ENROLLMENT_SUCCESS :
-              OOBE_UI_STATE.ENROLLMENT_CANCEL_ENABLED);
+              OobeUiState.ENROLLMENT_SUCCESS :
+              OobeUiState.ENROLLMENT_CANCEL_ENABLED);
     }
   }
 

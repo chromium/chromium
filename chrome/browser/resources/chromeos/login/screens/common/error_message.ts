@@ -23,7 +23,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
 import {Oobe} from '../../cr_ui.js';
 
 import {getTemplate} from './error_message.html.js';
@@ -386,8 +386,8 @@ export class ErrorMessageScreen extends ErrorMessageScreenBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.ERROR;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.ERROR;
   }
 
   /**
@@ -408,7 +408,7 @@ export class ErrorMessageScreen extends ErrorMessageScreenBase {
    */
   onBeforeHide(): void {
     this.enableWifiScans = false;
-    Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.HIDDEN);
+    Oobe.getInstance().setOobeUIState(OobeUiState.HIDDEN);
     this.isCloseable = true;
   }
 

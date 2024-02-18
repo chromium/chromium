@@ -210,7 +210,7 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   private currentLanguage: string;
   private currentKeyboard: string;
   private languages: OobeTypes.LanguageDsc[];
-  private keyboards: OobeTypes.IMEDsc[];
+  private keyboards: OobeTypes.InputMethodsDsc[];
   private a11yStatus: A11yStatuses;
   private timezones: OobeTypes.TimezoneDsc[];
   private highlightStrength: string;
@@ -469,9 +469,9 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /**
    * Handle keyboard layout selection.
-   *
    */
-  private onKeyboardSelected(event: CustomEvent<OobeTypes.IMEDsc>): void {
+  private onKeyboardSelected(event: CustomEvent<OobeTypes.InputMethodsDsc>):
+      void {
     const item = event.detail;
     const inputMethodId = item.value;
     this.currentKeyboard = item.title;
@@ -487,8 +487,7 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   }
 
   private onLanguagesChanged(): void {
-    this.currentLanguage = getSelectedTitle(
-        /** @type {!SelectListType} */ (this.languages));
+    this.currentLanguage = getSelectedTitle(this.languages);
   }
 
   onInputMethodIdSetFromBackend(keyboardId: string): void {

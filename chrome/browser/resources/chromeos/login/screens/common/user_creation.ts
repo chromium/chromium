@@ -28,7 +28,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
 import {Oobe} from '../../cr_ui.js';
 
 import {getTemplate} from './user_creation.html.js';
@@ -231,7 +231,7 @@ export class UserCreation extends UserCreationScreenElementBase {
   }
 
   setDefaultStep(): void {
-    Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
+    Oobe.getInstance().setOobeUIState(OobeUiState.USER_CREATION);
     this.setUIStep(UserCreationUIState.CREATE);
     this.selectedUserType = UserCreationUserType.SELF;
     this.selectedEnrollTriageMethod = '';
@@ -256,8 +256,8 @@ export class UserCreation extends UserCreationScreenElementBase {
     }
   }
 
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.USER_CREATION;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.USER_CREATION;
   }
 
   // this will allows to restore the oobe UI state
@@ -266,13 +266,13 @@ export class UserCreation extends UserCreationScreenElementBase {
   // and we need to restore the oobe ui state.
   restoreOobeUIState(): void {
     if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE) {
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLL_TRIAGE);
+      Oobe.getInstance().setOobeUIState(OobeUiState.ENROLL_TRIAGE);
     }
     if (this.uiStep === UserCreationUIState.CREATE) {
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
+      Oobe.getInstance().setOobeUIState(OobeUiState.USER_CREATION);
     }
     if (this.uiStep === UserCreationUIState.CHILD_SETUP) {
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.SETUP_CHILD);
+      Oobe.getInstance().setOobeUIState(OobeUiState.SETUP_CHILD);
     }
   }
 
@@ -291,7 +291,7 @@ export class UserCreation extends UserCreationScreenElementBase {
         this.uiStep === UserCreationUIState.CHILD_SETUP) {
       this.setUIStep(UserCreationUIState.CREATE);
       this.selectedUserType = '';
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
+      Oobe.getInstance().setOobeUIState(OobeUiState.USER_CREATION);
     } else {
       this.userActed(UserAction.CANCEL);
     }
@@ -327,13 +327,13 @@ export class UserCreation extends UserCreationScreenElementBase {
   }
 
   setTriageStep(): void {
-    Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLL_TRIAGE);
+    Oobe.getInstance().setOobeUIState(OobeUiState.ENROLL_TRIAGE);
     this.setUIStep(UserCreationUIState.ENROLL_TRIAGE);
   }
 
   setChildSetupStep(): void {
     this.setUIStep(UserCreationUIState.CHILD_SETUP);
-    Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.SETUP_CHILD);
+    Oobe.getInstance().setOobeUIState(OobeUiState.SETUP_CHILD);
   }
 
   private onTriageNextClicked_(): void {

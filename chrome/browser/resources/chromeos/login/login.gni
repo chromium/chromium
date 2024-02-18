@@ -24,8 +24,6 @@ foreach(f, conditional_files) {
 }
 
 unconditional_existing_files = [
-  "components/display_manager_types.js",
-  "components/oobe_types.js",
   "cr_ui.ts",
   "display_manager.js",
   "i18n_setup.ts",
@@ -263,10 +261,12 @@ foreach(f, components_html_files) {
 # The following components do not have corresponding html files, we are adding
 # them after the list of html files has been populated
 components_ts_files += [
+  "components/display_manager_types.ts",
   "components/keyboard_utils.ts",
   "components/keyboard_utils_oobe.ts",
   "components/long_touch_detector.ts",
   "components/oobe_select.ts",
+  "components/oobe_types.ts",
   "components/qr_code_canvas.ts",
   "components/web_view_helper.ts",
   "components/web_view_loader.ts",

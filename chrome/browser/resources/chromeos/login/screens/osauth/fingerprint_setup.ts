@@ -20,7 +20,7 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
 import {getTemplate} from './fingerprint_setup.html.js';
@@ -154,7 +154,7 @@ export class FingerprintSetup extends FingerprintSetupBase {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override getOobeUIInitialState() {
-    return OOBE_UI_STATE.ONBOARDING;
+    return OobeUiState.ONBOARDING;
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention

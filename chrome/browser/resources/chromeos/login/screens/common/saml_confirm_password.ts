@@ -24,7 +24,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
 import {getTemplate} from './saml_confirm_password.html.js';
@@ -100,8 +100,8 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): number {
-    return OOBE_UI_STATE.SAML_PASSWORD_CONFIRM;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.SAML_PASSWORD_CONFIRM;
   }
 
   /**

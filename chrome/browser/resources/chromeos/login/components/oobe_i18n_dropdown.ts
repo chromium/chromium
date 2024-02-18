@@ -16,7 +16,8 @@ import {setupSelect} from './oobe_select.js';
 /**
  * Languages/keyboard descriptor to display
  */
-export type I18nMenuItem = OobeTypes.LanguageDsc|OobeTypes.IMEDsc|OobeTypes.DemoCountryDsc;
+export type I18nMenuItem =
+    OobeTypes.LanguageDsc|OobeTypes.InputMethodsDsc|OobeTypes.DemoCountryDsc;
 
 /**
  * Polymer class definition for 'oobe-i18n-dropdown'.

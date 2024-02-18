@@ -11,7 +11,6 @@ import '../../components/oobe_illo_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/cr_card_radio_group_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
-import {OobeAdaptiveDialog} from'../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/oobe_cr_lottie.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
@@ -20,7 +19,8 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polym
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
 import type {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
 import {getTemplate} from './gaia_info.html.js';
@@ -122,8 +122,8 @@ export class GaiaInfoScreen extends GaiaInfoScreenElementBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.GAIA_INFO;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.GAIA_INFO;
   }
 
   private onNextClicked(): void {

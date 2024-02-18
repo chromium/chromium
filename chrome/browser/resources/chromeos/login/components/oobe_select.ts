@@ -8,7 +8,7 @@
 
 export interface SelectListTypeItem {
   optionGroupName?: string;
-  selected: boolean|undefined;
+  selected?: boolean;
   title: string;
   value: string;
 }

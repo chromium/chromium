@@ -31,8 +31,8 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {GaiaButton} from '../../components/gaia_button.js';
-import {getSelectedValue, setupSelect} from '../../components/oobe_select.js';
 import type {SelectListType} from '../../components/oobe_select.js';
+import {getSelectedValue, setupSelect} from '../../components/oobe_select.js';
 
 import {getTemplate} from './offline_ad_login.html.js';
 

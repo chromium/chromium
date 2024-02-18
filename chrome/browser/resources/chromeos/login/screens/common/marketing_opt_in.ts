@@ -28,7 +28,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import type {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
 import type {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
 import {getTemplate} from './marketing_opt_in.html.js';
@@ -123,8 +123,8 @@ export class MarketingOptIn extends MarketingScreenElementBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState() {
-    return OOBE_UI_STATE.MARKETING_OPT_IN;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.MARKETING_OPT_IN;
   }
 
   override get EXTERNAL_API(): string[] {
