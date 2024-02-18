@@ -4895,6 +4895,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX" desc="Task Manager row for PPAPI plugin broker, which provides additional access for PPAPI plugins">
           Plugin Broker: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
         </message>
+        <message name="IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI" desc="Task Manager row for the render process that is preloaded with Top Chrome WebUI resources.">
+          Preloaded UI Renderer
+        </message>
         <!-- TODO(liuwilliam): crbug/1325318 renaming the rest of existing Prerender to NoStatePrefetch -->
         <message name="IDS_TASK_MANAGER_NO_STATE_PREFETCH_PREFIX" desc="The prefix for a Task Manager No State Prefetch row">
           Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>

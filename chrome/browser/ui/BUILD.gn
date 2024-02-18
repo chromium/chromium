@@ -6193,6 +6193,8 @@ static_library("ui") {
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
       "webui/side_panel/customize_chrome/customize_chrome_section.h",
+      "webui/top_chrome/webui_contents_preload_manager.cc",
+      "webui/top_chrome/webui_contents_preload_manager.h",
       "webui/top_chrome/webui_contents_wrapper.cc",
       "webui/top_chrome/webui_contents_wrapper.h",
       "webui/top_chrome/webui_contents_wrapper_service.cc",

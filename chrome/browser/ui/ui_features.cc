@@ -98,6 +98,13 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
+// so that it can be shown instantly at a later time when necessary.
+// TODO(40168622): hook up to browser view initialization.
+BASE_FEATURE(kPreloadTopChromeWebUI,
+             "PreloadTopChromeWebUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
 // the browser width is resized smaller than normal.
 BASE_FEATURE(kResponsiveToolbar,

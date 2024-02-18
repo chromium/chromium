@@ -60,6 +60,8 @@ BASE_DECLARE_FEATURE(kHaTSWebUI);
 BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
 #endif
 
+BASE_DECLARE_FEATURE(kPreloadTopChromeWebUI);
+
 BASE_DECLARE_FEATURE(kResponsiveToolbar);
 
 BASE_DECLARE_FEATURE(kScrollableTabStrip);
