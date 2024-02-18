@@ -984,7 +984,9 @@ TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
                           "ScaleAndTranslate.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
+// TODO(crbug.com/1520190): Re-enable when flakiness is resolved.
+TEST_F(AshNotificationViewTest,
+       DISABLED_GroupExpandCollapseAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
