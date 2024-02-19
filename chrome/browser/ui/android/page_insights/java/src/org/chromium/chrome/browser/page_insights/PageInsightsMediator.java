@@ -157,6 +157,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @Nullable private View mCurrentChildView;
     private boolean mIsShowingChildView;
     @Nullable private NavigationHandle mCurrentNavigationHandle;
+    @Nullable private Tab mObservedTab;
 
     // Caches the sheet height at the current state. Avoids the repeated call to resize the content
     // if the size hasn't changed since.
@@ -171,7 +172,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @IntDef({
         AutoTriggerStage.CANCELLED_OR_NOT_STARTED,
         AutoTriggerStage.AWAITING_TIMER,
-        AutoTriggerStage.AWAITING_NAV_HANDLE,
         AutoTriggerStage.FETCHING_DATA,
         AutoTriggerStage.READY_FOR_AUTO_TRIGGER,
         AutoTriggerStage.AUTO_TRIGGERED
@@ -179,11 +179,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @interface AutoTriggerStage {
         int CANCELLED_OR_NOT_STARTED = 0;
         int AWAITING_TIMER = 1;
-        // This stage will be skipped if nav handle already available when timer finishes.
-        int AWAITING_NAV_HANDLE = 2;
-        int FETCHING_DATA = 3;
-        int READY_FOR_AUTO_TRIGGER = 4;
-        int AUTO_TRIGGERED = 5;
+        int FETCHING_DATA = 2;
+        int READY_FOR_AUTO_TRIGGER = 3;
+        int AUTO_TRIGGERED = 4;
     }
 
     private @AutoTriggerStage int mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
@@ -318,15 +316,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                                 PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
                                 false);
-        if (tabObservable.get() != null) {
-            onTab(tabObservable.get());
-        } else {
-            tabObservable.addObserver(
-                    tab -> {
-                        if (tab == null) return;
-                        onTab(tab);
-                    });
-        }
+        onTab(tabObservable.get());
+        tabObservable.addObserver(this::onTab);
         mBackPressManager = backPressManager;
         if (BackPressManager.isEnabled()) {
             mBackPressHandler = bottomSheetController.getBottomSheetBackPressHandler();
@@ -367,9 +358,16 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         }
     }
 
-    private void onTab(Tab tab) {
-        delayStartAutoTrigger(mAutoTriggerDelayMs);
-        tab.addObserver(this);
+    private void onTab(@Nullable Tab tab) {
+        if (tab != null && !tab.hasObserver(this)) {
+            Log.v(TAG, "New tab");
+            onNewTabOrPage();
+            tab.addObserver(this);
+            if (mObservedTab != null && mObservedTab != tab) {
+                mObservedTab.removeObserver(this);
+            }
+            mObservedTab = tab;
+        }
     }
 
     private boolean shouldHideContent() {
@@ -419,6 +417,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     private void cancelAutoTrigger() {
+        Log.v(TAG, "Cancelling auto-trigger");
         mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
         mHandler.removeCallbacks(mAutoTriggerTimerRunnable);
     }
@@ -428,6 +427,17 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
         Log.v(TAG, "onPageLoadStarted");
+        onNewTabOrPage();
+    }
+
+    @Override
+    public void onDidFinishNavigationInPrimaryMainFrame(
+            Tab tab, NavigationHandle navigationHandle) {
+        Log.v(TAG, "onDidFinishNavigationInPrimaryMainFrame");
+        mCurrentNavigationHandle = navigationHandle;
+    }
+
+    private void onNewTabOrPage() {
         mCurrentNavigationHandle = null;
         mCurrentMetadata = null;
         mCurrentConfig = null;
@@ -441,17 +451,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         delayStartAutoTrigger(mAutoTriggerDelayMs);
     }
 
-    @Override
-    public void onDidFinishNavigationInPrimaryMainFrame(
-            Tab tab, NavigationHandle navigationHandle) {
-        Log.v(TAG, "onDidFinishNavigationInPrimaryMainFrame");
-        mCurrentNavigationHandle = navigationHandle;
-        if (mAutoTriggerStage == AutoTriggerStage.AWAITING_NAV_HANDLE) {
-            maybeFetchDataForAutoTrigger();
-        }
-    }
-
     private void delayStartAutoTrigger(long delayMs) {
+        Log.v(TAG, "Scheduling auto-trigger");
         mAutoTriggerStage = AutoTriggerStage.AWAITING_TIMER;
         if (delayMs > 0) {
             mHandler.postDelayed(mAutoTriggerTimerRunnable, delayMs);
@@ -462,23 +463,24 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     @VisibleForTesting
     void onAutoTriggerTimerFinished() {
+        Log.v(TAG, "Auto-trigger timer finished");
         if (mAutoTriggerStage == AutoTriggerStage.AWAITING_TIMER) {
             maybeFetchDataForAutoTrigger();
         }
     }
 
     private void maybeFetchDataForAutoTrigger() {
-        if (mCurrentNavigationHandle == null) {
-            mAutoTriggerStage = AutoTriggerStage.AWAITING_NAV_HANDLE;
-            return;
-        }
-
         Tab tab = mTabObservable.get();
         if (tab == null) {
             Log.e(TAG, "Cancelling auto-trigger because Tab is unexpectedly null.");
             mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
             return;
         }
+        // mCurrentNavigationHandle may still be null by this point, probably because
+        // onDidFinishNavigationInPrimaryMainFrame was called before PageInsightsMediator
+        // was created. See b/325597773. Auto-triggering without the handle just causes
+        // internal code to provide the most conservative PageInsightsConfig options -
+        // triggering with these options is better than not triggering at all.
         PageInsightsConfig config =
                 mPageInsightsConfigProvider.get(
                         mCurrentNavigationHandle, getLastCommittedNavigationEntry(tab));
@@ -822,8 +824,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mOtherBottomSheetController.removeObserver(mOtherBottomSheetObserver);
         mControlsStateProvider.removeObserver(mBrowserControlsObserver);
         mSheetController.removeObserver(this);
-        if (mTabObservable.get() != null) {
-            mTabObservable.get().removeObserver(this);
+        if (mObservedTab != null) {
+            mObservedTab.removeObserver(this);
+            mObservedTab = null;
         }
         if (mInMotionSupplier != null) {
             mInMotionSupplier.removeObserver(mInMotionCallback);
