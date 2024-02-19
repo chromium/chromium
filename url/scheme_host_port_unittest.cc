@@ -63,6 +63,9 @@ TEST_F(SchemeHostPortTest, Invalid) {
       "about:srcdoc#ref", "about:srcdoc?query=123", "data:text/html,Hello!",
       "javascript:alert(1)",
 
+      // Non-special URLs which don't have an opaque path.
+      "git:/", "git://", "git:///", "git://host/", "git://host/path",
+
       // GURLs where GURL::is_valid returns false translate into an invalid
       // SchemeHostPort.
       "file://example.com:443/etc/passwd", "#!^%!$!&*",
@@ -131,6 +134,8 @@ TEST_F(SchemeHostPortTest, InvalidConstruction) {
                {"filesystem", "", 0},
                {"http", "", 80},
                {"data", "example.com", 80},
+               {"git", "", 0},
+               {"git", "example.com", 80},
                {"http", "☃.net", 80},
                {"http\nmore", "example.com", 80},
                {"http\rmore", "example.com", 80},
