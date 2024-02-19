@@ -58,6 +58,10 @@ void PickerSearchController::StartSearch(
   current_callback_ = std::move(callback);
   current_query_ = query;
 
+  // TODO: b/324154537 - Show a loading animation while waiting for results.
+  burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
+                       &PickerSearchController::PublishResults);
+
   client_->StartCrosSearch(
       query, base::BindRepeating(&PickerSearchController::HandleSearchResults,
                                  weak_ptr_factory_.GetWeakPtr()));
@@ -69,10 +73,6 @@ void PickerSearchController::StartSearch(
 
   // Emoji search is currently synchronous.
   HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
-
-  // TODO: b/324154537 - Show a loading animation while waiting for results.
-  burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
-                       &PickerSearchController::PublishResults);
 }
 
 void PickerSearchController::ResetResults() {
