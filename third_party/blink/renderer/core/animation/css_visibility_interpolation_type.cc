@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -69,10 +70,11 @@ class UnderlyingVisibilityChecker final
 
 
  private:
-  bool IsValid(const StyleResolverState&,
+  bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     double underlying_fraction =
-        To<InterpolableNumber>(*underlying.interpolable_value).Value();
+        To<InterpolableNumber>(*underlying.interpolable_value)
+            .Value(state.CssToLengthConversionData());
     EVisibility underlying_visibility = To<CSSVisibilityNonInterpolableValue>(
                                             *underlying.non_interpolable_value)
                                             .Visibility(underlying_fraction);
@@ -107,8 +109,12 @@ InterpolationValue CSSVisibilityInterpolationType::CreateVisibilityValue(
 InterpolationValue CSSVisibilityInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
-      To<InterpolableNumber>(*underlying.interpolable_value).Value();
+      To<InterpolableNumber>(*underlying.interpolable_value)
+          .Value(CSSToLengthConversionData());
   EVisibility underlying_visibility =
       To<CSSVisibilityNonInterpolableValue>(*underlying.non_interpolable_value)
           .Visibility(underlying_fraction);
@@ -196,7 +202,8 @@ void CSSVisibilityInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   // Visibility interpolation has been deferred to application time here due to
   // its non-linear behaviour.
-  double fraction = To<InterpolableNumber>(interpolable_value).Value();
+  double fraction = To<InterpolableNumber>(interpolable_value)
+                        .Value(state.CssToLengthConversionData());
   EVisibility visibility =
       To<CSSVisibilityNonInterpolableValue>(non_interpolable_value)
           ->Visibility(fraction);
