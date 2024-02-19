@@ -521,9 +521,9 @@ export class EnterpriseEnrollmentElement extends
     // otherwise the manual fallback button does nothing.
     if (this.isCancelDisabled ||
         step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
-      Oobe.getInstance().setOobeUIState(OobeUiState.ENROLLMENT_CANCEL_DISABLED);
+      Oobe.getInstance().setOobeUiState(OobeUiState.ENROLLMENT_CANCEL_DISABLED);
     } else {
-      Oobe.getInstance().setOobeUIState(
+      Oobe.getInstance().setOobeUiState(
           step === OobeTypes.EnrollmentStep.SUCCESS ?
               OobeUiState.ENROLLMENT_SUCCESS :
               OobeUiState.ENROLLMENT_CANCEL_ENABLED);

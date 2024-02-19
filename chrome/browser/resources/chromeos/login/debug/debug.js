@@ -2358,7 +2358,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       this.knownScreens = [];
       this.screenButtons = {};
       /** @suppress {visibility} */
-      for (const id of Oobe.getInstance().screens_) {
+      for (const id of Oobe.getInstance().screens) {
         if (id in this.screenMap) {
           const screenDef = this.screenMap[id];
           const screenElement = $(id);

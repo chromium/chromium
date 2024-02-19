@@ -83,7 +83,7 @@ export class Oobe extends DisplayManager {
    * Changes some UI which depends on the virtual keyboard being shown/hidden.
    */
   static setVirtualKeyboardShown(shown: boolean): void {
-    Oobe.getInstance().virtualKeyboardShown = shown;
+    Oobe.getInstance().setVirtualKeyboardShown(shown);
   }
 
   /**
@@ -209,7 +209,7 @@ export class Oobe extends DisplayManager {
     Oobe.updateDocumentLocalizedStrings();
 
     // Update localized content of the screens.
-    Oobe.getInstance().updateLocalizedContent_();
+    Oobe.getInstance().updateLocalizedContent();
   }
 
   /**
@@ -239,7 +239,7 @@ export class Oobe extends DisplayManager {
    * @param isInTabletMode True when in tablet mode.
    */
   static setTabletModeState(isInTabletMode: boolean): void {
-    Oobe.getInstance().setTabletModeState_(isInTabletMode);
+    Oobe.getInstance().setTabletModeState(isInTabletMode);
   }
 
   /**
@@ -248,7 +248,7 @@ export class Oobe extends DisplayManager {
    */
   static updateOobeConfiguration(configuration: OobeTypes.OobeConfiguration):
       void {
-    Oobe.getInstance().updateOobeConfiguration_(configuration);
+    Oobe.getInstance().updateOobeConfiguration(configuration);
   }
 
 }  // class Oobe

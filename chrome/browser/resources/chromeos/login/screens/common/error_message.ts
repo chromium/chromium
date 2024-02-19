@@ -408,7 +408,7 @@ export class ErrorMessageScreen extends ErrorMessageScreenBase {
    */
   onBeforeHide(): void {
     this.enableWifiScans = false;
-    Oobe.getInstance().setOobeUIState(OobeUiState.HIDDEN);
+    Oobe.getInstance().setOobeUiState(OobeUiState.HIDDEN);
     this.isCloseable = true;
   }
 

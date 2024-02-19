@@ -23,8 +23,8 @@
 }
 @media screen and (min-height:1040px),
         screen and (min-width:1040px) {
-  :root.jelly-modal-enabled:not([tablet=true]),
-  :root.boot-animation-enabled:not([tablet=true]) {
+  :root.jelly-modal-enabled:not([tablet]),
+  :root.boot-animation-enabled:not([tablet]) {
     /* TODO(b/268463435) Migrate to cros.sys.app-elevation3 when available */
     --oobe-container-elevation: 0 12px 12px 0 var(--cros-shadow-color-key);
   }
@@ -38,10 +38,10 @@ body {
 }
 @media screen and (min-height:1040px),
         screen and (min-width:1040px) {
-  html.jelly-modal-enabled:not([tablet=true]),
-  html.boot-animation-enabled:not([tablet=true]),
-  :root.jelly-modal-enabled:not([tablet=true]) body,
-  :root.boot-animation-enabled:not([tablet=true]) body {
+  html.jelly-modal-enabled:not([tablet]),
+  html.boot-animation-enabled:not([tablet]),
+  :root.jelly-modal-enabled:not([tablet]) body,
+  :root.boot-animation-enabled:not([tablet]) body {
     background-color: transparent;
   }
 }
@@ -50,7 +50,7 @@ html {
   --shelf-area-height: var(--shelf-area-height-base);
 }
 
-html[virtual-keyboard=true],
+html[virtual-keyboard],
 html[screen=gaia-signin] {
   /* has to be with px suffix to be used in calc */
   --shelf-area-height: 0px;
