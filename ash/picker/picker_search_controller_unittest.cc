@@ -44,7 +44,7 @@ using testing::Property;
 using testing::SaveArg;
 using testing::VariantWith;
 
-constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(100);
+constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
 
 // Matcher for the last element of a collection.
 MATCHER_P(LastElement, matcher, "") {
@@ -284,7 +284,19 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
                           base::Unretained(&second_search_results_callback)));
 }
 
-TEST_F(PickerSearchControllerTest, SendsQueryToGifSearchImmediately) {
+TEST_F(PickerSearchControllerTest, DoesNotSendQueryToGifSearchImmediately) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kBurnInPeriod);
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+  EXPECT_CALL(client, FetchGifSearch(Eq("cat"), _)).Times(0);
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+}
+
+TEST_F(PickerSearchControllerTest, SendsQueryToGifSearchAfterDelay) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -294,6 +306,7 @@ TEST_F(PickerSearchControllerTest, SendsQueryToGifSearchImmediately) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
@@ -328,13 +341,15 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
 
   std::move(*client.gif_search_callback())
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
-  task_environment().FastForwardBy(kBurnInPeriod);
+  task_environment().FastForwardBy(kBurnInPeriod -
+                                   PickerSearchController::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
@@ -369,6 +384,7 @@ TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
   PickerClient::FetchGifsCallback first_callback =
       std::move(*client.gif_search_callback());
   controller.StartSearch(
@@ -380,7 +396,8 @@ TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
-  task_environment().FastForwardBy(kBurnInPeriod);
+  task_environment().FastForwardBy(kBurnInPeriod -
+                                   PickerSearchController::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
@@ -415,6 +432,7 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
 
   client.cros_search_callback()->Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -426,7 +444,8 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
-  task_environment().FastForwardBy(kBurnInPeriod);
+  task_environment().FastForwardBy(kBurnInPeriod -
+                                   PickerSearchController::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
@@ -477,6 +496,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
 
   client.cros_search_callback()->Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -488,7 +508,8 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
-  task_environment().FastForwardBy(kBurnInPeriod);
+  task_environment().FastForwardBy(kBurnInPeriod -
+                                   PickerSearchController::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySections) {
@@ -508,6 +529,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySections) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
 
   client.cros_search_callback()->Run(ash::AppListSearchResultType::kOmnibox,
                                      {});

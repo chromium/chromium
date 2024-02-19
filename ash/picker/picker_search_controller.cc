@@ -48,7 +48,9 @@ base::span<const std::string> FirstNOrLessElements(
 
 PickerSearchController::PickerSearchController(PickerClient* client,
                                                base::TimeDelta burn_in_period)
-    : client_(CHECK_DEREF(client)), burn_in_period_(burn_in_period) {}
+    : client_(CHECK_DEREF(client)),
+      burn_in_period_(burn_in_period),
+      gif_search_debouncer_(kGifDebouncingDelay) {}
 
 PickerSearchController::~PickerSearchController() = default;
 
@@ -60,7 +62,8 @@ void PickerSearchController::StartSearch(
   client_->StopCrosQuery();
   ResetResults();
   current_callback_ = std::move(callback);
-  current_query_ = query;
+  std::string utf8_query = base::UTF16ToUTF8(query);
+  current_query_ = utf8_query;
 
   // TODO: b/324154537 - Show a loading animation while waiting for results.
   burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
@@ -70,11 +73,9 @@ void PickerSearchController::StartSearch(
       query,
       base::BindRepeating(&PickerSearchController::HandleCrosSearchResults,
                           weak_ptr_factory_.GetWeakPtr()));
-  std::string utf8_query = base::UTF16ToUTF8(query);
-  client_->FetchGifSearch(
-      utf8_query,
-      base::BindOnce(&PickerSearchController::HandleGifSearchResults,
-                     weak_ptr_factory_.GetWeakPtr(), query));
+  gif_search_debouncer_.RequestSearch(
+      base::BindOnce(&PickerSearchController::StartGifSearch,
+                     weak_ptr_factory_.GetWeakPtr(), utf8_query));
 
   // Emoji search is currently synchronous.
   HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
@@ -82,6 +83,12 @@ void PickerSearchController::StartSearch(
 
 bool PickerSearchController::IsPostBurnIn() const {
   return !burn_in_timer_.IsRunning();
+}
+
+void PickerSearchController::StartGifSearch(const std::string& query) {
+  client_->FetchGifSearch(
+      query, base::BindOnce(&PickerSearchController::HandleGifSearchResults,
+                            weak_ptr_factory_.GetWeakPtr(), query));
 }
 
 void PickerSearchController::ResetResults() {
@@ -133,7 +140,7 @@ void PickerSearchController::HandleCrosSearchResults(
 }
 
 void PickerSearchController::HandleGifSearchResults(
-    std::u16string query,
+    std::string query,
     std::vector<PickerSearchResult> results) {
   // As we cannot stop GIF search result callbacks, check whether the query for
   // this request is the current query to prevent showing results from an

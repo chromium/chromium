@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/picker_search_debouncer.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/raw_ref.h"
@@ -32,6 +33,9 @@ class ASH_EXPORT PickerSearchController {
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
 
+  static constexpr base::TimeDelta kGifDebouncingDelay =
+      base::Milliseconds(200);
+
   void StartSearch(const std::u16string& query,
                    std::optional<PickerCategory> category,
                    PickerViewDelegate::SearchResultsCallback callback);
@@ -40,12 +44,14 @@ class ASH_EXPORT PickerSearchController {
   // Whether the burn-in period has ended for the current search.
   bool IsPostBurnIn() const;
 
+  void StartGifSearch(const std::string& query);
+
   void ResetResults();
   void PublishBurnInResults();
   void AppendPostBurnInResults(PickerSearchResults::Section section);
   void HandleCrosSearchResults(ash::AppListSearchResultType type,
                                std::vector<PickerSearchResult> results);
-  void HandleGifSearchResults(std::u16string query,
+  void HandleGifSearchResults(std::string query,
                               std::vector<PickerSearchResult> results);
   void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
 
@@ -56,12 +62,14 @@ class ASH_EXPORT PickerSearchController {
 
   emoji::EmojiSearch emoji_search_;
 
-  std::u16string current_query_;
+  std::string current_query_;
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
   std::vector<PickerSearchResult> omnibox_results_;
   std::vector<PickerSearchResult> gif_results_;
   std::vector<PickerSearchResult> emoji_results_;
+
+  PickerSearchDebouncer gif_search_debouncer_;
 
   base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};
 };
