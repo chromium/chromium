@@ -163,6 +163,7 @@ void ChromeLoginPerformer::OnEarlyPrefsRead(
     std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }
+  AuthEventsRecorder::Get()->OnEarlyPrefsParsed();
   AuthParts::Get()->RegisterEarlyLoginAuthPolicyConnector(
       std::make_unique<EarlyLoginAuthPolicyConnector>(
           context->GetAccountId(), std::move(early_prefs_reader_)));

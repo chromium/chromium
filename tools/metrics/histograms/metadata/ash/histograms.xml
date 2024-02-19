@@ -5141,6 +5141,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.OSAuth.Login.Times.{LoginStage}" units="ms"
+    expires_after="2025-02-01">
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Time spent during particular stages of login process. Recorded upon
+    successful login.
+  </summary>
+  <token key="LoginStage">
+    <variant name="EarlyPrefsParse"/>
+    <variant name="EarlyPrefsRead"/>
+    <variant name="FactorConfigTotal"
+        summary="Includes EarlyPrefsRead/Parse, FactorMigrations,
+                 PolicyEnforcement"/>
+    <variant name="FactorMigrations"/>
+    <variant name="PolicyEnforcement"/>
+  </token>
+</histogram>
+
 <histogram
     name="Ash.OSAuth.{AuthenticationSurface}.NbPasswordAttempts.{AuthenticationOutcome}"
     units="attempts" expires_after="2024-06-30">

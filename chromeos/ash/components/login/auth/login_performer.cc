@@ -96,7 +96,9 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
       user_context.GetUserType() == user_manager::UserType::kChild;
   // TODO(b/315279142): Remove `is_primary_user` check and run factor updates
   // for all users.
+
   if (regular_or_child && is_primary_user) {
+    AuthEventsRecorder::Get()->StartPostLoginFactorAdjustments();
     LoadAndApplyEarlyPrefs(std::make_unique<UserContext>(user_context),
                            base::BindOnce(&LoginPerformer::OnEarlyPrefsApplied,
                                           weak_factory_.GetWeakPtr()));
@@ -114,7 +116,7 @@ void LoginPerformer::OnEarlyPrefsApplied(
     LOG(ERROR) << "Could not apply policies due to error:"
                << error->ToDebugString();
   }
-
+  AuthEventsRecorder::Get()->FinishPostLoginFactorAdjustments();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyAuthSuccess,
                                 weak_factory_.GetWeakPtr(), *context.get()));

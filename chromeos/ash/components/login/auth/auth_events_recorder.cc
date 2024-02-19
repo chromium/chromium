@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 
 #include <numeric>
+#include <optional>
 #include <vector>
 
 #include "base/check_is_test.h"
@@ -16,6 +17,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
@@ -68,6 +70,16 @@ constexpr int kManyUserLimit = 5;
 // "Ash.OSAuth.Login.ConfiguredAuthFactors.{Pin,Password,...}"
 constexpr char kConfiguredAuthFactorsHistogramPrefix[] =
     "Ash.OSAuth.Login.ConfiguredAuthFactors.";
+
+// Histogram prefix for recording duration of various login flow phases.
+// Format: "Ash.OSAuth.Login.Times.{...}"
+constexpr char kLoginTimeHistogramPrefix[] = "Ash.OSAuth.Login.Times.";
+
+constexpr char kLoginTimeFactorConfigTotal[] = "FactorConfigTotal";
+constexpr char kLoginTimeEarlyPrefsReadSuffix[] = "EarlyPrefsRead";
+constexpr char kLoginTimeEarlyPrefsParseSuffix[] = "EarlyPrefsParse";
+constexpr char kLoginTimeFactorMigraionsSuffix[] = "FactorMigrations";
+constexpr char kLoginTimePolicyEnforcementSuffix[] = "PolicyEnforcement";
 
 // The auth factors tracked for "Ash.OSAuth.Login.ConfiguredAuthFactors.*"
 // histogram reporting. When adding new values here, update
@@ -552,6 +564,72 @@ void AuthEventsRecorder::Reset() {
   user_login_type_ = std::nullopt;
   auth_surface_ = std::nullopt;
   knowledge_factor_auth_failure_count_ = 0;
+}
+
+void AuthEventsRecorder::StartPostLoginFactorAdjustments() {
+  factor_adjustment_start_ = base::TimeTicks::Now();
+  last_adjustment_event_ = factor_adjustment_start_;
+}
+
+void AuthEventsRecorder::OnEarlyPrefsRead() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (last_adjustment_event_) {
+    base::TimeDelta diff = now - *last_adjustment_event_;
+    base::UmaHistogramTimes(base::StrCat({kLoginTimeHistogramPrefix,
+                                          kLoginTimeEarlyPrefsReadSuffix}),
+                            diff);
+  }
+  last_adjustment_event_ = now;
+}
+
+void AuthEventsRecorder::OnEarlyPrefsParsed() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (last_adjustment_event_) {
+    base::TimeDelta diff = now - *last_adjustment_event_;
+    base::UmaHistogramTimes(base::StrCat({kLoginTimeHistogramPrefix,
+                                          kLoginTimeEarlyPrefsParseSuffix}),
+                            diff);
+  }
+  last_adjustment_event_ = now;
+}
+
+void AuthEventsRecorder::OnFactorUpdateStarted() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  last_adjustment_event_ = now;
+}
+
+void AuthEventsRecorder::OnMigrationsCompleted() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (last_adjustment_event_) {
+    base::TimeDelta diff = now - *last_adjustment_event_;
+    base::UmaHistogramTimes(base::StrCat({kLoginTimeHistogramPrefix,
+                                          kLoginTimeFactorMigraionsSuffix}),
+                            diff);
+  }
+  last_adjustment_event_ = now;
+}
+
+void AuthEventsRecorder::OnPoliciesApplied() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (last_adjustment_event_) {
+    base::TimeDelta diff = now - *last_adjustment_event_;
+    base::UmaHistogramTimes(base::StrCat({kLoginTimeHistogramPrefix,
+                                          kLoginTimePolicyEnforcementSuffix}),
+                            diff);
+  }
+  last_adjustment_event_ = now;
+}
+
+void AuthEventsRecorder::FinishPostLoginFactorAdjustments() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (factor_adjustment_start_) {
+    base::TimeDelta diff = now - *factor_adjustment_start_;
+    base::UmaHistogramTimes(
+        base::StrCat({kLoginTimeHistogramPrefix, kLoginTimeFactorConfigTotal}),
+        diff);
+  }
+  factor_adjustment_start_.reset();
+  last_adjustment_event_.reset();
 }
 
 }  // namespace ash
