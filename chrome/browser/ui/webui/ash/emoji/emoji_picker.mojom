@@ -63,6 +63,7 @@ struct GifResponse {
 struct GifUrls {
   url.mojom.Url full;
   url.mojom.Url preview;
+  url.mojom.Url preview_image;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

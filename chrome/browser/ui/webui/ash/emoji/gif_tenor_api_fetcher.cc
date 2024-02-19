@@ -190,9 +190,20 @@ std::vector<emoji_picker::mojom::GifResponsePtr> ParseGifs(
       continue;
     }
 
+    const std::string* preview_image = preview_gif->FindString("preview");
+    if (!preview_image) {
+      continue;
+    }
+
+    const GURL preview_image_gurl = GURL(preview_image->c_str());
+    if (!preview_gurl.is_valid()) {
+      continue;
+    }
+
     gifs.push_back(emoji_picker::mojom::GifResponse::New(
         *id, *content_description,
-        emoji_picker::mojom::GifUrls::New(full_gurl, preview_gurl),
+        emoji_picker::mojom::GifUrls::New(full_gurl, preview_gurl,
+                                          preview_image_gurl),
         gfx::Size(width.value(), height.value())));
   }
   return gifs;

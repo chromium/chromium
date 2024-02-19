@@ -528,19 +528,21 @@ export class EmojiSearch extends PolymerElement {
 
   onSealImageClick(e: CustomEvent<Image>) {
     this.dispatchEvent(createCustomEvent(
-      EMOJI_IMG_BUTTON_CLICK, {
-        name: 'image',
-        category: CategoryEnum.GIF,
-        visualContent: {
-          id: 'seal',
-          url: {
-            full: e.detail.url,
-            preview: e.detail.url,
+        EMOJI_IMG_BUTTON_CLICK,
+        {
+          name: 'image',
+          category: CategoryEnum.GIF,
+          visualContent: {
+            id: 'seal',
+            url: {
+              full: e.detail.url,
+              preview: e.detail.url,
+              previewImage: e.detail.url,
+            },
+            previewSize: e.detail.size,
           },
-          previewSize: e.detail.size,
         },
-      },
-    ));
+        ));
   }
 
   /**

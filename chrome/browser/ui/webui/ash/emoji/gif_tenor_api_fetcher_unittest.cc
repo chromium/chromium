@@ -37,13 +37,17 @@ constexpr char kFakeGifsResponse[] =
     "\"content_description\":\"GIF0\",\"media_formats\":{\"gif\":{\"dims\":"
     "["
     "498,339],\"url\":\"https://tenor.com/view/media.tenor.com/"
-    "full_url0\"},\"tinygif\":{\"dims\":[220,150]"
+    "full_url0\",\"preview\":\"https://tenor.com/view/media.tenor.com/"
+    "full_image_url0\"},\"tinygif\":{\"dims\":[220,150]"
     ",\"url\":\"https://tenor.com/view/media.tenor.com/"
-    "preview_url0\"}}},{\"id\":\"1\",\"content_description\":\"GIF1\","
+    "preview_url0\",\"preview\":\"https://tenor.com/view/media.tenor.com/"
+    "preview_image_url0\"}}},{\"id\":\"1\",\"content_description\":\"GIF1\","
     "\"media_formats\":{\"gif\":{\"dims\":[498,498],\"url\":\"https://"
-    "tenor.com/view/media.tenor.com/"
-    "full_url1\"},\"tinygif\":{\"dims\":[220,220],\"url\":\"https://"
-    "tenor.com/view/media.tenor.com/preview_url1\"}}}]}";
+    "tenor.com/view/media.tenor.com/full_url1\",\"preview\":"
+    "\"https://tenor.com/view/media.tenor.com/full_image_url1\"},\"tinygif\":"
+    "{\"dims\":[220,220],\"url\":\"https://tenor.com/view/media.tenor.com/"
+    "preview_url1\",\"preview\":\"https://tenor.com/view/media.tenor.com/"
+    "preview_image_url1\"}}}]}";
 
 std::vector<emoji_picker::mojom::GifResponsePtr> GetFakeGifs() {
   std::vector<emoji_picker::mojom::GifResponsePtr> gifs;
@@ -51,13 +55,15 @@ std::vector<emoji_picker::mojom::GifResponsePtr> GetFakeGifs() {
       "0", "GIF0",
       emoji_picker::mojom::GifUrls::New(
           GURL("https://tenor.com/view/media.tenor.com/full_url0"),
-          GURL("https://tenor.com/view/media.tenor.com/preview_url0")),
+          GURL("https://tenor.com/view/media.tenor.com/preview_url0"),
+          GURL("https://tenor.com/view/media.tenor.com/preview_image_url0")),
       gfx::Size(220, 150)));
   gifs.push_back(emoji_picker::mojom::GifResponse::New(
       "1", "GIF1",
       emoji_picker::mojom::GifUrls::New(
           GURL("https://tenor.com/view/media.tenor.com/full_url1"),
-          GURL("https://tenor.com/view/media.tenor.com/preview_url1")),
+          GURL("https://tenor.com/view/media.tenor.com/preview_url1"),
+          GURL("https://tenor.com/view/media.tenor.com/preview_image_url1")),
       gfx::Size(220, 220)));
   return gifs;
 }
