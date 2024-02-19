@@ -20,9 +20,16 @@
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
+namespace {
+
 using testing::IsSupersetOf;
 using testing::Key;
+using testing::Pair;
 using testing::UnorderedElementsAre;
+
+MATCHER_P(Type, type, "") {
+  return blink::IdentifiableSurface::FromMetricHash(arg).GetType() == type;
+}
 
 TEST(PrivacyBudgetUkmEntryFilterStandaloneTest,
      BlocksIdentifiabilityMetricsByDefault) {
@@ -139,3 +146,37 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, AddsStudyMetadataToFirstEvent) {
   EXPECT_EQ(2u, second_entry->metrics.size());
   EXPECT_THAT(second_entry->metrics, UnorderedElementsAre(Key(1), Key(2)));
 }
+
+TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, MetaExperimentActive) {
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIdentifiabilityStudyMetaExperiment,
+      {{features::kIdentifiabilityStudyMetaExperimentActivationProbability.name,
+        "1"}});
+  auto state =
+      std::make_unique<test_utils::InspectableIdentifiabilityStudyState>(
+          &pref_service);
+  auto filter = std::make_unique<PrivacyBudgetUkmEntryFilter>(state.get());
+
+  // The filter should reject all Identifiability events but report the
+  // corresponding meta surfaces. The surface of type 0 (kReservedInternal)
+  // should not be dropped though.
+  base::flat_map<uint64_t, int64_t> events = {{0, 5}, {1, 10}, {2, 20}};
+  ukm::mojom::UkmEntryPtr entry(
+      std::in_place, 1, ukm::builders::Identifiability::kEntryNameHash, events);
+
+  base::flat_set<uint64_t> filtered;
+  EXPECT_TRUE(filter->FilterEntry(entry.get(), &filtered));
+  EXPECT_THAT(
+      entry->metrics,
+      UnorderedElementsAre(
+          Pair(0, 5),
+          Pair(Type(blink::IdentifiableSurface::Type::kMeasuredSurface), 1),
+          Pair(Type(blink::IdentifiableSurface::Type::kMeasuredSurface), 2),
+          Key(ukm::builders::Identifiability::kStudyGeneration_626NameHash),
+          Key(ukm::builders::Identifiability::kGeneratorVersion_926NameHash)));
+}
+
+}  // namespace

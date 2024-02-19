@@ -19,6 +19,23 @@ namespace features {
 // IdentifiableSurface::Type is encoded as the decimal representation of the
 // enum value.
 
+// Feature for the Identifiability Study Meta experiment.
+//
+// If the feature is enabled, the meta experiment is activated on a random set
+// of clients according to the selection probability.
+BASE_DECLARE_FEATURE(kIdentifiabilityStudyMetaExperiment);
+
+// Probability with which the meta experiment will be activated on each client.
+//
+// Parameter name: "ActivationProbability"
+// Parameter type: double
+//
+// A value of the parameter outside the interval [0, 1] will be interpreted as
+// the default probability, which depends on the channel and is encoded in
+// chrome/browser/privacy_budget/identifiability_study_state.cc
+extern const base::FeatureParam<double>
+    kIdentifiabilityStudyMetaExperimentActivationProbability;
+
 // Root feature for all identifiability study logic.
 //
 // If the feature is disabled, then this browser instance will not be

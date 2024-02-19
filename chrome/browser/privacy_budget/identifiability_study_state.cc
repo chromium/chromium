@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_tree.h"
@@ -22,16 +23,19 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
 #include "chrome/common/privacy_budget/identifiability_study_configurator.mojom.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -44,6 +48,16 @@ namespace {
 int GetStudyGenerationFromFieldTrial() {
   return std::clamp(features::kIdentifiabilityStudyGeneration.Get(), 0,
                      std::numeric_limits<int>::max());
+}
+
+double GetMetaExperimentActivationProbability() {
+  double settings_probability =
+      features::kIdentifiabilityStudyMetaExperimentActivationProbability.Get();
+  if (settings_probability < 0 || settings_probability > 1) {
+    return chrome::GetChannel() == version_info::Channel::STABLE ? 0.01 : 0.5;
+  } else {
+    return settings_probability;
+  }
 }
 
 }  // namespace
@@ -67,7 +81,7 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
               : 1,
           kMesaDistributionRatio,
           kMesaDistributionGeometricDistributionParam),
-      meta_experiment_active_(false) {
+      meta_experiment_active_(IsMetaExperimentActive()) {
   InitializeGlobalStudySettings();
   InitFromPrefs();
 }
@@ -501,6 +515,35 @@ IdentifiabilityStudyState::AdjustForDroppedOffsets(
   }
   offsets.resize(to_offset);
   return offsets;
+}
+
+bool IdentifiabilityStudyState::IsMetaExperimentActive() {
+  if (!base::FeatureList::IsEnabled(
+          features::kIdentifiabilityStudyMetaExperiment)) {
+    pref_service_->ClearPref(prefs::kPrivacyBudgetMetaExperimentActivationSalt);
+    return false;
+  }
+
+  // Use a fixed state when benchmarking, so that benchmarking results are more
+  // reproducible.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarking)) {
+    return false;
+  }
+
+  // Keep the experiment consistently active or inactive for a given client.
+  double salt;
+  if (pref_service_->HasPrefPath(
+          prefs::kPrivacyBudgetMetaExperimentActivationSalt)) {
+    salt = pref_service_->GetDouble(
+        prefs::kPrivacyBudgetMetaExperimentActivationSalt);
+  } else {
+    salt = base::RandDouble();
+    pref_service_->SetDouble(prefs::kPrivacyBudgetMetaExperimentActivationSalt,
+                             salt);
+  }
+
+  return salt < GetMetaExperimentActivationProbability();
 }
 
 void IdentifiabilityStudyState::InitFromPrefs() {

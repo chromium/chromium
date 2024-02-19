@@ -152,6 +152,9 @@ class IdentifiabilityStudyState {
   // lists.
   void InitializeGlobalStudySettings();
 
+  // Determines if the meta experiment must be activated for this client.
+  bool IsMetaExperimentActive();
+
   // Checks that the invariants hold. When DCHECK_IS_ON() this call is
   // expensive. Noop otherwise.
   void CheckInvariants() const;

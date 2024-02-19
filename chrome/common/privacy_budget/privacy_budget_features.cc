@@ -6,9 +6,18 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace features {
+
+BASE_FEATURE(kIdentifiabilityStudyMetaExperiment,
+             "IdentifiabilityStudyMetaExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<double>
+    kIdentifiabilityStudyMetaExperimentActivationProbability = {
+        &kIdentifiabilityStudyMetaExperiment, "ActivationProbability", -1};
 
 BASE_FEATURE(kIdentifiabilityStudy,
              "IdentifiabilityStudy",

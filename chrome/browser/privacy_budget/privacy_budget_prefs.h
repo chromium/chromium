@@ -38,6 +38,13 @@ extern const char kPrivacyBudgetSelectedOffsets[];
 // Value is an integer >= 0.
 extern const char kPrivacyBudgetSelectedBlock[];
 
+// Pref used for persisting the random salt which is used to decide whether the
+// meta experiment should be active. The meta experiment is active if the salt
+// is smaller than the meta experiment selection probability.
+//
+// Value is a double in the interval [0,1)
+extern const char kPrivacyBudgetMetaExperimentActivationSalt[];
+
 void RegisterPrivacyBudgetPrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs
