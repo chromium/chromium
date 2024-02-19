@@ -50,9 +50,3 @@ void WebViewSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
     const GURL& url) {
   // No op.
 }
-
-bool WebViewSafeBrowsingClient::OnSubFrameUrlQueryCancellationDecided(
-    web::WebState* web_state,
-    const GURL& url) {
-  return true;
-}

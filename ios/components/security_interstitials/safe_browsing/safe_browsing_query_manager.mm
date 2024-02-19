@@ -60,8 +60,7 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
 
   // Create a URL checker and perform the query on the IO thread.
   network::mojom::RequestDestination request_destination =
-      query.IsMainFrame() ? network::mojom::RequestDestination::kDocument
-                          : network::mojom::RequestDestination::kIframe;
+      network::mojom::RequestDestination::kDocument;
   SafeBrowsingService* safe_browsing_service =
       client_->GetSafeBrowsingService();
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker =
@@ -87,8 +86,6 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
 
 void SafeBrowsingQueryManager::StoreUnsafeResource(
     const UnsafeResource& resource) {
-  bool is_main_frame = resource.request_destination ==
-                       network::mojom::RequestDestination::kDocument;
   // Responses to repeated queries can arrive in arbitrary order, not
   // necessarily in the same order as the queries are made. This means
   // that when there are repeated pending queries (e.g., when a page has
@@ -97,8 +94,7 @@ void SafeBrowsingQueryManager::StoreUnsafeResource(
   // `resource` must be stored with every corresponding query, not just the
   // first.
   for (auto& pair : results_) {
-    if (pair.first.url == resource.url &&
-        is_main_frame == pair.first.IsMainFrame() && !pair.second.resource) {
+    if (pair.first.url == resource.url && !pair.second.resource) {
       pair.second.resource = resource;
     }
   }
@@ -139,12 +135,8 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
 #pragma mark - SafeBrowsingQueryManager::Query
 
 SafeBrowsingQueryManager::Query::Query(const GURL& url,
-                                       const std::string& http_method,
-                                       int main_frame_item_id)
-    : url(url),
-      http_method(http_method),
-      main_frame_item_id(main_frame_item_id),
-      query_id(CreateQueryID()) {}
+                                       const std::string& http_method)
+    : url(url), http_method(http_method), query_id(CreateQueryID()) {}
 
 SafeBrowsingQueryManager::Query::Query(const Query&) = default;
 
@@ -152,10 +144,6 @@ SafeBrowsingQueryManager::Query::~Query() = default;
 
 bool SafeBrowsingQueryManager::Query::operator<(const Query& other) const {
   return query_id < other.query_id;
-}
-
-bool SafeBrowsingQueryManager::Query::IsMainFrame() const {
-  return main_frame_item_id == -1;
 }
 
 #pragma mark - SafeBrowsingQueryManager::Result

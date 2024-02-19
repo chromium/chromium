@@ -44,10 +44,3 @@ void FakeSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
     const GURL& url) {
   main_frame_cancellation_decided_called_ = true;
 }
-
-bool FakeSafeBrowsingClient::OnSubFrameUrlQueryCancellationDecided(
-    web::WebState* web_state,
-    const GURL& url) {
-  sub_frame_cancellation_decided_called_ = true;
-  return true;
-}

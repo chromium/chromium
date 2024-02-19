@@ -131,9 +131,7 @@ void WebViewWebClient::PrepareErrorPage(
     SafeBrowsingUnsafeResourceContainer* container =
         SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
     const security_interstitials::UnsafeResource* resource =
-        container->GetMainFrameUnsafeResource()
-            ?: container->GetSubFrameUnsafeResource(
-                   web_state->GetNavigationManager()->GetLastCommittedItem());
+        container->GetMainFrameUnsafeResource();
     CWVUnsafeURLHandler* handler =
         [[CWVUnsafeURLHandler alloc] initWithWebState:web_state
                                        unsafeResource:*resource

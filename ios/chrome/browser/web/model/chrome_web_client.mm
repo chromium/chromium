@@ -118,9 +118,7 @@ NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
   SafeBrowsingUnsafeResourceContainer* container =
       SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
   const security_interstitials::UnsafeResource* resource =
-      container->GetMainFrameUnsafeResource()
-          ?: container->GetSubFrameUnsafeResource(
-                 web_state->GetNavigationManager()->GetLastCommittedItem());
+      container->GetMainFrameUnsafeResource();
 
   // Construct the blocking page and associate it with the WebState.
   std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =

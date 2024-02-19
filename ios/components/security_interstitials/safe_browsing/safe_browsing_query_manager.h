@@ -22,10 +22,6 @@
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
-namespace web {
-class NavigationItem;
-}
-
 class SafeBrowsingClient;
 
 // A helper object that manages the Safe Browsing URL queries for a single
@@ -35,9 +31,7 @@ class SafeBrowsingQueryManager
  public:
   // Struct used to trigger URL check queries.
   struct Query {
-    explicit Query(const GURL& url,
-                   const std::string& http_method,
-                   int main_frame_item_id = -1);
+    explicit Query(const GURL& url, const std::string& http_method);
     Query() = delete;
     Query(const Query&);
     virtual ~Query();
@@ -52,9 +46,6 @@ class SafeBrowsingQueryManager
     const GURL url;
     // The HTTP method.
     const std::string http_method;
-    // The ID of the NavigationItem triggering the URL check.  -1 for main-frame
-    // URL checks.
-    const int main_frame_item_id;
     // The unique ID for the query.
     const size_t query_id;
   };
