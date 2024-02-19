@@ -65,6 +65,11 @@ public class AddToHomescreenDialogView
     private @AppType int mAppType;
     private boolean mCanSubmit;
 
+    private final String mInstallTitleText;
+    private final String mInstallButtonText;
+    private final String mAddTitleText;
+    private final String mAddButtonText;
+
     @VisibleForTesting
     public AddToHomescreenDialogView(
             Context context,
@@ -137,6 +142,11 @@ public class AddToHomescreenDialogView
                 });
 
         Resources resources = context.getResources();
+        mInstallTitleText = resources.getString(R.string.menu_install_webapp);
+        mInstallButtonText = resources.getString(R.string.app_banner_install);
+        mAddTitleText = resources.getString(R.string.menu_add_to_homescreen);
+        mAddButtonText = resources.getString(R.string.add);
+
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
@@ -208,6 +218,14 @@ public class AddToHomescreenDialogView
                 mAppLayout.setVisibility(View.VISIBLE);
                 mAppOriginView.setVisibility(View.VISIBLE);
                 break;
+        }
+
+        if (mAppType == AppType.SHORTCUT) {
+            mDialogModel.set(ModalDialogProperties.TITLE, mAddTitleText);
+            mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mAddButtonText);
+        } else {
+            mDialogModel.set(ModalDialogProperties.TITLE, mInstallTitleText);
+            mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mInstallButtonText);
         }
     }
 
