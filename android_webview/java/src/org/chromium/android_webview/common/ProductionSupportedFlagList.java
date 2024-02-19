@@ -898,6 +898,9 @@ public final class ProductionSupportedFlagList {
         Flag.commandLine(
                 AwSwitches.WEBVIEW_FORCE_DISABLE3PCS,
                 "Force disables 3rd party cookies for all apps."),
+        Flag.baseFeature(
+                "DoNotEvictOnAXLocationChange",
+                "When enabled, do not evict the bfcache entry even when AXLocationChange happens."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
