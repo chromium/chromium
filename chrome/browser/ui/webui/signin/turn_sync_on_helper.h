@@ -248,6 +248,10 @@ class TurnSyncOnHelper {
   // Aborts the flow and deletes this object.
   void AbortAndDelete();
 
+  // Removes the account on abort taking into consideration if it is the primary
+  // account.
+  void RemoveAccount();
+
   std::unique_ptr<Delegate> delegate_;
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
