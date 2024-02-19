@@ -128,6 +128,8 @@ class CookieSettingsBase {
     kMaxValue = kAllowBy3PCDMetadataSourceGovEduTld,
   };
 
+  // Returns true if the allow mechanism represents one of the multiple allow
+  // mechanisms derived from the TPCD Mitigations Metadata.
   static bool IsAnyTpcdMetadataAllowMechanism(
       const ThirdPartyCookieAllowMechanism& mechanism);
 
