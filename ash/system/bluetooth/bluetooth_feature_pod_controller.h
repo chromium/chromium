@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -78,6 +79,9 @@ class ASH_EXPORT BluetoothFeaturePodController
       remote_cros_bluetooth_config_;
   mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       cros_system_properties_observer_receiver_{this};
+
+  mojo::Remote<mojom::HidPreservingBluetoothStateController>
+      remote_hid_preserving_bluetooth_;
 
   size_t connected_device_count_ = 0;
   std::optional<BluetoothDeviceNameAndBatteryInfo> first_connected_device_;

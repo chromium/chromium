@@ -1463,6 +1463,8 @@ component("ash") {
     "system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller_impl.h",
     "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_controller.cc",
     "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_controller.h",
+    "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_service.cc",
+    "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_service.h",
     "system/bluetooth/hid_preserving_controller/in_process_instance.cc",
     "system/bluetooth/hid_preserving_controller/in_process_instance.h",
     "system/brightness/brightness_controller_chromeos.cc",

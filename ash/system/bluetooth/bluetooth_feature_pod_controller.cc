@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_state_cache.h"
+#include "ash/system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_service.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -51,6 +52,11 @@ BluetoothFeaturePodController::BluetoothFeaturePodController(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
   remote_cros_bluetooth_config_->ObserveSystemProperties(
       cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
+
+  if (features::IsBluetoothDisconnectWarningEnabled()) {
+    GetHidPreservingBluetoothStateControllerService(
+        remote_hid_preserving_bluetooth_.BindNewPipeAndPassReceiver());
+  }
 }
 
 BluetoothFeaturePodController::~BluetoothFeaturePodController() = default;
@@ -84,7 +90,12 @@ void BluetoothFeaturePodController::OnIconPressed() {
   }
 
   const bool is_toggled = IsButtonToggled();
-  remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
+  if (features::IsBluetoothDisconnectWarningEnabled()) {
+    remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
+        !is_toggled);
+  } else {
+    remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
+  }
   TrackToggleUMA(/*target_toggle_state=*/!is_toggled);
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {

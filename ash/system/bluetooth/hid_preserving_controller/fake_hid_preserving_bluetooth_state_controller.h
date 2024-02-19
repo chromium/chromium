@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 
 namespace ash {
@@ -33,13 +34,19 @@ class ASH_EXPORT FakeHidPreservingBluetoothStateController
   // Should only be called if |should_show_warning_dialog| is true.
   void CompleteShowDialog(bool show_dialog_result);
 
+  size_t dialog_shown_count() { return dialog_shown_count_; }
+
+  void SetScopedBluetoothConfigHelper(
+      bluetooth_config::ScopedBluetoothConfigTestHelper* helper);
+
  private:
   void SetBluetoothEnabledState(bool enabled);
 
+  size_t dialog_shown_count_ = 0u;
   bool pending_bluetooth_enabled_request_ = false;
   bool should_show_warning_dialog_ = false;
-  bluetooth_config::ScopedBluetoothConfigTestHelper
-      scoped_bluetooth_config_test_helper_;
+  raw_ptr<bluetooth_config::ScopedBluetoothConfigTestHelper, DanglingUntriaged>
+      scoped_bluetooth_config_test_helper_ = nullptr;
 };
 
 }  // namespace ash
