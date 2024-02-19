@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import static org.chromium.base.ThreadUtils.assertOnBackgroundThread;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerSetting.AUTO_SIGN_IN;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS;
+import static org.chromium.chrome.browser.password_manager.PasswordSettingsUpdaterMetricsRecorder.getStoreType;
 
 import android.accounts.Account;
 
@@ -57,7 +58,9 @@ public class PasswordSettingsUpdaterDispatcherBridge {
         assertOnBackgroundThread();
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
                 new PasswordSettingsUpdaterMetricsRecorder(
-                        setting, PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX);
+                        setting,
+                        PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX,
+                        getStoreType(account));
         switch (setting) {
             case OFFER_TO_SAVE_PASSWORDS:
                 mSettingsAccessor.getOfferToSavePasswords(
@@ -91,7 +94,9 @@ public class PasswordSettingsUpdaterDispatcherBridge {
         assertOnBackgroundThread();
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
                 new PasswordSettingsUpdaterMetricsRecorder(
-                        setting, PasswordSettingsUpdaterMetricsRecorder.SET_VALUE_FUNCTION_SUFFIX);
+                        setting,
+                        PasswordSettingsUpdaterMetricsRecorder.SET_VALUE_FUNCTION_SUFFIX,
+                        getStoreType(account));
         switch (setting) {
             case OFFER_TO_SAVE_PASSWORDS:
                 mSettingsAccessor.setOfferToSavePasswords(

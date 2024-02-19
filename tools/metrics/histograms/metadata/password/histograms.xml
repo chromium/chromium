@@ -2563,17 +2563,23 @@ chromium-metrics-reviews@google.com.
   <token key="Setting" variants="PasswordManagerSetting"/>
 </histogram>
 
-<histogram name="PasswordManager.PasswordSettings.{Function}.{Setting}.Success"
+<histogram
+    name="PasswordManager.PasswordSettings.{Function}.{Setting}{Type}.Success"
     enum="BooleanSuccess" expires_after="2024-04-28">
   <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records whether PasswordSettingsUpdater attempt to {Function} for {Setting}
-    succeed. Recorded when the asynchronous job has returned. This is currently
-    only recorded on Android.
+    succeed. Recorded for {Type} when the asynchronous job has returned. This is
+    currently only recorded on Android.
   </summary>
   <token key="Function" variants="PasswordManagerSettingAccessorFunction"/>
   <token key="Setting" variants="PasswordManagerSetting"/>
+  <token key="Type">
+    <variant name="" summary="any store type"/>
+    <variant name=".Account" summary="account store"/>
+    <variant name=".Local" summary="local store"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.PasswordsGrouping.Time" units="ms"
