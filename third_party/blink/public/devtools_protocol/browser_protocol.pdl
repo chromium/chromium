@@ -217,7 +217,7 @@ experimental domain Accessibility
       # If omitted, the full tree is returned.
       optional integer depth
       # The frame for whose document the AX tree should be retrieved.
-      # If omited, the root frame is used.
+      # If omitted, the root frame is used.
       optional Page.FrameId frameId
     returns
       array of AXNode nodes
@@ -258,7 +258,7 @@ experimental domain Accessibility
 
   # Query a DOM node's accessibility subtree for accessible name and role.
   # This command computes the name and role for all nodes in the subtree, including those that are
-  # ignored for accessibility, and returns those that mactch the specified name and role. If no DOM
+  # ignored for accessibility, and returns those that match the specified name and role. If no DOM
   # node is specified, or the DOM node does not exist, the command returns an error. If neither
   # `accessibleName` or `role` is specified, it returns all the accessibility nodes in the subtree.
   experimental command queryAXTree
@@ -1087,7 +1087,7 @@ experimental domain Autofill
   # Munich 81456
   type AddressUI extends object
     properties
-      # A two dimension array containing the repesentation of values from an address profile.
+      # A two dimension array containing the representation of values from an address profile.
       array of AddressFields addressFields
 
   # Specified whether a filled field was done so by using the html autocomplete attribute or autofill heuristics.
@@ -1339,7 +1339,7 @@ domain Browser
     parameters
       # Whether to allow all or deny all download requests, or use default Chrome behavior if
       # available (otherwise deny). |allowAndName| allows download and names files according to
-      # their dowmload guids.
+      # their download guids.
       enum behavior
         deny
         allow
@@ -1606,7 +1606,7 @@ experimental domain CSS
       # Owner frame identifier.
       Page.FrameId frameId
       # Stylesheet resource URL. Empty if this is a constructed stylesheet created using
-      # new CSSStyleSheet() (but non-empty if this is a constructed sylesheet imported
+      # new CSSStyleSheet() (but non-empty if this is a constructed stylesheet imported
       # as a CSS module script).
       string sourceURL
       # URL of source map associated with the stylesheet (if any).
@@ -2818,7 +2818,7 @@ domain DOM
   # Returns attributes for the specified node.
   command getAttributes
     parameters
-      # Id of the node to retrieve attibutes for.
+      # Id of the node to retrieve attributes for.
       NodeId nodeId
     returns
       # An interleaved array of node attribute names and values.
@@ -3986,13 +3986,13 @@ domain Emulation
       pause
       pauseIfNetworkFetchesPending
 
-  # Used to specify User Agent Cient Hints to emulate. See https://wicg.github.io/ua-client-hints
+  # Used to specify User Agent Client Hints to emulate. See https://wicg.github.io/ua-client-hints
   experimental type UserAgentBrandVersion extends object
     properties
       string brand
       string version
 
-  # Used to specify User Agent Cient Hints to emulate. See https://wicg.github.io/ua-client-hints
+  # Used to specify User Agent Client Hints to emulate. See https://wicg.github.io/ua-client-hints
   # Missing optional values will be filled in by the target with what it would normally use.
   experimental type UserAgentMetadata extends object
     properties
@@ -4201,7 +4201,7 @@ domain Emulation
       SensorType type
       optional SensorMetadata metadata
 
-  # Updates the sensor readings reported by a sensor type previously overriden
+  # Updates the sensor readings reported by a sensor type previously overridden
   # by setSensorOverrideEnabled.
   experimental command setSensorOverrideReadings
     parameters
@@ -4272,8 +4272,9 @@ domain Emulation
   # Overrides default host system timezone with the specified one.
   command setTimezoneOverride
     parameters
-      # The timezone identifier. If empty, disables the override and
-      # restores default host system timezone.
+      # The timezone identifier. List of supported timezones: 
+      # https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt
+      # If empty, disables the override and restores default host system timezone.
       string timezoneId
 
   # Resizes the frame/viewport of the page. Note that this does not affect the frame's container
@@ -4306,6 +4307,7 @@ domain Emulation
       integer hardwareConcurrency
 
   # Allows overriding user agent with the given string.
+  # `userAgentMetadata` must be set for Client Hint headers to be sent.
   command setUserAgentOverride
     parameters
       # User agent to use.
@@ -4392,7 +4394,7 @@ domain IO
     parameters
       # Handle of the stream to read.
       StreamHandle handle
-      # Seek to the specified offset before reading (if not specificed, proceed with offset
+      # Seek to the specified offset before reading (if not specified, proceed with offset
       # following the last read). Some types of streams may only support sequential reads.
       optional integer offset
       # Maximum number of bytes to read (left upon the agent discretion if not specified).
@@ -4776,7 +4778,7 @@ domain Input
       # The text to insert.
       string text
 
-  # This method sets the current candidate text for ime.
+  # This method sets the current candidate text for IME.
   # Use imeCommitComposition to commit the final text.
   # Use imeSetComposition with empty string as text to cancel composition.
   experimental command imeSetComposition
@@ -5156,7 +5158,7 @@ experimental domain LayerTree
 
   event layerTreeDidChange
     parameters
-      # Layer tree, absent if not in the comspositing mode.
+      # Layer tree, absent if not in the compositing mode.
       optional array of Layer layers
 
 # Provides access to log entries.
@@ -5533,7 +5535,7 @@ domain Network
       # passed by the developer (e.g. via "fetch") as understood by the backend.
       experimental optional TrustTokenParams trustTokenParams
       # True if this resource request is considered to be the 'same site' as the
-      # request correspondinfg to the main frame.
+      # request corresponding to the main frame.
       experimental optional boolean isSameSite
 
   # Details of a signed certificate timestamp (SCT).
@@ -5785,7 +5787,7 @@ domain Network
       optional boolean fromServiceWorker
       # Specifies that the request was served from the prefetch cache.
       optional boolean fromPrefetchCache
-      # Infomation about how Service Worker Static Router was used.
+      # Information about how Service Worker Static Router was used.
       experimental optional ServiceWorkerRouterInfo serviceWorkerRouterInfo
       # Total number of bytes received for this request so far.
       number encodedDataLength
@@ -5921,7 +5923,7 @@ domain Network
       # The cookie had the "Secure" attribute but was not received over a secure connection.
       SecureOnly
       # The cookie had the "SameSite=Strict" attribute but came from a cross-origin response.
-      # This includes navigation requests intitiated by other origins.
+      # This includes navigation requests initiated by other origins.
       SameSiteStrict
       # The cookie had the "SameSite=Lax" attribute but came from a cross-origin response.
       SameSiteLax
@@ -5955,7 +5957,7 @@ domain Network
       UnknownError
       # The cookie had the "SameSite=Strict" attribute but came from a response
       # with the same registrable domain but a different scheme.
-      # This includes navigation requests intitiated by other origins.
+      # This includes navigation requests initiated by other origins.
       # This is the "Schemeful Same-Site" version of the blocked reason.
       SchemefulSameSiteStrict
       # The cookie had the "SameSite=Lax" attribute but came from a response
@@ -6017,7 +6019,7 @@ domain Network
       UnknownError
       # The cookie had the "SameSite=Strict" attribute but came from a response
       # with the same registrable domain but a different scheme.
-      # This includes navigation requests intitiated by other origins.
+      # This includes navigation requests initiated by other origins.
       # This is the "Schemeful Same-Site" version of the blocked reason.
       SchemefulSameSiteStrict
       # The cookie had the "SameSite=Lax" attribute but came from a response
@@ -6244,7 +6246,7 @@ domain Network
       optional SignedExchangeHeader header
       # Security details for the signed exchange header.
       optional SecurityDetails securityDetails
-      # Errors occurred while handling the signed exchagne.
+      # Errors occurred while handling the signed exchange.
       optional array of SignedExchangeError errors
 
   # List of content encodings supported by the backend.
@@ -6597,7 +6599,7 @@ domain Network
       MonotonicTime timestamp
       # Resource type.
       ResourceType type
-      # User friendly error message.
+      # Error message. List of network errors: https://cs.chromium.org/chromium/src/net/base/net_error_list.h
       string errorText
       # True if loading was canceled.
       optional boolean canceled
@@ -6898,7 +6900,7 @@ domain Network
       # The cookie partition key that will be used to store partitioned cookies set in this response.
       # Only sent when partitioned cookies are enabled.
       optional string cookiePartitionKey
-      # True if partitioned cookies are enabled, but the partition key is not serializeable to string.
+      # True if partitioned cookies are enabled, but the partition key is not serializable to string.
       optional boolean cookiePartitionKeyOpaque
       # A list of cookies which should have been blocked by 3PCD but are exempted and stored from
       # the response with the corresponding reason.
@@ -7142,7 +7144,7 @@ experimental domain Overlay
   # Configuration data for drawing the source order of an elements children.
   type SourceOrderConfig extends object
     properties
-      # the color to outline the givent element in.
+      # the color to outline the given element in.
       DOM.RGBA parentOutlineColor
       # the color to outline the child elements in.
       DOM.RGBA childOutlineColor
@@ -7342,7 +7344,7 @@ experimental domain Overlay
     properties
       # Whether the title bar CSS should be shown when emulating the Window Controls Overlay.
       boolean showCSS
-      # Seleted platforms to show the overlay.
+      # Selected platforms to show the overlay.
       string selectedPlatform
       # The theme color defined in app manifest.
       string themeColor
@@ -7430,8 +7432,8 @@ experimental domain Overlay
   command hideHighlight
 
   # Highlights owner element of the frame with given id.
-  # Deprecated: Doesn't work reliablity and cannot be fixed due to process
-  # separatation (the owner node might be in a different process). Determine
+  # Deprecated: Doesn't work reliably and cannot be fixed due to process
+  # separation (the owner node might be in a different process). Determine
   # the owner node in the client and use highlightNode.
   deprecated command highlightFrame
     parameters
@@ -7998,7 +8000,7 @@ domain Page
     properties
       # Error message.
       string message
-      # If criticial, this is a non-recoverable parse error.
+      # If critical, this is a non-recoverable parse error.
       integer critical
       # Error line.
       integer line
@@ -8655,7 +8657,7 @@ domain Page
   experimental command stopScreencast
 
   # Requests backend to produce compilation cache for the specified scripts.
-  # `scripts` are appeneded to the list of scripts for which the cache
+  # `scripts` are appended to the list of scripts for which the cache
   # would be produced. The list may be reset during page navigation.
   # When script with a matching URL is encountered, the cache is optionally
   # produced upon backend discretion, based on internal heuristics.
@@ -8675,7 +8677,7 @@ domain Page
   # Clears seeded compilation cache.
   experimental command clearCompilationCache
 
-  # Enum of possible auto-reponse for permisison / prompt dialogs.
+  # Enum of possible auto-response for permission / prompt dialogs.
   experimental type AutoResponseMode extends string
     enum
       none
@@ -8870,7 +8872,7 @@ domain Page
       string message
       # Dialog type.
       DialogType type
-      # True iff browser is capable showing or acting on the given dialog. When browser has no
+      # True if browser is capable showing or acting on the given dialog. When browser has no
       # dialog handler for given target, calling alert while Page domain is engaged will stall
       # the page execution. Execution can be resumed via calling Page.handleJavaScriptDialog.
       boolean hasBrowserHandler
@@ -9073,7 +9075,7 @@ domain Page
   # when bfcache navigation fails.
   experimental event backForwardCacheNotUsed
     parameters
-      # The loader id for the associated navgation.
+      # The loader id for the associated navigation.
       Network.LoaderId loaderId
       # The frame id of the associated frame.
       FrameId frameId
@@ -9230,7 +9232,7 @@ experimental domain PerformanceTimeline
       # Identifies the frame that this event is related to. Empty for non-frame targets.
       Page.FrameId frameId
       # The event type, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
-      # This determines which of the optional "details" fiedls is present.
+      # This determines which of the optional "details" fields is present.
       string type
       # Name may be empty depending on the type.
       string name
@@ -9306,7 +9308,7 @@ domain Security
       Network.TimeSinceEpoch validTo
       # The highest priority network error code, if the certificate has an error.
       optional string certificateNetworkError
-      # True if the certificate uses a weak signature aglorithm.
+      # True if the certificate uses a weak signature algorithm.
       boolean certificateHasWeakSignature
       # True if the certificate has a SHA1 signature in the chain.
       boolean certificateHasSha1Signature
@@ -10093,7 +10095,7 @@ experimental domain Storage
       Page.FrameId mainFrameId
       # Serialized origin for the context that invoked the Shared Storage API.
       string ownerOrigin
-      # The sub-parameters warapped by `params` are all optional and their
+      # The sub-parameters wrapped by `params` are all optional and their
       # presence/absence depends on `type`.
       SharedStorageAccessParams params
 
@@ -10449,6 +10451,7 @@ domain Target
     properties
       TargetID targetId
       string type
+      # List of types: https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22
       string title
       string url
       # Whether the target has an attached client.
@@ -10467,7 +10470,7 @@ domain Target
   # A filter used by target query/discovery/auto-attach operations.
   experimental type FilterEntry extends object
     properties
-      # If set, causes exclusion of mathcing targets from the list.
+      # If set, causes exclusion of matching targets from the list.
       optional boolean exclude
       # If not present, matches any type.
       optional string type
@@ -10521,7 +10524,7 @@ domain Target
   #
   # Injected object will be available as `window[bindingName]`.
   #
-  # The object has the follwing API:
+  # The object has the following API:
   # - `binding.send(json)` - a method to send messages over the remote debugging protocol
   # - `binding.onmessage = json => handleMessage(json)` - a callback that will be called for the protocol notifications and command responses.
   experimental command exposeDevToolsProtocol
@@ -11716,7 +11719,7 @@ experimental domain Preload
       optional string url
       optional Network.RequestId requestId
       # Error information
-      # `errorMessage` is null iff `errorType` is null.
+      # `errorMessage` is null if `errorType` is null.
       optional RuleSetErrorType errorType
       # TODO(https://crbug.com/1425354): Replace this property with structured error.
       deprecated optional string errorMessage
@@ -11758,7 +11761,7 @@ experimental domain Preload
   # that had a speculation rule that triggered the attempt, and the
   # BackendNodeIds of <a href> or <area href> elements that triggered the
   # attempt (in the case of attempts triggered by a document rule). It is
-  # possible for mulitple rule sets and links to trigger a single attempt.
+  # possible for multiple rule sets and links to trigger a single attempt.
   type PreloadingAttemptSource extends object
     properties
       PreloadingAttemptKey key
