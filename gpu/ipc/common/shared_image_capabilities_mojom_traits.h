@@ -54,6 +54,11 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
       const gpu::SharedImageCapabilities& input) {
     return input.shared_image_swap_chain;
   }
+
+  static std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list(
+      const gpu::SharedImageCapabilities& input) {
+    return input.texture_target_exception_list;
+  }
 };
 
 }  // namespace mojo

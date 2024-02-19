@@ -906,6 +906,9 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
             kA16_float_SkColorType);
   }
 
+  shared_image_caps.texture_target_exception_list =
+      gpu_preferences_.texture_target_exception_list;
+
 #if BUILDFLAG(IS_WIN)
   shared_image_caps.shared_image_d3d =
       D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences_);
