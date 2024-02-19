@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 
@@ -394,20 +394,20 @@ void SetLacrosLaunchSwitchSourceForTest(
 // Parses the string representation of LacrosSelection policy value into the
 // enum value. Returns nullopt on unknown value.
 std::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
-    base::StringPiece value);
+    std::string_view value);
 
 // Parses the string representation of LacrosDataBackwardMigrationMode policy
 // value into the enum value. Returns nullopt on unknown value.
 std::optional<LacrosDataBackwardMigrationMode>
-ParseLacrosDataBackwardMigrationMode(base::StringPiece value);
+ParseLacrosDataBackwardMigrationMode(std::string_view value);
 
 // Returns the policy string representation from the given enum value.
-base::StringPiece GetLacrosDataBackwardMigrationModeName(
+std::string_view GetLacrosDataBackwardMigrationModeName(
     LacrosDataBackwardMigrationMode value);
 
 // Returns the LacrosSelection policy value name from the given value. Returned
-// StringPiece is guaranteed to never be invalidated.
-base::StringPiece GetLacrosSelectionPolicyName(LacrosSelectionPolicy value);
+// std::string_view is guaranteed to never be invalidated.
+std::string_view GetLacrosSelectionPolicyName(LacrosSelectionPolicy value);
 
 // Stores that "Go to files button" on the migration error screen is clicked.
 void SetGotoFilesClicked(PrefService* local_state,

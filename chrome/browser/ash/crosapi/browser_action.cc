@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/browser_action.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
@@ -75,8 +76,8 @@ class NewWindowAction final : public BrowserAction {
 
 class NewWindowForDetachingTabAction final : public BrowserAction {
  public:
-  NewWindowForDetachingTabAction(base::StringPiece16 tab_id_str,
-                                 base::StringPiece16 group_id_str,
+  NewWindowForDetachingTabAction(std::u16string_view tab_id_str,
+                                 std::u16string_view group_id_str,
                                  NewWindowForDetachingTabCallback callback)
       : BrowserAction(false),
         tab_id_str_(tab_id_str),
@@ -350,7 +351,7 @@ class CreateBrowserWithRestoredDataAction final : public BrowserAction {
       ui::WindowShowState show_state,
       int32_t active_tab_index,
       int32_t first_non_pinned_tab_index,
-      base::StringPiece app_name,
+      std::string_view app_name,
       int32_t restore_window_id,
       uint64_t lacros_profile_id)
       : BrowserAction(true),
@@ -424,8 +425,8 @@ std::unique_ptr<BrowserAction> BrowserAction::Launch(
 
 // static
 std::unique_ptr<BrowserAction> BrowserAction::NewWindowForDetachingTab(
-    base::StringPiece16 tab_id_str,
-    base::StringPiece16 group_id_str,
+    std::u16string_view tab_id_str,
+    std::u16string_view group_id_str,
     NewWindowForDetachingTabCallback callback) {
   return std::make_unique<NewWindowForDetachingTabAction>(
       tab_id_str, group_id_str, std::move(callback));
@@ -482,7 +483,7 @@ std::unique_ptr<BrowserAction> BrowserAction::CreateBrowserWithRestoredData(
     ui::WindowShowState show_state,
     int32_t active_tab_index,
     int32_t first_non_pinned_tab_index,
-    base::StringPiece app_name,
+    std::string_view app_name,
     int32_t restore_window_id,
     uint64_t lacros_profile_id) {
   return std::make_unique<CreateBrowserWithRestoredDataAction>(

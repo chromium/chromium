@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/stateful_lacros_loader.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
@@ -71,7 +72,7 @@ class StatefulLacrosLoaderTest : public testing::Test {
 
 TEST_F(StatefulLacrosLoaderTest, LoadStatefulLacros) {
   std::u16string lacros_component_name =
-      base::UTF8ToUTF16(base::StringPiece(kLacrosComponentName));
+      base::UTF8ToUTF16(std::string_view(kLacrosComponentName));
   EXPECT_CALL(mock_component_update_service_, GetComponents())
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
           {kLacrosComponentId, "", lacros_component_name, version, ""}}));
@@ -87,7 +88,7 @@ TEST_F(StatefulLacrosLoaderTest, LoadStatefulLacros) {
 
 TEST_F(StatefulLacrosLoaderTest, LoadStatefulLacrosSelectedByPolicy) {
   std::u16string lacros_component_name =
-      base::UTF8ToUTF16(base::StringPiece(kLacrosComponentName));
+      base::UTF8ToUTF16(std::string_view(kLacrosComponentName));
   EXPECT_CALL(mock_component_update_service_, GetComponents())
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
           {kLacrosComponentId, "", lacros_component_name, version, ""}}));

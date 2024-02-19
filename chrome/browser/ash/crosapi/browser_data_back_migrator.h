@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_BACK_MIGRATOR_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -301,7 +302,7 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
 
   // Decides whether preferences for the given `extension_id` should be migrated
   // back from Lacros to Ash.
-  static bool IsLacrosOnlyExtension(const base::StringPiece extension_id);
+  static bool IsLacrosOnlyExtension(const std::string_view extension_id);
 
   // Copy the LevelDB database from Lacros to the temporary directory to be used
   // as basis for the merge.

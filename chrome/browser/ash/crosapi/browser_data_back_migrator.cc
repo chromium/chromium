@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 
 #include <errno.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -917,7 +919,7 @@ bool BrowserDataBackMigrator::MergePreferences(
     } else {
       if (lacros_value->is_dict() && ash_value->is_dict()) {
         for (const auto entry : lacros_value->GetDict()) {
-          const base::StringPiece extension_id = entry.first;
+          const std::string_view extension_id = entry.first;
           if (IsLacrosOnlyExtension(extension_id)) {
             ash_value->GetDict().Set(extension_id, entry.second.Clone());
           }
@@ -927,7 +929,7 @@ bool BrowserDataBackMigrator::MergePreferences(
           if (!item.is_string())
             return false;
 
-          const base::StringPiece extension_id = item.GetString();
+          const std::string_view extension_id = item.GetString();
           return IsLacrosOnlyExtension(extension_id);
         });
 
@@ -1024,7 +1026,7 @@ bool BrowserDataBackMigrator::MergeLacrosPreferences(
 
 // static
 bool BrowserDataBackMigrator::IsLacrosOnlyExtension(
-    const base::StringPiece extension_id) {
+    const std::string_view extension_id) {
   return !base::Contains(browser_data_migrator_util::kExtensionsAshOnly,
                          extension_id) &&
          !base::Contains(

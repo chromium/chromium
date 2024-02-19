@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
@@ -38,7 +38,7 @@ struct PathNamePair {
 struct PathNameComparator {
   constexpr bool operator()(const PathNamePair& p1,
                             const PathNamePair& p2) const {
-    return base::StringPiece(p1.key) < base::StringPiece(p2.key);
+    return std::string_view(p1.key) < std::string_view(p2.key);
   }
 };
 
@@ -150,7 +150,7 @@ constexpr char kKeyPrefix[] = "_chrome-extension://";
 constexpr char kIndexedDBBlobExtension[] = ".indexeddb.blob";
 constexpr char kIndexedDBLevelDBExtension[] = ".indexeddb.leveldb";
 
-bool ShouldRemoveExtensionByType(const base::StringPiece extension_id,
+bool ShouldRemoveExtensionByType(const std::string_view extension_id,
                                  ChromeType chrome_type) {
   switch (chrome_type) {
     case ChromeType::kAsh:
@@ -170,7 +170,7 @@ void UpdatePreferencesDictByType(base::Value::Dict& dict,
 
   // Collect keys that don't belong in `chrome_type`.
   for (const auto entry : dict) {
-    const base::StringPiece extension_id = entry.first;
+    const std::string_view extension_id = entry.first;
     if (ShouldRemoveExtensionByType(extension_id, chrome_type))
       keys_to_remove.emplace_back(extension_id);
   }
@@ -188,7 +188,7 @@ void UpdatePreferencesListByType(base::Value::List& list,
     if (!item.is_string())
       return false;
 
-    const base::StringPiece extension_id = item.GetString();
+    const std::string_view extension_id = item.GetString();
     return ShouldRemoveExtensionByType(extension_id, chrome_type);
   });
 }
@@ -457,8 +457,10 @@ std::string GetUMAItemName(const base::FilePath& path) {
       std::begin(kPathNamePairs), std::end(kPathNamePairs),
       PathNamePair{path_name.c_str(), nullptr}, PathNameComparator());
 
-  if (it != std::end(kPathNamePairs) && base::StringPiece(it->key) == path_name)
+  if (it != std::end(kPathNamePairs) &&
+      std::string_view(it->key) == path_name) {
     return it->value;
+  }
 
   // If `path_name` was not found in kPathNamePairs, return "Unknown" as name.
   return kUnknownUMAName;
@@ -583,7 +585,7 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
   return it->status();
 }
 
-bool IsAshOnlySyncDataType(base::StringPiece key) {
+bool IsAshOnlySyncDataType(std::string_view key) {
   for (auto type : kAshOnlySyncDataTypes) {
     if ((base::StartsWith(
              key, FormatDataPrefix(type, syncer::StorageType::kUnspecified)) ||
@@ -764,7 +766,7 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
 }
 
 void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
-                                const base::StringPiece key,
+                                const std::string_view key,
                                 ChromeType chrome_type) {
   base::Value* value = root_dict->FindByDottedPath(key);
   if (!value)
@@ -778,7 +780,7 @@ void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
 }
 
 std::optional<PreferencesContents> MigratePreferencesContents(
-    const base::StringPiece original_contents) {
+    const std::string_view original_contents) {
   // Parse the original JSON file from Ash.
   std::optional<base::Value> ash_root =
       base::JSONReader::Read(original_contents);

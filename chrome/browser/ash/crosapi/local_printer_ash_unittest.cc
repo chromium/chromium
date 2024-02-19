@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -161,7 +161,7 @@ class FakePpdProvider : public chromeos::PpdProvider {
  public:
   FakePpdProvider() = default;
 
-  void ResolvePpdLicense(base::StringPiece effective_make_and_model,
+  void ResolvePpdLicense(std::string_view effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

@@ -9,6 +9,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/synchronization/atomic_flag.h"
@@ -460,7 +461,7 @@ void RecordTotalSize(int64_t size);
 
 // Given a key in Sync Data's leveldb, returns true if (based on its prefix) its
 // data type has to stay in Ash and Ash only, false otherwise.
-bool IsAshOnlySyncDataType(base::StringPiece key);
+bool IsAshOnlySyncDataType(std::string_view key);
 
 // Given an extension id, return the paths of the associated blob
 // and leveldb directories inside IndexedDB.
@@ -496,13 +497,13 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
 // If the entry is a list in any other format, if it doesn't exist,
 // or if it's not container type, no changes will be performed.
 void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
-                                const base::StringPiece key,
+                                const std::string_view key,
                                 ChromeType chrome_type);
 
 // Given a `original_contents` string containing the original Preferences
 // file, return the migrated Ash and Lacros versions of Preferences.
 std::optional<PreferencesContents> MigratePreferencesContents(
-    const base::StringPiece original_contents);
+    const std::string_view original_contents);
 
 // Migrate Preferences to Ash and Lacros.
 bool MigratePreferences(const base::FilePath& original_path,

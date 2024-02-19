@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -93,14 +95,14 @@ void EchoPrivateAsh::GetRegistrationCode(mojom::RegistrationCodeType type,
   std::string result;
   switch (type) {
     case mojom::RegistrationCodeType::kCoupon:
-      if (const std::optional<base::StringPiece> offers_code =
+      if (const std::optional<std::string_view> offers_code =
               provider->GetMachineStatistic(
                   ash::system::kOffersCouponCodeKey)) {
         result = std::string(offers_code.value());
       }
       break;
     case mojom::RegistrationCodeType::kGroup:
-      if (const std::optional<base::StringPiece> offers_code =
+      if (const std::optional<std::string_view> offers_code =
               provider->GetMachineStatistic(ash::system::kOffersGroupCodeKey)) {
         result = std::string(offers_code.value());
       }

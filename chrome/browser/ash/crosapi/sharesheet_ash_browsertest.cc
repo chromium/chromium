@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -135,7 +136,7 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
     // The Sample System Web App will be automatically selected from the
     // Sharesheet bubble.
     sharesheet::SharesheetService::SetSelectedAppForTesting(
-        base::UTF8ToUTF16(base::StringPiece{web_app::kSampleSystemWebAppId}));
+        base::UTF8ToUTF16(std::string_view{web_app::kSampleSystemWebAppId}));
 
     ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
   }

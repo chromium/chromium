@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -71,7 +72,7 @@ const char kDeprecatedMethodErr[] = "Deprecated method was called.";
 
 std::string GetSubjectPublicKeyInfo(
     const scoped_refptr<net::X509Certificate>& certificate) {
-  base::StringPiece spki_der_piece;
+  std::string_view spki_der_piece;
   bool ok = net::asn1::ExtractSPKIFromDERCert(
       net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
       &spki_der_piece);

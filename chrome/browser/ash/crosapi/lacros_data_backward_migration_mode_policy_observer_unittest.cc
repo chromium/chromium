@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -85,7 +86,7 @@ class LacrosDataBackwardMigrationModePolicyObserverTest : public testing::Test {
         base::StringPrintf("--%s=", chromeos::switches::kFeatureFlags);
     for (const std::string& flag : flags) {
       if (base::StartsWith(flag, prefix)) {
-        base::StringPiece flag_value(flag);
+        std::string_view flag_value(flag);
         flag_value.remove_prefix(prefix.size());
         std::optional<base::Value> parsed = base::JSONReader::Read(flag_value);
         std::vector<std::string> result;

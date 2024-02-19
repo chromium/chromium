@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator_metrics.h"
 
+#include <string_view>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
@@ -133,7 +135,7 @@ std::string TaskStatusToString(
 }
 
 bool IsSecondaryProfileDirectory(const std::string& dir_base_name) {
-  const base::StringPiece prefix = chrome::kMultiProfileDirPrefix;
+  const std::string_view prefix = chrome::kMultiProfileDirPrefix;
   const size_t prefix_length = prefix.length();
 
   if (dir_base_name.length() <= prefix_length) {

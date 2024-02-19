@@ -5,13 +5,13 @@
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -33,9 +33,9 @@ namespace {
 
 // List of all mojom::PrefPaths associated with profile prefs, and their
 // corresponding paths in the prefstore.
-base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
+std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
   static constexpr auto kProfilePrefPathToName =
-      base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>({
+      base::MakeFixedFlatMap<mojom::PrefPath, std::string_view>({
           {mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
           {mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
@@ -81,9 +81,9 @@ base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
 
 // List of all mojom::PrefPaths associated with extension controlled prefs,
 // and their corresponding paths in the prefstore.
-base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
+std::string_view GetExtensionPrefNameForPref(mojom::PrefPath path) {
   static constexpr auto kExtensionPrefPathToName =
-      base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>(
+      base::MakeFixedFlatMap<mojom::PrefPath, std::string_view>(
           {{mojom::PrefPath::kDockedMagnifierEnabled,
             ash::prefs::kDockedMagnifierEnabled},
            {mojom::PrefPath::kAccessibilityAutoclickEnabled,

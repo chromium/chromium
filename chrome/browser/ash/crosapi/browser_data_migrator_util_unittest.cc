@@ -8,6 +8,7 @@
 
 #include <map>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -40,7 +41,7 @@ constexpr char kCookiesPath[] = "Cookies";
 constexpr char kCachePath[] = "Cache";
 constexpr char kCodeCachePath[] = "Code Cache";
 constexpr char kCodeCacheUMAName[] = "CodeCache";
-constexpr base::StringPiece kTextFileContent = "Hello, World!";
+constexpr std::string_view kTextFileContent = "Hello, World!";
 constexpr char kMoveExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 // ID of an extension that runs in both Lacros and Ash chrome.
@@ -209,7 +210,7 @@ TEST(BrowserDataMigratorUtilTest, NoPathOverlaps) {
                             base::span<const char* const> paths_group_b) {
     for (const char* path_a : paths_group_a) {
       for (const char* path_b : paths_group_b) {
-        if (base::StringPiece(path_a) == base::StringPiece(path_b)) {
+        if (std::string_view(path_a) == std::string_view(path_b)) {
           LOG(ERROR) << "The following path appears in multiple sets: "
                      << path_a;
           return false;

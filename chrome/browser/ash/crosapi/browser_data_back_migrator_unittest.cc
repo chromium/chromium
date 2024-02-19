@@ -6,6 +6,8 @@
 
 #include <errno.h>
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_enumerator.h"
@@ -106,7 +108,7 @@ void CreateDirectoryAndFile(const base::FilePath& directory_path,
                             int file_size) {
   CreateDirectoryForTesting(directory_path);
   ASSERT_TRUE(base::WriteFile(directory_path.Append(file_path),
-                              base::StringPiece(file_content, file_size)));
+                              std::string_view(file_content, file_size)));
 }
 
 void SetUpExtensions(const base::FilePath& ash_profile_dir,

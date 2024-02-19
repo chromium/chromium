@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/input_method_test_interface_ash.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
@@ -39,7 +40,7 @@ GetInputMethodManagerState() {
   return ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
 }
 
-bool HasCapability(const base::StringPiece capability) {
+bool HasCapability(const std::string_view capability) {
   return false;
 }
 

@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
@@ -429,7 +430,7 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
   ASSERT_TRUE(base::WriteFile(
       original_profile_dir_2.Append(browser_data_migrator_util::kLacrosDir)
           .Append(chrome::kFirstRunSentinel),
-      base::StringPiece()));
+      std::string_view()));
   MoveMigrator::TaskResult result_2 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_2);
   ASSERT_EQ(result_2.status, MoveMigrator::TaskStatus::kSucceeded);
@@ -946,7 +947,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
   ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
-                              base::StringPiece()));
+                              std::string_view()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_split_dir));
   ASSERT_TRUE(
@@ -1055,7 +1056,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
   ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
-                              base::StringPiece()));
+                              std::string_view()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_split_dir));
   ASSERT_TRUE(
@@ -1164,7 +1165,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
   ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
-                              base::StringPiece()));
+                              std::string_view()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(
       base::CopyDirectory(original_profile_dir_.Append(kSharedProtoDBPath),
