@@ -98,6 +98,9 @@ class AutofillProviderAndroidBridge {
   // Informs the Java side that the form was autofilled.
   virtual void OnDidFillAutofillFormData() = 0;
 
+  // Cancels the current autofill session with clearing the cache if needed.
+  virtual void CancelSession() = 0;
+
   // Resets the Java instance.
   virtual void Reset() = 0;
 };

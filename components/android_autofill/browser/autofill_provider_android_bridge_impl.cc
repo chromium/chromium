@@ -208,6 +208,16 @@ void AutofillProviderAndroidBridgeImpl::OnDidFillAutofillFormData() {
   Java_AutofillProvider_onDidFillAutofillFormData(env, obj);
 }
 
+void AutofillProviderAndroidBridgeImpl::CancelSession() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_AutofillProvider_cancelSession(env, obj);
+}
+
 void AutofillProviderAndroidBridgeImpl::Reset() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

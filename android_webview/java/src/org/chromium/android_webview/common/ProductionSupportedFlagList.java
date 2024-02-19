@@ -208,6 +208,10 @@ public final class ProductionSupportedFlagList {
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME,
                 "Enable the workaround for autofill bottom sheet platform bug."),
         Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_CANCEL_SESSION_ON_NAVIGATION_NAME,
+                "Enable cancelling autofill session on a new document navigation, same frame that"
+                        + " has the form"),
+        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME,
                 "When enabled, prefill requests are supported for login forms."),
         Flag.baseFeature(

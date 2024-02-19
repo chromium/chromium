@@ -201,6 +201,7 @@ class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
   MOCK_METHOD(void, OnTextFieldDidScroll, (const FieldInfo&), (override));
   MOCK_METHOD(void, OnFormSubmitted, (mojom::SubmissionSource), (override));
   MOCK_METHOD(void, OnDidFillAutofillFormData, (), (override));
+  MOCK_METHOD(void, CancelSession, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
 };
 
@@ -285,6 +286,8 @@ class AutofillProviderAndroidTest : public content::RenderViewHostTestHarness {
   TestAutofillManagerInjector<TestAndroidAutofillManager>
       autofill_manager_injector_;
   raw_ptr<MockAutofillProviderAndroidBridge> provider_bridge_ = nullptr;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAndroidAutofillCancelSessionOnNavigation};
 };
 
 // Tests that AndroidAutofillManager keeps track of the predictions it is
@@ -781,6 +784,28 @@ TEST_F(AutofillProviderAndroidTest,
   android_autofill_manager().OnFormsSeen({changed_form}, /*removed_forms=*/{});
   android_autofill_manager().SimulateOnAskForValuesToFill(
       changed_form, changed_form.fields.front());
+}
+
+// Tests that new document navigation (manager reset) cancels the ongoing
+// autofill session
+TEST_F(AutofillProviderAndroidTest, CancelSessionOnNavigation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillCancelSessionOnNavigation);
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+
+  EXPECT_CALL(
+      provider_bridge(),
+      StartAutofillSession(EqualsFormData(form), EqualsFieldInfo(/*index=*/0),
+                           /*has_server_predictions=*/false));
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields.front());
+
+  EXPECT_CALL(provider_bridge(), CancelSession());
+  android_autofill_manager().Reset();
 }
 
 class AutofillProviderAndroidPrefillRequestTest

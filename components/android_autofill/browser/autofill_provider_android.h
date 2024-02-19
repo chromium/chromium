@@ -203,6 +203,9 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   void Reset();
 
+  // Cancels the current Autofill session.
+  void CancelSession();
+
   // Returns a new session id. Session ids are required when creating a
   // `FormDataAndroid` object and used to generate virtual ids that identify
   // form fields uniquely to the Android Autofill framework.

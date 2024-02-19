@@ -30,6 +30,14 @@ BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
              "AndroidAutofillBottomSheetWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, we explicitly cancel the ongoing Android autofill session on new
+// document navigation by calling `AutofillManager.cancel()`, we clear the
+// request state in the java side as it works as an indicator to the current
+// session.
+BASE_FEATURE(kAndroidAutofillCancelSessionOnNavigation,
+             "AndroidAutofillCancelSessionOnNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, prefill requests (i.e. calls to
 // `AutofillManager.notifyVirtualViewsReady`) are supported. Such prefill
 // requests are sent at most once per WebView session and are limited to forms

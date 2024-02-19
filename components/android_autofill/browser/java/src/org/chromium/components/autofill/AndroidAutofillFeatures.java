@@ -20,6 +20,8 @@ import org.chromium.base.Features;
 public class AndroidAutofillFeatures extends Features {
     public static final String ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME =
             "AndroidAutofillBottomSheetWorkaround";
+    public static final String ANDROID_AUTOFILL_CANCEL_SESSION_ON_NAVIGATION_NAME =
+            "AndroidAutofillCancelSessionOnNavigation";
     public static final String ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME =
             "AndroidAutofillPrefillRequestsForLoginForms";
     public static final String ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME =
