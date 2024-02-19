@@ -31,7 +31,6 @@
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 #include "third_party/webrtc/p2p/base/transport_description.h"
-#include "third_party/webrtc/pc/ice_server_parsing.h"
 #include "third_party/webrtc/pc/webrtc_sdp.h"
 
 namespace blink {

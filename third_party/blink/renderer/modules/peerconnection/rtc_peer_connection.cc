@@ -132,7 +132,6 @@
 #include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
-#include "third_party/webrtc/pc/session_description.h"
 #include "third_party/webrtc/rtc_base/ssl_identity.h"
 
 namespace blink {

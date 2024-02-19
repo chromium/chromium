@@ -70,7 +70,6 @@
 #include "third_party/webrtc/api/data_channel_interface.h"
 #include "third_party/webrtc/api/rtc_event_log_output.h"
 #include "third_party/webrtc/api/units/time_delta.h"
-#include "third_party/webrtc/pc/media_session.h"
 #include "third_party/webrtc/pc/session_description.h"
 
 using webrtc::DataChannelInterface;
