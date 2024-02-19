@@ -1138,6 +1138,16 @@ public class NotificationPlatformBridge {
             // isn't being shown, we just call that as well to ensure notifications are cleared.
         }
 
+        // The "provisionally unsubscribed" service notification re-uses the tag of the organic
+        // notification it has replaced. Do not let this service notification be canceled. The
+        // organic notification is at this point already deleted from the NotificationDatabase in
+        // response to it being closed by the developer. If the user clicks `UNDO_UNSUBSCRIBE`, we
+        // will not restore the cancelled notification.
+        String origin = getOriginFromNotificationTag(notificationId);
+        if (origin != null && mOriginsWithProvisionallyRevokedPermissions.contains(origin)) {
+            return;
+        }
+
         mNotificationManager.cancel(notificationId, PLATFORM_ID);
     }
 
@@ -1154,6 +1164,18 @@ public class NotificationPlatformBridge {
             NotificationIdentifyingAttributes identifyingAttributes,
             int actionIndex,
             @Nullable String reply) {
+        // After the user taps the `PRE_UNSUBSCRIBE` action on a notification, we need to complete
+        // native startup before we can replace the tapped notification with the "provisionally
+        // unsubscribed" service notification. In this time window, the user might have tapped the
+        // content or a developer-provided action button. Given the strong indication the user may
+        // want to stop getting these notifications, resolve this conflict by silently discarding
+        // the action.
+        if (identifyingAttributes.origin != null
+                && mOriginsWithProvisionallyRevokedPermissions.contains(
+                        identifyingAttributes.origin)) {
+            return;
+        }
+
         mLastNotificationClickMs = System.currentTimeMillis();
         NotificationPlatformBridgeJni.get()
                 .onNotificationClicked(
