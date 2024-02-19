@@ -141,6 +141,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kInsecureFormsWarningsEnabled,
     prefs::kInsecureFormWarningsEnabled,
     base::Value::Type::BOOLEAN },
+  { policy::key::kDownloadManagerSaveToDriveSettings,
+    prefs::kIosSaveToDriveDownloadManagerPolicySettings,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 

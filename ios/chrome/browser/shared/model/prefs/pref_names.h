@@ -299,6 +299,11 @@ inline constexpr char kIosSafetyCheckManagerUpdateCheckResult[] =
 inline constexpr char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
     "ios.safety_check_manager.safe_browsing_check_result";
 
+// Integer preference indicating whether Save to Drive is enabled by enterprise
+// policy.
+inline constexpr char kIosSaveToDriveDownloadManagerPolicySettings[] =
+    "ios.save_to_drive.download_manager_policy";
+
 // String preference containing the default account to use for saving images to
 // Google Photos.
 inline constexpr char kIosSaveToPhotosDefaultGaiaId[] =

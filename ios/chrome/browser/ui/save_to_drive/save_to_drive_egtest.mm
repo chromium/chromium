@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "components/policy/policy_constants.h"
+#import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/drive/model/test_constants.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/model/scoped_policy_list.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_constants.h"
@@ -253,6 +258,25 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Switch to Incognito.
   [ChromeEarlGrey openNewIncognitoTab];
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "DOWNLOAD" button is presented instead of "SAVE...".
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
+}
+
+// Tests that "DOWNLOAD" button is presented instead of "SAVE..." when
+// enterprise policy explicitly disables Save to Drive.
+- (void)testPolicyDisablesSaveToDrive {
+  // Temporary disable Save to Drive using policy.
+  ScopedPolicyList disableSaveToDrive;
+  disableSaveToDrive.SetPolicy(
+      static_cast<int>(SaveToDrivePolicySettings::kDisabled),
+      policy::key::kDownloadManagerSaveToDriveSettings);
+  // Sign-in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Load a page with a download button and tap the download button.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];

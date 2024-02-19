@@ -1222,6 +1222,7 @@ policies:
   1221: WebPrintingBlockedForUrls
   1222: DocumentScanAPITrustedExtensions
   1223: RemoteAccessHostAllowPinAuthentication
+  1224: DownloadManagerSaveToDriveSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

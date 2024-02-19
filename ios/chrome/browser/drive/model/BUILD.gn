@@ -9,6 +9,7 @@ source_set("drive_availability") {
   ]
   deps = [
     ":drive_service",
+    ":policy",
     "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
@@ -119,6 +120,10 @@ source_set("metrics") {
     "drive_metrics.h",
     "drive_metrics.mm",
   ]
+}
+
+source_set("policy") {
+  sources = [ "drive_policy.h" ]
 }
 
 source_set("test_constants") {

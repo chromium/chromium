@@ -75,6 +75,7 @@
 #import "components/variations/service/variations_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/variations_app_state_agent.h"
+#import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
@@ -689,6 +690,11 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kIosSaveToPhotosContextMenuPolicySettings,
       static_cast<int>(SaveToPhotosPolicySettings::kEnabled));
+
+  // Preferences related to Save to Drive settings.
+  registry->RegisterIntegerPref(
+      prefs::kIosSaveToDriveDownloadManagerPolicySettings,
+      static_cast<int>(SaveToDrivePolicySettings::kEnabled));
 
   // Preferences related to parcel tracking.
   registry->RegisterBooleanPref(

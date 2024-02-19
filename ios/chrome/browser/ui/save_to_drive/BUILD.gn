@@ -117,7 +117,11 @@ source_set("eg2_tests") {
   sources = [ "save_to_drive_egtest.mm" ]
   deps = [
     ":file_destination_picker_constants",
+    "//components/policy:policy_code_generate",
+    "//ios/chrome/browser/drive/model:policy",
     "//ios/chrome/browser/drive/model:test_constants",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/account_picker/account_picker_confirmation:constants",
