@@ -18792,6 +18792,21 @@
             ]
         }
     ],
+    "SyncShowIdentityErrorsForSignedInUsers": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncShowIdentityErrorsForSignedInUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "SynthesizePageLoadOnlyOnInitialMainDocumentAccess": [
         {
             "platforms": [
