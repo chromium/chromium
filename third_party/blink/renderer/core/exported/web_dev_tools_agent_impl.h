@@ -95,6 +95,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void DidShowNewWindow();
 
   void WaitForDebuggerWhenShown();
+  void ActivatePausedDebuggerWindow();
 
  private:
   friend class ClientMessageLoopAdapter;

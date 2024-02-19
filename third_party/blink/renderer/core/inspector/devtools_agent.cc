@@ -424,4 +424,10 @@ void DevToolsAgent::CleanupConnection() {
   pause_child_workers_on_start_ = false;
 }
 
+void DevToolsAgent::BringDevToolsWindowToFocus() {
+  if (associated_host_remote_.is_bound()) {
+    associated_host_remote_->BringToForeground();
+  }
+}
+
 }  // namespace blink

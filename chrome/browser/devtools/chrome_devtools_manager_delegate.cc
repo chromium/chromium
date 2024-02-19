@@ -194,6 +194,28 @@ void ChromeDevToolsManagerDelegate::Inspect(
                                      DevToolsOpenedByAction::kInspectLink);
 }
 
+void ChromeDevToolsManagerDelegate::Activate(
+    content::DevToolsAgentHost* agent_host) {
+  auto* web_contents = agent_host->GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  // Brings the tab to foreground. We need to do this in case the devtools
+  // window is undocked and this is being called from another tab that is in
+  // the foreground.
+  web_contents->GetDelegate()->ActivateContents(web_contents);
+
+  // Brings a undocked devtools window to the foreground.
+  DevToolsWindow* devtools_window =
+      DevToolsWindow::GetInstanceForInspectedWebContents(
+          agent_host->GetWebContents());
+  if (!devtools_window) {
+    return;
+  }
+  devtools_window->ActivateWindow();
+}
+
 void ChromeDevToolsManagerDelegate::HandleCommand(
     content::DevToolsAgentHostClientChannel* channel,
     base::span<const uint8_t> message,

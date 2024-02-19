@@ -36,6 +36,7 @@
 
 #include "base/auto_reset.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_scoped_page_pauser.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -121,6 +122,20 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     instance_ = instance.get();
     MainThreadDebugger::Instance(isolate)->SetClientMessageLoop(
         std::move(instance));
+  }
+
+  static void ActivatePausedDebuggerWindow(WebLocalFrameImpl* frame) {
+    if (!instance_ || !instance_->paused_frame_ ||
+        instance_->paused_frame_ == frame) {
+      return;
+    }
+    if (!base::FeatureList::IsEnabled(
+            features::kShowHudDisplayForPausedPages)) {
+      return;
+    }
+    instance_->paused_frame_->DevToolsAgentImpl()
+        ->GetDevToolsAgent()
+        ->BringDevToolsWindowToFocus();
   }
 
   static void ContinueProgram() {
@@ -586,6 +601,12 @@ WebInputEventResult WebDevToolsAgentImpl::HandleInputEvent(
     if (result != WebInputEventResult::kNotHandled)
       return result;
   }
+
+  if (event.GetType() == WebInputEvent::Type::kMouseDown) {
+    ClientMessageLoopAdapter::ActivatePausedDebuggerWindow(
+        web_local_frame_impl_);
+  }
+
   return WebInputEventResult::kNotHandled;
 }
 

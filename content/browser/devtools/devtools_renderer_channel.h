@@ -80,6 +80,7 @@ class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
   void ChildTargetDestroyed(DevToolsAgentHostImpl*);
   void MainThreadDebuggerPaused() override;
   void MainThreadDebuggerResumed() override;
+  void BringToForeground() override;
 
   void CleanupConnection();
   void SetRendererInternal(blink::mojom::DevToolsAgent* agent,
