@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Končna točka</translation>
 <translation id="3069085583900247081">Preizkus ni uspel</translation>
+<translation id="3078740164268491126">tabela</translation>
 <translation id="3083667275341675831">Diagnosticiranje povezav</translation>
 <translation id="3084958266922136097">Onemogočanje ohranjevalnika zaslona</translation>
 <translation id="3091839911843451378">Napaka – ustavljeno</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
 <translation id="3373141842870501561">Zaslonsko ozadje premika Zemlje</translation>
-<translation id="337375748120863155">Podatki, povezani z vašim izborom. Za dostop do kontrolnikov uporabite puščično tipko levo ali desno.</translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Opis</translation>
 <translation id="387301095347517405">Število ciklov popolnega polnjenja baterije.</translation>
 <translation id="3885327323343477505">Spremeni ohranjevalnik zaslona</translation>
-<translation id="3892148308691398805">Kopiraj besedilo</translation>
 <translation id="391412459402535266">Naprave ni mogoče preizkusiti. Če želite preizkusiti, preklopite v način prenosnika.</translation>
 <translation id="3916998944874125962">ustvarjanje posnetka zaslona</translation>
 <translation id="3923184630988645767">Prenesena količina podatkov</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Moč signala</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="473775607612524610">Posodobi</translation>
+<translation id="4744944742468440486">Podatki, povezani z vašim izborom</translation>
 <translation id="4771607256327216405">posvetlitev osvetlitve tipkovnice</translation>
 <translation id="4773299976671772492">Ustavljeno</translation>
 <translation id="4782311465517282004">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite.</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Želite samodejno vklopiti temni način?</translation>
 <translation id="5154917547274118687">Pomnilnik</translation>
 <translation id="5160857336552977725">Prijavite se v napravo <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Nastavitve hitrih odgovorov</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5180712487038406644">Ekspresivna</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">izvleček</translation>
-<translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5654356773042347102">šmarnica</translation>
 <translation id="5655283760733841251">Povečanje svetlosti osvetlitve tipkovnice</translation>
 <translation id="5655296450510165335">Včlanitev naprave</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Sprememba gesla je bila uspešna. Od zdaj naprej uporabljajte novo geslo.</translation>
 <translation id="7763470514545477072">Ujemanje pripone domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
-<translation id="7770834998503326261">Dodatne informacije, povezane z vašim izborom</translation>
 <translation id="7778717409420828014">Povratne informacije nam pomagajo izboljšati uporabo Chromebooka, zato jih bo pregledala naša skupina. Zaradi velikega števila poročil vam ne bomo mogli odgovoriti.</translation>
 <translation id="7784116172884276937">Strežniki DNS niso nastavljeni.</translation>
 <translation id="7791543448312431591">Dodaj</translation>

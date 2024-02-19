@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Test failed</translation>
+<translation id="3078740164268491126">table</translation>
 <translation id="3083667275341675831">Connectivity diagnostics</translation>
 <translation id="3084958266922136097">Disable screensaver</translation>
 <translation id="3091839911843451378">Failed – Stopped</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369013195428705271">Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.</translation>
 <translation id="3373141842870501561">Earth flow wallpaper</translation>
-<translation id="337375748120863155">Info related to your selection. Use the left or right arrow keys to access controls.</translation>
 <translation id="3383623117265110236">Exclusive</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Description</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
 <translation id="3885327323343477505">Change screen saver</translation>
-<translation id="3892148308691398805">Copy text</translation>
 <translation id="391412459402535266">Can’t test device. Switch to laptop mode to test.</translation>
 <translation id="3916998944874125962">take screenshot</translation>
 <translation id="3923184630988645767">Data usage</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Signal strength</translation>
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="473775607612524610">Update</translation>
+<translation id="4744944742468440486">Info related to your selection</translation>
 <translation id="4771607256327216405">keyboard brighten</translation>
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Turn on dark mode automatically?</translation>
 <translation id="5154917547274118687">Memory</translation>
 <translation id="5160857336552977725">Sign in to your <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Quick Answers settings</translation>
 <translation id="5168185087976003268">Battery health</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5180712487038406644">Expressive</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Internal only</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
-<translation id="5649768706273821470">Listen</translation>
 <translation id="5654356773042347102">lily of the valley</translation>
 <translation id="5655283760733841251">Keyboard brightness up</translation>
 <translation id="5655296450510165335">Device enrolment</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Your password change was successful. Please use the new password from now on.</translation>
 <translation id="7763470514545477072">Domain suffix match</translation>
 <translation id="7769672763586021400">Model ID</translation>
-<translation id="7770834998503326261">Additional info related to your selection</translation>
 <translation id="7778717409420828014">Your feedback helps us improve the Chromebook experience and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.</translation>
 <translation id="7784116172884276937">No DNS servers are set up</translation>
 <translation id="7791543448312431591">Add</translation>

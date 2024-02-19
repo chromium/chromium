@@ -5942,7 +5942,7 @@
 <translation id="557722062034137776">Սարքի վերակայումը չի վնասի ձեր Google հաշիվները կամ այդ հաշիվների հետ համաժամացված տվյալները, սակայն սարքում պահված ֆայլերը կջնջվեն:</translation>
 <translation id="5578059481725149024">Ավտոմատ մուտք</translation>
 <translation id="5581134892342029705">Թարգմանությունը կատարված է (<ph name="LANGUAGE" />)</translation>
-<translation id="558170650521898289">Microsoft Windows-ի սարքակազմի սարքավարի հաստատում</translation>
+<translation id="558170650521898289">Microsoft Windows-ի սարքակազմի դրայվերի հաստատում</translation>
 <translation id="5581876958763461074">Բոլոր նշումները</translation>
 <translation id="5581972110672966454">Չհաջողվեց միացնել սարքը տիրույթին։ Փորձեք նորից կամ կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="5582634344048669777">8-կետանոց</translation>
@@ -7816,6 +7816,7 @@
 <translation id="7044606776288350625">Տվյալների համաժամացում</translation>
 <translation id="7047059339731138197">Ընտրեք ֆոնը</translation>
 <translation id="7049293980323620022">Պահե՞լ ֆայլը:</translation>
+<translation id="7049524156282610342"><ph name="DISPLAY_NAME" />-ի այցելությունների պատմությունը</translation>
 <translation id="7050037487872780845">Թեժ կետի սխալ կազմաձև</translation>
 <translation id="7052237160939977163">Ուղարկել կատարողականության հետագծման տվյալները</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
@@ -8533,6 +8534,7 @@
 <translation id="7630426712700473382">Այս սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի/հաշվի կողմից։ Անհրաժեշտ է ամեն անգամ հաշիվ մտնել։</translation>
 <translation id="7631014249255418691">Լինուքսի հավելվածներն ու ֆայլերը պահուստավորվեցին</translation>
 <translation id="7631887513477658702">&amp;Միշտ բացել այս տեսակի ֆայլերը</translation>
+<translation id="7632437836497571618">Ապահով միացումներ օգտագործեք՝ կայքեր որոնելու համար</translation>
 <translation id="7632948528260659758">Չհաջողվեց թարմացնել հետևյալ kiosk հավելվածները՝</translation>
 <translation id="7633724038415831385">Դուք միայն այս անգամ պետք է սպասեք թարմացման։ Chromebook սարքերում ծրագրակազմի թարմացումը տեղի է ունենում ֆոնային ռեժիմում։</translation>
 <translation id="7634337648687970851">Սարքի տվյալների վերականգնումն այս պահին չի աջակցվում։</translation>
@@ -8794,6 +8796,7 @@
 <translation id="7803657407897251194">Կարգավորումն Android սարքով շարունակելու համար ձեր <ph name="DEVICE_TYPE" /> սարքը միացրեք ցանցին</translation>
 <translation id="7804072833593604762">Ներդիրը փակված է</translation>
 <translation id="780446144738273886">Սկանավորեք PDF ֆայլերը, որպեսզի արտահանեք տեսքտը էկրանի ընթերցիչի համար։ Աջակցվում է միայն Chrome դիտարկիչում։</translation>
+<translation id="7805371082115476536">Թեթև</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7805906048382884326">Փակել խորհուրդը</translation>
 <translation id="7806722269368320106">Տեղադրվում է հավելված</translation>

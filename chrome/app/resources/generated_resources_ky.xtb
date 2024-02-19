@@ -1911,6 +1911,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2412015533711271895">Бул кеңейтүүнү колдонуу үчүн ата-энең же камкорчу уруксат бериши керек</translation>
 <translation id="2412593942846481727">Жаңы версия бар</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Интернет дүкөнүндөгү<ph name="END_LINK1" /> кеңейтүүлөр менен серепчиңизди ыңгайлаштырыңыз</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> боюнча табылгандарды карай берүү</translation>
 <translation id="2414886740292270097">Кочкул</translation>
 <translation id="2415117815770324983">Көпчүлүк сайттардагы аккаунттарыңыздан чыгарыласыз. Google аккаунтуңузга кирген бойдон каласыз.</translation>
@@ -6850,6 +6851,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6271824294945464304">Сырсөз бөлүшүлүүдө</translation>
 <translation id="6273677812470008672">Сапат</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> түзмөгүнө туташууда</translation>
+<translation id="6274108044476515407">Жарнамалар ушул параметрге, <ph name="BEGIN_LINK1" />сайттар сунуштаган колдонмолорго<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cookie параметрлерине<ph name="LINK_END2" /> жана сиз карап жаткан сайттын параметрлерине жараша жекелештирилип көрсөтүлөт. <ph name="BEGIN_LINK3" />Жарнаманын купуялыгын тескөө<ph name="LINK_END3" /> тууралуу кеңири маалымат.</translation>
 <translation id="6274202259872570803">Скринкаст</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> проксиси колдонуучунун атын жана сырсөзүн талап кылып жатат.</translation>
 <translation id="6277105963844135994">Тармактын күтүү убакыты аяктады</translation>

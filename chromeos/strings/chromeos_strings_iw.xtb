@@ -298,6 +298,7 @@
 <translation id="3054177598518735801">mA<ph name="CURRENT_VALUE" /></translation>
 <translation id="3056720590588772262">‏נקודת קצה (endpoint)</translation>
 <translation id="3069085583900247081">הבדיקה נכשלה</translation>
+<translation id="3078740164268491126">טבלה</translation>
 <translation id="3083667275341675831">אבחון קישוריות</translation>
 <translation id="3084958266922136097">השבתת שומר המסך</translation>
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
 <translation id="3373141842870501561">הטפט של זרימה בכדור הארץ</translation>
-<translation id="337375748120863155">מידע שקשור לאפשרות שבחרת. ניתן לגשת לפקדים באמצעות מקש החץ שמאלה או מקש החץ ימינה.</translation>
 <translation id="3383623117265110236">בלעדי</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">תיאור</translation>
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
 <translation id="3885327323343477505">החלפת שומר המסך</translation>
-<translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="391412459402535266">לא ניתן לבדוק את המכשיר. צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה.</translation>
 <translation id="3916998944874125962">צילום מסך</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">עוצמת אות</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="473775607612524610">עדכון</translation>
+<translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
 <translation id="4771607256327216405">מקלדת בהירה</translation>
 <translation id="4773299976671772492">הופסק</translation>
 <translation id="4782311465517282004">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">להפעיל את המצב הכהה באופן אוטומטי?</translation>
 <translation id="5154917547274118687">זיכרון</translation>
 <translation id="5160857336552977725">יש להיכנס אל ה-<ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">ההגדרות של התשובות המהירות</translation>
 <translation id="5168185087976003268">תקינות הסוללה</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5180712487038406644">אקספרסיבי</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5630438231335788050">באוהאוס</translation>
 <translation id="5631759159893697722">תקציר</translation>
-<translation id="5649768706273821470">האזנה</translation>
 <translation id="5654356773042347102">שושנת העמקים</translation>
 <translation id="5655283760733841251">הגברת הבהירות של המקלדת</translation>
 <translation id="5655296450510165335">שיוך מכשיר לארגון</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">שינוי הסיסמה הסתיים בהצלחה. עליך להשתמש בסיסמה החדשה מעתה ואילך.</translation>
 <translation id="7763470514545477072">התאמה של סיומות אתרים</translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
-<translation id="7770834998503326261">מידע נוסף שקשור לבחירה שלך</translation>
 <translation id="7778717409420828014">‏המשוב שלך ייבדק על ידי הצוות שלנו ויעזור בשיפור חוויית השימוש ב-Chromebook. אנחנו מקבלים הרבה דיווחים, ולכן לא נוכל לשלוח תשובה.</translation>
 <translation id="7784116172884276937">‏לא הוגדרו שרתי DNS</translation>
 <translation id="7791543448312431591">הוספה</translation>

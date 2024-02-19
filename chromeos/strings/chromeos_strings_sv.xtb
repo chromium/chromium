@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Slutpunkt</translation>
 <translation id="3069085583900247081">Testet misslyckades</translation>
+<translation id="3078740164268491126">tabell</translation>
 <translation id="3083667275341675831">Anslutningsdiagnostik</translation>
 <translation id="3084958266922136097">Inaktivera skärmsläckare</translation>
 <translation id="3091839911843451378">Misslyckades – skrivaren har stannat</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369013195428705271">Vill du rensa all utskriftshistorik? De pågående utskriftsjobben rensas inte.</translation>
 <translation id="3373141842870501561">Bakgrund med jorden</translation>
-<translation id="337375748120863155">Information om det som är markerat. Använd vänster- eller högerpil för att komma åt kontrollerna.</translation>
 <translation id="3383623117265110236">Exklusivt</translation>
 <translation id="3404249063913988450">Aktivera skärmsläckare</translation>
 <translation id="3413935475507503304">Klicka på Nästa om du vill fortsätta med uppdateringen.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Beskrivning</translation>
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
 <translation id="3885327323343477505">Ändra skärmsläckare</translation>
-<translation id="3892148308691398805">Kopiera text</translation>
 <translation id="391412459402535266">Det gick inte att testa enheten. Byt till laptopläge för att testa.</translation>
 <translation id="3916998944874125962">ta skärmbild</translation>
 <translation id="3923184630988645767">Dataanvändning</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Signalstyrka</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="473775607612524610">Uppdatera</translation>
+<translation id="4744944742468440486">Information om det som är markerat</translation>
 <translation id="4771607256327216405">öka ljusstyrkan på tangentbordet</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
 <translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Vill du aktivera mörkt läge automatiskt?</translation>
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5160857336552977725">Logga in på din <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Inställningar för snabbinfo</translation>
 <translation id="5168185087976003268">Batterihälsa</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5180712487038406644">Uttrycksfull</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Endast internt</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
-<translation id="5649768706273821470">Lyssna</translation>
 <translation id="5654356773042347102">liljekonvalj</translation>
 <translation id="5655283760733841251">Tangenten som ökar ljusstyrkan på tangentbordet</translation>
 <translation id="5655296450510165335">Enhetsregistrering</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Lösenordet har bytts. Använd det nya lösenordet i fortsättningen.</translation>
 <translation id="7763470514545477072">Matchning av domänsuffix</translation>
 <translation id="7769672763586021400">Modell-id</translation>
-<translation id="7770834998503326261">Ytterligare information om det som är markerat</translation>
 <translation id="7778717409420828014">Din feedback hjälper oss att förbättra Chromebook-upplevelsen och granskas av vårt team. Vi får många rapporter och därför kan vi inte svara på dem.</translation>
 <translation id="7784116172884276937">Inga DNS-servrar har konfigurerats</translation>
 <translation id="7791543448312431591">Lägg till</translation>

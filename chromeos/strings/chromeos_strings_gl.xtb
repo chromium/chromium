@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3069085583900247081">Produciuse un erro durante a proba</translation>
+<translation id="3078740164268491126">táboa</translation>
 <translation id="3083667275341675831">Diagnósticos de conectividade</translation>
 <translation id="3084958266922136097">Desactivar salvapantallas</translation>
 <translation id="3091839911843451378">Produciuse un erro: a impresora está detida</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
 <translation id="3373141842870501561">Fondo de pantalla Fluxo da Terra</translation>
-<translation id="337375748120863155">Información relacionada coa túa selección. Usa as teclas Frecha dereita ou Frecha esquerda para acceder aos controis.</translation>
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Activar protector de pantalla</translation>
 <translation id="3413935475507503304">Para continuar coa actualización, fai clic en Seguinte.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Descrición</translation>
 <translation id="387301095347517405">Número de veces que a batería se someteu a un ciclo de carga completo</translation>
 <translation id="3885327323343477505">Cambiar protector de pantalla</translation>
-<translation id="3892148308691398805">Copiar texto</translation>
 <translation id="391412459402535266">Non se puido realizar a proba do dispositivo. Cambia ao modo de ordenador portátil para realizala.</translation>
 <translation id="3916998944874125962">facer unha captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Intensidade do sinal</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
+<translation id="4744944742468440486">Información relacionada coa túa selección</translation>
 <translation id="4771607256327216405">iluminación do teclado</translation>
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Queres activar o modo escuro automaticamente?</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Inicia sesión no teu <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Configuración de Respostas rápidas</translation>
 <translation id="5168185087976003268">Estado da batería</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5180712487038406644">Expresivo</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">resumo</translation>
-<translation id="5649768706273821470">Escoitar</translation>
 <translation id="5654356773042347102">lirio do val</translation>
 <translation id="5655283760733841251">Aumentar brillo do teclado</translation>
 <translation id="5655296450510165335">Inscrición do dispositivo</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Cambiaches o contrasinal correctamente. A partir de agora, utiliza o novo.</translation>
 <translation id="7763470514545477072">Coincidencia do sufixo de dominio</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
-<translation id="7770834998503326261">Información adicional relacionada coa túa selección</translation>
 <translation id="7778717409420828014">O noso equipo revisará os teus comentarios, que nos axudan a mellorar a experiencia que ofrecemos cos Chromebooks. Non imos poder enviar unha resposta debido ao gran número de informes que recibimos.</translation>
 <translation id="7784116172884276937">Non hai ningún servidor DNS configurado</translation>
 <translation id="7791543448312431591">Engadir</translation>

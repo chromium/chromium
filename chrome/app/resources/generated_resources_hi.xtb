@@ -7837,6 +7837,7 @@
 <translation id="7044606776288350625">डेटा सिंक करें</translation>
 <translation id="7047059339731138197">कोई बैकग्राउंड चुनें</translation>
 <translation id="7049293980323620022">फ़ाइल रखें?</translation>
+<translation id="7049524156282610342">ब्राउज़िंग डेटा <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">हॉटस्पॉट का कॉन्फ़िगरेशन गलत है</translation>
 <translation id="7052237160939977163">निष्पादन ट्रेस डेटा भेजें</translation>
 <translation id="7053983685419859001">ब्लॉक करें</translation>
@@ -8553,6 +8554,7 @@
 <translation id="7630426712700473382">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है. आपको हर बार साइन इन करना होगा.</translation>
 <translation id="7631014249255418691">Linux ऐप्लिकेशन और फ़ाइलों का बैकअप ले लिया गया है</translation>
 <translation id="7631887513477658702">इस प्रकार की फ़ाइलें &amp;हमेशा खोलें</translation>
+<translation id="7632437836497571618">साइटें खोजने के लिए सुरक्षित कनेक्शन का इस्तेमाल करें</translation>
 <translation id="7632948528260659758">निम्‍न किऑस्क&amp;#0; ऐप्‍स अपडेट होने में विफल रहे:</translation>
 <translation id="7633724038415831385">अपडेट के लिए, आपको सिर्फ़ इस बार इंतज़ार करना होगा. Chromebooks पर सॉफ़्टवेयर, बैकग्राउंड में अपडेट होते हैं.</translation>
 <translation id="7634337648687970851">फ़िलहाल, लोकल डेटा रिकवरी की सुविधा उपलब्ध नहीं है.</translation>
@@ -8814,6 +8816,7 @@
 <translation id="7803657407897251194">अपने Android डिवाइस की मदद से सेटअप जारी रखने के लिए, अपने <ph name="DEVICE_TYPE" /> को नेटवर्क से कनेक्ट करें</translation>
 <translation id="7804072833593604762">टैब बंद है</translation>
 <translation id="780446144738273886">PDF फ़ाइल को स्कैन करें, ताकि स्क्रीन रीडर से टेक्स्ट निकाला जा सके. यह सुविधा सिर्फ़ Chrome ब्राउज़र पर काम करती है</translation>
+<translation id="7805371082115476536">कम संवेदनशीलता</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7805906048382884326">सलाह बंद करें</translation>
 <translation id="7806722269368320106">एक ऐप्लिकेशन इंस्टॉल हो रहा है</translation>

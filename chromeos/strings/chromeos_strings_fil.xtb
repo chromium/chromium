@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Nabigo ang pagsubok</translation>
+<translation id="3078740164268491126">talahanayan</translation>
 <translation id="3083667275341675831">Mga Diagnostic sa Pagkakonekta</translation>
 <translation id="3084958266922136097">I-disable ang screen saver</translation>
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
 <translation id="3373141842870501561">Wallpaper na paggalaw ng mundo</translation>
-<translation id="337375748120863155">Impormasyong nauugnay sa iyong pinili. Gamitin ang Pakaliwa o Pakanang arrow key para i-access ang mga kontrol.</translation>
 <translation id="3383623117265110236">Eksklusibo</translation>
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
 <translation id="3413935475507503304">Para magpatuloy sa update, i-click ang Susunod.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Paglalarawan</translation>
 <translation id="387301095347517405">Ang dami ng beses na na-full charge ang iyong baterya</translation>
 <translation id="3885327323343477505">Palitan ang screen saver</translation>
-<translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="391412459402535266">Hindi masuri ang device. Lumipat sa laptop mode para suriin.</translation>
 <translation id="3916998944874125962">kumuha ng screenshot</translation>
 <translation id="3923184630988645767">Paggamit ng data</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Lakas ng Signal</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="473775607612524610">I-update</translation>
+<translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
 <translation id="4771607256327216405">pagliliwanag ng keyboard</translation>
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Awtomatikong i-on ang dark mode?</translation>
 <translation id="5154917547274118687">Memorya</translation>
 <translation id="5160857336552977725">Mag-sign in sa iyong <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Mga setting ng instant na impormasyon</translation>
 <translation id="5168185087976003268">Tagal ng baterya</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5180712487038406644">Expressive</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Internal lang</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
-<translation id="5649768706273821470">Pakinggan</translation>
 <translation id="5654356773042347102">lily of the valley</translation>
 <translation id="5655283760733841251">Taasan ang liwanag ng keyboard</translation>
 <translation id="5655296450510165335">Pag-enroll ng device</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Matagumpay ang iyong pagpapalit ng password. Pakigamit ang bagong password mula ngayon.</translation>
 <translation id="7763470514545477072">Pagtugma sa domain suffix</translation>
 <translation id="7769672763586021400">Model ID</translation>
-<translation id="7770834998503326261">Karagdagang impormasyon kaugnay ng iyong pinili</translation>
 <translation id="7778717409420828014">Nakakatulong ang iyong feedback sa amin para mapahusay ang experience sa Chromebook at susuriin ito ng aming team. Dahil sa napakaraming ulat, hindi kami makakapagpadala ng sagot.</translation>
 <translation id="7784116172884276937">Walang naka-set up na DNS server</translation>
 <translation id="7791543448312431591">Idagdag</translation>

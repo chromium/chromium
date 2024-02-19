@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1012241361789814178">调试程序已在另一个标签页中暂停，点击可切换到该标签页。</translation>
 <translation id="1088086359088493902">秒</translation>
 <translation id="1142001580032786438">显示星期选择器</translation>
 <translation id="1171774979989969504">请输入电子邮件地址。</translation>

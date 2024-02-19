@@ -7783,6 +7783,7 @@
 <translation id="7044606776288350625">同步数据</translation>
 <translation id="7047059339731138197">选择背景</translation>
 <translation id="7049293980323620022">要保留文件吗？</translation>
+<translation id="7049524156282610342"><ph name="DISPLAY_NAME" />的浏览数据</translation>
 <translation id="7050037487872780845">热点配置无效</translation>
 <translation id="7052237160939977163">发送性能跟踪数据</translation>
 <translation id="7053983685419859001">禁止</translation>
@@ -8496,6 +8497,7 @@
 <translation id="7630426712700473382">此设备由 <ph name="MANAGER" /> 管理，要求您每次使用前必须先登录。</translation>
 <translation id="7631014249255418691">已成功备份 Linux 应用和文件</translation>
 <translation id="7631887513477658702">总是打开此类文件(&amp;A)</translation>
+<translation id="7632437836497571618">使用安全连接查找网站</translation>
 <translation id="7632948528260659758">以下自助服务终端应用未能成功更新：</translation>
 <translation id="7633724038415831385">只有这一次，您需要等待系统完成更新。Chromebook 上的软件更新会在后台进行。</translation>
 <translation id="7634337648687970851">目前不支持本地数据恢复。</translation>
@@ -8757,6 +8759,7 @@
 <translation id="7803657407897251194">如要使用 Android 设备继续设置，请将 <ph name="DEVICE_TYPE" /> 连接到网络</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
 <translation id="780446144738273886">扫描 PDF 文件以提取文本供屏幕阅读器朗读。仅适用于 Chrome 浏览器</translation>
+<translation id="7805371082115476536">轻</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7805906048382884326">关闭提示</translation>
 <translation id="7806722269368320106">一款应用，正在安装</translation>

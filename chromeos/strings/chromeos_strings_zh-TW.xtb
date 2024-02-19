@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">端點</translation>
 <translation id="3069085583900247081">未通過測試</translation>
+<translation id="3078740164268491126">表格</translation>
 <translation id="3083667275341675831">連線診斷工具</translation>
 <translation id="3084958266922136097">停用螢幕保護程式</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
 <translation id="3373141842870501561">地球動態桌布</translation>
-<translation id="337375748120863155">所選內容的相關資訊。使用向左鍵或向右鍵即可存取控制項。</translation>
 <translation id="3383623117265110236">專屬</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
 <translation id="3413935475507503304">如要繼續執行更新作業，請按「下一步」</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">說明</translation>
 <translation id="387301095347517405">電池經過的完整充電循環次數</translation>
 <translation id="3885327323343477505">變更螢幕保護程式</translation>
-<translation id="3892148308691398805">複製文字</translation>
 <translation id="391412459402535266">無法測試裝置。請切換成筆電模式進行測試。</translation>
 <translation id="3916998944874125962">拍攝螢幕截圖</translation>
 <translation id="3923184630988645767">數據用量</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">訊號強度</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4744944742468440486">所選內容的相關資訊</translation>
 <translation id="4771607256327216405">提高鍵盤亮度</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4782311465517282004">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">要自動開啟深色模式嗎？</translation>
 <translation id="5154917547274118687">記憶體</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">快速解答設定</translation>
 <translation id="5168185087976003268">電池健康度</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5180712487038406644">栩栩如生</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">僅供內部使用</translation>
 <translation id="5630438231335788050">包浩斯</translation>
 <translation id="5631759159893697722">摘要</translation>
-<translation id="5649768706273821470">聆聽</translation>
 <translation id="5654356773042347102">鈴蘭</translation>
 <translation id="5655283760733841251">鍵盤亮度調高</translation>
 <translation id="5655296450510165335">裝置註冊</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">已成功變更你的密碼。請從現在開始改用新的密碼。</translation>
 <translation id="7763470514545477072">網域字尾比對</translation>
 <translation id="7769672763586021400">型號 ID</translation>
-<translation id="7770834998503326261">與所選內容有關的其他資訊</translation>
 <translation id="7778717409420828014">你的意見將有助於我們改善 Chromebook 體驗，我們的團隊會檢閱你提供的內容。由於回報數量眾多，我們不會逐一回覆。</translation>
 <translation id="7784116172884276937">尚未設定任何 DNS 伺服器</translation>
 <translation id="7791543448312431591">新增</translation>

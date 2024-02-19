@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Eindpunt</translation>
 <translation id="3069085583900247081">Toets het misluk</translation>
+<translation id="3078740164268491126">tabel</translation>
 <translation id="3083667275341675831">Konnektiwiteitdiagnostiek</translation>
 <translation id="3084958266922136097">Deaktiveer sluimerskerm</translation>
 <translation id="3091839911843451378">Misluk – Gestop</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
 <translation id="3373141842870501561">Aardevloeimuurpapier</translation>
-<translation id="337375748120863155">Inligting wat met jou keuse verband hou. Gebruik links- of regspylsleutel om toegang tot kontroles te kry.</translation>
 <translation id="3383623117265110236">Eksklusief</translation>
 <translation id="3404249063913988450">Aktiveer sluimerskerm</translation>
 <translation id="3413935475507503304">Klik Volgende om met die opdatering voort te gaan.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Beskrywing</translation>
 <translation id="387301095347517405">Die aantal keer wat jou battery deur 'n volledige laaisiklus gegaan het</translation>
 <translation id="3885327323343477505">Verander sluimerskerm</translation>
-<translation id="3892148308691398805">Kopieer teks</translation>
 <translation id="391412459402535266">Kan nie toestel toets nie. Skakel oor na skootrekenaarmodus om te toets.</translation>
 <translation id="3916998944874125962">neem skermskoot</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Seinsterkte</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="473775607612524610">Dateer op</translation>
+<translation id="4744944742468440486">Inligting wat met jou keuse verband hou</translation>
 <translation id="4771607256327216405">sleutelbord verhelder</translation>
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4782311465517282004">Kry definisies, vertalings of eenheidomskakelings wanneer jy regsklik of teks raak en hou</translation>
@@ -595,13 +595,13 @@
 <translation id="5088172560898466307">Bediener se gasheernaam</translation>
 <translation id="5089810972385038852">Deelstaat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5107243100836678918">Kortpad sonder <ph name="META_KEY" />-sleutel kan dalk met sommige apps se kortpad bots. Druk weer hierdie kortpad om voort te gaan om dit te gebruik, of druk ’n nuwe kortpad deur die <ph name="KEY" />-sleutel te gebruik. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Soortgelyk:</translation>
 <translation id="5137451382116112100">Vol</translation>
 <translation id="5142961317498132443">Stawing</translation>
 <translation id="5145081769226915336">Skakel donkermodus outomaties aan?</translation>
 <translation id="5154917547274118687">Geheue</translation>
 <translation id="5160857336552977725">Meld by jou <ph name="DEVICE_TYPE" /> aan</translation>
-<translation id="5166918508782100047">Vinnige Antwoorde-instellings</translation>
 <translation id="5168185087976003268">Batterygesondheid</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5180712487038406644">Uitdrukkingsvol</translation>
@@ -666,7 +666,6 @@
 <translation id="5620281292257375798">Slegs intern</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">opsomming</translation>
-<translation id="5649768706273821470">Luister</translation>
 <translation id="5654356773042347102">lelie van die vallei</translation>
 <translation id="5655283760733841251">Verhoog sleutelbordhelderheid</translation>
 <translation id="5655296450510165335">Toestelinskrywing</translation>
@@ -989,7 +988,6 @@
 <translation id="7762130827864645708">Jou wagwoord is suksesvol verander. Gebruik asseblief van nou af die nuwe wagwoord.</translation>
 <translation id="7763470514545477072">Passing vir domein-agtervoegsel</translation>
 <translation id="7769672763586021400">Model-ID</translation>
-<translation id="7770834998503326261">Bykomende inligting wat met jou keuse verband hou</translation>
 <translation id="7778717409420828014">Jou terugvoer help ons om die Chromebook-ervaring beter te maak en sal deur ons span nagegaan word. Weens die groot aantal verslae sal ons nie ’n antwoord kan stuur nie.</translation>
 <translation id="7784116172884276937">Geen DNS-bedieners is opgestel nie</translation>
 <translation id="7791543448312431591">Voeg by</translation>

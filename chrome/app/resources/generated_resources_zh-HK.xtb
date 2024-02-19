@@ -7829,6 +7829,7 @@
 <translation id="7044606776288350625">同步處理資料</translation>
 <translation id="7047059339731138197">選擇背景</translation>
 <translation id="7049293980323620022">要保留檔案嗎？</translation>
+<translation id="7049524156282610342">瀏覽資料 - <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">無效的熱點設定</translation>
 <translation id="7052237160939977163">傳送效能追蹤數據</translation>
 <translation id="7053983685419859001">封鎖</translation>
@@ -8545,6 +8546,7 @@
 <translation id="7630426712700473382">此裝置由 <ph name="MANAGER" /> 管理，每次使用均需要登入。</translation>
 <translation id="7631014249255418691">已成功備份 Linux 應用程式和檔案</translation>
 <translation id="7631887513477658702">保持開啟這類檔案(&amp;A)</translation>
+<translation id="7632437836497571618">使用安全連線查詢網站</translation>
 <translation id="7632948528260659758">下列 Kiosk 應用程式更新失敗：</translation>
 <translation id="7633724038415831385">只有這一次需要等待更新。Chromebook 上的軟件更新會在背景中執行。</translation>
 <translation id="7634337648687970851">目前不支援本機資料復原。</translation>
@@ -8807,6 +8809,7 @@
 <translation id="7803657407897251194">如要繼續使用 Android 裝置進行設定，請將 <ph name="DEVICE_TYPE" /> 連接網絡</translation>
 <translation id="7804072833593604762">閂咗分頁</translation>
 <translation id="780446144738273886">掃瞄 PDF，擷取文字俾螢幕閱讀器讀出嚟 (淨係 Chrome 瀏覽器適用)</translation>
+<translation id="7805371082115476536">輕</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7805906048382884326">閂提示</translation>
 <translation id="7806722269368320106">應用程式安裝緊</translation>

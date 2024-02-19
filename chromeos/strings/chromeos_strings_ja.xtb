@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">エンドポイント</translation>
 <translation id="3069085583900247081">テストに失敗しました</translation>
+<translation id="3078740164268491126">表</translation>
 <translation id="3083667275341675831">接続診断</translation>
 <translation id="3084958266922136097">スクリーン セーバーを無効にする</translation>
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
 <translation id="3373141842870501561">「地球の動き」の壁紙</translation>
-<translation id="337375748120863155">選択した項目に関連する情報。左右矢印キーで操作できます。</translation>
 <translation id="3383623117265110236">限定</translation>
 <translation id="3404249063913988450">スクリーン セーバーを有効にする</translation>
 <translation id="3413935475507503304">更新を進めるには、[次へ] をクリックしてください。</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">説明</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
 <translation id="3885327323343477505">スクリーン セーバーを変更</translation>
-<translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="391412459402535266">デバイスをテストできません。テストするにはノートパソコン モードに切り替えます。</translation>
 <translation id="3916998944874125962">スクリーンショットを撮る</translation>
 <translation id="3923184630988645767">データ使用</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">電波強度</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4744944742468440486">選択した項目に関連する情報</translation>
 <translation id="4771607256327216405">キーボードを明るく</translation>
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4782311465517282004">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">ダークモードを自動的にオンにしますか？</translation>
 <translation id="5154917547274118687">メモリ</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> にログインしてください</translation>
-<translation id="5166918508782100047">クイック アンサーの設定</translation>
 <translation id="5168185087976003268">電池の状態</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5180712487038406644">Expressive</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5630438231335788050">バウハウス</translation>
 <translation id="5631759159893697722">概要</translation>
-<translation id="5649768706273821470">聴く</translation>
 <translation id="5654356773042347102">スズラン</translation>
 <translation id="5655283760733841251">キーボードの明るさを上げる</translation>
 <translation id="5655296450510165335">デバイスの登録</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>
 <translation id="7763470514545477072">ドメイン サフィックス マッチ</translation>
 <translation id="7769672763586021400">モデル ID</translation>
-<translation id="7770834998503326261">選択した項目に関連する追加情報</translation>
 <translation id="7778717409420828014">お送りいただいたフィードバックは、担当チームで確認し、Chromebook の操作性向上に役立てさせていただきます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="7784116172884276937">DNS サーバーが設定されていません</translation>
 <translation id="7791543448312431591">追加</translation>

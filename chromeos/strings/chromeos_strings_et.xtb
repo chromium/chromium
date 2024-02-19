@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Lõpp-punkt</translation>
 <translation id="3069085583900247081">Test ebaõnnestus</translation>
+<translation id="3078740164268491126">tabel</translation>
 <translation id="3083667275341675831">Ühenduvuse diagnostika</translation>
 <translation id="3084958266922136097">Ekraanisäästja keelamine</translation>
 <translation id="3091839911843451378">Ebaõnnestus – peatatud</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Ühendatud</translation>
 <translation id="3369013195428705271">Kas soovite kindlasti kogu printimise ajaloo kustutada? Teie pooleliolevaid prinditöid ei kustutata.</translation>
 <translation id="3373141842870501561">Maa pöörlemise ekraanisäästja</translation>
-<translation id="337375748120863155">Teie valikuga seotud teave. Kasutage juhtelementidele juurdepääsuks vasak- ja paremnoolt.</translation>
 <translation id="3383623117265110236">Eksklusiivne</translation>
 <translation id="3404249063913988450">Ekraanisäästja lubamine</translation>
 <translation id="3413935475507503304">Värskendamisega jätkamiseks klõpsake nupul Järgmine.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Kirjeldus</translation>
 <translation id="387301095347517405">See arv näitab, mitu korda on teie seadme aku läbinud täieliku laadimistsükli</translation>
 <translation id="3885327323343477505">Muuda ekraanisäästjat</translation>
-<translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="391412459402535266">Seadet ei saa testida. Testimiseks lülituge sülearvutirežiimile.</translation>
 <translation id="3916998944874125962">teeb kuvatõmmise</translation>
 <translation id="3923184630988645767">Andmekasutus</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Signaali tugevus</translation>
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="473775607612524610">Värskenda</translation>
+<translation id="4744944742468440486">Teie valikuga seotud teave</translation>
 <translation id="4771607256327216405">klaviatuuri heledamaks muutmine</translation>
 <translation id="4773299976671772492">Peatatud</translation>
 <translation id="4782311465517282004">Hankige tekstil paremklõpsates või seda pikalt puudutades definitsioone, tõlkeid või ühikute teisendusi.</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Kas lülitada tume režiim automaatselt sisse?</translation>
 <translation id="5154917547274118687">Mälu</translation>
 <translation id="5160857336552977725">Logige sisse seadmesse <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Kiirvastuste seaded</translation>
 <translation id="5168185087976003268">Aku seisukord</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5180712487038406644">Ilmekas</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Ainult sisemine</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstraktne</translation>
-<translation id="5649768706273821470">Esita</translation>
 <translation id="5654356773042347102">maikelluke</translation>
 <translation id="5655283760733841251">Klaviatuuri ereduse suurendamine</translation>
 <translation id="5655296450510165335">Seadme registreerimine</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Parooli muutmine õnnestus. Edaspidi kasutage uut parooli.</translation>
 <translation id="7763470514545477072">Domeenisufiksi vaste</translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
-<translation id="7770834998503326261">Teie valikuga seotud lisateave</translation>
 <translation id="7778717409420828014">Teie tagasiside aitab meil parandada Chromebooki kasutuskogemust ja meie tiim vaatab selle üle. Kuna saame rohkelt teavitusi, ei saa me teile vastata.</translation>
 <translation id="7784116172884276937">Seadistatud pole ühtegi DNS-serverit</translation>
 <translation id="7791543448312431591">Lisa</translation>

@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Point d'extrémité</translation>
 <translation id="3069085583900247081">Échec du test</translation>
+<translation id="3078740164268491126">Tableau</translation>
 <translation id="3083667275341675831">Diagnostics de connectivité</translation>
 <translation id="3084958266922136097">Désactiver l'écran de veille</translation>
 <translation id="3091839911843451378">Échec : imprimante arrêtée</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
 <translation id="3373141842870501561">Fond d'écran Earth Flow</translation>
-<translation id="337375748120863155">Renseignements relatifs à votre sélection. Utilisez les touches de flèche vers la droite ou vers la gauche pour accéder aux commandes.</translation>
 <translation id="3383623117265110236">Exclusif</translation>
 <translation id="3404249063913988450">Activer l'écran de veille</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Description</translation>
 <translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
 <translation id="3885327323343477505">Changer l'écran de veille</translation>
-<translation id="3892148308691398805">Copier le texte</translation>
 <translation id="391412459402535266">Impossible de tester l'appareil. Passer en mode ordinateur portable pour tester.</translation>
 <translation id="3916998944874125962">faire une capture d'écran</translation>
 <translation id="3923184630988645767">Utilisation de données</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Puissance du signal</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="473775607612524610">Mise à jour</translation>
+<translation id="4744944742468440486">Renseignements concernant votre sélection</translation>
 <translation id="4771607256327216405">augmenter la luminosité du clavier</translation>
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Activer automatiquement le mode Sombre?</translation>
 <translation id="5154917547274118687">Mémoire</translation>
 <translation id="5160857336552977725">Connexion à votre <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Paramètres des réponses rapides</translation>
 <translation id="5168185087976003268">État de la pile</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5180712487038406644">Expressive</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">résumé</translation>
-<translation id="5649768706273821470">Écouter</translation>
 <translation id="5654356773042347102">muguet de mai</translation>
 <translation id="5655283760733841251">Augmenter la luminosité du clavier</translation>
 <translation id="5655296450510165335">Inscription d'appareil</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">La modification de votre mot de passe a bien été effectuée. Veuillez utiliser le nouveau mot de passe à partir de maintenant.</translation>
 <translation id="7763470514545477072">Correspondance du suffixe de domaine</translation>
 <translation id="7769672763586021400">Identifiant de modèle</translation>
-<translation id="7770834998503326261">Renseignements supplémentaires concernant votre sélection</translation>
 <translation id="7778717409420828014">Vos commentaires nous aident à améliorer l'expérience sur les Chromebook et seront examinés par notre équipe. En raison du grand nombre de rapports, nous ne serons pas en mesure de vous envoyer de réponse.</translation>
 <translation id="7784116172884276937">Aucun serveur DNS n'est configuré</translation>
 <translation id="7791543448312431591">Ajouter</translation>

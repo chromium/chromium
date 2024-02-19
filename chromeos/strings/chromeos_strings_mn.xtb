@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мA</translation>
 <translation id="3056720590588772262">Төгсгөлийн цэг</translation>
 <translation id="3069085583900247081">Туршилт амжилтгүй боллоо</translation>
+<translation id="3078740164268491126">Хүснэгт</translation>
 <translation id="3083667275341675831">Холболтын оношилгоо</translation>
 <translation id="3084958266922136097">Дэлгэц амраагчийг идэвхгүй болгох</translation>
 <translation id="3091839911843451378">Амжилтгүй болсон - Зогссон</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3369013195428705271">Та хэвлэлийн бүх түүхийг арилгахдаа итгэлтэй байна уу? Таны хийж буй хэвлэлийн ажлуудыг арилгахгүй.</translation>
 <translation id="3373141842870501561">Хөрсний нуралтыг харуулсан дэлгэцийн зураг</translation>
-<translation id="337375748120863155">Таны сонголттой холбоотой мэдээлэл. Тохиргоонд хандахын тулд Зүүн эсвэл Баруун суман товчийг ашиглана уу.</translation>
 <translation id="3383623117265110236">Онцгой</translation>
 <translation id="3404249063913988450">Дэлгэц амраагчийг идэвхжүүлэх</translation>
 <translation id="3413935475507503304">Шинэчлэлтийг үргэлжлүүлэхийн тулд Дараах дээр товшино уу.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
 <translation id="3885327323343477505">Дэлгэц амраагчийг өөрчлөх</translation>
-<translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="391412459402535266">Төхөөрөмжийг турших боломжгүй байна. Туршихын тулд зөөврийн компьютерын горим руу сэлгэнэ үү</translation>
 <translation id="3916998944874125962">дэлгэцийн зураг авах</translation>
 <translation id="3923184630988645767">Дата ашиглалт</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Дохионы хүч</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
+<translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>
 <translation id="4771607256327216405">гарыг илүү гэрэлтүүлэх</translation>
 <translation id="4773299976671772492">Зогссон</translation>
 <translation id="4782311465517282004">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Бараан горимыг автоматаар асаах уу?</translation>
 <translation id="5154917547274118687">Санах ойн</translation>
 <translation id="5160857336552977725">Өөрийн <ph name="DEVICE_TYPE" /> руу нэвтэрч орно уу</translation>
-<translation id="5166918508782100047">Шуурхай хариултын тохиргоо</translation>
 <translation id="5168185087976003268">Батарей барилт</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5180712487038406644">Илэрхийлэлтэй</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">хураангуй</translation>
-<translation id="5649768706273821470">Сонсох</translation>
 <translation id="5654356773042347102">хөндийн сараана цэцэг</translation>
 <translation id="5655283760733841251">Гарны гэрэлтүүлгийг нэмэгдүүлэх</translation>
 <translation id="5655296450510165335">Төхөөрөмж бүртгүүлэх</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>
 <translation id="7763470514545477072">Домэйн дагаврын тохирол</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
-<translation id="7770834998503326261">Таны сонголттой холбоотой нэмэлт мэдээлэл</translation>
 <translation id="7778717409420828014">Таны санал хүсэлт бидэнд Chromebook-н хэрэглээг сайжруулахад тусалдаг бөгөөд үүнийг манай баг шалгана. Олон тооны мэдээлэл ирдэг тул бид хариу илгээх боломжгүй.</translation>
 <translation id="7784116172884276937">Тохируулсан DNS сервер байхгүй</translation>
 <translation id="7791543448312431591">Нэмэх</translation>

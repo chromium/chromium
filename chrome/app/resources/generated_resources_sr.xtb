@@ -7821,6 +7821,7 @@
 <translation id="7044606776288350625">Синхронизација података</translation>
 <translation id="7047059339731138197">Изаберите позадину</translation>
 <translation id="7049293980323620022">Желите ли да задржите датотеку?</translation>
+<translation id="7049524156282610342">Подаци прегледања за корисника <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Неважећа конфигурација хотспота</translation>
 <translation id="7052237160939977163">Шаљи податке о праћењу учинка</translation>
 <translation id="7053983685419859001">Блокирај</translation>
@@ -8538,6 +8539,7 @@
 <translation id="7630426712700473382"><ph name="MANAGER" /> управља овим уређајем и захтева да се пријавите сваки пут.</translation>
 <translation id="7631014249255418691">Направљена је резервна копија Linux апликација и датотека</translation>
 <translation id="7631887513477658702">&amp;Увек отвори датотеке овог типа</translation>
+<translation id="7632437836497571618">Користите безбедне везе да бисте тражили сајтове</translation>
 <translation id="7632948528260659758">Ажурирање следећих киоск апликација није успело:</translation>
 <translation id="7633724038415831385">Ово је једини тренутак када ћете чекати на ажурирање. На Chromebook-у се софтвер ажурира у позадини.</translation>
 <translation id="7634337648687970851">Опоравак локалних података тренутно није подржан.</translation>
@@ -8800,6 +8802,7 @@
 <translation id="7803657407897251194">Да бисте наставили са подешавањем Android уређаја, повежите <ph name="DEVICE_TYPE" /> са мрежом</translation>
 <translation id="7804072833593604762">Картица је затворена</translation>
 <translation id="780446144738273886">Скенирајте PDF да бисте издвојили текст за читач екрана. Подржано само у Chrome прегледачу</translation>
+<translation id="7805371082115476536">Мала</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7805906048382884326">Затвори савет</translation>
 <translation id="7806722269368320106">Апликација, инсталира се</translation>

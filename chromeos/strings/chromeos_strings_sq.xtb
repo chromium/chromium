@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Pika përfundimtare</translation>
 <translation id="3069085583900247081">Testi dështoi</translation>
+<translation id="3078740164268491126">tabela</translation>
 <translation id="3083667275341675831">Diagnostikimi i lidhshmërisë</translation>
 <translation id="3084958266922136097">Çaktivizo mbrojtësin e ekranit</translation>
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
 <translation id="3373141842870501561">Imazhi i sfondit për rrjedhën e tokës</translation>
-<translation id="337375748120863155">Informacione në lidhje me zgjedhjen tënde. Përdor tastet e shigjetave majtas ose djathtas për t'u qasur te kontrollet.</translation>
 <translation id="3383623117265110236">Ekskluzive</translation>
 <translation id="3404249063913988450">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="3413935475507503304">Kliko "Para" për të vazhduar me përditësimin.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Përshkrimi</translation>
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
-<translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="391412459402535266">Pajisja nuk mund të testohet. Kalo te modaliteti i laptopit për të kryer testin.</translation>
 <translation id="3916998944874125962">nxirr një pamje të ekranit</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Fuqia e sinjalit</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="473775607612524610">Përditësoje</translation>
+<translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
 <translation id="4771607256327216405">ndriço tastierën</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
 <translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Të çaktivizohet automatikisht modaliteti i errët?</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Identifikohu në <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Cilësimet e "Përgjigjeve të shpejta"</translation>
 <translation id="5168185087976003268">Integriteti i baterisë</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5180712487038406644">Ekspresiv</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
-<translation id="5649768706273821470">Dëgjo</translation>
 <translation id="5654356773042347102">zambak në luginë</translation>
 <translation id="5655283760733841251">Ngritja e ndriçimit të tastierës</translation>
 <translation id="5655296450510165335">Regjistrimi i pajisjes</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
 <translation id="7763470514545477072">Përputhje e prapashtesës së domenit</translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
-<translation id="7770834998503326261">Informacione shtesë në lidhje me zgjedhjen tënde</translation>
 <translation id="7778717409420828014">Komentet e tua na ndihmojnë të përmirësojmë përvojën me Chromebook dhe do të rishikohen nga ekipi ynë. Për shkak të numrit të lartë të raportimeve, nuk do të mund të dërgojmë një përgjigje.</translation>
 <translation id="7784116172884276937">Nuk është konfiguruar asnjë server DNS</translation>
 <translation id="7791543448312431591">Shtoje</translation>

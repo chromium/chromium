@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punct final</translation>
 <translation id="3069085583900247081">Testul nu a reușit</translation>
+<translation id="3078740164268491126">tabel</translation>
 <translation id="3083667275341675831">Diagnosticare pentru conectivitate</translation>
 <translation id="3084958266922136097">Dezactivează screensaverul</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
 <translation id="3373141842870501561">Imagine de fundal Earth Flow</translation>
-<translation id="337375748120863155">Informații despre selecția ta. Folosește tastele săgeată spre stânga sau spre dreapta pentru a accesa opțiunile.</translation>
 <translation id="3383623117265110236">Exclusive</translation>
 <translation id="3404249063913988450">Activează screensaverul</translation>
 <translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Descriere</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
 <translation id="3885327323343477505">Schimbă screensaverul</translation>
-<translation id="3892148308691398805">Copiază textul</translation>
 <translation id="391412459402535266">Nu se poate testa dispozitivul. Treci la modul laptop pentru a testa.</translation>
 <translation id="3916998944874125962">fă o captură de ecran</translation>
 <translation id="3923184630988645767">Utilizarea datelor</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Puterea semnalului</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="473775607612524610">Actualizează</translation>
+<translation id="4744944742468440486">Informații legate de selecția ta</translation>
 <translation id="4771607256327216405">mărirea luminozității tastaturii</translation>
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Activezi automat modul întunecat?</translation>
 <translation id="5154917547274118687">Memorie</translation>
 <translation id="5160857336552977725">Conectează-te la <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Setări pentru Răspunsuri rapide</translation>
 <translation id="5168185087976003268">Buna funcționare a bateriei:</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5180712487038406644">Expresiv</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Numai intern</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">rezumat</translation>
-<translation id="5649768706273821470">Ascultă</translation>
 <translation id="5654356773042347102">lăcrămioară</translation>
 <translation id="5655283760733841251">Creșterea luminozității tastaturii</translation>
 <translation id="5655296450510165335">Înregistrarea dispozitivului</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Parola a fost schimbată. Folosește noua parolă de acum înainte.</translation>
 <translation id="7763470514545477072">Potrivire a sufixului de domeniu</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
-<translation id="7770834998503326261">Informații suplimentare privind selecția ta</translation>
 <translation id="7778717409420828014">Feedbackul tău ne ajută să îmbunătățim experiența Chromebookurilor și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
 <translation id="7791543448312431591">Adaugă</translation>

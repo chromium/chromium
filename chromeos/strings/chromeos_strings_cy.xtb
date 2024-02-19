@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Diweddbwynt</translation>
 <translation id="3069085583900247081">Gwnaeth y prawf fethu</translation>
+<translation id="3078740164268491126">tabl</translation>
 <translation id="3083667275341675831">Diagnosteg Cysylltedd</translation>
 <translation id="3084958266922136097">Analluogi'r arbedydd sgrîn</translation>
 <translation id="3091839911843451378">Methwyd - Wedi'i stopio</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Wedi cysylltu</translation>
 <translation id="3369013195428705271">Ydych chi'n siŵr eich bod am glirio holl hanes argraffu? Ni fydd y tasgau argraffu sy'n mynd rhagddynt yn cael eu clirio.</translation>
 <translation id="3373141842870501561">Papur wal llif y ddaear</translation>
-<translation id="337375748120863155">Gwybodaeth yn ymwneud â'ch dewis. Defnyddiwch y bysellau saeth Chwith neu Dde i gael mynediad at reolyddion.</translation>
 <translation id="3383623117265110236">Unigryw</translation>
 <translation id="3404249063913988450">Galluogi'r arbedydd sgrîn</translation>
 <translation id="3413935475507503304">I barhau gyda'r diweddariad, cliciwch Nesaf.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Disgrifiad</translation>
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
 <translation id="3885327323343477505">Newid arbedwr sgrîn</translation>
-<translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="391412459402535266">Methu â phrofi'r ddyfais. Newid i'r modd gliniadur i brofi.</translation>
 <translation id="3916998944874125962">tynnu sgrinlun</translation>
 <translation id="3923184630988645767">Defnydd data</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Cryfder Signal</translation>
 <translation id="4731797938093519117">Mynediad rhieni</translation>
 <translation id="473775607612524610">Diweddaru</translation>
+<translation id="4744944742468440486">Gwybodaeth yn ymwneud â'ch dewis</translation>
 <translation id="4771607256327216405">goleuo bysellfwrdd</translation>
 <translation id="4773299976671772492">Wedi stopio</translation>
 <translation id="4782311465517282004">Cael diffiniadau, cyfieithiadau, neu drosiadau uned pan fyddwch yn de-glicio neu'n cyffwrdd a dal testun</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Troi'r modd tywyll ymlaen yn awtomatig?</translation>
 <translation id="5154917547274118687">Cof</translation>
 <translation id="5160857336552977725">Mewngofnodi i'ch <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Gosodiadau atebion cyflym</translation>
 <translation id="5168185087976003268">Iechyd y batri</translation>
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
 <translation id="5180712487038406644">Mynegiannol</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Mewnol yn unig</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">crynodeb</translation>
-<translation id="5649768706273821470">Gwrando</translation>
 <translation id="5654356773042347102">lili'r dyffrynnoedd</translation>
 <translation id="5655283760733841251">Disgleirdeb y bysellfwrdd i fyny</translation>
 <translation id="5655296450510165335">Cofrestru dyfais</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Gwnaethoch newid eich cyfrinair yn llwyddiannus. Defnyddiwch y cyfrinair newydd o hyn ymlaen.</translation>
 <translation id="7763470514545477072">Cyfateb ôl-ddodiad parth</translation>
 <translation id="7769672763586021400">Rhif adnabod y Model</translation>
-<translation id="7770834998503326261">Gwybodaeth ychwanegol yn ymwneud â'ch dewis</translation>
 <translation id="7778717409420828014">Mae eich adborth yn ein helpu i wella profiad Chromebook a bydd yn cael ei adolygu gan ein tîm. Oherwydd y nifer fawr o adroddiadau, ni fyddwn yn gallu anfon ateb.</translation>
 <translation id="7784116172884276937">Nid oes unrhyw weinyddion DNS wedi'u gosod</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>

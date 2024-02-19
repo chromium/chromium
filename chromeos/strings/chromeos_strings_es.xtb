@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punto final</translation>
 <translation id="3069085583900247081">Error en la prueba</translation>
+<translation id="3078740164268491126">tabla</translation>
 <translation id="3083667275341675831">Diagnóstico de conectividad</translation>
 <translation id="3084958266922136097">Inhabilitar salvapantallas</translation>
 <translation id="3091839911843451378">No se ha podido imprimir - Se ha detenido</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresión? Los trabajos de impresión en curso no se borrarán.</translation>
 <translation id="3373141842870501561">Fondo de pantalla Movimiento de la Tierra</translation>
-<translation id="337375748120863155">Información relacionada con tu selección. Usa las teclas de flecha hacia la izquierda o hacia la derecha para acceder a los controles.</translation>
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Habilitar salvapantallas</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Descripción</translation>
 <translation id="387301095347517405">El número de veces que la batería ha tenido un ciclo de carga completo</translation>
 <translation id="3885327323343477505">Cambiar salvapantallas</translation>
-<translation id="3892148308691398805">Copiar texto</translation>
 <translation id="391412459402535266">No se puede probar el dispositivo. Cambia al modo Portátil para hacer la prueba.</translation>
 <translation id="3916998944874125962">hacer captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Intensidad de la señal</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
+<translation id="4744944742468440486">Información relacionada con tu selección</translation>
 <translation id="4771607256327216405">aumentar brillo de teclado</translation>
 <translation id="4773299976671772492">Detenido</translation>
 <translation id="4782311465517282004">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">¿Activar el modo Oscuro automáticamente?</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Inicia sesión en tu <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Ajustes de Respuestas rápidas</translation>
 <translation id="5168185087976003268">Salud de la batería</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5180712487038406644">Colores expresivos</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Solo para uso interno</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">resumen</translation>
-<translation id="5649768706273821470">Escuchar</translation>
 <translation id="5654356773042347102">Lirio del valle</translation>
 <translation id="5655283760733841251">Aumentar el brillo del teclado</translation>
 <translation id="5655296450510165335">Registro de dispositivos</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Tu contraseña se ha cambiado correctamente. A partir de ahora, usa la nueva contraseña.</translation>
 <translation id="7763470514545477072">Coincidencia de sufijo de dominio</translation>
 <translation id="7769672763586021400">ID de modelo</translation>
-<translation id="7770834998503326261">Información adicional relacionada con tu selección</translation>
 <translation id="7778717409420828014">Tus comentarios nos ayudan a mejorar la experiencia en Chromebook y nuestro equipo los revisará. Recibimos muchos informes, por lo que no podremos enviarte una respuesta.</translation>
 <translation id="7784116172884276937">No hay servidores DNS configurados</translation>
 <translation id="7791543448312431591">Añadir</translation>

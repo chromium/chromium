@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Beigu punkts</translation>
 <translation id="3069085583900247081">Testēšana neizdevās</translation>
+<translation id="3078740164268491126">tabula</translation>
 <translation id="3083667275341675831">Savienojamības diagnostika</translation>
 <translation id="3084958266922136097">Atspējot ekrānsaudzētāju</translation>
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">pievienots</translation>
 <translation id="3369013195428705271">Vai tiešām vēlaties notīrīt visu drukāšanas vēsturi? Netiks notīrīti drukas uzdevumi, kas tiek izpildīti.</translation>
 <translation id="3373141842870501561">Fona tapete Zemes plūsma</translation>
-<translation id="337375748120863155">Ar jūsu atlasīto saturu saistīta informācija. Lai piekļūtu vadīklām, izmantojiet kreiso vai labo bultiņu.</translation>
 <translation id="3383623117265110236">Ekskluzīvi</translation>
 <translation id="3404249063913988450">Iespējot ekrānsaudzētāju</translation>
 <translation id="3413935475507503304">Lai veiktu atjaunināšanu, noklikšķiniet uz “Tālāk”.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Apraksts</translation>
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
 <translation id="3885327323343477505">Mainīt ekrānsaudzētāju</translation>
-<translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="391412459402535266">Nevar pārbaudīt ierīci. Lai pārbaudītu, pārejiet klēpjdatora režīmā.</translation>
 <translation id="3916998944874125962">izveidot ekrānuzņēmumu</translation>
 <translation id="3923184630988645767">Datu lietojums</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Signāla stiprums</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
+<translation id="4744944742468440486">Ar atlasīto saturu saistīta informācija</translation>
 <translation id="4771607256327216405">palielināt tastatūras spilgtumu</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4782311465517282004">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Vai automātiski ieslēgt tumšo režīmu?</translation>
 <translation id="5154917547274118687">Atmiņa</translation>
 <translation id="5160857336552977725">Pierakstieties ierīcē <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Ātro atbilžu iestatījumi</translation>
 <translation id="5168185087976003268">Akumulatora stāvoklis</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5180712487038406644">Izteiksmīga</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">kopsavilkums</translation>
-<translation id="5649768706273821470">Klausīties</translation>
 <translation id="5654356773042347102">maijpuķīte</translation>
 <translation id="5655283760733841251">Palielināt tastatūras spilgtumu</translation>
 <translation id="5655296450510165335">Ierīces reģistrācija</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Parole ir sekmīgi nomainīta. Lūdzu, turpmāk izmantojiet jauno paroli.</translation>
 <translation id="7763470514545477072">Domēna sufiksa atbilstība</translation>
 <translation id="7769672763586021400">Modeļa ID</translation>
-<translation id="7770834998503326261">Ar jūsu atlasi saistītā papildu informācija</translation>
 <translation id="7778717409420828014">Jūsu atsauksmes palīdz mums uzlabot Chromebook datora lietošanas iespējas, un mūsu komanda tās pārskatīs. Tā kā mēs saņemam ļoti daudz ziņojumu, nevarēsim atbildēt uz tiem visiem.</translation>
 <translation id="7784116172884276937">Neviens DNS serveris nav iestatīts</translation>
 <translation id="7791543448312431591">Pievienot</translation>

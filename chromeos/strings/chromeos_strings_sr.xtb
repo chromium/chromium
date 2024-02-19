@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Крајња тачка</translation>
 <translation id="3069085583900247081">Тест није успео</translation>
+<translation id="3078740164268491126">табела</translation>
 <translation id="3083667275341675831">Дијагностика повезивости</translation>
 <translation id="3084958266922136097">Онемогућите чувар екрана</translation>
 <translation id="3091839911843451378">Није успело – заустављено је</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Повезан</translation>
 <translation id="3369013195428705271">Желите ли стварно да обришете сву историју штампања? Задаци штампања који су у току се не бришу.</translation>
 <translation id="3373141842870501561">Позадина са Земљом</translation>
-<translation id="337375748120863155">Информације везане за ваш избор. Користите тастере са стрелицама налево или надесно да бисте приступили контролама.</translation>
 <translation id="3383623117265110236">Ексклузивно</translation>
 <translation id="3404249063913988450">Омогућите чувар екрана</translation>
 <translation id="3413935475507503304">Да бисте наставили са ажурирањем, кликните на Даље.</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Број пута када се батерија напунила до краја</translation>
 <translation id="3885327323343477505">Промените чувар екрана</translation>
-<translation id="3892148308691398805">Копирај текст</translation>
 <translation id="391412459402535266">Тестирање уређаја није успело. Пређите на режим лаптопа да бисте га тестирали.</translation>
 <translation id="3916998944874125962">снимите екран</translation>
 <translation id="3923184630988645767">Потрошња података</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Јачина сигнала</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="473775607612524610">Ажурирај</translation>
+<translation id="4744944742468440486">Информације везане за ваш избор</translation>
 <translation id="4771607256327216405">осветљавање тастатуре</translation>
 <translation id="4773299976671772492">Заустављено је</translation>
 <translation id="4782311465517282004">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Желите да аутоматски укључите тамни режим?</translation>
 <translation id="5154917547274118687">Меморија</translation>
 <translation id="5160857336552977725">Пријавите се на <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Подешавања брзих одговора</translation>
 <translation id="5168185087976003268">Стање батерије</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5180712487038406644">Изражајно</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">сажетак</translation>
-<translation id="5649768706273821470">Слушај</translation>
 <translation id="5654356773042347102">ђурђевак</translation>
 <translation id="5655283760733841251">Повећајте осветљеност тастатуре</translation>
 <translation id="5655296450510165335">Регистрација уређаја</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Лозинка је промењена. Од сада користите нову лозинку.</translation>
 <translation id="7763470514545477072">Подударање суфикса домена</translation>
 <translation id="7769672763586021400">ИД модела</translation>
-<translation id="7770834998503326261">Додатне информације у вези са вашим избором</translation>
 <translation id="7778717409420828014">Повратне информације нам помажу да побољшамо доживљај Chromebook-а и прегледаће их наш тим. Због великог броја извештаја не можемо да шаљемо одговоре.</translation>
 <translation id="7784116172884276937">Није подешен ниједан DNS сервер</translation>
 <translation id="7791543448312431591">Додај</translation>

@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3056720590588772262">Кінцева точка</translation>
 <translation id="3069085583900247081">Перевірку не пройдено</translation>
+<translation id="3078740164268491126">таблиця</translation>
 <translation id="3083667275341675831">Діагностика з'єднання</translation>
 <translation id="3084958266922136097">Деактивувати заставку</translation>
 <translation id="3091839911843451378">Не надруковано – друк зупинено</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
 <translation id="3373141842870501561">Фоновий малюнок "Поверхня землі"</translation>
-<translation id="337375748120863155">Інформація, пов’язана з виділеним текстом. Щоб отримати доступ до елементів керування, натискайте стрілки вліво або вправо.</translation>
 <translation id="3383623117265110236">Ексклюзивно</translation>
 <translation id="3404249063913988450">Активувати заставку</translation>
 <translation id="3413935475507503304">Щоб оновити, натисніть "Далі".</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
 <translation id="3885327323343477505">Змінити заставку</translation>
-<translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="391412459402535266">Не вдалося перевірити клавіатуру. Перейдіть у режим ноутбука й повторіть спробу.</translation>
 <translation id="3916998944874125962">зробити знімок екрана</translation>
 <translation id="3923184630988645767">Використання трафіку</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Потужність сигналу</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="473775607612524610">Оновити</translation>
+<translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>
 <translation id="4771607256327216405">зробити клавіатуру яскравішою</translation>
 <translation id="4773299976671772492">Зупинено</translation>
 <translation id="4782311465517282004">Щоб дізнатися визначення слова, перекласти його або конвертувати одиницю, натисніть правою кнопкою миші або натисніть і втримуйте потрібний текст</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Вмикати темний режим автоматично?</translation>
 <translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5160857336552977725">Увійдіть в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Налаштування швидких відповідей</translation>
 <translation id="5168185087976003268">Стан акумулятора</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5180712487038406644">Емоційна</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">автореферат</translation>
-<translation id="5649768706273821470">Слухати</translation>
 <translation id="5654356773042347102">конвалія</translation>
 <translation id="5655283760733841251">Збільшити яскравість клавіатури</translation>
 <translation id="5655296450510165335">Реєстрація пристрою</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Ваш пароль змінено. Відтепер використовуйте новий.</translation>
 <translation id="7763470514545477072">Збіг із суфіксом домену</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
-<translation id="7770834998503326261">Додаткова інформація, пов’язана з вибраним варіантом</translation>
 <translation id="7778717409420828014">Наша команда перегляне ваш відгук. Він допоможе нам покращити роботу Chromebook. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="7784116172884276937">DNS-сервери не налаштовано</translation>
 <translation id="7791543448312431591">Додати</translation>

@@ -7835,6 +7835,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7044606776288350625">데이터 동기화</translation>
 <translation id="7047059339731138197">백그라운드를 선택합니다.</translation>
 <translation id="7049293980323620022">파일을 보관하시겠습니까?</translation>
+<translation id="7049524156282610342">인터넷 사용 기록 <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">핫스팟 구성이 잘못됨</translation>
 <translation id="7052237160939977163">성능 추적 데이터 전송</translation>
 <translation id="7053983685419859001">차단</translation>
@@ -8551,6 +8552,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7630426712700473382">이 기기는 <ph name="MANAGER" />에서 관리하며, 사용할 때마다 로그인해야 합니다.</translation>
 <translation id="7631014249255418691">Linux 앱 및 파일이 성공적으로 백업되었습니다.</translation>
 <translation id="7631887513477658702">해당 유형의 파일 항상 열기(&amp;A)</translation>
+<translation id="7632437836497571618">보안 연결을 사용하여 사이트 조회하기</translation>
 <translation id="7632948528260659758">다음 키오스크 앱을 업데이트하지 못했습니다.</translation>
 <translation id="7633724038415831385">이번에만 업데이트를 기다리시면 됩니다. Chromebook에서는 소프트웨어 업데이트가 백그라운드에서 이루어집니다.</translation>
 <translation id="7634337648687970851">로컬 데이터 복구는 현재 지원되지 않습니다.</translation>
@@ -8813,6 +8815,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7803657407897251194">Android 기기로 설정을 계속하려면 <ph name="DEVICE_TYPE" /> 기기를 네트워크에 연결하세요</translation>
 <translation id="7804072833593604762">탭 닫음</translation>
 <translation id="780446144738273886">PDF를 스캔하여 스크린 리더에서 사용할 수 있도록 텍스트를 추출합니다. Chrome 브라우저에서만 지원됩니다.</translation>
+<translation id="7805371082115476536">밝게</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7805906048382884326">도움말 닫기</translation>
 <translation id="7806722269368320106">앱 1개, 설치 중</translation>

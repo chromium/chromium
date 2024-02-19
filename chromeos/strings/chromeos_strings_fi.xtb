@@ -298,6 +298,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Päätepiste</translation>
 <translation id="3069085583900247081">Testi epäonnistui</translation>
+<translation id="3078740164268491126">taulukko</translation>
 <translation id="3083667275341675831">Yhteysdiagnostiikka</translation>
 <translation id="3084958266922136097">Poista näytönsäästäjä käytöstä</translation>
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
@@ -341,7 +342,6 @@
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
 <translation id="3373141842870501561">Maan kulku ‑taustakuva</translation>
-<translation id="337375748120863155">Valintaasi liittyviä tietoja. Siirry asetuksiin vasemmalla tai oikealla nuolinäppäimellä.</translation>
 <translation id="3383623117265110236">Eksklusiivinen</translation>
 <translation id="3404249063913988450">Ota näytönsäästäjä käyttöön</translation>
 <translation id="3413935475507503304">Jatka päivitystä valitsemalla Seuraava</translation>
@@ -409,7 +409,6 @@
 <translation id="3866249974567520381">Kuvaus</translation>
 <translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
 <translation id="3885327323343477505">Vaihda näytönsäästäjä</translation>
-<translation id="3892148308691398805">Kopioi teksti</translation>
 <translation id="391412459402535266">Laitetta ei voi testata. Vaihda tietokonetilaan testaamista varten.</translation>
 <translation id="3916998944874125962">ota kuvakaappaus</translation>
 <translation id="3923184630988645767">Datan käyttö</translation>
@@ -530,6 +529,7 @@
 <translation id="469379815867856270">Signaalin voimakkuus</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="473775607612524610">Päivitä</translation>
+<translation id="4744944742468440486">Valintaasi liittyviä tietoja</translation>
 <translation id="4771607256327216405">näppäimistön kirkastus</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
 <translation id="4782311465517282004">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään</translation>
@@ -602,7 +602,6 @@
 <translation id="5145081769226915336">Laitetaanko tumma tila päälle automaattisesti?</translation>
 <translation id="5154917547274118687">Muisti</translation>
 <translation id="5160857336552977725">Kirjaudu sisään <ph name="DEVICE_TYPE" />-laitteeseesi.</translation>
-<translation id="5166918508782100047">Pikainfon asetukset</translation>
 <translation id="5168185087976003268">Akun toiminta</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="5180712487038406644">Ilmeikäs</translation>
@@ -667,7 +666,6 @@
 <translation id="5620281292257375798">Vain sisäinen</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">tiivistelmä</translation>
-<translation id="5649768706273821470">Kuuntele</translation>
 <translation id="5654356773042347102">kielo</translation>
 <translation id="5655283760733841251">Lisää näppäimistön kirkkautta</translation>
 <translation id="5655296450510165335">Laitteen rekisteröinti</translation>
@@ -990,7 +988,6 @@
 <translation id="7762130827864645708">Salasanasi vaihtaminen onnistui. Käytä jatkossa uutta salasanaa.</translation>
 <translation id="7763470514545477072">Verkkotunnuksen päätteen vastaavuus</translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
-<translation id="7770834998503326261">Valintaasi liittyviä lisätietoja</translation>
 <translation id="7778717409420828014">Tiimimme tarkastaa palautteesi, ja se auttaa meitä parantamaan Chromebook-kokemusta. Ilmoitusten suuren määrän vuoksi emme voi lähettää vastausta.</translation>
 <translation id="7784116172884276937">DNS-palvelimia ei ole määritetty</translation>
 <translation id="7791543448312431591">Lisää</translation>
