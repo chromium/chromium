@@ -40,22 +40,19 @@ class SecurityDelegate {
     ADJUST_IF_DECORATED,
   };
 
-  // Get a SecurityDelegate instance with all of the defaults.
-  static std::unique_ptr<SecurityDelegate> GetDefaultSecurityDelegate();
-
-  virtual ~SecurityDelegate();
+  virtual ~SecurityDelegate() {}
 
   // "Self-activation" is a security sensitive windowing operation that is a
   // common paradigm in X11. The need to self-activate is controlled
   // per-subsystem, i.e. a product like ARC++ knows that its windows should be
   // able to self activate, whereas Crostini knows they usually shouldn't.
-  virtual bool CanSelfActivate(aura::Window* window) const;
+  virtual bool CanSelfActivate(aura::Window* window) const = 0;
 
   // Called when a client made pointer lock request, defined in
   // pointer-constraints-unstable-v1.xml extension protocol.  True if the client
   // can lock the location of the pointer and disable movement, or return false
   // to reject the pointer lock request.
-  virtual bool CanLockPointer(aura::Window* window) const;
+  virtual bool CanLockPointer(aura::Window* window) const = 0;
 
   // Whether clients may set their own windows' bounds is a security-relevant
   // policy decision.
@@ -63,7 +60,7 @@ class SecurityDelegate {
   // If server-side decoration is used, clients normally should not set their
   // own window bounds, as they may not be able to compute them correctly
   // (accounting for the size of the window decorations).
-  virtual SetBoundsPolicy CanSetBounds(aura::Window* window) const;
+  virtual SetBoundsPolicy CanSetBounds(aura::Window* window) const = 0;
 };
 
 }  // namespace exo

@@ -15,6 +15,13 @@ namespace exo::test {
 
 class TestSecurityDelegate : public SecurityDelegate {
  public:
+  TestSecurityDelegate();
+  TestSecurityDelegate(const TestSecurityDelegate&) = delete;
+  TestSecurityDelegate& operator=(const TestSecurityDelegate&) = delete;
+  ~TestSecurityDelegate() override;
+
+  // SecurityDelegate:
+  bool CanSelfActivate(aura::Window* window) const override;
   bool CanLockPointer(aura::Window* toplevel) const override;
   SetBoundsPolicy CanSetBounds(aura::Window* window) const override;
 

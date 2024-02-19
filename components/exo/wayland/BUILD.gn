@@ -681,6 +681,7 @@ source_set("wayland_client_test_helper") {
     "//cc:test_support",
     "//chromeos/ash/components:test_support",
     "//components/exo",
+    "//components/exo:test_support",
     "//components/exo/wayland",
     "//components/viz/test:test_support",
     "//mojo/core/embedder",

@@ -414,11 +414,6 @@ Server::~Server() {
 }
 
 // static
-std::unique_ptr<Server> Server::Create(Display* display) {
-  return Create(display, SecurityDelegate::GetDefaultSecurityDelegate());
-}
-
-// static
 std::unique_ptr<Server> Server::Create(
     Display* display,
     std::unique_ptr<SecurityDelegate> security_delegate) {

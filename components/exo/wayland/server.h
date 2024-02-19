@@ -54,10 +54,6 @@ class Server : public OutputController::Delegate {
 
   ~Server() override;
 
-  // Creates a Wayland display server that clients can connect to using the
-  // default socket name.
-  static std::unique_ptr<Server> Create(Display* display);
-
   // As above, but with the given |security_delegate|.
   static std::unique_ptr<Server> Create(
       Display* display,

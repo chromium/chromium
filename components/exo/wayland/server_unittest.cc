@@ -20,7 +20,7 @@
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
 #include "components/exo/display.h"
-#include "components/exo/security_delegate.h"
+#include "components/exo/test/test_security_delegate.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/test/wayland_server_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,8 +63,8 @@ TEST_F(ServerTest, GetFileDescriptor) {
 }
 
 TEST_F(ServerTest, SecurityDelegateAssociation) {
-  std::unique_ptr<SecurityDelegate> security_delegate =
-      SecurityDelegate::GetDefaultSecurityDelegate();
+  auto security_delegate =
+      std::make_unique<::exo::test::TestSecurityDelegate>();
   SecurityDelegate* security_delegate_ptr = security_delegate.get();
 
   auto server = CreateServer(std::move(security_delegate));

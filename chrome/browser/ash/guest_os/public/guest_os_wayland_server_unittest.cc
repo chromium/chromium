@@ -53,8 +53,8 @@ class GuestOsWaylandServerTest : public ChromeAshTestBase {
 }  // namespace
 
 TEST_F(GuestOsWaylandServerTest, BadSocketCausesFailure) {
-  auto wsc = std::make_unique<exo::WaylandServerController>(nullptr, nullptr,
-                                                            nullptr, nullptr);
+  auto wsc = std::make_unique<exo::WaylandServerController>(
+      nullptr, nullptr, nullptr, nullptr, nullptr);
   GuestOsWaylandServer gows(&profile_);
 
   base::test::TestFuture<std::optional<std::string>> result_future;
@@ -63,8 +63,8 @@ TEST_F(GuestOsWaylandServerTest, BadSocketCausesFailure) {
 }
 
 TEST_F(GuestOsWaylandServerTest, NullDelegateCausesFailure) {
-  auto wsc = std::make_unique<exo::WaylandServerController>(nullptr, nullptr,
-                                                            nullptr, nullptr);
+  auto wsc = std::make_unique<exo::WaylandServerController>(
+      nullptr, nullptr, nullptr, nullptr, nullptr);
   GuestOsWaylandServer gows(&profile_);
   exo::wayland::test::WaylandServerTestBase::ScopedTempSocket socket;
 
@@ -84,8 +84,8 @@ TEST_F(GuestOsWaylandServerTest, NullDelegateCausesFailure) {
 }
 
 TEST_F(GuestOsWaylandServerTest, DelegateLifetimeManagedCorrectly) {
-  auto wsc = std::make_unique<exo::WaylandServerController>(nullptr, nullptr,
-                                                            nullptr, nullptr);
+  auto wsc = std::make_unique<exo::WaylandServerController>(
+      nullptr, nullptr, nullptr, nullptr, nullptr);
   GuestOsWaylandServer gows(&profile_);
   exo::wayland::test::WaylandServerTestBase::ScopedTempSocket socket;
 
@@ -114,8 +114,8 @@ TEST_F(GuestOsWaylandServerTest, DelegateLifetimeManagedCorrectly) {
 TEST_F(GuestOsWaylandServerTest, EvictServersOnConciergeCrash) {
   ash::ConciergeClient::InitializeFake();
   auto* concierge_client = ash::FakeConciergeClient::Get();
-  auto wsc = std::make_unique<exo::WaylandServerController>(nullptr, nullptr,
-                                                            nullptr, nullptr);
+  auto wsc = std::make_unique<exo::WaylandServerController>(
+      nullptr, nullptr, nullptr, nullptr, nullptr);
   GuestOsWaylandServer gows(&profile_);
 
   exo::wayland::test::WaylandServerTestBase::ScopedTempSocket socket;

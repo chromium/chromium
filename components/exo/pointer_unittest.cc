@@ -27,7 +27,6 @@
 #include "components/exo/pointer_stylus_delegate.h"
 #include "components/exo/relative_pointer_delegate.h"
 #include "components/exo/seat.h"
-#include "components/exo/security_delegate.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
@@ -1821,51 +1820,6 @@ TEST_P(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
 
   pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate_);
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
-  pointer_.reset();
-}
-
-TEST_P(PointerConstraintTest, DefaultSecurityDeletegate) {
-  auto default_security_delegate =
-      SecurityDelegate::GetDefaultSecurityDelegate();
-  auto shell_surface = test::ShellSurfaceBuilder({10, 10})
-                           .SetSecurityDelegate(default_security_delegate.get())
-                           .BuildShellSurface();
-
-  auto* surface = shell_surface->surface_for_testing();
-
-  focus_client_->FocusWindow(surface->window());
-
-  MockPointerConstraintDelegate constraint_delegate;
-
-  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface));
-
-  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(1);
-  EXPECT_FALSE(pointer_->ConstrainPointer(&constraint_delegate));
-  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
-
-  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::LACROS));
-
-  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface));
-  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(0);
-  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate));
-
-  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
-
-  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface));
-  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
-  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(0);
-  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate));
-
-  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
-
-  pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate);
-  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
-
   pointer_.reset();
 }
 

@@ -34,7 +34,6 @@
 #include "components/exo/buffer.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/permission.h"
-#include "components/exo/security_delegate.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
@@ -1032,13 +1031,11 @@ TEST_F(ShellSurfaceTest, ActivationPermissionLegacy) {
 
 TEST_F(ShellSurfaceTest, WidgetActivationLegacy) {
   constexpr gfx::Size kBufferSize(64, 64);
-  std::unique_ptr<SecurityDelegate> default_security_delegate =
-      SecurityDelegate::GetDefaultSecurityDelegate();
+  auto security_delegate = std::make_unique<test::TestSecurityDelegate>();
 
-  auto shell_surface1 =
-      test::ShellSurfaceBuilder(kBufferSize)
-          .SetSecurityDelegate(default_security_delegate.get())
-          .BuildShellSurface();
+  auto shell_surface1 = test::ShellSurfaceBuilder(kBufferSize)
+                            .SetSecurityDelegate(security_delegate.get())
+                            .BuildShellSurface();
   auto* surface1 = shell_surface1->root_surface();
 
   // The window is active.
@@ -1046,10 +1043,9 @@ TEST_F(ShellSurfaceTest, WidgetActivationLegacy) {
   EXPECT_TRUE(widget1->IsActive());
 
   // Create a second window.
-  auto shell_surface2 =
-      test::ShellSurfaceBuilder(kBufferSize)
-          .SetSecurityDelegate(default_security_delegate.get())
-          .BuildShellSurface();
+  auto shell_surface2 = test::ShellSurfaceBuilder(kBufferSize)
+                            .SetSecurityDelegate(security_delegate.get())
+                            .BuildShellSurface();
   auto* surface2 = shell_surface2->root_surface();
 
   // Now the second window is active.

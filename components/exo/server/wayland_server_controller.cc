@@ -32,11 +32,12 @@ WaylandServerController* g_instance = nullptr;
 std::unique_ptr<WaylandServerController>
 WaylandServerController::CreateIfNecessary(
     std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,
+    std::unique_ptr<SecurityDelegate> security_delegate,
     std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
     std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
     std::unique_ptr<ToastSurfaceManager> toast_surface_manager) {
   return std::make_unique<WaylandServerController>(
-      std::move(data_exchange_delegate),
+      std::move(data_exchange_delegate), std::move(security_delegate),
       std::move(notification_surface_manager),
       std::move(input_method_surface_manager),
       std::move(toast_surface_manager));
@@ -74,6 +75,7 @@ wayland::Server* WaylandServerController::GetServerForDisplay(
 
 WaylandServerController::WaylandServerController(
     std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,
+    std::unique_ptr<SecurityDelegate> security_delegate,
     std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
     std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
     std::unique_ptr<ToastSurfaceManager> toast_surface_manager)
@@ -85,8 +87,8 @@ WaylandServerController::WaylandServerController(
                                     std::move(data_exchange_delegate))) {
   DCHECK(!g_instance);
   g_instance = this;
-  default_server_ = wayland::Server::Create(
-      display_.get(), SecurityDelegate::GetDefaultSecurityDelegate());
+  default_server_ =
+      wayland::Server::Create(display_.get(), std::move(security_delegate));
   default_server_->StartWithDefaultPath(base::BindOnce([](bool success) {
     DCHECK(success) << "Failed to start the default wayland server.";
   }));

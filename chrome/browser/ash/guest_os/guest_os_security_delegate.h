@@ -10,6 +10,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/exo/chrome_security_delegate.h"
 #include "components/exo/security_delegate.h"
 
 namespace exo {
@@ -19,7 +20,7 @@ class WaylandServerHandle;
 namespace guest_os {
 
 // This is a safer wrapper
-class GuestOsSecurityDelegate : public exo::SecurityDelegate {
+class GuestOsSecurityDelegate : public ash::ChromeSecurityDelegate {
  public:
   GuestOsSecurityDelegate();
 

@@ -46,7 +46,7 @@ class WaylandServerControllerTest : public ash::AshTestBase {
 }  // namespace
 
 TEST_F(WaylandServerControllerTest, RequestServerByFd) {
-  WaylandServerController wsc(nullptr, nullptr, nullptr, nullptr);
+  WaylandServerController wsc(nullptr, nullptr, nullptr, nullptr, nullptr);
   ASSERT_EQ(WaylandServerController::Get(), &wsc);
 
   wayland::test::WaylandServerTestBase::ScopedTempSocket sock;
@@ -76,7 +76,7 @@ TEST_F(WaylandServerControllerTest, RequestServerByFd) {
 }
 
 TEST_F(WaylandServerControllerTest, RequestServerBadSocket) {
-  WaylandServerController wsc(nullptr, nullptr, nullptr, nullptr);
+  WaylandServerController wsc(nullptr, nullptr, nullptr, nullptr, nullptr);
   ASSERT_EQ(WaylandServerController::Get(), &wsc);
 
   base::RunLoop loop;

@@ -88,7 +88,6 @@ static_library("exo") {
     "seat.cc",
     "seat.h",
     "seat_observer.h",
-    "security_delegate.cc",
     "security_delegate.h",
     "shared_memory.cc",
     "shared_memory.h",

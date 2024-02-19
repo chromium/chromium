@@ -6,12 +6,21 @@
 
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/security_delegate.h"
+#include "components/exo/shell_surface_util.h"
 #include "ui/aura/window.h"
 
 namespace exo::test {
 
-bool TestSecurityDelegate::CanLockPointer(aura::Window* toplevel) const {
-  return toplevel->GetProperty(chromeos::kUseOverviewToExitPointerLock);
+TestSecurityDelegate::TestSecurityDelegate() = default;
+
+TestSecurityDelegate::~TestSecurityDelegate() = default;
+
+bool TestSecurityDelegate::CanSelfActivate(aura::Window* window) const {
+  return HasPermissionToActivate(window);
+}
+
+bool TestSecurityDelegate::CanLockPointer(aura::Window* window) const {
+  return window->GetProperty(chromeos::kUseOverviewToExitPointerLock);
 }
 
 exo::SecurityDelegate::SetBoundsPolicy TestSecurityDelegate::CanSetBounds(
