@@ -141,15 +141,19 @@ CSSImageInterpolationType::StaticMergeSingleConversions(
 const CSSValue* CSSImageInterpolationType::CreateCSSValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
-    const StyleResolverState&) const {
-  return StaticCreateCSSValue(interpolable_value, non_interpolable_value);
+    const StyleResolverState& state) const {
+  return StaticCreateCSSValue(interpolable_value, non_interpolable_value,
+                              state.CssToLengthConversionData());
 }
 
 const CSSValue* CSSImageInterpolationType::StaticCreateCSSValue(
     const InterpolableValue& interpolable_value,
-    const NonInterpolableValue* non_interpolable_value) {
+    const NonInterpolableValue* non_interpolable_value,
+    const CSSLengthResolver& length_resolver) {
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   return To<CSSImageNonInterpolableValue>(non_interpolable_value)
-      ->Crossfade(To<InterpolableNumber>(interpolable_value).Value());
+      ->Crossfade(
+          To<InterpolableNumber>(interpolable_value).Value(length_resolver));
 }
 
 StyleImage* CSSImageInterpolationType::ResolveStyleImage(
@@ -158,7 +162,8 @@ StyleImage* CSSImageInterpolationType::ResolveStyleImage(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) {
   const CSSValue* image =
-      StaticCreateCSSValue(interpolable_value, non_interpolable_value);
+      StaticCreateCSSValue(interpolable_value, non_interpolable_value,
+                           state.CssToLengthConversionData());
   return state.GetStyleImage(property.PropertyID(), *image);
 }
 
