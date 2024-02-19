@@ -530,4 +530,8 @@ BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired,
              "TreatHTTPExpiresHeaderValueZeroAsExpired",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTruncateBodyToContentLength,
+             "TruncateBodyToContentLength",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

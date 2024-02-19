@@ -319,6 +319,12 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   scoped_refptr<SeekableIOBuffer> request_body_send_buf_;
   bool sent_last_chunk_ = false;
 
+  // Whether the Content-Length was known and extra data was discarded.
+  bool discarded_extra_data_ = false;
+
+  // Whether the response body should be truncated to the Content-Length.
+  const bool truncate_to_content_length_enabled_;
+
   // Error received when uploading the body, if any.
   int upload_error_ = OK;
 

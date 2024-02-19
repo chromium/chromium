@@ -520,6 +520,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointQUIC);
 // while on stable channels.
 NET_EXPORT BASE_DECLARE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired);
 
+// Enables truncating the response body to the content length.
+NET_EXPORT BASE_DECLARE_FEATURE(kTruncateBodyToContentLength);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
