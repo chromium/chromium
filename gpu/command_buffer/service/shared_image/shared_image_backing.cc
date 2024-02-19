@@ -183,11 +183,27 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkia(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   // For testing if no context state, then default to SkiaGanesh representation.
-  if (!context_state || context_state->gr_context()) {
+  if (!context_state) {
     return ProduceSkiaGanesh(manager, tracker, context_state);
   }
-  CHECK(context_state->graphite_context());
-  return ProduceSkiaGraphite(manager, tracker, context_state);
+
+  switch (context_state->gr_context_type()) {
+    case gpu::GrContextType::kNone:
+      // `kNone` signifies that the GPU process is being used only for WebGL via
+      // SwiftShader. Skia is not initialized and should never be used in this
+      // case.
+      NOTREACHED_NORETURN();
+    case gpu::GrContextType::kGL:
+    case gpu::GrContextType::kVulkan:
+      return ProduceSkiaGanesh(manager, tracker, context_state);
+    case gpu::GrContextType::kGraphiteMetal:
+    case gpu::GrContextType::kGraphiteDawn:
+      return ProduceSkiaGraphite(manager, tracker, context_state);
+      // NOTE: Do not add a default case to force any new types to be
+      // handled here on addition.
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
