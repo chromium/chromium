@@ -235,7 +235,7 @@ Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
                                            bool& is_key_installed) {
   scoped_refptr<net::X509Certificate> scoped_cert;
   Pkcs12ReaderStatusCode scoped_cert_result =
-      GetScopedCert(cert.x509, pkcs12_reader, scoped_cert);
+      GetScopedCert(cert.x509.get(), pkcs12_reader, scoped_cert);
   if (scoped_cert_result != Pkcs12ReaderStatusCode::kSuccess) {
     LOG(ERROR) << MakePkcs12CertImportErrorMessage(scoped_cert_result);
     return scoped_cert_result;
@@ -275,7 +275,7 @@ Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
 Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
     PK11SlotInfo* slot,
     const Pkcs12Reader& pkcs12_reader,
-    const bssl::UniquePtr<STACK_OF(X509)>& certs,
+    bssl::UniquePtr<STACK_OF(X509)> certs,
     KeyData& key_data,
     std::vector<CertData>& valid_certs_data) {
   if (!slot) {
@@ -292,8 +292,8 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
   // it might be the whole chain included. All certs that are not directly
   // related to the key will be filtered out.
   std::string cert_nickname;
-  for (size_t i = 0; i < sk_X509_num(certs.get()); ++i) {
-    X509* cert = sk_X509_value(certs.get(), i);
+  while (sk_X509_num(certs.get()) > 0) {
+    bssl::UniquePtr<X509> cert(sk_X509_pop(certs.get()));
     if (!cert) {
       LOG(WARNING) << MakePkcs12CertImportErrorMessage(
           Pkcs12ReaderStatusCode::kCertificateDataMissed);
@@ -302,7 +302,8 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
 
     bool is_cert_related_to_key = false;
     Pkcs12ReaderStatusCode cert_to_key_check_result =
-        pkcs12_reader.CheckRelation(key_data, cert, is_cert_related_to_key);
+        pkcs12_reader.CheckRelation(key_data, cert.get(),
+                                    is_cert_related_to_key);
     if (cert_to_key_check_result != Pkcs12ReaderStatusCode::kSuccess) {
       LOG(ERROR) << MakePkcs12CertImportErrorMessage(cert_to_key_check_result);
       continue;
@@ -314,7 +315,7 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
 
     if (cert_nickname.empty()) {
       Pkcs12ReaderStatusCode get_cert_nickname_result =
-          GetNickname(slot, cert, pkcs12_reader, cert_nickname);
+          GetNickname(slot, cert.get(), pkcs12_reader, cert_nickname);
       if (get_cert_nickname_result != Pkcs12ReaderStatusCode::kSuccess) {
         LOG(WARNING) << "Can not get nickname for the certificate due to: "
                      << MakePkcs12CertImportErrorMessage(
@@ -324,8 +325,8 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
     }
 
     bool is_cert_installed = false;
-    Pkcs12ReaderStatusCode cert_installed_result =
-        CanFindInstalledCert(slot, cert, pkcs12_reader, is_cert_installed);
+    Pkcs12ReaderStatusCode cert_installed_result = CanFindInstalledCert(
+        slot, cert.get(), pkcs12_reader, is_cert_installed);
     if (cert_installed_result != Pkcs12ReaderStatusCode::kSuccess) {
       LOG(ERROR) << "Failed to find installed cert in slot due to: "
                  << MakePkcs12CertImportErrorMessage(cert_installed_result);
@@ -337,7 +338,7 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
     }
 
     CertData& cert_data = valid_certs_data.emplace_back();
-    cert_data.x509 = cert;
+    cert_data.x509 = std::move(cert);
     cert_data.nickname = cert_nickname;
   }
 

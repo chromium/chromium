@@ -24,6 +24,10 @@
 namespace kcer::internal {
 
 CertData::CertData() = default;
+CertData::CertData(CertData&& other) {
+  x509 = std::move(other.x509);
+  nickname = std::move(other.nickname);
+}
 CertData::~CertData() = default;
 
 KeyData::KeyData() = default;

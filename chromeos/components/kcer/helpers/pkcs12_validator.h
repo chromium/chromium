@@ -39,7 +39,7 @@ Pkcs12ReaderStatusCode GetNickname(PK11SlotInfo* slot,
 Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
     PK11SlotInfo* slot,
     const Pkcs12Reader& pkcs12_reader,
-    const bssl::UniquePtr<STACK_OF(X509)>& certs,
+    bssl::UniquePtr<STACK_OF(X509)> certs,
     KeyData& key_data,
     std::vector<CertData>& valid_certs_data);
 

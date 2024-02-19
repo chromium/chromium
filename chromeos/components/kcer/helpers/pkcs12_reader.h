@@ -69,8 +69,9 @@ enum class Pkcs12ReaderCertSearchType {
 
 struct CertData {
   CertData();
+  CertData(CertData&& other);
   ~CertData();
-  raw_ptr<X509> x509;
+  bssl::UniquePtr<X509> x509;
   std::string nickname;
 };
 
