@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -70,10 +71,11 @@ class UnderlyingOverlayChecker final
   ~UnderlyingOverlayChecker() final = default;
 
  private:
-  bool IsValid(const StyleResolverState&,
+  bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     double underlying_fraction =
-        To<InterpolableNumber>(*underlying.interpolable_value).Value();
+        To<InterpolableNumber>(*underlying.interpolable_value)
+            .Value(state.CssToLengthConversionData());
     EOverlay underlying_overlay =
         To<CSSOverlayNonInterpolableValue>(*underlying.non_interpolable_value)
             .Overlay(underlying_fraction);
@@ -107,8 +109,12 @@ InterpolationValue CSSOverlayInterpolationType::CreateOverlayValue(
 InterpolationValue CSSOverlayInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
-      To<InterpolableNumber>(*underlying.interpolable_value).Value();
+      To<InterpolableNumber>(*underlying.interpolable_value)
+          .Value(CSSToLengthConversionData());
   EOverlay underlying_overlay =
       To<CSSOverlayNonInterpolableValue>(*underlying.non_interpolable_value)
           .Overlay(underlying_fraction);
@@ -190,7 +196,8 @@ void CSSOverlayInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   // Overlay interpolation has been deferred to application time here due to
   // its non-linear behaviour.
-  double fraction = To<InterpolableNumber>(interpolable_value).Value();
+  double fraction = To<InterpolableNumber>(interpolable_value)
+                        .Value(state.CssToLengthConversionData());
   EOverlay overlay = To<CSSOverlayNonInterpolableValue>(non_interpolable_value)
                          ->Overlay(fraction);
   state.StyleBuilder().SetOverlay(overlay);
