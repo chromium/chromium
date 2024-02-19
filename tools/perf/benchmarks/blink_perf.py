@@ -392,7 +392,7 @@ class BlinkPerfAccessibility(_BlinkPerfBenchmark):
     return 'blink_perf.accessibility'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--force-renderer-accessibility'])
+    options.AppendExtraBrowserArgs(['--force-renderer-accessibility=complete'])
 
 
 @benchmark.Info(
