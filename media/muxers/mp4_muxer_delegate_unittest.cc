@@ -172,7 +172,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
 
   constexpr uint32_t kSampleDurations[] = {29, 32, 31, 30};
-  constexpr uint32_t kSampleDurationsAfterTimescale[] = {870, 960, 930, 900};
+  constexpr uint32_t kSampleDurationsAfterTimescale[] = {870, 960, 930, 999};
 
   base::TimeDelta delta;
 
@@ -699,7 +699,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
             run_loop.Quit();
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);
@@ -827,7 +827,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
             run_loop.Quit();
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> code_description;
   PopulateAacAdts(code_description);
@@ -932,7 +932,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
     ASSERT_EQ(1u, traf_boxes[1].runs[0].sample_durations.size());
 
     // The first and last item.
-    EXPECT_EQ(1500u, traf_boxes[1].runs[0].sample_durations[0]);
+    EXPECT_EQ(999u, traf_boxes[1].runs[0].sample_durations[0]);
   }
 
   {
@@ -1031,7 +1031,7 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
             run_loop.Quit();
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);
@@ -1106,21 +1106,21 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   EXPECT_EQ(value, 63u);  // entry number size. 63 == 0x3f.
 
   big_endian_reader.ReadU32(&value);
-  // The file has 4 fragments, but video samples exists only for
-  // 2 fragments so the `tfra` box has only 2 entries.
-  EXPECT_EQ(value, 2u);  // number of entries.
+  // The file has 4 fragments, but video will also have 4 fragments
+  // and the first two fragments have empty video samples.
+  EXPECT_EQ(value, 4u);  // number of entries.
 
-  // Third entry.
-  size_t third_tfra_entry = tfra_box_offset + kTfraBoxSize;
+  // First entry.
+  size_t first_tfra_entry = tfra_box_offset + kTfraBoxSize;
   base::BigEndianReader big_endian_reader2(
       base::span(total_written_data)
-          .subspan(third_tfra_entry, kTfraEntrySize * 2u));
+          .subspan(first_tfra_entry, kTfraEntrySize * 4u));
   uint64_t time;
   big_endian_reader2.ReadU64(&time);
   EXPECT_EQ(time, 0u);  // time.
 
-  uint64_t third_moof_offset;
-  big_endian_reader2.ReadU64(&third_moof_offset);
+  uint64_t moof_offset;
+  big_endian_reader2.ReadU64(&moof_offset);
 
   big_endian_reader2.ReadU32(&value);
   EXPECT_EQ(value, 1u);  // traf number.
@@ -1130,7 +1130,40 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   big_endian_reader2.ReadU32(&value);
   EXPECT_EQ(value, 1u);  // sample number.
-  EXPECT_TRUE(memcmp(&total_written_data[third_moof_offset],
+
+  // Second entry.
+  big_endian_reader2.ReadU64(&time);
+  EXPECT_EQ(time, 0u);  // time.
+
+  big_endian_reader2.ReadU64(&moof_offset);
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // traf number.
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // trun number.
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // sample number.
+
+  // Third entry.
+  big_endian_reader2.ReadU64(&time);
+
+  // first fragment that holds video frames, so it should have
+  // a 0 that is video frame start time.
+  EXPECT_EQ(time, 0u);  // time.
+
+  big_endian_reader2.ReadU64(&moof_offset);
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // traf number.
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // trun number.
+
+  big_endian_reader2.ReadU32(&value);
+  EXPECT_EQ(value, 1u);  // sample number.
+  EXPECT_TRUE(memcmp(&total_written_data[moof_offset],
                      third_moof_written_data.data(),
                      third_moof_written_data.size()) == 0);
 
@@ -1193,7 +1226,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
             break;
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);
@@ -1340,7 +1373,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
             break;
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);

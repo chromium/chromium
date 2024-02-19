@@ -29,6 +29,8 @@ source_set("muxers") {
     "mp4_muxer_context.h",
     "mp4_muxer_delegate.cc",
     "mp4_muxer_delegate.h",
+    "mp4_muxer_delegate_fragment.cc",
+    "mp4_muxer_delegate_fragment.h",
     "mp4_type_conversion.cc",
     "mp4_type_conversion.h",
     "muxer.cc",
