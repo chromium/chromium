@@ -25,6 +25,32 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeInterval {
   static const char kStart[];
   static const char kEnd[];
 
+  // Determines if `interval_a` and `interval_b` have any overlap in time.
+  // Intervals are considered half-open (i.e., the start time is included, the
+  // end time is not).
+  static bool IntervalsOverlap(const WeeklyTimeInterval& interval_a,
+                               const WeeklyTimeInterval& interval_b);
+
+  // Return time interval made from WeeklyTimeIntervalProto structure. Return
+  // nullptr if the proto contains an invalid interval.
+  static std::unique_ptr<WeeklyTimeInterval> ExtractFromProto(
+      const enterprise_management::WeeklyTimeIntervalProto& container,
+      std::optional<int> timezone_offset);
+
+  // Return time interval made from Value::Dict in format:
+  // { "start" : WeeklyTime,
+  //   "end" : WeeklyTime }
+  // WeeklyTime dictionary format:
+  // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
+  // etc.)
+  //   "time" : int # in milliseconds from the beginning of the day.
+  //   "timezone_offset" : int # in milliseconds, how much time ahead of GMT.
+  // }
+  // Return nullptr if `dict` contains an invalid interval.
+  static std::unique_ptr<WeeklyTimeInterval> ExtractFromDict(
+      const base::Value::Dict& dict,
+      std::optional<int> timezone_offset);
+
   WeeklyTimeInterval(const WeeklyTime& start, const WeeklyTime& end);
 
   WeeklyTimeInterval(const WeeklyTimeInterval& rhs);
@@ -57,26 +83,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeInterval {
   std::optional<int> GetIntervalOffset(int timezone_offset) const {
     return start_.timezone_offset();
   }
-
-  // Return time interval made from WeeklyTimeIntervalProto structure. Return
-  // nullptr if the proto contains an invalid interval.
-  static std::unique_ptr<WeeklyTimeInterval> ExtractFromProto(
-      const enterprise_management::WeeklyTimeIntervalProto& container,
-      std::optional<int> timezone_offset);
-
-  // Return time interval made from Value::Dict in format:
-  // { "start" : WeeklyTime,
-  //   "end" : WeeklyTime }
-  // WeeklyTime dictionary format:
-  // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
-  // etc.)
-  //   "time" : int # in milliseconds from the beginning of the day.
-  //   "timezone_offset" : int # in milliseconds, how much time ahead of GMT.
-  // }
-  // Return nullptr if `dict` contains an invalid interval.
-  static std::unique_ptr<WeeklyTimeInterval> ExtractFromDict(
-      const base::Value::Dict& dict,
-      std::optional<int> timezone_offset);
 
   WeeklyTime start() const { return start_; }
 

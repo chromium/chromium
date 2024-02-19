@@ -23,11 +23,11 @@ using policy::WeeklyTimeInterval;
 //
 // Example:
 // DeviceWeeklyScheduledSuspendTestPolicyBuilder builder;
-// builder.AppendSchedule(DayOfWeek::WEDNESDAY,
+// builder.AddWeeklySuspendInterval(DayOfWeek::WEDNESDAY,
 //                        base::Hours(7),  // 07:00 AM
 //                        DayOfWeek::WEDNESDAY,
 //                        base::Hours(21)) // 21:00 PM
-//        .AppendSchedule(DayOfWeek::FRIDAY,
+//        .AddWeeklySuspendInterval(DayOfWeek::FRIDAY,
 //                        base::Hours(18), // 18:00 PM
 //                        DayOfWeek::MONDAY,
 //                        base::Hours(8)); // 08:00 AM
@@ -75,14 +75,26 @@ class DeviceWeeklyScheduledSuspendTestPolicyBuilder {
 
   ~DeviceWeeklyScheduledSuspendTestPolicyBuilder();
 
-  // Appends a weekly schedule interval to the policy. The device will be
-  // suspended during the specified interval. Returns a reference to the builder
-  // to support method chaining.
-  DeviceWeeklyScheduledSuspendTestPolicyBuilder&& AppendSchedule(
+  // Adds a defined weekly time interval to the device suspension policy. The
+  // device will be suspended during the specified interval. Returns a reference
+  // to the builder to support method chaining.
+  DeviceWeeklyScheduledSuspendTestPolicyBuilder&& AddWeeklySuspendInterval(
       DayOfWeek start_day_of_week,
       const base::TimeDelta& start_time_of_day,
       DayOfWeek end_day_of_week,
       const base::TimeDelta& end_time_of_day);
+
+  // Adds an invalid weekly schedule entry with a missing start time. Returns a
+  // reference to the builder to support method chaining.
+  DeviceWeeklyScheduledSuspendTestPolicyBuilder&&
+  AddInvalidScheduleMissingStart(DayOfWeek end_day_of_week,
+                                 const base::TimeDelta& end_time_of_day);
+
+  // Adds an invalid weekly schedule entry with a missing end time. Returns a
+  // reference to the builder to support method chaining.
+  DeviceWeeklyScheduledSuspendTestPolicyBuilder&& AddInvalidScheduleMissingEnd(
+      DayOfWeek start_day_of_week,
+      const base::TimeDelta& start_time_of_day);
 
   base::Value::List GetAsPrefValue() const;
 

@@ -62,7 +62,7 @@ DeviceWeeklyScheduledSuspendTestPolicyBuilder::
     ~DeviceWeeklyScheduledSuspendTestPolicyBuilder() = default;
 
 DeviceWeeklyScheduledSuspendTestPolicyBuilder&&
-DeviceWeeklyScheduledSuspendTestPolicyBuilder::AppendSchedule(
+DeviceWeeklyScheduledSuspendTestPolicyBuilder::AddWeeklySuspendInterval(
     DayOfWeek start_day_of_week,
     const base::TimeDelta& start_time_of_day,
     DayOfWeek end_day_of_week,
@@ -72,6 +72,24 @@ DeviceWeeklyScheduledSuspendTestPolicyBuilder::AppendSchedule(
           .Set(kStart,
                BuildScheduleTimePoint(start_day_of_week, start_time_of_day))
           .Set(kEnd, BuildScheduleTimePoint(end_day_of_week, end_time_of_day)));
+  return std::move(*this);
+}
+
+DeviceWeeklyScheduledSuspendTestPolicyBuilder&&
+DeviceWeeklyScheduledSuspendTestPolicyBuilder::AddInvalidScheduleMissingStart(
+    DayOfWeek end_day_of_week,
+    const base::TimeDelta& end_time_of_day) {
+  policy_value_.Append(base::Value::Dict().Set(
+      kEnd, BuildScheduleTimePoint(end_day_of_week, end_time_of_day)));
+  return std::move(*this);
+}
+
+DeviceWeeklyScheduledSuspendTestPolicyBuilder&&
+DeviceWeeklyScheduledSuspendTestPolicyBuilder::AddInvalidScheduleMissingEnd(
+    DayOfWeek start_day_of_week,
+    const base::TimeDelta& start_time_of_day) {
+  policy_value_.Append(base::Value::Dict().Set(
+      kStart, BuildScheduleTimePoint(start_day_of_week, start_time_of_day)));
   return std::move(*this);
 }
 

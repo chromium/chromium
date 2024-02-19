@@ -61,43 +61,87 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
       device_weekly_scheduled_suspend_controller_;
 };
 
-TEST_F(DeviceWeeklyScheduledSuspendControllerTest, NoPolicyValue) {
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+       HandlesEmptyIntervalsWithNoPolicy) {
   WeeklyTimeIntervals empty_intervals;
   CheckIntervalsInController(empty_intervals);
 }
 
-TEST_F(DeviceWeeklyScheduledSuspendControllerTest, EmptyPolicyConfig) {
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest, HandlesEmptyPolicy) {
   DeviceWeeklyScheduledSuspendTestPolicyBuilder empty_policy;
   UpdatePolicyAndCheckIntervals(empty_policy);
 }
 
-TEST_F(DeviceWeeklyScheduledSuspendControllerTest, ValidPolicyConfig) {
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+       HandlesValidPolicyWithMultipleIntervals) {
   UpdatePolicyAndCheckIntervals(
       DeviceWeeklyScheduledSuspendTestPolicyBuilder()
-          .AppendSchedule(DayOfWeek::WEDNESDAY, base::Hours(12),
-                          DayOfWeek::WEDNESDAY, base::Hours(15))
-          .AppendSchedule(DayOfWeek::FRIDAY, base::Hours(20), DayOfWeek::MONDAY,
-                          base::Hours(8)));
+          .AddWeeklySuspendInterval(DayOfWeek::WEDNESDAY, base::Hours(12),
+                                    DayOfWeek::WEDNESDAY, base::Hours(15))
+          .AddWeeklySuspendInterval(DayOfWeek::FRIDAY, base::Hours(20),
+                                    DayOfWeek::MONDAY, base::Hours(8)));
+}
+
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+       UpdatesIntervalsOnPolicyChange) {
+  UpdatePolicyAndCheckIntervals(
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder()
+          .AddWeeklySuspendInterval(DayOfWeek::WEDNESDAY, base::Hours(12),
+                                    DayOfWeek::WEDNESDAY, base::Hours(15))
+          .AddWeeklySuspendInterval(DayOfWeek::FRIDAY, base::Hours(20),
+                                    DayOfWeek::MONDAY, base::Hours(8)));
 
   UpdatePolicyAndCheckIntervals(
-      DeviceWeeklyScheduledSuspendTestPolicyBuilder().AppendSchedule(
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder().AddWeeklySuspendInterval(
           DayOfWeek::FRIDAY, base::Hours(20), DayOfWeek::MONDAY,
           base::Hours(8)));
+}
 
-  // Test clearing the policy.
-  DeviceWeeklyScheduledSuspendTestPolicyBuilder empty_policy;
-  UpdatePolicyAndCheckIntervals(empty_policy);
-
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+       ClearsIntervalsOnEmptyPolicy) {
   UpdatePolicyAndCheckIntervals(
       DeviceWeeklyScheduledSuspendTestPolicyBuilder()
-          .AppendSchedule(DayOfWeek::MONDAY, base::Hours(20),
-                          DayOfWeek::TUESDAY, base::Hours(6))
-          .AppendSchedule(DayOfWeek::TUESDAY, base::Hours(20),
-                          DayOfWeek::WEDNESDAY, base::Hours(6))
-          .AppendSchedule(DayOfWeek::WEDNESDAY, base::Hours(20),
-                          DayOfWeek::THURSDAY, base::Hours(6))
-          .AppendSchedule(DayOfWeek::THURSDAY, base::Hours(20),
-                          DayOfWeek::FRIDAY, base::Hours(6)));
+          .AddWeeklySuspendInterval(DayOfWeek::WEDNESDAY, base::Hours(12),
+                                    DayOfWeek::WEDNESDAY, base::Hours(15))
+          .AddWeeklySuspendInterval(DayOfWeek::FRIDAY, base::Hours(20),
+                                    DayOfWeek::MONDAY, base::Hours(8)));
+
+  UpdatePolicyPref(
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder().GetAsPrefValue());
+  CheckIntervalsInController({});
+}
+
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+       HandlesInvalidPolicyWithMissingStartTime) {
+  UpdatePolicyPref(
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder()
+          .AddInvalidScheduleMissingStart(DayOfWeek::FRIDAY, base::Hours(6))
+          .GetAsPrefValue());
+
+  CheckIntervalsInController({});
+}
+
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+       HandlesInvalidPolicyWithMissingEndTime) {
+  UpdatePolicyPref(
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder()
+          .AddInvalidScheduleMissingEnd(DayOfWeek::MONDAY, base::Hours(20))
+          .GetAsPrefValue());
+
+  CheckIntervalsInController({});
+}
+
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+       HandlesInvalidPolicyWithOverlappingIntervals) {
+  UpdatePolicyPref(
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder()
+          .AddWeeklySuspendInterval(DayOfWeek::FRIDAY, base::Hours(20),
+                                    DayOfWeek::SATURDAY, base::Hours(15))
+          .AddWeeklySuspendInterval(DayOfWeek::SATURDAY, base::Hours(6),
+                                    DayOfWeek::SUNDAY, base::Hours(20))
+          .GetAsPrefValue());
+
+  CheckIntervalsInController({});
 }
 
 }  // namespace ash
