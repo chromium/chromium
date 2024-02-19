@@ -469,7 +469,8 @@ crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/text
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-upload-size.html [ Failure ]
-crbug.com/1489477 [ fuchsia ] conformance/textures/svg_image/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/svg_image/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-nelson ] conformance/textures/svg_image/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 
 # Anti-aliasing disabled on Fuchsia
 [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
