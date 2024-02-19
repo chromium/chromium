@@ -2,8 +2,6 @@
   /* TODO look at UI with inspector to see which lines are overridden by the
    shared config. */
   :host {
-    --button-container-height: calc(2 * var(--action-container-padding) +
-        var(--cr-button-height));
     --sync-benefits-list-color: var(--google-grey-50);
     --sync-benefit-icon-color: var(--google-blue-600);
     color: var(--cr-primary-text-color);
@@ -130,6 +128,8 @@
   }
 
   .main-container:not(.dialog) {
+    --button-container-height: calc(2 * var(--action-container-padding) +
+        var(--cr-button-height));
     display: flex;
     height: calc(100vh - var(--button-container-height));
     width: 100vw;
@@ -210,7 +210,7 @@
   }
 
   .action-container {
-    height: var(--button-container-height); /* Prevent the container from shrinking when buttons are hidden. */
+    height: calc(2 * var(--action-container-padding)); /* Prevent the container from shrinking when buttons are hidden. */
   }
 
   @media (prefers-color-scheme: dark) {
