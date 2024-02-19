@@ -570,10 +570,12 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   // and, potentially, for overlays (Scanout).
   uint32_t shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+  // These SharedImages might also be used for zero-copy import into WebGPU to
+  // serve as the sources of WebGPU reads (e.g., for video effects processing).
   if (video_frame->metadata().is_webgpu_compatible &&
       !shared_image_caps->disable_webgpu_shared_images) {
-    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
   gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb;
