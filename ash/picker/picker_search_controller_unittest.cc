@@ -519,5 +519,45 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySections) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
+TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          Contains(AllOf(
+              Property("heading", &PickerSearchResults::Section::heading,
+                       u"Other expressions"),
+              Property(
+                  "results", &PickerSearchResults::Section::results,
+                  Contains(Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::GifData>(AllOf(
+                          Field("url", &PickerSearchResult::GifData::url,
+                                Property("spec", &GURL::spec,
+                                         "https://media.tenor.com/"
+                                         "GOabrbLMl4AAAAAd/"
+                                         "plink-cat-plink.gif")),
+                          Field(
+                              "content_description",
+                              &PickerSearchResult::GifData::content_description,
+                              u"cat blink")))))))))))
+      .Times(AtLeast(1));
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBurnInPeriod);
+  std::move(*client.gif_search_callback())
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
+          gfx::Size(480, 480), u"cat blink")});
+}
+
 }  // namespace
 }  // namespace ash

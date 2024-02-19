@@ -122,6 +122,10 @@ void PickerSearchController::HandleGifSearchResults(
   // TODO: b/324992789 - Allow stopping GIF search results.
   if (query == current_query_) {
     gif_results_ = std::move(results);
+
+    if (!burn_in_timer_.IsRunning()) {
+      PublishResults();
+    }
   }
 }
 
