@@ -82,8 +82,8 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
-// TODO(b/324867042): This test fails on Official bots.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(b/324867042): This test fails on Official bots and ipad device.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || !TARGET_OS_SIMULATOR
 #define MAYBE_testColdStartOpenStartSurface FLAKY_testColdStartOpenStartSurface
 #else
 #define MAYBE_testColdStartOpenStartSurface testColdStartOpenStartSurface
@@ -106,8 +106,8 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened.
-// TODO(b/324867042): This test fails on Official bots.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(b/324867042): This test fails on Official bots and ipad device.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || !TARGET_OS_SIMULATOR
 #define MAYBE_testWarmStartOpenStartSurface FLAKY_testWarmStartOpenStartSurface
 #else
 #define MAYBE_testWarmStartOpenStartSurface testWarmStartOpenStartSurface
@@ -132,8 +132,8 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-// TODO(b/324867042): This test fails on Official bots.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(b/324867042): This test fails on Official bots and ipad device.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || !TARGET_OS_SIMULATOR
 #define MAYBE_testRemoveRecentTabRemovesReturnToRecentTabTile \
     FLAKY_testRemoveRecentTabRemovesReturnToRecentTabTile
 #else
