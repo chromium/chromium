@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
-#import "ios/chrome/browser/ui/page_info/page_info_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -53,9 +52,10 @@ enum ItemIdentifier {
   [super viewDidLoad];
   CHECK(!_pageInfoSecurityDescription.isEmpty);
 
-  self.navigationItem.titleView =
-      page_info::TitleViewLabelForURL(_pageInfoSecurityDescription.siteURL);
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_CONNECTION_SECURITY);
+  self.navigationItem.largeTitleDisplayMode =
+      UINavigationItemLargeTitleDisplayModeNever;
+  self.navigationItem.prompt = _pageInfoSecurityDescription.siteURL;
   self.tableView.accessibilityIdentifier =
       kPageInfoSecurityViewAccessibilityIdentifier;
   self.navigationController.navigationBar.accessibilityIdentifier =

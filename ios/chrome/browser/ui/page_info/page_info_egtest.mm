@@ -294,6 +294,19 @@ void AddAboutThisSiteHint(GURL url) {
                      kPageInfoViewNavigationBarAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  // Check that the navigation bar has both the page info's page title and the
+  // page URL.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PAGE_INFO_SITE_INFORMATION))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text([NSString
+                     stringWithCString:[ChromeEarlGrey webStateVisibleURL]
+                                           .host()
+                                           .c_str()
+                              encoding:[NSString defaultCStringEncoding]])]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
   // Rotate to landscape mode and check the navigation bar is still visible.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
                                 error:nil];

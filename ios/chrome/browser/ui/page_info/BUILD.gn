@@ -7,8 +7,6 @@ source_set("page_info") {
     "page_info_about_this_site_consumer.h",
     "page_info_about_this_site_info.h",
     "page_info_about_this_site_info.mm",
-    "page_info_helper.h",
-    "page_info_helper.mm",
     "page_info_presentation_commands.h",
     "page_info_security_view_controller.h",
     "page_info_security_view_controller.mm",

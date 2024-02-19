@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_about_this_site_info.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
-#import "ios/chrome/browser/ui/page_info/page_info_helper.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
@@ -52,6 +51,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierPermissionsMicrophone,
   ItemIdentifierAboutThisSiteHeader
 };
+
+// The minimum scale factor of the title label showing the URL.
+float kTitleLabelMinimumScaleFactor = 0.7f;
 
 }  // namespace
 
@@ -87,9 +89,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.navigationItem.titleView =
-      page_info::TitleViewLabelForURL(self.pageInfoSecurityDescription.siteURL);
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_INFORMATION);
+  if (IsRevampPageInfoIosEnabled()) {
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeNever;
+    self.navigationItem.prompt = self.pageInfoSecurityDescription.siteURL;
+  } else {
+    self.navigationItem.titleView =
+        [self titleViewLabelForURL:self.pageInfoSecurityDescription.siteURL];
+  }
+
   self.tableView.accessibilityIdentifier = kPageInfoViewAccessibilityIdentifier;
   self.navigationController.navigationBar.accessibilityIdentifier =
       kPageInfoViewNavigationBarAccessibilityIdentifier;
@@ -381,6 +390,17 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       }
               range:NSMakeRange(0, descriptionAttributedString.length)];
   return descriptionAttributedString;
+}
+
+// Returns an UILabel for the navigationItem titleView for `siteURL`.
+- (UILabel*)titleViewLabelForURL:(NSString*)siteURL {
+  UILabel* labelURL = [[UILabel alloc] init];
+  labelURL.lineBreakMode = NSLineBreakByTruncatingHead;
+  labelURL.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  labelURL.text = siteURL;
+  labelURL.adjustsFontSizeToFitWidth = YES;
+  labelURL.minimumScaleFactor = kTitleLabelMinimumScaleFactor;
+  return labelURL;
 }
 
 // Updates `snapshot` to reflect the changes to AboutThisSite info.

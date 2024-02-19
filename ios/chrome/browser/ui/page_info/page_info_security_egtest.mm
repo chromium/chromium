@@ -98,6 +98,20 @@
                      kPageInfoSecurityViewNavigationBarAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  // Check that the navigation bar has both the security's page title and the
+  // page URL.
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                   IDS_IOS_PAGE_INFO_CONNECTION_SECURITY))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text([NSString
+                     stringWithCString:[ChromeEarlGrey webStateVisibleURL]
+                                           .host()
+                                           .c_str()
+                              encoding:[NSString defaultCStringEncoding]])]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
   // Rotate the device and check that the page info view is still presented
   // along with the navigation bar.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
