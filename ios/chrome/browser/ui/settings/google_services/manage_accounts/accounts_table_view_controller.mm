@@ -227,10 +227,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (void)settingsWillBeDismissed {
   if (!_dismissAccountDetailsViewController.is_null()) {
-    DCHECK(self.presentedViewController);
+    // TODO(crbug.com/40846158): Once 40846158 is fixed, the following DCHECK
+    // can be added: DCHECK(self.presentedViewController);
+    // DCHECK(!self.signoutCoordinator);
     DCHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
     DCHECK(!self.removeAccountCoordinator);
-    DCHECK(!self.signoutCoordinator);
     std::move(_dismissAccountDetailsViewController).Run(/*animated=*/false);
   }
   [self dismissRemoveOrMyGoogleChooserAlert];
