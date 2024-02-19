@@ -5,7 +5,7 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './emoji_gif_nudge_overlay.html.js';
-import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
+import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 
 
 
@@ -27,7 +27,7 @@ export class EmojiGifNudgeOverlay extends PolymerElement {
   closeOverlay: () => void;
 
   onClickLink() {
-    EmojiPickerApiProxyImpl.getInstance().openHelpCentreArticle();
+    EmojiPickerApiProxy.getInstance().openHelpCentreArticle();
   }
 
   onClickTooltip(event: MouseEvent) {

@@ -23,7 +23,7 @@ import {getTemplate} from './app.html.js';
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
 import {Category, Feature, Status} from './emoji_picker.mojom-webui.js';
-import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
+import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
@@ -130,7 +130,7 @@ export class EmojiPickerApp extends PolymerElement {
   private variantGroupingSupport: boolean;
   private showGifNudgeOverlay: boolean;
   private activeVariant: EmojiGroupComponent|null = null;
-  private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxyImpl.getInstance();
+  private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxy.getInstance();
   private autoScrollingToGroup: boolean = false;
   private highlightBarMoving: boolean = false;
   private nextGifPos: {[key: string]: string};

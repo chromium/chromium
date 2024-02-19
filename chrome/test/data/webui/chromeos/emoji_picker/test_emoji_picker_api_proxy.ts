@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPickerApiProxyImpl, GifSubcategoryData, TenorGifResponse, VisualContent} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApiProxy, GifSubcategoryData, TenorGifResponse, VisualContent} from 'chrome://emoji-picker/emoji_picker.js';
 
-export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
+export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
   // This variable is used to mock the status return value in the actual api
   // proxy.
   // TODO(b/268138636): Change hardcoded value to Status type once tests are

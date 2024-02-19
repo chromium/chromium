@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Category, EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker.js';
+import {Category, EmojiPickerApiProxy} from 'chrome://emoji-picker/emoji_picker.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {initialiseEmojiPickerForTest} from './emoji_picker_test_util.js';
@@ -16,7 +16,7 @@ suite('<emoji-picker> scroll tests', () => {
     // picker exists, and we haven't begun the scroll so this timing should be
     // safe.
     let scrollDonePromise = new Promise(() => {});
-    EmojiPickerApiProxyImpl.getInstance().getInitialCategory = async () => {
+    EmojiPickerApiProxy.getInstance().getInitialCategory = async () => {
       scrollDonePromise = new Promise((resolve) => {
         document.querySelector('emoji-picker-app')!.$.groups.onscrollend =
             resolve;
@@ -30,7 +30,7 @@ suite('<emoji-picker> scroll tests', () => {
     assertTrue(emojiPicker.$.groups.scrollTop > 0);
   });
   test('Does not scroll for emojis', async () => {
-    EmojiPickerApiProxyImpl.getInstance().getInitialCategory = async () => {
+    EmojiPickerApiProxy.getInstance().getInitialCategory = async () => {
       return {category: Category.kEmojis};
     };
     const {emojiPicker, readyPromise} = initialiseEmojiPickerForTest();

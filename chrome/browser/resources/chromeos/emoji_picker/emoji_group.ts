@@ -13,7 +13,7 @@ import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/
 import {VISUAL_CONTENT_WIDTH} from './constants.js';
 import {getTemplate} from './emoji_group.html.js';
 import {EmojiImageComponent} from './emoji_image.js';
-import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
+import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
 import {CategoryEnum, EmojiVariants, Gender, PreferenceMapping, Tone} from './types.js';
 
@@ -196,7 +196,7 @@ export class EmojiGroupComponent extends PolymerElement {
   }
 
   private onHelpClick(): void {
-    EmojiPickerApiProxyImpl.getInstance().openHelpCentreArticle();
+    EmojiPickerApiProxy.getInstance().openHelpCentreArticle();
   }
 
   /**
