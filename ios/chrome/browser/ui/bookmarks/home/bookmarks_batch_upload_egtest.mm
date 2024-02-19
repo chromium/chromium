@@ -184,7 +184,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -264,7 +264,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -292,7 +292,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -318,7 +318,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -371,7 +371,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -411,7 +411,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Sign in.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -427,7 +427,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -456,7 +456,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -490,7 +490,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -520,7 +520,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -555,7 +555,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -586,7 +586,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -619,7 +619,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -663,7 +663,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGreyUI openBookmarks];
@@ -713,7 +713,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Adds and signs in with `fakeIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   // Add one account bookmark.
