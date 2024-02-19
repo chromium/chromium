@@ -58,7 +58,6 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
   int picker_view_width_ = 0;
 
   SelectSearchResultCallback select_search_result_callback_;
-  PickerSearchResults search_results_;
 
   // `asset_fetcher` outlives `this`.
   raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
