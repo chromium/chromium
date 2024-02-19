@@ -255806,8 +255806,37 @@
        {}
       ]
      ],
+     "backdrop-filter-clip-rect-2.html": [
+      "8116bd0dcf292eb8dd6dfd3710bdbc4dedcf509e",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/backdrop-filter-clip-rect-2-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            80
+           ],
+           [
+            0,
+            1000
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "backdrop-filter-clip-rect.html": [
-      "5d5c707116c4fa2f7f16542f1da5bfa9100318e1",
+      "35b74652dcec6da5c9fe7d1275c30f145dedcb04",
       [
        null,
        [
@@ -255816,7 +255845,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            1
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "backdrop-filter-clip-rounded-clip.html": [
@@ -347288,6 +347333,10 @@
       []
      ],
      "reference": {
+      "backdrop-filter-clip-rect-2-ref.html": [
+       "f12e88515fe9d3d845599273054803b7f782dd5a",
+       []
+      ],
       "backdrop-filter-plus-will-change-opacity-ref.html": [
        "56c6243809bef53423ff18d4b70a8597795cacec",
        []
