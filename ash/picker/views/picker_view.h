@@ -132,6 +132,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   raw_ptr<PickerCategoryView> category_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
 
+  // Whether the first set of results for the current search have been published
+  // yet.
+  bool published_first_results_ = false;
+
   base::WeakPtrFactory<PickerView> weak_ptr_factory_{this};
 };
 

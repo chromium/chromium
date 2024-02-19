@@ -266,9 +266,7 @@ gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
 void PickerView::StartSearch(const std::u16string& query) {
   if (!query.empty()) {
     contents_view_->SetActivePage(search_results_view_);
-    // TODO: b/324465975: Clear results only when publishing the first set of
-    // results.
-    search_results_view_->ClearSearchResults();
+    published_first_results_ = false;
     delegate_->StartSearch(
         query, selected_category_,
         base::BindRepeating(&PickerView::PublishSearchResults,
@@ -281,6 +279,10 @@ void PickerView::StartSearch(const std::u16string& query) {
 }
 
 void PickerView::PublishSearchResults(const PickerSearchResults& results) {
+  if (!published_first_results_) {
+    search_results_view_->ClearSearchResults();
+    published_first_results_ = true;
+  }
   search_results_view_->AppendSearchResults(results);
   session_metrics_.MarkSearchResultsUpdated();
 }

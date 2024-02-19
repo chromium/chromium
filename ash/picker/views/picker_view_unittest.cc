@@ -37,6 +37,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
 
@@ -48,6 +49,7 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Optional;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Truly;
 
@@ -335,6 +337,133 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest, SearchingShowEmptyResultsWhenNoResultsArriveYet) {
+  base::test::TestFuture<void> search_called;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        search_called.SetValue();
+      }));
+  auto widget =
+      PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
+                               kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search_called.Wait());
+
+  // Results page should be empty until results arrive.
+  EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(picker_view->search_results_view_for_testing().children(),
+              IsEmpty());
+}
+
+TEST_F(PickerViewTest, SearchingShowResultsWhenResultsArriveAsynchronously) {
+  base::test::TestFuture<void> search_called;
+  FakePickerViewDelegate::SearchResultsCallback search_callback;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        search_callback = std::move(callback);
+        search_called.SetValue();
+      }));
+  auto widget =
+      PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
+                               kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search_called.Wait());
+
+  search_callback.Run(PickerSearchResults({{
+      PickerSearchResults::Section(u"section", {}),
+  }}));
+
+  EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_views_for_testing(),
+              ElementsAre(Pointee(Property(
+                  "title", &PickerSectionView::title_label_for_testing,
+                  Property("text", &views::Label::GetText, u"section")))));
+}
+
+TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
+  base::test::TestFuture<void> search1_called;
+  base::test::TestFuture<void> search2_called;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        if (!search1_called.IsReady()) {
+          callback.Run(PickerSearchResults({{
+              PickerSearchResults::Section(u"section", {}),
+          }}));
+          search1_called.SetValue();
+        } else {
+          search2_called.SetValue();
+        }
+      }));
+  auto widget =
+      PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
+                               kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  // Go to the results page.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search1_called.Wait());
+  // Start another search.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search2_called.Wait());
+
+  // Results page should keep old results until new results arrive.
+  EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_views_for_testing(),
+              ElementsAre(Pointee(Property(
+                  "title", &PickerSectionView::title_label_for_testing,
+                  Property("text", &views::Label::GetText, u"section")))));
+}
+
+TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
+  base::test::TestFuture<void> search1_called;
+  base::test::TestFuture<void> search2_called;
+  FakePickerViewDelegate::SearchResultsCallback search2_callback;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        if (!search1_called.IsReady()) {
+          callback.Run(PickerSearchResults({{
+              PickerSearchResults::Section(u"section", {}),
+          }}));
+          search1_called.SetValue();
+        } else {
+          search2_callback = std::move(callback);
+          search2_called.SetValue();
+        }
+      }));
+  auto widget =
+      PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
+                               kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  // Go to the results page.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search1_called.Wait());
+  // Start another search.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search2_called.Wait());
+  search2_callback.Run(PickerSearchResults({{
+      PickerSearchResults::Section(u"section2", {}),
+  }}));
+
+  // Results page should show the new results.
+  EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_views_for_testing(),
+              ElementsAre(Pointee(Property(
+                  "title", &PickerSectionView::title_label_for_testing,
+                  Property("text", &views::Label::GetText, u"section2")))));
 }
 
 TEST_F(PickerViewTest, PressingEscClosesPickerWidget) {
