@@ -86,23 +86,18 @@ void PickerSearchController::PublishResults() {
     return;
   }
 
-  std::vector<PickerSearchResult> expression_results;
-  expression_results.reserve(emoji_search_results_.size() +
-                             gif_results_.size());
-  expression_results.insert(expression_results.end(),
-                            emoji_search_results_.begin(),
-                            emoji_search_results_.end());
-  expression_results.insert(expression_results.end(), gif_results_.begin(),
-                            gif_results_.end());
-
   std::vector<PickerSearchResults::Section> sections;
-  if (!expression_results.empty()) {
+  if (!emoji_search_results_.empty()) {
     sections.push_back(PickerSearchResults::Section(u"Matching expressions",
-                                                    expression_results));
+                                                    emoji_search_results_));
   }
   if (!omnibox_results_.empty()) {
     sections.push_back(
         PickerSearchResults::Section(u"Matching links", omnibox_results_));
+  }
+  if (!gif_results_.empty()) {
+    sections.push_back(
+        PickerSearchResults::Section(u"Other expressions", gif_results_));
   }
   current_callback_.Run(PickerSearchResults(std::move(sections)));
 }

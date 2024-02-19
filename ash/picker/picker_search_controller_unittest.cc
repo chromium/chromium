@@ -46,6 +46,12 @@ using testing::VariantWith;
 
 constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(100);
 
+// Matcher for the last element of a collection.
+MATCHER_P(LastElement, matcher, "") {
+  return !arg.empty() &&
+         ExplainMatchResult(matcher, arg.back(), result_listener);
+}
+
 class MockPickerClient : public PickerClient {
  public:
   MockPickerClient() {
@@ -301,7 +307,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
           "sections", &PickerSearchResults::sections,
           Contains(AllOf(
               Property("heading", &PickerSearchResults::Section::heading,
-                       u"Matching expressions"),
+                       u"Other expressions"),
               Property(
                   "results", &PickerSearchResults::Section::results,
                   Contains(Property(
@@ -342,7 +348,7 @@ TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
           "sections", &PickerSearchResults::sections,
           Contains(AllOf(
               Property("heading", &PickerSearchResults::Section::heading,
-                       u"Matching expressions"),
+                       u"Other expressions"),
               Property(
                   "results", &PickerSearchResults::Section::results,
                   Contains(Property(
@@ -377,6 +383,52 @@ TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
+TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          LastElement(AllOf(
+              Property("heading", &PickerSearchResults::Section::heading,
+                       u"Other expressions"),
+              Property(
+                  "results", &PickerSearchResults::Section::results,
+                  Contains(Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::GifData>(AllOf(
+                          Field("url", &PickerSearchResult::GifData::url,
+                                Property("spec", &GURL::spec,
+                                         "https://media.tenor.com/"
+                                         "GOabrbLMl4AAAAAd/"
+                                         "plink-cat-plink.gif")),
+                          Field(
+                              "content_description",
+                              &PickerSearchResult::GifData::content_description,
+                              u"cat blink")))))))))))
+      .Times(AtLeast(1));
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  client.cros_search_callback()->Run(
+      ash::AppListSearchResultType::kOmnibox,
+      {ash::PickerSearchResult::BrowsingHistory(
+          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
+          ui::ImageModel())});
+  std::move(*client.gif_search_callback())
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
+          gfx::Size(480, 480), u"cat blink")});
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
 TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client, kBurnInPeriod);
@@ -388,7 +440,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
           "sections", &PickerSearchResults::sections,
           IsSupersetOf({
               AllOf(Property("heading", &PickerSearchResults::Section::heading,
-                             u"Matching expressions"),
+                             u"Other expressions"),
                     Property(
                         "results", &PickerSearchResults::Section::results,
                         Contains(Property(
