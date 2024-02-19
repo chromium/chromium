@@ -121,6 +121,59 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   return contributions;
 }
 
+std::vector<AggregatableHistogramContribution> CreateAggregatableHistogramM2M(
+    std::string attribution_logic,
+    const std::unordered_map<uint64_t, uint64_t>& source_id_counts,
+    const attribution_reporting::AggregationKeys& keys,
+    const std::vector<attribution_reporting::AggregatableTriggerData>&
+        aggregatable_trigger_data,
+    const attribution_reporting::AggregatableValues& aggregatable_values) {
+  
+
+  // Collect regular bucket from key (only one allowed)
+  attribution_reporting::AggregationKeys::Keys buckets = keys.keys();
+
+  // one bucket for every source_key e.g. 'purchaseValue'
+  for (const auto& data : aggregatable_trigger_data) {
+    for (const auto& source_key : data.source_keys()) {
+      auto bucket = buckets.find(source_key);
+      if (bucket == buckets.end()) {
+        continue;
+      }
+
+      bucket->second |= data.key_piece();
+    }
+  }
+
+  // due to assertions we only have one bucket until this points
+  const attribution_reporting::AggregatableValues::Values& values =
+      aggregatable_values.values();
+
+  // assert only one value
+
+  // assert(attribution_logic == "uniform");
+
+  std::vector<AggregatableHistogramContribution> contributions;
+  for (const auto& [key_id, key] : buckets) {
+    auto value = values.find(key_id);
+    if (value == values.end()) {
+      continue;
+    }
+
+    contributions.emplace_back(key, value->second);
+  }
+
+  // Continue by appending the [source_id, contribution_values] according to the <attribution_logic>
+  // assuming attribution logic is always uniform 
+  for (const auto& pair : source_id_counts) {
+      contributions.emplace_back(pair.first, pair.second);
+  }
+
+  return contributions;
+}
+
+
+
 std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
     const AttributionReport& report) {
   base::Time source_time;

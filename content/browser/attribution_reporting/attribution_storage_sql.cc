@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "base/logging.h"
-
+#include "assert.h"
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -1170,35 +1170,39 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
-  StoredSource source = sources_to_attribute[0];
-  const CommonSourceInfo& common_info = source.common_info();
-  const SourceType source_type = common_info.source_type();
+ // Initialize dict with source_id_candidates and set their counts to 0
+  std::unordered_map<uint64_t, uint64_t> source_id_counts;
+  for (uint64_t source_id_candidate : trigger_registration.source_id_candidates) {
+      source_id_counts[source_id_candidate] = 0;
+  }
 
-  // // Initialize dict with source_id_candidates and set their counts to 0
-  // std::unordered_map<uint64_t, uint64_t> source_id_counts;
-  // for (auto source_id_candidate : trigger_registration.source_id_candidates) {
-  //     source_id_counts[source_id_candidate] = 0
-  // }
+  // Update counters while iterating attributable sources
+  for (const StoredSource& source_to_attribute : sources_to_attribute) {
+    // assert(source_to_attribute.aggregation_keys().keys().size() == 1);
+    auto it = source_id_counts.find(source_to_attribute.source_event_id());
+    if (it == source_id_counts.end()) {
+     return AggregatableResult::kInternalError; 
+    }
+    source_id_counts[source_to_attribute.source_event_id()]++;
+  }
+// assert here that total_count == sum(source_id_counts[*])
 
-  // // Total attributable sources (to normalize)
-  // uint64_t total_count = sources_to_attribute.size();
+  for (auto source_id_candidate : trigger_registration.source_id_candidates) {
+      LOG(INFO) << base::NumberToString(source_id_candidate);
+      LOG(INFO) << base::NumberToString(source_id_counts[source_id_candidate]);
+      LOG(INFO) << "\n";
+  }
 
-  // // Update counters while iterating attributable sources
-  // for (const auto source_to_attribute : sources_to_attribute) {
-  //   auto it = source_id_counts.find(source_to_attribute.source_event_id);
-  //   if (it != source_id_counts.end()) {
-  //    return AggregatableResult::kInternalError; 
-  //   }
-  //   source_id_counts[source_to_attribute.source_event_id]++;
-  // }
+  // Aggregation-Key will be the same across all sources (assert that)
+  // sources won't be empty (assert that)
+  // assert !sources_to_attribute.empty()
 
-  // assert here that total_count == sum(source_id_counts[*])
-  // assert here that len(source.aggregation_keys()) == 1
-  
+  // Use the vector of key,values to store pairs of <source-id, contribution-value> instead
   std::vector<AggregatableHistogramContribution> contributions =
-      CreateAggregatableHistogram(
-          source.filter_data(), source_type, source.source_time(),
-          /*trigger_time=*/attribution_info.time, source.aggregation_keys(),
+      CreateAggregatableHistogramM2M(
+          trigger_registration.attribution_logic,
+          source_id_counts,
+          sources_to_attribute[0].aggregation_keys(),
           trigger_registration.aggregatable_trigger_data,
           trigger_registration.aggregatable_values);
   if (contributions.empty()) {
@@ -1217,12 +1221,10 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
               trigger_registration.aggregation_coordinator_origin,
               /*verification_token=*/std::nullopt,
               trigger_registration.aggregatable_trigger_config),
-          std::move(contributions), source));
+          std::move(contributions), sources_to_attribute[0]));
 
   return AggregatableResult::kSuccess;
 }
-
-
 
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     const AttributionTrigger& trigger) {
