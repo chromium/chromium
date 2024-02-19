@@ -9,9 +9,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// Wether the flow layout needs to be updated.
   public var needsUpdate: Bool = true
 
-  /// IndexPath of the selected item.
-  public var selectedIndexPath: IndexPath?
-
   /// Static decoration views that border the collection view.
   public var leftStaticSeparator: TabStripDecorationView?
   public var rightStaticSeparator: TabStripDecorationView?
@@ -46,6 +43,14 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  // MARK: - Properties
+
+  // Returns the selected item index path.
+  private var selectedIndexPath: IndexPath? {
+    guard let collectionView = collectionView else { return nil }
+    return collectionView.indexPathsForSelectedItems?.first
   }
 
   // MARK: - UICollectionViewLayout

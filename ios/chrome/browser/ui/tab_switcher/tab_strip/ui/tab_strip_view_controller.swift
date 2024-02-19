@@ -35,6 +35,16 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // is long pressed which does not always result in a drag action.
   private var draggedItem: TabSwitcherItem?
 
+  // The item currently selected in the tab strip.
+  // The collection view appears to sometimes forget what item is selected,
+  // so it is better to store this information here rather than directly using
+  // `collectionView.selectItem:` and `collectionView.deselectItem:`.
+  // `self.ensureSelectedItemIsSelected()` is used to ensure the value of
+  // `collectionView.indexPathsForSelectedItems` remains consistent with `selectedItem`.
+  private var selectedItem: TabSwitcherItem? {
+    didSet { self.ensureSelectedItemIsSelected() }
+  }
+
   /// `true` if the new tab button has been tapped. Used to scroll to the newly
   /// added item. It's automatically set to `false` after the scroll.
   private var newTabOpened: Bool = false
@@ -141,6 +151,11 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     }
   }
 
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    self.ensureSelectedItemIsSelected()
+  }
+
   // MARK: - TabStripConsumer
 
   func populate(items: [TabSwitcherItem]?, selectedItem: TabSwitcherItem?) {
@@ -158,20 +173,12 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       layout.cellAnimatediOS16 = true
     }
 
-    if let selectedItem = selectedItem,
-      let diffableDataSource = diffableDataSource,
-      diffableDataSource.indexPath(for: selectedItem) != nil
-    {
-      // If the newly selected item is already in the data source, select it first.
-      selectItem(selectedItem)
-      applySnapshot(
-        diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
-    } else {
-      // If the newly selected item is a new item, select it after applying snapshot.
-      applySnapshot(
-        diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
-      selectItem(selectedItem)
-    }
+    // To make the animation smoother, try to select the item if it's already
+    // present in the collection view.
+    selectItem(selectedItem)
+    applySnapshot(
+      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
+    selectItem(selectedItem)
 
     /// Scroll to the end of the collection view if a new tab has been opened.
     if newTabOpened {
@@ -204,22 +211,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   }
 
   func selectItem(_ item: TabSwitcherItem?) {
-    layout.selectedIndexPath = nil
-    if let indexPaths = collectionView.indexPathsForSelectedItems {
-      for indexPath in indexPaths {
-        collectionView.deselectItem(at: indexPath, animated: false)
-      }
-    }
-    guard
-      let item = item, let diffableDataSource = diffableDataSource,
-      let indexPath = diffableDataSource.indexPath(for: item)
-    else { return }
-    layout.selectedIndexPath = indexPath
-
-    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
-
-    /// Invalidate the layout to correctly recalculate the frame of the `selected` cell.
-    layout.invalidateLayout()
+    self.selectedItem = item
   }
 
   func reloadItem(_ item: TabSwitcherItem?) {
@@ -388,6 +380,37 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     self.collectionView.setContentOffset(
       CGPoint(x: offset, y: 0),
       animated: true)
+  }
+
+  /// Ensures `collectionView.indexPathsForSelectedItems` is consistent with
+  /// `self.selectedItem`.
+  func ensureSelectedItemIsSelected() {
+    guard let diffableDataSource = diffableDataSource else {
+      return
+    }
+
+    let expectedIndexPathForSelectedItem =
+      self.selectedItem.map { diffableDataSource.indexPath(for: $0) }
+    let observedIndexPathForSelectedItem = collectionView.indexPathsForSelectedItems?.first
+
+    // If the observed selected indexPath doesn't match the expected selected
+    // indexPath, update the observed selected item.
+    if expectedIndexPathForSelectedItem != observedIndexPathForSelectedItem {
+      // Clear the selection.
+      if let indexPaths = collectionView.indexPathsForSelectedItems {
+        for indexPath in indexPaths {
+          collectionView.deselectItem(at: indexPath, animated: false)
+        }
+      }
+
+      // If `expectedIndexPathForSelectedItem` is not nil, select it.
+      guard let expectedIndexPathForSelectedItem = expectedIndexPathForSelectedItem else { return }
+      collectionView.selectItem(
+        at: expectedIndexPathForSelectedItem, animated: false, scrollPosition: [])
+    }
+
+    /// Invalidate the layout to correctly recalculate the frame of the `selected` cell.
+    layout.invalidateLayout()
   }
 
   // MARK: - TabStripNewTabButtonDelegate
