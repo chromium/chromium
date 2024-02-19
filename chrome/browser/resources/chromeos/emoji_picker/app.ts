@@ -22,7 +22,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {getTemplate} from './app.html.js';
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
-import {Feature, Status} from './emoji_picker.mojom-webui.js';
+import {Category, Feature, Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
@@ -585,7 +585,23 @@ export class EmojiPickerApp extends PolymerElement {
 
       afterNextRender(
           this,
-          () => {
+          async () => {
+            switch ((await this.apiProxy.getInitialCategory()).category) {
+              // by default, do nothing.
+              default:
+              case Category.kEmojis:
+                break;
+              case Category.kSymbols:
+                this.onCategoryButtonClick(CategoryEnum.SYMBOL);
+                break;
+              case Category.kEmoticons:
+                this.onCategoryButtonClick(CategoryEnum.EMOTICON);
+                break;
+              case Category.kGifs:
+                this.onCategoryButtonClick(CategoryEnum.GIF);
+                break;
+            }
+
             this.apiProxy.onUiFullyLoaded();
             this.dispatchEvent(
                 events.createCustomEvent(events.EMOJI_PICKER_READY, {}));

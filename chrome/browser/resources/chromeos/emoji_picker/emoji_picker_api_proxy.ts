@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {PageHandlerFactory, PageHandlerRemote, Status, TenorGifResponse} from './emoji_picker.mojom-webui.js';
+import {Category, PageHandlerFactory, PageHandlerRemote, Status, TenorGifResponse} from './emoji_picker.mojom-webui.js';
 import {EmojiSearch, SearchResults} from './emoji_search.mojom-webui.js';
 import {NewWindowProxy} from './new_window_proxy.mojom-webui.js';
 import {EmojiVariants, GifSubcategoryData, VisualContent} from './types.js';
@@ -44,6 +44,8 @@ export interface EmojiPickerApiProxy {
   openHelpCentreArticle(): void;
 
   onUiFullyLoaded(): void;
+
+  getInitialCategory(): Promise<{category: Category}>;
 }
 
 export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
@@ -146,6 +148,11 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     this.newWindowProxy.openUrl({
       url: HELP_CENTRE_URL,
     });
+  }
+
+  /** @override */
+  getInitialCategory(): Promise<{category: Category}> {
+    return this.handler.getInitialCategory();
   }
 
   onUiFullyLoaded(): void {
