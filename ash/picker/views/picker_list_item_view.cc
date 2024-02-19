@@ -9,17 +9,16 @@
 #include <utility>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -38,8 +37,8 @@ constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 
 }  // namespace
 
-PickerListItemView::PickerListItemView(views::Button::PressedCallback callback)
-    : views::Button(std::move(callback)) {
+PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
+    : PickerItemView(std::move(select_item_callback)) {
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto* item_contents =
       AddChildView(views::Builder<views::FlexLayoutView>()
@@ -64,14 +63,6 @@ PickerListItemView::PickerListItemView(views::Button::PressedCallback callback)
       main_container->AddChildView(std::make_unique<views::FlexLayoutView>());
 
   SetBorder(views::CreateEmptyBorder(kPickerListItemBorderInsets));
-
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetMasksToBounds(true);
-
-  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                   /*highlight_on_hover=*/true,
-                                   /*highlight_on_focus=*/true);
 }
 
 PickerListItemView::~PickerListItemView() = default;

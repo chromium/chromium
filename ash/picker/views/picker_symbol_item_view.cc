@@ -7,12 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/font_list.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -31,9 +30,9 @@ constexpr auto kPickerSymbolItemCornerRadius = gfx::RoundedCornersF(4);
 }  // namespace
 
 PickerSymbolItemView::PickerSymbolItemView(
-    views::Button::PressedCallback callback,
+    SelectItemCallback select_item_callback,
     const std::u16string& symbol)
-    : views::Button(std::move(callback)) {
+    : PickerItemView(std::move(select_item_callback)) {
   SetUseDefaultFillLayout(true);
 
   symbol_label_ =
@@ -44,15 +43,8 @@ PickerSymbolItemView::PickerSymbolItemView(
                        .Build());
   SetAccessibleName(symbol_label_);
 
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetMasksToBounds(true);
-
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(
       this, kPickerSymbolItemCornerRadius);
-  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                   /*highlight_on_hover=*/true,
-                                   /*highlight_on_focus=*/true);
 }
 
 PickerSymbolItemView::~PickerSymbolItemView() = default;

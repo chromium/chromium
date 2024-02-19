@@ -7,14 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/style/style_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -25,23 +23,16 @@ constexpr auto kPickerImageItemCornerRadius = gfx::RoundedCornersF(8);
 }  // namespace
 
 PickerImageItemView::PickerImageItemView(
-    views::Button::PressedCallback callback,
+    SelectItemCallback select_item_callback,
     std::unique_ptr<views::ImageView> image)
-    : views::Button(std::move(callback)) {
+    : PickerItemView(std::move(select_item_callback)) {
   SetUseDefaultFillLayout(true);
 
   image_view_ = AddChildView(std::move(image));
   image_view_->SetCanProcessEventsWithinSubtree(false);
 
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetMasksToBounds(true);
-
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(
       this, kPickerImageItemCornerRadius);
-  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                   /*highlight_on_hover=*/true,
-                                   /*highlight_on_focus=*/true);
 
   // TODO: b/316936418 - Get accessible name for image contents.
   SetAccessibleName(u"image contents");

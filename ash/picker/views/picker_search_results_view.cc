@@ -75,8 +75,8 @@ void PickerSearchResultsView::AddResultToSection(
   // `base::Unretained` is safe here because `this` will own the item view which
   // takes this callback.
   auto select_result_callback =
-      base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                     base::Unretained(this), result);
+      base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
+                          base::Unretained(this), result);
   std::visit(
       base::Overloaded{
           [&](const PickerSearchResult::TextData& data) {

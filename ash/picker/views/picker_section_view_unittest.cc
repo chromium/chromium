@@ -16,7 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -36,7 +35,7 @@ int GetAspectRatio(const gfx::Size& size) {
 std::unique_ptr<PickerEmoticonItemView> CreateSizedEmoticonItem(
     const gfx::Size& size) {
   auto emoticon_item = std::make_unique<PickerEmoticonItemView>(
-      views::Button::PressedCallback(), u"¯\\_(ツ)_/¯");
+      base::DoNothing(), u"¯\\_(ツ)_/¯");
   emoticon_item->SetPreferredSize(size);
   return emoticon_item;
 }
@@ -44,7 +43,7 @@ std::unique_ptr<PickerEmoticonItemView> CreateSizedEmoticonItem(
 std::unique_ptr<PickerImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
   return std::make_unique<PickerImageItemView>(
-      views::Button::PressedCallback(),
+      base::DoNothing(),
       std::make_unique<PickerGifView>(
           /*frames_fetcher=*/base::DoNothing(),
           /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions,
@@ -66,8 +65,8 @@ TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
 TEST_F(PickerSectionViewTest, AddsEmojiItem) {
   PickerSectionView section_view(kDefaultSectionWidth);
 
-  section_view.AddEmojiItem(std::make_unique<PickerEmojiItemView>(
-      views::Button::PressedCallback(), u"😊"));
+  section_view.AddEmojiItem(
+      std::make_unique<PickerEmojiItemView>(base::DoNothing(), u"😊"));
 
   // One row with one item.
   EXPECT_THAT(
@@ -78,8 +77,8 @@ TEST_F(PickerSectionViewTest, AddsEmojiItem) {
 TEST_F(PickerSectionViewTest, AddsSymbolItem) {
   PickerSectionView section_view(kDefaultSectionWidth);
 
-  section_view.AddSymbolItem(std::make_unique<PickerSymbolItemView>(
-      views::Button::PressedCallback(), u"♬"));
+  section_view.AddSymbolItem(
+      std::make_unique<PickerSymbolItemView>(base::DoNothing(), u"♬"));
 
   // One row with one item.
   EXPECT_THAT(
@@ -91,7 +90,7 @@ TEST_F(PickerSectionViewTest, AddsEmoticonItem) {
   PickerSectionView section_view(kDefaultSectionWidth);
 
   section_view.AddEmoticonItem(std::make_unique<PickerEmoticonItemView>(
-      views::Button::PressedCallback(), u"¯\\_(ツ)_/¯"));
+      base::DoNothing(), u"¯\\_(ツ)_/¯"));
 
   // One row with one item.
   EXPECT_THAT(
@@ -189,8 +188,8 @@ TEST_F(PickerSectionViewTest, PreservesAspectRatioOfGifItems) {
 TEST_F(PickerSectionViewTest, EmojiItemsAndGifItems) {
   PickerSectionView section_view(kDefaultSectionWidth);
 
-  section_view.AddEmojiItem(std::make_unique<PickerEmojiItemView>(
-      views::Button::PressedCallback(), u"😊"));
+  section_view.AddEmojiItem(
+      std::make_unique<PickerEmojiItemView>(base::DoNothing(), u"😊"));
   section_view.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
 
   // One row with one small grid item.

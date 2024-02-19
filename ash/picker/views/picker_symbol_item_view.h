@@ -8,9 +8,9 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class Label;
@@ -19,11 +19,11 @@ class Label;
 namespace ash {
 
 // Picker item which contains just an symbol.
-class ASH_EXPORT PickerSymbolItemView : public views::Button {
-  METADATA_HEADER(PickerSymbolItemView, views::Button)
+class ASH_EXPORT PickerSymbolItemView : public PickerItemView {
+  METADATA_HEADER(PickerSymbolItemView, PickerItemView)
 
  public:
-  PickerSymbolItemView(views::Button::PressedCallback callback,
+  PickerSymbolItemView(SelectItemCallback select_item_callback,
                        const std::u16string& symbol);
   PickerSymbolItemView(const PickerSymbolItemView&) = delete;
   PickerSymbolItemView& operator=(const PickerSymbolItemView&) = delete;

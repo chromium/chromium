@@ -29,7 +29,7 @@ using ::testing::SizeIs;
 using PickerListItemViewTest = AshTestBase;
 
 TEST_F(PickerListItemViewTest, SetsPrimaryText) {
-  PickerListItemView item_view{views::Button::PressedCallback()};
+  PickerListItemView item_view(base::DoNothing());
 
   const std::u16string kPrimaryText = u"Item";
   item_view.SetPrimaryText(kPrimaryText);
@@ -43,7 +43,7 @@ TEST_F(PickerListItemViewTest, SetsPrimaryText) {
 }
 
 TEST_F(PickerListItemViewTest, SetsPrimaryImage) {
-  PickerListItemView item_view{views::Button::PressedCallback()};
+  PickerListItemView item_view(base::DoNothing());
 
   item_view.SetPrimaryImage(std::make_unique<views::ImageView>());
 
@@ -53,7 +53,7 @@ TEST_F(PickerListItemViewTest, SetsPrimaryImage) {
 }
 
 TEST_F(PickerListItemViewTest, SetsLeadingIcon) {
-  PickerListItemView item_view{views::Button::PressedCallback()};
+  PickerListItemView item_view(base::DoNothing());
 
   item_view.SetLeadingIcon(ui::ImageModel::FromVectorIcon(
       kImeMenuEmoticonIcon, cros_tokens::kCrosSysOnSurface));

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/button.h"
 
 namespace ui {
 class ImageModel;
@@ -24,11 +24,11 @@ namespace ash {
 
 // View for a Picker list item with text or an image as its primary contents.
 // Can optionally have other parts such as a leading icon and secondary text.
-class ASH_EXPORT PickerListItemView : public views::Button {
-  METADATA_HEADER(PickerListItemView, views::Button)
+class ASH_EXPORT PickerListItemView : public PickerItemView {
+  METADATA_HEADER(PickerListItemView, PickerItemView)
 
  public:
-  explicit PickerListItemView(views::Button::PressedCallback callback);
+  explicit PickerListItemView(SelectItemCallback select_item_callback);
   PickerListItemView(const PickerListItemView&) = delete;
   PickerListItemView& operator=(const PickerListItemView&) = delete;
   ~PickerListItemView() override;

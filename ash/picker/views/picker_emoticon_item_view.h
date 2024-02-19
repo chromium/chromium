@@ -8,9 +8,9 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class Label;
@@ -19,11 +19,11 @@ class Label;
 namespace ash {
 
 // Picker item which contains just an emoticon.
-class ASH_EXPORT PickerEmoticonItemView : public views::Button {
-  METADATA_HEADER(PickerEmoticonItemView, views::Button)
+class ASH_EXPORT PickerEmoticonItemView : public PickerItemView {
+  METADATA_HEADER(PickerEmoticonItemView, PickerItemView)
 
  public:
-  PickerEmoticonItemView(views::Button::PressedCallback callback,
+  PickerEmoticonItemView(SelectItemCallback select_item_callback,
                          const std::u16string& emoticon);
   PickerEmoticonItemView(const PickerEmoticonItemView&) = delete;
   PickerEmoticonItemView& operator=(const PickerEmoticonItemView&) = delete;
