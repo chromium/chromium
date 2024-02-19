@@ -56,8 +56,8 @@ using testing::Pointee;
 using HeaderVector = net::HttpRequestHeaders::HeaderVector;
 
 constexpr std::string_view kDomain = "google.com";
-constexpr std::string_view KTriggerRegistrationPath = "/trigger_registration";
-constexpr std::string_view kRegisterSessionPath = "/register_session";
+constexpr std::string_view KTriggerRegistrationPath = "/TriggerRegistration";
+constexpr std::string_view kRegisterSessionPath = "/RegisterSession";
 constexpr std::string_view kRotateCookiesPath = "/RotateBoundCookies";
 constexpr std::string_view kChallenge = "test_challenge";
 

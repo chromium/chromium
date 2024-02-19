@@ -82,12 +82,15 @@ class BoundSessionCookieRefreshServiceImpl
   friend class BoundSessionCookieRefreshServiceImplTest;
 
   // Used by tests to provide their own implementation of the
-  // `BoundSessionCookieController`.
-  using BoundSessionCookieControllerFactoryForTesting =
+  // `BoundSessionCookieController` and `BoundSessionRegistrationFetcher`.
+  using ControllerFactoryForTesting =
       base::RepeatingCallback<std::unique_ptr<BoundSessionCookieController>(
           const bound_session_credentials::BoundSessionParams&
               bound_session_params,
           Delegate* delegate)>;
+  using RegistrationFetcherFactoryForTesting =
+      base::RepeatingCallback<std::unique_ptr<BoundSessionRegistrationFetcher>(
+          BoundSessionRegistrationFetcherParam fetcher_params)>;
 
   // BoundSessionCookieRefreshService:
   void SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
@@ -97,9 +100,14 @@ class BoundSessionCookieRefreshServiceImpl
       base::RepeatingClosure updated_callback) override;
 
   void set_controller_factory_for_testing(
-      const BoundSessionCookieControllerFactoryForTesting&
-          controller_factory_for_testing) {
+      const ControllerFactoryForTesting& controller_factory_for_testing) {
     controller_factory_for_testing_ = controller_factory_for_testing;
+  }
+  void set_registration_fetcher_factory_for_testing(
+      const RegistrationFetcherFactoryForTesting&
+          registration_fetcher_factory_for_testing) {
+    registration_fetcher_factory_for_testing_ =
+        registration_fetcher_factory_for_testing;
   }
 
   void OnRegistrationRequestComplete(
@@ -143,7 +151,9 @@ class BoundSessionCookieRefreshServiceImpl
   // Required to attach X-Client-Data header to session registration and cookie
   // rotation requests for GWS-visible Finch experiment.
   const bool is_off_the_record_profile_;
-  BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
+  ControllerFactoryForTesting controller_factory_for_testing_;
+  RegistrationFetcherFactoryForTesting
+      registration_fetcher_factory_for_testing_;
   RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater_;
   base::RepeatingClosure session_updated_callback_for_testing_;
 

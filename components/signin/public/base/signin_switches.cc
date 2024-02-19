@@ -47,6 +47,14 @@ const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>
         EnableBoundSessionCredentialsDiceSupport::kDisabled,
         &enable_bound_session_credentials_dice_support};
 
+// Restricts the DBSC registration URL path to a single allowed string.
+// Set to "/" to denote an empty path.
+// Set to an empty string to remove the restriction.
+const base::FeatureParam<std::string>
+    kEnableBoundSessionCredentialsExclusiveRegistrationPath{
+        &kEnableBoundSessionCredentials, "exclusive-registration-path",
+        "/RegisterSession"};
+
 // Enables Chrome refresh tokens binding to a device. Requires
 // "EnableBoundSessionCredentials" being enabled as a prerequisite.
 BASE_FEATURE(kEnableChromeRefreshTokenBinding,
