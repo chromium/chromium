@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file.h"
@@ -48,6 +49,11 @@ class BulkIwaInstaller {
     kErrorCantInstallFromWebBundle,
     kUnknown,
   };
+
+  using Result =
+      std::pair<web_package::SignedWebBundleId, EphemeralAppInstallResult>;
+  using ResultCallback = base::OnceCallback<void(std::vector<Result>)>;
+
   static constexpr char kEphemeralIwaRootDirectory[] = "EphemeralIWA";
   static constexpr char kMainSignedWebBundleFileName[] = "main.swbn";
 
@@ -87,8 +93,7 @@ class BulkIwaInstaller {
           ephemeral_iwa_install_options,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<IwaInstallCommandWrapper> installer,
-      base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
-          ephemeral_install_cb);
+      ResultCallback ephemeral_install_cb);
   ~BulkIwaInstaller();
 
   // Triggers installing of the IWAs in MGS. There is no callback as so far we
@@ -149,32 +154,33 @@ class BulkIwaInstaller {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The result vector contains the installation result for each app.
-  std::vector<EphemeralAppInstallResult> result_vector_;
+  std::vector<Result> result_vector_;
   std::unique_ptr<IwaInstallCommandWrapper> installer_;
-  base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
-      ephemeral_install_cb_;
+  ResultCallback ephemeral_install_cb_;
 
   base::WeakPtrFactory<BulkIwaInstaller> weak_factory_{this};
 };
 
+// Uninstalls a list of IWAs based on their Web Bundle IDs.
 class BulkIwaUninstaller {
  public:
-  BulkIwaUninstaller(
-      web_app::WebAppProvider* provider,
-      std::vector<web_package::SignedWebBundleId> to_be_removed,
-      base::OnceCallback<void(std::vector<webapps::UninstallResultCode>)>);
+  using Result =
+      std::pair<web_package::SignedWebBundleId, webapps::UninstallResultCode>;
+  using ResultCallback = base::OnceCallback<void(std::vector<Result>)>;
+
+  explicit BulkIwaUninstaller(web_app::WebAppProvider& provider);
   ~BulkIwaUninstaller();
-  void UninstallApps();
+
+  // Uninstall the provided apps. Can be called multiple times.
+  void UninstallApps(
+      const std::vector<web_package::SignedWebBundleId>& web_bundle_ids,
+      ResultCallback callback);
 
  private:
-  void UninstallApp(const web_package::SignedWebBundleId& id);
-  void OnAppUninstalled(webapps::UninstallResultCode result);
-  std::vector<web_package::SignedWebBundleId> to_be_removed_;
-  std::vector<web_package::SignedWebBundleId>::iterator current_app_;
-  const raw_ptr<web_app::WebAppProvider> provider_;
-  base::OnceCallback<void(std::vector<webapps::UninstallResultCode>)>
-      uninstall_cb_;
-  std::vector<webapps::UninstallResultCode> results_;
+  void OnAppsUninstalled(ResultCallback callback,
+                         std::vector<Result> uninstall_results);
+
+  const raw_ref<web_app::WebAppProvider> provider_;
   base::WeakPtrFactory<BulkIwaUninstaller> weak_factory_{this};
 };
 
@@ -199,14 +205,15 @@ class IsolatedWebAppPolicyManager {
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
 
-  void Uninstall();
-  void OnUninstalled(
-      std::vector<webapps::UninstallResultCode> uninstall_results);
-  void Install();
+  void Uninstall(base::OnceClosure next_step_callback);
+  void OnUninstalled(base::OnceClosure next_step_callback,
+                     std::vector<web_app::internal::BulkIwaUninstaller::Result>
+                         uninstall_results);
+
+  void Install(base::OnceClosure next_step_callback);
   void OnInstalled(
-      std::vector<
-          web_app::internal::BulkIwaInstaller::EphemeralAppInstallResult>
-          result);
+      base::OnceClosure next_step_callback,
+      std::vector<web_app::internal::BulkIwaInstaller::Result> install_results);
 
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<WebAppProvider> provider_ = nullptr;
