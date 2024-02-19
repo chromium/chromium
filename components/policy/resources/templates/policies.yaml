@@ -1221,6 +1221,7 @@ policies:
   1220: WebPrintingAllowedForUrls
   1221: WebPrintingBlockedForUrls
   1222: DocumentScanAPITrustedExtensions
+  1223: RemoteAccessHostAllowPinAuthentication
 atomic_groups:
   1: Homepage
   2: RemoteAccess

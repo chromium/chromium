@@ -37,6 +37,9 @@ namespace remoting {
 class PolicyWatcher : public policy::PolicyService::Observer {
  public:
   // Called first with all policies, and subsequently with any changed policies.
+  // Policies that are unchanged will be absent in the returned dictionary.
+  // If a policy has no default value but is unset, it will be an empty Value,
+  // i.e., of type NONE.
   using PolicyUpdatedCallback =
       base::RepeatingCallback<void(base::Value::Dict)>;
 

@@ -4,6 +4,7 @@
 
 #include "remoting/host/policy_watcher.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -13,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_log.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
@@ -333,6 +335,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.Set(key::kRemoteAccessHostEnableUserInterface, true);
     dict.Set(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
     dict.Set(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);
+    dict.Set(key::kRemoteAccessHostAllowPinAuthentication, base::Value());
 #endif
 #if BUILDFLAG(IS_WIN)
     dict.Set(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance, false);
@@ -712,8 +715,21 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
   // are kept in-sync.
 
   std::map<std::string, base::Value::Type> expected_schema;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::flat_set<std::string> policies_with_no_default_values;
+#else
+  auto policies_with_no_default_values = base::MakeFixedFlatSet<std::string>(
+      base::sorted_unique,
+      {policy::key::kRemoteAccessHostAllowPinAuthentication});
+#endif
   for (auto i : GetDefaultValues()) {
-    expected_schema[i.first] = i.second.type();
+    if (policies_with_no_default_values.contains(i.first)) {
+      // This policy has no default value, so we need to explicitly set the
+      // expected type.
+      expected_schema[i.first] = base::Value::Type::BOOLEAN;
+    } else {
+      expected_schema[i.first] = i.second.type();
+    }
   }
 
   std::map<std::string, base::Value::Type> actual_schema;

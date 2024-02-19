@@ -74,7 +74,8 @@ base::Value::Dict CopyValuesAndAddDefaults(
       continue;
     }
 
-    CHECK(value->type() == i.second.type());
+    CHECK(value->type() == i.second.type() || value->is_none() ||
+          i.second.is_none());
     to.Set(i.first, value->Clone());
   }
 
@@ -207,6 +208,7 @@ base::Value::Dict PolicyWatcher::GetDefaultPolicies() {
   result.Set(key::kRemoteAccessHostEnableUserInterface, true);
   result.Set(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
   result.Set(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);
+  result.Set(key::kRemoteAccessHostAllowPinAuthentication, base::Value());
 #endif
 #if BUILDFLAG(IS_WIN)
   result.Set(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance, false);

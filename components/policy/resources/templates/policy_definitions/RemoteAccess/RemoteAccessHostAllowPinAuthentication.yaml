@@ -1,0 +1,29 @@
+caption: Allow PIN and pairing authentication methods for remote access hosts
+desc: |-
+  Setting the policy to Enabled allows the remote access host to use PIN and pairing authentications when accepting client connections.
+
+  Setting the policy to Disabled disallows PIN or pairing authentications.
+
+  Leaving it unset lets the host decide whether PIN and/or pairing authentications can be used.
+
+  Note: If the setting results in no mutually supported authentication methods by both the host and the client, then the connection will be rejected.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+items:
+- caption: Allows the remote access host to use PIN and pairing authentications when accepting client connections
+  value: true
+- caption: Disallows the remote access host to use PIN and pairing authentications when accepting client connections
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- joedow@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:123-
+tags: []
+type: main
