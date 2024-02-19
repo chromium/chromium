@@ -6,6 +6,7 @@ import("//build/config/ios/asset_catalog.gni")
 
 group("resources") {
   deps = [
+    ":omnibox_popout_overlay_color",
     ":omnibox_popout_suggestion_row_separator_color",
     ":omnibox_suggestion_answer_icon_color",
     ":omnibox_suggestion_answer_icon_dark_color",
@@ -44,4 +45,8 @@ colorset("omnibox_suggestion_row_separator_color") {
 colorset("omnibox_popout_suggestion_row_separator_color") {
   sources =
       [ "omnibox_popout_suggestion_row_separator_color.colorset/Contents.json" ]
+}
+
+colorset("omnibox_popout_overlay_color") {
+  sources = [ "omnibox_popout_overlay_color.colorset/Contents.json" ]
 }

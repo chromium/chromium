@@ -868,7 +868,8 @@ enum HeaderBehaviour {
   self.typingShield.accessibilityIdentifier = @"Typing Shield";
   self.typingShield.accessibilityLabel = l10n_util::GetNSString(IDS_CANCEL);
   if (IsIpadPopoutOmniboxEnabled()) {
-    self.typingShield.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
+    self.typingShield.backgroundColor =
+        [UIColor colorNamed:kOmniboxPopoutOverlayColor];
   }
   [self.typingShield addTarget:self
                         action:@selector(shieldWasTapped:)
