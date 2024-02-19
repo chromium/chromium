@@ -1035,17 +1035,6 @@ void DedicatedWorkerHost::EvictFromBackForwardCache(
     // The frame may have already been closed.
     return;
   }
-  if (reason == blink::mojom::RendererEvictionReason::kJavaScriptExecution) {
-    if (details.is_null()) {
-      mojo::ReportBadMessage(
-          "Details must be provided if it's JavaScript execution");
-    };
-    if (details->feature.has_value()) {
-      mojo::ReportBadMessage(
-          "Feature for scheduler shouldn't be provided if it's JavaScript "
-          "execution");
-    }
-  }
   ancestor_render_frame_host->EvictFromBackForwardCache(std::move(reason),
                                                         std::move(details));
 }
