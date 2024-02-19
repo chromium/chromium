@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/features_utils.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -785,7 +786,7 @@ enum HeaderBehaviour {
   _isShutdown = YES;
 
   // Disconnect child coordinators.
-  if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+  if (IsModernTabStripOrRaccoonEnabled()) {
     [self.tabStripCoordinator stop];
     self.tabStripCoordinator = nil;
   } else {
@@ -985,7 +986,7 @@ enum HeaderBehaviour {
     [self.toolbarCoordinator stop];
     self.toolbarCoordinator = nil;
     _toolbarUIState = nil;
-    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+    if (IsModernTabStripOrRaccoonEnabled()) {
       [self.tabStripCoordinator stop];
       self.tabStripCoordinator = nil;
     } else {
@@ -1061,7 +1062,7 @@ enum HeaderBehaviour {
     [self showTabStripView:self.tabStripView];
     [self.tabStripView layoutSubviews];
     const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
-    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+    if (IsModernTabStripOrRaccoonEnabled()) {
       [self.tabStripCoordinator hideTabStrip:!canShowTabStrip];
     } else {
       [self.legacyTabStripCoordinator hideTabStrip:!canShowTabStrip];
@@ -1131,7 +1132,7 @@ enum HeaderBehaviour {
 }
 
 - (void)completedTransition {
-  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+  if (!IsModernTabStripOrRaccoonEnabled()) {
     if (self.tabStripView) {
       [self.legacyTabStripCoordinator tabStripSizeDidChange];
     }
@@ -1270,7 +1271,7 @@ enum HeaderBehaviour {
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
   if (IsRegularXRegularSizeClass(self) && !_isOffTheRecord &&
-      !base::FeatureList::IsEnabled(kModernTabStrip)) {
+      !IsModernTabStripOrRaccoonEnabled()) {
     return self.tabStripView.frame.origin.y < kTabStripAppearanceOffset
                ? UIStatusBarStyleDefault
                : UIStatusBarStyleLightContent;
@@ -1294,7 +1295,7 @@ enum HeaderBehaviour {
   _fakeStatusBarView = [[UIView alloc] initWithFrame:statusBarFrame];
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+    if (IsModernTabStripOrRaccoonEnabled()) {
       _fakeStatusBarView.backgroundColor =
           [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
       // Force the UserInterfaceStyle update in incognito.
@@ -1326,7 +1327,7 @@ enum HeaderBehaviour {
   }
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+    if (IsModernTabStripOrRaccoonEnabled()) {
       [self.tabStripCoordinator start];
     } else {
       self.legacyTabStripCoordinator.presentationProvider = self;
@@ -1383,8 +1384,9 @@ enum HeaderBehaviour {
 }
 
 - (void)addConstraintsToTabStrip {
-  if (!base::FeatureList::IsEnabled(kModernTabStrip))
+  if (!IsModernTabStripOrRaccoonEnabled()) {
     return;
+  }
 
   self.tabStripView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
@@ -1500,8 +1502,7 @@ enum HeaderBehaviour {
     UIView* primaryToolbarView =
         self.toolbarCoordinator.primaryToolbarViewController.view;
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      if (base::FeatureList::IsEnabled(kModernTabStrip) &&
-          self.tabStripCoordinator) {
+      if (IsModernTabStripOrRaccoonEnabled() && self.tabStripCoordinator) {
         UIViewController* tabStripViewController =
             self.tabStripCoordinator.viewController;
         [self addChildViewController:tabStripViewController];
