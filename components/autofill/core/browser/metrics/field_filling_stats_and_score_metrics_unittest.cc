@@ -7,8 +7,10 @@
 #include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -300,6 +302,58 @@ TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest, FillingScores) {
                                       102, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormFillingComplexScore.CreditCard", 10, 1);
+}
+
+class AutocompleteUnrecognizedFieldFillingStatsTest
+    : public AutofillFieldFillingStatsAndScoreMetricsTest {};
+
+TEST_F(AutocompleteUnrecognizedFieldFillingStatsTest, FieldFillingStats) {
+  FormData form = GetAndAddSeenForm(
+      {.fields = {
+           {.role = NAME_FIRST,
+            .autocomplete_attribute = "unrecognized",
+            .is_autofilled = true},
+           {.role = NAME_MIDDLE,
+            .autocomplete_attribute = "unrecognized",
+            .is_autofilled = true},
+           {.role = NAME_LAST,
+            .autocomplete_attribute = "unrecognized",
+            .is_autofilled = true},
+           {.role = ADDRESS_HOME_COUNTRY,
+            .autocomplete_attribute = "unrecognized",
+            .is_autofilled = true},
+           {.role = ADDRESS_HOME_STREET_NAME,
+            .autocomplete_attribute = "unrecognized",
+            .is_autofilled = true},
+           {.role = ADDRESS_HOME_HOUSE_NUMBER,
+            .autocomplete_attribute = "unrecognized",
+            .is_autofilled = true},
+           {.role = ADDRESS_HOME_CITY,
+            .autocomplete_attribute = "unrecognized",
+            .is_autofilled = true},
+           {.role = ADDRESS_HOME_ZIP, .autocomplete_attribute = "unrecognized"},
+           {.role = PHONE_HOME_WHOLE_NUMBER,
+            .autocomplete_attribute = "unrecognized"},
+           {.role = EMAIL_ADDRESS, .autocomplete_attribute = "unrecognized"}}});
+
+  SimulateUserChangedTextFieldTo(form, form.fields[0], u"Corrected First Name");
+  SimulateUserChangedTextFieldTo(form, form.fields[1],
+                                 u"Corrected Middle Name");
+  SimulateUserChangedTextFieldTo(form, form.fields[2], u"Corrected Last Name");
+  SimulateUserChangedTextFieldTo(form, form.fields[8],
+                                 u"Manually Filled Phone");
+  SimulateUserChangedTextFieldTo(form, form.fields[9],
+                                 u"Manually Filled Email");
+
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.AutocompleteUnrecognized.FieldFillingStats"),
+      base::BucketsAre(base::Bucket(FieldFillingStat::kAccepted, 4),
+                       base::Bucket(FieldFillingStat::kCorrected, 3),
+                       base::Bucket(FieldFillingStat::kManuallyFilled, 2),
+                       base::Bucket(FieldFillingStat::kLeftEmpty, 1)));
 }
 
 }  // namespace autofill::autofill_metrics

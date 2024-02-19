@@ -42,10 +42,10 @@ void LogQualityMetrics(
   size_t num_of_accepted_autofilled_fields = 0;
   size_t num_of_corrected_autofilled_fields = 0;
 
-  // Tracks how many fields are filled, unfilled or corrected for the address
-  // and credit card forms.
+  // Tracks how many fields are filled, unfilled or corrected.
   autofill_metrics::FormGroupFillingStats address_field_stats;
   autofill_metrics::FormGroupFillingStats cc_field_stats;
+  autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
 
   // Same as above, but keyed by `AutofillFillingMethod`.
   base::flat_map<AutofillFillingMethod, autofill_metrics::FormGroupFillingStats>
@@ -146,6 +146,11 @@ void LogQualityMetrics(
         // counter.
         group_stats.AddFieldFillingStatus(
             autofill_metrics::GetFieldFillingStatus(*field));
+        if (is_address_form_field &&
+            field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+          ac_unrecognized_address_field_stats.AddFieldFillingStatus(
+              autofill_metrics::GetFieldFillingStatus(*field));
+        }
         // For address forms we want to emit filling stats metrics per
         // `AutofillFillingMethod`. Therefore, the stats generated are added to
         // a map keyed by `AutofillFillingMethod`, so that later, metrics can
@@ -372,8 +377,9 @@ void LogQualityMetrics(
     // The metrics are only emitted if there was at least one field in the
     // corresponding form group that is or was filled by autofill.
     // TODO(crbug.com/1459990): Remove this metric on cleanup.
-    autofill_metrics::LogFieldFillingStatsAndScore(address_field_stats,
-                                                   cc_field_stats);
+    autofill_metrics::LogFieldFillingStatsAndScore(
+        address_field_stats, cc_field_stats,
+        ac_unrecognized_address_field_stats);
     LogAddressFieldFillingStatsAndScoreByAutofillFillingMethod(
         address_field_stats_by_filling_method);
 

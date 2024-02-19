@@ -882,6 +882,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.AutocompleteUnrecognized.FieldFillingStat"
+    enum="FieldFillingStat" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records for every field with autocomplete unrecognized, whether it was
+    filled, corrected, manually filled, or left empty. Recorded at submission
+    time.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido" units="ms"
     expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>

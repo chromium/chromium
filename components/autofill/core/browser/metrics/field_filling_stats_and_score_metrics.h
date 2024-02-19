@@ -10,12 +10,22 @@
 
 namespace autofill::autofill_metrics {
 
-// Logs the `filling_stats` of the fields within a `form_type`. The filling
-// status consistent of the number of accepted, corrected or and unfilled
-// fields. See the .cc file for details.
+enum class FieldFillingStat {
+  kAccepted = 0,
+  kCorrected = 1,
+  kManuallyFilled = 2,
+  kLeftEmpty = 3,
+  kMaxValue = kLeftEmpty
+};
+
+// Logs the `filling_stats` of the fields within a `form_type`, and the
+// `filling_stats` of ac=unrecognized fields. The filling status
+// consistent of the number of accepted, corrected or and unfilled fields. See
+// the .cc file for details.
 void LogFieldFillingStatsAndScore(
     const FormGroupFillingStats& address_filling_stats,
-    const FormGroupFillingStats& cc_filling_stats);
+    const FormGroupFillingStats& cc_filling_stats,
+    const FormGroupFillingStats& ac_unrecognized_address_field_stats);
 
 // Same as above but keyed by `AutofillFillingMethod`.
 void LogAddressFieldFillingStatsAndScoreByAutofillFillingMethod(

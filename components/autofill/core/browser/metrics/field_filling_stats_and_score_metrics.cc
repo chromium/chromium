@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
 
 namespace autofill::autofill_metrics {
@@ -91,6 +92,35 @@ void LogFieldFillingStatsWithHistogramPrefix(
       filling_stats.Total());
 }
 
+void LogAutocompleteUnrecognizedFieldFillingStats(
+    FormType form_type,
+    const FormGroupFillingStats& filling_stats) {
+  // Do not acquire metrics if autofill was not used on ac=unrecognized fields
+  if (filling_stats.TotalFilled() == 0) {
+    return;
+  }
+  for (size_t i = 0; i < filling_stats.num_accepted; ++i) {
+    base::UmaHistogramEnumeration(
+        "Autofill.AutocompleteUnrecognized.FieldFillingStats",
+        FieldFillingStat::kAccepted);
+  }
+  for (size_t i = 0; i < filling_stats.TotalCorrected(); ++i) {
+    base::UmaHistogramEnumeration(
+        "Autofill.AutocompleteUnrecognized.FieldFillingStats",
+        FieldFillingStat::kCorrected);
+  }
+  for (size_t i = 0; i < filling_stats.TotalManuallyFilled(); ++i) {
+    base::UmaHistogramEnumeration(
+        "Autofill.AutocompleteUnrecognized.FieldFillingStats",
+        FieldFillingStat::kManuallyFilled);
+  }
+  for (size_t i = 0; i < filling_stats.num_left_empty; ++i) {
+    base::UmaHistogramEnumeration(
+        "Autofill.AutocompleteUnrecognized.FieldFillingStats",
+        FieldFillingStat::kLeftEmpty);
+  }
+}
+
 void LogFieldFillingStats(FormType form_type,
                           const FormGroupFillingStats& filling_stats) {
   LogFieldFillingStatsWithHistogramPrefix(
@@ -172,9 +202,12 @@ void LogFormFillingComplexScore(FormType form_type,
 
 void LogFieldFillingStatsAndScore(
     const FormGroupFillingStats& address_filling_stats,
-    const FormGroupFillingStats& cc_filling_stats) {
+    const FormGroupFillingStats& cc_filling_stats,
+    const FormGroupFillingStats& ac_unrecognized_address_field_stats) {
   LogFieldFillingStats(FormType::kAddressForm, address_filling_stats);
   LogFieldFillingStats(FormType::kCreditCardForm, cc_filling_stats);
+  LogAutocompleteUnrecognizedFieldFillingStats(
+      FormType::kCreditCardForm, ac_unrecognized_address_field_stats);
 
   LogFormFillingScore(FormType::kAddressForm, address_filling_stats);
   LogFormFillingScore(FormType::kCreditCardForm, cc_filling_stats);

@@ -4250,6 +4250,13 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Unclassified."/>
 </enum>
 
+<enum name="FieldFillingStat">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Corrected"/>
+  <int value="2" label="Manually Filled"/>
+  <int value="3" label="LeftEmpty"/>
+</enum>
+
 <enum name="IbanSuggestionBlockListStatus">
   <int value="0" label="Allowed"/>
   <int value="1" label="Blocked"/>
