@@ -16,7 +16,7 @@
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
-#include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -82,7 +82,7 @@ void PickerSearchResultsView::AddResultToSection(
   std::visit(
       base::Overloaded{
           [&](const PickerSearchResult::TextData& data) {
-            auto item_view = std::make_unique<PickerItemView>(
+            auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.text);
             section_view->AddListItem(std::move(item_view));
@@ -117,7 +117,7 @@ void PickerSearchResultsView::AddResultToSection(
             section_view->AddImageItem(std::move(gif_item_view));
           },
           [&](const PickerSearchResult::BrowsingHistoryData& data) {
-            auto item_view = std::make_unique<PickerItemView>(
+            auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
             item_view->SetSecondaryText(base::UTF8ToUTF16(data.url.spec()));

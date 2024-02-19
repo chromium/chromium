@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PICKER_VIEWS_PICKER_ITEM_VIEW_H_
-#define ASH_PICKER_VIEWS_PICKER_ITEM_VIEW_H_
+#ifndef ASH_PICKER_VIEWS_PICKER_LIST_ITEM_VIEW_H_
+#define ASH_PICKER_VIEWS_PICKER_LIST_ITEM_VIEW_H_
 
 #include <string>
 
@@ -22,16 +22,16 @@ class View;
 
 namespace ash {
 
-// View for a Picker item with text or an image as its primary contents. Can
-// optionally have other parts such as a leading icon and secondary text.
-class ASH_EXPORT PickerItemView : public views::Button {
-  METADATA_HEADER(PickerItemView, views::Button)
+// View for a Picker list item with text or an image as its primary contents.
+// Can optionally have other parts such as a leading icon and secondary text.
+class ASH_EXPORT PickerListItemView : public views::Button {
+  METADATA_HEADER(PickerListItemView, views::Button)
 
  public:
-  explicit PickerItemView(views::Button::PressedCallback callback);
-  PickerItemView(const PickerItemView&) = delete;
-  PickerItemView& operator=(const PickerItemView&) = delete;
-  ~PickerItemView() override;
+  explicit PickerListItemView(views::Button::PressedCallback callback);
+  PickerListItemView(const PickerListItemView&) = delete;
+  PickerListItemView& operator=(const PickerListItemView&) = delete;
+  ~PickerListItemView() override;
 
   void SetLeadingIcon(const ui::ImageModel& icon);
 
@@ -62,4 +62,4 @@ class ASH_EXPORT PickerItemView : public views::Button {
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_VIEWS_PICKER_ITEM_VIEW_H_
+#endif  // ASH_PICKER_VIEWS_PICKER_LIST_ITEM_VIEW_H_

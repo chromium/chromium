@@ -10,7 +10,6 @@
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
-#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"

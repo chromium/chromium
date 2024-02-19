@@ -15,7 +15,7 @@
 #include "ash/picker/views/picker_caps_nudge_view.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_icons.h"
-#include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_strings.h"
 #include "base/functional/bind.h"
@@ -38,7 +38,7 @@ PickerZeroStateView::PickerZeroStateView(
   AddChildView(std::make_unique<PickerCapsNudgeView>());
 
   for (auto category : PickerModel().GetAvailableCategories()) {
-    auto item_view = std::make_unique<PickerItemView>(
+    auto item_view = std::make_unique<PickerListItemView>(
         base::BindRepeating(select_category_callback, category));
     item_view->SetPrimaryText(GetLabelForPickerCategory(category));
     item_view->SetLeadingIcon(GetIconForPickerCategory(category));

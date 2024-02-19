@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 
 #include <string>
 #include <utility>
@@ -26,10 +26,10 @@ using ::testing::Eq;
 using ::testing::Property;
 using ::testing::SizeIs;
 
-using PickerItemViewTest = AshTestBase;
+using PickerListItemViewTest = AshTestBase;
 
-TEST_F(PickerItemViewTest, SetsPrimaryText) {
-  PickerItemView item_view{views::Button::PressedCallback()};
+TEST_F(PickerListItemViewTest, SetsPrimaryText) {
+  PickerListItemView item_view{views::Button::PressedCallback()};
 
   const std::u16string kPrimaryText = u"Item";
   item_view.SetPrimaryText(kPrimaryText);
@@ -42,8 +42,8 @@ TEST_F(PickerItemViewTest, SetsPrimaryText) {
               Property(&views::Label::GetText, Eq(kPrimaryText)));
 }
 
-TEST_F(PickerItemViewTest, SetsPrimaryImage) {
-  PickerItemView item_view{views::Button::PressedCallback()};
+TEST_F(PickerListItemViewTest, SetsPrimaryImage) {
+  PickerListItemView item_view{views::Button::PressedCallback()};
 
   item_view.SetPrimaryImage(std::make_unique<views::ImageView>());
 
@@ -52,8 +52,8 @@ TEST_F(PickerItemViewTest, SetsPrimaryImage) {
       item_view.primary_container_for_testing()->children()[0]));
 }
 
-TEST_F(PickerItemViewTest, SetsLeadingIcon) {
-  PickerItemView item_view{views::Button::PressedCallback()};
+TEST_F(PickerListItemViewTest, SetsLeadingIcon) {
+  PickerListItemView item_view{views::Button::PressedCallback()};
 
   item_view.SetLeadingIcon(ui::ImageModel::FromVectorIcon(
       kImeMenuEmoticonIcon, cros_tokens::kCrosSysOnSurface));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 
 #include <memory>
 #include <string>
@@ -38,7 +38,7 @@ constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 
 }  // namespace
 
-PickerItemView::PickerItemView(views::Button::PressedCallback callback)
+PickerListItemView::PickerListItemView(views::Button::PressedCallback callback)
     : views::Button(std::move(callback)) {
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto* item_contents =
@@ -74,9 +74,9 @@ PickerItemView::PickerItemView(views::Button::PressedCallback callback)
                                    /*highlight_on_focus=*/true);
 }
 
-PickerItemView::~PickerItemView() = default;
+PickerListItemView::~PickerListItemView() = default;
 
-void PickerItemView::SetPrimaryText(const std::u16string& primary_text) {
+void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   primary_container_->RemoveAllChildViews();
   primary_container_->AddChildView(
       bubble_utils::CreateLabel(TypographyToken::kCrosBody2, primary_text,
@@ -84,7 +84,7 @@ void PickerItemView::SetPrimaryText(const std::u16string& primary_text) {
   SetAccessibleName(primary_text);
 }
 
-void PickerItemView::SetPrimaryImage(
+void PickerListItemView::SetPrimaryImage(
     std::unique_ptr<views::ImageView> primary_image) {
   primary_container_->RemoveAllChildViews();
   auto* image_view = primary_container_->AddChildView(std::move(primary_image));
@@ -93,7 +93,7 @@ void PickerItemView::SetPrimaryImage(
   SetAccessibleName(u"image contents");
 }
 
-void PickerItemView::SetLeadingIcon(const ui::ImageModel& icon) {
+void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon) {
   leading_container_->RemoveAllChildViews();
   leading_container_->AddChildView(
       views::Builder<views::ImageView>()
@@ -104,14 +104,15 @@ void PickerItemView::SetLeadingIcon(const ui::ImageModel& icon) {
           .Build());
 }
 
-void PickerItemView::SetSecondaryText(const std::u16string& secondary_text) {
+void PickerListItemView::SetSecondaryText(
+    const std::u16string& secondary_text) {
   secondary_container_->RemoveAllChildViews();
   secondary_container_->AddChildView(bubble_utils::CreateLabel(
       TypographyToken::kCrosAnnotation2, secondary_text,
       cros_tokens::kCrosSysOnSurfaceVariant));
 }
 
-BEGIN_METADATA(PickerItemView)
+BEGIN_METADATA(PickerListItemView)
 END_METADATA
 
 }  // namespace ash
