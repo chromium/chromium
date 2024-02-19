@@ -314,11 +314,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // as dragging in scrollViewDidScroll:
   TabGridPage page = GetPageFromScrollView(scrollView);
   if (page != self.currentPage) {
-    self.currentPage = page;
-    [self broadcastIncognitoContentVisibility];
     [self.mutator
         pageChanged:page
         interaction:TabSwitcherPageChangeInteraction::kAccessibilitySwipe];
+    self.currentPage = page;
+    [self broadcastIncognitoContentVisibility];
     [self.topToolbar.pageControl setSelectedPage:page animated:YES];
   }
 }
@@ -1963,6 +1963,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self setCurrentIdlePageStatus:YES];
     newActivePage = self.activePage;
   }
+
+  [self.mutator pageChanged:newActivePage
+                interaction:TabSwitcherPageChangeInteraction::kNone];
   self.activePage = newActivePage;
   // Holding the done button down when it is enabled could result in done tap
   // being triggered on release after tabs have been closed and the button
