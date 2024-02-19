@@ -14,6 +14,10 @@
 
 class AccountId;
 
+namespace apps {
+enum class LaunchSource;
+}  // namespace apps
+
 namespace ui {
 class ElementContext;
 class ElementIdentifier;
@@ -105,6 +109,7 @@ class ASH_EXPORT UserEducationDelegate {
   // NOTE: Currently only the primary user profile is supported.
   virtual void LaunchSystemWebAppAsync(const AccountId& account_id,
                                        SystemWebAppType system_web_app_type,
+                                       apps::LaunchSource launch_source,
                                        int64_t display_id) = 0;
 
   // Returns true if there is a currently running tutorial for the user

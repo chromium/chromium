@@ -16,6 +16,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_prefs.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 
 namespace ash {
 namespace {
@@ -78,13 +79,14 @@ const std::optional<bool>& UserEducationController::IsNewUser(
 void UserEducationController::LaunchSystemWebAppAsync(
     UserEducationPrivateApiKey,
     SystemWebAppType system_web_app_type,
+    apps::LaunchSource launch_source,
     int64_t display_id) {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
   auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
   CHECK(user_education_util::IsPrimaryAccountId(account_id));
   delegate_->LaunchSystemWebAppAsync(account_id, system_web_app_type,
-                                     display_id);
+                                     launch_source, display_id);
 }
 
 }  // namespace ash

@@ -56,6 +56,7 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
       std::optional<ash::TutorialId> tutorial_id = std::nullopt) override;
   void LaunchSystemWebAppAsync(const AccountId& account_id,
                                ash::SystemWebAppType system_web_app_type,
+                               apps::LaunchSource launch_source,
                                int64_t display_id) override;
   bool IsRunningTutorial(
       const AccountId& account_id,

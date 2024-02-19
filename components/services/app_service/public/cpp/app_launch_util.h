@@ -68,10 +68,11 @@ enum class LaunchSource {
   kFromSysTrayCalendar = 36,  // Launches from the system tray Calendar.
   kFromInstaller = 37,        // Installation UI
   kFromFirstRun = 38,         // First Run.
+  kFromWelcomeTour = 39,      // Welcome Tour.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFromFirstRun,
+  kMaxValue = kFromWelcomeTour,
 };
 
 // Don't remove items or change the order of this enum.  It's used in

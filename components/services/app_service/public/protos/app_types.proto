@@ -109,6 +109,7 @@ enum ApplicationLaunchSource {
   APPLICATION_LAUNCH_SOURCE_SYSTEM_TRAY_CALENDAR = 36;
   APPLICATION_LAUNCH_SOURCE_INSTALLER = 37;
   APPLICATION_LAUNCH_SOURCE_FIRST_RUN = 38;
+  APPLICATION_LAUNCH_SOURCE_WELCOME_TOUR = 39;
 }
 
 // Describes the app uninstall source. Should be kept in sync with
