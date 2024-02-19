@@ -358,16 +358,24 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
           l10n_util::GetNSString(IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE);
       cell.detailText = _aboutThisSiteInfo.summary;
       cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-      // TODO(crbug.com/1512580): Change to the AboutThisSite branded icon.
-      [cell setIconImage:DefaultSymbolTemplateWithPointSize(
-                             kInfoCircleSymbol, kPageInfoSymbolPointSize)
+
+      UIImage* icon =
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+          CustomSymbolTemplateWithPointSize(kPageInsightsSymbol,
+                                            kPageInfoSymbolPointSize);
+#else
+          DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                             kPageInfoSymbolPointSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS),
+
+      [cell setIconImage:icon
                 tintColor:UIColor.whiteColor
           backgroundColor:[UIColor colorNamed:kPurple500Color]
              cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+
       cell.accessoryView = [[UIImageView alloc]
           initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
                             kExternalLinkSymbol)];
-
       cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
       return cell;
     }

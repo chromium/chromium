@@ -21,6 +21,7 @@ extern NSString* const kGoogleShieldSymbol;
 extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kGoogleMapsSymbol;
 extern NSString* const kGooglePhotosSymbol;
+extern NSString* const kPageInsightsSymbol;
 extern NSString* const kFedexCarrierImage;
 extern NSString* const kUPSCarrierImage;
 extern NSString* const kUSPSCarrierImage;
