@@ -2025,12 +2025,11 @@ chromium-metrics-reviews@google.com.
   <int value="1209" label="DeviceWeeklyScheduledSuspend"/>
   <int value="1210" label="RemoteAccessHostAllowUrlForwarding"/>
   <int value="1211" label="ScreenCaptureLocation"/>
-  <int value="1212" label="AllowDomainsForAppsList"/>
+  <int value="1212" label="AllowedDomainsForAppsList"/>
   <int value="1213" label="ChromeForTestingAllowed"/>
   <int value="1214" label="GoogleLocationServicesEnabled"/>
   <int value="1215" label="ProvisionManagedClientCertificateForUser"/>
   <int value="1216" label="LocalUserFilesAllowed"/>
-  <int value="1217" label="DevToolsGenAiSettings"/>
   <int value="1218"
       label="SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins"/>
   <int value="1219" label="DefaultWebPrintingSetting"/>

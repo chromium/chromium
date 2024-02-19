@@ -1215,7 +1215,7 @@ policies:
   1214: GoogleLocationServicesEnabled
   1215: ProvisionManagedClientCertificateForUser
   1216: LocalUserFilesAllowed
-  1217: DevToolsGenAiSettings
+  1217: ''
   1218: SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins
   1219: DefaultWebPrintingSetting
   1220: WebPrintingAllowedForUrls
