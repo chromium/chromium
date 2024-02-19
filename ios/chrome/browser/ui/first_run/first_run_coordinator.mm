@@ -34,9 +34,6 @@
 @property(nonatomic, strong) ChromeCoordinator* childCoordinator;
 @property(nonatomic, strong) UINavigationController* navigationController;
 
-// YES if First Run was completed.
-@property(nonatomic, assign) BOOL completed;
-
 @end
 
 @implementation FirstRunCoordinator
@@ -69,17 +66,6 @@
 }
 
 - (void)stop {
-  void (^completion)(void) = ^{
-  };
-  if (self.completed) {
-    __weak __typeof(self) weakSelf = self;
-    completion = ^{
-      base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
-                                    first_run::kComplete);
-      WriteFirstRunSentinel();
-      [weakSelf.delegate didFinishPresentingScreens];
-    };
-  }
   if (self.childCoordinator) {
     // If the child coordinator is not nil, then the FRE is stopped because
     // Chrome is being shutdown.
@@ -88,12 +74,11 @@
             self.childCoordinator);
     [interruptibleChildCoordinator
         interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-                 completion:completion];
+                 completion:nil];
     [self.childCoordinator stop];
     self.childCoordinator = nil;
   }
-  [self.baseViewController dismissViewControllerAnimated:YES
-                                              completion:completion];
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   _navigationController = nil;
   [super stop];
 }
@@ -113,7 +98,11 @@
   // If no more screen need to be present, call delegate to stop presenting
   // screens.
   if (type == kStepsCompleted) {
-    [self willFinishPresentingScreens];
+    // The user went through all screens of the FRE.
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kComplete);
+    WriteFirstRunSentinel();
+    [self.delegate didFinishFirstRun];
     return;
   }
   self.childCoordinator = [self createChildCoordinatorWithScreenType:type];
@@ -168,11 +157,6 @@
       break;
   }
   return nil;
-}
-
-- (void)willFinishPresentingScreens {
-  self.completed = YES;
-  [self.delegate willFinishPresentingScreens];
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate

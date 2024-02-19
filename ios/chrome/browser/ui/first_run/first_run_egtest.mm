@@ -474,6 +474,37 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 
 #pragma mark - Tests
 
+// Tests that the sentinel is written at the end of the first run.
+- (void)testFRESentinel {
+  [ChromeEarlGreyAppInterface removeFirstRunSentinel];
+  GREYAssertFalse([ChromeEarlGreyAppInterface hasFirstRunSentinel],
+                  @"First Run Sentinel not removed");
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Skip sign-in.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Omnibox position choice promo dismissal.
+  if ([FirstRunAppInterface isOmniboxPositionChoiceEnabled]) {
+    [[self elementInteractionWithGreyMatcher:
+               chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+                        scrollViewIdentifier:
+                            kPromoStyleScrollViewAccessibilityIdentifier]
+        performAction:grey_tap()];
+  }
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Tests that the sentinel file has been created.
+  GREYAssertTrue([ChromeEarlGreyAppInterface hasFirstRunSentinel],
+                 @"First Run Sentinel not created");
+}
+
 // Tests FRE with UMA default value and without sign-in.
 - (void)testWithUMACheckedAndNoSignin {
   // Verify 2 steps FRE.

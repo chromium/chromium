@@ -138,6 +138,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/find_bar:eg_app_support+eg2",
     "//ios/chrome/browser/ui/first_run:eg_app_support+eg2",
     "//ios/chrome/browser/ui/first_run:first_run_provider",
+    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/fullscreen/test:eg_app_support+eg2",
     "//ios/chrome/browser/ui/history:constants",
     "//ios/chrome/browser/ui/incognito_interstitial:constants",

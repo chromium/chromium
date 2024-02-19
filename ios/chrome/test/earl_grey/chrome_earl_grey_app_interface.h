@@ -718,8 +718,11 @@
 // completed.
 + (void)writeFirstRunSentinel;
 
-// Remove the FirstRun sentinel file.
+// Removes the FirstRun sentinel file.
 + (void)removeFirstRunSentinel;
+
+// Whether the first run sentinel exists.
++ (bool)hasFirstRunSentinel;
 
 @end
 

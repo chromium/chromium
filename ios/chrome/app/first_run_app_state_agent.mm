@@ -184,15 +184,11 @@
 
 #pragma mark - FirstRunCoordinatorDelegate
 
-- (void)willFinishPresentingScreens {
+- (void)didFinishFirstRun {
   DCHECK(self.appState.initStage == InitStageFirstRun);
   _firstRunUIBlocker.reset();
-
   [self.firstRunCoordinator stop];
   self.firstRunCoordinator = nil;
-}
-
-- (void)didFinishPresentingScreens {
   [self.appState queueTransitionToNextInitStage];
 }
 

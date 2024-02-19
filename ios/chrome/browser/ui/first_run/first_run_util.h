@@ -33,6 +33,9 @@ void WriteFirstRunSentinel();
 // Returns whether the First Run Experience should be presented.
 bool ShouldPresentFirstRunExperience();
 
+// Returns whether the First Run Sentinel exists.
+bool HasFirstRunSentinel();
+
 // Records what the default opt-in state for metrics reporting is in the local
 // prefs, based on whether the consent checkbox should be selected by default.
 void RecordMetricsReportingDefaultState();

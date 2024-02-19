@@ -97,11 +97,14 @@ bool ShouldPresentFirstRunExperience() {
   if (tests_hook::DisableDefaultFirstRun()) {
     return false;
   }
+  return !HasFirstRunSentinel();
+}
 
-  if (kFirstRunSentinelCreated)
-    return false;
-
-  return FirstRun::IsChromeFirstRun();
+bool HasFirstRunSentinel() {
+  if (kFirstRunSentinelCreated) {
+    return true;
+  }
+  return !FirstRun::IsChromeFirstRun();
 }
 
 void RecordMetricsReportingDefaultState() {
