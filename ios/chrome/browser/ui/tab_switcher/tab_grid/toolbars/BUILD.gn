@@ -49,6 +49,7 @@ source_set("toolbars_ui") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ui/base",
   ]
 }

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 UIControlEvents TabGridPageChangeByTapEvent = 1 << 24;
@@ -601,7 +602,13 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   slider.layer.cornerRadius = kSliderCornerRadius;
   slider.layer.masksToBounds = YES;
   slider.backgroundColor = UIColor.whiteColor;
-
+  if (ios::provider::IsRaccoonEnabled()) {
+    if (@available(iOS 17.0, *)) {
+      slider.hoverStyle = [UIHoverStyle
+          styleWithShape:
+              [UIShape rectShapeWithCornerRadius:kBackgroundCornerRadius]];
+    }
+  }
   [self addSubview:slider];
   self.sliderView = slider;
 
@@ -624,23 +631,10 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   [self.selectedImageView addSubview:regularSelectedLabel];
   self.regularSelectedLabel = regularSelectedLabel;
 
-  CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
-  UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
-  UIView* regularHoverView = [[UIView alloc] initWithFrame:segmentRect];
-  UIView* remoteHoverView = [[UIView alloc] initWithFrame:segmentRect];
-  [self insertSubview:incognitoHoverView belowSubview:self.sliderView];
-  [self insertSubview:regularHoverView belowSubview:self.sliderView];
-  [self insertSubview:remoteHoverView belowSubview:self.sliderView];
-  self.incognitoHoverView = incognitoHoverView;
-  self.regularHoverView = regularHoverView;
-  self.remoteHoverView = remoteHoverView;
+  self.incognitoHoverView = [self configureHoverView];
+  self.regularHoverView = [self configureHoverView];
+  self.remoteHoverView = [self configureHoverView];
 
-  [self.incognitoHoverView
-      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-  [self.regularHoverView
-      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-  [self.remoteHoverView
-      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
   [self.sliderView
       addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
@@ -735,6 +729,24 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 // Callback for the notification that the user changed the bold status.
 - (void)accessibilityBoldTextStatusDidChange {
   [self updateRegularLabels];
+}
+
+#pragma mark - Private's helpers
+
+- (UIView*)configureHoverView {
+  CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
+  UIView* hoverView = [[UIView alloc] initWithFrame:segmentRect];
+  if (ios::provider::IsRaccoonEnabled()) {
+    if (@available(iOS 17.0, *)) {
+      hoverView.hoverStyle = [UIHoverStyle
+          styleWithShape:
+              [UIShape rectShapeWithCornerRadius:kBackgroundCornerRadius]];
+    }
+  }
+  [self insertSubview:hoverView belowSubview:self.sliderView];
+  [hoverView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+  return hoverView;
 }
 
 #pragma mark UIPointerInteractionDelegate
