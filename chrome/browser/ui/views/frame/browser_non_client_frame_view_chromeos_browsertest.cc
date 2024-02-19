@@ -896,16 +896,11 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(GetPaintingAsActive());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1507735): Reenable the test once the GetLastActive() race
-// condition is fixed.
-#define MAYBE_PopupHasNoToolbar DISABLED_PopupHasNoToolbar
-#else
-#define MAYBE_PopupHasNoToolbar PopupHasNoToolbar
-#endif
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       MAYBE_PopupHasNoToolbar) {
+                       PopupHasNoToolbar) {
   SetUpWebApp();
+
+  Browser* popup_browser;
   {
     NavigateParams navigate_params(app_browser_, GetAppURL(),
                                    ui::PAGE_TRANSITION_LINK);
@@ -915,9 +910,9 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
     navigation_observer.StartWatchingNewWebContents();
     Navigate(&navigate_params);
     navigation_observer.WaitForNavigationFinished();
+    popup_browser = navigate_params.browser;
   }
 
-  Browser* popup_browser = BrowserList::GetInstance()->GetLastActive();
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(popup_browser);
   EXPECT_FALSE(browser_view->web_app_frame_toolbar_for_testing() &&
