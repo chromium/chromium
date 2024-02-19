@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 
-namespace plus_addresses {
+namespace plus_addresses::features {
 // Controls the enabled/disabled state of the experimental feature.
 BASE_FEATURE(kFeature,
              "PlusAddressesEnabled",
@@ -50,4 +50,4 @@ const base::FeatureParam<std::string> kPlusAddressErrorReportUrl{
 const base::FeatureParam<bool> kDisableForForbiddenUsers{
     &kFeature, kDisableForForbiddenUsersName, false};
 
-}  // namespace plus_addresses
+}  // namespace plus_addresses::features

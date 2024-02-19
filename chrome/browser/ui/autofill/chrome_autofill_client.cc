@@ -309,7 +309,7 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
   // The `PlusAddressServiceFactory` should also ensure the service is not
   // created without the feature enabled, but being defensive here to avoid
   // surprises.
-  if (!base::FeatureList::IsEnabled(plus_addresses::kFeature)) {
+  if (!base::FeatureList::IsEnabled(plus_addresses::features::kFeature)) {
     return nullptr;
   }
   return PlusAddressServiceFactory::GetForBrowserContext(

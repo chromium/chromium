@@ -75,8 +75,9 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
           last_request = request;
         }));
     features_.InitAndEnableFeatureWithParameters(
-        kFeature, {{kEnterprisePlusAddressServerUrl.name, server_base_url},
-                   {kEnterprisePlusAddressOAuthScope.name, test_scope}});
+        features::kFeature,
+        {{features::kEnterprisePlusAddressServerUrl.name, server_base_url},
+         {features::kEnterprisePlusAddressOAuthScope.name, test_scope}});
     clock_.SetNow(start_time);
   }
 
@@ -561,7 +562,8 @@ TEST(PlusAddressHttpClient, ChecksUrlParamIsValidGurl) {
   std::string server_url = "https://foo.com/";
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeatureWithParameters(
-      kFeature, {{kEnterprisePlusAddressServerUrl.name, server_url}});
+      features::kFeature,
+      {{features::kEnterprisePlusAddressServerUrl.name, server_url}});
   PlusAddressHttpClient client(
       identity_test_env.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
@@ -574,7 +576,8 @@ TEST(PlusAddressHttpClient, RejectsNonUrlStrings) {
   signin::IdentityTestEnvironment identity_test_env;
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeatureWithParameters(
-      kFeature, {{kEnterprisePlusAddressServerUrl.name, "kirubeldotcom"}});
+      features::kFeature,
+      {{features::kEnterprisePlusAddressServerUrl.name, "kirubeldotcom"}});
   PlusAddressHttpClient client(
       identity_test_env.identity_manager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
@@ -586,7 +589,8 @@ class PlusAddressAuthToken : public ::testing::Test {
   PlusAddressAuthToken() {
     // Init the feature param to add `test_scope_` to GetUnconsentedOAuth2Scopes
     features_.InitAndEnableFeatureWithParameters(
-        kFeature, {{kEnterprisePlusAddressOAuthScope.name, test_scope_}});
+        features::kFeature,
+        {{features::kEnterprisePlusAddressOAuthScope.name, test_scope_}});
 
     // Time-travel back to 1970 so that we can test with
     // base::Time::FromSecondsSinceUnixEpoch
@@ -756,7 +760,7 @@ class PlusAddressHttpClientNullServerUrl : public PlusAddressHttpClientRequests 
   void SetUp() override {
     // Disable feature plus_addresses, which should also set `server_url_` to
     // `nullopt`.
-    scoped_feature_list_.InitAndDisableFeature(plus_addresses::kFeature);
+    scoped_feature_list_.InitAndDisableFeature(features::kFeature);
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 

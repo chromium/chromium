@@ -300,9 +300,9 @@ void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
 
 void PlusAddressCreationDialogDelegate::OpenSettingsLink(
     content::WebContents* web_contents) {
-  if (web_contents && !kPlusAddressManagementUrl.Get().empty()) {
+  if (web_contents && !features::kPlusAddressManagementUrl.Get().empty()) {
     web_contents->OpenURL(content::OpenURLParams(
-        GURL(kPlusAddressManagementUrl.Get()), content::Referrer(),
+        GURL(features::kPlusAddressManagementUrl.Get()), content::Referrer(),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui::PageTransition::PAGE_TRANSITION_LINK,
         /*is_renderer_initiated=*/false));
@@ -312,9 +312,9 @@ void PlusAddressCreationDialogDelegate::OpenSettingsLink(
 // TODO(b/313670457) Test open link behaviors when migrate to Kombucha.
 void PlusAddressCreationDialogDelegate::OpenErrorReportLink(
     content::WebContents* web_contents) {
-  if (web_contents && !kPlusAddressErrorReportUrl.Get().empty()) {
+  if (web_contents && !features::kPlusAddressErrorReportUrl.Get().empty()) {
     web_contents->OpenURL(content::OpenURLParams(
-        GURL(kPlusAddressErrorReportUrl.Get()), content::Referrer(),
+        GURL(features::kPlusAddressErrorReportUrl.Get()), content::Referrer(),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui::PageTransition::PAGE_TRANSITION_LINK,
         /*is_renderer_initiated=*/false));

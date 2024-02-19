@@ -40,7 +40,7 @@ std::unique_ptr<KeyedService>
 PlusAddressServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   // If the feature is disabled, don't risk any side effects. Just bail.
-  if (!base::FeatureList::IsEnabled(plus_addresses::kFeature)) {
+  if (!base::FeatureList::IsEnabled(plus_addresses::features::kFeature)) {
     return nullptr;
   }
 

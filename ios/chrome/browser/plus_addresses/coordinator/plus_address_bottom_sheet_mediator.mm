@@ -133,9 +133,9 @@
 - (GURL)plusAddressURL:(PlusAddressURLType)type {
   switch (type) {
     case PlusAddressURLType::kErrorReport:
-      return GURL(plus_addresses::kPlusAddressErrorReportUrl.Get());
+      return GURL(plus_addresses::features::kPlusAddressErrorReportUrl.Get());
     case PlusAddressURLType::kManagement:
-      return GURL(plus_addresses::kPlusAddressManagementUrl.Get());
+      return GURL(plus_addresses::features::kPlusAddressManagementUrl.Get());
   }
 }
 @end

@@ -80,7 +80,7 @@ class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList features_{kFeature};
+  base::test::ScopedFeatureList features_{features::kFeature};
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       override_profile_selections_;
 };

@@ -1270,8 +1270,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeInTransportMode));
 
-  html_source->AddString("plusAddressManagementUrl",
-                         plus_addresses::kPlusAddressManagementUrl.Get());
+  html_source->AddString(
+      "plusAddressManagementUrl",
+      plus_addresses::features::kPlusAddressManagementUrl.Get());
 
   html_source->AddBoolean("syncDecoupleAddressPaymentSettings",
                           base::FeatureList::IsEnabled(

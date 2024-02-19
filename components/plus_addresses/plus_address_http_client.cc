@@ -126,7 +126,7 @@ const net::NetworkTrafficAnnotationTag kGetAllPlusAddressesAnnotation =
     )");
 
 std::optional<GURL> ValidateAndGetUrl() {
-  GURL maybe_url = GURL(kEnterprisePlusAddressServerUrl.Get());
+  GURL maybe_url = GURL(features::kEnterprisePlusAddressServerUrl.Get());
   return maybe_url.is_valid() ? std::make_optional(maybe_url) : std::nullopt;
 }
 
@@ -138,7 +138,7 @@ PlusAddressHttpClient::PlusAddressHttpClient(
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       server_url_(ValidateAndGetUrl()),
-      scopes_({kEnterprisePlusAddressOAuthScope.Get()}) {}
+      scopes_({features::kEnterprisePlusAddressOAuthScope.Get()}) {}
 
 PlusAddressHttpClient::~PlusAddressHttpClient() = default;
 PlusAddressHttpClient::PlusAddressHttpClient(PlusAddressHttpClient&&) = default;

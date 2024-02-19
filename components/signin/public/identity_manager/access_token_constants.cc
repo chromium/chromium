@@ -109,7 +109,7 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
   };
 // clang-format on
   std::string plus_address_scope =
-      plus_addresses::kEnterprisePlusAddressOAuthScope.Get();
+      plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get();
   if (!plus_address_scope.empty()) {
     allowlist.insert(plus_address_scope);
   }

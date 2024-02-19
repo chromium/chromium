@@ -67,7 +67,7 @@ class ScopedPlusAddressFeatureList {
  public:
   ScopedPlusAddressFeatureList() {
     features_.InitAndEnableFeatureWithParameters(
-        kFeature,
+        features::kFeature,
         {// This must be overridden by calling Reinit(server_url). A dummy is
          // provided here to bypass any checks on this during service creation.
          {"server-url", {"https://override-me-please.example"}},
@@ -82,10 +82,10 @@ class ScopedPlusAddressFeatureList {
     // Don't enable the 'sync-with-server' param so that the dialog is the
     // only way to trigger requests to the server.
     features_.InitAndEnableFeatureWithParameters(
-        kFeature, {{"server-url", {server_url}},
-                   {"oauth-scope", {kFakeOauthScope}},
-                   {"manage-url", {kFakeManagementUrl}},
-                   {"error-report-url", {kFakeErrorReportUrl}}});
+        features::kFeature, {{"server-url", {server_url}},
+                             {"oauth-scope", {kFakeOauthScope}},
+                             {"manage-url", {kFakeManagementUrl}},
+                             {"error-report-url", {kFakeErrorReportUrl}}});
   }
 
  private:

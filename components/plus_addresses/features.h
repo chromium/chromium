@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace plus_addresses {
+namespace plus_addresses::features {
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kFeature);
@@ -63,6 +63,6 @@ extern const base::FeatureParam<std::string> kPlusAddressErrorReportUrl;
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<bool> kDisableForForbiddenUsers;
 
-}  // namespace plus_addresses
+}  // namespace plus_addresses::features
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_

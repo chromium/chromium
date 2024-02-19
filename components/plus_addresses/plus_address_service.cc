@@ -237,7 +237,7 @@ std::u16string PlusAddressService::GetCreateSuggestionLabel() const {
   // TODO(crbug.com/1467623): once ready, use standard
   // `l10n_util::GetStringUTF16` instead of using feature params.
   return base::UTF8ToUTF16(
-      plus_addresses::kEnterprisePlusAddressSuggestionLabelOverride.Get());
+      features::kEnterprisePlusAddressSuggestionLabelOverride.Get());
 }
 
 std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
@@ -253,12 +253,12 @@ std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
 }
 
 bool PlusAddressService::is_enabled() const {
-  if (kDisableForForbiddenUsers.Get() && account_is_forbidden_.has_value() &&
-      account_is_forbidden_.value()) {
+  if (features::kDisableForForbiddenUsers.Get() &&
+      account_is_forbidden_.has_value() && account_is_forbidden_.value()) {
     return false;
   }
-  return base::FeatureList::IsEnabled(plus_addresses::kFeature) &&
-         (kEnterprisePlusAddressServerUrl.Get() != "") &&
+  return base::FeatureList::IsEnabled(features::kFeature) &&
+         (features::kEnterprisePlusAddressServerUrl.Get() != "") &&
          identity_manager_ != nullptr &&
          // Note that having a primary account implies that account's email will
          // be populated.
@@ -269,12 +269,13 @@ bool PlusAddressService::is_enabled() const {
 
 void PlusAddressService::CreateAndStartTimer() {
   if (!is_enabled() || !pref_service_ ||
-      !kSyncWithEnterprisePlusAddressServer.Get() || repeating_timer_) {
+      !features::kSyncWithEnterprisePlusAddressServer.Get() ||
+      repeating_timer_) {
     return;
   }
   repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
       pref_service_, prefs::kPlusAddressLastFetchedTime,
-      /*delay=*/kEnterprisePlusAddressTimerDelay.Get(),
+      /*delay=*/features::kEnterprisePlusAddressTimerDelay.Get(),
       /*task=*/
       base::BindRepeating(&PlusAddressService::SyncPlusAddressMapping,
                           // base::Unretained(this) is safe here since the timer
@@ -316,7 +317,7 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
 }
 
 void PlusAddressService::HandlePollingError(PlusAddressRequestError error) {
-  if (!kDisableForForbiddenUsers.Get() ||
+  if (!features::kDisableForForbiddenUsers.Get() ||
       error.type() != PlusAddressRequestErrorType::kNetworkError) {
     return;
   }
@@ -368,7 +369,7 @@ void PlusAddressService::HandleSignout() {
 std::set<std::string> PlusAddressService::GetAndParseExcludedSites() {
   std::set<std::string> parsed_excluded_sites;
   for (const std::string& site :
-       base::SplitString(kPlusAddressExcludedSites.Get(), ",",
+       base::SplitString(features::kPlusAddressExcludedSites.Get(), ",",
                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     parsed_excluded_sites.insert(site);
   }

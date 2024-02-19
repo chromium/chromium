@@ -79,12 +79,12 @@ void PlusAddressCreationViewAndroid::ShowInit(
                    IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_V2));
 
   base::android::ScopedJavaLocalRef<jstring> j_manage_url =
-      base::android::ConvertUTF8ToJavaString(env,
-                                             kPlusAddressManagementUrl.Get());
+      base::android::ConvertUTF8ToJavaString(
+          env, features::kPlusAddressManagementUrl.Get());
 
   base::android::ScopedJavaLocalRef<jstring> j_error_report_url =
-      base::android::ConvertUTF8ToJavaString(env,
-                                             kPlusAddressErrorReportUrl.Get());
+      base::android::ConvertUTF8ToJavaString(
+          env, features::kPlusAddressErrorReportUrl.Get());
 
   Java_PlusAddressCreationViewBridge_show(
       env, java_object_, j_title, j_formatted_description,
