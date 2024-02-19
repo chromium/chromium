@@ -242,17 +242,6 @@ TEST_P(PhoneFieldParserTest, ThreePartPhoneNumberPrefixSuffix) {
   }
 }
 
-TEST_P(PhoneFieldParserTest, ThreePartPhoneNumberPrefixSuffix2) {
-  for (FormControlType field_type : kFieldTypes) {
-    RunParsingTest(
-        {{field_type, u"(", u"phone1", PHONE_HOME_CITY_CODE, /*max_length=*/3},
-         {field_type, u")", u"phone2", PHONE_HOME_NUMBER_PREFIX,
-          /*max_length=*/3},
-         {field_type, u"", u"phone3", PHONE_HOME_NUMBER_SUFFIX,
-          /*max_length=*/4}});
-  }
-}
-
 // Phone in format <country code> - <city and number>
 TEST_P(PhoneFieldParserTest, CountryAndCityAndPhoneNumber) {
   for (FormControlType field_type : kFieldTypes) {

@@ -73,10 +73,14 @@ PhoneFieldParser::GetPhoneGrammars() {
       {{REGEX_COUNTRY, FIELD_COUNTRY_CODE},
        {REGEX_AREA, FIELD_AREA_CODE},
        {REGEX_PHONE, FIELD_PHONE}},
+      // The following grammar was removed because, though it looks plausible,
+      // it virtually never matched. The comment remains here for documentation
+      // purposes.
       // \( <ac> \) <phone>:3 <suffix>:4
-      {{REGEX_AREA_NOTEXT, FIELD_AREA_CODE, 3},
-       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
-       {REGEX_PHONE, FIELD_SUFFIX, 4}},
+      // {{REGEX_AREA_NOTEXT, FIELD_AREA_CODE, 3},
+      //  {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
+      //  {REGEX_PHONE, FIELD_SUFFIX, 4}},
+      //
       // Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_PHONE, FIELD_AREA_CODE, 3},
@@ -93,15 +97,23 @@ PhoneFieldParser::GetPhoneGrammars() {
       {{REGEX_PHONE, FIELD_AREA_CODE},
        {REGEX_PHONE, FIELD_PHONE, 3},
        {REGEX_PHONE, FIELD_SUFFIX, 4}},
+      // The following grammar was removed because, though it looks plausible,
+      // it virtually never matched. The comment remains here for documentation
+      // purposes.
       // Phone: <cc> \( <ac> \) <phone>
-      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
-       {REGEX_AREA_NOTEXT, FIELD_AREA_CODE},
-       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
+      // {{REGEX_PHONE, FIELD_COUNTRY_CODE},
+      //  {REGEX_AREA_NOTEXT, FIELD_AREA_CODE},
+      //  {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
+      //
+      // The following grammar was removed because, though it looks plausible,
+      // it virtually never matched. The comment remains here for documentation
+      // purposes.
       // Phone: <cc> - <ac> - <phone> - <suffix>
-      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
-       {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
-       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE},
-       {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX}},
+      // {{REGEX_PHONE, FIELD_COUNTRY_CODE},
+      //  {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
+      //  {REGEX_PREFIX_SEPARATOR, FIELD_PHONE},
+      //  {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX}},
+      //
       // Area code: <ac>:3 Prefix: <prefix>:3 Suffix: <suffix>:4
       {{REGEX_AREA, FIELD_AREA_CODE, 3},
        {REGEX_PREFIX, FIELD_PHONE, 3},
@@ -118,8 +130,6 @@ PhoneFieldParser::GetPhoneGrammars() {
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
        {REGEX_SUFFIX_SEPARATOR, FIELD_PHONE}},
-      // Phone: <ac> - <phone>
-      {{REGEX_AREA, FIELD_AREA_CODE}, {REGEX_PHONE, FIELD_PHONE}},
       // Phone: <cc>:3 - <phone>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
       // Phone: <phone>
