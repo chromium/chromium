@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 
 // TODO(crbug.com/1399414): Refactor tests when we start emitting issues in

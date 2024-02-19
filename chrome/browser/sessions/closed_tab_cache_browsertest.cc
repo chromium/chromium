@@ -5,6 +5,7 @@
 #include "chrome/browser/sessions/closed_tab_cache.h"
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"

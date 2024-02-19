@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "chrome/browser/ui/chrome_pages.h"

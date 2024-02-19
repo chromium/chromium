@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
+#include "content/public/test/browser_test_utils.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"

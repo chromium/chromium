@@ -19,6 +19,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"

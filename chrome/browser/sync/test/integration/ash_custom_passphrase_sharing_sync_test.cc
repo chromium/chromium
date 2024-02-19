@@ -35,6 +35,7 @@
 #include "components/sync/test/nigori_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 

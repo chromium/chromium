@@ -86,6 +86,7 @@
 #include "content/public/test/mojo_capability_control_test_interfaces.mojom.h"
 #include "content/public/test/mojo_capability_control_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"

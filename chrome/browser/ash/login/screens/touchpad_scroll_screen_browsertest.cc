@@ -21,6 +21,7 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/devices/touchpad_device.h"
 
 namespace ash {

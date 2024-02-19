@@ -4,6 +4,7 @@
 
 #include "build/build_config.h"
 
+#include "base/run_loop.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/public/browser/gpu_data_manager_observer.h"

@@ -28,6 +28,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"

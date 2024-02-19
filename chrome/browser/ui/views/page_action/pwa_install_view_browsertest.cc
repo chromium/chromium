@@ -45,6 +45,7 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
 #include "net/test/embedded_test_server/http_request.h"

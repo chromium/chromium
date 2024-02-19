@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"

@@ -10,6 +10,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 
 using SidePanelReadingListTest = WebUIMochaBrowserTest;

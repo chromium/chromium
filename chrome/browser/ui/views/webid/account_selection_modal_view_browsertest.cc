@@ -7,11 +7,12 @@
 #include <string>
 
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "content/public/test/browser_test.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace {

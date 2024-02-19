@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"

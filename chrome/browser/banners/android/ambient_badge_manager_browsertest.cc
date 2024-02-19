@@ -27,6 +27,7 @@
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -4,6 +4,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"

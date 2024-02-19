@@ -16,6 +16,8 @@
 #include "ash/constants/app_types.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/profiles/profile.h"

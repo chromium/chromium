@@ -4,6 +4,7 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/file_suggest/drive_file_suggestion_provider.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"

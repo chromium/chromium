@@ -7,6 +7,7 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/shell.h"
+#include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
 #include "chrome/browser/ui/ash/clipboard_history_test_util.h"
 #include "chrome/browser/ui/ash/clipboard_image_model_request.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/events/test/event_generator.h"
 

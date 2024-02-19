@@ -21,6 +21,7 @@
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect.h"
 
 using testing::ElementsAre;

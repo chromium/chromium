@@ -14,6 +14,12 @@
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
+namespace network::mojom {
+
+class NetworkContext;
+
+}  // namespace network::mojom
+
 class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
  public:
   BrowsingDataRemoverBrowserTestBase();

@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreInterface;

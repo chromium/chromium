@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"

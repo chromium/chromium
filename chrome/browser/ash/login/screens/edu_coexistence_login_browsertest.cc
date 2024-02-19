@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"

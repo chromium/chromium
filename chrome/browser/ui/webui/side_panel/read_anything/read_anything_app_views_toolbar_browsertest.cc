@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 
 // TODO(crbug.com/1474951): Remove this file once the ReadAnythingWebUiToolbar

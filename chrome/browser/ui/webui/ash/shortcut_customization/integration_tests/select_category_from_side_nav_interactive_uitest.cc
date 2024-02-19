@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/flat_map.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_test_base.h"
 

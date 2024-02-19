@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/test_views.h"

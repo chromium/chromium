@@ -5,6 +5,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/test/browser_test_utils.h"
 
 #include <functional>
 #include <memory>

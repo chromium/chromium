@@ -17,6 +17,7 @@
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace ash::settings {

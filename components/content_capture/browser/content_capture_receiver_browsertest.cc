@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/content_capture/browser/content_capture_test_helper.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"

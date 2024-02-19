@@ -16,6 +16,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "url/gurl.h"
 
 class Browser;

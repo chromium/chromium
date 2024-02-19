@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"

@@ -6,6 +6,7 @@
 
 #include "base/mac/mac_util.h"
 #include "base/process/process.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_child_process_host.h"

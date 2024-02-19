@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
+#include "content/public/test/browser_test_utils.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

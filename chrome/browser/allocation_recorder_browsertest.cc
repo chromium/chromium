@@ -9,6 +9,8 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/allocation_recorder/testing/crash_verification.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)

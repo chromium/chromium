@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "content/public/test/browser_test_utils.h"
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/policy_constants.h"

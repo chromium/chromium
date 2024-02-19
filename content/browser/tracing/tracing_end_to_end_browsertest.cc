@@ -4,14 +4,18 @@
 
 #include <thread>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_trace_processor.h"
 #include "base/test/trace_test_utils.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 
 #if BUILDFLAG(IS_POSIX)

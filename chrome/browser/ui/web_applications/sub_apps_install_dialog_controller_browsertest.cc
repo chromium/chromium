@@ -24,6 +24,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "content/public/test/browser_test_utils.h"
 #endif
 
 namespace web_app {

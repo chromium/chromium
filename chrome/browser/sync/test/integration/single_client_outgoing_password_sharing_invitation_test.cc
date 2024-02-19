@@ -4,6 +4,7 @@
 
 #include <array>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"

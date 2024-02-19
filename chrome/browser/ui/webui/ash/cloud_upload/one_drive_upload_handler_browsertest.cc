@@ -4,6 +4,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
 #include "ash/constants/ash_features.h"

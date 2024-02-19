@@ -13,6 +13,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 

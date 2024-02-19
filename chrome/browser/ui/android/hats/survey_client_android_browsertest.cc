@@ -14,6 +14,7 @@
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/test/messages_test_helper.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace hats {

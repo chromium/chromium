@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 
 #include "base/files/file_path.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

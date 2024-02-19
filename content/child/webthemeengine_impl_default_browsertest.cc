@@ -9,6 +9,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#include "content/public/test/browser_test_utils.h"
 #endif
 
 namespace content {

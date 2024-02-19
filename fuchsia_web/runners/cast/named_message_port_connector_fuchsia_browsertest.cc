@@ -6,6 +6,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"

@@ -13,6 +13,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::BrowserThread;

@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"

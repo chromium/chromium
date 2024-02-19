@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"

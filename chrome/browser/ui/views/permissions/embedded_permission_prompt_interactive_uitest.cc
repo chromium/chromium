@@ -19,6 +19,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/label.h"

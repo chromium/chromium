@@ -4,6 +4,7 @@
 
 #include "chrome/browser/net/network_annotation_monitor.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -15,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -22,6 +23,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_topics_test_util.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/test/embedded_test_server/request_handler_util.h"

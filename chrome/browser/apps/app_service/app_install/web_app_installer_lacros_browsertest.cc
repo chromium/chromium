@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

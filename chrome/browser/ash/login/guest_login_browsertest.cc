@@ -6,6 +6,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"

@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/platform/ax_platform_node.h"

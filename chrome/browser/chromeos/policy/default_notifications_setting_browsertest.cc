@@ -12,6 +12,7 @@
 #include "components/permissions/features.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

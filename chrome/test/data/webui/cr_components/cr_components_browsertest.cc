@@ -6,6 +6,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/crypto_buildflags.h"
 
 typedef WebUIMochaBrowserTest CrComponentsTest;
 

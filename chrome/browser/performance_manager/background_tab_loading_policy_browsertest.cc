@@ -15,6 +15,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace performance_manager {
 

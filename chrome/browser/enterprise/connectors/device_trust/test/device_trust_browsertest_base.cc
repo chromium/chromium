@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
 #include "chrome/browser/ui/browser.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
