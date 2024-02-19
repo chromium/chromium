@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_VIEW_CONTROLLER_PROTOCOL_H_
 #define IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_VIEW_CONTROLLER_PROTOCOL_H_
 
-#import <UIKit/UIkit.h>
+#import <UIKit/UIKit.h>
 
 @protocol DownloadManagerViewControllerDelegate;
 class FullscreenController;

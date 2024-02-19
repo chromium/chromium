@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_OPEN_LENS_INPUT_SELECTION_COMMAND_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_OPEN_LENS_INPUT_SELECTION_COMMAND_H_
 
-#import <UIKit/UIkit.h>
+#import <UIKit/UIKit.h>
 #import "base/ios/block_types.h"
 
 enum class LensEntrypoint;
