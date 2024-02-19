@@ -1281,7 +1281,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // the toggle.
 - (void)testReviewAccountSettingsPromoWithReadingListToggleDisabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // By default, `signinWithFakeIdentity` above enables reading list data type,
   // so turn it off.
@@ -1322,7 +1322,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // in only and reading list account storage is already enabled.
 - (void)testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
@@ -1332,7 +1332,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // account gets removed.
 - (void)testAccountSettingsViewedFroReadingListManager {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   // By default, `signinWithFakeIdentity` above enables reading list data type,
   // so turn it off.
@@ -1372,7 +1372,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // out from account settings.
 - (void)testSignOutFromAccountSettingsFromReadingListManager {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   // By default, `signinWithFakeIdentity` above enables reading list data type,
   // so turn it off.
@@ -1438,7 +1438,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // in.
 - (void)testSigninToReviewAccountSettingsPromo {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   // By default, `signinWithFakeIdentity` above enables reading list data type,
   // so turn it off.
