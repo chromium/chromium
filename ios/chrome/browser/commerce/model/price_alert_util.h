@@ -13,6 +13,6 @@ class BrowserState;
 
 // Price alerts should not be available for all users - only
 // MSBB and signed in users with a non-incognito Tab.
-BOOL IsPriceAlertsEligible(web::BrowserState* browser_state);
+bool IsPriceAlertsEligible(web::BrowserState* browser_state);
 
 #endif  // IOS_CHROME_BROWSER_COMMERCE_MODEL_PRICE_ALERT_UTIL_H_
