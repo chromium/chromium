@@ -415,7 +415,7 @@
 <translation id="1312811472299082263">Ansible Playbook किंवा Crostini बॅकअप फाइल वापरून तयार करा</translation>
 <translation id="13130607084115184">सेव्ह केलेले पासवर्ड येथे दिसतील. या डिव्हाइसवर <ph name="BRAND" /> वर पासवर्ड इंपोर्ट करण्यासाठी, <ph name="BEGIN_LINK" />CSV फाइल निवडणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> काढून टाकल्या</translation>
-<translation id="1313405956111467313">स्वयंचलित प्रॉक्सी कॉंफिगरेशन</translation>
+<translation id="1313405956111467313">ऑटोमॅटिक प्रॉक्सी कॉन्फिगरेशन</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">तुम्हाला उघड्या असलेल्या टॅबसह सर्व साइटमधून साइन आउट केले जाईल</translation>
 <translation id="1313705515580255288">तुमचे बुकमार्क, इतिहास आणि इतर सेटिंग्ज आपल्या Google खात्यामध्ये संकालित केल्या जातील.</translation>
@@ -1548,7 +1548,7 @@
 <translation id="2143089736086572103">काही संपर्कांना दिसेल</translation>
 <translation id="2143667386128949432">{COUNT,plural, =0{Chrome will block cookies again today}=1{Chrome उद्या पुन्हा कुकी ब्लॉक करेल}other{# दिवसांनी कुकी पुन्हा ब्लॉक केल्या जातील}}</translation>
 <translation id="2143765403545170146">टूलबार नेहमी पूर्ण स्क्रीनमध्ये दर्शवा</translation>
-<translation id="2143778271340628265">व्यक्तिचलित प्रॉक्झी कॉंफिगरेशन</translation>
+<translation id="2143778271340628265">मॅन्युअल प्रॉक्सी कॉन्फिगरेशन</translation>
 <translation id="2143808295261240440">शिफारस केलेले पासवर्ड वापरा</translation>
 <translation id="2143915448548023856">प्रदर्शन सेटिंग्ज</translation>
 <translation id="2144536955299248197">सर्टिफिकेट दर्शक: <ph name="CERTIFICATE_NAME" /></translation>
@@ -4462,7 +4462,7 @@
 <translation id="4388650384344483842">किमान आठ वर्ण वापरा</translation>
 <translation id="4389091756366370506">वापरकर्ता <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, आणि आणखी <ph name="NUMBER_OF_OTHER_SWITCHES" /> स्विच</translation>
-<translation id="439266289085815679">ब्लूटूथ कॉंफिगरेशन <ph name="USER_EMAIL" /> नियंत्रित करते.</translation>
+<translation id="439266289085815679">ब्लूटूथ कॉन्फिगरेशन <ph name="USER_EMAIL" /> नियंत्रित करते.</translation>
 <translation id="4392896746540753732">कॉंफिगरेशन फाइल संपादित करा</translation>
 <translation id="4393102500004843976">search + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4393713825278446281">जलद पेअरिंग डिव्हाइस ही <ph name="PRIMARY_EMAIL" /> मध्ये सेव्ह केली आहेत</translation>
@@ -4519,7 +4519,7 @@
 <translation id="4426508677408162512">सर्व बुकमार्क</translation>
 <translation id="4426513927906544654">आशय शिफारसी मिळवा</translation>
 <translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
-<translation id="4427365070557649936">कंफर्मेशन कोडची पडताळणी करत आहे…</translation>
+<translation id="4427365070557649936">कन्फर्मेशन कोडची पडताळणी करत आहे…</translation>
 <translation id="4429163740524851942">वास्तविक कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
 <translation id="443031431654216610">फक्त अंक वापरा</translation>
@@ -4857,7 +4857,7 @@
 <translation id="4692623383562244444">शोध इंजिने</translation>
 <translation id="4692736633446859167">तुम्ही पूर्वी <ph name="SITE" /> वर सर्व एक्स्टेंशनना अनुमती न देणे निवडले आहे. तुम्ही येथे ही साइट जोडल्यास, इतर एक्स्टेंशनदेखील <ph name="SITE" /> वर तुमचा साइट डेटा वाचण्याची आणि बदलण्याची विनंती करू शकतात.</translation>
 <translation id="4693155481716051732">सुशी</translation>
-<translation id="4694024090038830733">प्रिंटर कॉंफिगरेशन ॲडमिनिस्ट्रेटरद्वारे हाताळले जाते.</translation>
+<translation id="4694024090038830733">प्रिंटर कॉन्फिगरेशन अ‍ॅडमिनिस्ट्रेटरद्वारे हाताळले जाते.</translation>
 <translation id="4694604912444486114">माकड</translation>
 <translation id="4694820450536519583">परवानग्या</translation>
 <translation id="4695318956047767909">गडद थीम, स्क्रीन सेव्हर</translation>
@@ -5166,7 +5166,7 @@
 <translation id="4941246025622441835">एंटरप्राइज व्यवस्थापनासाठी डिव्हाइसची नोंदणी करताना ही डिव्हाइस मागणी वापरा:</translation>
 <translation id="4941627891654116707">फॉंट आकार</translation>
 <translation id="4941963255146903244">तुमच्या फोनमधील फोटो, मीडिया आणि अ‍ॅप्स पहा</translation>
-<translation id="494286511941020793">प्रॉक्सी कॉंफिगरेशन मदत</translation>
+<translation id="494286511941020793">प्रॉक्सी कॉन्फिगरेशन मदत</translation>
 <translation id="4943368462779413526">फूटबॉल</translation>
 <translation id="4943927218331934807">पासवर्ड आवश्यक आहे</translation>
 <translation id="4944310289250773232">ही ऑथेंटिकेशन सेवा <ph name="SAML_DOMAIN" /> द्वारे होस्ट केली जाते</translation>
@@ -6216,7 +6216,7 @@
 <translation id="5792874008054171483"><ph name="SITE_NAME" /> साठी आणखी कृती</translation>
 <translation id="5793317771769868848">या डिव्हाइसवरून ही पेमेंट पद्धत हटवली जाईल</translation>
 <translation id="5793339252089865437">तुम्ही तुमच्या मोबाइल नेटवर्कवरून अपडेट डाउनलोड केल्यास, याचा परिणाम म्हणून अतिरिक्त शुल्क आकारले जाऊ शकते.</translation>
-<translation id="5793420564274426163">पेअर करण्याशी संबंधित कंफर्मेशन</translation>
+<translation id="5793420564274426163">पेअर करण्याशी संबंधित कन्फर्मेशन</translation>
 <translation id="5794034487966529952">डेस्क <ph name="DESK_TITLE" /> वर <ph name="NUM_BROWSERS" /> ब्राउझर विंडो सुरू आहेत</translation>
 <translation id="5794414402486823030">नेहमी सिस्टम दर्शकासह उघडा</translation>
 <translation id="5794700615121138172">Linux ने शेअर केलेले फोल्डर</translation>
@@ -6225,7 +6225,7 @@
 <translation id="5797521893972859201">सर्च बॉक्समधील इतिहासाच्या समावेशासह, इतिहास साफ करते</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; आणि &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; वर सुरुवात कशी करावी हे जाणून घ्या</translation>
 <translation id="5798079537501238810">साइट पेमेंट हँडलर इंस्टॉल करू शकतात</translation>
-<translation id="5798086737841799234">कंफर्मेशन कोड एंटर करा</translation>
+<translation id="5798086737841799234">कन्फर्मेशन कोड एंटर करा</translation>
 <translation id="579915268381781820">तुमची सिक्युरिटी की काढून टाकली होती.</translation>
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> बाबत टिपा, ऑफर व अपडेट मिळवा आणि फीडबॅक शेअर करा.</translation>
 <translation id="5799508265798272974">Linux व्हर्च्युअल मशीन: <ph name="LINUX_VM_NAME" /></translation>
@@ -6863,7 +6863,7 @@
 <translation id="628726841779494414">प्रिंटर सेटिंग्जमध्ये तुमचे प्रिंटर व्यवस्थापित करा</translation>
 <translation id="6287828400772161253">Android फोन (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">जवळपास शेअर करत असलेली कोणतीही डिव्हाइस उपलब्ध नाहीत. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
-<translation id="6291741848715722067">कंफर्मेशन कोड</translation>
+<translation id="6291741848715722067">कन्फर्मेशन कोड</translation>
 <translation id="6291953229176937411">फाइंडर मध्ये &amp;दर्शवा</translation>
 <translation id="6292699686837272722">टॅब मध्यम रुंदीवर आक्रसतात</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> सुरू केला आहे</translation>
@@ -7584,7 +7584,7 @@
 <translation id="6856623341093082836">आपल्या टचस्क्रीनची अचूकता सेट करा आणि समायोजित करा</translation>
 <translation id="6856850379840757744">सुरू केल्यावर, सर्व सूचना सायलंट केल्या जातील</translation>
 <translation id="6857145580237920905">Powerwash करण्यापूर्वी eSIM प्रोफाइल काढून टाका</translation>
-<translation id="6857699260879628349">कॉंफिगरेशन माहिती मिळवा</translation>
+<translation id="6857699260879628349">कॉन्फिगरेशन माहिती मिळवा</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकंद</translation>
 <translation id="6860097299815761905">प्रॉक्सी सेटिंग्ज...</translation>
 <translation id="68601584151169673">सेव्ह आणि शेअर करा</translation>
@@ -7611,7 +7611,7 @@
 <translation id="6880587130513028875">या पेजवरील इमेज ब्लॉक केलेल्या होत्या.</translation>
 <translation id="6881845890692344060">तुमच्या अ‍ॅडमिनिस्ट्रेटरने लॉग आउट केले आहे. तुम्ही आता नियंत्रक आहात.</translation>
 <translation id="6882210908253838664">एखादी साइट काम करत नसल्यास, तुम्ही तृतीय पक्ष कुकी वापरण्याची तात्पुरती परवानगी देण्याचा प्रयत्न करू शकता. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
-<translation id="6883319974225028188">अरेरे! डिव्हाइस कॉंफिगरेशन सेव्ह करण्यात सिस्टम अयशस्वी झाले.</translation>
+<translation id="6883319974225028188">अरेरे! सिस्टीमला डिव्हाइस कॉन्फिगरेशन सेव्ह करता आले नाही.</translation>
 <translation id="6884474387073389421">तुम्हाला तुम्ही निवडलेला साइन इन डेटा नक्की हटवायचा आहे का?</translation>
 <translation id="6885122019363983153">डेस्कटॉप बॅकग्राउंड सर्व डिव्हाइसवर जुळतात</translation>
 <translation id="6885771755599377173">सिस्टम माहिती पूर्वावलोकन</translation>
@@ -8484,7 +8484,7 @@
 <translation id="7576690715254076113">तुलनात्मक</translation>
 <translation id="7576976045740938453">डेमो मोड खात्याला समस्या आली.</translation>
 <translation id="7578137152457315135">फिंगरप्रिंट सेटिंग्ज</translation>
-<translation id="7578692661782707876">कृपया तुमचा कंफर्मेशन कोड एंटर करा.</translation>
+<translation id="7578692661782707876">कृपया तुमचा कन्फर्मेशन कोड एंटर करा.</translation>
 <translation id="757941033127302446">साइन इन केले आहे</translation>
 <translation id="7581007437437492586">धोरणे योग्य प्रकारे काँफिगर केली आहेत</translation>
 <translation id="7581462281756524039">एक क्लीनअप टूल</translation>
@@ -9268,7 +9268,7 @@
 <translation id="8157248655669507702">eSIM प्रोफाइल इंस्टॉल करण्यासाठी मोबाइल डेटा सुरू करा</translation>
 <translation id="8157704005178149728">पर्यवेक्षण सेट करत आहे</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" /> मध्ये या डिव्हाइसला ऑटोमेटिक सॉफ्टवेअर आणि सुरक्षा अपडेट मिळणे थांबेल. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
-<translation id="8159652640256729753">स्क्रीन स्प्लिट करणे आणि डेस्‍क स्विच करणे यांसारख्या कृतींसाठी व्हायब्रेशनद्वारे कंफर्मेशन मिळवा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="8159652640256729753">स्क्रीन स्प्लिट करणे आणि डेस्‍क स्विच करणे यांसारख्या कृतींसाठी व्हायब्रेशनद्वारे कन्फर्मेशन मिळवा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">सर्टिफिकेट विश्वास सेट करताना एरर</translation>
 <translation id="8160775796528709999">सेटिंग्जमध्ये लाइव्ह कॅप्शन सुरू करून तुमच्या ऑडिओ आणि व्हिडिओसाठी कॅप्शन मिळवा</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
@@ -10047,9 +10047,9 @@
 <translation id="8750786237117206586">ChromeOS Flex ऑडिओ सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="8752451679755290210">आयटमदरम्यान आपोआप नेव्हिगेट करा</translation>
 <translation id="8753948258138515839">Files अ‍ॅप हे तुम्ही Google Drive, बाह्य स्टोरेज किंवा तुमच्या ChromeOS Flex डिव्हाइसवर सेव्ह केलेल्या फाइलचा झटपट अ‍ॅक्सेस पुरवते.</translation>
-<translation id="8754200782896249056">&lt;p&gt;सपोर्टेड डेस्कटॉप परिस्थिती अंतर्गत <ph name="PRODUCT_NAME" /> चालविताना, सिस्टम प्रॉक्सी सेटिंग्ज वापरल्या जातील. तथापि, एकतर तुमची सिस्टमला सपोर्ट नाही नसते किंवा तुमचे सिस्टम कॉंफिगरेशन लाँच करताना समस्या आली.&lt;/p&gt;
+<translation id="8754200782896249056">&lt;p&gt;सपोर्टेड डेस्कटॉप परिस्थिती अंतर्गत <ph name="PRODUCT_NAME" /> चालवताना, सिस्टीम प्रॉक्सी सेटिंग्ज वापरल्या जातील. तथापि, एकतर तुमची सिस्टीमला सपोर्ट नाही नसते किंवा तुमचे सिस्टीम कॉन्फिगरेशन लाँच करताना समस्या आली.&lt;/p&gt;
 
-          &lt;/p&gt;परंतु तुम्ही अद्याप कमांड लाइन कॉंफिगर करू शकता. कृपया फ्लॅग आणि परिस्थिती व्हेरिएबलांवरील अधिक माहितीसाठी &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; पहा.&lt;/p&gt;</translation>
+          &lt;/p&gt;परंतु तुम्ही अद्याप कमांड लाइन कॉन्फिगर करू शकता. कृपया फ्लॅग आणि परिस्थिती व्हेरिएबलवरील अधिक माहितीसाठी &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; पहा.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">तुमच्या संस्थेसाठी सुरक्षिततेशी संबंधित टास्क पार पाडा, जसे की डिव्हाइसवर स्टोअर केलेली सर्टिफिकेट आणि की व्यवस्थापित करणे</translation>
 <translation id="875532100880844232"><ph name="DEVICE_NAME" />साठी, प्रत्येक कीसाठी कृती निवडा</translation>
 <translation id="8755376271068075440">&amp;विशाल</translation>
@@ -10145,7 +10145,7 @@
 <translation id="8830863983385452402">साइट या टॅबचा आशय पाहू शकेल</translation>
 <translation id="8831769650322069887"><ph name="FILE_NAME" /> उघडा</translation>
 <translation id="8832781841902333794">तुमच्या प्रोफाइल</translation>
-<translation id="8834039744648160717"><ph name="USER_EMAIL" /> ने नेटवर्क कॉंफिगरेशन नियंत्रित केले आहे.</translation>
+<translation id="8834039744648160717"><ph name="USER_EMAIL" /> ने नेटवर्क कॉन्फिगरेशन नियंत्रित केले आहे.</translation>
 <translation id="8835786707922974220">तुम्हाला तुमचे सेव्ह केलेले पासवर्ड नेहमी अ‍ॅक्सेस करता येतील याची खात्री करा</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> एका आठवड्याच्या आत परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" /></translation>
 <translation id="8836782447513334597">पुढे सुरू ठेवा</translation>
