@@ -102,6 +102,14 @@ std::string ToString(const T x) {
   return (std::ostringstream() << drivefs::pinning::NiceNum << x).str();
 }
 
+std::string ToString(const drive::FileError error) {
+  std::string s = drive::FileErrorToString(error);
+  if (const std::string_view prefix = "FILE_ERROR_"; s.starts_with(prefix)) {
+    s.erase(0, prefix.size());
+  }
+  return s;
+}
+
 template <typename T>
 std::string ToPercent(const T num, const T total) {
   if (num >= 0 && total > 0) {
@@ -542,9 +550,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
     for (const FilePath& sync_path : paths) {
-      MaybeCallJavascript(
-          "onAddSyncPath", Value(sync_path.value()),
-          Value(drive::FileErrorToString(drive::FILE_ERROR_OK)));
+      MaybeCallJavascript("onAddSyncPath", Value(sync_path.value()),
+                          Value(ToString(drive::FILE_ERROR_OK)));
     }
   }
 
@@ -572,12 +579,12 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   void OnAddSyncPath(const FilePath& sync_path, drive::FileError status) {
     MaybeCallJavascript("onAddSyncPath", Value(sync_path.value()),
-                        Value(drive::FileErrorToString(status)));
+                        Value(ToString(status)));
   }
 
   void OnRemoveSyncPath(const FilePath& sync_path, drive::FileError status) {
     MaybeCallJavascript("onRemoveSyncPath", Value(sync_path.value()),
-                        Value(drive::FileErrorToString(status)));
+                        Value(ToString(status)));
   }
 
   void UpdateBulkPinningDeveloperSection() {
