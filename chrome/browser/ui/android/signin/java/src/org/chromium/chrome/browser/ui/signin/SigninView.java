@@ -207,7 +207,31 @@ class SigninView extends LinearLayout {
      * themed according to {@link screenMode} param.
      */
     void recreateButtons(@ScreenMode int screenMode) {
-        // TODO(b/318349052): Implement once deps are ready.
+        mButtonBar.removeAllViews();
+
+        Button oldButton = mAcceptButton;
+
+        @DualControlLayout.ButtonType
+        int acceptButtonType =
+                screenMode == ScreenMode.UNRESTRICTED
+                        ? DualControlLayout.ButtonType.PRIMARY_FILLED
+                        : DualControlLayout.ButtonType.PRIMARY_TEXT;
+
+        mAcceptButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(),
+                        acceptButtonType,
+                        oldButton.getText().toString(),
+                        this::acceptOnClickListenerProxy);
+        mAcceptButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mAcceptButton.setEnabled(oldButton.isEnabled());
+        updateAcceptConsentText();
+
+        // This button is not changed, make it unconditionally visible.
+        mRefuseButton.setVisibility(View.VISIBLE);
+        addButtonsToButtonBar();
     }
 
     private void addButtonsToButtonBar() {

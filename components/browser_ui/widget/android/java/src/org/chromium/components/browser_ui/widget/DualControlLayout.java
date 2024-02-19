@@ -197,6 +197,13 @@ public final class DualControlLayout extends ViewGroup {
     }
 
     @Override
+    public void removeAllViews() {
+        mPrimaryView = null;
+        mSecondaryView = null;
+        super.removeAllViews();
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mIsStacked = false;
         int sidePadding = getPaddingLeft() + getPaddingRight();
