@@ -25,24 +25,11 @@ void SetVMConfigPref(Profile* profile) {
       "vm_config_abc": {
           "name": "abc",
           "enabled_state": 2,
-          "display_order": 1,
-          "vtpm": {
-            "enabled": true,
-          }
+          "display_order": 1
       },
       "vm_config_def": {
           "name": "def",
-          "enabled_state": 2,
-          "vtpm": {
-            "enabled": true,
-          }
-      },
-      "vm_config_geh": {
-          "name": "geh",
-          "enabled_state": 0,
-          "vtpm": {
-            "enabled": true,
-          }
+          "enabled_state": 2
       }
     }
   )"));
@@ -122,30 +109,6 @@ TEST(BruschettaUtilTest, GetDisplayNameInPrefs) {
   )"));
 
   ASSERT_EQ(GetDisplayName(&profile, GetBruschettaAlphaId()), "Display Name");
-}
-
-TEST(BruschettaUtilTest, IsAllowed) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  SetVMConfigPref(&profile);
-  profile.GetPrefs()->SetList(guest_os::prefs::kGuestOsContainers,
-                              base::test::ParseJsonList(R"(
-    [
-      {
-        "vm_name": "bru1",
-        "container_name": "penguin",
-        "bruschetta_config_id": "vm_config_abc"
-      },
-      {
-        "vm_name": "bru2",
-        "container_name": "penguin",
-        "bruschetta_config_id": "vm_config_geh"
-      }
-    ]
-  )"));
-  EXPECT_TRUE(IsAllowed(&profile, "bru1"));
-  EXPECT_FALSE(IsAllowed(&profile, "bru2"));
-  EXPECT_FALSE(IsAllowed(&profile, "other"));
 }
 
 }  // namespace bruschetta

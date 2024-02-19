@@ -784,8 +784,6 @@ source_set("ash") {
     "bruschetta/bruschetta_policy_handler.h",
     "bruschetta/bruschetta_pref_names.cc",
     "bruschetta/bruschetta_pref_names.h",
-    "bruschetta/bruschetta_security_delegate.cc",
-    "bruschetta/bruschetta_security_delegate.h",
     "bruschetta/bruschetta_service.cc",
     "bruschetta/bruschetta_service.h",
     "bruschetta/bruschetta_service_factory.cc",

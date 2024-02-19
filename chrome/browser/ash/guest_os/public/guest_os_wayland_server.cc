@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_security_delegate.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_security_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -114,13 +113,6 @@ void GuestOsWaylandServer::Listen(base::ScopedFD fd,
     case vm_tools::apps::BOREALIS:
       borealis::BorealisSecurityDelegate::Build(
           profile_,
-          base::BindOnce(&GuestOsWaylandServer::OnSecurityDelegateCreated,
-                         weak_factory_.GetWeakPtr(), std::move(fd), type, name,
-                         std::move(callback)));
-      return;
-    case vm_tools::apps::BRUSCHETTA:
-      bruschetta::BruschettaSecurityDelegate::Build(
-          profile_, name,
           base::BindOnce(&GuestOsWaylandServer::OnSecurityDelegateCreated,
                          weak_factory_.GetWeakPtr(), std::move(fd), type, name,
                          std::move(callback)));

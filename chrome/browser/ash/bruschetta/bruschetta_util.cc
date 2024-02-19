@@ -121,16 +121,6 @@ void SortInstallableConfigs(std::vector<InstallableConfig>* configs) {
             });
 }
 
-bool IsAllowed(Profile* profile, const std::string& vm_name) {
-  const auto* pref = GetContainerPrefValue(
-      profile, MakeBruschettaId(vm_name), guest_os::prefs::kBruschettaConfigId);
-  if (!pref) {
-    return false;
-  }
-  const std::string config_id = pref->GetString();
-  return GetLaunchPolicyForConfig(profile, config_id).has_value();
-}
-
 bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id) {
   const base::Value* value = guest_os::GetContainerPrefValue(
       profile, guest_id, guest_os::prefs::kVmNameKey);

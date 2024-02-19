@@ -68,10 +68,6 @@ void SortInstallableConfigs(std::vector<InstallableConfig>* configs);
 // enterprise policy. (e.g. kBruschettaPolicyId)
 bool HasInstallableConfig(const Profile* profile, const std::string& config_id);
 
-// Returns true if enterprise policy allows the the Bruschetta VM called
-// `vm_name` to be launched.
-bool IsAllowed(Profile* profile, const std::string& vm_name);
-
 // Returns true if Bruschetta is installed.
 bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
 
