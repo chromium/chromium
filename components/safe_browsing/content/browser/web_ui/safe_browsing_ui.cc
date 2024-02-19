@@ -2178,6 +2178,23 @@ base::Value::Dict SerializeRTThreatInfo(
     matched_rule.Set(
         "matched_url_category",
         threat_info.matched_url_navigation_rule().matched_url_category());
+
+    if (threat_info.matched_url_navigation_rule().has_custom_message()) {
+      base::Value::List message_segments;
+      for (const auto& segment : threat_info.matched_url_navigation_rule()
+                                     .custom_message()
+                                     .message_segments()) {
+        base::Value::Dict segment_value;
+        if (segment.has_text()) {
+          segment_value.Set("text", segment.text());
+        }
+        if (segment.has_link()) {
+          segment_value.Set("link", segment.link());
+        }
+        message_segments.Append(std::move(segment_value));
+      }
+      matched_rule.Set("message_segments", std::move(message_segments));
+    }
     threat_info_dict.Set("matched_url_navigation_rule",
                          std::move(matched_rule));
   }
@@ -2758,6 +2775,22 @@ std::string SerializeContentAnalysisResponse(
       rule_value.Set("rule_name", rule.rule_name());
       rule_value.Set("rule_id", rule.rule_id());
       rule_value.Set("url_category", rule.url_category());
+
+      if (rule.has_custom_rule_message()) {
+        base::Value::List message_segments;
+        for (const auto& segment :
+             rule.custom_rule_message().message_segments()) {
+          base::Value::Dict segment_value;
+          if (segment.has_text()) {
+            segment_value.Set("text", segment.text());
+          }
+          if (segment.has_link()) {
+            segment_value.Set("link", segment.link());
+          }
+          message_segments.Append(std::move(segment_value));
+        }
+        rule_value.Set("message_segments", std::move(message_segments));
+      }
       triggered_rules.Append(std::move(rule_value));
     }
     result_value.Set("triggered_rules", std::move(triggered_rules));
