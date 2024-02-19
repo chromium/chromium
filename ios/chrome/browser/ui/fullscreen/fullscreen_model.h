@@ -74,7 +74,17 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
 
   // Whether the view is scrolled all the way to the bottom.
   bool is_scrolled_to_bottom() const {
-    return y_content_offset_ + scroll_view_height_ >= content_height_;
+    if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+      return y_content_offset_ + scroll_view_height_ >= content_height_;
+    } else {
+      return y_content_offset_ -
+                 (GetCollapsedTopToolbarHeight() +
+                  GetCollapsedBottomToolbarHeight() + safe_area_insets_.bottom +
+                  safe_area_insets_.top) +
+                 (scroll_view_height_ + GetExpandedTopToolbarHeight() +
+                  GetExpandedBottomToolbarHeight()) >=
+             content_height_;
+    }
   }
 
   // The min, max, and current insets caused by the toolbars.

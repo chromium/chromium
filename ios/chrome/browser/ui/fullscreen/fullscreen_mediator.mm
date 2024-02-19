@@ -149,9 +149,23 @@ void FullscreenMediator::FullscreenModelScrollEventStarted(
 void FullscreenMediator::FullscreenModelScrollEventEnded(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
-  AnimateWithStyle(model_->progress() >= 0.5
-                       ? FullscreenAnimatorStyle::EXIT_FULLSCREEN
-                       : FullscreenAnimatorStyle::ENTER_FULLSCREEN);
+  FullscreenAnimatorStyle animatorStyle;
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    AnimateWithStyle(model_->progress() >= 0.5
+                         ? FullscreenAnimatorStyle::EXIT_FULLSCREEN
+                         : FullscreenAnimatorStyle::ENTER_FULLSCREEN);
+  } else {
+    if (model_->enabled() && model_->is_scrolled_to_bottom() &&
+        AreCGFloatsEqual(model_->progress(), 0.0) &&
+        model_->can_collapse_toolbar()) {
+      animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+    } else if (model_->progress() >= 0.5) {
+      animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+    } else {
+      animatorStyle = FullscreenAnimatorStyle::ENTER_FULLSCREEN;
+    }
+    AnimateWithStyle(animatorStyle);
+  }
 }
 
 void FullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {
