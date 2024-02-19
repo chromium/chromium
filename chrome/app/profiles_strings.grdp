@@ -129,6 +129,9 @@
     <message name="IDS_PROFILES_PROFILE_HIDE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to hide the accounts for a profile.">
       Hide accounts
     </message>
+    <message name="IDS_PROFILE_MENU_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item in the profile menu.">
+      Open Guest profile
+    </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
@@ -139,6 +142,9 @@
     </message>
     <message name="IDS_PROFILES_PROFILE_HIDE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to hide the accounts for a profile.">
       Hide Accounts
+    </message>
+    <message name="IDS_PROFILE_MENU_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item in the profile menu.">
+      Open Guest Profile
     </message>
   </if>
   <message name="IDS_PROFILES_MANAGED_BY" desc="Label shown under the avatar in the avatar menu bubble view stating that the account is managed.">
@@ -174,9 +180,6 @@
   <message name="IDS_GUEST_PROFILE_NAME" desc="The name given to the guest
   browsing profile. Displayed in the avatar menu bubble and button UI.">
     Guest
-  </message>
-  <message name="IDS_PROFILE_MENU_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item in the profile menu.">
-    Open Guest Profile
   </message>
 
   <message name="IDS_DEFAULT_AVATAR_NAME_8" desc="The default name given to a newly created profile with the female spy avatar.">
