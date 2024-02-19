@@ -63,15 +63,13 @@ class PickerViewTest : public AshTestBase {
 
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
-  using FakeSearchFunction = base::RepeatingCallback<PickerSearchResults(
-      std::u16string_view query,
-      std::optional<PickerCategory> category)>;
+  using FakeSearchFunction =
+      base::RepeatingCallback<void(SearchResultsCallback callback)>;
 
   FakePickerViewDelegate()
       : search_function_(
-            base::BindRepeating([](std::u16string_view query,
-                                   std::optional<PickerCategory> category) {
-              return PickerSearchResults();
+            base::BindRepeating([](SearchResultsCallback callback) {
+              callback.Run(PickerSearchResults());
             })) {}
   explicit FakePickerViewDelegate(FakeSearchFunction search_function)
       : search_function_(search_function) {}
@@ -89,7 +87,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void StartSearch(const std::u16string& query,
                    std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override {
-    callback.Run(search_function_.Run(query, category));
+    search_function_.Run(std::move(callback));
   }
 
   void InsertResultOnNextFocus(const PickerSearchResult& result) override {
@@ -229,12 +227,12 @@ TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
 TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
-      [&](std::u16string_view query, std::optional<PickerCategory> category) {
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         future.SetValue();
-        return PickerSearchResults({{
+        callback.Run(PickerSearchResults({{
             PickerSearchResults::Section(
                 u"section", {{PickerSearchResult::Text(u"result")}}),
-        }});
+        }}));
       }));
   auto widget =
       PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
@@ -369,10 +367,9 @@ TEST_F(PickerViewTest, ClickingOutsideClosesPickerWidget) {
 TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
   base::HistogramTester histogram;
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
-      [&, this](std::u16string_view query,
-                std::optional<PickerCategory> category) {
+      [&, this](FakePickerViewDelegate::SearchResultsCallback callback) {
         task_environment()->FastForwardBy(base::Seconds(1));
-        return PickerSearchResults();
+        callback.Run(PickerSearchResults());
       }));
   auto widget =
       PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
