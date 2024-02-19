@@ -18,11 +18,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -138,6 +140,30 @@ public final class SyncTestUtil {
                 },
                 TIMEOUT_MS,
                 INTERVAL_MS);
+    }
+
+    /** Returns whether history sync is active. */
+    public static boolean isHistorySyncEnabled() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () ->
+                        getSyncServiceForLastUsedProfile()
+                                .getSelectedTypes()
+                                .containsAll(
+                                        Set.of(
+                                                UserSelectableType.HISTORY,
+                                                UserSelectableType.TABS)));
+    }
+
+    /** Waits for history and tabs sync to be active. */
+    public static void waitForHistorySyncEnabled() {
+        CriteriaHelper.pollUiThread(
+                () ->
+                        getSyncServiceForLastUsedProfile()
+                                .getSelectedTypes()
+                                .containsAll(
+                                        Set.of(
+                                                UserSelectableType.HISTORY,
+                                                UserSelectableType.TABS)));
     }
 
     /** Triggers a sync cycle. */

@@ -7,24 +7,26 @@ package org.chromium.chrome.browser.ui.signin.history_sync;
 import android.content.Context;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Set;
-
 class HistorySyncMediator {
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
     private final HistorySyncCoordinator.HistorySyncDelegate mDelegate;
+    private final SigninManager mSigninManager;
     private final SyncService mSyncService;
 
     HistorySyncMediator(
             Context context, HistorySyncCoordinator.HistorySyncDelegate delegate, Profile profile) {
         mDelegate = delegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
         mSyncService = SyncServiceFactory.getForProfile(profile);
         mModel =
                 HistorySyncProperties.createModel(
@@ -40,8 +42,8 @@ class HistorySyncMediator {
     }
 
     private void onAcceptClicked() {
-        mSyncService.setSelectedTypes(
-                true, Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+        mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
+        mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ true);
         mDelegate.dismiss();
     }
 

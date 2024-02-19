@@ -44,8 +44,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.ViewUtils;
 
-import java.util.Set;
-
 /** Tests for the standalone history sync consent dialog */
 @RunWith(BaseJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -107,9 +105,9 @@ public class HistorySyncTest {
         buildHistorySyncCoordinator();
 
         onView(withId(R.id.positive_button)).perform(click());
-        verify(mSyncServiceMock)
-                .setSelectedTypes(
-                        true, Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         Assert.assertTrue(mDelegate.isDialogClosed());
     }
 
