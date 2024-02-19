@@ -274,6 +274,7 @@ void PickerView::StartSearch(const std::u16string& query) {
   } else if (selected_category_.has_value()) {
     contents_view_->SetActivePage(category_view_);
   } else {
+    search_results_view_->ClearSearchResults();
     contents_view_->SetActivePage(zero_state_view_);
   }
 }

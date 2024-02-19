@@ -466,6 +466,33 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
                   Property("text", &views::Label::GetText, u"section2")))));
 }
 
+TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
+  base::test::TestFuture<void> search_called;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        search_called.SetValue();
+        callback.Run(PickerSearchResults({{
+            PickerSearchResults::Section(
+                u"section", {{PickerSearchResult::Text(u"result")}}),
+        }}));
+      }));
+  auto widget =
+      PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
+                               kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  // Go to the results page.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search_called.Wait());
+  // Go back to the zero state page.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(picker_view->search_results_view_for_testing().children(),
+              IsEmpty());
+}
+
 TEST_F(PickerViewTest, PressingEscClosesPickerWidget) {
   FakePickerViewDelegate delegate;
   auto widget =
