@@ -520,6 +520,7 @@ interface CSSKeyframeRule : CSSRule
 interface CSSKeyframesRule : CSSRule
     attribute @@toStringTag
     getter cssRules
+    getter length
     getter name
     method @@iterator
     method appendRule

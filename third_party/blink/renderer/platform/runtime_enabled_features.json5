@@ -872,6 +872,11 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/6289894144212992
+      name: "CSSKeyframesRuleLength",
+      status: "stable",
+    },
+    {
       name: "CSSLayoutAPI",
       status: "experimental",
     },
