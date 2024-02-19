@@ -49,14 +49,14 @@ enum TriggerRegistrationError {
   kTriggerContextIdInvalidValue = 37,
   kTriggerContextIdInvalidSourceRegistrationTimeConfig = 38,
 
-  kPamEpsilonWrongType = 39,
-  kPamEpsilonValueInvalid = 40,
+  kGlobalEpsilonWrongType = 39,
+  kGlobalEpsilonValueInvalid = 40,
 
-  kEpochWrongType = 41,
-  kEpochValueInvalid = 42,
-  kEpochStartMissing = 43,
-  kEpochEndMissing = 44,
-  kEpochListWrongType = 45,
+  kAttributionWindowWrongType = 41,
+  kAttributionWindowValueInvalid = 42,
+  kAttributionWindowStartMissing = 43,
+  kAttributionWindowEndMissing = 44,
+  kAttributionWindowListWrongType = 45,
 
   kSourceIdCandidatesListWrongType = 46,
   kSourceIdCandidatesWrongType = 47,

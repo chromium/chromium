@@ -10211,7 +10211,7 @@ experimental domain Storage
       array of string sourceKeys
       AttributionReportingFilterPair filters
 
-  experimental type AttributionReportingEpoch extends object
+  experimental type AttributionReportingAttributionWindow extends object
     properties
       UnsignedInt64AsBase10 epochStart
       UnsignedInt64AsBase10 epochEnd
@@ -10233,8 +10233,8 @@ experimental domain Storage
       optional string aggregationCoordinatorOrigin
       AttributionReportingSourceRegistrationTimeConfig sourceRegistrationTimeConfig
       optional string triggerContextId
-      optional number pamEpsilon
-      array of AttributionReportingEpoch epochs
+      optional number globalEpsilon
+      AttributionReportingAttributionWindow attributionWindow
       array of string sourceIdCandidates
       optional string attributionLogic
 

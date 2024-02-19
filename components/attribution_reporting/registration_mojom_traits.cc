@@ -280,11 +280,11 @@ bool StructTraits<attribution_reporting::mojom::EventTriggerDataDataView,
 }
 
 // static
-bool StructTraits<attribution_reporting::mojom::EpochDataView,
-                  attribution_reporting::Epoch>::
-    Read(attribution_reporting::mojom::EpochDataView data,
-         attribution_reporting::Epoch* out) {
-  *out = std::move(*attribution_reporting::Epoch::Create(data.epoch_start(), data.epoch_end()));
+bool StructTraits<attribution_reporting::mojom::AttributionWindowDataView,
+                  attribution_reporting::AttributionWindow>::
+    Read(attribution_reporting::mojom::AttributionWindowDataView data,
+         attribution_reporting::AttributionWindow* out) {
+  *out = std::move(*attribution_reporting::AttributionWindow::Create(data.epoch_start(), data.epoch_end()));
   return true;
 }
 
@@ -390,11 +390,11 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
   out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
 
-  if (!out->pam_epsilon.SetIfValid(data.pam_epsilon())) {
+  if (!out->global_epsilon.SetIfValid(data.global_epsilon())) {
     return false;
   }
 
-  if (!data.ReadEpochs(&out->epochs)) {
+  if (!data.ReadAttributionWindow(&out->attribution_window)) {
     return false;
   }
 

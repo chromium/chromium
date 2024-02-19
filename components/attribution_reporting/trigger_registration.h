@@ -14,8 +14,8 @@
 #include "base/component_export.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/attribution_reporting/pam_epsilon.h"
-#include "components/attribution_reporting/epoch.h"
+#include "components/attribution_reporting/global_epsilon.h"
+#include "components/attribution_reporting/attribution_window.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/filters.h"
@@ -66,8 +66,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   std::optional<SuitableOrigin> aggregation_coordinator_origin;
   AggregatableTriggerConfig aggregatable_trigger_config;
   
-  PamEpsilon pam_epsilon;
-  std::vector<Epoch> epochs;
+  GlobalEpsilon global_epsilon;
+  AttributionWindow attribution_window;
   std::vector<uint64_t> source_id_candidates;
   std::string attribution_logic;
 

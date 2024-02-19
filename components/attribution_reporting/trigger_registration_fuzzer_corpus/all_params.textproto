@@ -403,7 +403,7 @@ object_value {
     }
   }
   field {
-    name: "pam_epsilon"
+    name: "global_epsilon"
     value {
       number_value {
         float_value {
@@ -413,26 +413,22 @@ object_value {
     }
   }
   field {
-    name: "epochs"
+    name: "attribution_window"
     value {
-      array_value {
-        value {
-          object_value {
-            field {
-              name: "epoch_start"
-              value: {
-                integer_value {
-                  value: 0
-                }
-              }
+      object_value {
+        field {
+          name: "epoch_start"
+          value: {
+            integer_value {
+              value: 0
             }
-            field {
-              name: "epoch_end"
-              value: {
-                integer_value {
-                  value: 1
-                }
-              }
+          }
+        }
+        field {
+          name: "epoch_end"
+          value: {
+            integer_value {
+              value: 1
             }
           }
         }

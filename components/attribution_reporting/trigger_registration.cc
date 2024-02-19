@@ -19,8 +19,8 @@
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
-#include "components/attribution_reporting/epoch.h"
-#include "components/attribution_reporting/pam_epsilon.h"
+#include "components/attribution_reporting/attribution_window.h"
+#include "components/attribution_reporting/global_epsilon.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -45,7 +45,7 @@ constexpr char kAggregatableDeduplicationKeys[] =
 constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
 constexpr char kAggregatableValues[] = "aggregatable_values";
 constexpr char kEventTriggerData[] = "event_trigger_data";
-constexpr char kEpochs[] = "epochs";
+constexpr char kAttributionWindow[] = "attribution_window";
 constexpr char kSourceIdCandidates[] = "source_id_candidates";
 constexpr char kAttributionLogic[] = "attribution_logic";
 
@@ -172,21 +172,18 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
   
-  ASSIGN_OR_RETURN(registration.pam_epsilon,
-                   PamEpsilon::Parse(dict));
+  ASSIGN_OR_RETURN(registration.global_epsilon,
+                   GlobalEpsilon::Parse(dict));
 
   ASSIGN_OR_RETURN(
-      registration.epochs,
-      ParseList<Epoch>(
-          dict.Find(kEpochs),
-          TriggerRegistrationError::kEpochListWrongType,
-          &Epoch::FromJSON));
+      registration.attribution_window,
+      AttributionWindow::FromJSON(dict.Find(kAttributionWindow)));
 
   auto parseUint64Lambda = [](base::Value& value) -> base::expected<uint64_t, TriggerRegistrationError> {      
     std::optional<uint64_t> v = value.GetIfInt();
     if (!v.has_value()) {
       return base::unexpected(
-          TriggerRegistrationError::kPamEpsilonWrongType);
+          TriggerRegistrationError::kSourceIdCandidatesWrongType);
     }
       return *v;
   };
@@ -294,8 +291,8 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   }
 
   aggregatable_trigger_config.Serialize(dict);
-  pam_epsilon.Serialize(dict);
-  SerializeListIfNotEmpty(dict, kEpochs, epochs);
+  global_epsilon.Serialize(dict);
+  dict.Set(kAttributionWindow, attribution_window.ToJson());
   SerializeListIfNotEmpty(dict, kSourceIdCandidates, source_id_candidates);
   dict.Set(kAttributionLogic, attribution_logic);
   return dict;

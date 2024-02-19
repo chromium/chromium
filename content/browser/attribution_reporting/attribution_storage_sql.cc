@@ -1128,8 +1128,7 @@ bool AttributionStorageSql::FindMatchingSourceForTriggerM2M(
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
-  const std::vector<attribution_reporting::Epoch> attribution_windows = trigger_registration.epochs;
-  attribution_reporting::Epoch attribution_window = attribution_windows[0];
+  const attribution_reporting::AttributionWindow attribution_window = trigger_registration.attribution_window;
 
   // Stringify source_id_candidates
   std::string source_id_candidates = "";

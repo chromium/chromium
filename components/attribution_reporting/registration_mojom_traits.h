@@ -288,19 +288,19 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
-    StructTraits<attribution_reporting::mojom::EpochDataView,
-                 attribution_reporting::Epoch> {
-  static uint64_t epoch_start(const attribution_reporting::Epoch& epoch) {
-    return epoch.epoch_start();
+    StructTraits<attribution_reporting::mojom::AttributionWindowDataView,
+                 attribution_reporting::AttributionWindow> {
+  static uint64_t epoch_start(const attribution_reporting::AttributionWindow& attribution_window) {
+    return attribution_window.epoch_start();
   }
 
-  static uint64_t epoch_end(const attribution_reporting::Epoch& epoch) {
-    return epoch.epoch_end();
+  static uint64_t epoch_end(const attribution_reporting::AttributionWindow& attribution_window) {
+    return attribution_window.epoch_end();
   }
 
   static bool Read(
-      attribution_reporting::mojom::EpochDataView data,
-      attribution_reporting::Epoch* out);
+      attribution_reporting::mojom::AttributionWindowDataView data,
+      attribution_reporting::AttributionWindow* out);
 };
 
 template <>
@@ -387,14 +387,14 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return trigger.aggregatable_trigger_config.trigger_context_id();
   }
   
-  static double pam_epsilon(
+  static double global_epsilon(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.pam_epsilon;
+    return trigger.global_epsilon;
   }
   
-  static const std::vector<attribution_reporting::Epoch>& epochs(
+  static const attribution_reporting::AttributionWindow& attribution_window(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.epochs;
+    return trigger.attribution_window;
   }
 
   static const std::vector<uint64_t>& source_id_candidates(

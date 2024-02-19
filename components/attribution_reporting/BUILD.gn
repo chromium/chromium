@@ -77,10 +77,10 @@ component("attribution_reporting") {
     "trigger_config.h",
     "trigger_registration.cc",
     "trigger_registration.h",
-    "pam_epsilon.cc",
-    "pam_epsilon.h",
-    "epoch.cc",
-    "epoch.h",
+    "global_epsilon.cc",
+    "global_epsilon.h",
+    "attribution_window.cc",
+    "attribution_window.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

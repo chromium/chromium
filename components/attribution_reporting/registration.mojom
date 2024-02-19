@@ -59,7 +59,7 @@ struct AggregatableTriggerData {
   FilterPair filters;
 };
 
-struct Epoch {
+struct AttributionWindow {
   uint64 epoch_start;
   uint64 epoch_end;
 };
@@ -207,10 +207,10 @@ struct TriggerRegistration {
   string? trigger_context_id;
 
   // Controls the epsilon parameter requested to be consumed by user. Must be greater than or equal to 0.
-  double pam_epsilon;
+  double global_epsilon;
 
-  // The epochs in which the attribution logic will look for matching sources
-  array<Epoch> epochs;
+  // The attribution_window in which the attribution logic will look for matching sources
+  AttributionWindow attribution_window;
 
   // The ids of the sources that are candidates for attribution
   array<uint64> source_id_candidates;
