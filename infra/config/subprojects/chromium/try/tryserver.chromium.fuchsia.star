@@ -109,6 +109,9 @@ This builder should be removed after migrating size from Ninja to Siso. b/277863
         },
     },
     siso_enabled = True,
+    # b/325854950 - 1280 concurrent remote jobs might cause slow downloads
+    # because this builder doesn't use SSD.
+    siso_remote_jobs = 640,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
