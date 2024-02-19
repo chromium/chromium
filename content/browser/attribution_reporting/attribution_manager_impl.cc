@@ -665,7 +665,7 @@ void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
         std::exchange(trigger.registration().debug_key, std::nullopt);
   }
 
-  attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
+  attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReportM2M)
       .WithArgs(trigger)
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
                            weak_factory_.GetWeakPtr(), std::move(trigger),

@@ -56,6 +56,9 @@ class AttributionStorage {
   virtual CreateReportResult MaybeCreateAndStoreReport(
       const AttributionTrigger& trigger) = 0;
 
+  virtual CreateReportResult MaybeCreateAndStoreReportM2M(
+      const AttributionTrigger& trigger) = 0;
+
   // Returns all of the reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the
   // underlying storage. |limit| limits the number of reports to return; use

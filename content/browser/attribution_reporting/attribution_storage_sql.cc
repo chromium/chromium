@@ -18,6 +18,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <unordered_map>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -931,6 +932,297 @@ bool HasAggregatableData(
 }
 
 }  // namespace
+
+
+CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReportM2M(
+    const AttributionTrigger& trigger) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const attribution_reporting::TriggerRegistration& trigger_registration =
+      trigger.registration();
+  
+  const base::Time trigger_time = base::Time::Now();
+
+  AttributionInfo attribution_info(
+      trigger_time, trigger_registration.debug_key,
+      /*context_origin=*/trigger.destination_origin());
+
+  // Declarations for all of the various pieces of information which may be
+  // collected and/or returned as a result of computing new reports in order to
+  // produce a `CreateReportResult`.
+
+  std::optional<AggregatableResult> aggregatable_status;
+  std::optional<AttributionReport> new_aggregatable_report;
+  std::vector<StoredSource> sources_to_attribute;
+  std::optional<base::Time> min_null_aggregatable_report_time;
+  CreateReportResult::Limits limits;
+
+  auto assemble_report_result =
+      [&](std::optional<AggregatableResult> new_aggregatable_status) {
+        aggregatable_status = aggregatable_status.has_value()
+                                  ? aggregatable_status
+                                  : new_aggregatable_status;
+        DCHECK(aggregatable_status.has_value());
+
+        if (!IsSuccessResult(*aggregatable_status)) {
+          new_aggregatable_report = std::nullopt;
+        }
+
+        if (aggregatable_status == AggregatableResult::kInternalError) {
+          min_null_aggregatable_report_time.reset();
+        }
+      // Not changing CreateReportResult to minimize changes
+        return CreateReportResult(
+            trigger_time, EventLevelResult::kNotRegistered, *aggregatable_status,
+            std::move(std::nullopt),
+            std::move(std::nullopt),
+            std::move(new_aggregatable_report),
+            !sources_to_attribute.empty()
+                ? std::make_optional(std::move(sources_to_attribute[0]))
+                : std::nullopt,
+            limits, std::move(std::nullopt),
+            min_null_aggregatable_report_time);
+      };
+
+  auto generate_null_reports_and_assemble_report_result =
+      [&](std::optional<AggregatableResult> new_aggregatable_status)
+          VALID_CONTEXT_REQUIRED(sequence_checker_) {
+            DCHECK(!new_aggregatable_report.has_value());
+
+            if (!GenerateNullAggregatableReportsAndStoreReports(
+                    trigger, attribution_info, new_aggregatable_report,
+                    min_null_aggregatable_report_time)) {
+              min_null_aggregatable_report_time.reset();
+            }
+
+            return assemble_report_result(new_aggregatable_status);
+          };
+
+
+  if (!HasAggregatableData(trigger_registration)) {
+    aggregatable_status = AggregatableResult::kNotRegistered;
+  }
+
+  if (aggregatable_status.has_value()) {
+    return assemble_report_result(std::nullopt);
+  }
+
+  if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
+    return assemble_report_result(AggregatableResult::kInternalError);
+  }
+
+  std::vector<StoredSource::Id> source_ids_to_attribute;
+  if (!FindMatchingSourceForTriggerM2M(trigger, source_ids_to_attribute)) {
+    return assemble_report_result(AggregatableResult::kInternalError);
+  }
+  if (source_ids_to_attribute.empty()) {
+    return generate_null_reports_and_assemble_report_result(
+        AggregatableResult::kNoMatchingImpressions);
+  }
+  
+  for (auto source_id_to_attribute : source_ids_to_attribute) {
+    sources_to_attribute.push_back(ReadSourceToAttribute(source_id_to_attribute)->source);
+  }
+  // This is only possible if there is a corrupt DB.
+  if (sources_to_attribute.empty()) {
+    return assemble_report_result(AggregatableResult::kInternalError);    
+  }
+
+  bool top_level_filters_match;
+  for (auto source_to_attribute : sources_to_attribute) {
+      top_level_filters_match =
+          source_to_attribute.filter_data().Matches(
+              source_to_attribute.common_info().source_type(),
+              source_to_attribute.source_time(), trigger_time,
+              trigger_registration.filters);
+
+      if (!top_level_filters_match) {
+        return generate_null_reports_and_assemble_report_result(
+            AggregatableResult::kNoMatchingSourceFilterData);
+      }
+  }
+
+  if (!aggregatable_status.has_value()) {
+    if (AggregatableResult create_aggregatable_status =
+            MaybeCreateAggregatableAttributionReportM2M(
+                attribution_info, sources_to_attribute, trigger,
+                new_aggregatable_report);
+        create_aggregatable_status != AggregatableResult::kSuccess) {
+      aggregatable_status = create_aggregatable_status;
+    }
+  }
+
+  if (aggregatable_status == AggregatableResult::kInternalError) {
+    return assemble_report_result(AggregatableResult::kInternalError);
+  }
+
+  if (aggregatable_status.has_value()) {
+    return generate_null_reports_and_assemble_report_result(std::nullopt);
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return assemble_report_result(AggregatableResult::kInternalError);
+  }
+
+  std::optional<AggregatableResult> store_aggregatable_status;
+  if (!aggregatable_status.has_value()) {
+    DCHECK(new_aggregatable_report.has_value());
+    store_aggregatable_status = MaybeStoreAggregatableAttributionReportDataM2M(
+        *new_aggregatable_report
+        // source_to_attribute->source.aggregatable_budget_consumed()
+        );
+  }
+
+  if (store_aggregatable_status == AggregatableResult::kInternalError) {
+    return assemble_report_result(AggregatableResult::kInternalError);
+  }
+
+  if (!IsSuccessResult(store_aggregatable_status)) {
+    new_aggregatable_report.reset();
+  }
+
+  // Stores null reports and the aggregatable report here to be in the same
+  // transaction.
+  if (!GenerateNullAggregatableReportsAndStoreReports(
+          trigger, attribution_info, new_aggregatable_report,
+          min_null_aggregatable_report_time)) {
+    min_null_aggregatable_report_time.reset();
+    return assemble_report_result(AggregatableResult::kInternalError);
+  }
+
+  // Early exit if done modifying the storage. Noised reports still need to
+  // clean sources.
+  if (!IsSuccessResult(store_aggregatable_status)) {
+    if (!transaction.Commit()) {
+      return assemble_report_result(AggregatableResult::kInternalError);
+    }
+
+    return assemble_report_result(store_aggregatable_status);
+  }
+
+  // Reports which are dropped do not need to make any further changes.
+  if (!IsSuccessResult(store_aggregatable_status)) {
+    if (!transaction.Commit()) {
+      return assemble_report_result(AggregatableResult::kInternalError);
+    }
+
+    return assemble_report_result(store_aggregatable_status);
+  }
+
+  if (!transaction.Commit()) {
+    return assemble_report_result(AggregatableResult::kInternalError);
+  }
+
+  return assemble_report_result(store_aggregatable_status);
+}
+
+
+bool AttributionStorageSql::FindMatchingSourceForTriggerM2M(
+    const AttributionTrigger& trigger,
+    std::vector<StoredSource::Id>& source_ids_to_attribute) {
+      
+  // TODO(kelly): sometimes the querying origin might be the publisher/source - extend in the future
+  const SuitableOrigin& querying_origin = trigger.destination_origin();
+
+  const attribution_reporting::TriggerRegistration& trigger_registration =
+      trigger.registration();
+
+  const std::vector<attribution_reporting::Epoch> attribution_windows = trigger_registration.epochs;
+  attribution_reporting::Epoch attribution_window = attribution_windows[0];
+
+  // Stringify source_id_candidates
+  std::string source_id_candidates = "";
+  for (size_t i=0; i < trigger_registration.source_id_candidates.size(); ++i) {
+      source_id_candidates += base::NumberToString(trigger_registration.source_id_candidates[i]);
+      if (i < trigger_registration.source_id_candidates.size()-1) {
+        source_id_candidates += ", ";
+      }
+  }
+  // Get all sources that match this trigger data.
+  std::string kGetMatchingSourcesSqlFromIndices =
+    "SELECT I.source_id "
+    "FROM sources I "
+    "JOIN source_destinations D "
+    "ON D.source_id=I.source_id AND D.destination_site='" + net::SchemefulSite(querying_origin).Serialize() +
+    "' WHERE I.source_epoch>= " + base::NumberToString(attribution_window.epoch_start()) + 
+    " AND I.source_epoch<= " + base::NumberToString(attribution_window.epoch_end())  +
+    " AND I.source_event_id IN (" + source_id_candidates + ");";
+
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kGetMatchingSourcesSqlFromIndices.c_str()));
+  
+  LOG(INFO) << "Running sql";
+  
+  while (statement.Step()) {
+      source_ids_to_attribute.push_back(StoredSource::Id(statement.ColumnInt64(0)));
+      LOG(INFO) << statement.ColumnInt64(0);
+  }
+  return statement.Succeeded();
+}
+
+AggregatableResult
+AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
+    const AttributionInfo& attribution_info,
+    const std::vector<StoredSource>& sources_to_attribute,
+    const AttributionTrigger& trigger,
+    std::optional<AttributionReport>& report) {
+
+  const attribution_reporting::TriggerRegistration& trigger_registration =
+      trigger.registration();
+
+  StoredSource source = sources_to_attribute[0];
+  const CommonSourceInfo& common_info = source.common_info();
+  const SourceType source_type = common_info.source_type();
+
+  // // Initialize dict with source_id_candidates and set their counts to 0
+  // std::unordered_map<uint64_t, uint64_t> source_id_counts;
+  // for (auto source_id_candidate : trigger_registration.source_id_candidates) {
+  //     source_id_counts[source_id_candidate] = 0
+  // }
+
+  // // Total attributable sources (to normalize)
+  // uint64_t total_count = sources_to_attribute.size();
+
+  // // Update counters while iterating attributable sources
+  // for (const auto source_to_attribute : sources_to_attribute) {
+  //   auto it = source_id_counts.find(source_to_attribute.source_event_id);
+  //   if (it != source_id_counts.end()) {
+  //    return AggregatableResult::kInternalError; 
+  //   }
+  //   source_id_counts[source_to_attribute.source_event_id]++;
+  // }
+
+  // assert here that total_count == sum(source_id_counts[*])
+  // assert here that len(source.aggregation_keys()) == 1
+  
+  std::vector<AggregatableHistogramContribution> contributions =
+      CreateAggregatableHistogram(
+          source.filter_data(), source_type, source.source_time(),
+          /*trigger_time=*/attribution_info.time, source.aggregation_keys(),
+          trigger_registration.aggregatable_trigger_data,
+          trigger_registration.aggregatable_values);
+  if (contributions.empty()) {
+    return AggregatableResult::kNoHistograms;
+  }
+
+  base::Time report_time =
+      GetAggregatableReportTime(trigger, attribution_info.time);
+
+  report = AttributionReport(
+      attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
+      /*initial_report_time=*/report_time, delegate_->NewReportID(),
+      /*failed_send_attempts=*/0,
+      AttributionReport::AggregatableAttributionData(
+          AttributionReport::CommonAggregatableData(
+              trigger_registration.aggregation_coordinator_origin,
+              /*verification_token=*/std::nullopt,
+              trigger_registration.aggregatable_trigger_config),
+          std::move(contributions), source));
+
+  return AggregatableResult::kSuccess;
+}
+
+
 
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     const AttributionTrigger& trigger) {
@@ -2592,39 +2884,37 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
   }
 
-  // // All columns in this table are const except |budget_consumed| and
-  // // which are updated when a non null report is about to be send.
-  // // |epoch| is a primary key and represents the period of time covered by the filter
-  // // [querying_origin] is the origin requesting the report from which we will deduct budget
-  // // |initial_budget| is the initial budget capacity of the filter <epoch,querying_origin>
-  // // |consumed_budget| is the budget that has been consumed so far from the filter <epoch,querying_origin>.
-  // static constexpr char kPerQueryingOriginFiltersTableSql[] =
-  //     "CREATE TABLE per_querying_origin_filters("
-  //     "epoch INTEGER NOT NULL,"
-  //     "querying_origin TEXT NOT NULL,"
-  //     "initial_budget FLOAT NOT NULL,"
-  //     "consumed_budget FLOAT NOT NULL,"
-  //     "PRIMARY KEY (epoch, querying_origin))";
-  // if (!db_.Execute(kPerQueryingOriginFiltersTableSql)) {
-  //   return false;
-  // }
+  // All columns in this table are const except |budget_consumed| and
+  // which are updated when a non null report is about to be send.
+  // |epoch| is a primary key and represents the period of time covered by the filter
+  // [origin] is the origin requesting the report from which we will deduct budget
+  // |initial_budget| is the initial budget capacity of the filter <epoch,origin>
+  // |consumed_budget| is the budget that has been consumed so far from the filter <epoch,origin>.
+  static constexpr char kPerOriginFiltersTableSql[] =
+      "CREATE TABLE per_origin_filters("
+      "epoch INTEGER NOT NULL,"
+      "origin TEXT NOT NULL,"
+      "initial_budget FLOAT NOT NULL,"
+      "consumed_budget FLOAT NOT NULL,"
+      "PRIMARY KEY (epoch, origin))";
+  if (!db_.Execute(kPerOriginFiltersTableSql)) {
+    return false;
+  }
 
-  // // All columns in this table are const except |budget_consumed| and
-  // // which are updated when a non null report is about to be send.
-  // // |epoch| is a primary key and represents the period of time covered by the filter
-  // // [querying_origin_type] is the type of origin requesting the report (can be either publisher or advertiser)
-  // // |initial_budget| is the initial budget capacity of the filter <epoch,querying_origin_type>
-  // // |consumed_budget| is the budget that has been consumed so far from the filter <epoch,querying_origin_type>.
-  // static constexpr char kGlobalFiltersTableSql[] =
-  //     "CREATE TABLE global_filters("
-  //     "epoch INTEGER NOT NULL,"
-  //     "querying_origin_type TEXT NOT NULL,"
-  //     "initial_budget FLOAT NOT NULL,"
-  //     "consumed_budget FLOAT NOT NULL,"
-  //     "PRIMARY KEY (epoch, querying_origin_type))";
-  // if (!db_.Execute(kGlobalFiltersTableSql)) {
-  //   return false;
-  // }
+  // All columns in this table are const except |budget_consumed| and
+  // which are updated when a non null report is about to be send.
+  // |epoch| is a primary key and represents the period of time covered by the filter
+  // |initial_budget| is the initial budget capacity of the filter <epoch>
+  // |consumed_budget| is the budget that has been consumed so far from the filter <epoch>.
+  static constexpr char kAllOriginsFiltersTableSql[] =
+      "CREATE TABLE all_origins_filters("
+      "epoch INTEGER PRIMARY KEY NOT NULL,"
+      // "querying_origin_type TEXT NOT NULL,"
+      "initial_budget FLOAT NOT NULL,"
+      "consumed_budget FLOAT NOT NULL)";
+  if (!db_.Execute(kAllOriginsFiltersTableSql)) {
+    return false;
+  }
 
   if (!rate_limit_table_.CreateTable(&db_)) {
     return false;
@@ -3035,6 +3325,53 @@ bool AttributionStorageSql::StoreAttributionReport(AttributionReport& report) {
 
   report.set_id(AttributionReport::Id(db_.GetLastInsertRowId()));
   return true;
+}
+
+AggregatableResult
+AttributionStorageSql::MaybeStoreAggregatableAttributionReportDataM2M(
+    AttributionReport& report) {
+  const auto* aggregatable_attribution =
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &report.data());
+  DCHECK(aggregatable_attribution);
+
+  // switch (AggregatableAttributionAllowedForBudgetLimit(
+  //     *aggregatable_attribution, aggregatable_budget_consumed)) {
+  //   case RateLimitResult::kAllowed:
+  //     break;
+  //   case RateLimitResult::kNotAllowed:
+  //     return AggregatableResult::kInsufficientBudget;
+  //   case RateLimitResult::kError:
+  //     return AggregatableResult::kInternalError;
+  // }
+
+  // sql::Transaction transaction(&db_);
+  // if (!transaction.Begin()) {
+  //   return AggregatableResult::kInternalError;
+  // }
+
+  // StoredSource::Id source_id = aggregatable_attribution->source.source_id();
+
+  // base::CheckedNumeric<int64_t> budget_required =
+  //     aggregatable_attribution->BudgetRequired();
+  // // The value was already validated by
+  // // `AggregatableAttributionAllowedForBudgetLimit()` above.
+  // DCHECK(budget_required.IsValid());
+  // if (!AdjustBudgetConsumedForSource(source_id, budget_required.ValueOrDie())) {
+  //   return AggregatableResult::kInternalError;
+  // }
+
+  // if (dedup_key.has_value() &&
+  //     !StoreDedupKey(source_id, *dedup_key,
+  //                    AttributionReport::Type::kAggregatableAttribution)) {
+  //   return AggregatableResult::kInternalError;
+  // }
+
+  // if (!transaction.Commit()) {
+  //   return AggregatableResult::kInternalError;
+  // }
+
+  return AggregatableResult::kSuccess;
 }
 
 AggregatableResult
