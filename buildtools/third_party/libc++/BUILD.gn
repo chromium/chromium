@@ -196,12 +196,7 @@ target(_libcxx_target_type, "libc++") {
       # specified in the C++ spec 3.7.4p2, which makes them always have default
       # visibility.  This option is needed to force hidden visibility since
       # -fvisibility=hidden doesn't have the desired effect.
-      if (llvm_force_head_revision) {
-        cflags = [ "-fvisibility-global-new-delete=force-hidden" ]
-      } else {
-        # TODO(b/41496712): Remove when updating Clang.
-        cflags = [ "-fvisibility-global-new-delete-hidden" ]
-      }
+      cflags = [ "-fvisibility-global-new-delete=force-hidden" ]
     } else {
       defines += [
         # This resets the visibility to default only for the various

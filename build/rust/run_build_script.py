@@ -124,6 +124,12 @@ def main():
     else:
       print(f'Invalid TARGET {env["TARGET"]}')
       sys.exit(1)
+    # See https://crbug.com/325543500 for background.
+    # Cargo sets CARGO_CFG_TARGET_OS to "android" even when targeting *-androideabi.
+    if env["CARGO_CFG_TARGET_OS"].startswith("android"):
+      env["CARGO_CFG_TARGET_OS"] = "android"
+    elif env["CARGO_CFG_TARGET_OS"] == "darwin":
+      env["CARGO_CFG_TARGET_OS"] = "macos"
     if args.features:
       for f in args.features:
         feature_name = f.upper().replace("-", "_")

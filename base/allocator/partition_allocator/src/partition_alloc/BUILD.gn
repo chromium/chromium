@@ -339,7 +339,7 @@ if (is_clang_or_gcc) {
       # This is already set when we compile libc++, see
       # buildtools/third_party/libc++/BUILD.gn. But it needs to be set here as
       # well, since the shim defines the symbols, to prevent them being exported.
-      cflags = [ "-fvisibility-global-new-delete-hidden" ]
+      cflags = [ "-fvisibility-global-new-delete=force-hidden" ]
     }
   }
 

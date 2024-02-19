@@ -86,14 +86,17 @@ EXCLUDED_TESTS_MAC = [
     # https://crbug.com/1479875 This fails on Mac. It relates to the large code
     # model which we don't use, so suppress it for now.
     os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
-    # https://crbug.com/1521497 This fails on Mac.
+    # https://crbug.com/1521497 These fail on Mac.
     os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs#x64'),
+    os.path.join('tests', 'ui', 'abi', 'stack-probes.rs#x64'),
 ]
 EXCLUDED_TESTS_MAC_ARM64 = [
     # https://crbug.com/1519640 This fails on Mac/ARM64. We didn't even run it
     # until recently, so ignore it for now.
     os.path.join('tests', 'ui', 'extern',
                  'issue-64655-extern-rust-must-allow-unwind.rs#fat0'),
+    os.path.join('tests', 'ui', 'extern',
+                 'issue-64655-extern-rust-must-allow-unwind.rs#thin0'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
@@ -336,9 +339,11 @@ class XPy:
             self._env['CXXFLAGS'] += f' -isysroot {sdk_path}'
             self._env['LDFLAGS'] += f' -isysroot {sdk_path}'
             self._env['RUSTFLAGS_BOOTSTRAP'] += (
-                f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
+                f' -Clink-arg=-isysroot -Clink-arg={sdk_path} -Clink-arg=-Wl,-no_fixup_chains'
+            )
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-                f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
+                f' -Clink-arg=-isysroot -Clink-arg={sdk_path} -Clink-arg=-Wl,-no_fixup_chains'
+            )
             # Rust compiletests don't get any of the RUSTFLAGS that we set here
             # and then the clang linker can't find `-lSystem`, unless we set the
             # `SDKROOT`.
@@ -600,6 +605,10 @@ def GitApplyCherryPicks():
     # https://github.com/rust-lang/rust/pull/119185 has been merged.
     GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                   '14947b410ad23a09251180af50486e247f70b465')
+
+    # TODO: Remove once https://github.com/rust-lang/rust/issues/120830 is resolved.
+    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                  '64fe2093da164e63a7e56fceaf9aa62e6731ad55')
 
     print('Finished applying cherry-picks.')
 

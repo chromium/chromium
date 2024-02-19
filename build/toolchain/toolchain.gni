@@ -46,11 +46,8 @@ if (generate_linker_map) {
 declare_args() {
   if (llvm_android_mainline) {  # https://crbug.com/1481060
     clang_version = "17"
-  } else if (llvm_force_head_revision) {
-    clang_version = "19"
   } else {
-    # TODO(crbug.com/1517549): Remove in the next Clang roll.
-    clang_version = "18"
+    clang_version = "19"
   }
 }
 
