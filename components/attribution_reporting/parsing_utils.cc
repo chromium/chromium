@@ -20,11 +20,9 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "components/attribution_reporting/trigger_registration_error.mojom.h"
-
-using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 namespace attribution_reporting {
 
