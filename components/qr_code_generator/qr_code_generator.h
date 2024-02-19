@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
