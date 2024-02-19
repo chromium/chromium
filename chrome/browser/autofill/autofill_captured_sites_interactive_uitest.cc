@@ -28,6 +28,7 @@
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/test_card_unmask_prompt_waiter.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -52,6 +53,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -196,9 +198,7 @@ class AutofillCapturedSitesInteractiveTest
       }
 
       // Press the down key to highlight the first choice in the autofill
-      // suggestion drop down. Once the popup is shown, wait for 500 ms to
-      // exceed the freeze period of the popup during which it ignores "Enter"
-      // keystrokes.
+      // suggestion drop down.
       test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData},
                                        kAutofillWaitForActionInterval);
       SendKeyToPopup(frame, ui::DomKey::ARROW_DOWN);
@@ -209,7 +209,6 @@ class AutofillCapturedSitesInteractiveTest
                      << preview_shown.message();
         continue;
       }
-      DoNothingAndWait(base::Milliseconds(500));
 
       std::optional<std::u16string> cvc = profile_controller_->cvc();
       // If CVC is available in the Action Recorder receipts and this is a
@@ -362,9 +361,20 @@ class AutofillCapturedSitesInteractiveTest
       const std::string& target_element_xpath,
       const std::vector<std::string> iframe_path,
       content::RenderFrameHost* frame) {
-    // First, automation should focus on the frame containing the autofill form.
-    // Doing so ensures that Chrome scrolls the element into view if the
-    // element is off the page.
+    auto disable_popup_timing_checks = [&frame]() {
+      auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
+      CHECK_NE(web_contents, nullptr);
+      auto* client =
+          ChromeAutofillClient::FromWebContentsForTesting(web_contents);
+      CHECK_NE(client, nullptr);
+      if (base::WeakPtr<AutofillPopupControllerImpl> controller =
+              client->popup_controller_for_testing()) {
+        controller->DisableThresholdForTesting(true);
+      }
+    };
+    // First, automation should focus on the frame containing the autofill
+    // form. Doing so ensures that Chrome scrolls the element into view if
+    // the element is off the page.
     test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsShown},
                                      kAutofillWaitForActionInterval);
     if (!captured_sites_test_utils::TestRecipeReplayer::PlaceFocusOnElement(
@@ -373,6 +383,7 @@ class AutofillCapturedSitesInteractiveTest
              << "PlaceFocusOnElement() failed in " << FROM_HERE.ToString();
     }
     if (test_delegate()->Wait()) {
+      disable_popup_timing_checks();
       return testing::AssertionSuccess();
     }
 
@@ -392,7 +403,9 @@ class AutofillCapturedSitesInteractiveTest
       return testing::AssertionFailure()
              << "SimulateLeftMouseClickAt() failed in " << FROM_HERE.ToString();
 
-    return test_delegate()->Wait();
+    auto result = test_delegate()->Wait();
+    disable_popup_timing_checks();
+    return result;
   }
 
   std::unique_ptr<captured_sites_test_utils::TestRecipeReplayer>
