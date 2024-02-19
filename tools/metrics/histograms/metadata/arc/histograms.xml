@@ -385,19 +385,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppCount.HasInstalledOrUnknownApp" enum="Boolean"
-    expires_after="2024-06-30">
+    expires_after="2024-12-31">
   <owner>khmel@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
     True if the user (or Chrome app sync) has manually installed one or more
-    apps or Ash has one or more &quot;unknown&quot; apps. See
-    Arc.AppCount.InstalledApp and Arc.AppCount.UnknownApp for more details.
-    Collected once every time when ARC starts.
+    apps. See Arc.AppCount.InstalledApp for more details. UnknownApp is
+    deprecated and has never been collected. Collected once every time when ARC
+    starts.
   </summary>
 </histogram>
 
 <histogram name="Arc.AppCount.{AppType}" units="apps"
-    expires_after="2022-09-23">
+    expires_after="2024-12-31">
   <owner>khmel@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -414,8 +414,6 @@ chromium-metrics-reviews@google.com.
     <variant name="StickyApp"
         summary="'Sticky' ARC app in a system/vendor image. This is always 0
                  for opt-out users."/>
-    <variant name="UnknownApp"
-        summary="[Deprecated in M104] ARC app whose type is unknown to Ash."/>
   </token>
 </histogram>
 
