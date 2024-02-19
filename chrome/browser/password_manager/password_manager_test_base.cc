@@ -312,6 +312,11 @@ bool BubbleObserver::IsUpdatePromptAvailable() const {
       password_manager::ui::PENDING_PASSWORD_UPDATE_STATE;
 }
 
+bool BubbleObserver::IsDefaultStoreChangedPromptAvailable() const {
+  return passwords_ui_controller_->GetState() ==
+         password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE;
+}
+
 bool BubbleObserver::IsSavePromptShownAutomatically() const {
   if (!IsSavePromptAvailable())
     return false;
@@ -323,6 +328,15 @@ bool BubbleObserver::IsSavePromptShownAutomatically() const {
 bool BubbleObserver::IsUpdatePromptShownAutomatically() const {
   if (!IsUpdatePromptAvailable())
     return false;
+  return static_cast<CustomManagePasswordsUIController*>(
+             passwords_ui_controller_)
+      ->was_prompt_automatically_shown();
+}
+
+bool BubbleObserver::IsDefaultStoreChangedPromptShownAutomatically() const {
+  if (!IsDefaultStoreChangedPromptAvailable()) {
+    return false;
+  }
   return static_cast<CustomManagePasswordsUIController*>(
              passwords_ui_controller_)
       ->was_prompt_automatically_shown();
@@ -346,6 +360,12 @@ void BubbleObserver::AcceptUpdatePrompt() const {
       passwords_ui_controller_->GetPendingPassword().username_value,
       passwords_ui_controller_->GetPendingPassword().password_value);
   EXPECT_FALSE(IsUpdatePromptAvailable());
+}
+
+void BubbleObserver::AcknowledgeDefaultStoreChange() const {
+  ASSERT_TRUE(IsDefaultStoreChangedPromptAvailable());
+  passwords_ui_controller_->PromptSaveBubbleAfterDefaultStoreChanged();
+  EXPECT_FALSE(IsDefaultStoreChangedPromptAvailable());
 }
 
 void BubbleObserver::WaitForAccountChooser() const {
