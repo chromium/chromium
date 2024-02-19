@@ -63,6 +63,61 @@ namespace blink {
 
 namespace {
 
+template <typename Span1, typename Span2>
+unsigned MismatchInternal(const Span1& span1, const Span2& span2) {
+  const auto old_new = base::ranges::mismatch(span1, span2);
+  return static_cast<unsigned>(old_new.first - span1.begin());
+}
+
+unsigned Mismatch(const String& old_text, const String& new_text) {
+  if (old_text.Is8Bit()) {
+    const auto old_span8 = old_text.Span8();
+    if (new_text.Is8Bit()) {
+      return MismatchInternal(old_span8, new_text.Span8());
+    }
+    return MismatchInternal(old_span8, new_text.Span16());
+  }
+  const auto old_span16 = old_text.Span16();
+  if (new_text.Is8Bit()) {
+    return MismatchInternal(old_span16, new_text.Span8());
+  }
+  return MismatchInternal(old_span16, new_text.Span16());
+}
+
+template <typename Span1, typename Span2>
+unsigned MismatchFromEnd(const Span1& span1, const Span2& span2) {
+  const auto old_new =
+      base::ranges::mismatch(base::Reversed(span1), base::Reversed(span2));
+  return static_cast<unsigned>(old_new.first - span1.rbegin());
+}
+
+unsigned MismatchFromEnd(const String& old_text,
+                         const String& new_text,
+                         unsigned max_length) {
+  const unsigned old_length = old_text.length();
+  const unsigned new_length = new_text.length();
+  DCHECK_LE(max_length, old_length);
+  DCHECK_LE(max_length, new_length);
+  const unsigned old_start = old_length - max_length;
+  const unsigned new_start = new_length - max_length;
+  if (old_text.Is8Bit()) {
+    const auto old_span8 = old_text.Span8().subspan(old_start, max_length);
+    if (new_text.Is8Bit()) {
+      return MismatchFromEnd(old_span8,
+                             new_text.Span8().subspan(new_start, max_length));
+    }
+    return MismatchFromEnd(old_span8,
+                           new_text.Span16().subspan(new_start, max_length));
+  }
+  const auto old_span16 = old_text.Span16().subspan(old_start, max_length);
+  if (new_text.Is8Bit()) {
+    return MismatchFromEnd(old_span16,
+                           new_text.Span8().subspan(new_start, max_length));
+  }
+  return MismatchFromEnd(old_span16,
+                         new_text.Span16().subspan(new_start, max_length));
+}
+
 // Returns sum of |ShapeResult::Width()| in |data.items|. Note: All items
 // should be text item other type of items are not allowed.
 float CalculateWidthForTextCombine(const InlineItemsData& data) {
@@ -639,15 +694,17 @@ class InlineNodeDataEditor final {
 
   void Run() {
     const InlineNodeData& new_data = *block_flow_->GetInlineNodeData();
-    const unsigned old_length = data_->text_content.length();
-    const unsigned new_length = new_data.text_content.length();
-    const unsigned start_offset = Mismatch(*data_, new_data);
+    const String& old_text = data_->text_content;
+    const String& new_text = new_data.text_content;
+    const unsigned old_length = old_text.length();
+    const unsigned new_length = new_text.length();
+    const unsigned start_offset = Mismatch(old_text, new_text);
     //  * "ab cd ef" => delete "cd" => "ab ef"
     //    We should not reuse " " before "ef"
     //  * "a bc" => delete "bc" => "a"
     //    There are no spaces after "a".
     const unsigned matched_length = MismatchFromEnd(
-        *data_, new_data,
+        old_text, new_text,
         std::min(old_length - start_offset, new_length - start_offset));
     DCHECK_LE(start_offset, old_length - matched_length);
     DCHECK_LE(start_offset, new_length - matched_length);
@@ -736,17 +793,6 @@ class InlineNodeDataEditor final {
     return offset - (-delta);
   }
 
-  static unsigned ConvertDOMOffsetToTextContent(
-      base::span<const OffsetMappingUnit> units,
-      unsigned offset) {
-    auto it =
-        base::ranges::find_if(units, [offset](const OffsetMappingUnit& unit) {
-          return unit.DOMStart() <= offset && offset <= unit.DOMEnd();
-        });
-    DCHECK(it != units.end());
-    return it->ConvertDOMOffsetToTextContent(offset);
-  }
-
   // Returns copy of |item| after |start_offset| (inclusive).
   InlineItem CopyItemAfter(const InlineItem& item,
                            unsigned start_offset) const {
@@ -821,64 +867,6 @@ class InlineNodeDataEditor final {
     // is always safe to break offset, we try to search before |end_offset|.
     return item.shape_result_->CachedPreviousSafeToBreakOffset(end_offset -
                                                                skip);
-  }
-
-  template <typename Span1, typename Span2>
-  static unsigned MismatchInternal(const Span1& span1, const Span2& span2) {
-    const auto old_new = base::ranges::mismatch(span1, span2);
-    return static_cast<unsigned>(old_new.first - span1.begin());
-  }
-
-  static unsigned Mismatch(const InlineItemsData& old_data,
-                           const InlineItemsData& new_data) {
-    const String& old_text = old_data.text_content;
-    const String& new_text = new_data.text_content;
-    if (old_text.Is8Bit()) {
-      const auto old_span8 = old_text.Span8();
-      if (new_text.Is8Bit())
-        return MismatchInternal(old_span8, new_text.Span8());
-      return MismatchInternal(old_span8, new_text.Span16());
-    }
-    const auto old_span16 = old_text.Span16();
-    if (new_text.Is8Bit())
-      return MismatchInternal(old_span16, new_text.Span8());
-    return MismatchInternal(old_span16, new_text.Span16());
-  }
-
-  template <typename Span1, typename Span2>
-  static unsigned MismatchFromEnd(const Span1& span1, const Span2& span2) {
-    const auto old_new =
-        base::ranges::mismatch(base::Reversed(span1), base::Reversed(span2));
-    return static_cast<unsigned>(old_new.first - span1.rbegin());
-  }
-
-  static unsigned MismatchFromEnd(const InlineItemsData& old_data,
-                                  const InlineItemsData& new_data,
-                                  unsigned max_length) {
-    const String& old_text = old_data.text_content;
-    const String& new_text = new_data.text_content;
-    const unsigned old_length = old_text.length();
-    const unsigned new_length = new_text.length();
-    DCHECK_LE(max_length, old_length);
-    DCHECK_LE(max_length, new_length);
-    const unsigned old_start = old_length - max_length;
-    const unsigned new_start = new_length - max_length;
-    if (old_text.Is8Bit()) {
-      const auto old_span8 = old_text.Span8().subspan(old_start, max_length);
-      if (new_text.Is8Bit()) {
-        return MismatchFromEnd(old_span8,
-                               new_text.Span8().subspan(new_start, max_length));
-      }
-      return MismatchFromEnd(old_span8,
-                             new_text.Span16().subspan(new_start, max_length));
-    }
-    const auto old_span16 = old_text.Span16().subspan(old_start, max_length);
-    if (new_text.Is8Bit()) {
-      return MismatchFromEnd(old_span16,
-                             new_text.Span8().subspan(new_start, max_length));
-    }
-    return MismatchFromEnd(old_span16,
-                           new_text.Span16().subspan(new_start, max_length));
   }
 
   static void ShiftItem(InlineItem* item, int delta) {
