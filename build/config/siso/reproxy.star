@@ -298,6 +298,7 @@ def __step_config(ctx, step_config):
                 "action": rule["action"],
                 "exclude_input_patterns": rule.get("exclude_input_patterns"),
                 "handler": "rewrite_rewrapper",
+                "input_root_absolute_path": rule.get("input_root_absolute_path"),
             }
             new_rules.append(new_rule)
             continue
