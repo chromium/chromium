@@ -45,7 +45,7 @@ class AddressFormEventLogger : public FormEventLoggerBase {
     record_type_count_ = record_type_count;
   }
 
-  void OnDidFillSuggestion(
+  void OnDidFillFormFillingSuggestion(
       const AutofillProfile& profile,
       const FormStructure& form,
       const AutofillField& field,

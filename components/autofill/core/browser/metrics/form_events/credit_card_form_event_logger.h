@@ -110,7 +110,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   //
   // Therefore, the intersection of `newly_filled_fields` and `safe_fields`
   // contains the actually filled fields.
-  void OnDidFillSuggestion(
+  void OnDidFillFormFillingSuggestion(
       const CreditCard& credit_card,
       const FormStructure& form,
       const AutofillField& field,

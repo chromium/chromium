@@ -1187,6 +1187,13 @@ void BrowserAutofillManager::FillOrPreviewField(
   form_filler_->FillOrPreviewField(action_persistence, text_replacement, form,
                                    field, form_structure, autofill_field, value,
                                    popup_item_id);
+  if (action_persistence == mojom::ActionPersistence::kFill) {
+    if (popup_item_id == PopupItemId::kAddressFieldByFieldFilling) {
+      address_form_event_logger_->RecordFillingOperation();
+    } else if (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling) {
+      credit_card_form_event_logger_->RecordFillingOperation();
+    }
+  }
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -1892,30 +1899,39 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   }
   CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
   if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
-    // The originally selected masked card is `credit_card_`. So we must log
-    // `credit_card_` as opposed to
-    // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
-    // whether the user filled the form using a masked card suggestion.
-    is_refill ? credit_card_form_event_logger_->OnDidRefill(
-                    signin_state_for_metrics_, form_structure)
-              : credit_card_form_event_logger_->OnDidFillSuggestion(
-                    credit_card_, form_structure, trigger_autofill_field,
-                    filled_fields, safe_fields, signin_state_for_metrics_,
-                    trigger_details.trigger_source);
+    if (is_refill) {
+      credit_card_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
+                                                  form_structure);
+    } else {
+      credit_card_form_event_logger_->RecordFillingOperation();
+      // The originally selected masked card is `credit_card_`. So we must log
+      // `credit_card_` as opposed to
+      // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
+      // whether the user filled the form using a masked card suggestion.
+      credit_card_form_event_logger_->OnDidFillFormFillingSuggestion(
+          credit_card_, form_structure, trigger_autofill_field, filled_fields,
+          safe_fields, signin_state_for_metrics_,
+          trigger_details.trigger_source);
+    }
   } else {
     CHECK(absl::holds_alternative<const AutofillProfile*>(
         profile_or_credit_card));
     if (!trigger_autofill_field
              .ShouldSuppressSuggestionsAndFillingByDefault()) {
-      is_refill
-          ? address_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
-                                                    form_structure)
-          : address_form_event_logger_->OnDidFillSuggestion(
-                *absl::get<const AutofillProfile*>(profile_or_credit_card),
-                form_structure, trigger_autofill_field,
-                signin_state_for_metrics_, trigger_details.trigger_source);
+      if (is_refill) {
+        address_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
+                                                form_structure);
+      } else {
+        address_form_event_logger_->RecordFillingOperation();
+        address_form_event_logger_->OnDidFillFormFillingSuggestion(
+            *absl::get<const AutofillProfile*>(profile_or_credit_card),
+            form_structure, trigger_autofill_field, signin_state_for_metrics_,
+            trigger_details.trigger_source);
+      }
     } else if (!is_refill) {
-      autocomplete_unrecognized_fallback_logger_->OnDidFillSuggestion();
+      address_form_event_logger_->RecordFillingOperation();
+      autocomplete_unrecognized_fallback_logger_
+          ->OnDidFillFormFillingSuggestion();
     }
   }
   if (!is_refill) {

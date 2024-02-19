@@ -3,17 +3,22 @@
 // found in the LICENSE file.
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 
+#include <string>
 #include <vector>
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -227,6 +232,42 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
     histogram_tester.ExpectTotalCount(base::StrCat({metric, ".Address"}), 0);
     histogram_tester.ExpectTotalCount(base::StrCat({metric, ".CreditCard"}), 0);
   }
+}
+
+class FormEventLoggerBaseTest : public AutofillMetricsBaseTest,
+                                public testing::Test {
+ public:
+  void SetUp() override { SetUpHelper(); }
+  void TearDown() override { TearDownHelper(); }
+};
+
+TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+                  {.role = CREDIT_CARD_NAME_FIRST,
+                   .autocomplete_attribute = "cc-name"},
+                  {.role = CREDIT_CARD_NUMBER,
+                   .autocomplete_attribute = "cc-number"}}});
+  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().FillOrPreviewProfileForm(
+      mojom::ActionPersistence::kFill, form, form.fields[0],
+      test::GetFullProfile(),
+      {.trigger_source = AutofillTriggerSource::kPopup});
+  autofill_manager().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      form, form.fields[2], u"CC_NAME_VALUE",
+      PopupItemId::kCreditCardFieldByFieldFilling);
+  autofill_manager().FillCreditCardForm(
+      form, form.fields[3], test::GetCreditCard(), std::u16string(),
+      {.trigger_source = AutofillTriggerSource::kPopup});
+  base::HistogramTester histogram_tester;
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectUniqueSample("Autofill.FillingOperationCount.Address",
+                                      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FillingOperationCount.CreditCard", 2, 1);
 }
 
 // Tests for Autofill.KeyMetrics.* metrics.

@@ -90,8 +90,8 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   ShowSuggestions(form);
 
   // Dynamically change the autocomplete attribute before accepting the
-  // suggestion. This causes `OnDidFillSuggestion()` to be called, even though
-  // `OnDidShowSuggestions()` was never called.
+  // suggestion. This causes `OnDidFillFormFillingSuggestion()` to be called,
+  // even though `OnDidShowSuggestions()` was never called.
   form.fields[0].parsed_autocomplete =
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
   SeeForm(form);

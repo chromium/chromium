@@ -32,7 +32,7 @@ AddressFormEventLogger::AddressFormEventLogger(
 
 AddressFormEventLogger::~AddressFormEventLogger() = default;
 
-void AddressFormEventLogger::OnDidFillSuggestion(
+void AddressFormEventLogger::OnDidFillFormFillingSuggestion(
     const AutofillProfile& profile,
     const FormStructure& form,
     const AutofillField& field,
@@ -44,8 +44,8 @@ void AddressFormEventLogger::OnDidFillSuggestion(
 
   Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
 
-  if (!has_logged_suggestion_filled_) {
-    has_logged_suggestion_filled_ = true;
+  if (!has_logged_form_filling_suggestion_filled_) {
+    has_logged_form_filling_suggestion_filled_ = true;
     Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
   }
 

@@ -260,7 +260,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   has_logged_suggestion_with_metadata_selected_ = true;
 }
 
-void CreditCardFormEventLogger::OnDidFillSuggestion(
+void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     const CreditCard& credit_card,
     const FormStructure& form,
     const AutofillField& field,
@@ -333,10 +333,11 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
   // was filled.
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kFilled,
-      metadata_logging_context_, HasBeenLogged(has_logged_suggestion_filled_));
+      metadata_logging_context_,
+      HasBeenLogged(has_logged_form_filling_suggestion_filled_));
 
-  if (!has_logged_suggestion_filled_) {
-    has_logged_suggestion_filled_ = true;
+  if (!has_logged_form_filling_suggestion_filled_) {
+    has_logged_form_filling_suggestion_filled_ = true;
     logged_suggestion_filled_was_server_data_ =
         record_type == CreditCard::RecordType::kMaskedServerCard ||
         record_type == CreditCard::RecordType::kFullServerCard ||
@@ -448,7 +449,7 @@ void CreditCardFormEventLogger::RecordShowSuggestions() {
 }
 
 void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
-  if (!has_logged_suggestion_filled_) {
+  if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, form);
   } else if (logged_suggestion_filled_was_masked_server_card_) {
     Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, form);
@@ -475,7 +476,7 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
     Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_WILL_SUBMIT_ONCE, form);
   }
 
-  if (has_logged_suggestion_filled_) {
+  if (has_logged_form_filling_suggestion_filled_) {
     // Log issuer-specific metrics on whether a card suggestion with metadata
     // was filled before submission.
     LogCardWithMetadataFormEventMetric(
@@ -491,7 +492,7 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
 }
 
 void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
-  if (!has_logged_suggestion_filled_) {
+  if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, form);
   } else if (logged_suggestion_filled_was_masked_server_card_) {
     Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, form);
@@ -517,7 +518,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     Log(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, form);
   }
 
-  if (has_logged_suggestion_filled_ && has_eligible_offer_) {
+  if (has_logged_form_filling_suggestion_filled_ && has_eligible_offer_) {
     base::UmaHistogramBoolean("Autofill.Offer.SubmittedCardHasOffer",
                               card_selected_has_offer_);
   }
@@ -537,7 +538,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SUBMITTED_ONCE, form);
   }
 
-  if (has_logged_suggestion_filled_) {
+  if (has_logged_form_filling_suggestion_filled_) {
     // Log issuer-specific metrics on whether a card suggestion with metadata
     // was filled before submission.
     LogCardWithMetadataFormEventMetric(
@@ -570,7 +571,7 @@ void CreditCardFormEventLogger::OnSuggestionsShownOnce(
 
 void CreditCardFormEventLogger::OnSuggestionsShownSubmittedOnce(
     const FormStructure& form) {
-  if (!has_logged_suggestion_filled_) {
+  if (!has_logged_form_filling_suggestion_filled_) {
     const CreditCard& credit_card =
         client_->GetFormDataImporter()->ExtractCreditCardFromForm(form).card;
     Log(GetCardNumberStatusFormEvent(credit_card), form);

@@ -2101,6 +2101,19 @@ chromium-metrics-reviews@google.com.
       variants="ClassificationMatchesFillingProduct"/>
 </histogram>
 
+<histogram name="Autofill.FillingOperationCount{FillingProduct}" units="unit"
+    expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records how many time the user uses Autofill to fill forms and fields with
+    {FillingProduct} data before submitting. Does not account for refill
+    operations. Recorded on the destruction of BrowserAutofillManager if at
+    least one autofill operation was performed.
+  </summary>
+  <token key="FillingProduct" variants="FillingProduct"/>
+</histogram>
+
 <histogram name="Autofill.FormContextMenuImpressions.ByNumberOfFields"
     units="fields" expires_after="2024-07-21">
   <owner>vidhanj@google.com</owner>
