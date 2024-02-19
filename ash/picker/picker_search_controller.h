@@ -38,22 +38,26 @@ class ASH_EXPORT PickerSearchController {
  private:
   void ResetResults();
   void PublishResults();
-  void HandleSearchResults(ash::AppListSearchResultType type,
-                           std::vector<PickerSearchResult> results);
+  void HandleCrosSearchResults(ash::AppListSearchResultType type,
+                               std::vector<PickerSearchResult> results);
   void HandleGifSearchResults(std::u16string query,
                               std::vector<PickerSearchResult> results);
   void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
 
   const raw_ref<PickerClient> client_;
-  emoji::EmojiSearch emoji_search_;
+
   base::TimeDelta burn_in_period_;
+  base::OneShotTimer burn_in_timer_;
+
+  emoji::EmojiSearch emoji_search_;
+
+  std::u16string current_query_;
+  PickerViewDelegate::SearchResultsCallback current_callback_;
 
   std::vector<PickerSearchResult> omnibox_results_;
   std::vector<PickerSearchResult> gif_results_;
-  std::vector<PickerSearchResult> emoji_search_results_;
-  std::u16string current_query_;
-  PickerViewDelegate::SearchResultsCallback current_callback_;
-  base::OneShotTimer burn_in_timer_;
+  std::vector<PickerSearchResult> emoji_results_;
+
   base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};
 };
 

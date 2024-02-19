@@ -34,6 +34,10 @@ enum class AppListSearchResultType;
 
 namespace {
 
+constexpr int kMaxEmojiResults = 3;
+constexpr int kMaxSymbolResults = 2;
+constexpr int kMaxEmoticonResults = 2;
+
 base::span<const std::string> FirstNOrLessElements(
     base::span<const std::string> container,
     size_t n) {
@@ -63,8 +67,9 @@ void PickerSearchController::StartSearch(
                        &PickerSearchController::PublishResults);
 
   client_->StartCrosSearch(
-      query, base::BindRepeating(&PickerSearchController::HandleSearchResults,
-                                 weak_ptr_factory_.GetWeakPtr()));
+      query,
+      base::BindRepeating(&PickerSearchController::HandleCrosSearchResults,
+                          weak_ptr_factory_.GetWeakPtr()));
   std::string utf8_query = base::UTF16ToUTF8(query);
   client_->FetchGifSearch(
       utf8_query,
@@ -78,7 +83,7 @@ void PickerSearchController::StartSearch(
 void PickerSearchController::ResetResults() {
   omnibox_results_.clear();
   gif_results_.clear();
-  emoji_search_results_.clear();
+  emoji_results_.clear();
 }
 
 void PickerSearchController::PublishResults() {
@@ -87,9 +92,9 @@ void PickerSearchController::PublishResults() {
   }
 
   std::vector<PickerSearchResults::Section> sections;
-  if (!emoji_search_results_.empty()) {
-    sections.push_back(PickerSearchResults::Section(u"Matching expressions",
-                                                    emoji_search_results_));
+  if (!emoji_results_.empty()) {
+    sections.push_back(
+        PickerSearchResults::Section(u"Matching expressions", emoji_results_));
   }
   if (!omnibox_results_.empty()) {
     sections.push_back(
@@ -102,7 +107,7 @@ void PickerSearchController::PublishResults() {
   current_callback_.Run(PickerSearchResults(std::move(sections)));
 }
 
-void PickerSearchController::HandleSearchResults(
+void PickerSearchController::HandleCrosSearchResults(
     ash::AppListSearchResultType type,
     std::vector<PickerSearchResult> results) {
   omnibox_results_ = std::move(results);
@@ -122,20 +127,25 @@ void PickerSearchController::HandleGifSearchResults(
 
 void PickerSearchController::HandleEmojiSearchResults(
     emoji::EmojiSearchResult results) {
-  std::vector<PickerSearchResult> picker_emoji_search_results;
-  for (const std::string& result : FirstNOrLessElements(results.emojis, 3)) {
-    picker_emoji_search_results.push_back(
+  emoji_results_.clear();
+  emoji_results_.reserve(kMaxEmojiResults + kMaxSymbolResults +
+                         kMaxEmoticonResults);
+
+  for (const std::string& result :
+       FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {
+    emoji_results_.push_back(
         PickerSearchResult::Emoji(base::UTF8ToUTF16(result)));
   }
-  for (const std::string& result : FirstNOrLessElements(results.symbols, 2)) {
-    picker_emoji_search_results.push_back(
+  for (const std::string& result :
+       FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
+    emoji_results_.push_back(
         PickerSearchResult::Symbol(base::UTF8ToUTF16(result)));
   }
-  for (const std::string& result : FirstNOrLessElements(results.emoticons, 2)) {
-    picker_emoji_search_results.push_back(
+  for (const std::string& result :
+       FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
+    emoji_results_.push_back(
         PickerSearchResult::Emoticon(base::UTF8ToUTF16(result)));
   }
-  emoji_search_results_ = std::move(picker_emoji_search_results);
 }
 
 }  // namespace ash
