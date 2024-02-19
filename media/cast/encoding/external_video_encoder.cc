@@ -241,6 +241,8 @@ class ExternalVideoEncoder::VEAClientImpl final
     if (video_frame->coded_size() != frame_coded_size_ ||
         video_frame->storage_type() !=
             media::VideoFrame::StorageType::STORAGE_SHMEM) {
+      TRACE_EVENT1("media", "VideoFrame copy", "coded size",
+                   video_frame->coded_size().ToString());
       const int index = free_input_buffer_index_.back();
       auto& mapped_region = input_buffers_[index];
       DCHECK(mapped_region.IsValid());

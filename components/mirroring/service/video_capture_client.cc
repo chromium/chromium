@@ -5,6 +5,7 @@
 #include "components/mirroring/service/video_capture_client.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -235,8 +236,11 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
             &VideoCaptureClient::OnClientBufferFinished,
             weak_factory_.GetWeakPtr(), buffer->buffer_id, std::move(mapping)));
   } else {
-    base::ReadOnlySharedMemoryMapping mapping =
-        buffer_iter->second->get_read_only_shmem_region().Map();
+    // Duplicate base::ReadOnlySharedMemoryRegion here because there is no
+    // guarantee on lifetime between |client_buffers_| and |frame|.
+    base::ReadOnlySharedMemoryRegion shm_region =
+        buffer_iter->second->get_read_only_shmem_region().Duplicate();
+    base::ReadOnlySharedMemoryMapping mapping = shm_region.Map();
     const size_t frame_allocation_size = media::VideoFrame::AllocationSize(
         buffer->info->pixel_format, buffer->info->coded_size);
     if (mapping.IsValid() && mapping.size() >= frame_allocation_size) {
@@ -245,11 +249,15 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
           buffer->info->visible_rect, buffer->info->visible_rect.size(),
           mapping.GetMemoryAs<uint8_t>(), frame_allocation_size,
           buffer->info->timestamp);
+      if (frame) {
+        frame->BackWithOwnedSharedMemory(std::move(shm_region),
+                                         std::move(mapping));
+      }
     }
-    buffer_finished_callback =
-        base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &VideoCaptureClient::OnClientBufferFinished,
-            weak_factory_.GetWeakPtr(), buffer->buffer_id, std::move(mapping)));
+    buffer_finished_callback = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&VideoCaptureClient::OnClientBufferFinished,
+                       weak_factory_.GetWeakPtr(), buffer->buffer_id,
+                       base::ReadOnlySharedMemoryMapping()));
   }
 
   if (!frame) {
