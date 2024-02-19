@@ -32,7 +32,8 @@ PickerCategoryView::PickerCategoryView(
 PickerCategoryView::~PickerCategoryView() = default;
 
 void PickerCategoryView::SetResults(const PickerSearchResults& results) {
-  search_results_view_->SetSearchResults(results);
+  search_results_view_->ClearSearchResults();
+  search_results_view_->AppendSearchResults(results);
 }
 
 BEGIN_METADATA(PickerCategoryView)

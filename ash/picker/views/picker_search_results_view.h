@@ -36,8 +36,12 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
   PickerSearchResultsView& operator=(const PickerSearchResultsView&) = delete;
   ~PickerSearchResultsView() override;
 
-  // Replaces the current search results with `results`.
-  void SetSearchResults(const PickerSearchResults& results);
+  // Clears the search results.
+  void ClearSearchResults();
+
+  // Append `results` to the current set of search results.
+  // TODO: b/325840864 - Merge with existing sections if needed.
+  void AppendSearchResults(const PickerSearchResults& results);
 
   base::span<const raw_ptr<PickerSectionView>> section_views_for_testing()
       const {

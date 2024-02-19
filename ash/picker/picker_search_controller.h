@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_category.h"
+#include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/raw_ref.h"
@@ -36,8 +37,12 @@ class ASH_EXPORT PickerSearchController {
                    PickerViewDelegate::SearchResultsCallback callback);
 
  private:
+  // Whether the burn-in period has ended for the current search.
+  bool IsPostBurnIn() const;
+
   void ResetResults();
-  void PublishResults();
+  void PublishBurnInResults();
+  void AppendPostBurnInResults(PickerSearchResults::Section section);
   void HandleCrosSearchResults(ash::AppListSearchResultType type,
                                std::vector<PickerSearchResult> results);
   void HandleGifSearchResults(std::u16string query,

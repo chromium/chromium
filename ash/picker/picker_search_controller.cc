@@ -64,7 +64,7 @@ void PickerSearchController::StartSearch(
 
   // TODO: b/324154537 - Show a loading animation while waiting for results.
   burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
-                       &PickerSearchController::PublishResults);
+                       &PickerSearchController::PublishBurnInResults);
 
   client_->StartCrosSearch(
       query,
@@ -80,37 +80,56 @@ void PickerSearchController::StartSearch(
   HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
 }
 
+bool PickerSearchController::IsPostBurnIn() const {
+  return !burn_in_timer_.IsRunning();
+}
+
 void PickerSearchController::ResetResults() {
   omnibox_results_.clear();
   gif_results_.clear();
   emoji_results_.clear();
 }
 
-void PickerSearchController::PublishResults() {
+void PickerSearchController::PublishBurnInResults() {
   if (!current_callback_) {
     return;
   }
 
   std::vector<PickerSearchResults::Section> sections;
   if (!emoji_results_.empty()) {
-    sections.push_back(
-        PickerSearchResults::Section(u"Matching expressions", emoji_results_));
+    sections.push_back(PickerSearchResults::Section(u"Matching expressions",
+                                                    std::move(emoji_results_)));
   }
   if (!omnibox_results_.empty()) {
-    sections.push_back(
-        PickerSearchResults::Section(u"Matching links", omnibox_results_));
+    sections.push_back(PickerSearchResults::Section(
+        u"Matching links", std::move(omnibox_results_)));
   }
   if (!gif_results_.empty()) {
-    sections.push_back(
-        PickerSearchResults::Section(u"Other expressions", gif_results_));
+    sections.push_back(PickerSearchResults::Section(u"Other expressions",
+                                                    std::move(gif_results_)));
   }
   current_callback_.Run(PickerSearchResults(std::move(sections)));
+}
+
+void PickerSearchController::AppendPostBurnInResults(
+    PickerSearchResults::Section section) {
+  if (!current_callback_) {
+    return;
+  }
+
+  CHECK(IsPostBurnIn());
+  current_callback_.Run(PickerSearchResults({{std::move(section)}}));
 }
 
 void PickerSearchController::HandleCrosSearchResults(
     ash::AppListSearchResultType type,
     std::vector<PickerSearchResult> results) {
   omnibox_results_ = std::move(results);
+
+  if (IsPostBurnIn()) {
+    AppendPostBurnInResults(PickerSearchResults::Section(
+        u"Matching links", std::move(omnibox_results_)));
+  }
 }
 
 void PickerSearchController::HandleGifSearchResults(
@@ -123,8 +142,9 @@ void PickerSearchController::HandleGifSearchResults(
   if (query == current_query_) {
     gif_results_ = std::move(results);
 
-    if (!burn_in_timer_.IsRunning()) {
-      PublishResults();
+    if (IsPostBurnIn()) {
+      AppendPostBurnInResults(PickerSearchResults::Section(
+          u"Other expressions", std::move(gif_results_)));
     }
   }
 }

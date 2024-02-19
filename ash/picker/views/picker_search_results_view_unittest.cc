@@ -52,13 +52,27 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
                                    {{PickerSearchResult::Text(u"Result B"),
                                      PickerSearchResult::Text(u"Result C")}}),
   }});
-  view.SetSearchResults(kSearchResults);
+  view.AppendSearchResults(kSearchResults);
 
   EXPECT_THAT(view.children(), SizeIs(kSearchResults.sections().size()));
   EXPECT_THAT(
       view.section_views_for_testing(),
       ElementsAre(Pointee(MatchesResultSection(kSearchResults.sections()[0])),
                   Pointee(MatchesResultSection(kSearchResults.sections()[1]))));
+}
+
+TEST_F(PickerSearchResultsViewTest, ClearSearchResults) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  const PickerSearchResults kSearchResults({{
+      PickerSearchResults::Section(u"Section",
+                                   {{PickerSearchResult::Text(u"Result")}}),
+  }});
+  view.AppendSearchResults(kSearchResults);
+
+  view.ClearSearchResults();
+
+  EXPECT_THAT(view.children(), IsEmpty());
 }
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
@@ -69,7 +83,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
       {{PickerSearchResult::Gif(
           /*url=*/GURL(), /*preview_image_url=*/GURL(), gfx::Size(),
           /*content_description=*/u"")}})}});
-  view.SetSearchResults(kSearchResults);
+  view.AppendSearchResults(kSearchResults);
 
   EXPECT_THAT(view.children(), SizeIs(kSearchResults.sections().size()));
   EXPECT_THAT(
@@ -84,18 +98,20 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
       PickerSearchResults::Section(u"Section",
                                    {{PickerSearchResult::Text(u"Result")}}),
   }});
-  view.SetSearchResults(kInitialSearchResults);
+  view.AppendSearchResults(kInitialSearchResults);
 
   const PickerSearchResults kUpdatedSearchResults({{
       PickerSearchResults::Section(
           u"Updated Section", {{PickerSearchResult::Text(u"Updated Result")}}),
   }});
-  view.SetSearchResults(kUpdatedSearchResults);
+  view.AppendSearchResults(kUpdatedSearchResults);
 
-  EXPECT_THAT(view.children(), SizeIs(kUpdatedSearchResults.sections().size()));
-  EXPECT_THAT(view.section_views_for_testing(),
-              ElementsAre(Pointee(
-                  MatchesResultSection(kUpdatedSearchResults.sections()[0]))));
+  EXPECT_THAT(view.children(), SizeIs(2));
+  EXPECT_THAT(
+      view.section_views_for_testing(),
+      ElementsAre(
+          Pointee(MatchesResultSection(kInitialSearchResults.sections()[0])),
+          Pointee(MatchesResultSection(kUpdatedSearchResults.sections()[0]))));
 }
 
 struct PickerSearchResultTestCase {
@@ -116,7 +132,7 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           kPickerWidth, future.GetCallback(), &asset_fetcher));
-  view->SetSearchResults(PickerSearchResults({{
+  view->AppendSearchResults(PickerSearchResults({{
       PickerSearchResults::Section(u"section", {{test_case.result}}),
   }}));
   ASSERT_THAT(view->section_views_for_testing(), Not(IsEmpty()));
