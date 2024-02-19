@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
+#include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -77,14 +79,33 @@ class ModelGenericSession::Responder final
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
   void OnResponse(mojom::blink::ModelStreamingResponseStatus status,
                   const WTF::String& text) override {
+    base::UmaHistogramEnumeration(
+        ModelExecutionMetrics::GetModelExecutionSessionResponseStatusMetricName(
+            ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+        status);
+
+    response_callback_count_++;
+    auto record_response_metric = [&]() {
+      base::UmaHistogramCounts1M(
+          ModelExecutionMetrics::GetModelExecutionSessionResponseSizeMetricName(
+              ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+          int(response_.CharactersSizeInBytes()));
+      base::UmaHistogramCounts1M(
+          ModelExecutionMetrics::
+              GetModelExecutionSessionResponseCallbackCountMetricName(
+                  ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+          response_callback_count_);
+    };
     switch (status) {
       case mojom::blink::ModelStreamingResponseStatus::kOngoing:
         response_ = text;
         break;
       case mojom::blink::ModelStreamingResponseStatus::kComplete:
+        record_response_metric();
         resolver_->Resolve(response_);
         break;
       default:
+        record_response_metric();
         resolver_->Reject(ConvertModelStreamingResponseErrorToString(status));
     }
   }
@@ -92,6 +113,7 @@ class ModelGenericSession::Responder final
  private:
   Member<ScriptPromiseResolver> resolver_;
   WTF::String response_;
+  int response_callback_count_;
 };
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
@@ -125,18 +147,38 @@ class ModelGenericSession::StreamingResponder final
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
   void OnResponse(mojom::blink::ModelStreamingResponseStatus status,
                   const WTF::String& text) override {
+    base::UmaHistogramEnumeration(
+        ModelExecutionMetrics::GetModelExecutionSessionResponseStatusMetricName(
+            ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+        status);
+
+    response_callback_count_++;
+    auto record_response_metric = [&]() {
+      base::UmaHistogramCounts1M(
+          ModelExecutionMetrics::GetModelExecutionSessionResponseSizeMetricName(
+              ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+          response_size_);
+      base::UmaHistogramCounts1M(
+          ModelExecutionMetrics::
+              GetModelExecutionSessionResponseCallbackCountMetricName(
+                  ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+          response_callback_count_);
+    };
     switch (status) {
       case mojom::blink::ModelStreamingResponseStatus::kOngoing: {
+        response_size_ = int(text.CharactersSizeInBytes());
         v8::HandleScope handle_scope(script_state_->GetIsolate());
         Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
         break;
       }
       case mojom::blink::ModelStreamingResponseStatus::kComplete:
+        record_response_metric();
         Controller()->Close();
         break;
       default:
         // TODO(crbug.com/1520700): raise the proper exception based on the spec
         // after the prototype phase.
+        record_response_metric();
         Controller()->Error(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotReadableError,
             ConvertModelStreamingResponseErrorToString(status)));
@@ -144,6 +186,8 @@ class ModelGenericSession::StreamingResponder final
   }
 
  private:
+  int response_size_;
+  int response_callback_count_;
   Member<ScriptState> script_state_;
 };
 
@@ -170,6 +214,16 @@ ScriptPromise ModelGenericSession::execute(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  base::UmaHistogramEnumeration(
+      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      ModelExecutionMetrics::ModelExecutionAPI::kSessionExecute);
+
+  base::UmaHistogramCounts1M(
+      ModelExecutionMetrics::GetModelExecutionSessionRequestSizeMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      int(input.CharactersSizeInBytes()));
+
   ModelGenericSession::Responder* responder =
       MakeGarbageCollected<ModelGenericSession::Responder>(script_state);
 
@@ -191,6 +245,16 @@ ReadableStream* ModelGenericSession::executeStreaming(
                                       "The execution context is not valid.");
     return nullptr;
   }
+
+  base::UmaHistogramEnumeration(
+      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      ModelExecutionMetrics::ModelExecutionAPI::kSessionExecuteStreaming);
+
+  base::UmaHistogramCounts1M(
+      ModelExecutionMetrics::GetModelExecutionSessionRequestSizeMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      int(input.CharactersSizeInBytes()));
 
   ModelGenericSession::StreamingResponder* responder =
       MakeGarbageCollected<ModelGenericSession::StreamingResponder>(

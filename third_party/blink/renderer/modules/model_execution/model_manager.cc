@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/modules/model_execution/model_manager.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
 #include "third_party/blink/renderer/modules/model_execution/model_generic_session.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -19,17 +21,17 @@
 
 namespace blink {
 
-String AvailabilityToString(ModelManager::Availability availability) {
+String AvailabilityToString(ModelManager::ModelAvailability availability) {
   DEFINE_STATIC_LOCAL(const String, readily, ("readily"));
   DEFINE_STATIC_LOCAL(const String, after_download, ("after-download"));
   DEFINE_STATIC_LOCAL(const String, no, ("no"));
 
   switch (availability) {
-    case ModelManager::kReadily:
+    case ModelManager::ModelAvailability::kReadily:
       return readily;
-    case ModelManager::kAfterDownload:
+    case ModelManager::ModelAvailability::kAfterDownload:
       return after_download;
-    case ModelManager::kNo:
+    case ModelManager::ModelAvailability::kNo:
       return no;
   }
 
@@ -58,6 +60,15 @@ ModelManager::GetModelManagerRemote() {
   return model_manager_remote_;
 }
 
+void ResolveAvailability(ScriptPromiseResolver* resolver,
+                         ModelManager::ModelAvailability availability) {
+  base::UmaHistogramEnumeration(
+      ModelExecutionMetrics::GetModelExecutionAvailabilityMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      availability);
+  resolver->Resolve(AvailabilityToString(availability));
+}
+
 ScriptPromise ModelManager::canCreateGenericSession(
     ScriptState* script_state,
     ExceptionState& exception_state) {
@@ -67,21 +78,25 @@ ScriptPromise ModelManager::canCreateGenericSession(
     return ScriptPromise();
   }
 
+  base::UmaHistogramEnumeration(
+      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      ModelExecutionMetrics::ModelExecutionAPI::kModelCanCreateSession);
+
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  // TODO(leimy): in the future, we may need to check if the model has been
-  // downloaded etc.
+
   if (!GetModelManagerRemote().is_connected()) {
-    resolver->Resolve(AvailabilityToString(kNo));
+    ResolveAvailability(resolver, ModelAvailability::kNo);
   } else {
     GetModelManagerRemote()->CanCreateGenericSession(WTF::BindOnce(
         [](ScriptPromiseResolver* resolver, bool can_create) {
-          Availability availability = kNo;
+          ModelAvailability availability = ModelAvailability::kNo;
           if (can_create) {
-            availability = kReadily;
+            availability = ModelAvailability::kReadily;
           }
-          resolver->Resolve(AvailabilityToString(availability));
+          ResolveAvailability(resolver, availability);
         },
         WrapPersistent(resolver)));
   }
@@ -98,6 +113,11 @@ ScriptPromise ModelManager::createGenericSession(
                                       "The execution context is not valid.");
     return ScriptPromise();
   }
+
+  base::UmaHistogramEnumeration(
+      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      ModelExecutionMetrics::ModelExecutionAPI::kModelCreateSession);
 
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);

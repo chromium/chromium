@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("model_execution") {
   sources = [
+    "model_execution_metrics.cc",
+    "model_execution_metrics.h",
     "model_generic_session.cc",
     "model_generic_session.h",
     "model_manager.cc",
