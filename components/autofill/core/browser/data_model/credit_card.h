@@ -246,7 +246,9 @@ class CreditCard : public AutofillDataModel {
   Issuer card_issuer() const { return card_issuer_; }
   void set_card_issuer(Issuer card_issuer) { card_issuer_ = card_issuer; }
   const std::string& issuer_id() const { return issuer_id_; }
-  void set_issuer_id(const std::string& issuer_id) { issuer_id_ = issuer_id; }
+  void set_issuer_id(const std::string_view issuer_id) {
+    issuer_id_ = std::string(issuer_id);
+  }
 
   // If the card numbers for |this| and |imported_card| match, and merging the
   // two wouldn't result in unverified data overwriting verified data,

@@ -3898,7 +3898,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     // was generated, and it did not have metadata.
     base::flat_map<std::string, bool>
         expected_issuer_or_network_to_metadata_availability = {
-            {kCapitalOneCardIssuerId, false}, {server_card.network(), false}};
+            {server_card.issuer_id(), false}, {server_card.network(), false}};
     EXPECT_EQ(
         metadata_logging_context.issuer_or_network_to_metadata_availability,
         expected_issuer_or_network_to_metadata_availability);
@@ -3933,7 +3933,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     // Verify that a record is added that a Capital One card suggestion
     // was generated, and it had metadata.
     base::flat_map<std::string, bool> expected_issuer_to_metadata_availability =
-        {{kCapitalOneCardIssuerId, true},
+        {{server_card_with_metadata.issuer_id(), true},
          {server_card_with_metadata.network(), true}};
     EXPECT_EQ(
         metadata_logging_context.issuer_or_network_to_metadata_availability,
