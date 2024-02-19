@@ -383,6 +383,36 @@ TEST_F(AutofillAgentShadowDomTest, NestedForms) {
   WaitForFormsSeen();
 }
 
+// Tests that explicit form associations are handled correctly.
+TEST_F(AutofillAgentShadowDomTest, NestedFormsWithAssociation) {
+  EXPECT_CALL(
+      autofill_driver(),
+      FormsSeen(HasSingleElementWhich(
+                    HasFormIdAttribute(u"f1"),
+                    HasFieldsWithIdAttributes({u"t1", u"t2", u"t3", u"t4",
+                                               u"t5", u"t6", u"t7", u"t8"})),
+                IsEmpty()));
+  LoadHTML(R"(<body><form id="f1">
+    <div>
+      <template shadowrootmode="open">
+        <form id="f2">
+          <input id="t1">
+          <input id="t2">
+          <input id="t3" form="f3">
+        </form>
+        <form id=f3">
+          <input id="t4">
+          <input id="t5" form="f2">
+        </form>
+        <input id="t6" form="f2">
+      </template>
+      <input id="t7">
+    </div></form>
+    <input id="t8" form="f1">
+    </body>)");
+  WaitForFormsSeen();
+}
+
 // Tests that multiple nested shadow DOM forms are extracted properly.
 TEST_F(AutofillAgentShadowDomTest, MultipleNestedForms) {
   EXPECT_CALL(
