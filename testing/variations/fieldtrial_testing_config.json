@@ -14018,27 +14018,7 @@
             ]
         }
     ],
-    "PlusAddressExperiment": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PlusAddressExperiment",
-                    "enable_features": [
-                        "AutofillEnableEmailHeuristicOnlyAddressForms",
-                        "PlusAddressesEnabled"
-                    ]
-                }
-            ]
-        },
+    "PlusAddressesExperiment": [
         {
             "platforms": [
                 "android",
