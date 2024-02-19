@@ -164,12 +164,17 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                             title);
         }
         if (isLocalPasswordStorageUsed()) {
+            String title =
+                    usesSplitStoresAndUPMForLocal(mPrefService)
+                            ? mSettingsFragment.getString(
+                                    R.string.safety_check_passwords_local_title)
+                            : mSettingsFragment.getString(R.string.safety_check_passwords_title);
             mPasswordCheckLocalModel =
                     createPasswordCheckPreferenceModelAndBind(
                             settingsFragment,
                             safetyCheckModel,
                             SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL,
-                            mSettingsFragment.getString(R.string.safety_check_passwords_title));
+                            title);
         }
     }
 

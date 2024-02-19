@@ -229,7 +229,7 @@ public class SafetyCheckSettingsFragmentTest {
 
         assertEquals(
                 passwordsLocal.getTitle(),
-                mFragment.getString(R.string.safety_check_passwords_title));
+                mFragment.getString(R.string.safety_check_passwords_local_title));
         assertEquals(
                 passwordsAccount.getTitle(),
                 mFragment.getString(
