@@ -203,13 +203,10 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
     for (const auto& index :
          GetHostIndexedContentSettings(ContentSettingsType::COOKIES)) {
       for (const auto& entry : index) {
-        // All settings can be assumed to not be from incognito mode because
-        // clear on exit is not relevant there. Incognito clears all cookies on
-        // exit anyways.
         settings.emplace_back(entry.first.primary_pattern,
                               entry.first.secondary_pattern,
                               entry.second.value.Clone(), *index.source(),
-                              false, entry.second.metadata);
+                              *index.off_the_record(), entry.second.metadata);
       }
     }
   } else {

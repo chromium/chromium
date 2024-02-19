@@ -131,7 +131,8 @@ class CookieSettingsTestBase {
       const std::string& secondary_pattern,
       ContentSetting setting,
       base::Time expiration = base::Time(),
-      const std::string& source = std::string()) {
+      const std::string& source = std::string(),
+      bool off_the_record = false) {
     content_settings::RuleMetaData metadata;
     metadata.SetExpirationAndLifetime(
         expiration, expiration.is_null() ? base::TimeDelta()
@@ -139,7 +140,7 @@ class CookieSettingsTestBase {
     return ContentSettingPatternSource(
         ContentSettingsPattern::FromString(primary_pattern),
         ContentSettingsPattern::FromString(secondary_pattern),
-        base::Value(setting), source, false /* incognito */, metadata);
+        base::Value(setting), source, off_the_record, metadata);
   }
 
   void FastForwardTime(base::TimeDelta delta) {
@@ -293,6 +294,26 @@ TEST_P(CookieSettingsTest, GetCookieSettingMultipleProviders) {
                      "pref"),
        CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(),
                      "default")});
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_SESSION_ONLY);
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kOtherURL), GURL(kOtherURL),
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+
+TEST_P(CookieSettingsTest, GetCookieSettingOtrProviders) {
+  CookieSettings settings;
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting(kURL, kURL, CONTENT_SETTING_SESSION_ONLY, base::Time(),
+                     "pref", true),
+       CreateSetting("*", "*", CONTENT_SETTING_BLOCK, base::Time(), "pref",
+                     true),
+       CreateSetting(kOtherURL, kOtherURL, CONTENT_SETTING_ALLOW, base::Time(),
+                     "pref", false),
+       CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(), "default",
+                     false)});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_SESSION_ONLY);
