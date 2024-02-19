@@ -117,7 +117,8 @@ void PickerClientImpl::FetchGifSearch(const std::string& query,
   content::StoragePartition* storage_partition =
       profile_->GetDefaultStoragePartition();
   CHECK(storage_partition);
-  gif_tenor_api_fetcher_.FetchGifSearch(
+  // This will cancel the previous in-flight request if there is one.
+  current_gif_fetcher_ = gif_tenor_api_fetcher_.FetchGifSearchCancellable(
       base::BindOnce(&OnGifSearchResponse, std::move(callback)),
       storage_partition->GetURLLoaderFactoryForBrowserProcess(), query,
       std::nullopt, kMaxGifsToSearch);

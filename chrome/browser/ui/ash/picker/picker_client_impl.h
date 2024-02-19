@@ -21,6 +21,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+class EndpointFetcher;
 class Profile;
 class ChromeSearchResult;
 
@@ -115,6 +116,7 @@ class PickerClientImpl
   PickerAppListControllerDelegate app_list_controller_delegate_;
 
   ash::GifTenorApiFetcher gif_tenor_api_fetcher_;
+  std::unique_ptr<EndpointFetcher> current_gif_fetcher_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>

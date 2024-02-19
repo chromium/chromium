@@ -7,11 +7,18 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}
 
 namespace ash {
 
@@ -51,6 +58,15 @@ class GifTenorApiFetcher {
       TenorGifsApiCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& query,
+      const std::optional<std::string>& pos,
+      std::optional<int> limit = std::nullopt);
+
+  // Fetch tenor API Search endpoint. Returns the `EndpointFetcher` used for the
+  // request, which will cancel the network request once it is deleted.
+  std::unique_ptr<EndpointFetcher> FetchGifSearchCancellable(
+      TenorGifsApiCallback callback,
+      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::string_view query,
       const std::optional<std::string>& pos,
       std::optional<int> limit = std::nullopt);
 
