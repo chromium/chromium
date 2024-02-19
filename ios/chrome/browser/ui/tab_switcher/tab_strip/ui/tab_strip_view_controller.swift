@@ -393,6 +393,9 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // MARK: - TabStripNewTabButtonDelegate
 
   @objc func newTabButtonTapped() {
+    UserMetricsUtils.recordAction("MobileTabSwitched")
+    UserMetricsUtils.recordAction("MobileTabStripNewTab")
+
     newTabOpened = true
     mutator?.addNewItem()
   }
