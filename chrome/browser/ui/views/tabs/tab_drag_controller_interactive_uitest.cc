@@ -2543,11 +2543,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, MAYBE_DragAll) {
   EXPECT_FALSE(browser()->window()->IsMaximized());
 
   const gfx::Rect final_bounds = browser()->window()->GetBounds();
-  // Size unchanged, but it should have moved down.
-  EXPECT_EQ(initial_bounds.size(), final_bounds.size());
-  EXPECT_EQ(initial_bounds.origin().x(), final_bounds.origin().x());
-  EXPECT_EQ(initial_bounds.origin().y() + GetDetachY(tab_strip),
-            final_bounds.origin().y());
+
+  // The following expectations might not hold on platforms where we can't
+  // control the browser's bounds.
+  if (test::CanUseSetBounds()) {
+    // Size unchanged, but it should have moved down.
+    EXPECT_EQ(initial_bounds.size(), final_bounds.size());
+    EXPECT_EQ(initial_bounds.origin().x(), final_bounds.origin().x());
+    EXPECT_EQ(initial_bounds.origin().y() + GetDetachY(tab_strip),
+              final_bounds.origin().y());
+  }
 }
 
 namespace {
