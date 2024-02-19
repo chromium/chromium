@@ -383,7 +383,8 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private void openTrustedVaultKeyRetrievalActivity() {
-        CoreAccountInfo primaryAccountInfo = getSyncConsentedAccountInfo();
+        CoreAccountInfo primaryAccountInfo =
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (primaryAccountInfo == null) {
             return;
         }
@@ -406,7 +407,8 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private void openTrustedVaultRecoverabilityDegradedActivity() {
-        CoreAccountInfo primaryAccountInfo = getSyncConsentedAccountInfo();
+        CoreAccountInfo primaryAccountInfo =
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (primaryAccountInfo == null) {
             return;
         }
@@ -438,18 +440,11 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
 
     private void startUpdateCredentialsFlow(Activity activity) {
         final CoreAccountInfo primaryAccountInfo =
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         assert primaryAccountInfo != null;
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
-    }
-
-    private CoreAccountInfo getSyncConsentedAccountInfo() {
-        if (!mSyncService.hasSyncConsent()) {
-            return null;
-        }
-        return mSyncService.getAccountInfo();
     }
 
     @VisibleForTesting
