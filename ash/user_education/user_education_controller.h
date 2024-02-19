@@ -18,10 +18,6 @@
 
 class PrefRegistrySimple;
 
-namespace apps {
-enum class LaunchSource;
-}  // namespace apps
-
 namespace ui {
 class ElementIdentifier;
 }  // namespace ui
@@ -68,7 +64,6 @@ class ASH_EXPORT UserEducationController {
   // NOTE: Currently only the primary user profile is supported.
   void LaunchSystemWebAppAsync(UserEducationPrivateApiKey,
                                SystemWebAppType system_web_app_type,
-                               apps::LaunchSource launch_source,
                                int64_t display_id);
 
  private:

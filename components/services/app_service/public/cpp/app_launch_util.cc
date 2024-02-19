@@ -99,8 +99,6 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_INSTALLER;
     case LaunchSource::kFromFirstRun:
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_FIRST_RUN;
-    case LaunchSource::kFromWelcomeTour:
-      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_WELCOME_TOUR;
   }
 }
 

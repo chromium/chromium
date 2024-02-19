@@ -160,10 +160,6 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromFirstRun",
                                     default_app_name);
       break;
-    case apps::LaunchSource::kFromWelcomeTour:
-      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromWelcomeTour",
-                                    default_app_name);
-      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:
@@ -177,11 +173,9 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name,
                                   apps::LaunchSource launch_source) {
-  // This metric is intended to capture actual user actions after the user
-  // completed the Welcome tour. Do not log automatically launched apps,
-  // including apps that were automatically launched by the Welcome Tour.
-  if (launch_source == apps::LaunchSource::kFromChromeInternal ||
-      launch_source == apps::LaunchSource::kFromWelcomeTour) {
+  // This metric is intended to capture user actions. Do not log automatically
+  // launched apps.
+  if (launch_source == apps::LaunchSource::kFromChromeInternal) {
     return;
   }
 

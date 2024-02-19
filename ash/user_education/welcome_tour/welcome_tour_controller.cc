@@ -93,7 +93,7 @@ views::TrackedElementViews* GetMatchingElementInPrimaryRootWindow(
 
 void LaunchExploreAppAsync(UserEducationPrivateApiKey key) {
   UserEducationController::Get()->LaunchSystemWebAppAsync(
-      key, ash::SystemWebAppType::HELP, apps::LaunchSource::kFromWelcomeTour,
+      key, ash::SystemWebAppType::HELP,
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
 }
 
