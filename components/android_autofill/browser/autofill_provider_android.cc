@@ -591,8 +591,8 @@ bool AutofillProviderAndroid::IntendsToShowBottomSheet(
     FormGlobalId form,
     FieldGlobalId field,
     const FormData& form_data) const {
-  return !has_used_cached_form_ && cached_form_ &&
-         form == cached_form_->form().global_id();
+  return !has_used_cached_form_ && cached_data_ && cached_data_->cached_form &&
+         form == cached_data_->cached_form->form().global_id();
 }
 
 bool AutofillProviderAndroid::WasBottomSheetJustShown(

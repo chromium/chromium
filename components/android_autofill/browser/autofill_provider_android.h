@@ -292,9 +292,6 @@ class AutofillProviderAndroid : public AutofillProvider,
   };
   std::optional<CachedData> cached_data_;
 
-  // The form for which a prefill request has been sent.
-  std::unique_ptr<FormDataAndroid> cached_form_;
-
   // Indicates whether we have used the cached form to show a bottom sheet. This
   // state is kept because a bottom sheet should only be shown once per cached
   // form to allow the user to access the keyboard after focusing on the
