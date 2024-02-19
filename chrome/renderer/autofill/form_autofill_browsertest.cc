@@ -2986,7 +2986,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
-  WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+  WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
   WebInputElement input_element = GetInputElementById("firstname");
@@ -3099,7 +3099,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_TooManyFields) {
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
-  WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+  WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
   ASSERT_FALSE(forms.front().GetFormControlElements().empty());
 
@@ -3499,7 +3499,8 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_Autocomplete) {
     WebLocalFrame* web_frame = GetMainFrame();
     ASSERT_NE(nullptr, web_frame);
 
-    WebVector<WebFormElement> web_forms = web_frame->GetDocument().Forms();
+    WebVector<WebFormElement> web_forms =
+        web_frame->GetDocument().GetTopLevelForms();
     ASSERT_EQ(1U, web_forms.size());
     WebFormElement web_form = web_forms[0];
 
@@ -4829,7 +4830,7 @@ TEST_F(FormAutofillTest, ThreePartPhone) {
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
-  WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+  WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
   FormData form = *WebFormElementToFormDataForTesting(
@@ -4886,7 +4887,7 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
-  WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+  WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
   FormData form = *WebFormElementToFormDataForTesting(
@@ -5125,7 +5126,8 @@ TEST_F(FormAutofillTest, UndoAutofill) {
               HasAutofillValue("autofill_selectlist_option_2",
                                WebAutofillState::kAutofilled));
 
-  WebVector<WebFormElement> forms = GetMainFrame()->GetDocument().Forms();
+  WebVector<WebFormElement> forms =
+      GetMainFrame()->GetDocument().GetTopLevelForms();
   EXPECT_EQ(1U, forms.size());
 
   FormData form = *WebFormElementToFormDataForTesting(
@@ -5429,7 +5431,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
       frame->GetDocument().GetElementById("country").To<WebSelectElement>();
   select_element.SetValue(WebString::FromUTF8("AL"));
 
-  WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+  WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
   // Extract the country select-one value as text.

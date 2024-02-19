@@ -2629,7 +2629,11 @@ void TraverseDomForFourDigitCombinations(
   // elements nearby in search of four digit combinations.
   std::vector<WebFormControlElement> form_control_elements;
 
-  for (const WebFormElement& form : document.Forms()) {
+  for (const WebFormElement& form :
+       base::FeatureList::IsEnabled(
+           blink::features::kAutofillIncludeFormElementsInShadowDom)
+           ? document.GetTopLevelForms()
+           : document.Forms()) {
     base::ranges::move(form.GetFormControlElements().ReleaseVector(),
                        std::back_inserter(form_control_elements));
   }

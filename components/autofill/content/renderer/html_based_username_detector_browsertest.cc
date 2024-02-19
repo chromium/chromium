@@ -78,7 +78,7 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
   WebFormElement GetFormElement() {
     const WebLocalFrame* frame = GetMainFrame();
     const blink::WebVector<WebFormElement>& forms =
-        frame->GetDocument().Forms();
+        frame->GetDocument().GetTopLevelForms();
     EXPECT_EQ(1U, forms.size());
     EXPECT_FALSE(forms[0].IsNull());
 

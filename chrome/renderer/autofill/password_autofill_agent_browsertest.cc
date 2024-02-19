@@ -499,7 +499,8 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     ExecuteJavaScriptForTests("document.forms[0].elements[0].focus();");
     GetMainFrame()->NotifyUserActivation(
         blink::mojom::UserActivationNotificationType::kTest);
-    auto first_form_element = GetMainFrame()->GetDocument().Forms()[0];
+    auto first_form_element =
+        GetMainFrame()->GetDocument().GetTopLevelForms()[0];
     GetMainFrame()->Client()->FocusedElementChanged(
         first_form_element.GetFormControlElements()[0]);
     GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
@@ -1241,7 +1242,8 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
 
   LoadHTML(kVisibleFormWithNoUsernameHTML);
   frame = GetMainFrame();
-  blink::WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+  blink::WebVector<WebFormElement> forms =
+      frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1u, forms.size());
   blink::WebVector<blink::WebFormControlElement> web_control_elements =
       forms[0].GetFormControlElements();
@@ -1251,7 +1253,7 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
 
   LoadHTML(kNonVisibleFormHTML);
   frame = GetMainFrame();
-  forms = frame->GetDocument().Forms();
+  forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1u, forms.size());
   web_control_elements = forms[0].GetFormControlElements();
   ASSERT_EQ(1u, web_control_elements.size());
@@ -1260,7 +1262,7 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
 
   LoadHTML(kNonDisplayedFormHTML);
   frame = GetMainFrame();
-  forms = frame->GetDocument().Forms();
+  forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1u, forms.size());
   web_control_elements = forms[0].GetFormControlElements();
   ASSERT_EQ(1u, web_control_elements.size());
@@ -3681,7 +3683,7 @@ TEST_F(PasswordAutofillAgentTest,
 
     // Get the username and password form input elements.
     blink::WebDocument document = GetMainFrame()->GetDocument();
-    blink::WebVector<WebFormElement> forms = document.Forms();
+    blink::WebVector<WebFormElement> forms = document.GetTopLevelForms();
     WebFormElement form_element = forms[0];
     std::vector<blink::WebFormControlElement> control_elements =
         form_util::GetAutofillableFormControlElements(document, form_element);

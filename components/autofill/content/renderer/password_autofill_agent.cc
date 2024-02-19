@@ -340,8 +340,12 @@ bool HasPasswordField(const WebLocalFrame& frame) {
   };
 
   WebDocument doc = frame.GetDocument();
-  return base::ranges::any_of(doc.Forms(), ContainsPasswordField,
-                              &WebFormElement::GetFormControlElements) ||
+  return base::ranges::any_of(
+             base::FeatureList::IsEnabled(
+                 blink::features::kAutofillIncludeFormElementsInShadowDom)
+                 ? doc.GetTopLevelForms()
+                 : doc.Forms(),
+             ContainsPasswordField, &WebFormElement::GetFormControlElements) ||
          ContainsPasswordField(doc.UnassociatedFormControls());
 }
 
@@ -1204,7 +1208,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
 
   // Make sure that this security origin is allowed to use password manager.
-  blink::WebSecurityOrigin origin = frame->GetDocument().GetSecurityOrigin();
+  WebDocument doc = frame->GetDocument();
+  blink::WebSecurityOrigin origin = doc.GetSecurityOrigin();
   if (logger) {
     logger->LogURL(Logger::STRING_SECURITY_ORIGIN,
                    GURL(origin.ToString().Utf8()));
@@ -1220,7 +1225,11 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     return;
   }
 
-  WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+  WebVector<WebFormElement> forms =
+      base::FeatureList::IsEnabled(
+          blink::features::kAutofillIncludeFormElementsInShadowDom)
+          ? doc.GetTopLevelForms()
+          : doc.Forms();
 
   if (IsShowAutofillSignaturesEnabled())
     AnnotateFormsAndFieldsWithSignatures(forms);
@@ -1270,8 +1279,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   bool add_unowned_inputs = true;
   if (only_visible) {
     std::vector<WebFormControlElement> control_elements =
-        form_util::GetAutofillableFormControlElements(frame->GetDocument(),
-                                                      WebFormElement());
+        form_util::GetAutofillableFormControlElements(doc, WebFormElement());
     add_unowned_inputs = base::ranges::any_of(
         control_elements, &IsWebElementFocusableForAutofill);
     LogBoolean(logger.get(), Logger::STRING_UNOWNED_INPUTS_VISIBLE,
@@ -1308,9 +1316,10 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Provide warnings about the accessibility of password forms on the page.
   if (!password_forms_data.empty() &&
-      (frame->GetDocument().Url().ProtocolIs(url::kHttpScheme) ||
-       frame->GetDocument().Url().ProtocolIs(url::kHttpsScheme)))
+      (doc.Url().ProtocolIs(url::kHttpScheme) ||
+       doc.Url().ProtocolIs(url::kHttpsScheme))) {
     page_passwords_analyser_.AnalyseDocumentDOM(frame);
+  }
 #endif
 }
 

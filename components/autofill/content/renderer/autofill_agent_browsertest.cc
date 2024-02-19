@@ -258,9 +258,17 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
 }
 
 class AutofillAgentShadowDomTest : public AutofillAgentTestWithFeatures {
+ public:
+  AutofillAgentShadowDomTest() {
+    scoped_features_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements,
+         blink::features::kAutofillIncludeFormElementsInShadowDom},
+        /*disabled_features=*/{});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_features_{
-      blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements};
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Tests that unassociated form control elements in a Shadow DOM tree that do
@@ -331,6 +339,115 @@ TEST_F(AutofillAgentShadowDomTest, FormControlInsideSlotWithinFormInShadowDom) {
           <input id=t2>
         </div>
       </body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that a form that is inside a shadow tree and does not have a
+// shadow-tree-including form ancestor is extracted correctly.
+TEST_F(AutofillAgentShadowDomTest, ElementsOwnedByFormInShadowTree) {
+  EXPECT_CALL(autofill_driver(),
+              FormsSeen(HasSingleElementWhich(
+                            HasFormIdAttribute(u"f1"),
+                            HasFieldsWithIdAttributes({u"t1", u"t2"})),
+                        IsEmpty()));
+  LoadHTML(R"(<body>
+    <div>
+      <template shadowrootmode="open">
+        <form id="f1">
+          <input type="text" id="t1">
+          <input type="text" id="t2">
+        </form>
+      </template>
+    </div></body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that a form whose shadow-tree including descendants include another
+// form element, is extracted correctly.
+TEST_F(AutofillAgentShadowDomTest, NestedForms) {
+  EXPECT_CALL(autofill_driver(),
+              FormsSeen(HasSingleElementWhich(
+                            HasFormIdAttribute(u"f1"),
+                            HasFieldsWithIdAttributes({u"t1", u"t2", u"t3"})),
+                        IsEmpty()));
+  LoadHTML(R"(<body><form id="f1">
+    <div>
+      <template shadowrootmode="open">
+        <form id="f2">
+          <input type="text" id="t1">
+          <input type="text" id="t2">
+        </form>
+      </template>
+      <input type="text" id="t3">
+    </div></form></body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that multiple nested shadow DOM forms are extracted properly.
+TEST_F(AutofillAgentShadowDomTest, MultipleNestedForms) {
+  EXPECT_CALL(
+      autofill_driver(),
+      FormsSeen(HasSingleElementWhich(HasFormIdAttribute(u"f1"),
+                                      HasFieldsWithIdAttributes(
+                                          {u"t1", u"t2", u"t3", u"t4", u"t5"})),
+                IsEmpty()));
+  LoadHTML(R"(<body><form id="f1">
+    <div>
+      <template shadowrootmode="open">
+        <form id="f2">
+          <input type="text" id="t1">
+          <input type="text" id="t2">
+        </form>
+      </template>
+    </div>
+    <input type="text" id="t3">
+    <div>
+      <template shadowrootmode="open">
+        <form id="f3">
+          <input type="text" id="t4">
+          <input type="text" id="t5">
+        </form>
+      </template>
+    </div>
+    </form></body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that nested shadow DOM forms are extracted properly even if the nesting
+// is multiple levels deep.
+TEST_F(AutofillAgentShadowDomTest, DeepNestedForms) {
+  EXPECT_CALL(
+      autofill_driver(),
+      FormsSeen(HasSingleElementWhich(HasFormIdAttribute(u"f1"),
+                                      HasFieldsWithIdAttributes(
+                                          {u"t1", u"t2", u"t3", u"t4", u"t5"})),
+                IsEmpty()));
+  LoadHTML(R"(<body><form id="f1">
+    <div>
+      <template shadowrootmode="open">
+        <form id="f2">
+          <input type="text" id="t1">
+          <input type="text" id="t2">
+          <div>
+            <template shadowrootmode="open">
+              <input type="text" id="t3">
+            </template>
+          </div>
+        </form>
+        <div>
+          <template shadowrootmode="open">
+            <input type="text" id="t4">
+            <div>
+              <template shadowrootmode="open">
+                <form id="f3">
+                  <input type="text" id="t5">
+                </form>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+    </div></form></body>)");
   WaitForFormsSeen();
 }
 
@@ -436,7 +553,7 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   )");
 
   blink::WebVector<blink::WebFormElement> forms =
-      GetMainFrame()->GetDocument().Forms();
+      GetMainFrame()->GetDocument().GetTopLevelForms();
   EXPECT_EQ(1U, forms.size());
   FormData form = *form_util::WebFormElementToFormDataForTesting(
       forms[0], blink::WebFormControlElement(),
@@ -461,7 +578,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   )");
 
   blink::WebVector<blink::WebFormElement> forms =
-      GetMainFrame()->GetDocument().Forms();
+      GetMainFrame()->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
   FormData form = *form_util::WebFormElementToFormDataForTesting(
       forms[0], blink::WebFormControlElement(),

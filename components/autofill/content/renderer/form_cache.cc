@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -185,7 +186,11 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   if (document.IsNull())
     return r;
 
-  for (const WebFormElement& form_element : document.Forms()) {
+  for (const WebFormElement& form_element :
+       base::FeatureList::IsEnabled(
+           blink::features::kAutofillIncludeFormElementsInShadowDom)
+           ? document.GetTopLevelForms()
+           : document.Forms()) {
     if (std::optional<FormData> form = ExtractFormData(
             document, form_element, field_data_manager, extract_options)) {
       if (!ProcessForm(std::move(*form))) {

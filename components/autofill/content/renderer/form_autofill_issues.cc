@@ -14,6 +14,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
@@ -318,7 +319,11 @@ void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
   WebDocument document = web_local_frame.GetDocument();
   std::vector<blink::WebAutofillClient::FormIssue> form_issues;
   // Get issues from forms input elements.
-  for (const WebFormElement& form_element : document.Forms()) {
+  for (const WebFormElement& form_element :
+       base::FeatureList::IsEnabled(
+           blink::features::kAutofillIncludeFormElementsInShadowDom)
+           ? document.GetTopLevelForms()
+           : document.Forms()) {
     form_issues = form_issues::GetFormIssues(
         form_element.GetFormControlElements(), std::move(form_issues));
   }

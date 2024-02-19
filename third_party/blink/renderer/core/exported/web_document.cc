@@ -218,6 +218,17 @@ WebVector<WebFormElement> WebDocument::Forms() const {
   return form_elements;
 }
 
+WebVector<WebFormElement> WebDocument::GetTopLevelForms() const {
+  Vector<WebFormElement> web_forms;
+  HeapVector<Member<HTMLFormElement>> forms =
+      const_cast<Document*>(ConstUnwrap<Document>())->GetTopLevelForms();
+  web_forms.reserve(forms.size());
+  for (auto& form : forms) {
+    web_forms.push_back(form.Get());
+  }
+  return web_forms;
+}
+
 WebURL WebDocument::CompleteURL(const WebString& partial_url) const {
   return ConstUnwrap<Document>()->CompleteURL(partial_url);
 }
