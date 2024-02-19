@@ -7,6 +7,7 @@
 
 #import "base/observer_list.h"
 
+class GURL;
 @protocol SystemIdentity;
 class UploadTaskObserver;
 
@@ -46,7 +47,10 @@ class UploadTask {
   // Returns the upload progress from 0 to 1.
   virtual float GetProgress() const = 0;
   // Returns the response link to the uploaded file, if any.
-  virtual NSURL* GetResponseLink() const = 0;
+  // If `add_user_identifier` is `true`, then the returned link is modified to
+  // include the identifier of the uploading identity.
+  virtual std::optional<GURL> GetResponseLink(
+      bool add_user_identifier = false) const = 0;
   // Returns the error object for this upload task, in case of failure.
   virtual NSError* GetError() const = 0;
 

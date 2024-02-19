@@ -32,7 +32,8 @@ class DriveUploadTask final : public UploadTask {
   void Cancel() final;
   id<SystemIdentity> GetIdentity() const final;
   float GetProgress() const final;
-  NSURL* GetResponseLink() const final;
+  std::optional<GURL> GetResponseLink(
+      bool add_user_identifier = false) const final;
   NSError* GetError() const final;
 
  private:

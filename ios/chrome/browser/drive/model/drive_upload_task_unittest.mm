@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
@@ -12,8 +13,10 @@
 #import "ios/chrome/browser/drive/model/test_drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/test_upload_task_observer.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "net/base/url_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 using State = UploadTask::State;
 
@@ -45,7 +48,7 @@ TEST_F(DriveUploadTaskTest, TaskCanBeStartedAndCancelled) {
   EXPECT_EQ(0, task_->GetProgress());
   EXPECT_EQ(State::kNotStarted, task_->GetState());
   EXPECT_EQ(nil, task_->GetError());
-  EXPECT_EQ(nil, task_->GetResponseLink());
+  EXPECT_EQ(std::nullopt, task_->GetResponseLink());
   EXPECT_FALSE(task_->IsDone());
   // Starting the task.
   EXPECT_EQ(nullptr, observer_->GetUpdatedUpload());
@@ -74,9 +77,13 @@ TEST_F(DriveUploadTaskTest, CreatesFolderIfNotFound) {
       {0, 100}, {10, 100}, {25, 100}, {50, 100}, {99, 100}, {100, 100},
   };
   uploader_->SetFileUploadProgressElements(progress_elements);
-  const NSURL* response_link = [NSURL URLWithString:@"test_response_file_link"];
+  const char* response_link_str = "https://test_response.file_link";
+  const GURL response_link(response_link_str);
+  const GURL response_link_with_identifier = net::AppendOrReplaceQueryParameter(
+      response_link, "huid",
+      base::SysNSStringToUTF8(uploader_->GetIdentity().hashedGaiaID));
   uploader_->SetFileUploadResult(
-      {.file_link = response_link.absoluteString, .error = nil});
+      { .file_link = @(response_link_str), .error = nil });
   // Set up the task with the name of the parent folder as well as the path,
   // suggested name and MIME type of the file to upload.
   task_->SetDestinationFolderName("test_folder_name");
@@ -123,7 +130,10 @@ TEST_F(DriveUploadTaskTest, CreatesFolderIfNotFound) {
   observer_->ResetUpdatedUpload();
   task_environment_.RunUntilQuit();
   EXPECT_EQ(task_.get(), observer_->GetUpdatedUpload());
-  EXPECT_NSEQ(response_link, task_->GetResponseLink());
+  EXPECT_EQ(response_link,
+            task_->GetResponseLink(/* add_user_identifier= */ false));
+  EXPECT_EQ(response_link_with_identifier,
+            task_->GetResponseLink(/* add_user_identifier= */ true));
   EXPECT_NSEQ(nil, task_->GetError());
   EXPECT_EQ(State::kComplete, task_->GetState());
   // Test that expected histograms were recorded.
@@ -147,9 +157,13 @@ TEST_F(DriveUploadTaskTest, UsesExistingFolderIfFound) {
       {0, 100}, {10, 100}, {25, 100}, {50, 100}, {99, 100}, {100, 100},
   };
   uploader_->SetFileUploadProgressElements(progress_elements);
-  const NSURL* response_link = [NSURL URLWithString:@"test_response_file_link"];
+  const char* response_link_str = "https://test_response.file_link";
+  const GURL response_link(response_link_str);
+  const GURL response_link_with_identifier = net::AppendOrReplaceQueryParameter(
+      response_link, "huid",
+      base::SysNSStringToUTF8(uploader_->GetIdentity().hashedGaiaID));
   uploader_->SetFileUploadResult(
-      {.file_link = response_link.absoluteString, .error = nil});
+      { .file_link = @(response_link_str), .error = nil });
   // Set up the task with the name of the parent folder as well as the path,
   // suggested name and MIME type of the file to upload.
   task_->SetDestinationFolderName("test_folder_name");
@@ -192,7 +206,10 @@ TEST_F(DriveUploadTaskTest, UsesExistingFolderIfFound) {
   observer_->ResetUpdatedUpload();
   task_environment_.RunUntilQuit();
   EXPECT_EQ(task_.get(), observer_->GetUpdatedUpload());
-  EXPECT_NSEQ(response_link, task_->GetResponseLink());
+  EXPECT_EQ(response_link,
+            task_->GetResponseLink(/* add_user_identifier= */ false));
+  EXPECT_EQ(response_link_with_identifier,
+            task_->GetResponseLink(/* add_user_identifier= */ true));
   EXPECT_NSEQ(nil, task_->GetError());
   EXPECT_EQ(State::kComplete, task_->GetState());
   // Test that expected histograms were recorded.
@@ -265,7 +282,7 @@ TEST_F(DriveUploadTaskTest, ReportsFileUploadFailure) {
   observer_->ResetUpdatedUpload();
   task_environment_.RunUntilQuit();
   EXPECT_EQ(task_.get(), observer_->GetUpdatedUpload());
-  EXPECT_NSEQ(nil, task_->GetResponseLink());
+  EXPECT_EQ(std::nullopt, task_->GetResponseLink());
   EXPECT_NSEQ(file_upload_error, task_->GetError());
   EXPECT_EQ(State::kFailed, task_->GetState());
   // Test that expected histograms were recorded.

@@ -14,6 +14,10 @@
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "net/base/apple/url_conversions.h"
+#import "net/base/url_util.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -75,6 +79,9 @@ DriveFolderResult RecordDriveFolderResultErrorCode(
   }
   return result;
 }
+
+// Name of query parameter for the user ID to open a Drive response link.
+constexpr const char kHashedUserIdQueryParameterName[] = "huid";
 
 }  // namespace
 
@@ -164,11 +171,19 @@ float DriveUploadTask::GetProgress() const {
          upload_progress_->total_bytes_expected_to_upload;
 }
 
-NSURL* DriveUploadTask::GetResponseLink() const {
-  if (!upload_result_) {
-    return nil;
+std::optional<GURL> DriveUploadTask::GetResponseLink(
+    bool add_user_identifier) const {
+  if (!upload_result_ || !upload_result_->file_link) {
+    return std::nullopt;
   }
-  return [NSURL URLWithString:upload_result_->file_link];
+  GURL result(base::SysNSStringToUTF8(upload_result_->file_link));
+  if (add_user_identifier) {
+    NSString* user_identifier = GetIdentity().hashedGaiaID;
+    result = net::AppendOrReplaceQueryParameter(
+        result, kHashedUserIdQueryParameterName,
+        base::SysNSStringToUTF8(user_identifier));
+  }
+  return result;
 }
 
 NSError* DriveUploadTask::GetError() const {
