@@ -2,10 +2,10 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>angle custom properties interpolation with progress-*() functions</title>
+    <title>offset-rotate interpolation with css math functions</title>
     <link rel="author" title="Daniil Sakhapov" href="mailto:sakhapov@chromium.org">
-    <link rel="help" href="https://drafts.csswg.org/css-values-5/#progress">
-    <meta name="assert" content="angle custom properties support interpolation with progress-*() functions.">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#offset-rotate-property">
+    <link rel="help" href="https://drafts.csswg.org/css-values/#sign-funcs">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/css/support/interpolation-testcommon.js"></script>
@@ -14,16 +14,11 @@
     :root {
       font-size: 10px;
     }
-    @property --my-angle {
-      syntax: "<angle>";
-      initial-value: 0deg;
-      inherits: false;
-    }
   </style>
   <body>
     <script>
       test_interpolation({
-        property: '--my-angle',
+        property: 'offset-rotate',
         from: '100deg',
         to: 'calc(sign(20rem - 20px) * 180deg)',
       }, [
@@ -36,9 +31,9 @@
       ]);
 
       test_interpolation({
-        property: '--my-angle',
+        property: 'offset-rotate',
         from: 'calc(sign(20rem - 20px) * 100deg)',
-        to: 'calc(progress(10rem from 20px to 100px) * 180deg)',
+        to: 'calc(sign(20rem - 20px) * 180deg)',
       }, [
         {at: -1, expect: '20deg'},
         {at: 0, expect: '100deg'},

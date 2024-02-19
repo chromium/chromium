@@ -5,6 +5,7 @@
     <title>border-image-width interpolation with css math functions</title>
     <link rel="author" title="Daniil Sakhapov" href="mailto:sakhapov@chromium.org">
     <link rel="help" href="https://drafts.csswg.org/css-backgrounds/#the-border-image-width">
+    <link rel="help" href="https://drafts.csswg.org/css-values/#sign-funcs">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/css/support/interpolation-testcommon.js"></script>
@@ -32,7 +33,7 @@
       test_interpolation({
         property: 'border-image-width',
         from: 'calc(sign(20rem - 20px) * 100)',
-        to: 'calc(progress(10rem from 20px to 100px) * 180)',
+        to: 'calc(sign(20rem - 20px) * 180)',
       }, [
         {at: -1, expect: '20'},
         {at: 0, expect: '100'},
