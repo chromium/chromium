@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,6 +33,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/branded_strings.h"
@@ -71,7 +74,8 @@ base::TimeDelta AvatarToolbarButton::g_iph_min_delay_after_creation =
 
 AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
     : ToolbarButton(base::BindRepeating(&AvatarToolbarButton::ButtonPressed,
-                                        base::Unretained(this))),
+                                        base::Unretained(this),
+                                        /*is_source_accelerator=*/false)),
       browser_(browser_view->browser()),
       creation_time_(base::TimeTicks::Now()) {
   delegate_ = std::make_unique<AvatarToolbarButtonDelegate>(this, browser_);
@@ -228,6 +232,41 @@ base::ScopedClosureRunner AvatarToolbarButton::ShowExplicitText(
   return delegate_->ShowExplicitText(text);
 }
 
+void AvatarToolbarButton::ResetButtonAction() {
+  explicit_button_pressed_action_.Reset();
+  reset_button_action_button_closure_ptr_ = nullptr;
+}
+
+base::ScopedClosureRunner AvatarToolbarButton::SetExplicitButtonAction(
+    base::RepeatingClosure explicit_closure) {
+  // This logic is similar to the one in
+  // `AvatarToolbarButtonDelegate::ShowExplicitText()`.
+  // TODO(b/323516037): look into how to combine those into one struct for
+  // consistency.
+
+  // If an action was already set, enforce resetting it and invalidate the
+  // existing reset closure internally.
+  if (!explicit_button_pressed_action_.is_null()) {
+    // It is safe to run the scoped closure multiple times. It is a no-op after
+    // the first time.
+    reset_button_action_button_closure_ptr_->RunAndReset();
+  }
+
+  explicit_button_pressed_action_ = std::move(explicit_closure);
+
+  base::ScopedClosureRunner closure = base::ScopedClosureRunner(
+      base::BindRepeating(&AvatarToolbarButton::ResetButtonAction,
+                          weak_ptr_factory_.GetWeakPtr()));
+  // Keep a pointer to the current active closure in case the current action was
+  // reset from another call to `SetExplicitButtonAction()`.
+  reset_button_action_button_closure_ptr_ = &closure;
+  return closure;
+}
+
+bool AvatarToolbarButton::HasExplicitButtonAction() const {
+  return !explicit_button_pressed_action_.is_null();
+}
+
 void AvatarToolbarButton::SetButtonActionDisabled(bool disabled) {
   button_action_disabled_ = disabled;
 }
@@ -289,13 +328,19 @@ void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
   g_iph_min_delay_after_creation = delay;
 }
 
-void AvatarToolbarButton::ButtonPressed() {
+void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
   if (button_action_disabled_) {
     return;
   }
 
-  browser_->window()->ShowAvatarBubbleFromAvatarButton(
-      /*is_source_accelerator=*/false);
+  if (!explicit_button_pressed_action_.is_null()) {
+    explicit_button_pressed_action_.Run();
+    return;
+  }
+
+  // Default behavior, shows the profile menu.
+  ProfileMenuCoordinator::GetOrCreateForBrowser(browser_)->Show(
+      is_source_accelerator);
 }
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,

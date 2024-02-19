@@ -5020,6 +5020,19 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
 }
 
 void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
+  // TODO(b/323362927): rename the function and equivalent shortcut ID name to
+  // be more precise -- about being the same as button being pressed instead of
+  // just showing the avatar bubble since the action can be modified within the
+  // button itself, like dismissing some other bubbles.
+  if (AvatarToolbarButton* avatar_button =
+          toolbar_button_provider_
+              ? toolbar_button_provider_->GetAvatarToolbarButton()
+              : nullptr) {
+    avatar_button->ButtonPressed(is_source_accelerator);
+    return;
+  }
+
+  // Default behavior -- show the profile menu.
   ProfileMenuCoordinator::GetOrCreateForBrowser(browser())->Show(
       is_source_accelerator);
 }

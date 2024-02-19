@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -41,6 +42,14 @@ class AvatarToolbarButton : public ToolbarButton {
   [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
       const std::u16string& text);
 
+  // Changes the button pressed action.
+  // Returns a callback to be used when the new action should stop being used.
+  [[nodiscard]] base::ScopedClosureRunner SetExplicitButtonAction(
+      base::RepeatingClosure explicit_closure);
+
+  // Returns whether the button currently has a explicit action already set.
+  bool HasExplicitButtonAction() const;
+
   // Control whether the button action is active or not.
   // One reason to disable the action; when a bubble is shown from this button
   // (and not the profile menu), we want to disable the button action, however
@@ -67,6 +76,8 @@ class AvatarToolbarButton : public ToolbarButton {
   bool ShouldPaintBorder() const override;
   bool ShouldBlendHighlightColor() const override;
 
+  void ButtonPressed(bool is_source_accelerator = false);
+
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
 
@@ -77,8 +88,6 @@ class AvatarToolbarButton : public ToolbarButton {
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
-  void ButtonPressed();
-
   void SetInsets();
 
   // Updates the layout insets depending on whether it is a chip or a button.
@@ -87,6 +96,9 @@ class AvatarToolbarButton : public ToolbarButton {
   // Updates the inkdrop highlight and ripple properties depending on the state
   // and whether the chip is expanded.
   void UpdateInkdrop();
+
+  // Used as a callback to reset the explicit button action.
+  void ResetButtonAction();
 
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 
@@ -103,6 +115,13 @@ class AvatarToolbarButton : public ToolbarButton {
   // Setting this to true will stop the button reaction but the button will
   // remain in active state, not affecting it's UI in any way.
   bool button_action_disabled_ = false;
+  // Explicit button action set by external calls.
+  base::RepeatingClosure explicit_button_pressed_action_;
+  // Internal pointer to the current explicit closure. This is used to
+  // invalidate an existing reset callback if an explicit action is being set
+  // while an existing already exists. Priority to the last call.
+  raw_ptr<base::ScopedClosureRunner> reset_button_action_button_closure_ptr_ =
+      nullptr;
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
 };

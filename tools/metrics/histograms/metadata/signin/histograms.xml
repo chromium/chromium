@@ -961,6 +961,23 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram name="Signin.Intercept.BubbleDismissReason{Type}"
+    enum="SigninInterceptionDismissReason" expires_after="2024-06-30">
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the reason for dismissing {Type} bubble. This is recorded when a
+    dismiss action is done. It could either be by pressing the Escape key when
+    the bubble is shown or by pressing on the identity pill button.
+  </summary>
+  <token key="Type">
+    <variant name="" summary="an intercept"/>
+    <variant name=".ChromeSignin" summary="the Chrome Signin"/>
+    <variant name=".MultiUser" summary="the Profile Creation"/>
+    <variant name=".Switch" summary="the Profile Switch"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Intercept.ChromeSignin.AttemptsBeforeAccept"
     units="attempts" expires_after="2024-06-16">
   <owner>rsult@google.com</owner>

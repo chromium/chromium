@@ -106,6 +106,10 @@ BASE_FEATURE(kUnoDesktop, "UnoDesktop", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kExplicitBrowserSigninUIOnDesktop,
              "ExplicitBrowserSigninUIOnDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kInterceptBubblesDismissibleByAvatarButton{
+    &kExplicitBrowserSigninUIOnDesktop,
+    /*name=*/"bubble_dismissible_by_avatar_button",
+    /*default_value=*/true};
 
 bool IsExplicitBrowserSigninUIOnDesktopEnabled(
     ExplicitBrowserSigninPhase phase) {

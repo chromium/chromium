@@ -174,32 +174,33 @@ void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(
 }
 
 // static
+std::string DiceWebSigninInterceptorDelegate::GetHistogramSuffix(
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
+  switch (interception_type) {
+    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
+    case WebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
+      return ".Enterprise";
+    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
+      return ".MultiUser";
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
+      return ".Switch";
+    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+      return ".ChromeSignin";
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+      return ".EnterpriseForced";
+  }
+}
+
+// static
 void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     Profile* profile,
     SigninInterceptionResult result) {
-  std::string histogram_base_name = "Signin.InterceptResult";
-  switch (bubble_parameters.interception_type) {
-    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
-    case WebSigninInterceptor::SigninInterceptionType::
-        kEnterpriseAcceptManagement:
-      histogram_base_name.append(".Enterprise");
-      break;
-    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
-      histogram_base_name.append(".MultiUser");
-      break;
-    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
-      histogram_base_name.append(".Switch");
-      break;
-    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
-      histogram_base_name.append(".ChromeSignin");
-      break;
-    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
-      histogram_base_name.append(".EnterpriseForced");
-      break;
-  }
-
+  std::string histogram_base_name =
+      "Signin.InterceptResult" +
+      GetHistogramSuffix(bubble_parameters.interception_type);
   // Record aggregated histogram for each interception type.
   base::UmaHistogramEnumeration(histogram_base_name, result);
   // Record histogram sliced by Sync status.

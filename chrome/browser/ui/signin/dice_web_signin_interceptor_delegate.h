@@ -35,6 +35,10 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override;
 
+  // Returns the histogram suffix related to the given interception type.
+  static std::string GetHistogramSuffix(
+      WebSigninInterceptor::SigninInterceptionType interception_type);
+
   // Record metrics about the result of the signin interception.
   static void RecordInterceptionResult(
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
