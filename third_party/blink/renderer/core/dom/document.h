@@ -1757,7 +1757,8 @@ class CORE_EXPORT Document : public ContainerNode,
   ukm::SourceId UkmSourceID() const;
 
   // Tracks and reports UKM metrics of the number of attempted font family match
-  // attempts (both successful and not successful) by the page.
+  // attempts (both successful and not successful) by the page. This will return
+  // null if the document is stopped.
   FontMatchingMetrics* GetFontMatchingMetrics();
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType);

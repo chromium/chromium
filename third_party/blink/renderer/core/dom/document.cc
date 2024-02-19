@@ -133,6 +133,7 @@
 #include "third_party/blink/renderer/core/dom/document_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
@@ -8077,6 +8078,9 @@ ukm::SourceId Document::UkmSourceID() const {
 }
 
 FontMatchingMetrics* Document::GetFontMatchingMetrics() {
+  if (Lifecycle().GetState() >= DocumentLifecycle::LifecycleState::kStopping) {
+    return nullptr;
+  }
   if (font_matching_metrics_)
     return font_matching_metrics_.get();
   font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(

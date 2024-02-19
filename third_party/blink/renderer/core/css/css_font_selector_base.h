@@ -82,6 +82,8 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
   // issue of `CSSFontSelector` is solved. It will be alive after `TreeScope`
   // is dead.
   virtual bool IsAlive() const { return true; }
+
+  // Might return null.
   virtual FontMatchingMetrics* GetFontMatchingMetrics() const = 0;
   virtual UseCounter* GetUseCounter() const = 0;
 
