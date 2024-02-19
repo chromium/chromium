@@ -551,17 +551,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PasswordManager.AccountStorageOptInSwitchFlipped"
-    enum="Boolean" expires_after="2024-03-31">
-  <owner>victorvianna@google.com</owner>
-  <owner>src/components/password_manager/OWNERS</owner>
-  <summary>
-    Records the new state (enabled/disabled) of the account storage opt-in
-    switch in password settings. Recorded when the switch is flipped by the
-    user, only on iOS.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.AccountStorageUserStateDuration{UserSyncingType}"
     units="ms" expires_after="2024-06-30">

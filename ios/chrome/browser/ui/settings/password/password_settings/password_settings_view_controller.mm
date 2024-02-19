@@ -714,8 +714,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 }
 
 - (void)accountStorageSwitchChanged:(UISwitch*)switchView {
-  base::UmaHistogramBoolean("PasswordManager.AccountStorageOptInSwitchFlipped",
-                            switchView.on);
   [self.delegate accountStorageSwitchDidChange:switchView.on];
 }
 
