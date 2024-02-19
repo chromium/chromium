@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -44,7 +46,7 @@ namespace {
 
 Server* g_server_instance = nullptr;
 
-bool UseTempFile(const base::StringPiece fs_url_as_string) {
+bool UseTempFile(const std::string_view fs_url_as_string) {
   // MTP (the protocol) does not support incremental writes. When creating an
   // MTP file (via FuseBox), we need to supply its contents as a whole. Up
   // until that transfer, spool incremental writes to a temporary file.
@@ -52,7 +54,7 @@ bool UseTempFile(const base::StringPiece fs_url_as_string) {
                           file_manager::util::kFuseBoxSubdirPrefixMTP);
 }
 
-bool UseEmptyTruncateWorkaround(const base::StringPiece fs_url_as_string,
+bool UseEmptyTruncateWorkaround(const std::string_view fs_url_as_string,
                                 int64_t length) {
   // Not all storage::AsyncFileUtil back-ends implement the CreateFile or
   // Truncate methods. When they don't, and truncating to a zero length, work
@@ -805,7 +807,7 @@ base::FilePath Server::InverseResolveFSURL(
   // Find the longest registered (in the "called Server::RegisterFSURLPrefix"
   // sense) FileSystemURL that is a prefix of fs_url.
   size_t best_size = 0;
-  base::StringPiece best_subdir;
+  std::string_view best_subdir;
   for (const auto& i : prefix_map_) {
     if ((best_size < i.second.fs_url_prefix.size()) &&
         base::StartsWith(fs_url_as_string, i.second.fs_url_prefix)) {
