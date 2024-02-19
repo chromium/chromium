@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
 #import "base/notreached.h"
+#import "base/time/time.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -55,6 +56,9 @@ constexpr CGFloat kStackViewDefaultButtonSpacing = 0;
 // Corner radius for the whole view.
 constexpr CGFloat kCornerRadius = 20;
 
+// Duration for the buttons' fade-in animation.
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
+
 // Properties of the header image kImageWithShadow type shadow.
 const CGFloat kHeaderImageCornerRadius = 13;
 const CGFloat kHeaderImageShadowOffsetX = 0;
@@ -73,7 +77,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 @property(nonatomic, strong) UITextView* disclaimerView;
 // Primary action button for the view controller.
 @property(nonatomic, strong) HighlightButton* primaryActionButton;
-
 // Read/Write override.
 @property(nonatomic, assign, readwrite) BOOL didReachBottom;
 
@@ -91,8 +94,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // This view contains the background image for the header image. The header
   // view will be placed at the center of it.
   UIImageView* _headerBackgroundImageView;
-  UILabel* _subtitleLabel;
-  UIStackView* _actionStackView;
+  // Stack view containing the action buttons.
+  UIStackView* _actionButtonsStackView;
   UIButton* _secondaryActionButton;
   UIButton* _tertiaryActionButton;
 
@@ -217,12 +220,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [view insertSubview:self.learnMoreButton aboveSubview:_scrollView];
   }
 
-  _actionStackView = [[UIStackView alloc] init];
-  _actionStackView.alignment = UIStackViewAlignmentFill;
-  _actionStackView.axis = UILayoutConstraintAxisVertical;
-  _actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_actionStackView addArrangedSubview:self.primaryActionButton];
-  [view addSubview:_actionStackView];
+  _actionButtonsStackView = [[UIStackView alloc] init];
+  _actionButtonsStackView.alignment = UIStackViewAlignmentFill;
+  _actionButtonsStackView.axis = UILayoutConstraintAxisVertical;
+  _actionButtonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_actionButtonsStackView addArrangedSubview:self.primaryActionButton];
+  _actionButtonsStackView.hidden =
+      (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
+  [view addSubview:_actionButtonsStackView];
 
   // Create a layout guide to constrain the width of the content, while still
   // allowing the scroll view to take the full screen width.
@@ -328,9 +333,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     // Action stack view constraints. Constrain the bottom of the action stack
     // view to both the bottom of the screen and the bottom of the safe area, to
     // give a nice result whether the device has a physical home button or not.
-    [_actionStackView.leadingAnchor
+    [_actionButtonsStackView.leadingAnchor
         constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
-    [_actionStackView.trailingAnchor
+    [_actionButtonsStackView.trailingAnchor
         constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
   ]];
 
@@ -465,12 +470,13 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   [self setupBannerConstraints];
 
   _buttonsVerticalAnchorConstraints = @[
-    [_scrollView.bottomAnchor constraintEqualToAnchor:_actionStackView.topAnchor
-                                             constant:-kDefaultMargin],
-    [_actionStackView.bottomAnchor
+    [_scrollView.bottomAnchor
+        constraintEqualToAnchor:_actionButtonsStackView.topAnchor
+                       constant:-kDefaultMargin],
+    [_actionButtonsStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:view.bottomAnchor
                                  constant:-kActionsBottomMargin * 2],
-    [_actionStackView.bottomAnchor
+    [_actionButtonsStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
                                  constant:-kActionsBottomMargin],
   ];
@@ -491,8 +497,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Also constrain the bottom of the action stack view to the bottom of the
   // safe area, but with a lower priority, so that the action stack view is put
   // as close to the bottom as possible.
-  NSLayoutConstraint* actionBottomConstraint = [_actionStackView.bottomAnchor
-      constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor];
+  NSLayoutConstraint* actionBottomConstraint =
+      [_actionButtonsStackView.bottomAnchor
+          constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor];
   actionBottomConstraint.priority = UILayoutPriorityDefaultLow;
   actionBottomConstraint.active = YES;
 
@@ -597,32 +604,54 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (_actionButtonsVisibility == visibility) {
     return;
   }
+
   // Visibility should not be reverted to kDefault.
   DCHECK(visibility != ActionButtonsVisibility::kDefault);
-
   _actionButtonsVisibility = visibility;
-  BOOL isHidden = (visibility == ActionButtonsVisibility::kHidden);
 
-  if (_primaryActionButton) {
-    if (!isHidden) {
-      // On unhiding, the primary action button will have updated style based
-      // on actionButtonsVisibility.
-      [self setPrimaryActionButtonColor:_primaryActionButton];
+  // On hidden visibility, hide the entire button stack view and the disclaimer
+  // view above it.
+  if (visibility == ActionButtonsVisibility::kHidden) {
+    if (_actionButtonsStackView) {
+      _actionButtonsStackView.hidden = YES;
     }
-    _primaryActionButton.hidden = isHidden;
+    self.disclaimerView.hidden = YES;
+    return;
   }
 
+  // On unhiding, the primary action button will have updated style based
+  // on actionButtonsVisibility.
+  if (self.primaryActionString) {
+    [self setPrimaryActionButtonColor:self.primaryActionButton];
+  }
+  // The secondary action button has button type based on
+  // actionButtonsVisibility and should be recreated.
   if (_secondaryActionButton) {
-    if (!isHidden) {
-      // Remove the existing secondary button from view.
-      [_secondaryActionButton removeFromSuperview];
-      // On unhiding, the secondary action button has button type based on
-      // actionButtonsVisibility and should be recreated.
-      _secondaryActionButton = [self createSecondaryActionButton];
-      [_actionStackView insertArrangedSubview:_secondaryActionButton atIndex:1];
-      [self updateActionButtonsSpacing];
-    }
-    _secondaryActionButton.hidden = isHidden;
+    // Remove the current secondary button from view.
+    [_secondaryActionButton removeFromSuperview];
+    _secondaryActionButton = [self createSecondaryActionButton];
+    [_actionButtonsStackView insertArrangedSubview:_secondaryActionButton
+                                           atIndex:1];
+    [self updateActionButtonsSpacing];
+  }
+
+  // Fade the buttons and disclaimer text in if they are hidden.
+  if (_actionButtonsStackView.hidden) {
+    _actionButtonsStackView.alpha = 0;
+    _actionButtonsStackView.hidden = NO;
+    self.disclaimerView.alpha = 0;
+    self.disclaimerView.hidden = NO;
+    __weak __typeof(self) weakSelf = self;
+    [UIView animateWithDuration:kAnimationDuration.InSecondsF()
+                     animations:^{
+                       PromoStyleViewController* strongSelf = weakSelf;
+                       if (!strongSelf) {
+                         return;
+                       }
+                       [strongSelf updateActionButtonsStackAlpha:1.0];
+                       strongSelf.disclaimerView.alpha = 1.0;
+                     }
+                     completion:nil];
   }
 }
 
@@ -1201,14 +1230,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Add other buttons with the correct margins.
   if (self.secondaryActionString) {
     _secondaryActionButton = [self createSecondaryActionButton];
-    _secondaryActionButton.hidden =
-        (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
-    [_actionStackView insertArrangedSubview:_secondaryActionButton atIndex:1];
+    [_actionButtonsStackView insertArrangedSubview:_secondaryActionButton
+                                           atIndex:1];
     [self updateActionButtonsSpacing];
   }
   if (self.tertiaryActionString) {
     _tertiaryActionButton = [self createTertiaryActionButton];
-    [_actionStackView insertArrangedSubview:_tertiaryActionButton atIndex:0];
+    [_actionButtonsStackView insertArrangedSubview:_tertiaryActionButton
+                                           atIndex:0];
   }
 
   if (self.secondaryActionString || self.tertiaryActionString) {
@@ -1217,13 +1246,13 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         deactivateConstraints:_buttonsVerticalAnchorConstraints];
     _buttonsVerticalAnchorConstraints = @[
       [_scrollView.bottomAnchor
-          constraintEqualToAnchor:_actionStackView.topAnchor
+          constraintEqualToAnchor:_actionButtonsStackView.topAnchor
                          constant:self.tertiaryActionString ? 0
                                                             : -kDefaultMargin],
-      [_actionStackView.bottomAnchor
+      [_actionButtonsStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
                                    constant:-kActionsBottomMargin],
-      [_actionStackView.bottomAnchor
+      [_actionButtonsStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                                 .bottomAnchor],
     ];
@@ -1460,16 +1489,23 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   switch (self.actionButtonsVisibility) {
     case ActionButtonsVisibility::kEquallyWeightedButtonShown:
       // Spacing is needed when all buttons have filled background.
-      [_actionStackView setCustomSpacing:kStackViewEquallyWeightedButtonSpacing
-                               afterView:_primaryActionButton];
+      [_actionButtonsStackView
+          setCustomSpacing:kStackViewEquallyWeightedButtonSpacing
+                 afterView:_primaryActionButton];
       break;
     case ActionButtonsVisibility::kRegularButtonsShown:
-      [_actionStackView setCustomSpacing:kStackViewDefaultButtonSpacing
-                               afterView:_primaryActionButton];
+      [_actionButtonsStackView setCustomSpacing:kStackViewDefaultButtonSpacing
+                                      afterView:_primaryActionButton];
       break;
     default:
       // Do not add button spacing by default or when buttons are hidden.
       break;
+  }
+}
+
+- (void)updateActionButtonsStackAlpha:(CGFloat)alpha {
+  if (_actionButtonsStackView) {
+    _actionButtonsStackView.alpha = alpha;
   }
 }
 

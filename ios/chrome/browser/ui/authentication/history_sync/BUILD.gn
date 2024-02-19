@@ -59,9 +59,11 @@ source_set("ui") {
     "//base",
     "//components/signin/public/base:signin_switches",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }

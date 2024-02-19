@@ -113,6 +113,9 @@ enum class ActionButtonsVisibility {
 // loaded. This is declared public so the accessibility can be enabled.
 @property(nonatomic, strong) UILabel* titleLabel;
 
+// The subtitle label below the title. Must be set before the view is loaded.
+@property(nonatomic, strong) UILabel* subtitleLabel;
+
 // The headline below the image. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* titleText;
 
