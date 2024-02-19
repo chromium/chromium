@@ -23,8 +23,10 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
+import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
@@ -37,6 +39,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -122,8 +125,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
             SyncService syncService,
             PrefService prefService) {
         try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
-            if (getMessageType(SyncSettingsUtils.getSyncError(syncService))
-                    == MessageType.NOT_SHOWN) {
+            if (getMessageType(getError(syncService)) == MessageType.NOT_SHOWN) {
                 return;
             }
 
@@ -158,12 +160,17 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
             Activity activity,
             IdentityManager identityManager,
             SyncService syncService) {
-        @SyncError int error = SyncSettingsUtils.getSyncError(syncService);
-        // TODO(crbug.com/1503649): Also show error message for identity errors.
-        final boolean isIdentityError = false;
-        String errorMessage = getMessage(activity, error, isIdentityError);
-        String title = getTitle(activity, error, isIdentityError);
-        String primaryButtonText = getPrimaryButtonText(activity, error, isIdentityError);
+        @SyncError int error = getError(syncService);
+
+        mType = getMessageType(error);
+        mActivity = activity;
+        mIdentityManager = identityManager;
+        mSyncService = syncService;
+        mSyncService.addSyncStateChangedListener(this);
+
+        String errorMessage = getMessage(activity, error);
+        String title = getTitle(activity, error);
+        String primaryButtonText = getPrimaryButtonText(activity, error);
         Resources resources = activity.getResources();
         mModel =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -186,11 +193,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         mMessageDispatcher =
                 sMessageDispatcherForTesting == null ? dispatcher : sMessageDispatcherForTesting;
         mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
-        mType = getMessageType(error);
-        mActivity = activity;
-        mIdentityManager = identityManager;
-        mSyncService = syncService;
-        mSyncService.addSyncStateChangedListener(this);
         SyncErrorMessageImpressionTracker.updateLastShownTime();
         recordHistogram(Action.SHOWN);
     }
@@ -198,7 +200,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     @Override
     public void syncStateChanged() {
         // If the error disappeared or changed type in the meantime, dismiss the UI.
-        if (mType != getMessageType(SyncSettingsUtils.getSyncError(mSyncService))) {
+        if (mType != getMessageType(getError(mSyncService))) {
             mMessageDispatcher.dismissMessage(mModel, DismissReason.UNKNOWN);
             assert !SYNC_ERROR_MESSAGE_KEY.isAttachedToAnyHost(this)
                     : "Message UI should have been dismissed";
@@ -216,7 +218,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
             case MessageType.PASSPHRASE_REQUIRED:
             case MessageType.SYNC_SETUP_INCOMPLETE:
             case MessageType.CLIENT_OUT_OF_DATE:
-                openSyncSettings();
+                openSettings();
                 break;
             case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
@@ -286,9 +288,10 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         RecordHistogram.recordEnumeratedHistogram(name, action, Action.NUM_ENTRIES);
     }
 
-    private static String getPrimaryButtonText(
-            Context context, @SyncError int error, boolean isIdentityError) {
-        if (!isIdentityError) {
+    // TODO(crbug.com/1503649): Use mType instead error.
+    private String getPrimaryButtonText(Context context, @SyncError int error) {
+        // Check if this is for a sync error.
+        if (mSyncService.hasSyncConsent()) {
             switch (error) {
                 case SyncError.AUTH_ERROR:
                     return context.getString(R.string.password_error_sign_in_button_title);
@@ -302,6 +305,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
             }
         }
 
+        // Strings for identity error.
         switch (error) {
             case SyncError.PASSPHRASE_REQUIRED:
                 return context.getString(
@@ -323,12 +327,15 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         }
     }
 
-    private static String getTitle(Context context, @SyncError int error, boolean isIdentityError) {
-        if (!isIdentityError) {
+    // TODO(crbug.com/1503649): Use mType instead error.
+    private String getTitle(Context context, @SyncError int error) {
+        // Check if this is for a sync error.
+        if (mSyncService.hasSyncConsent()) {
             // Use the same title with sync error card of sync settings.
             return SyncSettingsUtils.getSyncErrorCardTitle(context, error);
         }
 
+        // Strings for identity error.
         switch (error) {
             case SyncError.PASSPHRASE_REQUIRED:
                 return context.getString(R.string.identity_error_message_title_passphrase_required);
@@ -349,14 +356,16 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         }
     }
 
-    private static String getMessage(
-            Context context, @SyncError int error, boolean isIdentityError) {
-        if (!isIdentityError) {
+    // TODO(crbug.com/1503649): Use mType instead error.
+    private String getMessage(Context context, @SyncError int error) {
+        // Check if this is for a sync error.
+        if (mSyncService.hasSyncConsent()) {
             return error == SyncError.SYNC_SETUP_INCOMPLETE
                     ? context.getString(R.string.sync_settings_not_confirmed_title)
                     : SyncSettingsUtils.getSyncErrorHint(context, error);
         }
 
+        // Strings for identity error.
         switch (error) {
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
                 return context.getString(
@@ -430,12 +439,17 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                                         exception));
     }
 
-    private static void openSyncSettings() {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(
-                getApplicationContext(),
-                ManageSyncSettings.class,
-                ManageSyncSettings.createArguments(false));
+    private void openSettings() {
+        if (mSyncService.hasSyncConsent()) {
+            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+            settingsLauncher.launchSettingsActivity(
+                    getApplicationContext(),
+                    ManageSyncSettings.class,
+                    ManageSyncSettings.createArguments(false));
+        } else {
+            AccountManagementFragment.openAccountManagementScreen(
+                    getApplicationContext(), GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        }
     }
 
     private void startUpdateCredentialsFlow(Activity activity) {
@@ -445,6 +459,16 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
+    }
+
+    private static @SyncError int getError(SyncService syncService) {
+        // Check if there is an identity error.
+        if (!syncService.hasSyncConsent()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
+            return SyncSettingsUtils.getIdentityError(syncService);
+        }
+        return SyncSettingsUtils.getSyncError(syncService);
     }
 
     @VisibleForTesting
