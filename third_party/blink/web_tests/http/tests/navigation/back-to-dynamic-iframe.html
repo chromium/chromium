@@ -1,4 +1,5 @@
 <body>
+<script src="/resources/prevent-bfcache.js"></script>
 <script>
 if (window.testRunner) {
     testRunner.dumpBackForwardList();
@@ -6,7 +7,8 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
 }
 
-function childLoaded() {
+async function childLoaded() {
+    await preventBFCache();
     if (window.sessionStorage.getItem("dynamic-iframe") != null) {
         setTimeout(function() {
             location.assign("resources/go-back.html");
@@ -32,6 +34,6 @@ if (window.sessionStorage.getItem("dynamic-iframe") == null) {
 }
 </script>
 
-This test expects the iframe to be reset on backward navigation. Back-foward
+This test expects the iframe to be reset on backward navigation. Back-forward
 cache needs to be disabled to run this test successfully.
 </body>

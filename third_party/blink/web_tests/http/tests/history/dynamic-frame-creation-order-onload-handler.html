@@ -19,6 +19,7 @@
         right: 3em;
       }
     </style>
+    <script src="/resources/prevent-bfcache.js"></script>
     <script>
       function addFinalFrameURL(className) {
         var frame = document.getElementsByClassName(className)[0]
@@ -65,9 +66,11 @@
       function addLeftFrame() { addFrame('resources/red.html', 'left'); }
       function addRightFrame() { addFrame('resources/green.html', 'right'); }
 
-      function onLoad() {
-        if (!sessionStorage.pageLoadCount)
+      async function onLoad() {
+        await preventBFCache();
+        if (!sessionStorage.pageLoadCount) {
           sessionStorage.pageLoadCount = 0;
+        }
         sessionStorage.pageLoadCount = parseInt(sessionStorage.pageLoadCount) + 1;
 
         if ((sessionStorage.pageLoadCount % 2) == 0) {
