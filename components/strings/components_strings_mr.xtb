@@ -1375,7 +1375,7 @@
 <translation id="3715016660240337709">{0,plural, =1{फाइल अपलोड करण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल अपलोड करण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="3715545959749027023">Chrome ने सुरक्षा इव्हेंट फ्लॅग केल्यास, इव्हेंटसंबंधित उपयुक्त डेटा तुमच्या अ‍ॅडमिनिस्ट्रेटरकडे पाठवला जातो. यामध्ये तुम्ही Chrome मध्ये भेट देत असलेल्या पेजच्या URL, फाइलची नावे किंवा मेटाडेटा, ब्राउझर किंवा टॅब क्रॅश होणे आणि तुम्ही वेबवर आधारित अ‍ॅप्लिकेशन, तुमचे डिव्हाइस व Chrome वर साइन इन करण्यासाठी वापरत असलेले वापरकर्ता नाव असू शकते.</translation>
 <translation id="3715597595485130451">वाय-फाय वर कनेक्ट करा</translation>
-<translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि DNS कॉंफिगरेशन तपासणे<ph name="END_LINK" /></translation>
+<translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि DNS कॉन्फिगरेशन तपासणे<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">अपडेटदरम्यान तुम्हाला तुमचे डिव्हाइस कमान १० मिनिटे वापरता येणार नाही.</translation>
 <translation id="372429172604983730">या एररला कारणीभूत असू शकणार्‍या ॲप्लिकेशनमध्ये अँटिव्हायरस, फायरवॉल आणि वेब फिल्टरिंग किंवा प्रॉक्सी सॉफ्टवेअरचा समावेश होतो.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides मध्ये नवीन Google प्रेझेंटेशन झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
@@ -1531,7 +1531,7 @@
 <translation id="4073376909608563327">डिव्हाइस अनलॉक वापरता आले नाही</translation>
 <translation id="4073797364926776829">कार्ड पहा</translation>
 <translation id="4075732493274867456">क्लायंट आणि सर्व्हर एक सामान्य SSL प्रोटोकॉल आवृत्ती किंवा सायफर संचाला सपोर्ट करीत नाही.</translation>
-<translation id="4079302484614802869">प्रॉक्सी कॉंफिगरेशन .pac स्क्रिप्ट URL वापरण्‍यास सेट करण्‍यात आले आहे, निश्चित प्रॉक्सी सर्व्हर नव्हे.</translation>
+<translation id="4079302484614802869">प्रॉक्सी कॉन्फिगरेशन .pac स्क्रिप्ट URL वापरण्‍यास सेट करण्‍यात आले आहे, निश्चित प्रॉक्सी सर्व्हर नव्हे.</translation>
 <translation id="4082333119419111506">पेपर (प्रिंटेट)</translation>
 <translation id="4082393374666368382">सेटिंग्ज - व्यवस्थापक</translation>
 <translation id="4084219288110917128">एन्व्हलप सी१</translation>
@@ -1596,7 +1596,7 @@
 <translation id="4202218894997543208">तुम्ही ब्लॉक केलेले विषय</translation>
 <translation id="4202554117186904723">पाचवा रोल</translation>
 <translation id="4203769790323223880">कॅमेराला अनुमती नाही</translation>
-<translation id="4203896806696719780"><ph name="BEGIN_LINK" />फायरवॉल आणि अँटीव्हायरस कॉंफिगरेशन तपासणे<ph name="END_LINK" /></translation>
+<translation id="4203896806696719780"><ph name="BEGIN_LINK" />फायरवॉल आणि अँटीव्हायरस कॉन्फिगरेशन तपासणे<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">मोठा</translation>
 <translation id="4210602799576081649">पडताळणी कोड एक्स्पायर झाला, नवीन कोडसाठी विनंती करा</translation>
 <translation id="421066178035138955">आभासी वास्तविकता डिव्हाइस आणि डेटा वापरा</translation>
@@ -2022,7 +2022,7 @@
 <translation id="5021557570875267742">Chrome वापरून किमतीचा माग ठेवा</translation>
 <translation id="5023310440958281426">तुमच्या ॲडमिनिस्ट्रेटरची धोरणे तपासा</translation>
 <translation id="5030338702439866405">द्वारा जारी</translation>
-<translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" साठी मूळ सर्टिफिकेट आवश्यक आहे परंतु ते इंस्टॉल केलेले नाही. तुमच्या IT अ‍ॅडमिनिस्ट्रेटरने ही समस्या सोडण्यासाठी "<ph name="SOFTWARE_NAME" />" साठीच्या कॉंफिगरेशन सूचना पहाव्यात. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" साठी मूळ सर्टिफिकेट आवश्यक आहे परंतु ते इंस्टॉल केलेले नाही. तुमच्या IT अ‍ॅडमिनिस्ट्रेटरने ही समस्या सोडण्यासाठी "<ph name="SOFTWARE_NAME" />" साठीच्या कॉन्फिगरेशन सूचना पहाव्यात. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google भाषांतर बद्दल</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ला तुमचा कॅमेरा आणि मायक्रोफोन वापरायचा आहे</translation>
 <translation id="5035135400558156732">बागकाम</translation>
@@ -3128,7 +3128,7 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# जुळणी}other{# जुळण्या}}</translation>
 <translation id="724691107663265825">साइटमध्ये पुढे मालवेअर आहे</translation>
-<translation id="7251437084390964440">नेटवर्क कॉंफिगरेशन ONC स्टँडर्डचे पालन करत नाही. कॉंफिगरेशनचे भाग कदाचित इंपोर्ट करता येणार नाहीत.
+<translation id="7251437084390964440">नेटवर्क कॉन्फिगरेशन ONC स्टँडर्डचे पालन करत नाही. कॉन्फिगरेशनचे भाग कदाचित इंपोर्ट करता येणार नाहीत.
 अतिरिक्त तपशील:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">मागील ट्रे</translation>
@@ -3739,7 +3739,7 @@
 <translation id="8409413588194360210">पेमेंट हँडलर</translation>
 <translation id="8412145213513410671">क्रॅश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">समान सांकेतिक पासफ्रेझ दोनदा एंटर करणे आवश्यक आहे.</translation>
-<translation id="8416694386774425977">नेटवर्क कॉंफिगरेशन चुकीचे आहे आणि इंपोर्ट केले जाऊ शकत नाही.
+<translation id="8416694386774425977">नेटवर्क कॉन्फिगरेशन चुकीचे आहे आणि इंपोर्ट केले जाऊ शकत नाही.
 अतिरिक्त तपशील:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">यावेळी मायक्रोफोनला अनुमती दिली आहे</translation>
