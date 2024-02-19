@@ -49,6 +49,12 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   /// added item. It's automatically set to `false` after the scroll.
   private var newTabOpened: Bool = false
 
+  /// `true` if the dragged tab moved to a new index.
+  private var dragEndAtNewIndex: Bool = false
+
+  /// `true` if a drop animation is in progress.
+  private var dropAnimationInProgress: Bool = false
+
   // Handles model updates.
   public weak var mutator: TabStripMutator?
   // Tab strip  delegate.
@@ -506,6 +512,10 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     _ collectionView: UICollectionView,
     dragSessionWillBegin session: UIDragSession
   ) {
+    dragEndAtNewIndex = false
+    HistogramUtils.recordHistogram(
+      kUmaTabStripViewDragDropTabs, withSample: DragDropTabs.dragBegin.rawValue,
+      maxValue: DragDropTabs.maxValue.rawValue)
     dragDropHandler?.dragWillBegin(for: draggedItem)
   }
 
@@ -513,6 +523,21 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     _ collectionView: UICollectionView,
     dragSessionDidEnd session: UIDragSession
   ) {
+    var dragEvent =
+      dragEndAtNewIndex
+      ? DragDropTabs.dragEndAtNewIndex
+      : DragDropTabs.dragEndAtSameIndex
+
+    // If a drop animation is in progress and the drag didn't end at a new index,
+    // that means the item has been dropped outside of its collection view.
+    if dropAnimationInProgress && !dragEndAtNewIndex {
+      dragEvent = DragDropTabs.dragEndInOtherCollection
+    }
+
+    HistogramUtils.recordHistogram(
+      kUmaTabStripViewDragDropTabs, withSample: dragEvent.rawValue,
+      maxValue: DragDropTabs.maxValue.rawValue)
+
     dragDropHandler?.dragSessionDidEnd()
   }
 
@@ -583,10 +608,15 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
         destinationIndex = destinationIndexPath.item
       }
       let dropIndexPah: IndexPath = IndexPath(item: destinationIndex, section: 0)
+      dragEndAtNewIndex = true
 
       // Drop synchronously if local object is available.
       if item.dragItem.localObject != nil {
-        coordinator.drop(item.dragItem, toItemAt: dropIndexPah)
+        weak var weakSelf = self
+        coordinator.drop(item.dragItem, toItemAt: dropIndexPah).addCompletion {
+          UIViewAnimatingPosition in
+          weakSelf?.dropAnimationInProgress = false
+        }
         // The sourceIndexPath is non-nil if the drop item is from this same
         // collection view.
         self.dragDropHandler?.drop(

@@ -4,6 +4,8 @@
 
 source_set("metrics_bridge") {
   sources = [
+    "histogram_functions_bridge.h",
+    "histogram_functions_bridge.mm",
     "user_metrics_bridge.h",
     "user_metrics_bridge.mm",
   ]

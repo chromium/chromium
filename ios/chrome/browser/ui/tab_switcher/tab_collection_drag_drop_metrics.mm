@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 
-extern const char kUmaTabStripViewDragDropTabs[] = "IOS.TabStrip.DragDropTabs";
+NSString* const kUmaTabStripViewDragDropTabs = @"IOS.TabStrip.DragDropTabs";
 extern const char kUmaGridViewDragDropTabs[] = "IOS.TabSwitcher.DragDropTabs";
 extern const char kUmaPinnedViewDragDropTabs[] =
     "IOS.TabSwitcher.PinnedTabs.DragDropTabs";

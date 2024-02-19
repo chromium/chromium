@@ -297,13 +297,10 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 }
 
 - (void)dragWillBeginForItem:(TabSwitcherItem*)item {
-  base::UmaHistogramEnumeration(kUmaTabStripViewDragDropTabs,
-                                DragDropTabs::kDragBegin);
   _dragItemID = item.identifier;
 }
 
 - (void)dragSessionDidEnd {
-  // TODO(crbug.com/1515507): Record metrics.
   _dragItemID = web::WebStateID();
 }
 
