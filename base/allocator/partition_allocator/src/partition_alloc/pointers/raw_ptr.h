@@ -1114,6 +1114,12 @@ constexpr inline auto VectorExperimental = base::RawPtrTraits::kMayDangle;
 // lands and will be replaced by DanglingUntriaged where necessary.
 constexpr inline auto SetExperimental = base::RawPtrTraits::kMayDangle;
 
+// Temporary alias introduced in the context of rewriting more containers and in
+// order to temporarily bypass the dangling ptr checks on the CQ. This alias
+// will be removed gradually after the rewrite cl lands and will be replaced by
+// DanglingUntriaged where necessary.
+constexpr inline auto CtnExperimental = base::RawPtrTraits::kMayDangle;
+
 // Temporary workaround needed when using vector<raw_ptr<T, VectorExperimental>
 // in Mocked method signatures as the macros don't allow commas within.
 template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
@@ -1151,6 +1157,15 @@ struct less<raw_ptr<T, Traits>> {
   bool operator()(const raw_ptr<T, Traits>& lhs, T* rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
+  }
+};
+
+template <typename T, base::RawPtrTraits Traits>
+struct hash<raw_ptr<T, Traits>> {
+  typedef raw_ptr<T, Traits> argument_type;
+  typedef std::size_t result_type;
+  result_type operator()(argument_type const& ptr) const {
+    return hash<T*>()(ptr.get());
   }
 };
 
