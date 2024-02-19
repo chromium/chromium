@@ -41,6 +41,9 @@
 #include "third_party/blink/public/web/web_select_element.h"
 #include "third_party/blink/public/web/web_view.h"
 
+namespace autofill::form_util {
+namespace {
+
 using autofill::mojom::ButtonTitleType;
 using blink::WebDocument;
 using blink::WebElement;
@@ -62,9 +65,6 @@ using ::testing::IsTrue;
 using ::testing::Optional;
 using ::testing::Pointwise;
 using ::testing::Values;
-
-namespace autofill::form_util {
-namespace {
 
 struct AutofillFieldUtilCase {
   const char* description;
@@ -181,8 +181,8 @@ void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
                             const ButtonTitlesCache& actual_cache) {
   EXPECT_THAT(actual_cache,
-              testing::ElementsAre(testing::Pair(GetFormRendererId(form_target),
-                                                 expected_button_titles)));
+              ElementsAre(testing::Pair(GetFormRendererId(form_target),
+                                        expected_button_titles)));
 }
 
 bool HaveSameFormControlId(const WebFormControlElement& element,
@@ -2065,6 +2065,220 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
                               Field(&FormFieldData::name, u"check_input"),
                               Field(&FormFieldData::name, u"number_input"),
                               Field(&FormFieldData::name, u"select_input")))));
+}
+
+// Tests that the owning form of a form control element in light DOM is its
+// associated form (i.e. the form explicitly set via form attribute or its
+// closest ancestor).
+TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDom) {
+  LoadHTML(R"(
+    <html>
+      <body>
+        <form id=f>
+          <input id=t1>
+          <input id=t2>
+        </form>
+        <input id=t3>
+      </body>
+    </html>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebFormElement f = GetFormElementById(doc, "f");
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t1")), f);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t2")), f);
+  EXPECT_TRUE(GetOwningForm(GetFormControlElementById(doc, "t3")).IsNull());
+}
+
+// Tests that explicit association overrules DOM ancestry when determining the
+// owning form.
+TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
+  LoadHTML(R"(
+    <html>
+      <body>
+        <form id=f1>
+          <input id=t1>
+          <input id=t2 form=f2>
+        </form>
+        <form id=f2>
+          <input id=t3>
+          <input id=t4 form=f1>
+        </form>
+        <input id=t5 form=f1>
+        <input id=t6 form=f2>
+      </body>
+    </html>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebFormElement f1 = GetFormElementById(doc, "f1");
+  WebFormElement f2 = GetFormElementById(doc, "f2");
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t1")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t2")), f2);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t3")), f2);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t4")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t5")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t6")), f2);
+}
+
+// Tests that input elements in shadow DOM whose closest ancestor is in the
+// light DOM are extracted correctly.
+TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
+  LoadHTML(R"(
+    <html>
+      <body>
+        <form id=f1>
+          <div id=host1>
+            <template shadowrootmode=open>
+              <input id=t1>
+            </template>
+            <input id=t2>
+          </div>
+        </form>
+        <div id=host2>
+          <template shadowrootmode=open>
+            <input id=t3>
+          </template>
+        </div>
+      </body>
+    </html>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebNode shadow_root1 = GetElementById(doc, "host1").ShadowRoot();
+  WebNode shadow_root2 = GetElementById(doc, "host2").ShadowRoot();
+  WebFormElement f1 = GetFormElementById(doc, "f1");
+
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t1")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t2")), f1);
+  EXPECT_TRUE(
+      GetOwningForm(GetFormControlElementById(shadow_root2, "t3")).IsNull());
+}
+
+// Tests that the owning form of a form control element is the furthest
+// shadow-including ancestor form element (in absence of explicit associations).
+TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kAutofillIncludeFormElementsInShadowDom};
+
+  LoadHTML(R"(
+    <html>
+      <body>
+        <form id=f1>
+          <div id=host1>
+            <template shadowrootmode=open>
+              <form id=f2>
+                <input id=t1>
+              </form>
+              <input id=t2>
+            </template>
+          </div>
+        </form>
+        <div id=host2>
+          <template shadowrootmode=open>
+            <form id=f3>
+              <input id=t3>
+            </form>
+          </template>
+        </div>
+      </body>
+    </html>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebNode shadow_root1 = GetElementById(doc, "host1").ShadowRoot();
+  WebNode shadow_root2 = GetElementById(doc, "host2").ShadowRoot();
+  WebFormElement f1 = GetFormElementById(doc, "f1");
+  WebFormElement f3 = GetFormElementById(shadow_root2, "f3");
+
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t1")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t2")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root2, "t3")), f3);
+}
+
+// Tests that the owning form is returned correctly even if there are multiple
+// levels of Shadow DOM.
+TEST_F(FormAutofillUtilsTest,
+       GetOwningFormInShadowDomWithFormInShadowDomWithMultipleLevels) {
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kAutofillIncludeFormElementsInShadowDom};
+
+  LoadHTML(R"(
+    <html>
+      <body>
+        <form id=f1>
+          <div id=host1>
+            <template shadowrootmode=open>
+              <form id=f2>
+                <input id=t1>
+              </form>
+              <div id=host2>
+                <template shadowrootmode=open>
+                  <form id=f3>
+                    <input id=t2>
+                  </form>
+                  <input id=t3>
+                </template>
+                <input id=t4>
+              </div>
+              <input id=t5>
+            </template>
+          </div>
+        </form>
+      </body>
+    </html>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebNode shadow_root1 = GetElementById(doc, "host1").ShadowRoot();
+  WebNode shadow_root2 = GetElementById(shadow_root1, "host2").ShadowRoot();
+  WebFormElement f1 = GetFormElementById(doc, "f1");
+
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t1")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root2, "t2")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root2, "t3")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t4")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t5")), f1);
+}
+
+// Tests that the owning form is computed correctly for form control elements
+// inside the shadow DOM that have explicit form attributes.
+TEST_F(FormAutofillUtilsTest,
+       GetOwningFormInShadowDomWithFormInShadowDomAndExplicitAssociation) {
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kAutofillIncludeFormElementsInShadowDom};
+
+  LoadHTML(R"(
+    <html>
+      <body>
+        <form id=f1>
+          <div id=host1>
+            <template shadowrootmode=open>
+              <form id=f2>
+                <input id=t1>
+              </form>
+              <input id=t2>
+              <form id=f3>
+                <input id=t3 form=f2>
+              </form>
+              <input id=t4 form=f2>
+              <input id=t5 form=f3>
+              <input id=t6 form=f1>
+            </template>
+          </div>
+        </form>
+        <div id=host2>
+          <template shadowrootmode=open>
+            <form id=f4>
+              <input id=t7>
+            </form>
+          </template>
+        </div>
+      </body>
+    </html>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebNode shadow_root1 = GetElementById(doc, "host1").ShadowRoot();
+  WebNode shadow_root2 = GetElementById(doc, "host2").ShadowRoot();
+  WebFormElement f1 = GetFormElementById(doc, "f1");
+  WebFormElement f4 = GetFormElementById(shadow_root2, "f4");
+
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t1")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t2")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t3")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t4")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t5")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t6")), f1);
+  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root2, "t7")), f4);
 }
 
 }  // namespace

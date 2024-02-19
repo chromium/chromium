@@ -65,15 +65,17 @@ namespace form_util {
 //     <form id=f></form>
 //     <input type=text id=t form=f>
 //   * or `f` is `t`'s (not shadow-tree including) ancestor node.
-//     Note that there should be at most one not-shadow-tree-including ancestor
-//     node that is a `<form>` since multiple nested `<form>`s are not permitted
+//     Note that there should be at most one not-shadow-including ancestor node
+//     that is a `<form>` since multiple nested `<form>`s are not permitted
 //     inside the same document fragment.
 //   Autofill does not currently support form-associated custom
 //   elements. See https://web.dev/articles/more-capable-form-controls for more
 //   information on those.
 // - We consider a form control element `t` to be owned by a form element `f` if
-//   * `t` is associated with `f`
-//   *  or `t` is a shadow including descendant of `f`.
+//   * `t` is explicitly associated with `f` or a shadow-including descendant of
+//     `f`,
+//   *  or `t` is a shadow-including descendant of `f` without explicit
+//      association.
 // - We consider a form control element to be unowned if is it not owned by any
 //   form.
 
@@ -281,12 +283,19 @@ void WebFormControlElementToFormField(
     FormFieldData* field,
     ShadowFieldData* shadow_data = nullptr);
 
-// Returns the form that owns the `form_control`, or a null pointer if no form
-// owns the `form_control`. exists.
+// Returns the form that owns the `form_control`, or a null `WebFormElement` if
+// no form owns the `form_control`.
 //
-// The form that owns `form_control` is
-// - the form with which `form_control` is associated, if such a form exists,
-// - the closest shadow-including ancestor WebFormElement.
+// When `kAutofillIncludeFormElementsInShadowDom` is enabled, the form that owns
+// `form_control` is
+// - if `form_control` is associated to a form, the furthest shadow-including
+//   form ancestor of that form,
+// - otherwise, the furthest shadow-including form ancestor of `form_control`.
+//
+// When `kAutofillIncludeFormElementsInShadowDom` is disabled, `form_control`'s
+// owner is
+// - if `form_control` is associated to a form, that form,
+// - otherwise, the nearest shadow-including form ancestor of `form_control`.
 blink::WebFormElement GetOwningForm(
     const blink::WebFormControlElement& form_control);
 

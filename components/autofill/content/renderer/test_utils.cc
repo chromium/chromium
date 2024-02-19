@@ -4,19 +4,17 @@
 
 #include "components/autofill/content/renderer/test_utils.h"
 
+#include "base/strings/strcat.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
-#include "third_party/blink/public/web/web_form_control_element.h"
-#include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
 
 using blink::WebDocument;
 using blink::WebElement;
-using blink::WebFormControlElement;
-using blink::WebFormElement;
 using blink::WebString;
 
 namespace autofill {
@@ -31,16 +29,13 @@ WebElement GetElementById(const WebDocument& doc,
   return e;
 }
 
-WebFormControlElement GetFormControlElementById(const WebDocument& doc,
-                                                std::string_view id,
-                                                AllowNull allow_null) {
-  return GetElementById(doc, id, allow_null).To<WebFormControlElement>();
-}
-
-WebFormElement GetFormElementById(const WebDocument& doc,
-                                  std::string_view id,
-                                  AllowNull allow_null) {
-  return GetElementById(doc, id, allow_null).To<WebFormElement>();
+blink::WebElement GetElementById(const blink::WebNode& node,
+                                 std::string_view id,
+                                 AllowNull allow_null) {
+  WebElement e =
+      node.QuerySelector(WebString::FromASCII(base::StrCat({"#", id})));
+  CHECK(allow_null || !e.IsNull());
+  return e;
 }
 
 content::RenderFrame* GetIframeById(const WebDocument& doc,

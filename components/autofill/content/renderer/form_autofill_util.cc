@@ -2080,15 +2080,27 @@ void WebFormControlElementToFormField(
   }
 }
 
-// TODO(crbug.com/1268085): Make sure this works for all shadow DOM cases,
-// including cases in which the owning form is multiple (shadow DOM) levels
-// apart from the form control element.
 WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
-  WebFormElement associated_form = form_control.Form();
-  if (!associated_form.IsNull()) {
-    return associated_form;
+  // When `kAutofillIncludeFormElementsInShadowDom` is enabled, the owning form
+  // is the furthest ancestor form element, if there is one.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAutofillIncludeFormElementsInShadowDom)) {
+    WebFormElement parent;
+    WebNode node = form_control;
+    if (!form_control.Form().IsNull()) {
+      node = form_control.Form();
+    }
+    for (; !node.IsNull(); node = node.ParentOrShadowHostNode()) {
+      if (auto form = node.DynamicTo<WebFormElement>(); !form.IsNull()) {
+        parent = form;
+      }
+    }
+    return parent;
   }
 
+  if (WebFormElement form = form_control.Form(); !form.IsNull()) {
+    return form;
+  }
   // If we are in a shadow DOM, then look to see if the host(s) are inside a
   // form element we can use.
   size_t levels_up = kMaxShadowLevelsUp;
