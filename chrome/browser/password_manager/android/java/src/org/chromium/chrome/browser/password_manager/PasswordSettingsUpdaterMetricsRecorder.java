@@ -59,9 +59,12 @@ class PasswordSettingsUpdaterMetricsRecorder {
         RecordHistogram.recordBooleanHistogram(getHistogramName("Success"), exception == null);
         RecordHistogram.recordBooleanHistogram(
                 getHistogramName("Success", mStoreType), exception == null);
+        long durationMs = SystemClock.elapsedRealtime() - mStartTimeMs;
         RecordHistogram.recordTimesHistogram(
-                getHistogramName(exception == null ? "Latency" : "ErrorLatency"),
-                SystemClock.elapsedRealtime() - mStartTimeMs);
+                getHistogramName(exception == null ? "Latency" : "ErrorLatency"), durationMs);
+        RecordHistogram.recordTimesHistogram(
+                getHistogramName(exception == null ? "Latency" : "ErrorLatency", mStoreType),
+                durationMs);
         if (exception != null) {
             reportErrorMetrics(exception);
         }
@@ -103,9 +106,15 @@ class PasswordSettingsUpdaterMetricsRecorder {
         int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramName("ErrorCode"), error, AndroidBackendErrorType.MAX_VALUE + 1);
+        RecordHistogram.recordEnumeratedHistogram(
+                getHistogramName("ErrorCode", mStoreType),
+                error,
+                AndroidBackendErrorType.MAX_VALUE + 1);
         if (error == AndroidBackendErrorType.EXTERNAL_ERROR) {
             int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
             RecordHistogram.recordSparseHistogram(getHistogramName("APIError1"), apiErrorCode);
+            RecordHistogram.recordSparseHistogram(
+                    getHistogramName("APIError1", mStoreType), apiErrorCode);
         }
     }
 

@@ -66,15 +66,31 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(nameWithSuffixes + ".Latency", 0));
         assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        nameWithSuffixes + "." + mStoreType + ".Latency", 0));
+        assertEquals(
                 0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         nameWithSuffixes + ".ErrorLatency"));
         assertEquals(
                 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        nameWithSuffixes + "." + mStoreType + ".ErrorLatency"));
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".ErrorCode"));
         assertEquals(
                 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        nameWithSuffixes + "." + mStoreType + ".ErrorCode"));
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".APIError1"));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        nameWithSuffixes + "." + mStoreType + ".APIError1"));
     }
 
     private void checkFailureHistograms(
@@ -87,13 +103,25 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
         assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".Latency"));
         assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        nameWithSuffixes + "." + mStoreType + ".Latency"));
+        assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffixes + ".ErrorLatency", 0));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
+                        nameWithSuffixes + "." + mStoreType + ".ErrorLatency", 0));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffixes + ".ErrorCode", errorCode));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        nameWithSuffixes + "." + mStoreType + ".ErrorCode", errorCode));
         apiErrorCode.ifPresentOrElse(
                 apiError ->
                         assertEquals(
@@ -105,6 +133,18 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                                 0,
                                 RecordHistogram.getHistogramTotalCountForTesting(
                                         nameWithSuffixes + ".APIError1")));
+        apiErrorCode.ifPresentOrElse(
+                apiError ->
+                        assertEquals(
+                                1,
+                                RecordHistogram.getHistogramValueCountForTesting(
+                                        nameWithSuffixes + "." + mStoreType + ".APIError1",
+                                        apiError)),
+                () ->
+                        assertEquals(
+                                0,
+                                RecordHistogram.getHistogramTotalCountForTesting(
+                                        nameWithSuffixes + "." + mStoreType + ".APIError1")));
     }
 
     @Test
