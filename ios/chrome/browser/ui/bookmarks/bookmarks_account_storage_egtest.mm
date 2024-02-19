@@ -68,7 +68,7 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGreyUI bookmarkCurrentTabWithTitle:bookmarkTitle];
   // Sign-in+sync with identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [BookmarkEarlGreyUI openBookmarks];
   // Tests that there is only one "Mobile Bookmarks".
   [[EarlGrey selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
