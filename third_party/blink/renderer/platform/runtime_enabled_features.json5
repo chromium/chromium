@@ -602,7 +602,6 @@
     {
       name: "ClipboardUnsanitizedContent",
       status: "stable",
-      base_feature: "none",
     },
     {
       name: "ClipboardWellFormedHtmlSanitizationWrite",

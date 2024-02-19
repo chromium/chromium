@@ -587,10 +587,6 @@ BASE_FEATURE(kClientHintsViewportWidth_DEPRECATED,
              "ClientHintsViewportWidth_DEPRECATED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClipboardUnsanitizedContent,
-             "ClipboardUnsanitizedContent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disabling this will cause parkable strings to never be compressed.
 // This is useful for headless mode + virtual time. Since virtual time advances
 // quickly, strings may be parked too eagerly in that mode.
