@@ -1235,7 +1235,7 @@ TEST_F(PasswordGenerationAgentTest, AutofillToGenerationField) {
   WebElement element = GetElementById("first_password");
   const WebInputElement input_element = element.To<WebInputElement>();
   // Since password isn't generated (just suitable field was detected),
-  // |OnFieldAutofilled| wouldn't trigger any actions.
+  // `OnFieldAutofilled` wouldn't trigger any actions.
   EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_)).Times(0);
   password_generation_->OnFieldAutofilled(input_element);
 }
@@ -1265,7 +1265,7 @@ TEST_F(PasswordGenerationAgentTest, PasswordUnmaskedUntilCompleteDeletion) {
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
 
   // Delete characters of the generated password until only
-  // |kMinimumLengthForEditedPassword| - 1 chars remain.
+  // `kMinimumLengthForEditedPassword` - 1 chars remain.
   EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
   FocusField(kGenerationElementId);
   SimulateUserTypingASCIICharacter(ui::VKEY_END, false);
@@ -1317,7 +1317,7 @@ TEST_F(PasswordGenerationAgentTest, ShortPasswordMaskedAfterChangingFocus) {
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
 
   // Delete characters of the generated password until only
-  // |kMinimumLengthForEditedPassword| - 1 chars remain.
+  // `kMinimumLengthForEditedPassword` - 1 chars remain.
   EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
   FocusField(kGenerationElementId);
   EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_));

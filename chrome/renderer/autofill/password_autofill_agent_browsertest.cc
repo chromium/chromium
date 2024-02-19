@@ -345,7 +345,7 @@ const char kFormTagHostsShadowDomInputs[] =
     "</form>"
     "</body>";
 
-// Sets the "readonly" attribute of |element| to the value given by |read_only|.
+// Sets the "readonly" attribute of `element` to the value given by `read_only`.
 void SetElementReadOnly(WebInputElement& element, bool read_only) {
   element.SetAttribute(WebString::FromUTF8("readonly"),
                        read_only ? WebString::FromUTF8("true") : WebString());
@@ -630,17 +630,17 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   }
 
   void SimulateUsernameSingleFieldAutofill(const std::u16string& text) {
-    // Simulate set |username_element_| in focus.
+    // Simulate set `username_element_` in focus.
     static_cast<content::RenderFrameObserver*>(autofill_agent_)
         ->FocusedElementChanged(username_element_);
-    // Fill focused element (i.e. |username_element_|).
+    // Fill focused element (i.e. `username_element_`).
     autofill_agent_->ApplyFieldAction(
         mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
         form_util::GetFieldRendererId(username_element_), text);
   }
 
   void SimulateUsernameFormAutofill(const std::u16string& text) {
-    // Simulate set |username_element_| in focus.
+    // Simulate set `username_element_` in focus.
     static_cast<content::RenderFrameObserver*>(autofill_agent_)
         ->FocusedElementChanged(username_element_);
     // Fill the form.
@@ -746,7 +746,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         false /* check_suggested_password */);
   }
 
-  // Checks the suggested values of the |username| and |password| elements.
+  // Checks the suggested values of the `username` and `password` elements.
   void CheckTextFieldsSuggestedState(const std::string& username,
                                      bool username_autofilled,
                                      const std::string& password,
@@ -1205,7 +1205,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordNotClearedOnEdit) {
   CheckTextFieldsDOMState("alicia", false, kAlicePassword, true);
 }
 
-// Tests that lost focus does not trigger filling when |wait_for_username| is
+// Tests that lost focus does not trigger filling when `wait_for_username` is
 // true.
 TEST_F(PasswordAutofillAgentTest, WaitUsername) {
   // Simulate the browser sending back the login info.
@@ -1552,9 +1552,9 @@ TEST_F(PasswordAutofillAgentTest,
   CheckIfEventsAreCalled(event_checkers, true);
 }
 
-// Tests that |FillSuggestion| properly fills the username and password.
+// Tests that `FillSuggestion` properly fills the username and password.
 TEST_F(PasswordAutofillAgentTest, FillSuggestion) {
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1590,13 +1590,13 @@ TEST_F(PasswordAutofillAgentTest, FillSuggestion) {
   }
 }
 
-// Tests that |FillSuggestion| properly fills the username and password when the
+// Tests that `FillSuggestion` properly fills the username and password when the
 // username field is created dynamically in JavaScript.
 TEST_F(PasswordAutofillAgentTest, FillSuggestionWithDynamicUsernameField) {
   LoadHTML(kVisibleFormWithNoUsernameHTML);
   UpdateOnlyPasswordElement();
 
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1621,13 +1621,13 @@ TEST_F(PasswordAutofillAgentTest, FillSuggestionWithDynamicUsernameField) {
   CheckFirstFillingResult(FillingResult::kWaitForUsername);
 }
 
-// Tests that |FillSuggestion| doesn't change non-empty non-autofilled username
+// Tests that `FillSuggestion` doesn't change non-empty non-autofilled username
 // when interacting with the password field.
 TEST_F(PasswordAutofillAgentTest,
        FillSuggestionFromPasswordFieldWithUsernameManuallyFilled) {
   username_element_.SetValue(WebString::FromUTF8("user1"));
 
-  // Simulate the browser sending the login info, but set |wait_for_username| to
+  // Simulate the browser sending the login info, but set `wait_for_username` to
   // prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1652,7 +1652,7 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_EQ(2, fake_driver_.called_inform_about_user_input_count());
 }
 
-// Tests that |FillSuggestion| properly fills the password if the username field
+// Tests that `FillSuggestion` properly fills the password if the username field
 // is read-only.
 TEST_F(PasswordAutofillAgentTest, FillSuggestionIfUsernameReadOnly) {
   // Simulate the browser sending the login info.
@@ -1677,9 +1677,9 @@ TEST_F(PasswordAutofillAgentTest, FillSuggestionIfUsernameReadOnly) {
   ClearUsernameAndPasswordFieldValues();
 }
 
-// Tests that |PreviewSuggestion| properly previews the username and password.
+// Tests that `PreviewSuggestion` properly previews the username and password.
 TEST_F(PasswordAutofillAgentTest, PreviewSuggestion) {
-  // Simulate the browser sending the login info, but set |wait_for_username| to
+  // Simulate the browser sending the login info, but set `wait_for_username` to
   // prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1717,13 +1717,13 @@ TEST_F(PasswordAutofillAgentTest, PreviewSuggestion) {
   }
 }
 
-// Tests that |PreviewSuggestion| doesn't change non-empty non-autofilled
+// Tests that `PreviewSuggestion` doesn't change non-empty non-autofilled
 // username when previewing autofills on interacting with the password field.
 TEST_F(PasswordAutofillAgentTest,
        PreviewSuggestionFromPasswordFieldWithUsernameManuallyFilled) {
   username_element_.SetValue(WebString::FromUTF8("user1"));
 
-  // Simulate the browser sending the login info, but set |wait_for_username| to
+  // Simulate the browser sending the login info, but set `wait_for_username` to
   // prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1743,7 +1743,7 @@ TEST_F(PasswordAutofillAgentTest,
   CheckTextFieldsDOMState("user1", false, std::string(), true);
 }
 
-// Tests that |PreviewSuggestion| properly previews the password if username is
+// Tests that `PreviewSuggestion` properly previews the password if username is
 // read-only.
 TEST_F(PasswordAutofillAgentTest, PreviewSuggestionIfUsernameReadOnly) {
   // Simulate the browser sending the login info.
@@ -1770,9 +1770,9 @@ TEST_F(PasswordAutofillAgentTest, PreviewSuggestionIfUsernameReadOnly) {
   }
 }
 
-// Tests that |PreviewSuggestion| properly sets the username selection range.
+// Tests that `PreviewSuggestion` properly sets the username selection range.
 TEST_F(PasswordAutofillAgentTest, PreviewSuggestionSelectionRange) {
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1789,12 +1789,12 @@ TEST_F(PasswordAutofillAgentTest, PreviewSuggestionSelectionRange) {
   }
 }
 
-// Tests that |ClearPreview| properly clears previewed username and password
+// Tests that `ClearPreview` properly clears previewed username and password
 // with password being previously autofilled.
 TEST_F(PasswordAutofillAgentTest, ClearPreviewWithPasswordAutofilled) {
   ResetFieldState(&password_element_, "sec", WebAutofillState::kPreviewed);
 
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1814,13 +1814,13 @@ TEST_F(PasswordAutofillAgentTest, ClearPreviewWithPasswordAutofilled) {
   }
 }
 
-// Tests that |ClearPreview| properly clears previewed username and password
+// Tests that `ClearPreview` properly clears previewed username and password
 // with username being previously autofilled.
 TEST_F(PasswordAutofillAgentTest, ClearPreviewWithUsernameAutofilled) {
   ResetFieldState(&username_element_, "ali", WebAutofillState::kPreviewed);
   username_element_.SetSelectionRange(3, 3);
 
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1840,14 +1840,14 @@ TEST_F(PasswordAutofillAgentTest, ClearPreviewWithUsernameAutofilled) {
   }
 }
 
-// Tests that |ClearPreview| properly clears previewed username and password
+// Tests that `ClearPreview` properly clears previewed username and password
 // with username and password being previously autofilled.
 TEST_F(PasswordAutofillAgentTest,
        ClearPreviewWithAutofilledUsernameAndPassword) {
   ResetFieldState(&username_element_, "ali", WebAutofillState::kPreviewed);
   ResetFieldState(&password_element_, "sec", WebAutofillState::kPreviewed);
 
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -1881,7 +1881,7 @@ TEST_F(PasswordAutofillAgentTest, TryToShowKeyboardReplacingSurfaceUsername) {
       random_element));
   EXPECT_FALSE(password_autofill_agent_->ShouldSuppressKeyboard());
 
-  // This changes once fill data is simulated. |random_element| continue  to
+  // This changes once fill data is simulated. `random_element` continue  to
   // have no fill data, though.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -2197,7 +2197,7 @@ TEST_F(PasswordAutofillAgentTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Tests that |FillIntoFocusedField| doesn't fill read-only text fields.
+// Tests that `FillIntoFocusedField` doesn't fill read-only text fields.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedReadonlyTextField) {
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
@@ -2210,7 +2210,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedReadonlyTextField) {
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
 }
 
-// Tests that |FillIntoFocusedField| properly fills user-provided credentials.
+// Tests that `FillIntoFocusedField` properly fills user-provided credentials.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedWritableTextField) {
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
@@ -2225,7 +2225,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedWritableTextField) {
   CheckUsernameSelection(strlen(kAliceUsername), strlen(kAliceUsername));
 }
 
-// Tests that |FillIntoFocusedField| doesn't fill passwords in user fields.
+// Tests that `FillIntoFocusedField` doesn't fill passwords in user fields.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldOnlyIntoPasswordFields) {
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
@@ -2245,7 +2245,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldOnlyIntoPasswordFields) {
   CheckTextFieldsDOMState(std::string(), false, kAlicePassword, true);
 }
 
-// Tests that |FillIntoFocusedField| fills last focused, not last clicked field.
+// Tests that `FillIntoFocusedField` fills last focused, not last clicked field.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldForNonClickFocus) {
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
@@ -2262,11 +2262,11 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldForNonClickFocus) {
   CheckTextFieldsDOMState(std::string(), false, "TextToFill", true);
 }
 
-// Tests that |ClearPreview| properly clears previewed username and password
+// Tests that `ClearPreview` properly clears previewed username and password
 // with neither username nor password being previously autofilled.
 TEST_F(PasswordAutofillAgentTest,
        ClearPreviewWithNotAutofilledUsernameAndPassword) {
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -3175,7 +3175,7 @@ TEST_F(PasswordAutofillAgentTest, FillSuggestionPasswordChangeForms) {
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -3650,7 +3650,7 @@ TEST_F(PasswordAutofillAgentTest,
        kAlicePassword, true, true},
 
       // Change password form without name or id attributes specified for the
-      // input fields and |autocomplete='current-password'| attribute for old
+      // input fields and `autocomplete='current-password'` attribute for old
       // password field.
       {kChangePasswordFormContainsEmptyNamesHTML, true, true, kAliceUsername,
        kAlicePassword, true, true},
@@ -3660,15 +3660,15 @@ TEST_F(PasswordAutofillAgentTest,
        false, true},
 
       // Change password form without name or id attributes specified for the
-      // input fields and |autocomplete='new-password'| attribute for new
-      // password fields. This form *do not* trigger |OnFillPasswordForm| from
+      // input fields and `autocomplete='new-password'` attribute for new
+      // password fields. This form *do not* trigger `OnFillPasswordForm` from
       // browser.
       {kChangePasswordFormButNoOldPassword, false, true, kEmpty, kEmpty, false,
        false},
 
       // Change password form without name or id attributes specified for the
-      // input fields but |autocomplete='current-password'| or
-      // |autocomplete='new-password'| attributes are missing for old and new
+      // input fields but `autocomplete='current-password'` or
+      // `autocomplete='new-password'` attributes are missing for old and new
       // password fields respectively.
       {kChangePasswordFormButNoAutocompleteAttribute, true, true,
        kAliceUsername, kAlicePassword, true, true},
@@ -3696,7 +3696,7 @@ TEST_F(PasswordAutofillAgentTest,
     }
 
     if (test_case.does_trigger_autocomplete_on_fill) {
-      // Prepare |fill_data_| to trigger autocomplete.
+      // Prepare `fill_data_` to trigger autocomplete.
       UpdateRendererIDsInFillData();
       fill_data_.additional_logins.clear();
 
@@ -4103,7 +4103,7 @@ TEST_F(PasswordAutofillAgentTest, ManualFallbackForSaving_PasswordChangeForm) {
 // browser with information that the password should not be saved.
 TEST_F(PasswordAutofillAgentTest, GaiaReauthenticationFormIgnored) {
   // HTML is already loaded in test SetUp method, so information about password
-  // forms was already sent to the |fake_driver_|. Hence it should be reset.
+  // forms was already sent to the `fake_driver_`. Hence it should be reset.
   fake_driver_.reset_password_forms_calls();
 
   const char kGaiaReauthenticationFormHTML[] =
@@ -4332,11 +4332,11 @@ TEST_F(PasswordAutofillAgentTest, FillOnLoadSingleUsername) {
   CheckTextFieldsDOMState(kAliceUsername, true, std::string(), false);
 }
 
-// Tests that |PreviewSuggestion| properly previews the single username.
+// Tests that `PreviewSuggestion` properly previews the single username.
 TEST_F(PasswordAutofillAgentTest, SingleUsernamePreviewSuggestion) {
   fill_data_.preferred_login.password_value.clear();
   fill_data_.password_element_renderer_id = autofill::FieldRendererId();
-  // Simulate the browser sending the login info, but set |wait_for_username| to
+  // Simulate the browser sending the login info, but set `wait_for_username` to
   // prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -4355,11 +4355,11 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernamePreviewSuggestion) {
   CheckTextFieldsSuggestedState(kBobUsername, true, std::string(), false);
 }
 
-// Tests that |FillSuggestion| properly fills the single username.
+// Tests that `FillSuggestion` properly fills the single username.
 TEST_F(PasswordAutofillAgentTest, SingleUsernameFillSuggestion) {
   fill_data_.preferred_login.password_value.clear();
   fill_data_.password_element_renderer_id = autofill::FieldRendererId();
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -4384,14 +4384,14 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameFillSuggestion) {
   CheckUsernameSelection(username_length, username_length);
 }
 
-// Tests that |ClearPreview| properly clears previewed single username.
+// Tests that `ClearPreview` properly clears previewed single username.
 TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
   fill_data_.preferred_login.password_value.clear();
   fill_data_.password_element_renderer_id = autofill::FieldRendererId();
   ResetFieldState(&username_element_, "ali", WebAutofillState::kPreviewed);
   username_element_.SetSelectionRange(3, 3);
 
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -4658,9 +4658,9 @@ TEST_F(PasswordAutofillAgentTest, TriggerFormSubmission_HiddenPasswordField) {
   base::RunLoop().RunUntilIdle();
   UpdateUsernameAndPasswordElements();
 
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled because the test
-  // simulates filling with |FillSuggestion|, the function that
+  // simulates filling with `FillSuggestion`, the function that
   // KeyboardReplacingSurface uses.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -4690,9 +4690,9 @@ TEST_P(PasswordAutofillAgentFormPresenceVariationTest, TriggerFormSubmission) {
   base::RunLoop().RunUntilIdle();
   UpdateUsernameAndPasswordElements();
 
-  // Simulate the browser sending the login info, but set |wait_for_username|
+  // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled because the test
-  // simulates filling with |FillSuggestion|, the function that
+  // simulates filling with `FillSuggestion`, the function that
   // KeyboardReplacingSurface uses.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);

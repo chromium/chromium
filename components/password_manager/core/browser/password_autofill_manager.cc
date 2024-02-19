@@ -65,8 +65,8 @@ autofill::Suggestion CreateAccountStorageEmptyEntry() {
   return suggestion;
 }
 
-// If |suggestion| was made for an empty username, then return the empty
-// string, otherwise return |suggestion|.
+// If `suggestion` was made for an empty username, then return the empty
+// string, otherwise return `suggestion`.
 std::u16string GetUsernameFromSuggestion(const std::u16string& suggestion) {
   return suggestion ==
                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
@@ -569,7 +569,7 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
     const autofill::PasswordFormFillData& fill_data,
     autofill::PasswordAndMetadata* password_and_meta_data) {
   // TODO(dubroy): When password access requires some kind of authentication
-  // (e.g. Keychain access on Mac OS), use |password_manager_client_| here to
+  // (e.g. Keychain access on Mac OS), use `password_manager_client_` here to
   // fetch the actual password. See crbug.com/178358 for more context.
 
   bool item_uses_account_store =

@@ -368,7 +368,7 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   }
 
   // If autofill::mojom::PasswordAutofillAgent::SetLoggingState() got called,
-  // copies its argument into |activation_flag| and returns true. Otherwise
+  // copies its argument into `activation_flag` and returns true. Otherwise
   // returns false.
   bool WasLoggingActivationMessageSent(bool* activation_flag);
 
@@ -1146,7 +1146,7 @@ ChromePasswordManagerClientAndroidTest::SetUpMockPwdAccessoryForClientUse(
   MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
       mock_pwd_controller.get();
 
-  // Tie the mock accessory to the |WebContents| so that the client uses is.
+  // Tie the mock accessory to the `WebContents` so that the client uses is.
   web_contents()->SetUserData(weak_mock_pwd_controller->UserDataKey(),
                               std::move(mock_pwd_controller));
 

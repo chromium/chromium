@@ -32,7 +32,7 @@ namespace {
 const char* const kEvents[] = {"focus",  "keydown", "input",
                                "change", "keyup",   "blur"};
 
-// Returns renderer id of WebInput element with id attribute |input_id|.
+// Returns renderer id of WebInput element with id attribute `input_id`.
 autofill::FieldRendererId GetRendererId(WebDocument document,
                                         const char* input_id) {
   WebElement element = document.GetElementById(WebString::FromUTF8(input_id));
@@ -57,9 +57,9 @@ void SetFoundFormEligibleForGeneration(
   generation_agent->FoundFormEligibleForGeneration(data);
 }
 
-// Creates script that registers event listeners for |element_name| field. To
+// Creates script that registers event listeners for `element_name` field. To
 // check whether the listeners are called, check that the variables from
-// |variables_to_check| are set to 1.
+// `variables_to_check` are set to 1.
 std::string CreateScriptToRegisterListeners(
     const char* const element_name,
     std::vector<std::u16string>* variables_to_check) {

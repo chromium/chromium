@@ -131,8 +131,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   // Records whether FocusNoLongerOnForm() get called.
   bool did_unfocus_form_{false};
 
-  // Records value of |had_interacted_form| on last call to
-  // FocusNoLongerOnForm(). Meaningless if |did_unfocus_form_| is false.
+  // Records value of `had_interacted_form` on last call to
+  // FocusNoLongerOnForm(). Meaningless if `did_unfocus_form_` is false.
   bool had_interacted_form_{false};
 
   // Records the form data received via FormSubmitted() call.
@@ -149,7 +149,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
 // Helper function to verify the form-related messages received from the
 // renderer. The same data is expected in both messages. Depending on
-// |expect_submitted_message|, will verify presence of FormSubmitted message.
+// `expect_submitted_message`, will verify presence of FormSubmitted message.
 void VerifyReceivedRendererMessages(
     const FakeContentAutofillDriver& fake_driver,
     const std::string& fname,
@@ -539,7 +539,7 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
     WebElement element = document.GetElementById(WebString::FromUTF8(c.id));
     ASSERT_FALSE(element.IsNull());
     WebInputElement input_element = element.To<WebInputElement>();
-    // Select this element in |autofill_agent_|.
+    // Select this element in `autofill_agent_`.
     autofill_agent_->FormControlElementClicked(input_element);
 
     autofill_agent_->AcceptDataListSuggestion(

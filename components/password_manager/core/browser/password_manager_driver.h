@@ -49,13 +49,13 @@ class PasswordManagerDriver {
   // Returns driver id which is unique in the current tab.
   virtual int GetId() const = 0;
 
-  // Fills forms matching |form_data|.
+  // Fills forms matching `form_data`.
   virtual void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) = 0;
 
   // Informs the driver that there are no saved credentials in the password
   // store for the current page.
-  // |should_show_popup_without_passwords| instructs the driver that the popup
+  // `should_show_popup_without_passwords` instructs the driver that the popup
   // should be shown even without password suggestions. This is set to true if
   // the popup will include another item that the driver doesn't know about
   // (e.g. a promo to unlock passwords from the user's Google Account).
@@ -64,7 +64,7 @@ class PasswordManagerDriver {
       bool should_show_popup_without_passwords) {}
 
   // Notifies the driver that a password can be generated on the fields
-  // identified by |form|.
+  // identified by `form`.
   virtual void FormEligibleForGenerationFound(
       const autofill::PasswordFormGenerationData& form) {}
 
@@ -85,12 +85,12 @@ class PasswordManagerDriver {
   // in account creation).
   virtual void FocusNextFieldAfterPasswords() {}
 
-  // Tells the driver to fill the form with the |username| and |password|.
+  // Tells the driver to fill the form with the `username` and `password`.
   virtual void FillSuggestion(const std::u16string& username,
                               const std::u16string& password) = 0;
 
   // Tells the renderer to fill the given credential into the focused element.
-  // Always calls |completed_callback| with a status indicating success/error.
+  // Always calls `completed_callback` with a status indicating success/error.
   virtual void FillIntoFocusedField(
       bool is_password,
       const std::u16string& user_provided_credential) {}
@@ -106,8 +106,8 @@ class PasswordManagerDriver {
   virtual void TriggerFormSubmission() {}
 #endif
 
-  // Tells the driver to preview filling form with the |username| and
-  // |password|.
+  // Tells the driver to preview filling form with the `username` and
+  // `password`.
   virtual void PreviewSuggestion(const std::u16string& username,
                                  const std::u16string& password) = 0;
 
@@ -118,7 +118,7 @@ class PasswordManagerDriver {
   virtual void ClearPreviewedForm() = 0;
 
   // Updates the autofill suggestion availability of the DOM node with
-  // |generation_element_id|. It is critical for a11y to keep it updated
+  // `generation_element_id`. It is critical for a11y to keep it updated
   // to make proper announcements.
   virtual void SetSuggestionAvailability(
       autofill::FieldRendererId element_id,

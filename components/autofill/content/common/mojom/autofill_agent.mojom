@@ -67,13 +67,13 @@ interface AutofillAgent {
   TriggerSuggestions(FieldRendererId field,
                      AutofillSuggestionTriggerSource trigger_source);
 
-  // Sets the autofill/autocomplete suggestion availability of |field| (if it is
+  // Sets the autofill/autocomplete suggestion availability of `field` (if it is
   // still the currently selected node).
   SetSuggestionAvailability(
     FieldRendererId field,
     AutofillSuggestionAvailability suggestion_availability);
 
-  // Sets the value of |field| (if it is still the currently selected node).
+  // Sets the value of `field` (if it is still the currently selected node).
   // to the given data list value.
   AcceptDataListSuggestion(FieldRendererId field,
                            mojo_base.mojom.String16 value);
@@ -116,10 +116,10 @@ interface PasswordAutofillAgent {
   // This is the "no results" equivalent of SetPasswordFillData.
   InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
-  // Fills the given |credential| into the last focused text input.
+  // Fills the given `credential` into the last focused text input.
   FillIntoFocusedField(bool is_password, mojo_base.mojom.String16 credential);
 
-  // Notification to start (|active| == true) or stop (|active| == false)
+  // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
 
@@ -152,7 +152,7 @@ interface PasswordGenerationAgent {
   TriggeredGeneratePassword() => (PasswordGenerationUIData? data);
 
   // Tells the renderer that a password can be generated on the fields
-  // identified by |form|.
+  // identified by `form`.
   FoundFormEligibleForGeneration(PasswordFormGenerationData form);
 
   // Tells the renderer to advance focus to the next field after password fields

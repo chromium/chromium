@@ -527,7 +527,7 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
   size_t number_of_elements = form_data.fields.size();
   if (username_index == number_of_elements ||
       password_index == number_of_elements) {
-    // This is unexpected. |form_data| is supposed to contain username and
+    // This is unexpected. `form_data` is supposed to contain username and
     // password elements.
     return mojom::SubmissionReadinessState::kError;
   }
@@ -783,7 +783,7 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     auto iter = password_to_username_.find(element);
     if (iter != password_to_username_.end()) {
       web_input_to_password_info_[iter->second].password_was_edited_last = true;
-      // Note that the suggested value of |mutable_element| was reset when its
+      // Note that the suggested value of `mutable_element` was reset when its
       // value changed.
       // TODO(crbug.com/415449): Do this through const WebInputElement.
       WebInputElement mutable_element = element;  // We need a non-const.
@@ -1304,7 +1304,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     // store. Therefore, saved passwords will be available for filling on click.
     if (!sent_request_to_store_ && password_forms_data.empty() &&
         HasPasswordField(*frame)) {
-      // Set everything that |FormDigest| needs.
+      // Set everything that `FormDigest` needs.
       password_forms_data.emplace_back();
     }
     if (!password_forms_data.empty()) {

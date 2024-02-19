@@ -104,11 +104,11 @@ ContentPasswordManagerDriver::ContentPasswordManagerDriver(
   render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(
       &password_autofill_agent_);
 
-  // For some frames |this| may be instantiated before log manager creation, so
+  // For some frames `this` may be instantiated before log manager creation, so
   // here we can not send logging state to renderer process for them. For such
   // cases, after the log manager got ready later,
   // ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() will
-  // call ContentPasswordManagerDriver::SendLoggingAvailability() on |this| to
+  // call ContentPasswordManagerDriver::SendLoggingAvailability() on `this` to
   // do it actually.
   if (autofill::LogManager* log_manager = client_->GetLogManager()) {
     // RenderFrameHost might be a speculative one: it hasn't committed its

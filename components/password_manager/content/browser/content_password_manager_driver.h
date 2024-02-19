@@ -46,7 +46,7 @@ class ContentPasswordManagerDriver final
 
   ~ContentPasswordManagerDriver() override;
 
-  // Gets the driver for |render_frame_host|.
+  // Gets the driver for `render_frame_host`.
   static ContentPasswordManagerDriver* GetForRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 

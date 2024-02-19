@@ -2573,7 +2573,7 @@ TEST_F(FormAutofillTest,
   expected.name = expected.id_attribute;
   expected.max_length = 0;
   expected.form_control_type = FormControlType::kSelectOne;
-  // We check that the extra attributes have been copied to |result1|.
+  // We check that the extra attributes have been copied to `result1`.
   expected.is_autofilled = true;
   expected.autocomplete_attribute = "off";
   expected.should_autocomplete = false;
@@ -3112,7 +3112,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_TooManyFields) {
       {ExtractOption::kValue}));
 }
 
-// Tests that the |should_autocomplete| is set to false for all the fields when
+// Tests that the `should_autocomplete` is set to false for all the fields when
 // an autocomplete='off' attribute is set for the form in HTML.
 TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnForm) {
   LoadHTML(
@@ -3142,7 +3142,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnForm) {
   }
 }
 
-// Tests that the |should_autocomplete| is set to false only for the field
+// Tests that the `should_autocomplete` is set to false only for the field
 // which has an autocomplete='off' attribute set for it in HTML.
 TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnField) {
   LoadHTML(
@@ -3174,7 +3174,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnField) {
   EXPECT_TRUE(form.fields[2].should_autocomplete);
 }
 
-// |should_autocomplete| must be set to false for the field with
+// `should_autocomplete` must be set to false for the field with
 // autocomplete='one-time-code' attribute set in HTML.
 TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
   LoadHTML(
@@ -4927,14 +4927,14 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
   expected.max_length = 5;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[3]);
 
-  // When unspecified |size|, default is returned.
+  // When unspecified `size`, default is returned.
   expected.name_attribute = u"default1";
   expected.label.clear();
   expected.name = expected.name_attribute;
   expected.max_length = FormFieldData::kDefaultMaxLength;
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[4]);
 
-  // When invalid |size|, default is returned.
+  // When invalid `size`, default is returned.
   expected.name_attribute = u"invalid1";
   expected.label.clear();
   expected.name = expected.name_attribute;
