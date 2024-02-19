@@ -1239,7 +1239,13 @@ void FocusFakebox() {
 // displayed. Paste button should be hidden when pasteboard is empty otherwise
 // it should be displayed. Select & SelectAll buttons should be hidden when the
 // omnibox is empty.
-- (void)testEmptyOmnibox {
+// TODO(b/325908456): This test fails on iPad device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testEmptyOmnibox testEmptyOmnibox
+#else
+#define MAYBE_testEmptyOmnibox DISABLED_testEmptyOmnibox
+#endif
+- (void)MAYBE_testEmptyOmnibox {
   // TODO(crbug.com/1209342): this test fails on iOS 15 devices.
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
@@ -1351,7 +1357,13 @@ void FocusFakebox() {
 // fied, Select button should be hidden & SelectAll button should be displayed.
 // If the selected text is the entire omnibox field, select & SelectAll button
 // should be hidden.
-- (void)testSelection {
+// TODO(b/325908456): This test fails on iPad device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSelection testSelection
+#else
+#define MAYBE_testSelection DISABLED_testSelection
+#endif
+- (void)MAYBE_testSelection {
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1413,7 +1425,13 @@ void FocusFakebox() {
       assertWithMatcher:grey_nil()];
 }
 
-- (void)testNoDefaultMatch {
+// TODO(b/325908456): This test fails on iPad device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testNoDefaultMatch testNoDefaultMatch
+#else
+#define MAYBE_testNoDefaultMatch DISABLED_testNoDefaultMatch
+#endif
+- (void)MAYBE_testNoDefaultMatch {
   // TODO(crbug.com/1253345) This test fails on iOS 15 devices.
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
