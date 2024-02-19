@@ -229,7 +229,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   // Creates the constraints if the view is newly added to the view hierarchy.
 
   if (IsIpadPopoutOmniboxEnabled()) {
-    self.bottomConstraintPhone = [popup.superview.bottomAnchor
+    self.bottomConstraintPhone = [popup.superview.safeAreaLayoutGuide
+                                      .bottomAnchor
         constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
                                     constant:
                                         kPopupBottomPaddingTablet +
