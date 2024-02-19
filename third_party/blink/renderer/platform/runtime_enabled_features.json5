@@ -107,8 +107,9 @@
     },
 
     // public specifies whether a feature can be accessed via
-    // third_party/blink/public/platform/web_runtime_features.h, with the
-    // default being false.
+    // third_party/blink/public/platform/web_runtime_features.h with dedicated
+    // methods. The default is false. This should be rare because
+    // WebRuntimeFeatures::EnableFeatureFromString() works in most cases.
     public: {
       valid_type: "bool",
     },
@@ -229,7 +230,6 @@
     {
       name: "AccessibilityObjectModel",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "AccessibilityOSLevelBoldText",
@@ -260,7 +260,6 @@
       name: "AddressSpace",
       status: "experimental",
       implied_by: ["CorsRFC1918"],
-      base_feature: "none",
     },
     {
       // Interest Group JS API/runtimeflag.
@@ -298,9 +297,7 @@
     },
     {
       name: "AnonymousIframe",
-      public: true,
       status: "stable",
-      base_feature: "none",
     },
     {
       name: "AOMAriaRelationshipProperties",
@@ -471,7 +468,6 @@
     },
     {
       name: "BlinkRuntimeCallStats",
-      base_feature: "none",
     },
     {
       name: "BlockingFocusWithoutUserActivation",
@@ -661,7 +657,6 @@
     {
       name: "ComputedAccessibilityInfo",
       status: "experimental",
-      base_feature: "none",
     },
     {
       // blink::features::kComputePressure is a kill switch for the API. If the
@@ -685,7 +680,6 @@
     {
       name: "ContactsManager",
       status:  {"Android": "stable", "default": "test"},
-      base_feature: "none",
     },
     {
       name: "ContactsManagerExtraProperties",
@@ -698,7 +692,6 @@
     {
       name: "ContextMenu",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "CookieDeprecationFacilitatedTesting",
@@ -763,7 +756,6 @@
       // https://drafts.csswg.org/css-counter-styles/#counter-style-speak-as
       name: "CSSAtRuleCounterStyleSpeakAsDescriptor",
       status: "test",
-      base_feature: "none",
     },
     {
       // https://chromestatus.com/feature/5125388091260928
@@ -882,7 +874,6 @@
     {
       name: "CSSLayoutAPI",
       status: "experimental",
-      base_feature: "none",
     },
     {
       // Support for 'light-dark()' function to select computed color values
@@ -1530,7 +1521,6 @@
     },
     {
       name: "ExposeRenderTimeNonTaoDelayedImage",
-      base_feature: "none",
     },
     {
       name: "ExtendedTextMetrics",
@@ -1555,7 +1545,6 @@
     {
       name: "FaceDetector",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "FakeNoAllocDirectCallForTesting",
@@ -1721,7 +1710,6 @@
       // Shared objects by OPFS and non-OPFS File System Access API.
       name: "FileSystemAccess",
       implied_by: ["FileSystemAccessLocal", "FileSystemAccessOriginPrivate"],
-      base_feature: "none",
     },
     {
       // In-development features for the File System Access API.
@@ -2037,7 +2025,6 @@
     {
       name: "HTMLSelectListElement",
       status: "experimental",
-      base_feature: "none",
     },
     {
       // http://crbug.com/1478969
@@ -2194,7 +2181,6 @@
     {
       name: "LCPAnimatedImagesWebExposed",
       status: "test",
-      base_feature: "none",
     },
     {
       name: "LCPMouseoverHeuristics",
@@ -2276,7 +2262,6 @@
     {
       name: "MediaCapabilitiesSpatialAudio",
       status: "test",
-      base_feature: "none",
     },
     {
       name: "MediaCapture",
@@ -2324,7 +2309,6 @@
     },
     {
       name: "MediaElementVolumeGreaterThanOne",
-      base_feature: "none",
     },
     // Set to reflect the kMediaEngagementBypassAutoplayPolicies feature.
     {
@@ -2387,7 +2371,6 @@
     {
       name: "MiddleClickAutoscroll",
       status: "test",
-      base_feature: "none",
     },
     {
       name: "MobileLayoutTheme",
@@ -2400,7 +2383,6 @@
     {
       name: "MojoJS",
       status: "test",
-      base_feature: "none",
     },
     // MojoJSTest is used exclusively in testing environments, whereas MojoJS
     // may also be used elsewhere.
@@ -2452,7 +2434,6 @@
       name: "NavigatorContentUtils",
       // Android does not yet support NavigatorContentUtils.
       status: {"Android": "", "default": "stable"},
-      base_feature: "none",
     },
     {
       name: "NestedTopLayerSupport",
@@ -2811,7 +2792,6 @@
       name: "PaymentMethodChangeEvent",
       depends_on: ["PaymentRequest"],
       status: "stable",
-      base_feature: "none",
     },
     // PaymentRequest is enabled by default on Android
     {
@@ -2884,7 +2864,6 @@
     {
       name: "PermissionsRequestRevoke",
       status: "experimental",
-      base_feature: "none",
     },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374
@@ -3076,7 +3055,6 @@
     {
       name: "RegionCapture",
       status: {"Android": "", "default": "stable"},
-      base_feature: "none",
     },
     {
       name: "RemotePlayback",
@@ -3344,7 +3322,6 @@
     {
       name: "Serial",
       status: {"Android": "", "default": "stable"},
-      base_feature: "none",
     },
     {
       name: "SerializeViewTransitionStateInSPA",
@@ -3573,7 +3550,6 @@
     },
     {
       name: "SpeculationRulesPrefetchWithSubresources",
-      base_feature: "none",
     },
     {
       name: "SpeculationRulesRelativeToDocument",
@@ -3651,7 +3627,6 @@
     {
       name: "SystemWakeLock",
       status: "experimental",
-      base_feature: "none",
     },
     {
       // Killswitch for the reflection of <template shadowrootdelegatesfocus>
@@ -3951,7 +3926,6 @@
       name: "WakeLock",
       status: "stable",
       implied_by: ["SystemWakeLock"],
-      base_feature: "none",
     },
     {
       // When enabled, this will issue a warning to the console any time
@@ -3993,7 +3967,6 @@
     {
       name:"WebAppsLockScreen",
       status:"experimental",
-      base_feature: "none",
     },
     {
       name: "WebAppTabStrip",
@@ -4166,7 +4139,6 @@
     },
     {
       name: "WebGPU",
-      base_feature: "none",
       status: "stable",
     },
     {
@@ -4186,7 +4158,6 @@
     {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
-      base_feature: "none",
     },
     {
       // It is only enabled in extension environment for now.
