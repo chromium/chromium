@@ -3855,19 +3855,37 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
           std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_GENERAL_ERROR));
+  EXPECT_CALL(chaps_client_, GetMechanismList)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
+          std::vector<uint64>(), chromeos::PKCS11_CKR_GENERAL_ERROR));
 
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_rsa_waiter;
   token_.GenerateRsaKey(RsaModulusLength::k2048, true,
                         generate_rsa_waiter.GetCallback());
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_ec_waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256, true,
+                       generate_ec_waiter.GetCallback());
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(), import_key_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> import_cert_waiter;
+  token_.ImportCertFromBytes(CertDer(), import_cert_waiter.GetCallback());
   base::test::TestFuture<base::expected<void, Error>> remove_key_waiter;
   token_.RemoveKeyAndCerts(PrivateKeyHandle(public_key),
                            remove_key_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
+  token_.RemoveCert(nullptr, remove_cert_waiter.GetCallback());
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>>
+      list_keys_waiter;
+  token_.ListKeys(list_keys_waiter.GetCallback());
+  base::test::TestFuture<
+      base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
+      list_certs_waiter;
+  token_.ListCerts(list_certs_waiter.GetCallback());
   base::test::TestFuture<base::expected<bool, Error>> key_exists_waiter;
   token_.DoesPrivateKeyExist(PrivateKeyHandle(public_key),
                              key_exists_waiter.GetCallback());
-
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   token_.Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha1,
               DataToSign({1, 2, 3}), sign_waiter.GetCallback());
@@ -3875,31 +3893,81 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key),
                          DigestWithPrefix({1, 2, 3}),
                          sign_raw_waiter.GetCallback());
-  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>>
-      list_keys_waiter;
-  token_.ListKeys(list_keys_waiter.GetCallback());
+  base::test::TestFuture<base::expected<TokenInfo, Error>> token_info_waiter;
+  token_.GetTokenInfo(token_info_waiter.GetCallback());
+  base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key),
+                    key_info_waiter.GetCallback());
+  base::test::TestFuture<
+      base::expected<std::optional<chaps::KeyPermissions>, Error>>
+      get_key_permissions_waiter;
+  token_.GetKeyPermissions(PrivateKeyHandle(public_key),
+                           get_key_permissions_waiter.GetCallback());
+  base::test::TestFuture<base::expected<std::optional<std::string>, Error>>
+      get_cert_prov_id_waiter;
+  token_.GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                      get_cert_prov_id_waiter.GetCallback());
   base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
   token_.SetKeyNickname(PrivateKeyHandle(public_key), "",
                         set_nickname_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>>
+      set_key_permissions_waiter;
+  token_.SetKeyPermissions(PrivateKeyHandle(public_key),
+                           chaps::KeyPermissions(),
+                           set_key_permissions_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> set_cert_prov_id_waiter;
+  token_.SetCertProvisioningProfileId(PrivateKeyHandle(public_key), "",
+                                      set_cert_prov_id_waiter.GetCallback());
+  // Run GenerateRsaKey again to test that SetCertProvisioningProfileId will
+  // trigger it after initialization.
+  base::test::TestFuture<base::expected<PublicKey, Error>>
+      generate_rsa_waiter_2;
+  token_.GenerateRsaKey(RsaModulusLength::k2048, true,
+                        generate_rsa_waiter_2.GetCallback());
 
   task_environment_.RunUntilIdle();
+
   EXPECT_FALSE(generate_rsa_waiter.IsReady());
+  EXPECT_FALSE(generate_ec_waiter.IsReady());
+  EXPECT_FALSE(import_key_waiter.IsReady());
+  EXPECT_FALSE(import_cert_waiter.IsReady());
   EXPECT_FALSE(remove_key_waiter.IsReady());
+  EXPECT_FALSE(remove_cert_waiter.IsReady());
+  EXPECT_FALSE(list_keys_waiter.IsReady());
+  EXPECT_FALSE(list_certs_waiter.IsReady());
   EXPECT_FALSE(key_exists_waiter.IsReady());
   EXPECT_FALSE(sign_waiter.IsReady());
   EXPECT_FALSE(sign_raw_waiter.IsReady());
-  EXPECT_FALSE(list_keys_waiter.IsReady());
+  EXPECT_FALSE(token_info_waiter.IsReady());
+  EXPECT_FALSE(key_info_waiter.IsReady());
+  EXPECT_FALSE(get_key_permissions_waiter.IsReady());
+  EXPECT_FALSE(get_cert_prov_id_waiter.IsReady());
   EXPECT_FALSE(set_nickname_waiter.IsReady());
+  EXPECT_FALSE(set_key_permissions_waiter.IsReady());
+  EXPECT_FALSE(set_cert_prov_id_waiter.IsReady());
+  EXPECT_FALSE(generate_rsa_waiter_2.IsReady());
 
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   EXPECT_FALSE(generate_rsa_waiter.Get().has_value());
+  EXPECT_FALSE(generate_ec_waiter.Get().has_value());
+  EXPECT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_FALSE(import_cert_waiter.Get().has_value());
   EXPECT_FALSE(remove_key_waiter.Get().has_value());
+  EXPECT_FALSE(remove_cert_waiter.Get().has_value());
+  EXPECT_FALSE(list_keys_waiter.Get().has_value());
+  EXPECT_FALSE(list_certs_waiter.Get().has_value());
   EXPECT_FALSE(key_exists_waiter.Get().has_value());
   EXPECT_FALSE(sign_waiter.Get().has_value());
   EXPECT_FALSE(sign_raw_waiter.Get().has_value());
-  EXPECT_FALSE(list_keys_waiter.Get().has_value());
+  EXPECT_TRUE(token_info_waiter.Get().has_value());
+  EXPECT_FALSE(key_info_waiter.Get().has_value());
+  EXPECT_FALSE(get_key_permissions_waiter.Get().has_value());
+  EXPECT_FALSE(get_cert_prov_id_waiter.Get().has_value());
   EXPECT_FALSE(set_nickname_waiter.Get().has_value());
+  EXPECT_FALSE(set_key_permissions_waiter.Get().has_value());
+  EXPECT_FALSE(set_cert_prov_id_waiter.Get().has_value());
+  EXPECT_FALSE(generate_rsa_waiter_2.Get().has_value());
 }
 
 }  // namespace

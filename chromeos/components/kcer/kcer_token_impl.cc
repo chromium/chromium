@@ -428,7 +428,6 @@ void KcerTokenImpl::GenerateRsaKey(RsaModulusLength modulus_length_bits,
         &KcerTokenImpl::GenerateRsaKey, weak_factory_.GetWeakPtr(),
         modulus_length_bits, hardware_backed, std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -597,7 +596,6 @@ void KcerTokenImpl::GenerateEcKey(EllipticCurve curve,
         &KcerTokenImpl::GenerateEcKey, weak_factory_.GetWeakPtr(), curve,
         hardware_backed, std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -769,30 +767,31 @@ void KcerTokenImpl::ImportKey(Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
         &KcerTokenImpl::ImportKey, weak_factory_.GetWeakPtr(),
         std::move(pkcs8_private_key_info_der), std::move(callback)));
   }
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
   const uint8_t* buffer = pkcs8_private_key_info_der->data();
   bssl::UniquePtr<PKCS8_PRIV_KEY_INFO> p8(d2i_PKCS8_PRIV_KEY_INFO(
       nullptr, &buffer, pkcs8_private_key_info_der->size()));
   if (!p8) {
-    return std::move(callback).Run(base::unexpected(Error::kFailedToParseKey));
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToParseKey));
   }
 
   KeyData key_data;
   key_data.key = bssl::UniquePtr<EVP_PKEY>(EVP_PKCS82PKEY(p8.get()));
   if (!key_data.key) {
-    return std::move(callback).Run(base::unexpected(Error::kFailedToParseKey));
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToParseKey));
   }
 
   Pkcs12Reader pkcs12_reader;
   Pkcs12ReaderStatusCode enrich_key_data_result =
       pkcs12_reader.EnrichKeyData(key_data);
   if (enrich_key_data_result != Pkcs12ReaderStatusCode::kSuccess) {
-    return std::move(callback).Run(
-        base::unexpected(Error::kFailedToGetPkcs11Id));
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToGetPkcs11Id));
   }
-
-  // Block task queue, attach unblocking task to the callback.
-  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
   kcer_utils_.ImportKey(KcerTokenUtils::ImportKeyTask(
       std::move(key_data), std::move(unblocking_callback)));
@@ -811,13 +810,11 @@ KcerTokenImpl::ImportCertFromBytesTask::~ImportCertFromBytesTask() = default;
 void KcerTokenImpl::ImportCertFromBytes(CertDer cert_der,
                                         Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (is_blocked_) {
     return task_queue_.push_back(base::BindOnce(
         &KcerTokenImpl::ImportCertFromBytes, weak_factory_.GetWeakPtr(),
         std::move(cert_der), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -980,7 +977,6 @@ void KcerTokenImpl::RemoveKeyAndCerts(PrivateKeyHandle key,
         &KcerTokenImpl::RemoveKeyAndCerts, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -1069,7 +1065,6 @@ void KcerTokenImpl::RemoveCert(scoped_refptr<const Cert> cert,
         base::BindOnce(&KcerTokenImpl::RemoveCert, weak_factory_.GetWeakPtr(),
                        std::move(cert), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -1160,7 +1155,6 @@ void KcerTokenImpl::ListKeys(TokenListKeysCallback callback) {
                                                 weak_factory_.GetWeakPtr(),
                                                 std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -1437,7 +1431,6 @@ void KcerTokenImpl::ListCerts(TokenListCertsCallback callback) {
                                                 weak_factory_.GetWeakPtr(),
                                                 std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -1570,7 +1563,6 @@ void KcerTokenImpl::DoesPrivateKeyExist(PrivateKeyHandle key,
         &KcerTokenImpl::DoesPrivateKeyExist, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -1648,7 +1640,6 @@ void KcerTokenImpl::Sign(PrivateKeyHandle key,
         &KcerTokenImpl::Sign, weak_factory_.GetWeakPtr(), std::move(key),
         signing_scheme, std::move(data), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -1780,7 +1771,6 @@ void KcerTokenImpl::SignRsaPkcs1Raw(PrivateKeyHandle key,
         &KcerTokenImpl::SignRsaPkcs1Raw, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(digest_with_prefix), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -1861,7 +1851,13 @@ void KcerTokenImpl::DidSignRsaPkcs1Raw(SignRsaPkcs1RawTask task,
 void KcerTokenImpl::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Do not block the task queue, this method doesn't communicate with Chaps.
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(&KcerTokenImpl::GetTokenInfo,
+                                                weak_factory_.GetWeakPtr(),
+                                                std::move(callback)));
+  }
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
   TokenInfo result;
   result.pkcs11_id = pkcs_11_slot_id_.value();
@@ -1877,7 +1873,8 @@ void KcerTokenImpl::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+      FROM_HERE,
+      base::BindOnce(std::move(unblocking_callback), std::move(result)));
 }
 
 //==============================================================================
@@ -1938,9 +1935,7 @@ void KcerTokenImpl::GetKeyInfo(PrivateKeyHandle key,
         base::BindOnce(&KcerTokenImpl::GetKeyInfo, weak_factory_.GetWeakPtr(),
                        std::move(key), std::move(callback)));
   }
-
-  // Block task queue, attach unblocking
-  // task to the callback.
+  // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
   if (!EnsurePkcs11IdIsSet(key)) {
@@ -2073,9 +2068,7 @@ void KcerTokenImpl::GetKeyPermissions(
         &KcerTokenImpl::GetKeyPermissions, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(callback)));
   }
-
-  // Block task queue, attach unblocking
-  // task to the callback.
+  // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
   if (!EnsurePkcs11IdIsSet(key)) {
@@ -2165,9 +2158,7 @@ void KcerTokenImpl::GetCertProvisioningProfileId(
         &KcerTokenImpl::GetCertProvisioningProfileId,
         weak_factory_.GetWeakPtr(), std::move(key), std::move(callback)));
   }
-
-  // Block task queue, attach unblocking
-  // task to the callback.
+  // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
   if (!EnsurePkcs11IdIsSet(key)) {
@@ -2339,7 +2330,6 @@ void KcerTokenImpl::SetKeyNickname(PrivateKeyHandle key,
         &KcerTokenImpl::SetKeyNickname, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(nickname), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -2361,7 +2351,6 @@ void KcerTokenImpl::SetKeyPermissions(PrivateKeyHandle key,
         &KcerTokenImpl::SetKeyPermissions, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(key_permissions), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
@@ -2389,7 +2378,6 @@ void KcerTokenImpl::SetCertProvisioningProfileId(
                        weak_factory_.GetWeakPtr(), std::move(key),
                        std::move(profile_id), std::move(callback)));
   }
-
   // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
