@@ -15,13 +15,13 @@ option optimize_for = LITE_RUNTIME;
 package sync_pb;
 
 // Special sync datatype to notify client about People Group changes.
-message CollaborationSpecifics {
+message CollaborationGroupSpecifics {
   // Unique identifier for a collaboration group, also known as `group_id` or
   // `group_name`.
   optional string collaboration_id = 1;
 
-  // Indicates staleness of the collaboration, used to determine whether client
-  // should refresh cached group. Server-side derived from group
+  // Indicates staleness of the collaboration group, used to determine whether
+  // client should refresh cached group. Server-side derived from group
   // `consistency_token`.
   optional int64 last_updated_timestamp_millis_since_unix_epoch = 2;
 }

@@ -21,7 +21,7 @@ import "components/sync/protocol/autofill_offer_specifics.proto";
 import "components/sync/protocol/autofill_wallet_credential_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
 import "components/sync/protocol/bookmark_specifics.proto";
-import "components/sync/protocol/collaboration_specifics.proto";
+import "components/sync/protocol/collaboration_group_specifics.proto";
 import "components/sync/protocol/contact_info_specifics.proto";
 import "components/sync/protocol/device_info_specifics.proto";
 import "components/sync/protocol/dictionary_specifics.proto";
@@ -152,7 +152,7 @@ message EntitySpecifics {
         outgoing_password_sharing_invitation = 1142081;
     AutofillWalletCredentialSpecifics autofill_wallet_credential = 1164238;
     SharedTabGroupDataSpecifics shared_tab_group_data = 1239418;
-    CollaborationSpecifics collaboration = 1259076;
+    CollaborationGroupSpecifics collaboration_group = 1259076;
 
     // No-longer-supported data types, in various stages of removal.
     // TODO(crbug.com/1395003): Eventually, these should all become "reserved"

@@ -15,7 +15,7 @@
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
-#include "components/sync/protocol/collaboration_specifics.pb.h"
+#include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
@@ -334,7 +334,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ChromiumExtensionsActivity& proto) {
   VISIT(bookmark_writes_since_last_commit);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::CollaborationSpecifics& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::CollaborationGroupSpecifics& proto) {
   VISIT(collaboration_id);
   VISIT(last_updated_timestamp_millis_since_unix_epoch);
 }
@@ -606,7 +606,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(autofill_wallet_credential);
   VISIT(autofill_wallet_usage);
   VISIT(bookmark);
-  VISIT(collaboration);
+  VISIT(collaboration_group);
   VISIT(contact_info);
   VISIT(device_info);
   VISIT(dictionary);

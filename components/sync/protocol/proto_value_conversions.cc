@@ -22,7 +22,7 @@
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
-#include "components/sync/protocol/collaboration_specifics.pb.h"
+#include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
@@ -344,7 +344,7 @@ IMPLEMENT_PROTO_TO_VALUE(AutofillWalletUsageSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(BankAccountDetails)
 IMPLEMENT_PROTO_TO_VALUE(BookmarkSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ClientConfigParams)
-IMPLEMENT_PROTO_TO_VALUE(CollaborationSpecifics)
+IMPLEMENT_PROTO_TO_VALUE(CollaborationGroupSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ContactInfoSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(CrossUserSharingPublicKey)
 IMPLEMENT_PROTO_TO_VALUE(DebugEventInfo)
