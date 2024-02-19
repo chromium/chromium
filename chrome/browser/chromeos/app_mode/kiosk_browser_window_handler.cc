@@ -61,9 +61,15 @@ std::string GetUrlOfActiveTab(const Browser* browser) {
 }
 
 void CloseBrowser(Browser* browser) {
-  // Note we don't use `browser.window().Close()` because it can fail if a
-  // user drags the window.
-  browser->tab_strip_model()->CloseAllTabs();
+  // We prefer to use `browser->tab_strip_model()->CloseAllTabs`, because
+  // `browser->window()->Close()` can silently fail if the window is currently
+  // being dragged. However, `CloseAllTabs` becomes a no-op if no tabs are
+  // present, so we fall back to `browser->window()->Close()` for that case.
+  if (!browser->tab_strip_model()->empty()) {
+    browser->tab_strip_model()->CloseAllTabs();
+  } else {
+    browser->window()->Close();
+  }
 }
 
 }  // namespace
