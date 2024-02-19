@@ -51,7 +51,7 @@ public class PwaUniversalInstallBottomSheetView {
                 .findViewById(R.id.option_shortcut)
                 .setBackgroundResource(R.drawable.pwa_restore_app_item_background_bottom);
 
-        // Add a 4dp separator view as a separate item in the ScrollView so as to not affect the
+        // Add a 2dp separator view as a separate item in the ScrollView so as to not affect the
         // height of the app item view (or mess up the rounded corners).
         View separator = mContentView.findViewById(R.id.separator);
         separator.setLayoutParams(
@@ -60,7 +60,7 @@ public class PwaUniversalInstallBottomSheetView {
                         (int)
                                 TypedValue.applyDimension(
                                         TypedValue.COMPLEX_UNIT_DIP,
-                                        4,
+                                        2,
                                         context.getResources().getDisplayMetrics())));
 
         // Setup the app icon, with a placeholder as fallback in case of an error.
@@ -79,6 +79,12 @@ public class PwaUniversalInstallBottomSheetView {
                     .setBackgroundResource(arrowId);
             ((ImageView) mContentView.findViewById(R.id.arrow_shortcut))
                     .setBackgroundResource(arrowId);
+
+            // TODO(finnur): Swap out the placeholders for drawables from UX.
+            ((ImageView) mContentView.findViewById(R.id.install_icon_overlay))
+                    .setBackgroundResource(arrowId);
+            ((ImageView) mContentView.findViewById(R.id.shortcut_icon_overlay))
+                    .setBackgroundResource(arrowId);
         }
     }
 
@@ -86,21 +92,26 @@ public class PwaUniversalInstallBottomSheetView {
         assert (!isAdaptive || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 : "Adaptive icons should not be provided pre-Android O.";
 
-        ImageView app_icon_install = mContentView.findViewById(R.id.app_icon_install);
-        ImageView app_icon_shortcut = mContentView.findViewById(R.id.app_icon_shortcut);
+        ImageView appIconInstall = mContentView.findViewById(R.id.app_icon_install);
+        ImageView appIconShortcut = mContentView.findViewById(R.id.app_icon_shortcut);
+
         if (isAdaptive) {
-            app_icon_install.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
-            app_icon_shortcut.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
+            appIconInstall.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
+            appIconShortcut.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
         } else {
-            app_icon_install.setImageBitmap(appIcon);
-            app_icon_shortcut.setImageBitmap(appIcon);
+            appIconInstall.setImageBitmap(appIcon);
+            appIconShortcut.setImageBitmap(appIcon);
         }
 
         // Swap out the spinners for icons.
         mContentView.findViewById(R.id.spinny_install).setVisibility(View.GONE);
         mContentView.findViewById(R.id.spinny_shortcut).setVisibility(View.GONE);
-        app_icon_install.setVisibility(View.VISIBLE);
-        app_icon_shortcut.setVisibility(View.VISIBLE);
+        appIconInstall.setVisibility(View.VISIBLE);
+        appIconShortcut.setVisibility(View.VISIBLE);
+
+        // TODO(finnur): Show these overlays after the right drawables have been configured.
+        // mContentView.findViewById(R.id.install_icon_overlay).setVisibility(View.VISIBLE);
+        // mContentView.findViewById(R.id.shortcut_icon_overlay).setVisibility(View.VISIBLE);
     }
 
     public View getContentView() {

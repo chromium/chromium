@@ -98,8 +98,14 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
                             view.findViewById(R.id.app_icon_install).getVisibility()
                                     == View.VISIBLE);
                     Assert.assertTrue(
+                            view.findViewById(R.id.install_icon_overlay).getVisibility()
+                                    == View.GONE);
+                    Assert.assertTrue(
                             view.findViewById(R.id.app_icon_shortcut).getVisibility()
                                     == View.VISIBLE);
+                    Assert.assertTrue(
+                            view.findViewById(R.id.shortcut_icon_overlay).getVisibility()
+                                    == View.GONE);
                     Assert.assertTrue(
                             view.findViewById(R.id.arrow_install).getVisibility() == View.VISIBLE);
                     Assert.assertTrue(
