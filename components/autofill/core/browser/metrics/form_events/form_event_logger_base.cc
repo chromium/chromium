@@ -4,12 +4,17 @@
 
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 
+#include <cstddef>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -17,6 +22,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 using base::UmaHistogramBoolean;
 
@@ -143,6 +149,27 @@ void FormEventLoggerBase::OnDidShowSuggestions(
   RecordShowSuggestions();
 }
 
+void FormEventLoggerBase::RecordFillingOperation(
+    FormGlobalId form_id,
+    base::span<const AutofillField*> filled_fields) {
+  ++filling_operation_count_;
+  bool is_address = form_type_name_ == "Address";
+  for (const AutofillField* filled_field : filled_fields) {
+    if (!filled_field ||
+        filled_field->Type().GetStorableType() == UNKNOWN_TYPE ||
+        (IsAddressType(filled_field->Type().GetStorableType()) != is_address)) {
+      filled_fields_types_[filled_field->global_id()] =
+          FilledFieldTypeMetric::kUnclassified;
+    } else if (filled_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+      filled_fields_types_[filled_field->global_id()] =
+          FilledFieldTypeMetric::kClassifiedWithUnrecognizedAutocomplete;
+    } else {
+      filled_fields_types_[filled_field->global_id()] =
+          FilledFieldTypeMetric::kClassifiedWithRecognizedAutocomplete;
+    }
+  }
+}
+
 void FormEventLoggerBase::OnDidRefill(
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const FormStructure& form) {
@@ -234,10 +261,15 @@ void FormEventLoggerBase::OnDestroyed() {
   if (ablation_group_ != AblationGroup::kAblation) {
     RecordFunnelMetrics();
     RecordKeyMetrics();
+
     if (filling_operation_count_) {
       base::UmaHistogramCounts100(
           "Autofill.FillingOperationCount." + form_type_name_,
           filling_operation_count_);
+      for (const auto& [_, filled_field_type] : filled_fields_types_) {
+        base::UmaHistogramEnumeration(
+            "Autofill.FilledFieldType." + form_type_name_, filled_field_type);
+      }
     }
   }
   RecordAblationMetrics();

@@ -16,8 +16,16 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill::autofill_metrics {
+
+enum class FilledFieldTypeMetric {
+  kClassifiedWithRecognizedAutocomplete = 0,
+  kClassifiedWithUnrecognizedAutocomplete = 1,
+  kUnclassified = 2,
+  kMaxValue = kUnclassified
+};
 
 // Utility to log autofill form events in the relevant histograms depending on
 // the presence of server and/or local data.
@@ -52,7 +60,8 @@ class FormEventLoggerBase {
   // This is different from OnDidFillSuggestion because it does not require to
   // provide data models or other parameters. It is needed to be used in field
   // by field filling.
-  void RecordFillingOperation() { ++filling_operation_count_; }
+  void RecordFillingOperation(FormGlobalId form_id,
+                              base::span<const AutofillField*> filled_fields);
 
   void OnDidRefill(
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
@@ -210,6 +219,7 @@ class FormEventLoggerBase {
   // `has_logged_form_filling_suggestion_filled_` since the latter doesn't
   // include field by field filling operations.
   size_t filling_operation_count_ = 0;
+  std::map<FieldGlobalId, FilledFieldTypeMetric> filled_fields_types_;
 
   // The last field that was polled for suggestions.
   FormFieldData last_polled_field_;

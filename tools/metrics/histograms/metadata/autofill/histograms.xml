@@ -2085,6 +2085,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FilledFieldType{AutofillFormType}"
+    enum="FieldClassificationType" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records for each field autofilled with {AutofillFormType} data, whether it
+    is classified with autocomplete attribute recognized, unrecognized, or
+    whether it is simply unclassified. Emitted at destruction time of
+    BrowserAutofillManager if at least one autofill operation was performed.
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
 <histogram
     name="Autofill.FillingMethodUsed{FillingProduct}{ClassificationMatchesFillingProduct}"
     enum="AutofillFillingMethodMetric" expires_after="2024-11-03">

@@ -25,6 +25,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -83,6 +84,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
+#include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
@@ -189,21 +191,25 @@ void LogDeveloperEngagementUkm(ukm::UkmRecorder* ukm_recorder,
 }
 
 ValuePatternsMetric GetValuePattern(const std::u16string& value) {
-  if (IsUPIVirtualPaymentAddress(value))
+  if (IsUPIVirtualPaymentAddress(value)) {
     return ValuePatternsMetric::kUpiVpa;
-  if (IsInternationalBankAccountNumber(value))
+  }
+  if (IsInternationalBankAccountNumber(value)) {
     return ValuePatternsMetric::kIban;
+  }
   return ValuePatternsMetric::kNoPatternFound;
 }
 
 void LogValuePatternsMetric(const FormData& form) {
   for (const FormFieldData& field : form.fields) {
-    if (!field.IsFocusable())
+    if (!field.IsFocusable()) {
       continue;
+    }
     std::u16string value;
     base::TrimWhitespace(field.value, base::TRIM_ALL, &value);
-    if (value.empty())
+    if (value.empty()) {
       continue;
+    }
     base::UmaHistogramEnumeration("Autofill.SubmittedValuePatterns",
                                   GetValuePattern(value));
   }
@@ -477,19 +483,22 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
   }
 
   AutofillField* autofill_field = GetAutofillField(form, field);
-  if (!autofill_field)
+  if (!autofill_field) {
     return false;
+  }
 
   bool is_card_number_field =
       autofill_field->Type().GetStorableType() == CREDIT_CARD_NUMBER &&
       base::ContainsOnlyChars(CreditCard::StripSeparators(field.value),
                               u"0123456789");
 
-  if (!is_card_number_field)
+  if (!is_card_number_field) {
     return false;
+  }
 
-  if (IsFormNonSecure(form))
+  if (IsFormNonSecure(form)) {
     return false;
+  }
 
   static const int kShowScanCreditCardMaxValueLength = 6;
   return field.value.size() <= kShowScanCreditCardMaxValueLength;
@@ -518,8 +527,9 @@ bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     return false;
   }
 
-  if (IsFormNonSecure(form))
+  if (IsFormNonSecure(form)) {
     return false;
+  }
 
   return client().GetPersonalDataManager()->ShouldShowCardsFromAccountOption();
 }
@@ -707,8 +717,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   // Create another FormStructure instance.
   submitted_form = ValidateSubmittedForm(form);
   DCHECK(submitted_form);
-  if (!submitted_form)
+  if (!submitted_form) {
     return;
+  }
 
   submitted_form->set_submission_source(source);
 
@@ -749,24 +760,28 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   const std::vector<CreditCard*>& credit_cards =
       client().GetPersonalDataManager()->GetCreditCards();
 
-  if (profiles.empty() && credit_cards.empty())
+  if (profiles.empty() && credit_cards.empty()) {
     return false;
+  }
 
   if (form_structure->field_count() * (profiles.size() + credit_cards.size()) >=
-      kMaxTypeMatchingCalls)
+      kMaxTypeMatchingCalls) {
     return false;
+  }
 
   // Copy the profile and credit card data, so that it can be accessed on a
   // separate thread.
   std::vector<AutofillProfile> copied_profiles;
   copied_profiles.reserve(profiles.size());
-  for (const AutofillProfile* profile : profiles)
+  for (const AutofillProfile* profile : profiles) {
     copied_profiles.push_back(*profile);
+  }
 
   std::vector<CreditCard> copied_credit_cards;
   copied_credit_cards.reserve(credit_cards.size());
-  for (const CreditCard* card : credit_cards)
+  for (const CreditCard* card : credit_cards) {
     copied_credit_cards.push_back(*card);
+  }
 
   // Annotate the form with the source language of the page.
   form_structure->set_current_page_language(GetCurrentPageLanguage());
@@ -830,16 +845,18 @@ void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
 }
 
 void BrowserAutofillManager::ProcessPendingFormForUpload() {
-  if (!pending_form_data_)
+  if (!pending_form_data_) {
     return;
+  }
 
   // We get the FormStructure corresponding to |pending_form_data_|, used in the
   // upload process. |pending_form_data_| is reset.
   std::unique_ptr<FormStructure> upload_form =
       ValidateSubmittedForm(*pending_form_data_);
   pending_form_data_.reset();
-  if (!upload_form)
+  if (!upload_form) {
     return;
+  }
 
   MaybeStartVoteUploadProcess(std::move(upload_form),
                               /*observed_submission=*/false);
@@ -852,8 +869,9 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const TimeTicks timestamp) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
+  }
 
   // Log events when user edits the field.
   // If the user types into the same field multiple times, repeated
@@ -872,8 +890,9 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 
   auto* logger = GetEventFormLogger(*autofill_field);
   if (!autofill_field->is_autofilled) {
-    if (logger)
+    if (logger) {
       logger->OnTypedIntoNonFilledField();
+    }
   }
 
   if (!user_did_type_) {
@@ -891,8 +910,9 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
         autofill_field->Type().group(),
         client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
 
-    if (logger)
+    if (logger) {
       logger->OnEditedAutofilledField();
+    }
 
     if (!user_did_edit_autofilled_field_) {
       user_did_edit_autofilled_field_ = true;
@@ -905,8 +925,9 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 
   UpdateInitialInteractionTimestamp(timestamp);
 
-  if (logger)
+  if (logger) {
     logger->OnTextFieldDidChange(autofill_field->global_id());
+  }
 }
 
 bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
@@ -1188,10 +1209,13 @@ void BrowserAutofillManager::FillOrPreviewField(
                                    field, form_structure, autofill_field, value,
                                    popup_item_id);
   if (action_persistence == mojom::ActionPersistence::kFill) {
+    const AutofillField* const_autofill_field = autofill_field;
     if (popup_item_id == PopupItemId::kAddressFieldByFieldFilling) {
-      address_form_event_logger_->RecordFillingOperation();
+      address_form_event_logger_->RecordFillingOperation(
+          form.global_id(), base::make_span(&const_autofill_field, 1u));
     } else if (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling) {
-      credit_card_form_event_logger_->RecordFillingOperation();
+      credit_card_form_event_logger_->RecordFillingOperation(
+          form.global_id(), base::make_span(&const_autofill_field, 1u));
     }
   }
 }
@@ -1244,8 +1268,9 @@ void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(
   // For historical reasons, Chrome takes action on this message only if focus
   // was previously on a form with which the user had interacted.
   // TODO(crbug.com/1140473): Remove need for this short-circuit.
-  if (!had_interacted_form)
+  if (!had_interacted_form) {
     return;
+  }
 
   ProcessPendingFormForUpload();
 
@@ -1271,8 +1296,9 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // the platform is ChromeOS, then assume ChromeVox is in use as there is no
   // way of determining whether it's being used from this point in the code.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!external_delegate_->HasActiveScreenReader())
+  if (!external_delegate_->HasActiveScreenReader()) {
     return;
+  }
 #endif
 
   // TODO(https://crbug.com/848427): Add metrics for performance impact.
@@ -1355,8 +1381,9 @@ void BrowserAutofillManager::DidShowSuggestions(
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // TODO(crbug.com/1493361): Adapt for the unclassified forms.
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
+  }
 
   uint32_t profile_form_bitmask = data_util::DetermineGroups(*form_structure);
   AutofillMetrics::LogUserHappinessMetric(
@@ -1451,12 +1478,14 @@ void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
                                                    const FormFieldData& field) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
+  }
 
   auto* logger = GetEventFormLogger(*autofill_field);
-  if (logger)
+  if (logger) {
     logger->OnUserHideSuggestions(*form_structure, *autofill_field);
+  }
 }
 
 bool BrowserAutofillManager::ShouldClearPreviewedForm() {
@@ -1466,8 +1495,9 @@ bool BrowserAutofillManager::ShouldClearPreviewedForm() {
 void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(
     const FormData& form) {
   FormStructure* form_structure = FindCachedFormById(form.global_id());
-  if (!form_structure)
+  if (!form_structure) {
     return;
+  }
 
   driver().SendAutofillTypePredictionsToRenderer({form_structure});
 
@@ -1500,8 +1530,9 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   };
   auto GetFieldNumber = [&]() {
     for (size_t i = 0; i < form.fields.size(); ++i) {
-      if (form.fields[i].global_id() == field.global_id())
+      if (form.fields[i].global_id() == field.global_id()) {
         return base::StringPrintf("Field %zu", i);
+      }
     }
     return std::string("unknown");
   };
@@ -1532,13 +1563,15 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   // We are interested in reporting the events where JavaScript resets an
   // autofilled value immediately after filling. For a reset, the value
   // needs to be empty.
-  if (!field.value.empty())
+  if (!field.value.empty()) {
     return;
+  }
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
+  }
 
   base::TimeTicks now = base::TimeTicks::Now();
   std::optional<base::TimeTicks> original_fill_time =
@@ -1657,8 +1690,9 @@ void BrowserAutofillManager::WipeLogQualityAndVotesUploadCallback(
 void BrowserAutofillManager::FlushPendingLogQualityAndVotesUploadCallbacks() {
   std::list<std::pair<FormSignature, base::OnceClosure>> queued_vote_uploads =
       std::exchange(queued_vote_uploads_, {});
-  for (auto& i : queued_vote_uploads)
+  for (auto& i : queued_vote_uploads) {
     std::move(i.second).Run();
+  }
 }
 
 // We explicitly pass in all the time stamps of interest, as the cached ones
@@ -1671,8 +1705,9 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     ukm::SourceId source_id) {
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.
-  if (observed_submission)
+  if (observed_submission) {
     WipeLogQualityAndVotesUploadCallback(submitted_form->form_signature());
+  }
 
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFieldForms() ||
@@ -1698,8 +1733,9 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     }
   }
 
-  if (!submitted_form->ShouldBeUploaded())
+  if (!submitted_form->ShouldBeUploaded()) {
     return;
+  }
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillLogUKMEventsWithSampleRate) &&
@@ -1838,20 +1874,23 @@ void BrowserAutofillManager::OnContextMenuShownInField(
     const FormGlobalId& form_global_id,
     const FieldGlobalId& field_global_id) {
   FormStructure* form = FindCachedFormById(form_global_id);
-  if (!form)
+  if (!form) {
     return;
+  }
   auto field =
       base::ranges::find_if(*form, [&field_global_id](const auto& field) {
         return field->global_id() == field_global_id;
       });
 
-  if (field != form->end())
+  if (field != form->end()) {
     (*field)->set_was_context_menu_shown(true);
+  }
 }
 
 bool BrowserAutofillManager::RefreshDataModels() {
-  if (!IsAutofillEnabled())
+  if (!IsAutofillEnabled()) {
     return false;
+  }
 
   credit_card_access_manager_->UpdateCreditCardFormEventLogger();
 
@@ -1883,6 +1922,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     const FormStructure& form_structure,
     const AutofillField& trigger_autofill_field,
     base::span<const FormFieldData*> safe_filled_fields,
+    base::span<const AutofillField*> safe_filled_autofill_fields,
     const base::flat_set<FieldGlobalId>& filled_fields,
     const base::flat_set<FieldGlobalId>& safe_fields,
     absl::variant<const AutofillProfile*, const CreditCard*>
@@ -1903,7 +1943,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       credit_card_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
                                                   form_structure);
     } else {
-      credit_card_form_event_logger_->RecordFillingOperation();
+      credit_card_form_event_logger_->RecordFillingOperation(
+          form_structure.global_id(), safe_filled_autofill_fields);
       // The originally selected masked card is `credit_card_`. So we must log
       // `credit_card_` as opposed to
       // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
@@ -1922,14 +1963,16 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
         address_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
                                                 form_structure);
       } else {
-        address_form_event_logger_->RecordFillingOperation();
+        address_form_event_logger_->RecordFillingOperation(
+            form_structure.global_id(), safe_filled_autofill_fields);
         address_form_event_logger_->OnDidFillFormFillingSuggestion(
             *absl::get<const AutofillProfile*>(profile_or_credit_card),
             form_structure, trigger_autofill_field, signin_state_for_metrics_,
             trigger_details.trigger_source);
       }
     } else if (!is_refill) {
-      address_form_event_logger_->RecordFillingOperation();
+      address_form_event_logger_->RecordFillingOperation(
+          form_structure.global_id(), safe_filled_autofill_fields);
       autocomplete_unrecognized_fallback_logger_
           ->OnDidFillFormFillingSuggestion();
     }
@@ -1966,11 +2009,13 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return nullptr;
+  }
 
-  if (!form_structure->IsAutofillable())
+  if (!form_structure->IsAutofillable()) {
     return nullptr;
+  }
 
   return autofill_field;
 }
@@ -2451,8 +2496,9 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
         profile.GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale_);
 
     for (auto& field : *form_structure) {
-      if (field->state_is_a_matching_type())
+      if (field->state_is_a_matching_type()) {
         continue;
+      }
 
       std::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
@@ -2473,15 +2519,19 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
   // send the verification code to a phone number that was collected beforehand
   // and uses the WebOTP API for authentication purpose without user manually
   // entering the code.
-  if (!has_parsed_forms() && !used_web_otp)
+  if (!has_parsed_forms() && !used_web_otp) {
     return;
+  }
 
-  if (has_observed_phone_number_field())
+  if (has_observed_phone_number_field()) {
     phone_collection_metric_state_ |= phone_collection_metric::kPhoneCollected;
-  if (has_observed_one_time_code_field())
+  }
+  if (has_observed_one_time_code_field()) {
     phone_collection_metric_state_ |= phone_collection_metric::kOTCUsed;
-  if (used_web_otp)
+  }
+  if (used_web_otp) {
     phone_collection_metric_state_ |= phone_collection_metric::kWebOTPUsed;
+  }
 
   ukm::UkmRecorder* recorder = client().GetUkmRecorder();
   ukm::SourceId source_id = client().GetUkmSourceId();

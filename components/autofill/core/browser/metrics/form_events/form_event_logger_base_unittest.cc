@@ -270,6 +270,38 @@ TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
       "Autofill.FillingOperationCount.CreditCard", 2, 1);
 }
 
+TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
+  // Create a form with an unrecognized field and an unclassified field.
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "unrecognized"},
+           {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+           {.role = ADDRESS_HOME_LINE1,
+            .autocomplete_attribute = "address_line1"},
+           {}}});
+  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().FillOrPreviewProfileForm(
+      mojom::ActionPersistence::kFill, form, form.fields[0],
+      test::GetFullProfile(),
+      {.trigger_source = AutofillTriggerSource::kManualFallback});
+  autofill_manager().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      form, form.fields[3], u"SOME_VALUE",
+      PopupItemId::kCreditCardFieldByFieldFilling);
+
+  base::HistogramTester histogram_tester;
+  ResetDriverToCommitMetrics();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FilledFieldType.Address"),
+      BucketsAre(
+          Bucket(FilledFieldTypeMetric::kClassifiedWithRecognizedAutocomplete,
+                 2),
+          Bucket(FilledFieldTypeMetric::kClassifiedWithUnrecognizedAutocomplete,
+                 1)));
+  histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.CreditCard",
+                                      FilledFieldTypeMetric::kUnclassified, 1);
+}
+
 // Tests for Autofill.KeyMetrics.* metrics.
 class FormEventLoggerBaseKeyMetricsTest : public AutofillMetricsBaseTest,
                                           public testing::Test {

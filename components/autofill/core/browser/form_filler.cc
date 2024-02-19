@@ -787,8 +787,9 @@ void FormFiller::FillOrPreviewForm(
 
   manager_->OnDidFillOrPreviewForm(
       action_persistence, *form_structure, *autofill_trigger_field,
-      safe_newly_filled_fields.new_values, newly_filled_field_ids, safe_fields,
-      profile_or_credit_card, trigger_details, is_refill);
+      safe_newly_filled_fields.new_values, safe_newly_filled_fields.cached,
+      newly_filled_field_ids, safe_fields, profile_or_credit_card,
+      trigger_details, is_refill);
 }
 
 bool FormFiller::ShouldTriggerRefill(

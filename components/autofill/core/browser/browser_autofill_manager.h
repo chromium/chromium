@@ -240,6 +240,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormStructure& form_structure,
       const AutofillField& trigger_autofill_field,
       base::span<const FormFieldData*> safe_filled_fields,
+      base::span<const AutofillField*> safe_filled_autofill_fields,
       const base::flat_set<FieldGlobalId>& filled_fields,
       const base::flat_set<FieldGlobalId>& safe_fields,
       absl::variant<const AutofillProfile*, const CreditCard*>
