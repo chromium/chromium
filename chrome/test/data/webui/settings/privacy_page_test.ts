@@ -59,11 +59,12 @@ const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_WEB_PRINTING,
   // </if>
 
+  routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
+
   // TODO(crbug.com/1128902) After restructure add coverage for elements on
   // routes which depend on flags being enabled.
   // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
   // routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
-  // routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
 
   // Doesn't contain toggle or radio buttons
   // routes.SITE_SETTINGS_INSECURE_CONTENT,
