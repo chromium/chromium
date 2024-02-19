@@ -256,8 +256,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       return;
     }
 
-    usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-             gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+    // WebGPU will potentially read directly from this texture.
+    usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
 
     HANDLE shared_handle = nullptr;
     hr = dxgi_resource->CreateSharedHandle(
