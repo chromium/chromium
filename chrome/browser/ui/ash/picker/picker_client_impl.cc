@@ -17,6 +17,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
@@ -34,13 +35,10 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace ash {
 enum class AppListSearchResultType;
@@ -49,17 +47,6 @@ enum class AppListSearchResultType;
 namespace {
 
 constexpr int kMaxGifsToSearch = 4;
-
-void OnGifDownloaded(PickerClientImpl::DownloadGifToStringCallback callback,
-                     std::unique_ptr<network::SimpleURLLoader> simple_loader,
-                     std::unique_ptr<std::string> response_body) {
-  if (simple_loader->NetError() == net::OK && response_body) {
-    std::move(callback).Run(*response_body);
-    return;
-  }
-  // TODO: b/325368650 - Add better handling of errors.
-  std::move(callback).Run(std::string());
-}
 
 void OnGifSearchResponse(PickerClientImpl::FetchGifsCallback callback,
                          emoji_picker::mojom::Status status,
@@ -118,54 +105,10 @@ std::unique_ptr<ash::AshWebView> PickerClientImpl::CreateWebView(
   return std::make_unique<AshWebViewImpl>(params);
 }
 
-void PickerClientImpl::DownloadGifToString(
-    const ash::ValidGifUrl& url,
-    DownloadGifToStringCallback callback) {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = url.ToGURL();
-  resource_request->method = "GET";
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-      net::DefineNetworkTrafficAnnotation("chromeos_picker_gif_fetcher", R"(
-      semantics {
-        sender: "ChromeOS Picker"
-        description:
-          "Fetches a GIF from tenor for the specified url. This is used to"
-          "show a preview of the GIF in the ChromeOS picker, which users can"
-          "select to insert the GIF into supported textfields."
-        trigger:
-          "Triggered when the user opens the ChromeOS picker."
-        data:
-          "A GIF ID to specify the GIF to fetch."
-        destination: GOOGLE_OWNED_SERVICE
-        internal {
-          contacts {
-              email: "e14s-eng@google.com"
-          }
-        }
-        user_data {
-          type: NONE
-        }
-        last_reviewed: "2024-01-03"
-      }
-      policy {
-        cookies_allowed: NO
-        setting:
-          "No setting. Users must take explicit action to trigger the feature."
-        policy_exception_justification:
-          "Not implemented, not considered useful. This request is part of a "
-          "flow which is user-initiated."
-      }
-  )");
-  auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 kTrafficAnnotation);
-  auto* loader_ptr = loader.get();
+scoped_refptr<network::SharedURLLoaderFactory>
+PickerClientImpl::GetSharedURLLoaderFactory() {
   CHECK(profile_);
-  loader_ptr->DownloadToString(
-      profile_->GetURLLoaderFactory().get(),
-      base::BindOnce(&OnGifDownloaded, std::move(callback), std::move(loader)),
-      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+  return profile_->GetURLLoaderFactory();
 }
 
 void PickerClientImpl::FetchGifSearch(const std::string& query,

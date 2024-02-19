@@ -29,6 +29,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
+#include "base/memory/scoped_refptr.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -143,8 +145,9 @@ void MaybeCopyMediaToClipboard(const PickerSearchResult& result) {
 }  // namespace
 
 PickerController::PickerController() {
+  // `base::Unretained` is safe here because this class owns `asset_fetcher_`.
   asset_fetcher_ = std::make_unique<PickerAssetFetcherImpl>(base::BindRepeating(
-      &PickerController::DownloadGifToString, weak_ptr_factory_.GetWeakPtr()));
+      &PickerController::GetSharedURLLoaderFactory, base::Unretained(this)));
   if (auto* manager = ash::input_method::InputMethodManager::Get()) {
     keyboard_observation_.Observe(manager->GetImeKeyboard());
   }
@@ -256,17 +259,9 @@ void PickerController::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
 }
 
-void PickerController::DownloadGifToString(
-    const GURL& url,
-    base::OnceCallback<void(const std::string&)> callback) {
-  if (!client_) {
-    // TODO: b/316936723 - Add better handling of errors.
-    std::move(callback).Run(std::string());
-    return;
-  }
-  std::optional<ValidGifUrl> validated_url = ValidGifUrl::Create(url);
-  CHECK(validated_url.has_value());
-  client_->DownloadGifToString(*validated_url, std::move(callback));
+scoped_refptr<network::SharedURLLoaderFactory>
+PickerController::GetSharedURLLoaderFactory() {
+  return client_->GetSharedURLLoaderFactory();
 }
 
 }  // namespace ash

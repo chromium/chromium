@@ -12,7 +12,9 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -56,8 +58,11 @@ class TestPickerClient : public PickerClient {
     return web_view_factory_.Create(params);
   }
 
-  void DownloadGifToString(const ValidGifUrl& url,
-                           DownloadGifToStringCallback callback) override {}
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
+      override {
+    return base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
+  }
+
   void FetchGifSearch(const std::string& query,
                       FetchGifsCallback callback) override {}
   void StartCrosSearch(const std::u16string& query,

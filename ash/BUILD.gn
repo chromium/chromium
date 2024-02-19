@@ -3500,6 +3500,7 @@ test("ash_unittests") {
     "picker/metrics/picker_feature_usage_metrics_unittest.cc",
     "picker/metrics/picker_session_metrics_unittest.cc",
     "picker/model/picker_model_unittest.cc",
+    "picker/picker_asset_fetcher_impl_unittest.cc",
     "picker/picker_controller_unittest.cc",
     "picker/picker_copy_media_unittest.cc",
     "picker/picker_insert_media_request_unittest.cc",

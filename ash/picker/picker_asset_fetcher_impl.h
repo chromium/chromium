@@ -5,11 +5,14 @@
 #ifndef ASH_PICKER_PICKER_ASSET_FETCHER_IMPL_H_
 #define ASH_PICKER_PICKER_ASSET_FETCHER_IMPL_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 class GURL;
 
@@ -17,13 +20,11 @@ namespace ash {
 
 class ASH_EXPORT PickerAssetFetcherImpl : public PickerAssetFetcher {
  public:
-  using GifDataLoadedCallback =
-      base::OnceCallback<void(const std::string& gif_data)>;
-  using GifUrlLoader =
-      base::RepeatingCallback<void(const GURL& url,
-                                   GifDataLoadedCallback callback)>;
+  using SharedURLLoaderFactoryGetter =
+      base::RepeatingCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
 
-  explicit PickerAssetFetcherImpl(GifUrlLoader gif_url_loader);
+  explicit PickerAssetFetcherImpl(
+      SharedURLLoaderFactoryGetter shared_url_loader_factory_getter);
   PickerAssetFetcherImpl(const PickerAssetFetcherImpl&) = delete;
   PickerAssetFetcherImpl& operator=(const PickerAssetFetcherImpl&) = delete;
   ~PickerAssetFetcherImpl() override;
@@ -36,8 +37,7 @@ class ASH_EXPORT PickerAssetFetcherImpl : public PickerAssetFetcher {
       PickerImageFetchedCallback callback) override;
 
  private:
-  // Helper for loading gifs and gif previews as encoded strings from urls.
-  GifUrlLoader gif_url_loader_;
+  SharedURLLoaderFactoryGetter shared_url_loader_factory_getter_;
 };
 
 }  // namespace ash

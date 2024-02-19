@@ -22,24 +22,6 @@
 
 namespace {
 
-struct TestServerSetup {
-  std::unique_ptr<net::test_server::EmbeddedTestServer> server;
-  net::test_server::EmbeddedTestServerHandle handle;
-};
-
-TestServerSetup CreateAndStartTestServer(
-    net::test_server::EmbeddedTestServer::HandleRequestCallback
-        handle_request_callback) {
-  auto test_server = std::make_unique<net::test_server::EmbeddedTestServer>();
-  test_server->RegisterRequestHandler(std::move(handle_request_callback));
-  net::test_server::EmbeddedTestServerHandle handle =
-      test_server->StartAndReturnHandle();
-  return {
-      .server = std::move(test_server),
-      .handle = std::move(handle),
-  };
-}
-
 class PickerClientImplTest : public testing::Test {
  public:
   PickerClientImplTest()
@@ -69,6 +51,10 @@ class PickerClientImplTest : public testing::Test {
     return fake_user_manager_.Get();
   }
 
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory() {
+    return test_shared_url_loader_factory_;
+  }
+
  private:
   TestingProfile* CreateTestingProfileForAccount(const AccountId& account_id) {
     return testing_profile_manager_.CreateTestingProfile(
@@ -88,46 +74,13 @@ class PickerClientImplTest : public testing::Test {
   TestingProfileManager testing_profile_manager_;
 };
 
-TEST_F(PickerClientImplTest, DownloadGifReturnsGifOnSuccess) {
+TEST_F(PickerClientImplTest, GetsSharedURLLoaderFactory) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, GetUserManagerLoggedInAsFakeUser());
-  TestServerSetup server_setup = CreateAndStartTestServer(base::BindRepeating(
-      [](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        auto http_response =
-            std::make_unique<net::test_server::BasicHttpResponse>();
-        http_response->set_code(net::HTTP_OK);
-        http_response->set_content("hello");
-        http_response->set_content_type("text/plain");
-        return http_response;
-      }));
 
-  base::test::TestFuture<const std::string&> future;
-  client.DownloadGifToString(ash::ValidGifUrl::CreateForTesting(
-                                 server_setup.server->GetURL("/test.gif")),
-                             future.GetCallback());
-
-  EXPECT_EQ(future.Get(), "hello");
+  EXPECT_EQ(client.GetSharedURLLoaderFactory(), GetSharedURLLoaderFactory());
 }
 
-TEST_F(PickerClientImplTest, DownloadGifReturnsEmptyOnFailure) {
-  ash::PickerController controller;
-  PickerClientImpl client(&controller, GetUserManagerLoggedInAsFakeUser());
-  TestServerSetup server_setup = CreateAndStartTestServer(base::BindRepeating(
-      [](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        auto http_response =
-            std::make_unique<net::test_server::BasicHttpResponse>();
-        http_response->set_code(net::HTTP_NOT_FOUND);
-        return http_response;
-      }));
-
-  base::test::TestFuture<const std::string&> future;
-  client.DownloadGifToString(ash::ValidGifUrl::CreateForTesting(
-                                 server_setup.server->GetURL("/test.gif")),
-                             future.GetCallback());
-
-  EXPECT_EQ(future.Get(), "");
-}
+// TODO: b/325540366 - Add PickerClientImpl tests.
 
 }  // namespace

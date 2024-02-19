@@ -64,9 +64,11 @@ class MockPickerClient : public PickerClient {
     return nullptr;
   }
 
-  void DownloadGifToString(const ValidGifUrl& query,
-                           DownloadGifToStringCallback callback) override {
-    FAIL() << "DownloadGifToString should not be called in this unittest";
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
+      override {
+    ADD_FAILURE()
+        << "GetSharedURLLoaderFactory should not be called in this unittest";
+    return nullptr;
   }
 
   MOCK_METHOD(void,

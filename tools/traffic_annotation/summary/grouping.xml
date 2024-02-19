@@ -294,7 +294,6 @@ after discussions on the right group.
       <annotation id="metrics_report_ukm_and_appkm"/>
       <annotation id="search_engine_adapter"/>
       <annotation id="launcher_manatee"/>
-      <annotation id="chromeos_picker_gif_fetcher"/>
       <annotation id="prewarm_http_disk_cache"/>
       <annotation id="admin_specified_ppd_fetch"/>
       <annotation id="shopping_list_ui_image_fetcher"/>
@@ -313,6 +312,7 @@ after discussions on the right group.
       <annotation id="remoting_corp_session_authz_generate_host_token"/>
       <annotation id="remoting_corp_session_authz_verify_session_token"/>
       <annotation id="remoting_corp_session_reauthorize_host"/>
+      <annotation id="chromeos_picker_gif_media_fetcher"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
