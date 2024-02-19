@@ -125,6 +125,11 @@ public class NotificationServiceImpl extends NotificationService.Impl {
 
         // Try to load native.
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
-        ChromeBrowserInitializer.getInstance().handlePostNativeStartup(/* isAsync= */ true, parts);
+
+        // TODO(crbug.com/324827395): A blocking start-up ensures that `onStartJob` does not return
+        // `false` and does not release the wake lock prematurely. Clean this up once we have
+        // confirmation in telemetry that this solution is effective.
+        boolean isAsync = !NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction());
+        ChromeBrowserInitializer.getInstance().handlePostNativeStartup(isAsync, parts);
     }
 }
