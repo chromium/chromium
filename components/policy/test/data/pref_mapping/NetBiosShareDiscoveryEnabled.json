@@ -9,7 +9,9 @@
           "NetBiosShareDiscoveryEnabled": true
         },
         "prefs": {
-          "network_file_shares.netbios_discovery.enabled": {}
+          "network_file_shares.netbios_discovery.enabled": {
+            "value": true
+          }
         }
       }
     ]

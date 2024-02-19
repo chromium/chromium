@@ -10,7 +10,8 @@
         },
         "prefs": {
           "auth.android_negotiate_account_type": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "com.example.spnego"
           }
         }
       }

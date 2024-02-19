@@ -20,7 +20,15 @@
           }
         },
         "prefs": {
-          "printing.paper_size_default": {}
+          "printing.paper_size_default": {
+            "value": {
+              "custom_size": {
+                "height": 297000,
+                "width": 210000
+              },
+              "name": "custom"
+            }
+          }
         }
       }
     ]

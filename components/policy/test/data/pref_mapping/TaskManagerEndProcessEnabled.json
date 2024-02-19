@@ -15,7 +15,8 @@
         },
         "prefs": {
           "task_manager.end_process_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }

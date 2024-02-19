@@ -9,7 +9,9 @@
           "CaptivePortalAuthenticationIgnoresProxy": true
         },
         "prefs": {
-          "proxy.captive_portal_ignores_proxy": {}
+          "proxy.captive_portal_ignores_proxy": {
+            "value": true
+          }
         }
       }
     ]

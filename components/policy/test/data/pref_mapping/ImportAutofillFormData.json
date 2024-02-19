@@ -13,7 +13,9 @@
           "ImportAutofillFormData": false
         },
         "prefs": {
-          "import_dialog_autofill_form_data": {}
+          "import_dialog_autofill_form_data": {
+            "value": false
+          }
         }
       }
     ]

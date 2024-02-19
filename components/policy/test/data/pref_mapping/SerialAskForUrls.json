@@ -16,7 +16,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_serial_ask_for_urls": {}
+          "profile.managed_serial_ask_for_urls": {
+            "value": [
+              "[*.].com"
+            ]
+          }
         }
       }
     ]

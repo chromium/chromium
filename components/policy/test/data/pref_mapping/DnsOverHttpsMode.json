@@ -16,7 +16,8 @@
         },
         "prefs": {
           "dns_over_https.mode": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "off"
           }
         }
       }

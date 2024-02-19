@@ -11,7 +11,11 @@
           ]
         },
         "prefs": {
-          "policy.url_blocklist": {}
+          "policy.url_blocklist": {
+            "value": [
+              "google.com"
+            ]
+          }
         }
       }
     ]

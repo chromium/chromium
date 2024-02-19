@@ -14,7 +14,9 @@
           "ShowCastIconInToolbar": false
         },
         "prefs": {
-          "media_router.show_cast_icon_in_toolbar": {}
+          "media_router.show_cast_icon_in_toolbar": {
+            "value": false
+          }
         }
       }
     ]

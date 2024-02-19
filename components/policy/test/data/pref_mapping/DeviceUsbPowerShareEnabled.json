@@ -10,7 +10,8 @@
         },
         "prefs": {
           "ash.power.usb_power_share_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

@@ -15,7 +15,9 @@
           "NewTabPageLocation": "http://.org"
         },
         "prefs": {
-          "newtab_page_location_override": {}
+          "newtab_page_location_override": {
+            "value": "http://.org"
+          }
         }
       }
     ]

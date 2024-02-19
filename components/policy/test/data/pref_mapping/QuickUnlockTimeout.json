@@ -9,7 +9,9 @@
           "QuickUnlockTimeout": 0
         },
         "prefs": {
-          "quick_unlock_timeout": {}
+          "quick_unlock_timeout": {
+            "value": 0
+          }
         }
       }
     ]

@@ -28,7 +28,22 @@
           ]
         },
         "prefs": {
-          "profile.managed_web_usb_allow_devices_for_urls": {}
+          "profile.managed_web_usb_allow_devices_for_urls": {
+            "value": [
+              {
+                "devices": [
+                  {
+                    "product_id": 5678,
+                    "vendor_id": 1234
+                  }
+                ],
+                "urls": [
+                  "https://google.com,https://google.com",
+                  "https://www.youtube.com"
+                ]
+              }
+            ]
+          }
         }
       }
     ]

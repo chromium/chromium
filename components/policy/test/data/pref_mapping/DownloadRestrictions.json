@@ -15,7 +15,9 @@
           "DownloadRestrictions": 3
         },
         "prefs": {
-          "download_restrictions": {}
+          "download_restrictions": {
+            "value": 3
+          }
         }
       }
     ]

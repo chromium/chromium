@@ -12,7 +12,9 @@
           "CloudPrintProxyEnabled": true
         },
         "prefs": {
-          "cloud_print.enabled": {}
+          "cloud_print.enabled": {
+            "value": true
+          }
         }
       }
     ]

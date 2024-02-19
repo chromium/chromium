@@ -14,7 +14,9 @@
           "ShoppingListEnabled": false
         },
         "prefs": {
-          "shopping_list_enabled": {}
+          "shopping_list_enabled": {
+            "value": false
+          }
         }
       }
     ]

@@ -15,7 +15,8 @@
         },
         "prefs": {
           "browser.promotional_tabs_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }

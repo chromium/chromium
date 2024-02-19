@@ -10,7 +10,8 @@
         },
         "prefs": {
           "block_browser_legacy_extension_points": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

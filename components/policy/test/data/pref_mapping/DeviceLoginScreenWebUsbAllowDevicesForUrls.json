@@ -23,7 +23,21 @@
         },
         "prefs": {
           "profile.managed_web_usb_allow_devices_for_urls": {
-            "location": "signin_profile"
+            "location": "signin_profile",
+            "value": [
+              {
+                "devices": [
+                  {
+                    "product_id": 5678,
+                    "vendor_id": 1234
+                  }
+                ],
+                "urls": [
+                  "https://google.com",
+                  "https://requesting.com,https://embedded.com"
+                ]
+              }
+            ]
           }
         }
       }

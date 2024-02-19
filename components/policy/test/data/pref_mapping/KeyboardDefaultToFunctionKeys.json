@@ -9,7 +9,9 @@
           "KeyboardDefaultToFunctionKeys": true
         },
         "prefs": {
-          "settings.language.send_function_keys": {}
+          "settings.language.send_function_keys": {
+            "value": true
+          }
         }
       }
     ]

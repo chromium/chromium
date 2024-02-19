@@ -11,7 +11,9 @@
           "CloudPrintSubmitEnabled": false
         },
         "prefs": {
-          "cloud_print.submit_enabled": {}
+          "cloud_print.submit_enabled": {
+            "value": false
+          }
         }
       }
     ]

@@ -12,7 +12,9 @@
           "ImportHomepage": false
         },
         "prefs": {
-          "import_home_page": {}
+          "import_home_page": {
+            "value": false
+          }
         }
       }
     ]

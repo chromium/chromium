@@ -10,7 +10,8 @@
         },
         "prefs": {
           "ash.power.peak_shift_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

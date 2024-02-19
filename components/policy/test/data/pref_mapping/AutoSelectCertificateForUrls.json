@@ -17,7 +17,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_auto_select_certificate_for_urls": {}
+          "profile.managed_auto_select_certificate_for_urls": {
+            "value": [
+              "{'pattern':'https://example.com','filter':{'ISSUER':{'CN': 'issuer-name'}}}"
+            ]
+          }
         }
       }
     ]

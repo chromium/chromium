@@ -17,7 +17,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_insecure_content_blocked_for_urls": {}
+          "profile.managed_insecure_content_blocked_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]

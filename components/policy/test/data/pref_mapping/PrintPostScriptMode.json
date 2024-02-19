@@ -9,7 +9,9 @@
           "PrintPostScriptMode": 1
         },
         "prefs": {
-          "printing.postscript_mode": {}
+          "printing.postscript_mode": {
+            "value": 1
+          }
         }
       }
     ]

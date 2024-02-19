@@ -16,7 +16,11 @@
           ]
         },
         "prefs": {
-          "extensions.install.denylist": {}
+          "extensions.install.denylist": {
+            "value": [
+              "*"
+            ]
+          }
         }
       }
     ]

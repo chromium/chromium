@@ -22,7 +22,14 @@
         },
         "prefs": {
           "custom_handlers.policy.registered_protocol_handlers": {
-            "check_for_mandatory": false
+            "check_for_mandatory": false,
+            "value": [
+              {
+                "default": true,
+                "protocol": "test",
+                "url": "http://example.com/%s"
+              }
+            ]
           }
         }
       }

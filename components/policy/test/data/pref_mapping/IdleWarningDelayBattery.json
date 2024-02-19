@@ -9,7 +9,9 @@
           "IdleWarningDelayBattery": 600000
         },
         "prefs": {
-          "power.battery_idle_warning_delay_ms": {}
+          "power.battery_idle_warning_delay_ms": {
+            "value": 600000
+          }
         }
       }
     ]

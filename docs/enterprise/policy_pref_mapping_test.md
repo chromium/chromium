@@ -244,7 +244,7 @@ Policies that map into CrosSettings can not be tested at the moment (see
 #### Expected value
 
 Each preference is also checked for its expected value. The expected value the
-preference should take on can be defined by exactly one of three ways:
+preference should take on can be defined by exactly one of two ways:
 
 - A `value` field. Use this to specify an explicit value the preference should
   take on when the `policies` are set. This also checks that the preference is
@@ -252,12 +252,6 @@ preference should take on can be defined by exactly one of three ways:
 - A `default_value` field. Use this to specify an explicit value the preference
   should take on when either no policies are set or to indicate that the
   preference should be unaffected by the `policies`.
-- Neither specifying a `value` or `default_value` field. This only works if the
-  `policies` field sets exactly one policy, in which case that policy's value is
-  used as expected preference value. This behavior is mostly for backwards
-  compatibility to ensure that existing tests with missing `value` /
-  `default_value` also perform a value check, prefer to explicitly specify the
-  expected `value`.
 
 For each preference, you can also specify `check_for_mandatory` and
 `check_for_recommended` (in combination with `can_be_recommended` from above)
@@ -293,8 +287,8 @@ use the `PolicyTestCase`'s `can_be_recommended` though.
         "prefs": {
           ${pref_name_1}: {
             "location": string, // optional, one of [user_profile, local_state, signin_profile], defaults to "user_profile"
-            "value": ${expected_pref_value_1}, // This or |default_value| should be set
-            "default_value": ${expected_pref_value_1}, // This or |value| should be set
+            "value": ${expected_pref_value_1}, // This or |default_value| must be set
+            "default_value": ${expected_pref_value_1}, // This or |value| must be set
             "check_for_mandatory": boolean, // optional, defaults to true
             "check_for_recommended": boolean // optional, defaults to true
           },

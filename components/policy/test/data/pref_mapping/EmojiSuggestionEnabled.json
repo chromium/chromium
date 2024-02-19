@@ -9,7 +9,9 @@
           "EmojiSuggestionEnabled": false
         },
         "prefs": {
-          "assistive_input.emoji_suggestion.enterprise_allowed": {}
+          "assistive_input.emoji_suggestion.enterprise_allowed": {
+            "value": false
+          }
         }
       }
     ]

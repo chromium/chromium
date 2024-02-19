@@ -9,7 +9,9 @@
           "DisableSafeBrowsingProceedAnyway": true
         },
         "prefs": {
-          "safebrowsing.proceed_anyway_disabled": {}
+          "safebrowsing.proceed_anyway_disabled": {
+            "value": true
+          }
         }
       }
     ]

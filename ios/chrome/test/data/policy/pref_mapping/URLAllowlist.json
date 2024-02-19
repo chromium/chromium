@@ -11,7 +11,11 @@
           ]
         },
         "prefs": {
-          "policy.url_allowlist": {}
+          "policy.url_allowlist": {
+            "value": [
+              "google.com"
+            ]
+          }
         }
       }
     ]

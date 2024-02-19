@@ -10,7 +10,9 @@
           "SafeBrowsingEnabled": false
         },
         "prefs": {
-          "safebrowsing.enabled": {}
+          "safebrowsing.enabled": {
+            "value": false
+          }
         }
       },
       {
@@ -18,7 +20,9 @@
           "SafeBrowsingEnabled": true
         },
         "prefs": {
-          "safebrowsing.enabled": {}
+          "safebrowsing.enabled": {
+            "value": true
+          }
         }
       }
     ]

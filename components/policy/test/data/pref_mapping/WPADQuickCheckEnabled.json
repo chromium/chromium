@@ -15,7 +15,8 @@
         },
         "prefs": {
           "proxy.quick_check_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

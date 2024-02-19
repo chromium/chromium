@@ -18,7 +18,13 @@
           ]
         },
         "prefs": {
-          "enterprise_connectors.on_security_event": {}
+          "enterprise_connectors.on_security_event": {
+            "value": [
+              {
+                "service_provider": "google"
+              }
+            ]
+          }
         }
       }
     ]

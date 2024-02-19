@@ -15,7 +15,8 @@
         },
         "prefs": {
           "browser.relaunch_notification_period": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 86400000
           }
         }
       }

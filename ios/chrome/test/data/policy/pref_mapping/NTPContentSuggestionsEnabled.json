@@ -9,7 +9,9 @@
           "NTPContentSuggestionsEnabled": false
         },
         "prefs": {
-          "ios.ntp.content_suggestions_enabled": {}
+          "ios.ntp.content_suggestions_enabled": {
+            "value": false
+          }
         }
       }
     ]

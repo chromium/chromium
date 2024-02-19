@@ -12,7 +12,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_popups_allowed_for_urls": {}
+          "profile.managed_popups_allowed_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]

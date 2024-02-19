@@ -13,7 +13,8 @@
         },
         "prefs": {
           "network_time.network_time_queries_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

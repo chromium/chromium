@@ -13,7 +13,8 @@
         },
         "prefs": {
           "browser.command_line_flag_security_warnings_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

@@ -9,7 +9,9 @@
           "NoteTakingAppsLockScreenAllowlist": []
         },
         "prefs": {
-          "settings.note_taking_apps_lock_screen_whitelist": {}
+          "settings.note_taking_apps_lock_screen_whitelist": {
+            "value": []
+          }
         }
       }
     ]

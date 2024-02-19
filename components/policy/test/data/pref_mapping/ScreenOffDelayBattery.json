@@ -9,7 +9,9 @@
           "ScreenOffDelayBattery": 360000
         },
         "prefs": {
-          "power.battery_screen_off_delay_ms": {}
+          "power.battery_screen_off_delay_ms": {
+            "value": 360000
+          }
         }
       }
     ]

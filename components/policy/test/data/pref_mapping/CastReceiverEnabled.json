@@ -9,7 +9,9 @@
           "CastReceiverEnabled": true
         },
         "prefs": {
-          "cast_receiver.enabled": {}
+          "cast_receiver.enabled": {
+            "value": true
+          }
         }
       }
     ]

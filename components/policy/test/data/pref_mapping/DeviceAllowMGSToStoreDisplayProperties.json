@@ -10,7 +10,8 @@
         },
         "prefs": {
           "settings.display.allow_mgs_to_store": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

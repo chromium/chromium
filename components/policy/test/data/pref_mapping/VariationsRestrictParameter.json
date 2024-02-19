@@ -13,7 +13,8 @@
         },
         "prefs": {
           "variations_restrict_parameter": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "restricted"
           }
         }
       }

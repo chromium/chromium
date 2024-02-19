@@ -10,7 +10,8 @@
         },
         "prefs": {
           "ash.power.boot_on_ac_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

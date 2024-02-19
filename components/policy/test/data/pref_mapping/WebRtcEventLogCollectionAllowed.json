@@ -14,7 +14,9 @@
           "WebRtcEventLogCollectionAllowed": false
         },
         "prefs": {
-          "webrtc.event_logs_collection": {}
+          "webrtc.event_logs_collection": {
+            "value": false
+          }
         }
       }
     ]

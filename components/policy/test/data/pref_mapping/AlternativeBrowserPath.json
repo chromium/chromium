@@ -12,7 +12,9 @@
           "AlternativeBrowserPath": "foobarbaz"
         },
         "prefs": {
-          "browser_switcher.alternative_browser_path": {}
+          "browser_switcher.alternative_browser_path": {
+            "value": "foobarbaz"
+          }
         }
       }
     ]

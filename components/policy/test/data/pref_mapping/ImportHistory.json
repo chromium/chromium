@@ -13,7 +13,9 @@
           "ImportHistory": false
         },
         "prefs": {
-          "import_dialog_history": {}
+          "import_dialog_history": {
+            "value": false
+          }
         }
       }
     ]

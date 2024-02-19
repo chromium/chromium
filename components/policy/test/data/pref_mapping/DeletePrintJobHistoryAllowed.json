@@ -9,7 +9,9 @@
           "DeletePrintJobHistoryAllowed": false
         },
         "prefs": {
-          "printing.delete_print_job_history_allowed": {}
+          "printing.delete_print_job_history_allowed": {
+            "value": false
+          }
         }
       }
     ]

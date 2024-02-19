@@ -11,7 +11,8 @@
         },
         "prefs": {
           "native_client_force_allowed": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       },
@@ -21,7 +22,8 @@
         },
         "prefs": {
           "native_client_force_allowed": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }

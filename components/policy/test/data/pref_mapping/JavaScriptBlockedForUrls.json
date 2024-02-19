@@ -18,7 +18,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_javascript_blocked_for_urls": {}
+          "profile.managed_javascript_blocked_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]

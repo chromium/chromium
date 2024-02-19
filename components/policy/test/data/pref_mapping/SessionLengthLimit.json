@@ -10,7 +10,8 @@
         },
         "prefs": {
           "session.length_limit": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 3600000
           }
         }
       }

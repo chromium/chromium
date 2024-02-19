@@ -13,7 +13,8 @@
         },
         "prefs": {
           "profile.browser_guest_enforced": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

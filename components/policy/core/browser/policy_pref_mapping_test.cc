@@ -146,6 +146,10 @@ class PrefTestCase {
           << "only one of |value| or |default_value| should be used for pref "
           << name;
     }
+    if (!value && !default_value) {
+      ADD_FAILURE() << "either |value| or |default_value| must be set for pref "
+                    << name;
+    }
   }
 
   ~PrefTestCase() = default;
@@ -657,12 +661,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           if (!expected_value && pref_case->default_value()) {
             expected_value = pref_case->default_value();
             expect_value_to_be_default = true;
-          }
-          if (!expected_value && policies.size() == 1) {
-            // If no value/default value is specified, fall back to the policy
-            // value (if only one policy is set).
-            expected_value = &policies.begin()->second;
-            expect_value_to_be_default = false;
           }
           ASSERT_TRUE(expected_value);
 

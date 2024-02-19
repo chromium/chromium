@@ -9,7 +9,9 @@
           "PowerSmartDimEnabled": false
         },
         "prefs": {
-          "power.smart_dim_enabled": {}
+          "power.smart_dim_enabled": {
+            "value": false
+          }
         }
       }
     ]

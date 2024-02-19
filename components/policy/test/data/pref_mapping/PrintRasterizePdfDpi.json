@@ -14,7 +14,9 @@
           "PrintRasterizePdfDpi": 300
         },
         "prefs": {
-          "printing.rasterize_pdf_dpi": {}
+          "printing.rasterize_pdf_dpi": {
+            "value": 300
+          }
         }
       }
     ]

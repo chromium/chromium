@@ -15,7 +15,9 @@
           "DefaultWebBluetoothGuardSetting": 2
         },
         "prefs": {
-          "profile.managed_default_content_settings.web_bluetooth_guard": {}
+          "profile.managed_default_content_settings.web_bluetooth_guard": {
+            "value": 2
+          }
         }
       }
     ]

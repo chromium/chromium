@@ -9,7 +9,9 @@
           "CaretHighlightEnabled": true
         },
         "prefs": {
-          "settings.a11y.caret_highlight": {}
+          "settings.a11y.caret_highlight": {
+            "value": true
+          }
         }
       }
     ]

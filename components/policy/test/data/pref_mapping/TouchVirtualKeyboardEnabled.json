@@ -9,7 +9,9 @@
           "TouchVirtualKeyboardEnabled": false
         },
         "prefs": {
-          "ui.touch_virtual_keyboard_enabled": {}
+          "ui.touch_virtual_keyboard_enabled": {
+            "value": false
+          }
         }
       }
     ]

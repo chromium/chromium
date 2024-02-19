@@ -10,7 +10,8 @@
         },
         "prefs": {
           "enterprise_reporting.chrome_cloud_reporting": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

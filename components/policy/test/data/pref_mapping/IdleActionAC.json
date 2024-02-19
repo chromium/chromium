@@ -9,7 +9,9 @@
           "IdleActionAC": 0
         },
         "prefs": {
-          "power.ac_idle_action": {}
+          "power.ac_idle_action": {
+            "value": 0
+          }
         }
       }
     ]

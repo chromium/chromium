@@ -10,7 +10,8 @@
         },
         "prefs": {
           "auth.gssapi_library_name": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "libwhatever.so"
           }
         }
       }

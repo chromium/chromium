@@ -16,7 +16,11 @@
           ]
         },
         "prefs": {
-          "extensions.install.allowlist": {}
+          "extensions.install.allowlist": {
+            "value": [
+              "lcncmkcnkcdbbanbjakcencbaoegdjlp"
+            ]
+          }
         }
       }
     ]

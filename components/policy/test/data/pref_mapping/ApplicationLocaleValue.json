@@ -11,7 +11,8 @@
         },
         "prefs": {
           "intl.app_locale": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "fr"
           }
         }
       }

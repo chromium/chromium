@@ -10,7 +10,9 @@
           "PrintPdfAsImageAvailability": true
         },
         "prefs": {
-          "printing.print_pdf_as_image_availability": {}
+          "printing.print_pdf_as_image_availability": {
+            "value": true
+          }
         }
       }
     ]

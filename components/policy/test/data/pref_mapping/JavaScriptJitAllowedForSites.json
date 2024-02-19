@@ -18,7 +18,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_javascript_jit_allowed_for_sites": {}
+          "profile.managed_javascript_jit_allowed_for_sites": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]

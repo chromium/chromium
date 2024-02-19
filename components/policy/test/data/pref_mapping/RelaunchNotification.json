@@ -15,7 +15,8 @@
         },
         "prefs": {
           "browser.relaunch_notification": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 1
           }
         }
       }

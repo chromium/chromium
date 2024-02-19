@@ -19,7 +19,13 @@
             "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
               "example://example/",
               "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
-            ]
+            ],
+            "value": {
+              "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
+                "example://example/",
+                "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
+              ]
+            }
           }
         }
       }

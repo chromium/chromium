@@ -13,7 +13,8 @@
         },
         "prefs": {
           "browser.disk_cache_dir": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "${user_home}/test-cache"
           }
         }
       }

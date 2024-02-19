@@ -16,7 +16,9 @@
           "NetworkPredictionOptions": 2
         },
         "prefs": {
-          "net.network_prediction_options": {}
+          "net.network_prediction_options": {
+            "value": 2
+          }
         }
       }
     ]

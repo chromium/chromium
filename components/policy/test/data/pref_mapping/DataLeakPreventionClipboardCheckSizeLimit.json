@@ -12,7 +12,8 @@
         },
         "prefs": {
           "policy.dlp_clipboard_check_size_limit": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 50
           }
         }
       }

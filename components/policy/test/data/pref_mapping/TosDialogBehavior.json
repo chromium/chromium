@@ -10,7 +10,8 @@
         },
         "prefs": {
           "policy.cct_tos_dialog_behavior": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 2
           }
         }
       }

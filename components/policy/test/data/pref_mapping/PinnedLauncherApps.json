@@ -18,7 +18,9 @@
           "PinnedLauncherApps": []
         },
         "prefs": {
-          "policy_pinned_launcher_apps": {}
+          "policy_pinned_launcher_apps": {
+            "value": []
+          }
         }
       },
       {

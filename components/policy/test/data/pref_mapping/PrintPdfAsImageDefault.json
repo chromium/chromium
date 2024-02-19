@@ -14,7 +14,9 @@
           "PrintPdfAsImageDefault": true
         },
         "prefs": {
-          "printing.print_pdf_as_image_default": {}
+          "printing.print_pdf_as_image_default": {
+            "value": true
+          }
         }
       }
     ]

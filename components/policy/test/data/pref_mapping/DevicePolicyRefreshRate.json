@@ -10,7 +10,8 @@
         },
         "prefs": {
           "policy.device_refresh_rate": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 300000
           }
         }
       }

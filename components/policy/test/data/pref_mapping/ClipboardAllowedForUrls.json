@@ -16,7 +16,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_clipboard_allowed_for_urls": {}
+          "profile.managed_clipboard_allowed_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]

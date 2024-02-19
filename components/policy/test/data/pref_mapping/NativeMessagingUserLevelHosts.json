@@ -12,7 +12,9 @@
           "NativeMessagingUserLevelHosts": false
         },
         "prefs": {
-          "native_messaging.user_level_hosts": {}
+          "native_messaging.user_level_hosts": {
+            "value": false
+          }
         }
       }
     ]

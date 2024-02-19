@@ -17,7 +17,11 @@
           ]
         },
         "prefs": {
-          "session.startup_urls": {}
+          "session.startup_urls": {
+            "value": [
+              "chromium.org"
+            ]
+          }
         }
       }
     ]

@@ -9,7 +9,9 @@
           "ClientCertificateManagementAllowed": 2
         },
         "prefs": {
-          "client_certificate_management_allowed": {}
+          "client_certificate_management_allowed": {
+            "value": 2
+          }
         }
       }
     ]

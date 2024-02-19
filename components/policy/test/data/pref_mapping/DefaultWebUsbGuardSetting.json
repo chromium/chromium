@@ -15,7 +15,9 @@
           "DefaultWebUsbGuardSetting": 2
         },
         "prefs": {
-          "profile.managed_default_content_settings.web_usb_guard": {}
+          "profile.managed_default_content_settings.web_usb_guard": {
+            "value": 2
+          }
         }
       }
     ]

@@ -15,7 +15,8 @@
         },
         "prefs": {
           "ssl.rev_checking.enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

@@ -12,7 +12,9 @@
           "PrintPreviewUseSystemDefaultPrinter": false
         },
         "prefs": {
-          "printing.use_system_default_printer": {}
+          "printing.use_system_default_printer": {
+            "value": false
+          }
         }
       }
     ]

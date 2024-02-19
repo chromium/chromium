@@ -10,7 +10,8 @@
         },
         "prefs": {
           "policy.lens_camera_assisted_search_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

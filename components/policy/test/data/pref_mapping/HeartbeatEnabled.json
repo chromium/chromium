@@ -11,7 +11,8 @@
         },
         "prefs": {
           "cros.device_status.heartbeat_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

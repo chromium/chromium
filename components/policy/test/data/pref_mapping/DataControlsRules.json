@@ -54,7 +54,39 @@
         },
         "prefs": {
           "data_controls.rules": {
-            "location": "user_profile"
+            "location": "user_profile",
+            "value": [
+              {
+                "description": "testing rule",
+                "name": "rule name",
+                "restrictions": [
+                  {
+                    "class": "FILE_DOWNLOAD",
+                    "level": "BLOCK"
+                  }
+                ],
+                "rule_id": "rule001",
+                "sources": {
+                  "byte_size_higher_than": 100,
+                  "byte_size_lower_than": 5000000,
+                  "file_number_higher_than": 0,
+                  "file_number_lower_than": 2,
+                  "file_type": [
+                    "exe",
+                    "bat",
+                    "msi",
+                    "dmg"
+                  ],
+                  "mime_type": [
+                    "application/vnd.microsoft.portable-executable"
+                  ],
+                  "urls": [
+                    "salesforce.com",
+                    "gmail.com"
+                  ]
+                }
+              }
+            ]
           }
         }
       }

@@ -9,7 +9,9 @@
           "PrivacyScreenEnabled": true
         },
         "prefs": {
-          "settings.display.privacy_screen_enabled": {}
+          "settings.display.privacy_screen_enabled": {
+            "value": true
+          }
         }
       }
     ]

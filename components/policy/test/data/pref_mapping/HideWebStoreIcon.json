@@ -14,7 +14,9 @@
           "HideWebStoreIcon": true
         },
         "prefs": {
-          "hide_web_store_icon": {}
+          "hide_web_store_icon": {
+            "value": true
+          }
         }
       }
     ]

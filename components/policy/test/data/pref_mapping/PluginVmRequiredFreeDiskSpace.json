@@ -9,7 +9,9 @@
           "PluginVmRequiredFreeDiskSpace": 25
         },
         "prefs": {
-          "plugin_vm.required_free_disk_space": {}
+          "plugin_vm.required_free_disk_space": {
+            "value": 25
+          }
         }
       }
     ]

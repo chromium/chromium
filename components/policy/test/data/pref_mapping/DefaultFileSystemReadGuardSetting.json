@@ -14,7 +14,9 @@
           "DefaultFileSystemReadGuardSetting": 2
         },
         "prefs": {
-          "profile.managed_default_content_settings.file_system_read_guard": {}
+          "profile.managed_default_content_settings.file_system_read_guard": {
+            "value": 2
+          }
         }
       }
     ]

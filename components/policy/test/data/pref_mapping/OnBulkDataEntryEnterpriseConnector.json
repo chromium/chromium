@@ -48,7 +48,43 @@
           ]
         },
         "prefs": {
-          "enterprise_connectors.on_bulk_data_entry": {}
+          "enterprise_connectors.on_bulk_data_entry": {
+            "value": [
+              {
+                "block_until_verdict": 0,
+                "disable": [
+                  {
+                    "tags": [
+                      "malware"
+                    ],
+                    "url_list": [
+                      "*.us.com"
+                    ]
+                  }
+                ],
+                "enable": [
+                  {
+                    "tags": [
+                      "malware"
+                    ],
+                    "url_list": [
+                      "*"
+                    ]
+                  },
+                  {
+                    "tags": [
+                      "dlp"
+                    ],
+                    "url_list": [
+                      "*.them.com",
+                      "*.others.com"
+                    ]
+                  }
+                ],
+                "service_provider": "google"
+              }
+            ]
+          }
         }
       }
     ]
@@ -94,7 +130,38 @@
           ]
         },
         "prefs": {
-          "enterprise_connectors.on_bulk_data_entry": {}
+          "enterprise_connectors.on_bulk_data_entry": {
+            "value": [
+              {
+                "block_large_files": false,
+                "block_password_protected": false,
+                "block_until_verdict": 1,
+                "disable": [],
+                "enable": [
+                  {
+                    "tags": [
+                      "dlp"
+                    ],
+                    "url_list": [
+                      "*"
+                    ]
+                  }
+                ],
+                "service_provider": "local_user_agent",
+                "verification": {
+                  "linux": [
+                    "key"
+                  ],
+                  "mac": [
+                    "key"
+                  ],
+                  "windows": [
+                    "key"
+                  ]
+                }
+              }
+            ]
+          }
         }
       }
     ]

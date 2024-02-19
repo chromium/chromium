@@ -9,7 +9,9 @@
           "PrintersBulkAccessMode": 1
         },
         "prefs": {
-          "native_printing.recommended_printers_access_mode": {}
+          "native_printing.recommended_printers_access_mode": {
+            "value": 1
+          }
         }
       }
     ]

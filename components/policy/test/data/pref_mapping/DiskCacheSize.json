@@ -13,7 +13,8 @@
         },
         "prefs": {
           "browser.disk_cache_size": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 100
           }
         }
       }

@@ -9,7 +9,9 @@
           "LockScreenMediaPlaybackEnabled": true
         },
         "prefs": {
-          "ash.lock_screen_media_controls_enabled": {}
+          "ash.lock_screen_media_controls_enabled": {
+            "value": true
+          }
         }
       }
     ]

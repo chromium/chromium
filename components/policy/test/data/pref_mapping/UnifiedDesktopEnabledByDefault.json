@@ -9,7 +9,9 @@
           "UnifiedDesktopEnabledByDefault": true
         },
         "prefs": {
-          "settings.display.unified_desktop_enabled_by_default": {}
+          "settings.display.unified_desktop_enabled_by_default": {
+            "value": true
+          }
         }
       }
     ]

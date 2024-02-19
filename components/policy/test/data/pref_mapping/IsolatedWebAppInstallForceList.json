@@ -28,7 +28,18 @@
           ]
         },
         "prefs": {
-          "profile.isolated_web_app.install.forcelist": {}
+          "profile.isolated_web_app.install.forcelist": {
+            "value": [
+              {
+                "update_manifest_url": "https://example.com/isolated_web_app/update_manifest.json",
+                "web_bundle_id": "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"
+              },
+              {
+                "update_manifest_url": "https://example.com/another_isolated_web_app/update_manifest.json",
+                "web_bundle_id": "bbceqaztij5biqquuksfawpsaibuegqqcirgfcgwuosuofdjabzqaaic"
+              }
+            ]
+          }
         }
       }
     ]

@@ -11,7 +11,11 @@
           ]
         },
         "prefs": {
-          "printing.printing_api_extensions_whitelist": {}
+          "printing.printing_api_extensions_whitelist": {
+            "value": [
+              "abcdefghijklmnopabcdefghijklmnop"
+            ]
+          }
         },
         "required_buildflags": [
           "USE_CUPS"

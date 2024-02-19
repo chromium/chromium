@@ -10,7 +10,8 @@
         },
         "prefs": {
           "renderer_code_integrity_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

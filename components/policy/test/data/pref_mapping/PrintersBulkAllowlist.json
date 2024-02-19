@@ -13,7 +13,13 @@
           ]
         },
         "prefs": {
-          "native_printing.recommended_printers_whitelist": {}
+          "native_printing.recommended_printers_whitelist": {
+            "value": [
+              "id4",
+              "id7",
+              "id10"
+            ]
+          }
         }
       }
     ]

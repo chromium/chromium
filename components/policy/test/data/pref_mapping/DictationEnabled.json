@@ -9,7 +9,9 @@
           "DictationEnabled": true
         },
         "prefs": {
-          "settings.a11y.dictation": {}
+          "settings.a11y.dictation": {
+            "value": true
+          }
         }
       }
     ]

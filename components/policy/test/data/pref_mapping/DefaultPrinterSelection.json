@@ -14,7 +14,9 @@
           "DefaultPrinterSelection": "{ 'kind': 'local', 'namePattern': '.*' }"
         },
         "prefs": {
-          "printing.default_destination_selection_rules": {}
+          "printing.default_destination_selection_rules": {
+            "value": "{ 'kind': 'local', 'namePattern': '.*' }"
+          }
         }
       }
     ]

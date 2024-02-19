@@ -12,7 +12,9 @@
           "DesktopSharingHubEnabled": true
         },
         "prefs": {
-          "sharing_hub.desktop_sharing_hub_enabled": {}
+          "sharing_hub.desktop_sharing_hub_enabled": {
+            "value": true
+          }
         }
       }
     ]

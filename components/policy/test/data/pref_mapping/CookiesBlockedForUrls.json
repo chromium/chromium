@@ -18,7 +18,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_cookies_blocked_for_urls": {}
+          "profile.managed_cookies_blocked_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]

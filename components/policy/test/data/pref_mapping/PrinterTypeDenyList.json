@@ -16,7 +16,11 @@
           ]
         },
         "prefs": {
-          "printing.printer_type_deny_list": {}
+          "printing.printer_type_deny_list": {
+            "value": [
+              "value1"
+            ]
+          }
         }
       }
     ]

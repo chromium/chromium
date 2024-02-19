@@ -9,7 +9,9 @@
           "NetworkFileSharesAllowed": false
         },
         "prefs": {
-          "network_file_shares.allowed": {}
+          "network_file_shares.allowed": {
+            "value": false
+          }
         }
       }
     ]

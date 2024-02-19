@@ -18,7 +18,10 @@
         },
         "prefs": {
           "ssl.client_certs.h2_coalescing_hosts": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": [
+              "example.com"
+            ]
           }
         }
       }

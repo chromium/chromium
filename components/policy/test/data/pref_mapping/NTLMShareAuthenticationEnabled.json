@@ -9,7 +9,9 @@
           "NTLMShareAuthenticationEnabled": true
         },
         "prefs": {
-          "network_file_shares.ntlm_share_authentication.enabled": {}
+          "network_file_shares.ntlm_share_authentication.enabled": {
+            "value": true
+          }
         }
       }
     ]

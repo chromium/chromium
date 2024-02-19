@@ -9,7 +9,9 @@
           "MonoAudioEnabled": true
         },
         "prefs": {
-          "settings.a11y.mono_audio": {}
+          "settings.a11y.mono_audio": {
+            "value": true
+          }
         }
       }
     ]

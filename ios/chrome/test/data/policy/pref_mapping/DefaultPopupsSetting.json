@@ -10,7 +10,9 @@
           "DefaultPopupsSetting": 1
         },
         "prefs": {
-          "profile.managed_default_content_settings.popups": {}
+          "profile.managed_default_content_settings.popups": {
+            "value": 1
+          }
         }
       },
       {
@@ -18,7 +20,9 @@
           "DefaultPopupsSetting": 2
         },
         "prefs": {
-          "profile.managed_default_content_settings.popups": {}
+          "profile.managed_default_content_settings.popups": {
+            "value": 2
+          }
         }
       }
     ]

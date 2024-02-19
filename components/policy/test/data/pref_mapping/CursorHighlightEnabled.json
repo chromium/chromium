@@ -9,7 +9,9 @@
           "CursorHighlightEnabled": true
         },
         "prefs": {
-          "settings.a11y.cursor_highlight": {}
+          "settings.a11y.cursor_highlight": {
+            "value": true
+          }
         }
       }
     ]

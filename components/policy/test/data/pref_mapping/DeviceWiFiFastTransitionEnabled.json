@@ -10,7 +10,8 @@
         },
         "prefs": {
           "net.device_wifi_fast_transition_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

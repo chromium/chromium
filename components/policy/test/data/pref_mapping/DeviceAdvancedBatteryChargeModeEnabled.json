@@ -10,7 +10,8 @@
         },
         "prefs": {
           "ash.power.advanced_battery_charge_mode_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

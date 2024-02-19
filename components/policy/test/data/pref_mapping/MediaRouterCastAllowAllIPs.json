@@ -15,7 +15,8 @@
         },
         "prefs": {
           "media_router.cast_allow_all_ips": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }

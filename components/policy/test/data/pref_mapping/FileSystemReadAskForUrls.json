@@ -17,7 +17,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_file_system_read_ask_for_urls": {}
+          "profile.managed_file_system_read_ask_for_urls": {
+            "value": [
+              "[*.].com"
+            ]
+          }
         }
       }
     ]

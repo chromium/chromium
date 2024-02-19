@@ -10,7 +10,8 @@
         },
         "prefs": {
           "ash.power.battery_charge_custom_start_charging": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 60
           }
         }
       }

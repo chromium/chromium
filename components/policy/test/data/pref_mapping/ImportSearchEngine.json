@@ -13,7 +13,9 @@
           "ImportSearchEngine": false
         },
         "prefs": {
-          "import_dialog_search_engine": {}
+          "import_dialog_search_engine": {
+            "value": false
+          }
         }
       }
     ]

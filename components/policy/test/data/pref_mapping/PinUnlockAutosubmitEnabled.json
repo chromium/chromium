@@ -10,7 +10,9 @@
           "PinUnlockAutosubmitEnabled": true
         },
         "prefs": {
-          "pin_unlock_autosubmit_enabled": {}
+          "pin_unlock_autosubmit_enabled": {
+            "value": true
+          }
         }
       }
     ]

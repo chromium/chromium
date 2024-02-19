@@ -9,7 +9,9 @@
           "PrintingSendUsernameAndFilenameEnabled": true
         },
         "prefs": {
-          "printing.send_username_and_filename_enabled": {}
+          "printing.send_username_and_filename_enabled": {
+            "value": true
+          }
         }
       }
     ]

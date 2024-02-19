@@ -9,7 +9,9 @@
           "VpnConfigAllowed": false
         },
         "prefs": {
-          "vpn_config_allowed": {}
+          "vpn_config_allowed": {
+            "value": false
+          }
         }
       }
     ]

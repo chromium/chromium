@@ -9,7 +9,9 @@
           "ChromeOsMultiProfileUserBehavior": "unrestricted"
         },
         "prefs": {
-          "settings.multiprofile_user_behavior": {}
+          "settings.multiprofile_user_behavior": {
+            "value": "unrestricted"
+          }
         }
       }
     ]

@@ -14,7 +14,9 @@
           "DefaultFileSystemWriteGuardSetting": 2
         },
         "prefs": {
-          "profile.managed_default_content_settings.file_system_write_guard": {}
+          "profile.managed_default_content_settings.file_system_write_guard": {
+            "value": 2
+          }
         }
       }
     ]

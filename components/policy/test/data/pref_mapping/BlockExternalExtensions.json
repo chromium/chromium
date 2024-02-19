@@ -12,7 +12,9 @@
           "BlockExternalExtensions": true
         },
         "prefs": {
-          "extensions.block_external_extensions": {}
+          "extensions.block_external_extensions": {
+            "value": true
+          }
         }
       }
     ]

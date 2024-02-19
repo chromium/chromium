@@ -16,7 +16,9 @@
           "TranslateEnabled": false
         },
         "prefs": {
-          "translate.enabled": {}
+          "translate.enabled": {
+            "value": false
+          }
         }
       }
     ]
