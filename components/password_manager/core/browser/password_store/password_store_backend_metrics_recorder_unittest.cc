@@ -42,6 +42,8 @@ constexpr char kDurationMetricWithStoreInfix[] =
     "PasswordManager.PasswordStoreSomeBackend.Account.MethodName.Latency";
 constexpr char kSuccessMetricWithStoreInfix[] =
     "PasswordManager.PasswordStoreSomeBackend.Account.MethodName.Success";
+constexpr char kOverallSuccessMetricWithStoreInfix[] =
+    "PasswordManager.PasswordStoreSomeBackend.Account.Success";
 constexpr char kErrorCodeMetricWithStoreInfix[] =
     "PasswordManager.PasswordStoreSomeBackend.Account.MethodName.ErrorCode";
 constexpr char kOverallErrorCodeMetricWithStoreInfix[] =
@@ -152,6 +154,8 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Success) {
                                            kLatencyDelta, 1);
     EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessMetricWithStoreInfix),
                 ElementsAre(Bucket(true, 1)));
+    histogram_tester.ExpectUniqueSample(kOverallSuccessMetricWithStoreInfix,
+                                        true, 1);
 
     EXPECT_THAT(histogram_tester.GetAllSamples(kSpecificMetricWithStoreInfix),
                 ElementsAre(Bucket(/* Requested */ 0, 1),
@@ -162,6 +166,8 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Success) {
                                            kLatencyDelta, 0);
     EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessMetricWithStoreInfix),
                 IsEmpty());
+    histogram_tester.ExpectUniqueSample(kOverallSuccessMetricWithStoreInfix,
+                                        true, 0);
 
     EXPECT_THAT(histogram_tester.GetAllSamples(kSpecificMetricWithStoreInfix),
                 IsEmpty());

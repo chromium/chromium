@@ -2784,6 +2784,18 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="PasswordStoreAndroidBackendType"/>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.{Type}.Success"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P API. Recorded when
+    the asynchronous job has returned. This histogram is recording an overall
+    metric for {Type}.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStoreAndroidBackend.{Type}.{Function}"
     enum="PasswordStoreAndroidBackendRequestStatus" expires_after="2025-01-30">
   <owner>izuzic@google.com</owner>

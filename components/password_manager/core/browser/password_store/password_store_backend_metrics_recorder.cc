@@ -108,6 +108,11 @@ void PasswordStoreBackendMetricsRecorder::RecordSuccess(
   // Adding the infix for split stores.
   if (store_type_ != PasswordStoreAndroidBackendType::kNone) {
     possible_infixes.push_back(GetStoreInfix());
+
+    base::UmaHistogramBoolean(
+        base::JoinString(
+            {base::StrCat({kMetricPrefix, GetStoreInfix()}), "Success"}, "."),
+        success_status == SuccessStatus::kSuccess);
   }
 
   for (const auto& infix : possible_infixes) {
