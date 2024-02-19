@@ -32,6 +32,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
@@ -196,10 +197,10 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2AppServiceMetrics) {
                 std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 
   navigation_observer.Wait();
-  // The HELP app is 18, see DefaultAppName in
-  // src/chrome/browser/apps/app_service/app_service_metrics.cc
-  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard", 18,
-                                      1);
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard",
+                                      apps::DefaultAppName::kHelpApp, 1);
+  histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
+                                      apps::LaunchSource::kFromKeyboard, 1);
 }
 
 // Test that the Help App can log metrics in the untrusted frame.
@@ -287,13 +288,17 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithFirstRunEnabled,
             SandboxedWebUiAppTestBase::EvalJsInAppFrame(
                 GetActiveWebContents(), "window.location.href"));
 
-  // The HELP app is 18, see DefaultAppName in
-  // src/chrome/browser/apps/app_service/app_service_metrics.cc
-  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromFirstRun", 18,
-                                      1);
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromFirstRun",
+                                      apps::DefaultAppName::kHelpApp, 1);
+  histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
+                                      apps::LaunchSource::kFromFirstRun, 1);
 #else
   // We just have the original browser. No new app opens.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromFirstRun",
+                                      apps::DefaultAppName::kHelpApp, 0);
+  histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
+                                      apps::LaunchSource::kFromFirstRun, 0);
 #endif
 }
 
@@ -1021,10 +1026,10 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
   EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 
-  // The HELP app is 18, see DefaultAppName in
-  // src/chrome/browser/apps/app_service/app_service_metrics.cc
-  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromOtherApp", 18,
-                                      1);
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromOtherApp",
+                                      apps::DefaultAppName::kHelpApp, 1);
+  histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
+                                      apps::LaunchSource::kFromOtherApp, 1);
 }
 
 // Test that the Help App opens from keyboard shortcut.
@@ -1059,19 +1064,19 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
   // Default browser tab and Help app are open.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ("chrome://help-app/", GetActiveWebContents()->GetVisibleURL());
-  // The HELP app is 18, see DefaultAppName in
-  // src/chrome/browser/apps/app_service/app_service_metrics.cc
-  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard", 18,
-                                      1);
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard",
+                                      apps::DefaultAppName::kHelpApp, 1);
+  histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
+                                      apps::LaunchSource::kFromKeyboard, 1);
 #else
   // We just have the one browser. Navigates chrome.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(GURL(chrome::kChromeHelpViaKeyboardURL),
             GetActiveWebContents()->GetVisibleURL());
-  // The HELP app is 18, see DefaultAppName in
-  // src/chrome/browser/apps/app_service/app_service_metrics.cc
-  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard", 18,
-                                      0);
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromKeyboard",
+                                      apps::DefaultAppName::kHelpApp, 0);
+  histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
+                                      apps::LaunchSource::kFromKeyboard, 0);
 #endif
 }
 
