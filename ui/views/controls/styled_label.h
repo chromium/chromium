@@ -177,6 +177,12 @@ class VIEWS_EXPORT StyledLabel : public View {
   // wrapped).  If 0, no fixed width is enforced.
   void SizeToFit(int fixed_width);
 
+  // If true, the preferred size is dependent on the last set width.
+  // See the comment on `use_legacy_preferred_size_`.
+  void set_use_legacy_preferred_size(bool use_legacy_preferred_size) {
+    use_legacy_preferred_size_ = use_legacy_preferred_size;
+  }
+
   // View:
   gfx::Size CalculatePreferredSize() const final;
   gfx::Size CalculatePreferredSize(
@@ -250,6 +256,12 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   std::optional<int> line_height_;
   int fixed_width_ = 0;
+  // If true, the preferred size is dependent on the last set width.
+  // This is a deprecated behavior because we want the preferred size
+  // to be "stateless", meaning that the previous layout result
+  // shouldn't affect future layouts.
+  // TODO(322715559): remove this after fixing the ChromeOS tast failure.
+  bool use_legacy_preferred_size_ = false;
 
   // Temporarily owns the custom views until they've been been placed into the
   // StyledLabel's child list. This list also holds the custom views during
