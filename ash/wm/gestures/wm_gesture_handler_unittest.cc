@@ -64,8 +64,8 @@ class TestInputDeviceSettingsController
             kDefaultTapToClickEnabled,
             kDefaultThreeFingerClickEnabled,
             kDefaultTapDraggingEnabled,
-            /*scroll_sensitivity=*/kDefaultSensitivity,
-            kDefaultScrollAcceleration,
+            /*scroll_sensitivity=*/kDefaultScrollSensitivity,
+            kDefaultScrollAccelerationEnabled,
             kDefaultHapticSensitivity,
             kDefaultHapticFeedbackEnabled,
             /*simulate_right_click=*/

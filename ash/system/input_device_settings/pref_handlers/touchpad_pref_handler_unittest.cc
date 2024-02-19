@@ -53,8 +53,8 @@ const mojom::TouchpadSettings kTouchpadSettingsDefault(
     /*tap_to_click_enabled=*/kDefaultTapToClickEnabled,
     /*three_finger_click_enabled=*/kDefaultThreeFingerClickEnabled,
     /*tap_dragging_enabled=*/kDefaultTapDraggingEnabled,
-    /*scroll_sensitivity=*/kDefaultSensitivity,
-    /*scroll_acceleration=*/kDefaultScrollAcceleration,
+    /*scroll_sensitivity=*/kDefaultScrollSensitivity,
+    /*scroll_acceleration=*/kDefaultScrollAccelerationEnabled,
     /*haptic_sensitivity=*/kDefaultHapticSensitivity,
     /*haptic_enabled=*/kDefaultHapticFeedbackEnabled,
     /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone);
@@ -67,7 +67,7 @@ const mojom::TouchpadSettings kTouchpadSettingsNotDefault(
     /*three_finger_click_enabled=*/!kDefaultThreeFingerClickEnabled,
     /*tap_dragging_enabled=*/!kDefaultTapDraggingEnabled,
     /*scroll_sensitivity=*/1,
-    /*scroll_acceleration=*/!kDefaultScrollAcceleration,
+    /*scroll_acceleration=*/!kDefaultScrollAccelerationEnabled,
     /*haptic_sensitivity=*/1,
     /*haptic_enabled=*/!kDefaultHapticFeedbackEnabled,
     /*simulate_right_click=*/ui::mojom::SimulateRightClickModifier::kNone);
@@ -152,9 +152,9 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     pref_service_->registry()->RegisterBooleanPref(prefs::kTapDraggingEnabled,
                                                    kDefaultTapDraggingEnabled);
     pref_service_->registry()->RegisterIntegerPref(
-        prefs::kTouchpadScrollSensitivity, kDefaultSensitivity);
+        prefs::kTouchpadScrollSensitivity, kDefaultScrollSensitivity);
     pref_service_->registry()->RegisterBooleanPref(
-        prefs::kTouchpadScrollAcceleration, kDefaultScrollAcceleration);
+        prefs::kTouchpadScrollAcceleration, kDefaultScrollAccelerationEnabled);
     pref_service_->registry()->RegisterIntegerPref(
         prefs::kTouchpadHapticClickSensitivity, kDefaultHapticSensitivity);
     pref_service_->registry()->RegisterBooleanPref(
@@ -219,7 +219,7 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     if (scroll_sensitivity.has_value()) {
       EXPECT_EQ(settings.scroll_sensitivity, scroll_sensitivity);
     } else {
-      EXPECT_EQ(settings.scroll_sensitivity, kDefaultSensitivity);
+      EXPECT_EQ(settings.scroll_sensitivity, kDefaultScrollSensitivity);
     }
 
     const auto scroll_acceleration =
@@ -227,7 +227,8 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     if (scroll_acceleration.has_value()) {
       EXPECT_EQ(settings.scroll_acceleration, scroll_acceleration);
     } else {
-      EXPECT_EQ(settings.scroll_acceleration, kDefaultScrollAcceleration);
+      EXPECT_EQ(settings.scroll_acceleration,
+                kDefaultScrollAccelerationEnabled);
     }
 
     const auto tap_to_click_enabled =
@@ -684,9 +685,9 @@ TEST_F(TouchpadPrefHandlerTest,
   pref_service_->SetUserPref(prefs::kTapDraggingEnabled,
                              base::Value(kDefaultTapDraggingEnabled));
   pref_service_->SetUserPref(prefs::kTouchpadScrollSensitivity,
-                             base::Value(kDefaultSensitivity));
+                             base::Value(kDefaultScrollSensitivity));
   pref_service_->SetUserPref(prefs::kTouchpadScrollAcceleration,
-                             base::Value(kDefaultScrollAcceleration));
+                             base::Value(kDefaultScrollAccelerationEnabled));
   pref_service_->SetUserPref(prefs::kTouchpadHapticClickSensitivity,
                              base::Value(kDefaultHapticSensitivity));
   pref_service_->SetUserPref(prefs::kTouchpadHapticFeedback,

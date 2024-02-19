@@ -30,7 +30,8 @@ constexpr bool kDefaultSwapRight = false;
 constexpr int kDefaultSensitivity = 3;
 constexpr bool kDefaultReverseScrolling = false;
 constexpr bool kDefaultAccelerationEnabled = true;
-constexpr bool kDefaultScrollAcceleration = true;
+constexpr bool kDefaultScrollAccelerationEnabled = true;
+constexpr int kDefaultScrollSensitivity = 3;
 
 // Touchpad setting defaults.
 constexpr bool kDefaultTapToClickEnabled = true;

@@ -130,7 +130,7 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(
       prefs->GetUserPrefValue(prefs::kTouchpadScrollSensitivity);
   settings->scroll_sensitivity = scroll_sensitivity_preference
                                      ? scroll_sensitivity_preference->GetInt()
-                                     : kDefaultSensitivity;
+                                     : kDefaultScrollSensitivity;
   force_persistence.scroll_sensitivity =
       scroll_sensitivity_preference != nullptr;
 
@@ -138,7 +138,7 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(
       prefs->GetUserPrefValue(prefs::kTouchpadScrollAcceleration);
   settings->scroll_acceleration =
       scroll_acceleration_preference ? scroll_acceleration_preference->GetBool()
-                                     : kDefaultScrollAcceleration;
+                                     : kDefaultScrollAccelerationEnabled;
   force_persistence.scroll_acceleration =
       scroll_acceleration_preference != nullptr;
 
@@ -189,10 +189,10 @@ mojom::TouchpadSettingsPtr RetrieveTouchpadSettings(
           .value_or(kDefaultTapDraggingEnabled);
   settings->scroll_sensitivity =
       settings_dict.FindInt(prefs::kTouchpadSettingScrollSensitivity)
-          .value_or(kDefaultSensitivity);
+          .value_or(kDefaultScrollSensitivity);
   settings->scroll_acceleration =
       settings_dict.FindBool(prefs::kTouchpadSettingScrollAcceleration)
-          .value_or(kDefaultScrollAcceleration);
+          .value_or(kDefaultScrollAccelerationEnabled);
 
   if (touchpad.is_haptic) {
     settings->haptic_sensitivity =
@@ -263,16 +263,17 @@ base::Value::Dict ConvertSettingsToDict(
   if (ShouldPersistSetting(
           prefs::kTouchpadSettingScrollSensitivity,
           static_cast<int>(touchpad.settings->scroll_sensitivity),
-          kDefaultSensitivity, force_persistence.scroll_sensitivity,
+          kDefaultScrollSensitivity, force_persistence.scroll_sensitivity,
           existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingScrollSensitivity,
                       touchpad.settings->scroll_sensitivity);
   }
 
-  if (ShouldPersistSetting(
-          prefs::kTouchpadSettingScrollAcceleration,
-          touchpad.settings->scroll_acceleration, kDefaultScrollAcceleration,
-          force_persistence.scroll_acceleration, existing_settings_dict)) {
+  if (ShouldPersistSetting(prefs::kTouchpadSettingScrollAcceleration,
+                           touchpad.settings->scroll_acceleration,
+                           kDefaultScrollAccelerationEnabled,
+                           force_persistence.scroll_acceleration,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingScrollAcceleration,
                       touchpad.settings->scroll_acceleration);
   }

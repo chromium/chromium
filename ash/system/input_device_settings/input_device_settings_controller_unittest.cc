@@ -1012,7 +1012,7 @@ TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSettingsValidMetric) {
       /*reverse_scrolling=*/kDefaultReverseScrolling,
       /*acceleration_enabled=*/kDefaultAccelerationEnabled,
       /*scroll_sensitivity=*/kDefaultSensitivity,
-      /*scroll_acceleration=*/kDefaultScrollAcceleration,
+      /*scroll_acceleration=*/kDefaultScrollAccelerationEnabled,
       /*button_remappings=*/mojo::Clone(button_remappings));
 
   // Set mouse with valid id and invalid settings.

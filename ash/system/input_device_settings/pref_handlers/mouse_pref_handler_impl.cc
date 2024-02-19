@@ -110,7 +110,7 @@ mojom::MouseSettingsPtr GetMouseSettingsFromPrefs(
       prefs->GetUserPrefValue(prefs::kMouseScrollAcceleration);
   settings->scroll_acceleration =
       scroll_acceleration_preference ? scroll_acceleration_preference->GetBool()
-                                     : kDefaultSensitivity;
+                                     : kDefaultScrollAccelerationEnabled;
   force_persistence.scroll_acceleration =
       scroll_acceleration_preference != nullptr;
 
@@ -118,7 +118,7 @@ mojom::MouseSettingsPtr GetMouseSettingsFromPrefs(
       prefs->GetUserPrefValue(prefs::kMouseScrollSensitivity);
   settings->scroll_sensitivity = scroll_sensitivity_preference
                                      ? scroll_sensitivity_preference->GetInt()
-                                     : kDefaultScrollAcceleration;
+                                     : kDefaultScrollSensitivity;
   force_persistence.scroll_sensitivity =
       scroll_sensitivity_preference != nullptr;
 
@@ -142,10 +142,10 @@ mojom::MouseSettingsPtr RetrieveMouseSettings(
           .value_or(kDefaultAccelerationEnabled);
   settings->scroll_sensitivity =
       settings_dict.FindInt(prefs::kMouseSettingScrollSensitivity)
-          .value_or(kDefaultSensitivity);
+          .value_or(kDefaultScrollSensitivity);
   settings->scroll_acceleration =
       settings_dict.FindBool(prefs::kMouseSettingScrollAcceleration)
-          .value_or(kDefaultScrollAcceleration);
+          .value_or(kDefaultScrollAccelerationEnabled);
   return settings;
 }
 
@@ -202,17 +202,18 @@ base::Value::Dict ConvertSettingsToDict(
 
   if (ShouldPersistSetting(prefs::kMouseSettingScrollSensitivity,
                            static_cast<int>(mouse.settings->scroll_sensitivity),
-                           kDefaultSensitivity,
+                           kDefaultScrollSensitivity,
                            force_persistence.scroll_sensitivity,
                            existing_settings_dict)) {
     settings_dict.Set(prefs::kMouseSettingScrollSensitivity,
                       mouse.settings->scroll_sensitivity);
   }
 
-  if (ShouldPersistSetting(
-          prefs::kMouseSettingScrollAcceleration,
-          mouse.settings->scroll_acceleration, kDefaultScrollAcceleration,
-          force_persistence.scroll_acceleration, existing_settings_dict)) {
+  if (ShouldPersistSetting(prefs::kMouseSettingScrollAcceleration,
+                           mouse.settings->scroll_acceleration,
+                           kDefaultScrollAccelerationEnabled,
+                           force_persistence.scroll_acceleration,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kMouseSettingScrollAcceleration,
                       mouse.settings->scroll_acceleration);
   }
