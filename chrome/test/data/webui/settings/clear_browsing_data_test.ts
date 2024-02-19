@@ -852,17 +852,13 @@ suite('ClearBrowsingDataForSupervisedUsers', function() {
   test(
       'Additional information shown for supervised users when clearing cookies',
       async function() {
-        loadTimeData.overrideValues({
-          clearingCookiesKeepsSupervisedUsersSignedIn: true,
-        });
         document.body.appendChild(element);
         await testBrowserProxy.whenCalled('initialize');
 
         assertTrue(element.$.clearBrowsingDataDialog.open);
 
         // Supervised users will see additional text informing them they will
-        // not be signed out when cookies are cleared and
-        // `kClearingCookiesKeepsSupervisedUsersSignedIn` flag enabled.
+        // not be signed out when cookies are cleared
         const checkbox =
             element.shadowRoot!.querySelector<SettingsCheckboxElement>(
                 '#cookiesCheckboxBasic')!;
