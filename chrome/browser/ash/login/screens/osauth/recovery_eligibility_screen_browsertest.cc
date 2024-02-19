@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -152,9 +153,35 @@ IN_PROC_BROWSER_TEST_F(RecoveryEligibilityScreenTest, UnmanagedUser) {
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
                   ->recovery_setup.ask_about_recovery_consent);
+  const bool opt_in = base::FeatureList::IsEnabled(
+      ash::features::kCryptohomeRecoveryByDefaultForConsumers);
+  EXPECT_EQ(opt_in, LoginDisplayHost::default_host()
+                        ->GetWizardContextForTesting()
+                        ->recovery_setup.recovery_factor_opted_in);
+
+  ContinueScreenExit();
+  EXPECT_EQ(result_.value(), RecoveryEligibilityScreen::Result::PROCEED);
+}
+
+// The recovery fields on the context should be set correctly for managed users.
+IN_PROC_BROWSER_TEST_F(RecoveryEligibilityScreenTest,
+                       ManagedUserRecoveryDefault) {
+  LoginAsUser(/*is_child=*/false);
+  ProfileManager::GetActiveUserProfile()
+      ->GetProfilePolicyConnector()
+      ->OverrideIsManagedForTesting(/*is_managed=*/true);
+
+  ShowScreen();
   EXPECT_FALSE(LoginDisplayHost::default_host()
                    ->GetWizardContextForTesting()
-                   ->recovery_setup.recovery_factor_opted_in);
+                   ->recovery_setup.ask_about_recovery_consent);
+
+  const bool enterprise_opt_in = base::FeatureList::IsEnabled(
+      ash::features::kCryptohomeRecoveryByDefaultForEnterprise);
+
+  EXPECT_EQ(enterprise_opt_in, LoginDisplayHost::default_host()
+                                   ->GetWizardContextForTesting()
+                                   ->recovery_setup.recovery_factor_opted_in);
 
   ContinueScreenExit();
   EXPECT_EQ(result_.value(), RecoveryEligibilityScreen::Result::PROCEED);
@@ -212,9 +239,11 @@ IN_PROC_BROWSER_TEST_F(RecoveryEligibilityScreenTest, ChildUser) {
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
                   ->recovery_setup.ask_about_recovery_consent);
-  EXPECT_FALSE(LoginDisplayHost::default_host()
-                   ->GetWizardContextForTesting()
-                   ->recovery_setup.recovery_factor_opted_in);
+  const bool opt_in = base::FeatureList::IsEnabled(
+      ash::features::kCryptohomeRecoveryByDefaultForConsumers);
+  EXPECT_EQ(opt_in, LoginDisplayHost::default_host()
+                        ->GetWizardContextForTesting()
+                        ->recovery_setup.recovery_factor_opted_in);
 
   ContinueScreenExit();
 }
