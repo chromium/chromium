@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/animation/image_slice_property_functions.h"
 #include "third_party/blink/renderer/core/animation/side_index.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 
@@ -218,8 +220,20 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertValue(
   for (wtf_size_t i = 0; i < kSideIndexCount; i++) {
     const auto& side = *To<CSSPrimitiveValue>(sides[i]);
     DCHECK(side.IsNumber() || side.IsPercentage());
-    list->Set(i,
-              MakeGarbageCollected<InterpolableNumber>(side.GetDoubleValue()));
+    if (auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(side)) {
+      CSSPrimitiveValue::UnitType unit_type =
+          numeric_value->IsNumber() ? CSSPrimitiveValue::UnitType::kNumber
+                                    : CSSPrimitiveValue::UnitType::kPercentage;
+      list->Set(
+          i, MakeGarbageCollected<InterpolableNumber>(
+                 numeric_value->IsNumber() ? numeric_value->ComputeNumber()
+                                           : numeric_value->ComputePercentage(),
+                 unit_type));
+      continue;
+    }
+    CHECK(side.IsMathFunctionValue());
+    list->Set(i, MakeGarbageCollected<InterpolableNumber>(
+                     *To<CSSMathFunctionValue>(side).ExpressionNode()));
   }
 
   return InterpolationValue(
@@ -280,9 +294,11 @@ void CSSImageSliceInterpolationType::ApplyStandardPropertyValue(
   const auto& list = To<InterpolableList>(interpolable_value);
   const auto& types =
       To<CSSImageSliceNonInterpolableValue>(non_interpolable_value)->Types();
-  const auto& convert_side = [&types, &list, &builder](wtf_size_t index) {
-    float value =
-        ClampTo<float>(To<InterpolableNumber>(list.Get(index))->Value(), 0);
+  const auto& convert_side = [&types, &list, &builder,
+                              &state](wtf_size_t index) {
+    float value = ClampTo<float>(To<InterpolableNumber>(list.Get(index))
+                                     ->Value(state.CssToLengthConversionData()),
+                                 0);
     return types.is_number[index]
                ? Length::Fixed(value * builder.EffectiveZoom())
                : Length::Percent(value);

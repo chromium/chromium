@@ -687,14 +687,16 @@ void CSSToStyleMap::MapNinePieceImage(StyleResolverState& state,
   }
 }
 
-static Length ConvertBorderImageSliceSide(const CSSPrimitiveValue& value) {
+static Length ConvertBorderImageSliceSide(
+    const CSSLengthResolver& length_resolver,
+    const CSSPrimitiveValue& value) {
   if (value.IsPercentage()) {
-    return Length::Percent(value.GetDoubleValue());
+    return Length::Percent(value.ComputePercentage(length_resolver));
   }
-  return Length::Fixed(round(value.GetDoubleValue()));
+  return Length::Fixed(round(value.ComputeNumber(length_resolver)));
 }
 
-void CSSToStyleMap::MapNinePieceImageSlice(StyleResolverState&,
+void CSSToStyleMap::MapNinePieceImageSlice(StyleResolverState& state,
                                            const CSSValue& value,
                                            NinePieceImage& image) {
   if (!IsA<cssvalue::CSSBorderImageSliceValue>(value)) {
@@ -708,13 +710,16 @@ void CSSToStyleMap::MapNinePieceImageSlice(StyleResolverState&,
   // Set up a length box to represent our image slices.
   LengthBox box;
   const CSSQuadValue& slices = border_image_slice.Slices();
-  box.top_ = ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Top()));
+  box.top_ = ConvertBorderImageSliceSide(state.CssToLengthConversionData(),
+                                         To<CSSPrimitiveValue>(*slices.Top()));
   box.bottom_ =
-      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Bottom()));
-  box.left_ =
-      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Left()));
+      ConvertBorderImageSliceSide(state.CssToLengthConversionData(),
+                                  To<CSSPrimitiveValue>(*slices.Bottom()));
+  box.left_ = ConvertBorderImageSliceSide(
+      state.CssToLengthConversionData(), To<CSSPrimitiveValue>(*slices.Left()));
   box.right_ =
-      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Right()));
+      ConvertBorderImageSliceSide(state.CssToLengthConversionData(),
+                                  To<CSSPrimitiveValue>(*slices.Right()));
   image.SetImageSlices(box);
 
   // Set our fill mode.
