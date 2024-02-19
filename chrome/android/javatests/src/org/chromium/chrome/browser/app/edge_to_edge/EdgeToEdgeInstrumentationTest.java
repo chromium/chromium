@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -298,6 +299,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/41492043")
     public void testUnfold() {
         activateFeatureToEdge();
         assertEquals(
