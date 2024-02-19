@@ -493,6 +493,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Image processing time out"/>
 </enum>
 
+<enum name="ImageContentAnnotatorStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Model Specification Error"/>
+  <int value="2" label="Load Model Error"/>
+  <int value="3" label="Feature Not Supported Error"/>
+  <int value="4" label="Language Not Supported Error"/>
+</enum>
+
 <enum name="ItemSuggestCacheStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="Disabled by experiment"/>

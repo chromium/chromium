@@ -375,6 +375,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.Status"
+    enum="ImageContentAnnotatorStatus" expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    To track the errors that may occur during the DLC installation. Logged once
+    per installation.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status"
     enum="ImageAnnotationWorkerStatus" expires_after="2024-10-31">
   <owner>dgrebenyuk@google.com</owner>
