@@ -654,7 +654,7 @@ void QuickStartController::OnBluetoothPermissionGranted() {
 
   if (IsBluetoothDisabled()) {
     CHECK(cros_bluetooth_config_remote_);
-    cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive();
+    cros_bluetooth_config_remote_->SetBluetoothEnabledWithoutPersistence();
     // Advertising will start once we are notified that bluetooth is enabled.
   }
 }

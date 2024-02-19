@@ -167,7 +167,7 @@ export class FakeBluetoothConfig {
                   bluetoothSystemState.kDisabling);
   }
 
-  setBluetoothHidDetectionActive() {
+  setBluetoothEnabledWithoutPersistence() {
     // This method is left unimplemented as it is only used in OOBE.
     assertNotReached();
   }

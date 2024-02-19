@@ -22,7 +22,7 @@ class FakeBluetoothPowerController : public BluetoothPowerController {
 
  private:
   // BluetoothPowerController:
-  void SetBluetoothHidDetectionActive() override;
+  void SetBluetoothEnabledWithoutPersistence() override;
   void SetBluetoothHidDetectionInactive(bool is_using_bluetooth) override;
   void SetPrefs(PrefService* logged_in_profile_prefs,
                 PrefService* local_state) override {}
