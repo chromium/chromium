@@ -315,8 +315,8 @@ RTCVideoDecoderFactory::~RTCVideoDecoderFactory() {
   DVLOG(2) << __func__;
 }
 
-std::unique_ptr<webrtc::VideoDecoder>
-RTCVideoDecoderFactory::CreateVideoDecoder(
+std::unique_ptr<webrtc::VideoDecoder> RTCVideoDecoderFactory::Create(
+    const webrtc::Environment& /*env*/,
     const webrtc::SdpVideoFormat& format) {
   TRACE_EVENT0("webrtc", "RTCVideoDecoderFactory::CreateVideoDecoder");
   DVLOG(2) << __func__;

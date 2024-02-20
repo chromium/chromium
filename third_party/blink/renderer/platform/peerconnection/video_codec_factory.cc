@@ -53,18 +53,20 @@ std::vector<webrtc::SdpVideoFormat> MergeFormats(
 
 std::unique_ptr<webrtc::VideoDecoder> CreateDecoder(
     webrtc::VideoDecoderFactory* factory,
+    const webrtc::Environment& env,
     const webrtc::SdpVideoFormat& format) {
   if (!IsFormatSupported(factory, format))
     return nullptr;
-  return factory->CreateVideoDecoder(format);
+  return factory->Create(env, format);
 }
 
 std::unique_ptr<webrtc::VideoDecoder> Wrap(
+    const webrtc::Environment& env,
     std::unique_ptr<webrtc::VideoDecoder> software_decoder,
     std::unique_ptr<webrtc::VideoDecoder> hardware_decoder) {
   if (software_decoder && hardware_decoder) {
     return webrtc::CreateVideoDecoderSoftwareFallbackWrapper(
-        std::move(software_decoder), std::move(hardware_decoder));
+        env, std::move(software_decoder), std::move(hardware_decoder));
   }
   return hardware_decoder ? std::move(hardware_decoder)
                           : std::move(software_decoder);
@@ -162,19 +164,21 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
       : hardware_decoder_factory_(std::move(hardware_decoder_factory)),
         stats_callback_(stats_callback) {}
 
-  std::unique_ptr<webrtc::VideoDecoder> CreateVideoDecoder(
+  std::unique_ptr<webrtc::VideoDecoder> Create(
+      const webrtc::Environment& env,
       const webrtc::SdpVideoFormat& format) override {
     std::unique_ptr<webrtc::VideoDecoder> software_decoder =
-        CreateDecoder(&software_decoder_factory_, format);
+        CreateDecoder(&software_decoder_factory_, env, format);
 
     std::unique_ptr<webrtc::VideoDecoder> hardware_decoder =
-        CreateDecoder(hardware_decoder_factory_.get(), format);
+        CreateDecoder(hardware_decoder_factory_.get(), env, format);
 
     if (!software_decoder && !hardware_decoder)
       return nullptr;
 
     return std::make_unique<StatsCollectingDecoder>(
-        format, Wrap(std::move(software_decoder), std::move(hardware_decoder)),
+        format,
+        Wrap(env, std::move(software_decoder), std::move(hardware_decoder)),
         stats_callback_);
   }
 
