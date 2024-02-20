@@ -308,11 +308,6 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
 
-scoped_refptr<OpenTypeVerticalData> FontPlatformData::CreateVerticalData()
-    const {
-  return OpenTypeVerticalData::CreateUnscaled(typeface_);
-}
-
 IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
   DCHECK(typeface_);
   int table_count = typeface_->countTables();

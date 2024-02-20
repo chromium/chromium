@@ -59,7 +59,6 @@ typedef const struct __CTFont* CTFontRef;
 namespace blink {
 
 class HarfBuzzFace;
-class OpenTypeVerticalData;
 
 class PLATFORM_EXPORT FontPlatformData
     : public GarbageCollected<FontPlatformData> {
@@ -137,8 +136,6 @@ class PLATFORM_EXPORT FontPlatformData
 #endif
 
   SkFont CreateSkFont(const FontDescription* = nullptr) const;
-
-  scoped_refptr<OpenTypeVerticalData> CreateVerticalData() const;
 
   // Computes a digest from the typeface. The digest only depends on the
   // underlying font itself, and does not vary by the style (size, weight,

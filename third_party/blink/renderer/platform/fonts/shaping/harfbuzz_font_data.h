@@ -32,7 +32,10 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
   HarfBuzzFontData(const HarfBuzzFontData&) = delete;
   HarfBuzzFontData& operator=(const HarfBuzzFontData&) = delete;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(range_set_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(vertical_data_);
+    visitor->Trace(range_set_);
+  }
 
   // The vertical origin and vertical advance functions in HarfBuzzFace require
   // the ascent and height metrics as fallback in case no specific vertical
@@ -67,18 +70,18 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
     }
   }
 
-  scoped_refptr<OpenTypeVerticalData> VerticalData() {
+  OpenTypeVerticalData* VerticalData() {
     if (!vertical_data_) {
       DCHECK_NE(ascent_fallback_, kInvalidFallbackMetricsValue);
       DCHECK_NE(height_fallback_, kInvalidFallbackMetricsValue);
       DCHECK_NE(size_per_unit_, kInvalidFallbackMetricsValue);
 
       vertical_data_ =
-          OpenTypeVerticalData::CreateUnscaled(font_.refTypeface());
+          MakeGarbageCollected<OpenTypeVerticalData>(font_.refTypeface());
     }
     vertical_data_->SetScaleAndFallbackMetrics(size_per_unit_, ascent_fallback_,
                                                height_fallback_);
-    return vertical_data_;
+    return vertical_data_.Get();
   }
 
   const hb::unique_ptr<hb_font_t> unscaled_font_;
@@ -97,7 +100,7 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
   SpaceGlyphInOpenTypeTables space_in_gsub_ =
       SpaceGlyphInOpenTypeTables::kUnknown;
 
-  scoped_refptr<OpenTypeVerticalData> vertical_data_;
+  Member<OpenTypeVerticalData> vertical_data_;
   Member<const UnicodeRangeSet> range_set_;
 };
 

@@ -167,8 +167,7 @@ static hb_bool_t HarfBuzzGetGlyphVerticalOrigin(hb_font_t* hb_font,
                                                 void* user_data) {
   HarfBuzzFontData* hb_font_data =
       reinterpret_cast<HarfBuzzFontData*>(font_data);
-  scoped_refptr<OpenTypeVerticalData> vertical_data =
-      hb_font_data->VerticalData();
+  OpenTypeVerticalData* vertical_data = hb_font_data->VerticalData();
   if (!vertical_data)
     return false;
 
@@ -187,8 +186,7 @@ static hb_position_t HarfBuzzGetGlyphVerticalAdvance(hb_font_t* hb_font,
                                                      void* user_data) {
   HarfBuzzFontData* hb_font_data =
       reinterpret_cast<HarfBuzzFontData*>(font_data);
-  scoped_refptr<OpenTypeVerticalData> vertical_data =
-      hb_font_data->VerticalData();
+  OpenTypeVerticalData* vertical_data = hb_font_data->VerticalData();
   if (!vertical_data) {
     return SkiaScalarToHarfBuzzPosition(hb_font_data->height_fallback_);
   }
