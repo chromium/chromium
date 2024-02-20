@@ -982,8 +982,8 @@ bool FrameSchedulerImpl::IsOrdinary() const {
 bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
   DCHECK(parent_page_scheduler_);
 
-  if (parent_page_scheduler_->ThrottleUnimportantFrameTimers() &&
-      IsCrossOriginToNearestMainFrame() && frame_visible_ && !IsImportant()) {
+  if (base::FeatureList::IsEnabled(features::kThrottleUnimportantFrameTimers) &&
+      IsCrossOriginToNearestMainFrame() && !IsImportant()) {
     return true;
   }
   if (!RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled()) {

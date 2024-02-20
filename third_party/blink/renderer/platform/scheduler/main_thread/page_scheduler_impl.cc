@@ -172,8 +172,6 @@ PageSchedulerImpl::PageSchedulerImpl(
       had_recent_title_or_favicon_update_(false),
       delegate_(delegate),
       delay_for_background_tab_freezing_(GetDelayForBackgroundTabFreezing()),
-      throttle_unimportant_frame_timers_(base::FeatureList::IsEnabled(
-          features::kThrottleUnimportantFrameTimers)),
       unimportant_timers_throttled_wake_up_interval_(base::Milliseconds(
           features::kUnimportantFrameTimersThrottledWakeUpIntervalMills
               .Get())) {

@@ -130,10 +130,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // frame it not a local one.
   FrameSchedulerImpl* SelectFrameForUkmAttribution();
 
-  bool ThrottleUnimportantFrameTimers() const {
-    return throttle_unimportant_frame_timers_;
-  }
-
   void WriteIntoTrace(perfetto::TracedValue context, base::TimeTicks now) const;
 
   base::WeakPtr<PageSchedulerImpl> GetWeakPtr() {
@@ -299,9 +295,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   CancelableClosureHolder update_frozen_state_callback_;
   const base::TimeDelta delay_for_background_tab_freezing_;
 
-  // Whether timers of foreground unimportant frames (visible small and non user
-  // activated cross-origin frames) should be always throttled.
-  const bool throttle_unimportant_frame_timers_;
   // Interval between throttled wake ups for unimportant frames (visible, small
   // and non user activated cross origin frames) on a foreground page.
   const base::TimeDelta unimportant_timers_throttled_wake_up_interval_;
