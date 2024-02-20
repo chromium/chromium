@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
+#include "chrome/browser/android/metrics/jni_headers/AppUpdateInfoUtils_jni.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
@@ -111,6 +112,8 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   UMA_HISTOGRAM_BOOLEAN("Android.MultiWindowMode.Active",
                         chrome::android::GetIsInMultiWindowModeValue());
+  // Determine and emit to histogram if AppUpdate is available.
+  Java_AppUpdateInfoUtils_emitToHistogram(jni_zero::AttachCurrentThread());
 
   metrics::SystemProfileProto::OS* os_proto =
       uma_proto->mutable_system_profile()->mutable_os();

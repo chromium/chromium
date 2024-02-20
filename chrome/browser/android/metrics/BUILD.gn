@@ -6,17 +6,21 @@ if (is_android) {
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 
-  _jni_sources = [ "java/src/org/chromium/chrome/browser/metrics/AndroidSessionDurationsServiceState.java" ]
+  _jni_sources = [
+    "java/src/org/chromium/chrome/browser/metrics/AndroidSessionDurationsServiceState.java",
+    "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoUtils.java",
+  ]
 
   _test_jni_sources = [ "javatests/src/org/chromium/chrome/browser/metrics/util/UkmUtilsForTest.java" ]
 
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
-      "java/src/org/chromium/chrome/browser/metrics/AndroidSessionDurationsServiceState.java",
+      "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfo.java",
       "java/src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetrics.java",
       "java/src/org/chromium/chrome/browser/metrics/PackageMetrics.java",
     ]
+    sources += _jni_sources
 
     deps = [
       "//base:base_java",
@@ -29,6 +33,25 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+
+    public_deps = [ ":delegate_java" ]
+  }
+
+  android_library("delegate_java") {
+    sources = [
+      "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegate.java",
+      "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegateImpl.java",
+    ]
+
+    # Add the actual implementation where necessary so that downstream
+    # targets can provide their own implementations.
+    jar_excluded_patterns = [ "*/AppUpdateInfoDelegateImpl.class" ]
+  }
+
+  android_library("delegate_public_impl_java") {
+    sources = [ "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegateImpl.java" ]
+
+    deps = [ ":delegate_java" ]
   }
 
   static_library("ukm_utils_for_test") {
