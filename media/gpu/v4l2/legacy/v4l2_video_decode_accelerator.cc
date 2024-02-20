@@ -459,9 +459,7 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
     DCHECK(!output_record.cleared);
 
     output_record.picture_id = buffers[i].id();
-    output_record.texture_id = buffers[i].service_texture_ids().empty()
-                                   ? 0
-                                   : buffers[i].service_texture_ids()[0];
+    output_record.texture_id = buffers[i].service_texture_id();
 
     // We move the buffer into output_wait_map_, so get a reference to
     // its video frame if we need it to create the native pixmap for import.

@@ -114,7 +114,7 @@ TEST_F(PictureBufferManagerImplTest, Initialize) {
 TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_GLTextures) {
   Initialize();
   PictureBuffer pb = CreateARGBPictureBuffer();
-  EXPECT_TRUE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
 }
 #endif
 
@@ -122,12 +122,12 @@ TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_SharedImage) {
   Initialize();
   PictureBuffer pb1 = CreateARGBPictureBuffer(
       VideoDecodeAccelerator::TextureAllocationMode::kDoNotAllocateGLTextures);
-  EXPECT_EQ(pb1.client_texture_ids().size(), 0u);
+  EXPECT_EQ(pb1.service_texture_id(), 0u);
 
 #if !BUILDFLAG(IS_APPLE)
   PictureBuffer pb2 = CreateARGBPictureBuffer(
       VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures);
-  EXPECT_TRUE(cbh_->HasTexture(pb2.client_texture_ids()[0]));
+  EXPECT_TRUE(cbh_->HasTexture(pb2.service_texture_id()));
 #endif
 }
 
@@ -190,7 +190,7 @@ TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_Available) {
 
   // Allocated textures should be deleted soon.
   environment_.RunUntilIdle();
-  EXPECT_FALSE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+  EXPECT_FALSE(cbh_->HasTexture(pb.service_texture_id()));
 }
 
 TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_Output) {
@@ -202,18 +202,18 @@ TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_Output) {
 
   // Allocated textures should not be deleted while the VideoFrame exists.
   environment_.RunUntilIdle();
-  EXPECT_TRUE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
 
   // Or after it has been returned.
   frame = nullptr;
   environment_.RunUntilIdle();
-  EXPECT_TRUE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
 
   // The textures should be deleted once the the wait has completed. The reuse
   // callback should not be called for a dismissed picture buffer.
   cbh_->ReleaseSyncToken(sync_token);
   environment_.RunUntilIdle();
-  EXPECT_FALSE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+  EXPECT_FALSE(cbh_->HasTexture(pb.service_texture_id()));
 }
 
 TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_MultipleOutputs) {
@@ -232,21 +232,21 @@ TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_MultipleOutputs) {
 
   // Allocated textures should not be deleted while the VideoFrames exists.
   environment_.RunUntilIdle();
-  EXPECT_TRUE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
 
   // Or after they have been returned.
   frames.clear();
   environment_.RunUntilIdle();
-  EXPECT_TRUE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
 
   // The textures should be deleted only once all of the waits have completed.
   for (size_t i = 0; i < kOutputCountPerPictureBuffer; i++) {
     cbh_->ReleaseSyncToken(sync_tokens[i]);
     environment_.RunUntilIdle();
     if (i < kOutputCountPerPictureBuffer - 1) {
-      EXPECT_TRUE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+      EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
     } else {
-      EXPECT_FALSE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+      EXPECT_FALSE(cbh_->HasTexture(pb.service_texture_id()));
     }
   }
 }

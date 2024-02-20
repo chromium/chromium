@@ -2021,8 +2021,7 @@ void VTVideoDecodeAccelerator::AssignPictureBuffers(
     // PictureBuffer instances with texture IDs on Apple platforms: it does so
     // only when requested to allocate GL textures, which is neither supported
     // nor ever requested on these platforms.
-    CHECK(picture.client_texture_ids().empty() &&
-          picture.service_texture_ids().empty());
+    CHECK_EQ(picture.service_texture_id(), 0u);
     picture_info_map_.insert(
         std::make_pair(picture.id(), std::make_unique<PictureInfo>()));
   }
