@@ -307,6 +307,10 @@ class GEOMETRY_SKIA_EXPORT Transform {
     return LIKELY(!full_matrix_) || matrix_.IsScaleOrTranslation();
   }
 
+  // Returns true if, for 2d rects on the x/y plane, this matrix can be
+  // represented as a 2d affine transform on the x/y plane.
+  bool Preserves2dAffine() const;
+
   // Returns true if axis-aligned 2d rects will remain axis-aligned after being
   // transformed by this matrix.
   bool Preserves2dAxisAlignment() const;

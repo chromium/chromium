@@ -3087,6 +3087,117 @@ TEST(XFormTest, IsFlat) {
   EXPECT_TRUE(transform.IsFlat());
 }
 
+TEST(XFormTest, Preserves2dAffine) {
+  static const struct TestCase {
+    gfx::Transform transform;
+    bool expected;
+  } test_cases[] = {
+      // Skew z axis in x and y direction
+      {
+          gfx::Transform::ColMajor(1.0, 0.0, 0.0, 0.0,  //
+                                   0.0, 1.0, 0.0, 0.0,  //
+                                   0.1, 0.1, 1.0, 0.0,  //
+                                   0.0, 0.0, 0.0, 1.0),
+          true,
+      },
+
+      // Scale z axis
+      {
+          gfx::Transform::ColMajor(1.0, 0.0, 0.0, 0.0,  //
+                                   0.0, 1.0, 0.0, 0.0,  //
+                                   0.0, 0.0, 2.0, 0.0,  //
+                                   0.0, 0.0, 0.0, 1.0),
+          true,
+      },
+
+      // Perspective projection along the z axis
+      {
+          gfx::Transform::ColMajor(1.0, 0.0, 0.0, 0.0,  //
+                                   0.0, 1.0, 0.0, 0.0,  //
+                                   0.0, 0.0, 1.0, 0.1,  //
+                                   0.0, 0.0, 0.0, 1.0),
+          true,
+      },
+
+      // All together, including x and y axis skew and translation
+      {
+          gfx::Transform::ColMajor(1.0, 0.1, 0.0, 0.0,  //
+                                   0.1, 1.0, 0.0, 0.0,  //
+                                   0.1, 0.1, 2.0, 0.1,  //
+                                   0.1, 0.1, 0.0, 1.0),
+          true,
+      },
+
+      // Skew x axis in the z direction.
+      {
+          gfx::Transform::ColMajor(1.0, 0.0, 0.1, 0.0,  //
+                                   0.0, 1.0, 0.0, 0.0,  //
+                                   0.0, 0.0, 1.0, 0.0,  //
+                                   0.0, 0.0, 0.0, 1.0),
+          false,
+      },
+
+      // Add y perspective
+      {
+          gfx::Transform::ColMajor(1.0, 0.0, 0.0, 0.0,  //
+                                   0.0, 1.0, 0.0, 0.1,  //
+                                   0.0, 0.0, 1.0, 0.0,  //
+                                   0.0, 0.0, 0.0, 1.0),
+          false,
+      },
+
+      // Add z translation
+      {
+          gfx::Transform::ColMajor(1.0, 0.0, 0.0, 0.0,  //
+                                   0.0, 1.0, 0.0, 0.1,  //
+                                   0.0, 0.0, 1.0, 0.0,  //
+                                   0.0, 0.0, 0.1, 1.0),
+          false,
+      },
+  };
+
+  // Another implementation of Preserves2dAffine that isn't as fast, good for
+  // testing the faster implementation.
+  auto EmpiricallyPreserves2dAffine = [](const Transform& transform) {
+    Point3F p1(5.0f, 5.0f, 0.0f);
+    Point3F p2(10.0f, 5.0f, 0.0f);
+    Point3F p3(10.0f, 20.0f, 0.0f);
+    Point3F p4(5.0f, 20.0f, 0.0f);
+
+    QuadF test_quad(PointF(p1.x(), p1.y()), PointF(p2.x(), p2.y()),
+                    PointF(p3.x(), p3.y()), PointF(p4.x(), p4.y()));
+    EXPECT_TRUE(test_quad.IsRectilinear());
+
+    p1 = transform.MapPoint(p1);
+    p2 = transform.MapPoint(p2);
+    p3 = transform.MapPoint(p3);
+    p4 = transform.MapPoint(p4);
+
+    // We expect our quad on the x/y plane to remain so.
+    if (p1.z() != 0 || p2.z() != 0 || p3.z() != 0 || p4.z() != 0) {
+      return false;
+    }
+
+    // In an affine transform, parallel lines are preserved.
+    return CrossProduct(p2 - p1, p3 - p4).IsZero() &&
+           CrossProduct(p4 - p1, p3 - p2).IsZero();
+  };
+
+  for (const auto& value : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("transform = %s, expected = %d",
+                                    value.transform.ToString().c_str(),
+                                    value.expected));
+
+    if (value.expected) {
+      EXPECT_TRUE(EmpiricallyPreserves2dAffine(value.transform));
+      EXPECT_TRUE(value.transform.Preserves2dAffine());
+    } else {
+      EXPECT_FALSE(EmpiricallyPreserves2dAffine(value.transform));
+      EXPECT_FALSE(value.transform.Preserves2dAffine());
+    }
+  }
+}
+
 // Another implementation of Preserves2dAxisAlignment that isn't as fast,
 // good for testing the faster implementation.
 static bool EmpiricallyPreserves2dAxisAlignment(const Transform& transform) {
