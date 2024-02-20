@@ -289,6 +289,7 @@ const OncFieldSignature cellular_provider_fields[] = {
     {nullptr}};
 
 const OncFieldSignature cellular_apn_fields[] = {
+    {::onc::kRecommended, &kRecommendedSignature},
     {::onc::cellular_apn::kAccessPointName, &kStringSignature},
     {::onc::cellular_apn::kName, &kStringSignature},
     {::onc::cellular_apn::kUsername, &kStringSignature},

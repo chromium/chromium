@@ -158,6 +158,79 @@ CertPEMsByGUIDMap GetServerAndCACertsByGUID(
   return certs_by_guid;
 }
 
+// Set APN dictionary and associated recommended values to solve the issue
+// of setting the APN for managed eSIM profiles (see http://b/295226668) in
+// old APN UI.
+void SetAPNDictAndRecommendedIfNone(base::Value::Dict& cellular_fields) {
+  if (cellular_fields.Find(::onc::cellular::kAPN)) {
+    return;
+  }
+
+  auto apn_recommended_list = base::Value::List()
+                                  .Append(::onc::cellular_apn::kAccessPointName)
+                                  .Append(::onc::cellular_apn::kAttach)
+                                  .Append(::onc::cellular_apn::kAuthentication)
+                                  .Append(::onc::cellular_apn::kUsername)
+                                  .Append(::onc::cellular_apn::kPassword);
+
+  base::Value* apn_dict = cellular_fields.Set(
+      ::onc::cellular::kAPN, base::Value(base::Value::Type::DICT));
+  apn_dict->GetDict().Set(::onc::kRecommended, std::move(apn_recommended_list));
+}
+
+// Modify recommended list to include custom APN list field to solve the issue
+// of setting the APN for managed eSIM profiles (see http://b/295226668) in
+// revamp APN UI.
+void AddCustomAPNListToRecommended(base::Value::Dict& cellular_fields) {
+  auto* recommended = cellular_fields.Find(::onc::kRecommended);
+  if (!recommended) {
+    recommended = cellular_fields.Set(::onc::kRecommended,
+                                      base::Value(base::Value::Type::LIST));
+  }
+  for (const auto& field : recommended->GetList()) {
+    if (field == ::onc::cellular::kCustomAPNList) {
+      return;
+    }
+  }
+  recommended->GetList().Append(::onc::cellular::kCustomAPNList);
+}
+
+void FillInCellularDefaultsInOncObject(const OncValueSignature& signature,
+                                       base::Value::Dict& onc_object) {
+  if (&signature == &kCellularSignature) {
+    SetAPNDictAndRecommendedIfNone(onc_object);
+    AddCustomAPNListToRecommended(onc_object);
+    return;
+  }
+
+  // The function takes any ONC object and recursively searches until it finds a
+  // Cellular dictionary to set the default values.
+  for (auto it : onc_object) {
+    if (!it.second.is_dict()) {
+      continue;
+    }
+
+    const OncFieldSignature* field_signature =
+        GetFieldSignature(signature, it.first);
+    if (!field_signature) {
+      continue;
+    }
+
+    FillInCellularDefaultsInOncObject(*field_signature->value_signature,
+                                      it.second.GetDict());
+  }
+}
+
+// Adds "CustomAPNList" as a recommended field by default, and creates an APN
+// dict with nested recommended field in cellular entries lacking an APN dict in
+// |network_configs| list.
+void FillInCellularDefaultsInNetworks(base::Value::List& network_configs) {
+  for (auto& network : network_configs) {
+    FillInCellularDefaultsInOncObject(kNetworkConfigurationSignature,
+                                      network.GetDict());
+  }
+}
+
 // Fills HexSSID fields in all entries in the |network_configs| list.
 void FillInHexSSIDFieldsInNetworks(base::Value::List& network_configs) {
   for (auto& network : network_configs) {
@@ -711,6 +784,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
       ::onc::toplevel_config::kNetworkConfigurations);
   if (validated_networks_list) {
     FillInHexSSIDFieldsInNetworks(*validated_networks_list);
+    FillInCellularDefaultsInNetworks(*validated_networks_list);
     // Set HiddenSSID to default value to solve the issue crbug.com/1171837
     SetHiddenSSIDFieldsInNetworks(*validated_networks_list);
 
