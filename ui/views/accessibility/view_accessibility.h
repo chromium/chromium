@@ -137,6 +137,8 @@ class VIEWS_EXPORT ViewAccessibility {
                       const ax::mojom::DescriptionFrom description_from =
                           ax::mojom::DescriptionFrom::kAriaDescription);
 
+  // Deprecated. Use ViewAccessibility::SetRole instead.
+  // See https://crbug.com/324485311.
   void OverrideRole(const ax::mojom::Role role);
 
   // Sets the accessible name to the specified string value.
