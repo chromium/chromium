@@ -110,10 +110,15 @@ float GetInnerRingStrokeWidth(const ui::Layer* layer) {
          std::min(size.width(), size.height());
 }
 
+// TODO(b/324644877): We want the progress ring still keep the same opacity
+// after the `Pulse` animation. Please also provide an option for our this
+// expectation after removing `kForcedShow`.
 // Returns the opacity for the outer ring given the current `progress`.
 float GetOuterRingOpacity(const std::optional<float>& progress) {
-  return progress != ProgressIndicator::kProgressComplete ? kOuterRingOpacity
-                                                          : 1.f;
+  return (progress == ProgressIndicator::kProgressComplete ||
+          progress == ProgressIndicator::kForcedShow)
+             ? 1.f
+             : kOuterRingOpacity;
 }
 
 // Returns the stroke width for the outer ring given `layer` dimensions and
