@@ -573,10 +573,6 @@ void LayoutTheme::SystemFont(CSSValueID system_font_id,
   if (font_description.IsAbsoluteSize())
     return;
 
-  font_description.SetStyle(
-      LayoutThemeFontProvider::SystemFontStyle(system_font_id));
-  font_description.SetWeight(
-      LayoutThemeFontProvider::SystemFontWeight(system_font_id));
   font_description.SetSpecifiedSize(
       LayoutThemeFontProvider::SystemFontSize(system_font_id, document));
   font_description.SetIsAbsoluteSize(true);
