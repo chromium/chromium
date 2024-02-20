@@ -744,10 +744,10 @@ TEST_F(ViewAXPlatformNodeDelegateTest, ComputeViewListItemName) {
   ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
   ViewAXPlatformNodeDelegate* child_view_3 = view_accessibility(extra_views[3]);
 
-  parent_view->OverrideRole(ax::mojom::Role::kListItem);
-  child_view_1->OverrideRole(ax::mojom::Role::kStaticText);
-  child_view_2->OverrideRole(ax::mojom::Role::kLink);
-  child_view_3->OverrideRole(ax::mojom::Role::kStaticText);
+  parent_view->SetRole(ax::mojom::Role::kListItem);
+  child_view_1->SetRole(ax::mojom::Role::kStaticText);
+  child_view_2->SetRole(ax::mojom::Role::kLink);
+  child_view_3->SetRole(ax::mojom::Role::kStaticText);
 
   child_view_1->OverrideName("1");
   child_view_2->OverrideName("2");

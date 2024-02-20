@@ -1185,9 +1185,9 @@ TEST_F(DesktopWidgetFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
 
   // In order to pass the accessibility paint checks, focusable views must have
   // a valid role.
-  parent1->GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
-  parent2->GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
-  child->GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+  parent1->GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  parent2->GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  child->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   // In order to pass the accessibility paint checks, focusable views must have
   // a non-empty accessible name, or have their name set to explicitly empty.

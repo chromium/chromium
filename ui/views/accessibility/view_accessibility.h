@@ -106,6 +106,7 @@ class VIEWS_EXPORT ViewAccessibility {
   virtual void FireFocusAfterMenuClose();
 
   void SetRole(const ax::mojom::Role role);
+
   // This function cannot follow the established pattern and be named GetRole()
   // because of a function of the same name in AXPlatformNodeDelegate.
   // ViewAXPlatformNodeDelegate extends both ViewAccessibility and

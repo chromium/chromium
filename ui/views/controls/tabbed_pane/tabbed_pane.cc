@@ -322,7 +322,7 @@ TabbedPaneTabStrip::TabbedPaneTabStrip(TabbedPane::Orientation orientation,
   }
   SetLayoutManager(std::move(layout));
 
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kNone);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
 
   // These durations are taken from the Paper Tabs source:
   // https://github.com/PolymerElements/paper-tabs/blob/master/paper-tabs.html
@@ -563,7 +563,7 @@ void TabbedPane::AddTabInternal(size_t index,
                                 std::unique_ptr<View> contents) {
   DCHECK_LE(index, GetTabCount());
   contents->SetVisible(false);
-  contents->GetViewAccessibility().OverrideRole(ax::mojom::Role::kTabPanel);
+  contents->GetViewAccessibility().SetRole(ax::mojom::Role::kTabPanel);
   if (!title.empty()) {
     contents->GetViewAccessibility().OverrideName(title);
   }

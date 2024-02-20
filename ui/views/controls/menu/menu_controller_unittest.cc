@@ -2868,7 +2868,7 @@ TEST_F(MenuControllerTest, SetSelectionIndices_NestedButtons) {
 
   // This simulates how buttons are nested in views in the main app menu.
   auto* const container_view = item4->AddChildView(std::make_unique<View>());
-  container_view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
+  container_view->GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
 
   // There's usually a label before the traversable elements.
   container_view->AddChildView(std::make_unique<Label>());
@@ -2877,10 +2877,10 @@ TEST_F(MenuControllerTest, SetSelectionIndices_NestedButtons) {
   auto* const button1 =
       container_view->AddChildView(std::make_unique<LabelButton>());
   button1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  button1->GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
+  button1->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   auto* const button2 =
       container_view->AddChildView(std::make_unique<LabelButton>());
-  button2->GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
+  button2->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   button2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   OpenMenu(menu_item());
