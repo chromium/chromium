@@ -106,6 +106,10 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif  // BUILDFLAG(USE_DAWN)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/abstract_texture.h"
+#endif  // !BUIDLFLAG(IS_ANDROID)
+
 // Local versions of the SET_GL_ERROR macros
 #define LOCAL_SET_GL_ERROR(error, function_name, msg) \
   ERRORSTATE_SET_GL_ERROR(error_state_.get(), error, function_name, msg)

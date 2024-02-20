@@ -67,6 +67,10 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/abstract_texture.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace gpu {
 namespace webgpu {
 

@@ -117,6 +117,10 @@
 // Note: this undefs far and near so include this after other Windows headers.
 #include "third_party/angle/src/image_util/loadimage.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/abstract_texture.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace gpu {
 namespace gles2 {
 
