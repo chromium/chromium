@@ -860,7 +860,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
     float scale,
     const Vector<LayoutUnit>& rows,
     const Vector<LayoutUnit>& columns) {
-  auto* grid = To<LayoutGrid>(node->GetLayoutObject());
+  const auto* grid = To<LayoutGrid>(node->GetLayoutObject());
   LocalFrameView* containing_view = node->GetDocument().View();
   bool is_rtl = !grid->StyleRef().IsLeftToRightDirection();
 
@@ -874,9 +874,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
   LayoutUnit row_gap = grid->GridGap(kForRows);
   LayoutUnit column_gap = grid->GridGap(kForColumns);
 
-  std::optional<NamedGridAreaMap> named_area_map =
-      grid->CachedPlacementData().line_resolver.NamedAreasMap();
-  if (named_area_map) {
+  if (const NamedGridAreaMap* named_area_map =
+          grid->CachedPlacementData().line_resolver.NamedAreasMap()) {
     for (const auto& item : *named_area_map) {
       const GridArea& area = item.value;
       const String& name = item.key;

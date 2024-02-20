@@ -362,9 +362,8 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
                       subgrid_area);
   }
 
-  std::optional<NamedGridAreaMap> parent_areas =
-      parent_line_resolver.NamedAreasMap();
-  if (parent_line_resolver.NamedAreasMap()) {
+  if (const NamedGridAreaMap* parent_areas =
+          parent_line_resolver.NamedAreasMap()) {
     // If the subgrid doesn't have any grid areas defined, emplace an empty one.
     // We still need to call `MergeAndClampGridAreasWithParent` to copy and
     // clamp the parent's map to the subgrid range.
@@ -650,14 +649,14 @@ const NamedGridLinesMap& GridLineResolver::ExplicitNamedLinesMap(
              : ComputedGridTrackList(track_direction).named_grid_lines;
 }
 
-std::optional<NamedGridAreaMap> GridLineResolver::NamedAreasMap() const {
+const NamedGridAreaMap* GridLineResolver::NamedAreasMap() const {
   if (subgrid_merged_named_areas_) {
-    return *subgrid_merged_named_areas_;
+    return &subgrid_merged_named_areas_.value();
   }
   if (auto& areas = style_->GridTemplateAreas()) {
-    return areas->named_areas;
+    return &areas->named_areas;
   }
-  return std::nullopt;
+  return nullptr;
 }
 
 const NamedGridLinesMap& GridLineResolver::AutoRepeatLineNamesMap(
