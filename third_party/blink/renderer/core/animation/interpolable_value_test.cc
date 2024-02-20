@@ -39,8 +39,9 @@ class AnimationInterpolableValueTest : public testing::Test {
     i->Interpolate(0, progress);
     TypedInterpolationValue* interpolated_value = i->GetInterpolatedValue();
     EXPECT_TRUE(interpolated_value);
+    CSSToLengthConversionData length_resolver;
     return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())
-        .Value();
+        .Value(length_resolver);
   }
 
   void ScaleAndAdd(InterpolableValue& base,
@@ -83,9 +84,13 @@ TEST_F(AnimationInterpolableValueTest, SimpleList) {
       InterpolateLists(std::move(list_a), std::move(list_b), 0.3);
   const auto& out_list = To<InterpolableList>(*interpolated_value);
 
-  EXPECT_FLOAT_EQ(30, To<InterpolableNumber>(out_list.Get(0))->Value());
-  EXPECT_FLOAT_EQ(-30.6f, To<InterpolableNumber>(out_list.Get(1))->Value());
-  EXPECT_FLOAT_EQ(104.35f, To<InterpolableNumber>(out_list.Get(2))->Value());
+  CSSToLengthConversionData length_resolver;
+  EXPECT_FLOAT_EQ(
+      30, To<InterpolableNumber>(out_list.Get(0))->Value(length_resolver));
+  EXPECT_FLOAT_EQ(
+      -30.6f, To<InterpolableNumber>(out_list.Get(1))->Value(length_resolver));
+  EXPECT_FLOAT_EQ(
+      104.35f, To<InterpolableNumber>(out_list.Get(2))->Value(length_resolver));
 }
 
 TEST_F(AnimationInterpolableValueTest, NestedList) {
@@ -106,25 +111,29 @@ TEST_F(AnimationInterpolableValueTest, NestedList) {
   InterpolableValue* interpolated_value = InterpolateLists(list_a, list_b, 0.5);
   const auto& out_list = To<InterpolableList>(*interpolated_value);
 
-  EXPECT_FLOAT_EQ(50, To<InterpolableNumber>(out_list.Get(0))->Value());
+  CSSToLengthConversionData length_resolver;
+  EXPECT_FLOAT_EQ(
+      50, To<InterpolableNumber>(out_list.Get(0))->Value(length_resolver));
   EXPECT_FLOAT_EQ(
       75, To<InterpolableNumber>(To<InterpolableList>(out_list.Get(1))->Get(0))
-              ->Value());
-  EXPECT_FLOAT_EQ(0.5, To<InterpolableNumber>(out_list.Get(2))->Value());
+              ->Value(length_resolver));
+  EXPECT_FLOAT_EQ(
+      0.5, To<InterpolableNumber>(out_list.Get(2))->Value(length_resolver));
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddNumbers) {
+  CSSToLengthConversionData length_resolver;
   InterpolableNumber* base = MakeGarbageCollected<InterpolableNumber>(10);
   ScaleAndAdd(*base, 2, *MakeGarbageCollected<InterpolableNumber>(1));
-  EXPECT_FLOAT_EQ(21, base->Value());
+  EXPECT_FLOAT_EQ(21, base->Value(length_resolver));
 
   base = MakeGarbageCollected<InterpolableNumber>(10);
   ScaleAndAdd(*base, 0, *MakeGarbageCollected<InterpolableNumber>(5));
-  EXPECT_FLOAT_EQ(5, base->Value());
+  EXPECT_FLOAT_EQ(5, base->Value(length_resolver));
 
   base = MakeGarbageCollected<InterpolableNumber>(10);
   ScaleAndAdd(*base, -1, *MakeGarbageCollected<InterpolableNumber>(8));
-  EXPECT_FLOAT_EQ(-2, base->Value());
+  EXPECT_FLOAT_EQ(-2, base->Value(length_resolver));
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddLists) {
@@ -137,9 +146,13 @@ TEST_F(AnimationInterpolableValueTest, ScaleAndAddLists) {
   add_list->Set(1, MakeGarbageCollected<InterpolableNumber>(2));
   add_list->Set(2, MakeGarbageCollected<InterpolableNumber>(3));
   ScaleAndAdd(*base_list, 2, *add_list);
-  EXPECT_FLOAT_EQ(11, To<InterpolableNumber>(base_list->Get(0))->Value());
-  EXPECT_FLOAT_EQ(22, To<InterpolableNumber>(base_list->Get(1))->Value());
-  EXPECT_FLOAT_EQ(33, To<InterpolableNumber>(base_list->Get(2))->Value());
+  CSSToLengthConversionData length_resolver;
+  EXPECT_FLOAT_EQ(
+      11, To<InterpolableNumber>(base_list->Get(0))->Value(length_resolver));
+  EXPECT_FLOAT_EQ(
+      22, To<InterpolableNumber>(base_list->Get(1))->Value(length_resolver));
+  EXPECT_FLOAT_EQ(
+      33, To<InterpolableNumber>(base_list->Get(2))->Value(length_resolver));
 }
 
 TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
