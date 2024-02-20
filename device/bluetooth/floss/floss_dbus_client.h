@@ -120,6 +120,7 @@ inline constexpr char kGetConnectedDevices[] = "GetConnectedDevices";
 inline constexpr char kSdpSearch[] = "SdpSearch";
 inline constexpr char kCreateSdpRecord[] = "CreateSdpRecord";
 inline constexpr char kRemoveSdpRecord[] = "RemoveSdpRecord";
+inline constexpr char kGetSupportedRoles[] = "GetSupportedRoles";
 
 // TODO(abps) - Rename this to AdapterCallback in platform and here
 inline constexpr char kCallbackInterface[] =

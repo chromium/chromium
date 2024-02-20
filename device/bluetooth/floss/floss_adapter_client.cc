@@ -343,6 +343,10 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
                                    dbus::ObjectPath(exported_callback_path_),
                                    base::DoNothing());
 
+  property_roles_.Init(this, bus_, service_name_, adapter_path_,
+                       dbus::ObjectPath(exported_callback_path_),
+                       base::DoNothing());
+
   UpdateDiscoverableTimeout();
 
   pending_register_calls_ = 2;

@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "dbus/exported_object.h"
 #include "dbus/object_path.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
@@ -105,6 +106,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kRandomId,
     kUnknown = 0xfe,
     kAnonymous = 0xff,
+  };
+
+  enum class BtAdapterRole {
+    kCentral = 0,
+    kPeripheral,
+    kCentralPeripheral,
   };
 
   struct VendorProductInfo {
@@ -343,6 +350,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void RemoveSdpRecord(ResponseCallback<bool> callback,
                                const int32_t& handle);
 
+  std::vector<BtAdapterRole> GetSupportedRoles() {
+    return property_roles_.Get();
+  }
+
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
 
@@ -488,6 +499,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   FlossProperty<bool> property_ext_adv_supported_{
       kAdapterInterface, adapter::kCallbackInterface,
       adapter::kIsLeExtendedAdvertisingSupported, nullptr};
+
+  FlossProperty<std::vector<BtAdapterRole>> property_roles_{
+      kAdapterInterface, adapter::kCallbackInterface,
+      adapter::kGetSupportedRoles, nullptr};
 
   // Object path for exported callbacks registered against adapter interface.
   static const char kExportedCallbacksPath[];

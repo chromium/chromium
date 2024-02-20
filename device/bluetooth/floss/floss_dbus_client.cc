@@ -418,6 +418,18 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    FlossAdapterClient::BtAdapterRole* type) {
+  uint32_t val;
+  bool success;
+
+  success = reader->PopUint32(&val);
+  *type = static_cast<FlossAdapterClient::BtAdapterRole>(val);
+
+  return success;
+}
+
+template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const FlossDeviceId& device) {
   dbus::MessageWriter array(nullptr);
