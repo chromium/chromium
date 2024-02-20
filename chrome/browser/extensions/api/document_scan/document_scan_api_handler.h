@@ -14,10 +14,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -38,7 +41,8 @@ class ScannerDiscoveryRunner;
 class StartScanRunner;
 
 // Handles chrome.documentScan API function calls.
-class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
+class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
+                               public ExtensionRegistryObserver {
  public:
   using SimpleScanCallback = base::OnceCallback<void(
       std::optional<api::document_scan::ScanResults> scan_results,
@@ -78,6 +82,14 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
 
   // Registers the documentScan API preference with the |registry|.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // ExtensionRegistryObserver implementation:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+
+  // KeyedService implementation:
+  void Shutdown() override;
 
   // Replaces the DocumentScan service with a mock.
   void SetDocumentScanForTesting(crosapi::mojom::DocumentScan* document_scan);
@@ -220,6 +232,9 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   DocumentScanAPIHandler(content::BrowserContext* browser_context,
                          crosapi::mojom::DocumentScan* document_scan);
 
+  // Cleanup all handles and state for the given extension.
+  void ExtensionCleanup(const ExtensionId& id);
+
   void OnSimpleScanNamesReceived(bool force_virtual_usb_printer,
                                  SimpleScanCallback callback,
                                  const std::vector<std::string>& scanner_names);
@@ -261,6 +276,9 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
   std::map<ExtensionId, ExtensionState> extension_state_;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<DocumentScanAPIHandler> weak_ptr_factory_{this};
 };

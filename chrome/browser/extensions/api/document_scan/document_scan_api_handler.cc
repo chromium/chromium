@@ -99,6 +99,8 @@ DocumentScanAPIHandler::DocumentScanAPIHandler(
     crosapi::mojom::DocumentScan* document_scan)
     : browser_context_(browser_context), document_scan_(document_scan) {
   CHECK(document_scan_);
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
 }
 
 DocumentScanAPIHandler::~DocumentScanAPIHandler() = default;
@@ -127,6 +129,33 @@ DocumentScanAPIHandler* DocumentScanAPIHandler::Get(
 void DocumentScanAPIHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kDocumentScanAPITrustedExtensions);
+}
+
+void DocumentScanAPIHandler::ExtensionCleanup(const ExtensionId& id) {
+  const ExtensionState& state = extension_state_[id];
+  for (const auto& [scanner_handle, scanner_id] : state.scanner_handles) {
+    // No need to monitor the responses from the CloseScanner call since there
+    // is no client waiting for these responses.
+    document_scan_->CloseScanner(
+        scanner_handle,
+        base::DoNothingAs<void(crosapi::mojom::CloseScannerResponsePtr)>());
+  }
+  extension_state_.erase(id);
+}
+
+void DocumentScanAPIHandler::Shutdown() {
+  while (!extension_state_.empty()) {
+    // `ExtensionCleanup` will remove the given item from the map, so this loop
+    // will eventually terminate.
+    ExtensionCleanup(extension_state_.begin()->first);
+  }
+}
+
+void DocumentScanAPIHandler::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UnloadedExtensionReason reason) {
+  ExtensionCleanup(extension->id());
 }
 
 void DocumentScanAPIHandler::SetDocumentScanForTesting(
@@ -633,11 +662,6 @@ BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  Profile* profile = Profile::FromBrowserContext(context);
-  // We do not want an instance of DocumentScanAPIHandler on the lock screen.
-  if (!profile->IsRegularProfile()) {
-    return nullptr;
-  }
   return new DocumentScanAPIHandler(context);
 }
 
