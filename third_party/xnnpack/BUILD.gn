@@ -304,6 +304,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     cflags = [
       "-mavx2",
       "-mavxvnni",
+      "-mf16c",
       "-mfma",
     ]
 
@@ -328,6 +329,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     cflags = [
       "-mavx2",
       "-mavxvnni",
+      "-mf16c",
       "-mfma",
     ]
 
