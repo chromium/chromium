@@ -158,7 +158,7 @@ void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
 }
 
 void ServiceMain::SetServiceStatus(DWORD state) {
-  ::InterlockedExchange(&service_status_.dwCurrentState, state);
+  service_status_.dwCurrentState = state;
   ::SetServiceStatus(service_status_handle_, &service_status_);
 }
 
