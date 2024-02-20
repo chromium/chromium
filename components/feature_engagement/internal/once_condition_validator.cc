@@ -89,4 +89,8 @@ void OnceConditionValidator::AllowMultipleFeaturesForTesting(
   allows_multiple_features_ = allows_multiple_features;
 }
 
+void OnceConditionValidator::ResetSession() {
+  shown_features_.clear();
+}
+
 }  // namespace feature_engagement

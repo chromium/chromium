@@ -158,6 +158,10 @@ FeatureConfigConditionValidator::GetPendingPriorityNotification() {
   return pending_priority_notification_;
 }
 
+void FeatureConfigConditionValidator::ResetSession() {
+  times_shown_for_feature_.clear();
+}
+
 bool FeatureConfigConditionValidator::AvailabilityMeetsConditions(
     const base::Feature& feature,
     Comparator comparator,

@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
+#include "components/feature_engagement/public/default_session_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -38,6 +39,7 @@ namespace feature_engagement {
 
 class Configuration;
 class Tracker;
+class SessionController;
 
 // Creates a Tracker that is usable for a demo mode.
 std::unique_ptr<Tracker> CreateDemoModeTracker(std::string chosen_feature_name);
@@ -159,8 +161,9 @@ class Tracker : public KeyedService, public base::SupportsUserData {
       leveldb_proto::ProtoDatabaseProvider* db_provider,
       base::WeakPtr<TrackerEventExporter> event_exporter,
       const ConfigurationProviderList& configuration_providers =
-          GetDefaultConfigurationProviders());
-
+          GetDefaultConfigurationProviders(),
+      std::unique_ptr<SessionController> session_controller =
+          std::make_unique<DefaultSessionController>());
   // Possibly adds a command line argument for a child browser process to
   // communicate what IPH are allowed in a testing environment. Has no effect if
   // IPH behavior is not being modified for testing. If specific IPH features

@@ -50,6 +50,7 @@ class FeatureConfigConditionValidator : public ConditionValidator {
   void SetPriorityNotification(
       const std::optional<std::string>& feature) override;
   std::optional<std::string> GetPendingPriorityNotification() override;
+  void ResetSession() override;
 
  private:
   bool EventConfigMeetsConditions(const EventConfig& event_config,

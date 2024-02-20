@@ -547,6 +547,43 @@ TEST_F(FeatureConfigConditionValidatorTest, SessionRate) {
   EXPECT_FALSE(result.session_rate_ok);
 }
 
+// Tests that the session rate is zero after resetting the session.
+TEST_F(FeatureConfigConditionValidatorTest, SessionRateIsZeroAfterReset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar,
+       kFeatureConfigTestFeatureQux},
+      {});
+  std::vector<std::string> all_feature_names = {
+      kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name,
+      kFeatureConfigTestFeatureQux.name};
+
+  FeatureConfig foo_config = GetAcceptingFeatureConfig();
+  foo_config.session_rate = Comparator(LESS_THAN, 2u);
+  FeatureConfig bar_config = GetAcceptingFeatureConfig();
+  FeatureConfig qux_config = GetAcceptingFeatureConfig();
+  qux_config.session_rate = Comparator(EQUAL, 0u);
+
+  // Current session has 2, making the `foo_config` fail the check.
+  validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
+                             all_feature_names);
+  validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
+  validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
+                             all_feature_names);
+  validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
+  ConditionValidator::Result result = GetResult(foo_config);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.session_rate_ok);
+
+  validator_.ResetSession();
+
+  // After resetting, current session has 0, making the `qux_config` pass the
+  // check.
+  result = GetResult(qux_config);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.session_rate_ok);
+}
+
 TEST_F(FeatureConfigConditionValidatorTest, SessionRateImpactAffectsNone) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1454,6 +1491,42 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupSessionRate) {
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.groups_ok);
+}
+
+// Tests that when group session rate is zero, it passes the test after session
+// is reset.
+TEST_F(FeatureConfigConditionValidatorTest, GroupSessionRateIsZeroAfterReset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar}, {});
+  std::vector<std::string> all_feature_names = {
+      kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name};
+
+  FeatureConfig foo_config = GetAcceptingFeatureConfig();
+  FeatureConfig bar_config = GetAcceptingFeatureConfig();
+
+  GroupConfig group_config = GetAcceptingGroupConfig();
+  group_config.session_rate = Comparator(EQUAL, 0u);
+
+  EXPECT_TRUE(GetResultWithGroups(foo_config, {group_config}).NoErrors());
+
+  // Current session rate is 1, the `group_config` will fail the check.
+  validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
+                             all_feature_names);
+  validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
+  ConditionValidator::Result result =
+      GetResultWithGroups(foo_config, {group_config});
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.session_rate_ok);
+  EXPECT_FALSE(result.groups_ok);
+
+  validator_.ResetSession();
+
+  // Current session rate is 0, the `group_config` will pass the check.
+  result = GetResultWithGroups(foo_config, {group_config});
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.session_rate_ok);
+  EXPECT_TRUE(result.groups_ok);
 }
 
 TEST_F(FeatureConfigConditionValidatorTest,
