@@ -134,7 +134,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
         for (Tab tab : tabs) {
             final int index = TabModelUtils.getTabIndexById(model, tab.getId());
             greatestTabIndex = Math.max(index, greatestTabIndex);
-            if (actionOnRelatedTabs && filter.hasOtherRelatedTabs(tab)) {
+            if (actionOnRelatedTabs && filter.isTabInTabGroup(tab)) {
                 smallestGroupIndex =
                         (smallestGroupIndex == TabModel.INVALID_TAB_INDEX)
                                 ? index

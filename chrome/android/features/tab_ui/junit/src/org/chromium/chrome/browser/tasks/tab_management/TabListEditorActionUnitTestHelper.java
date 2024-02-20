@@ -105,9 +105,8 @@ public class TabListEditorActionUnitTestHelper {
                 if (group.isSelected() && groupTabs.isEmpty()) {
                     selectedTabs.add(tab);
                 }
+                when(filter.isTabInTabGroup(tab)).thenReturn(group.getTabIds().length > 1);
                 groupTabs.add(tab);
-                final boolean hasOtherRelatedTabs = group.getTabIds().length > 1;
-                when(filter.hasOtherRelatedTabs(tab)).thenReturn(hasOtherRelatedTabs);
             }
             if (group.isSelected()) {
                 selectedTabIds.add(group.getTabIdAt(0));
