@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/barrier_callback.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -38,6 +39,7 @@ using Consumer =
     password_manager::PasswordSettingsUpdaterAndroidReceiverBridge::Consumer;
 using SyncingAccount = password_manager::
     PasswordSettingsUpdaterAndroidReceiverBridge::SyncingAccount;
+using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 constexpr PasswordManagerSetting kAllPasswordSettings[] = {
     PasswordManagerSetting::kOfferToSavePasswords,
@@ -78,6 +80,45 @@ bool HasChosenToSyncPreferences(const syncer::SyncService* sync_service) {
   return sync_service && sync_service->IsSyncFeatureEnabled() &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPreferences);
+}
+
+bool DoesUpmPrefAllowForSettingsMigration(PrefService* pref_service) {
+  return static_cast<UseUpmLocalAndSeparateStoresState>(
+             pref_service->GetInteger(
+                 password_manager::prefs::
+                     kPasswordsUseUPMLocalAndSeparateStores)) !=
+         UseUpmLocalAndSeparateStoresState::kOff;
+}
+
+bool ShouldMigrateSettings(PrefService* pref_service,
+                           bool is_password_sync_enabled) {
+  // Settings should be migrated if the user is enrolled in UPM with local
+  // passwords and they have never successfully completed settings migration.
+  return !is_password_sync_enabled &&
+         !pref_service->GetBoolean(
+             password_manager::prefs::kSettingsMigratedToUPMLocal) &&
+         DoesUpmPrefAllowForSettingsMigration(pref_service);
+}
+
+// This function is called after a setting is fetched from
+// GMS Core to update the cache. Updating the non-cache (regular)
+// prefs is also done in cases where sync isn't running so that the value
+// is up-to-data in case of rollback.
+bool ShouldWriteToRegularPref(syncer::SyncService* sync_service,
+                              PrefService* pref_service) {
+  // We should write to regular pref if sync for preferences is disabled and:
+  // 1) User is using upm with local passwords and their settings migration
+  // finished.
+  // 2) User is not using upm with local passwords.
+  bool is_using_upm_with_local_passwords_and_had_settings_migrated =
+      DoesUpmPrefAllowForSettingsMigration(pref_service) &&
+      pref_service->GetBoolean(
+          password_manager::prefs::kSettingsMigratedToUPMLocal);
+  bool is_not_using_upm_with_local_passwords =
+      !DoesUpmPrefAllowForSettingsMigration(pref_service);
+  return !HasChosenToSyncPreferences(sync_service) &&
+         (is_using_upm_with_local_passwords_and_had_settings_migrated ||
+          is_not_using_upm_with_local_passwords);
 }
 
 }  // namespace
@@ -201,6 +242,13 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
       base::BindRepeating(&PasswordManagerSettingsServiceAndroidImpl::
                               OnUnenrollmentPreferenceChanged,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  start_migration_callback_ =
+      base::BarrierCallback<PasswordManagerGetSettingGmsResult>(
+          2,
+          base::BindOnce(
+              &PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
@@ -220,6 +268,10 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
   }
 
   WriteToTheCacheAndRegularPref(setting, value);
+  if (start_migration_callback_) {
+    start_migration_callback_.Run(
+        PasswordManagerGetSettingGmsResult(setting, /*was_successful=*/true));
+  }
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
@@ -232,10 +284,14 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
   }
 
   // This code is currently called only for UPM users. If the setting value
-  // is absent in GMSCore, the cached setting value is set to the default value,
-  // which is true for both of the password-related settings: AutoSignIn and
-  // OfferToSavePasswords.
+  // is absent in GMSCore, the cached setting value is set to the default
+  // value, which is true for both of the password-related settings:
+  // AutoSignIn and OfferToSavePasswords.
   WriteToTheCacheAndRegularPref(setting, std::nullopt);
+  if (start_migration_callback_) {
+    start_migration_callback_.Run(
+        PasswordManagerGetSettingGmsResult(setting, /*was_successful=*/true));
+  }
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::WriteToTheCacheAndRegularPref(
@@ -254,7 +310,7 @@ void PasswordManagerSettingsServiceAndroidImpl::WriteToTheCacheAndRegularPref(
   // when preference syncing is off, otherwise it might cause sync cycles.
   // When sync is on, the regular preference gets updated via sync, so this
   // step is not necessary.
-  if (!HasChosenToSyncPreferences(sync_service_)) {
+  if (ShouldWriteToRegularPref(sync_service_, pref_service_)) {
     const PrefService::Preference* regular_pref =
         GetRegularPrefFromSetting(pref_service_, setting);
     if (value.has_value()) {
@@ -354,4 +410,63 @@ bool PasswordManagerSettingsServiceAndroidImpl::UsesUPMBackend() const {
   }
   return password_manager_android_util::CanUseUPMBackend(
       is_password_sync_enabled_, pref_service_);
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded(
+    const std::vector<PasswordManagerGetSettingGmsResult>& results) {
+  start_migration_callback_.Reset();
+  // Check if migration should happen.
+  if (!ShouldMigrateSettings(pref_service_, is_password_sync_enabled_)) {
+    return;
+  }
+
+  // Check if getting settings prefs failed. In rare cases (when Chrome was put
+  // into the background with running migration and then to the foreground
+  // again), since the settings from GMS are fetched when foregrounding Chrome,
+  // it might happen that two fetches for the same pref will finish first. We
+  // want to ensure that each one of the settings was fetched successfully.
+  if (!results[0].was_successful || !results[1].was_successful ||
+      results[0].setting == results[1].setting) {
+    return;
+  }
+
+  for (auto setting : kAllPasswordSettings) {
+    const PrefService::Preference* regular_pref =
+        GetRegularPrefFromSetting(pref_service_, setting);
+    const PrefService::Preference* android_pref =
+        GetGMSPrefFromSetting(pref_service_, setting);
+
+    if (regular_pref->IsDefaultValue()) {
+      // If Chrome had default value then value from gms is saved to Chrome.
+      pref_service_->SetBoolean(regular_pref->name(),
+                                android_pref->GetValue()->GetBool());
+      continue;
+    }
+
+    if (android_pref->GetValue()->GetBool() ==
+        pref_service_->GetDefaultPrefValue(android_pref->name())->GetBool()) {
+      // If Chrome had user set pref value and gms had default value, then
+      // Chrome value is saved in gms.
+      bridge_helper_->SetPasswordSettingValue(
+          std::nullopt, setting, regular_pref->GetValue()->GetBool());
+      pref_service_->SetBoolean(android_pref->name(),
+                                regular_pref->GetValue()->GetBool());
+      continue;
+    }
+
+    // If Chrome had user set pref value and gms had non default value, then
+    // the most conservative value is saved. Meaning that if either one of
+    // them, had this setting disabled, it should be disabled after the
+    // migration.
+    bool conservative_value = regular_pref->GetValue()->GetBool() &&
+                              android_pref->GetValue()->GetBool();
+    bridge_helper_->SetPasswordSettingValue(std::nullopt, setting,
+                                            conservative_value);
+    pref_service_->SetBoolean(android_pref->name(), conservative_value);
+    pref_service_->SetBoolean(regular_pref->name(), conservative_value);
+  }
+  // TODO: crbug.com/321216306 - Handle gms core errors while setting prefs and
+  // retry migration if something failed.
+  pref_service_->SetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPMLocal, true);
 }
