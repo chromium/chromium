@@ -240,9 +240,9 @@ void PerUserTopicSubscriptionManager::Init() {
 
 void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
     const TopicMap& topics,
-    const std::string& instance_id_token) {
+    const std::string& new_instance_id_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  instance_id_token_ = instance_id_token;
+  instance_id_token_ = new_instance_id_token;
   DropAllSavedSubscriptionsOnTokenChange();
 
   for (const auto& topic : topics) {
@@ -318,8 +318,7 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
 void PerUserTopicSubscriptionManager::ClearInstanceIDToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  instance_id_token_.clear();
-  DropAllSavedSubscriptionsOnTokenChange();
+  UpdateSubscribedTopics(/*topics=*/{}, /*new_instance_id_token=*/{});
 }
 
 void PerUserTopicSubscriptionManager::StartPendingSubscriptions() {
