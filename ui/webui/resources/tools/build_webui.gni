@@ -486,10 +486,6 @@ template("build_webui") {
 
   if (!generate_grdp) {
     grit("resources") {
-      if (use_blink) {
-        defines = chrome_grit_defines
-      }
-
       # These arguments are needed since the grd is generated at build time.
       enable_input_discovery_for_gn_analyze = false
       source = "$target_gen_dir/resources.grd"
