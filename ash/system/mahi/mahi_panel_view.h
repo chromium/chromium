@@ -23,14 +23,6 @@ class ASH_EXPORT MahiPanelView : public views::BoxLayoutView {
   METADATA_HEADER(MahiPanelView, views::BoxLayoutView)
 
  public:
-  enum ViewId {
-    kCloseButton = 1,
-    kSummaryLabel,
-    kThumbsUpButton,
-    kThumbsDownButton,
-    kLearnMoreLink,
-  };
-
   MahiPanelView();
   MahiPanelView(const MahiPanelView&) = delete;
   MahiPanelView& operator=(const MahiPanelView&) = delete;

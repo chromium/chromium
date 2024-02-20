@@ -93,14 +93,14 @@ TEST_F(MahiPanelViewTest, SummaryText) {
   fake_mahi_manager()->set_summary_text(test_text1);
   auto mahi_view1 = std::make_unique<MahiPanelView>();
   auto* summary_label1 = static_cast<views::Label*>(
-      mahi_view1->GetViewByID(MahiPanelView::ViewId::kSummaryLabel));
+      mahi_view1->GetViewByID(mahi_constants::ViewId::kSummaryLabel));
   EXPECT_EQ(test_text1, summary_label1->GetText());
 
   auto* test_text2 = u"test summary text 2";
   fake_mahi_manager()->set_summary_text(test_text2);
   auto mahi_view2 = std::make_unique<MahiPanelView>();
   auto* summary_label2 = static_cast<views::Label*>(
-      mahi_view2->GetViewByID(MahiPanelView::ViewId::kSummaryLabel));
+      mahi_view2->GetViewByID(mahi_constants::ViewId::kSummaryLabel));
   EXPECT_EQ(test_text2, summary_label2->GetText());
 }
 
@@ -108,14 +108,14 @@ TEST_F(MahiPanelViewTest, FeedbackButtons) {
   base::HistogramTester histogram_tester;
 
   LeftClickOn(
-      panel_view()->GetViewByID(MahiPanelView::ViewId::kThumbsUpButton));
+      panel_view()->GetViewByID(mahi_constants::ViewId::kThumbsUpButton));
   histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
                                      true, 1);
   histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
                                      false, 0);
 
   LeftClickOn(
-      panel_view()->GetViewByID(MahiPanelView::ViewId::kThumbsDownButton));
+      panel_view()->GetViewByID(mahi_constants::ViewId::kThumbsDownButton));
   histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
                                      true, 1);
   histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
@@ -125,7 +125,7 @@ TEST_F(MahiPanelViewTest, FeedbackButtons) {
 TEST_F(MahiPanelViewTest, CloseButton) {
   EXPECT_FALSE(widget()->IsClosed());
 
-  LeftClickOn(panel_view()->GetViewByID(MahiPanelView::ViewId::kCloseButton));
+  LeftClickOn(panel_view()->GetViewByID(mahi_constants::ViewId::kCloseButton));
 
   EXPECT_TRUE(widget()->IsClosed());
 }
@@ -135,7 +135,8 @@ TEST_F(MahiPanelViewTest, LearnMoreLink) {
               OpenUrl(GURL(mahi_constants::kLearnMorePage),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
-  LeftClickOn(panel_view()->GetViewByID(MahiPanelView::ViewId::kLearnMoreLink));
+  LeftClickOn(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink));
 }
 
 }  // namespace

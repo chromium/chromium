@@ -1730,6 +1730,8 @@ component("ash") {
     "system/mahi/mahi_panel_view.h",
     "system/mahi/mahi_panel_widget.cc",
     "system/mahi/mahi_panel_widget.h",
+    "system/mahi/summary_outlines_section.cc",
+    "system/mahi/summary_outlines_section.h",
     "system/media/media_color_theme.cc",
     "system/media/media_color_theme.h",
     "system/media/media_notification_provider.cc",

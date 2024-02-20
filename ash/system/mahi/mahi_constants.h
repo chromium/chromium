@@ -7,6 +7,15 @@
 
 namespace ash::mahi_constants {
 
+// The view ids that will be used for all children views within the Mahi panel.
+enum ViewId {
+  kCloseButton = 1,
+  kSummaryLabel,
+  kThumbsUpButton,
+  kThumbsDownButton,
+  kLearnMoreLink,
+};
+
 inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
 
 // TODO(b/319264190): Replace the string here with the correct URL.

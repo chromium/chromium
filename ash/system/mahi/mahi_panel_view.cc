@@ -13,7 +13,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/summary_outlines_section.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +26,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
@@ -44,6 +47,9 @@ namespace ash {
 namespace {
 
 constexpr int kPanelCornerRadius = 16;
+constexpr gfx::Insets kPanelPadding = gfx::Insets(16);
+constexpr int kPanelChildSpacing = 8;
+constexpr int kHeaderRowSpacing = 8;
 
 }  // namespace
 
@@ -53,7 +59,10 @@ END_METADATA
 MahiPanelView::MahiPanelView() {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
-  SetBackground(views::CreateRoundedRectBackground(
+  SetInsideBorderInsets(kPanelPadding);
+  SetBetweenChildSpacing(kPanelChildSpacing);
+
+  SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
 
   // Create a layer for the view for background blur and rounded corners.
@@ -75,6 +84,8 @@ MahiPanelView::MahiPanelView() {
   header_left_container->SetOrientation(views::LayoutOrientation::kHorizontal);
   header_left_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   header_left_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  header_left_container->SetDefault(
+      views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kHeaderRowSpacing));
   header_left_container->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
@@ -84,6 +95,9 @@ MahiPanelView::MahiPanelView() {
   // TODO(b/319264190): Replace the string used here with the correct string ID.
   auto header_label = std::make_unique<views::Label>(u"Mahi Panel");
   header_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                        *header_label);
+  header_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   header_left_container->AddChildView(std::move(header_label));
 
   header_left_container->AddChildView(
@@ -97,29 +111,12 @@ MahiPanelView::MahiPanelView() {
                           weak_ptr_factory_.GetWeakPtr()),
       IconButton::Type::kMedium, &kMediumOrLargeCloseButtonIcon,
       IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN);
-  close_button->SetID(ViewId::kCloseButton);
+  close_button->SetID(mahi_constants::ViewId::kCloseButton);
   header_row->AddChildView(std::move(close_button));
 
   AddChildView(std::move(header_row));
 
-  auto* summary_label = AddChildView(std::make_unique<views::Label>());
-  summary_label->SetID(ViewId::kSummaryLabel);
-
-  auto* manager = chromeos::MahiManager::Get();
-  if (manager) {
-    manager->GetSummary(base::BindOnce(
-        [](base::WeakPtr<MahiPanelView> parent, views::Label* summary_label,
-           std::u16string summary_text) {
-          if (!parent) {
-            return;
-          }
-
-          summary_label->SetText(summary_text);
-        },
-        weak_ptr_factory_.GetWeakPtr(), summary_label));
-  } else {
-    CHECK_IS_TEST();
-  }
+  AddChildView(std::make_unique<SummaryOutlinesSection>());
 
   auto feedback_view = std::make_unique<views::BoxLayoutView>();
   feedback_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -130,7 +127,7 @@ MahiPanelView::MahiPanelView() {
                           weak_ptr_factory_.GetWeakPtr()),
       IconButton::Type::kMedium, &kMahiThumbsUpIcon,
       IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_UP);
-  thumbs_up_button->SetID(ViewId::kThumbsUpButton);
+  thumbs_up_button->SetID(mahi_constants::ViewId::kThumbsUpButton);
   feedback_view->AddChildView(std::move(thumbs_up_button));
 
   auto thumbs_down_button = std::make_unique<IconButton>(
@@ -138,7 +135,7 @@ MahiPanelView::MahiPanelView() {
                           weak_ptr_factory_.GetWeakPtr()),
       IconButton::Type::kMedium, &kMahiThumbsDownIcon,
       IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN);
-  thumbs_down_button->SetID(ViewId::kThumbsDownButton);
+  thumbs_down_button->SetID(mahi_constants::ViewId::kThumbsDownButton);
   feedback_view->AddChildView(std::move(thumbs_down_button));
 
   AddChildView(std::move(feedback_view));
@@ -153,7 +150,7 @@ MahiPanelView::MahiPanelView() {
       l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT));
   learn_more_link->SetCallback(base::BindRepeating(
       &MahiPanelView::OnLearnMoreLinkClicked, weak_ptr_factory_.GetWeakPtr()));
-  learn_more_link->SetID(ViewId::kLearnMoreLink);
+  learn_more_link->SetID(mahi_constants::ViewId::kLearnMoreLink);
   footer_row->AddChildView(std::move(learn_more_link));
 
   AddChildView(std::move(footer_row));

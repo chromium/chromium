@@ -383,6 +383,12 @@
       <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
         Ask question
       </message>
+      <message name="IDS_MAHI_PANEL_SUMMARY_SECTION_NAME" desc="The name for the summary section that lies within the Mahi panel">
+        Summary
+      </message>
+      <message name="IDS_MAHI_PANEL_OUTLINES_SECTION_NAME" desc="The name for the outlines section that lies within the Mahi panel">
+        Outlines
+      </message>
 
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu." meaning="Splits the associated window into half snapped state.">
