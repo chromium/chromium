@@ -8,6 +8,12 @@
 #import "base/memory/raw_ptr.h"
 
 class ChromeAccountManagerService;
+class PrefService;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 @protocol SingleSignOnService;
 
 namespace drive {
@@ -16,6 +22,10 @@ namespace drive {
 struct DriveServiceConfiguration {
   // The SingleSignOnService instance to use by DriveService.
   id<SingleSignOnService> sso_service;
+  // PrefService to check the state of Save to Drive preferences.
+  raw_ptr<PrefService> pref_service;
+  // IdentityManager to check whether the user is signed-in.
+  raw_ptr<signin::IdentityManager> identity_manager;
   // The account manager service to observe system identities.
   raw_ptr<ChromeAccountManagerService> account_manager_service;
 };

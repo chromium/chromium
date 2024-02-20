@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol SystemIdentity;
+
 @protocol AccountPickerConsumer <NSObject>
 
 // Starts the spinner and disables buttons.
@@ -17,6 +19,9 @@
 
 // Shows/hides the identity button in the account confirmation screen.
 - (void)setIdentityButtonHidden:(BOOL)hidden animated:(BOOL)animated;
+
+// Set the currently selected identity.
+- (void)setSelectedIdentity:(id<SystemIdentity>)identity;
 
 @end
 

@@ -6,17 +6,20 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
 #import "ios/chrome/browser/ui/save_to_drive/file_destination.h"
@@ -53,9 +56,12 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   id<ApplicationCommands> _applicationHandler;
   id<AccountPickerCommands> _accountPickerHandler;
   raw_ptr<drive::DriveService> _driveService;
+  raw_ptr<PrefService> _prefService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   FileDestination _fileDestination;
   // The file uploader is used to fetch the storage quota for a given identity.
   std::unique_ptr<DriveFileUploader> _fileUploader;
+  BOOL _prefsLoaded;
 }
 
 - (instancetype)initWithDownloadTask:(web::DownloadTask*)downloadTask
@@ -65,6 +71,9 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
                   applicationHandler:(id<ApplicationCommands>)applicationHandler
                 accountPickerHandler:
                     (id<AccountPickerCommands>)accountPickerHandler
+                         prefService:(PrefService*)prefService
+               accountManagerService:
+                   (ChromeAccountManagerService*)accountManagerService
                         driveService:(drive::DriveService*)driveService {
   self = [super init];
   if (self) {
@@ -80,7 +89,9 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
     _manageStorageAlertHandler = manageStorageAlertHandler;
     _applicationHandler = applicationHandler;
     _accountPickerHandler = accountPickerHandler;
+    _prefService = prefService;
     _driveService = driveService;
+    _accountManagerService = accountManagerService;
     _fileDestination = FileDestination::kFiles;
   }
   return self;
@@ -99,6 +110,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   }
   _webState = nullptr;
   _webStateObserverBridge = nullptr;
+  _prefService = nullptr;
+  _accountManagerService = nullptr;
   _driveService = nullptr;
   _saveToDriveHandler = nil;
 }
@@ -110,6 +123,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   }
   switch (_fileDestination) {
     case FileDestination::kFiles: {
+      // Clear the account pref.
+      _prefService->ClearPref(prefs::kIosSaveToDriveDefaultGaiaId);
       // If the selected file destination is Files, start the download
       // immediately and hide the account picker.
       DownloadManagerTabHelper* downloadManagerTabHelper =
@@ -119,6 +134,9 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
       break;
     }
     case FileDestination::kDrive: {
+      // Memorize the account that was picked.
+      _prefService->SetString(prefs::kIosSaveToDriveDefaultGaiaId,
+                              base::SysNSStringToUTF8(identity.gaiaID));
       // Otherwise if the selected destination is Drive, check for sufficient
       // storage space before any further steps.
       [_accountPickerConsumer startValidationSpinner];
@@ -190,10 +208,32 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
 
 // Updates consumers.
 - (void)updateConsumersAnimated:(BOOL)animated {
+  if (_accountPickerConsumer && _destinationPickerConsumer && !_prefsLoaded) {
+    [self loadPrefs];
+    _prefsLoaded = YES;
+  }
+
   bool destinationIsFiles = _fileDestination == FileDestination::kFiles;
   [self.accountPickerConsumer setIdentityButtonHidden:destinationIsFiles
                                              animated:animated];
   [self.destinationPickerConsumer setSelectedDestination:_fileDestination];
+}
+
+- (void)loadPrefs {
+  // Retrieve the last selected identity from prefs.
+  const std::string defaultGaiaId =
+      _prefService->GetString(prefs::kIosSaveToDriveDefaultGaiaId);
+  id<SystemIdentity> defaultIdentity =
+      _accountManagerService->GetIdentityWithGaiaID(defaultGaiaId);
+  if (defaultIdentity) {
+    // If an identity is associated with the memorized GAIA ID, use it.
+    [self.accountPickerConsumer setSelectedIdentity:defaultIdentity];
+    _fileDestination = FileDestination::kDrive;
+  } else {
+    // Otherwise, clear any memorized GAIA ID from prefs.
+    _prefService->ClearPref(prefs::kIosSaveToDriveDefaultGaiaId);
+    _fileDestination = FileDestination::kFiles;
+  }
 }
 
 // Called when the storage quota has been fetched, with or without any error.

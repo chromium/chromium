@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
@@ -64,6 +65,9 @@
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   drive::DriveService* driveService =
       drive::DriveServiceFactory::GetForBrowserState(browserState);
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  PrefService* prefService = browserState->GetPrefs();
   id<SaveToDriveCommands> saveToDriveHandler =
       HandlerForProtocol(dispatcher, SaveToDriveCommands);
   id<ApplicationCommands> applicationHandler =
@@ -74,6 +78,8 @@
                               manageStorageAlertHandler:self
                                      applicationHandler:applicationHandler
                                    accountPickerHandler:self
+                                            prefService:prefService
+                                  accountManagerService:accountManagerService
                                            driveService:driveService];
 
   AccountPickerConfiguration* accountPickerConfiguration =

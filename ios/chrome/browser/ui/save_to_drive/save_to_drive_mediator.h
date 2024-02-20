@@ -12,8 +12,10 @@
 @protocol AccountPickerCommands;
 @protocol AccountPickerConsumer;
 @protocol ApplicationCommands;
+class ChromeAccountManagerService;
 @protocol FileDestinationPickerConsumer;
 @protocol ManageStorageAlertCommands;
+class PrefService;
 @protocol SaveToDriveCommands;
 @protocol SystemIdentity;
 
@@ -40,6 +42,9 @@ class DownloadTask;
                   applicationHandler:(id<ApplicationCommands>)applicationHandler
                 accountPickerHandler:
                     (id<AccountPickerCommands>)accountPickerHandler
+                         prefService:(PrefService*)prefService
+               accountManagerService:
+                   (ChromeAccountManagerService*)accountManagerService
                         driveService:(drive::DriveService*)driveService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
