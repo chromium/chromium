@@ -13820,25 +13820,18 @@ void RenderFrameHostImpl::SendCommitNavigation(
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::SendCommitNavigation");
-  if (lifecycle_state() == LifecycleStateImpl::kPendingCommit) {
-    // The navigation commits in a new RenderFrameHost. Log the time between the
-    // creation of its compositor frame sink to the navigation commit, if
-    // applicable.
-    if (RenderWidgetHostImpl* rwh = GetLocalRenderWidgetHost()) {
-      if (rwh->create_frame_sink_timestamp() == base::TimeTicks()) {
-        // The compositor frame sink hasn't been requested yet.
-        UMA_HISTOGRAM_BOOLEAN("Navigation.CompositorRequestedBeforeCommit",
-                              false);
+  if (RenderWidgetHostImpl* rwh = GetLocalRenderWidgetHost()) {
+    if (rwh->compositor_metric_recorder()) {
+      if (lifecycle_state() == LifecycleStateImpl::kPendingCommit) {
+        // The navigation commits in a new RenderFrameHost with a new
+        // RenderWidgetHost. Log the time when the commit happens to record
+        // compositor-related metrics.
+        rwh->compositor_metric_recorder()->DidStartNavigationCommit();
       } else {
-        // The compositor frame sink has been requested. Log the time between
-        // the request and the navigation commit.
-        UMA_HISTOGRAM_BOOLEAN("Navigation.CompositorRequestedBeforeCommit",
-                              true);
-        base::TimeDelta time =
-            base::TimeTicks::Now() - rwh->create_frame_sink_timestamp();
-        UMA_HISTOGRAM_CUSTOM_TIMES("Navigation.CompositorCreationToCommit",
-                                   time, base::Milliseconds(1),
-                                   base::Minutes(3), 50);
+        // The navigation commits in a pre-existing RenderFrameHost. Make sure
+        // that it won't record compositor-related metrics, since it's intended
+        // to be recorded for navigations with a new RenderFrameHost.
+        rwh->DisableCompositorMetricRecording();
       }
     }
   }

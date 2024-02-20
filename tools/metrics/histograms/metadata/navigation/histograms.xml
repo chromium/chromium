@@ -608,7 +608,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.CompositorCreationTo{Stage}" units="ms"
+<histogram name="Navigation.CompositorCreationTo{Stage}2" units="ms"
     expires_after="2024-07-14">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -616,12 +616,13 @@ chromium-metrics-reviews@google.com.
     Records the time duration between the creation of CompositorFrameSink for a
     new RenderWidgetHost to when the navigation that uses that RenderWidgetHost
     reaches {Stage}. Logged when the navigation that uses a new RenderFrameHost
-    and RenderWidgetHost reaches {Stage}.
+    and RenderWidgetHost reaches both the commit and swap RFH stages and the
+    creation of CompositorFrameSink had already been requested at that time.
   </summary>
   <token key="Stage" variants="NavigationStage"/>
 </histogram>
 
-<histogram name="Navigation.CompositorRequestedBefore{Stage}" enum="Boolean"
+<histogram name="Navigation.CompositorRequestedBefore{Stage}2" enum="Boolean"
     expires_after="2024-07-14">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -629,7 +630,8 @@ chromium-metrics-reviews@google.com.
     Records whether the creation of CompositorFrameSink for a new
     RenderWidgetHost is already requested when the navigation that uses it
     reaches {Stage}. Logged when the navigation that uses the new
-    RenderFrameHost and RenderWidgetHost reaches {Stage}.
+    RenderFrameHost and RenderWidgetHost has reached both the commit and swap
+    RFH stages.
   </summary>
   <token key="Stage" variants="NavigationStage"/>
 </histogram>
@@ -1619,6 +1621,20 @@ chromium-metrics-reviews@google.com.
                  NavigationURLLoader::Start"/>
   </token>
   <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
+<histogram name="Navigation.{Stage}ToCompositorCreation" units="ms"
+    expires_after="2024-07-14">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records the time duration between when the navigation that uses a new
+    RenderWidgetHost reaches {Stage} and when the creation of the
+    CompositorFrameSink for the RenderWidgetHost is requested. Logged when the
+    compositor is requested and the navigation that created the RenderWidgetHost
+    had already reached both the commit and swap RFH stages.
+  </summary>
+  <token key="Stage" variants="NavigationStage"/>
 </histogram>
 
 <histogram name="NavigationSuggestion.Event2" enum="NavigationSuggestionEvent"

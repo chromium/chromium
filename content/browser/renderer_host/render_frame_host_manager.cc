@@ -4455,23 +4455,26 @@ void RenderFrameHostManager::CommitPending(
   //    order to receive the IPC.
   DCHECK(pending_rfh->IsRenderFrameLive());
   if (RenderWidgetHostImpl* rwh = pending_rfh->GetLocalRenderWidgetHost()) {
-    // The navigation commits in a new local root RenderFrameHost. Log the time
-    // between the creation of its compositor frame sink to swapping in the new
-    // RenderFrameHost.
-    if (rwh->create_frame_sink_timestamp() == base::TimeTicks()) {
-      // The compositor frame sink hasn't been requested yet.
-      UMA_HISTOGRAM_BOOLEAN("Navigation.CompositorRequestedBeforeSwapRFH",
-                            false);
-    } else {
-      UMA_HISTOGRAM_BOOLEAN("Navigation.CompositorRequestedBeforeSwapRFH",
-                            true);
-      base::TimeDelta time =
-          base::TimeTicks::Now() - rwh->create_frame_sink_timestamp();
-      UMA_HISTOGRAM_CUSTOM_TIMES("Navigation.CompositorCreationToSwapRFH", time,
-                                 base::Milliseconds(1), base::Minutes(3), 50);
+    if (rwh->compositor_metric_recorder()) {
+      if (pending_rfh->lifecycle_state() == LifecycleStateImpl::kSpeculative ||
+          pending_rfh->lifecycle_state() ==
+              LifecycleStateImpl::kPendingCommit) {
+        // The navigation swaps in a new RenderFrameHost with a new
+        // RenderWidgetHost. Log the time when the RFH swap happens to record
+        // compositor-related metrics.
+        rwh->compositor_metric_recorder()->DidSwap();
+      } else {
+        // We're restoring a BFCached RenderFrameHost. Make sure that it won't
+        // record compositor-related metrics, since it's intended to be recorded
+        // only for navigations with a new RenderFrameHost. Note that this can't
+        // be a prerendered RFH because we don't create recorders for
+        // prerendered pages.
+        CHECK_EQ(pending_rfh->lifecycle_state(),
+                 LifecycleStateImpl::kInBackForwardCache);
+        rwh->DisableCompositorMetricRecording();
+      }
     }
   }
-
 #if BUILDFLAG(IS_MAC)
   // The old RenderWidgetHostView will be hidden before the new
   // RenderWidgetHostView takes its contents. Ensure that Cocoa sees this as

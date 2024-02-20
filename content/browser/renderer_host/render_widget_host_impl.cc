@@ -465,7 +465,11 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
           GetUIThreadTaskRunner({BrowserTaskType::kUserInput}),
 #endif
           frame_token_message_queue_.get()),
-      frame_sink_id_(frame_sink_id) {
+      frame_sink_id_(frame_sink_id),
+      compositor_metric_recorder_(
+          (frame_tree && frame_tree->is_primary())
+              ? std::make_unique<CompositorMetricRecorder>(this)
+              : nullptr) {
   DCHECK(frame_token_message_queue_);
   frame_token_message_queue_->Init(this);
 
@@ -3702,7 +3706,9 @@ void RenderWidgetHostImpl::MaybeDispatchBufferedFrameSinkRequest() {
     return;
   }
 
-  create_frame_sink_timestamp_ = base::TimeTicks::Now();
+  if (compositor_metric_recorder_) {
+    compositor_metric_recorder_->DidRequestFrameSink();
+  }
 
   std::move(create_frame_sink_callback_).Run(view_->GetFrameSinkId());
 }
@@ -3803,6 +3809,7 @@ void RenderWidgetHostImpl::ForceFirstFrameAfterNavigationTimeout() {
   }
   new_content_rendering_timeout_->Stop();
   ClearDisplayedGraphics();
+  DisableCompositorMetricRecording();
 }
 
 void RenderWidgetHostImpl::StopFling() {
@@ -4029,5 +4036,92 @@ RenderWidgetHostImpl::PendingShowParams::PendingShowParams(
       visible_time_request(std::move(visible_time_request)) {}
 
 RenderWidgetHostImpl::PendingShowParams::~PendingShowParams() = default;
+
+void RenderWidgetHostImpl::DisableCompositorMetricRecording() {
+  compositor_metric_recorder_.reset();
+}
+
+RenderWidgetHostImpl::CompositorMetricRecorder::CompositorMetricRecorder(
+    RenderWidgetHostImpl* owner)
+    : owner_(owner) {}
+
+void RenderWidgetHostImpl::CompositorMetricRecorder::
+    DidStartNavigationCommit() {
+  if (commit_nav_timestamp_ != base::TimeTicks()) {
+    // A second navigation is committing this RenderWidgetHost. We only want to
+    // record metrics for the first navigation, so disable any recording after
+    // this.
+    owner_->DisableCompositorMetricRecording();
+    // DO NOT ADD CODE after this line. The call above has deleted `this`, so
+    // immediately return.
+    return;
+  }
+  commit_nav_timestamp_ = base::TimeTicks::Now();
+  TryToRecordMetrics();
+}
+
+void RenderWidgetHostImpl::CompositorMetricRecorder::DidSwap() {
+  if (swap_rfh_timestamp_ != base::TimeTicks()) {
+    // A second navigation is swapping in a RenderFrameHost that's associated
+    // with this RenderWidgetHost. We only want to record metrics for the first
+    // navigation, so disable any recording after this.
+    owner_->DisableCompositorMetricRecording();
+    // DO NOT ADD CODE after this line. The call above has deleted `this`, so
+    // immediately return.
+    return;
+  }
+  swap_rfh_timestamp_ = base::TimeTicks::Now();
+  TryToRecordMetrics();
+}
+
+void RenderWidgetHostImpl::CompositorMetricRecorder::DidRequestFrameSink() {
+  if (create_frame_sink_timestamp_ != base::TimeTicks()) {
+    return;
+  }
+  create_frame_sink_timestamp_ = base::TimeTicks::Now();
+  TryToRecordMetrics();
+}
+
+void RenderWidgetHostImpl::CompositorMetricRecorder::TryToRecordMetrics() {
+  if (commit_nav_timestamp_ == base::TimeTicks() ||
+      swap_rfh_timestamp_ == base::TimeTicks() ||
+      create_frame_sink_timestamp_ == base::TimeTicks()) {
+    // We need all three events (commit, swap RFH, frame sink creation) to have
+    // happened to record the metrics.
+    return;
+  }
+
+  if (create_frame_sink_timestamp_ < commit_nav_timestamp_) {
+    base::UmaHistogramBoolean("Navigation.CompositorRequestedBeforeCommit2",
+                              true);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Navigation.CompositorCreationToCommit2",
+        commit_nav_timestamp_ - create_frame_sink_timestamp_,
+        base::Milliseconds(1), base::Minutes(10), 50);
+  } else {
+    base::UmaHistogramBoolean("Navigation.CompositorRequestedBeforeCommit2",
+                              false);
+    base::UmaHistogramCustomTimes(
+        "Navigation.CommitToCompositorCreation",
+        create_frame_sink_timestamp_ - commit_nav_timestamp_,
+        base::Milliseconds(1), base::Minutes(10), 50);
+  }
+
+  if (create_frame_sink_timestamp_ < swap_rfh_timestamp_) {
+    base::UmaHistogramBoolean("Navigation.CompositorRequestedBeforeSwapRFH2",
+                              true);
+    base::UmaHistogramCustomTimes(
+        "Navigation.CompositorCreationToSwapRFH2",
+        swap_rfh_timestamp_ - create_frame_sink_timestamp_,
+        base::Milliseconds(1), base::Minutes(10), 50);
+  } else {
+    base::UmaHistogramBoolean("Navigation.CompositorRequestedBeforeSwapRFH2",
+                              false);
+    base::UmaHistogramCustomTimes(
+        "Navigation.SwapRFHToCompositorCreation",
+        create_frame_sink_timestamp_ - swap_rfh_timestamp_,
+        base::Milliseconds(1), base::Minutes(10), 50);
+  }
+}
 
 }  // namespace content
