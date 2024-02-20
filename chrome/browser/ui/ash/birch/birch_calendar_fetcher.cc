@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/calendar/calendar_api_requests.h"
 #include "google_apis/common/auth_service.h"
@@ -82,6 +83,7 @@ BirchCalendarFetcher::~BirchCalendarFetcher() {}
 
 void BirchCalendarFetcher::Shutdown() {
   sender_.reset();
+  identity_manager_observation_.Reset();
 }
 
 void BirchCalendarFetcher::GetCalendarEvents(
@@ -95,10 +97,36 @@ void BirchCalendarFetcher::GetCalendarEvents(
     return;
   }
 
+  start_time_ = start_time;
+  end_time_ = end_time;
+  callback_ = std::move(callback);
+
+  // If a refresh token is available, make the request. Otherwise observe for
+  // the token being updated.
+  if (identity_manager_->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSignin)) {
+    StartRequest();
+  } else {
+    identity_manager_observation_.Observe(identity_manager_);
+  }
+}
+
+void BirchCalendarFetcher::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  const CoreAccountInfo& primary_account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account_info != primary_account_info) {
+    return;
+  }
+  identity_manager_observation_.Reset();
+  StartRequest();
+}
+
+void BirchCalendarFetcher::StartRequest() {
   sender_->StartRequestWithAuthRetry(
       std::make_unique<google_apis::calendar::CalendarApiEventsRequest>(
-          sender_.get(), url_generator_, std::move(callback), start_time,
-          end_time));
+          sender_.get(), url_generator_, std::move(callback_), start_time_,
+          end_time_));
 }
 
 void BirchCalendarFetcher::SetSenderForTest(
