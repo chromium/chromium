@@ -1141,6 +1141,11 @@ const base::FeatureParam<int>
 // <- Touch Down Trigger For Prefetch
 // ---------------------------------------------------------
 // Site Search Starter Pack ->
+const base::FeatureParam<std::string> kGeminiUrlOverride(
+    &omnibox::kStarterPackExpansion,
+    "StarterPackGeminiUrlOverride",
+    "");
+
 bool IsStarterPackExpansionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);
 }

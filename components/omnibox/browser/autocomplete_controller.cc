@@ -818,7 +818,7 @@ void AutocompleteController::SetMatchDestinationURL(
   const TemplateURL* turl = match->GetTemplateURL(template_url_service_, false);
   // Append an extra header to navigations from the AskGoogle built-in keyword.
   if (turl &&
-      turl->GetBuiltinEngineType() == KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE) {
+      turl->starter_pack_id() == TemplateURLStarterPackData::kAskGoogle) {
     match->extra_headers = kOmniboxGeminiHeader;
   }
 
@@ -834,11 +834,21 @@ void AutocompleteController::SetMatchDestinationURL(
 GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
     const TemplateURL* template_url,
     const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
+  std::string gemini_url = "";
   if (!template_url) {
     return GURL();
   }
+
+  // Override the URL when in the @gemini scope. If `gemini_url` is
+  // invalid/empty, it will not be overridden.
+  if (template_url->starter_pack_id() ==
+      TemplateURLStarterPackData::kAskGoogle) {
+    gemini_url = OmniboxFieldTrial::kGeminiUrlOverride.Get();
+  }
+
   return GURL(template_url->url_ref().ReplaceSearchTerms(
-      search_terms_args, template_url_service_->search_terms_data()));
+      search_terms_args, template_url_service_->search_terms_data(),
+      gemini_url));
 }
 
 void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,

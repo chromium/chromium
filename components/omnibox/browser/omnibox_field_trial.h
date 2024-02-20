@@ -790,6 +790,10 @@ extern const base::FeatureParam<int>
 // <- Touch Down Trigger For Prefetch
 // ---------------------------------------------------------
 // Site Search Starter Pack ->
+// When non-empty, the value of this param overrides the `search_url` for the
+// @gemini scope. This happens when the URL gets served, it does not affect the
+// DB or TemplateURLService's copy of the URL.
+extern const base::FeatureParam<std::string> kGeminiUrlOverride;
 
 // Whether the expansion pack for the site search starter pack is enabled.
 bool IsStarterPackExpansionEnabled();
