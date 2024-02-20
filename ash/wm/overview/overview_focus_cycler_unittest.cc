@@ -9,6 +9,8 @@
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_action_button.h"
+#include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -422,6 +424,12 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
             GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "first mini view");
 
+  // Tests that the close all button of the first desk preview is focused next.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view->mini_views()[0]->desk_action_view()->close_all_button(),
+      GetHighlightedView());
+
   // Test that one more tab focuses the desks name view.
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_name_view(),
@@ -432,7 +440,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-
+  SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
@@ -460,8 +468,8 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
 // Tests that we can reverse tab through the desk mini views, new desk button
 // and overview items in the correct order.
 TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
-  std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
-  std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
 
   ToggleOverview();
   const auto* desk_bar_view =
@@ -487,17 +495,30 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
 
-  // Tests that after the new desk button comes the preview views and the desk
-  // name views in reverse order.
+  // Tests that after the new desk button comes the preview views, desk action
+  // buttons, and the desk name views in reverse order.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_name_view(),
             GetHighlightedView());
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(
+      desk_bar_view->mini_views()[1]->desk_action_view()->close_all_button(),
+      GetHighlightedView());
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
             GetHighlightedView());
 
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_name_view(),
+            GetHighlightedView());
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(
+      desk_bar_view->mini_views()[0]->desk_action_view()->close_all_button(),
+      GetHighlightedView());
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(desk_bar_view->mini_views()[0]
+                ->desk_action_view()
+                ->combine_desks_button(),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
@@ -540,12 +561,20 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingChromevox) {
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
             GetHighlightedView());
   SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(
+      desk_bar_view->mini_views()[0]->desk_action_view()->close_all_button(),
+      GetHighlightedView());
+  SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_name_view(),
             GetHighlightedView());
 
   SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
             GetHighlightedView());
+  SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(
+      desk_bar_view->mini_views()[1]->desk_action_view()->close_all_button(),
+      GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_name_view(),
             GetHighlightedView());
@@ -564,12 +593,12 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
 
   // Create two windows on the first display, and one each on the second and
   // third displays.
-  std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
-  std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window3(
-      CreateTestWindow(gfx::Rect(600, 0, 200, 200)));
+      CreateAppWindow(gfx::Rect(600, 0, 200, 200)));
   std::unique_ptr<aura::Window> window4(
-      CreateTestWindow(gfx::Rect(1200, 0, 200, 200)));
+      CreateAppWindow(gfx::Rect(1200, 0, 200, 200)));
   ASSERT_EQ(roots[0], window1->GetRootWindow());
   ASSERT_EQ(roots[0], window2->GetRootWindow());
   ASSERT_EQ(roots[1], window3->GetRootWindow());
@@ -597,12 +626,25 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   EXPECT_EQ(desk_bar_view1->mini_views()[0]->desk_preview(),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view1->mini_views()[0]
+                ->desk_action_view()
+                ->combine_desks_button(),
+            GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view1->mini_views()[0]->desk_action_view()->close_all_button(),
+      GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->mini_views()[0]->desk_name_view(),
             GetHighlightedView());
 
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_preview(),
             GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view1->mini_views()[1]->desk_action_view()->close_all_button(),
+      GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_name_view(),
             GetHighlightedView());
@@ -635,6 +677,9 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view2->new_desk_button(), GetHighlightedView());
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
@@ -658,6 +703,9 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
             GetHighlightedView());
 
   // Tab through all items on the third display.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
@@ -692,6 +740,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateHighlightOnMiniView) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
   ASSERT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
             GetHighlightedView());
 
@@ -719,6 +768,7 @@ TEST_P(DesksOverviewFocusCyclerTest, CloseHighlightOnMiniView) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
   ASSERT_EQ(mini_view2->desk_preview(), GetHighlightedView());
 
   // Tests that after hitting ctrl-w on the focused preview view associated with
@@ -739,6 +789,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
   auto* desk_name_view_1 = desk_bar_view->mini_views()[0]->desk_name_view();
 
   // Tab until the desk name view of the first desk is focused.
+  SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_name_view_1, GetHighlightedView());
@@ -789,18 +840,18 @@ TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameIsHighlighted) {
   // Tab until the desk name view of the first desk is focused.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_name_view_1, GetHighlightedView());
 
+  // Desks bar never goes back to zero state after it's initialized.
   const auto* desks_controller = DesksController::Get();
   auto* desk_1 = desks_controller->GetDeskAtIndex(0);
   RemoveDesk(desk_1);
+  EXPECT_EQ(nullptr, GetHighlightedView());
+  EXPECT_FALSE(desk_bar_view->IsZeroState());
 
   // Tabbing again should cause no crashes.
-  EXPECT_EQ(nullptr, GetHighlightedView());
   SendKey(ui::VKEY_TAB);
-
-  // Desks bar never goes back to zero state after it's initialized.
-  EXPECT_FALSE(desk_bar_view->IsZeroState());
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
             GetHighlightedView());
 }
@@ -829,6 +880,8 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateCloseHighlightOnNewDeskButton) {
   };
 
   // Use the keyboard to navigate to the new desk button.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);

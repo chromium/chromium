@@ -21,6 +21,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -1286,6 +1287,10 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
       // comes later in the focus order (See documentation of
       // `OnViewDestroyingOrDisabling()`).
       focus_cycler->OnViewDestroyingOrDisabling((*iter)->desk_name_view());
+      focus_cycler->OnViewDestroyingOrDisabling(
+          (*iter)->desk_action_view()->close_all_button());
+      focus_cycler->OnViewDestroyingOrDisabling(
+          (*iter)->desk_action_view()->combine_desks_button());
       if (auto* desk_profiles_button = (*iter)->desk_profiles_button()) {
         focus_cycler->OnViewDestroyingOrDisabling(desk_profiles_button);
       }
@@ -1667,7 +1672,7 @@ void DeskBarViewBase::MaybeUpdateCombineDesksTooltips() {
     if (mini_view->desk()->is_desk_being_removed()) {
       continue;
     }
-    mini_view->desk_action_view()->UpdateCombineDesksTooltip(
+    mini_view->desk_action_view()->combine_desks_button()->UpdateTooltip(
         DesksController::Get()->GetCombineDesksTargetName(mini_view->desk()));
   }
 }

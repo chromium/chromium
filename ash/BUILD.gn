@@ -2518,6 +2518,8 @@ component("ash") {
     "wm/desks/default_desk_button.h",
     "wm/desks/desk.cc",
     "wm/desks/desk.h",
+    "wm/desks/desk_action_button.cc",
+    "wm/desks/desk_action_button.h",
     "wm/desks/desk_action_context_menu.cc",
     "wm/desks/desk_action_context_menu.h",
     "wm/desks/desk_action_view.cc",

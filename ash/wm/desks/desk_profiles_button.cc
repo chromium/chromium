@@ -149,10 +149,14 @@ void DeskProfilesButton::MaybeCloseFocusedView(bool primary_action) {}
 void DeskProfilesButton::MaybeSwapFocusedView(bool right) {}
 
 void DeskProfilesButton::OnFocusableViewFocused() {
+  mini_view_->UpdateDeskButtonVisibility();
+  mini_view_->UpdateFocusColor();
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
 void DeskProfilesButton::OnFocusableViewBlurred() {
+  mini_view_->UpdateDeskButtonVisibility();
+  mini_view_->UpdateFocusColor();
   views::FocusRing::Get(this)->SchedulePaint();
 }
 

@@ -17,6 +17,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/close_button.h"
 #include "ash/style/style_util.h"
+#include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
@@ -200,7 +201,8 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
                           DeskCloseType::kCloseAllWindowsAndWait),
       /*focus_change_callback=*/
       base::BindRepeating(&DeskMiniView::UpdateDeskButtonVisibility,
-                          base::Unretained(this))));
+                          base::Unretained(this)),
+      /*mini_view=*/this));
 
   desk_name_view_ = AddChildView(std::move(desk_name_view));
 
@@ -273,10 +275,13 @@ bool DeskMiniView::IsDeskNameBeingModified() const {
 void DeskMiniView::UpdateDeskButtonVisibility() {
   CHECK(desk_);
 
+  // TODO(b/326124631): Refactor code below.
   auto* controller = DesksController::Get();
 
-  bool desk_profile_button_is_focused =
+  bool desk_profile_button_has_focus =
       desk_profile_button_ && desk_profile_button_->HasFocus();
+  bool desk_profile_button_is_focused =
+      desk_profile_button_ && desk_profile_button_->is_focused();
   // Don't show desk buttons when hovered while the dragged window is on
   // the desk bar view.
   // For switch access, setting desk buttons to visible allows users to
@@ -287,13 +292,19 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       (IsMouseHovered() || force_show_desk_buttons_ ||
        Shell::Get()->accessibility_controller()->IsSwitchAccessRunning() ||
        (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
-        (desk_preview_->HasFocus() || desk_profile_button_is_focused ||
+        (desk_preview_->HasFocus() || desk_profile_button_has_focus ||
+         desk_action_view_->ChildHasFocus())) ||
+       (owner_bar_->type() == DeskBarViewBase::Type::kOverview &&
+        (desk_preview_->is_focused() || desk_profile_button_is_focused ||
          desk_action_view_->ChildHasFocus())));
 
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
   // all desks.
-  desk_action_view_->SetCombineDesksButtonVisibility(ContainsAppWindows(desk_));
+  auto* combine_desks_button = desk_action_view_->combine_desks_button();
+  auto* close_all_button = desk_action_view_->close_all_button();
+  combine_desks_button->SetVisible(combine_desks_button->CanShow());
+  close_all_button->SetVisible(close_all_button->CanShow());
   desk_action_view_->SetVisible(visible && !is_context_menu_open_);
 
   // Only show the shortcut view on the first 8 desks in the desk button desk
@@ -499,8 +510,14 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
 }
 
 void DeskMiniView::OnPreviewOrProfileAboutToBeFocusedByReverseTab() {
-  if (!desk_action_view_->ChildHasFocus() &&
-      (desk_profile_button_ == nullptr || !desk_profile_button_->HasFocus())) {
+  if ((owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
+       !desk_action_view_->ChildHasFocus() &&
+       (desk_profile_button_ == nullptr ||
+        !desk_profile_button_->HasFocus()))) {
+    auto* combine_desks_button = desk_action_view_->combine_desks_button();
+    auto* close_all_button = desk_action_view_->close_all_button();
+    combine_desks_button->SetVisible(combine_desks_button->CanShow());
+    close_all_button->SetVisible(close_all_button->CanShow());
     desk_action_view_->SetVisible(true);
     desk_action_view_->close_all_button()->RequestFocus();
   }

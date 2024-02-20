@@ -641,11 +641,13 @@ bool DeskPreviewView::MaybeActivateFocusedViewOnOverviewExit(
 }
 
 void DeskPreviewView::OnFocusableViewFocused() {
+  mini_view_->UpdateDeskButtonVisibility();
   mini_view_->UpdateFocusColor();
   mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 
 void DeskPreviewView::OnFocusableViewBlurred() {
+  mini_view_->UpdateDeskButtonVisibility();
   mini_view_->UpdateFocusColor();
 }
 

@@ -40,6 +40,7 @@
 #include "ash/test/raster_scale_change_tracker.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desks_constants.h"

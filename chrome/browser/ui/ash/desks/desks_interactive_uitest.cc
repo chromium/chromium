@@ -167,6 +167,9 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
         ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_TAB,
                                   /*control=*/false, /*shift=*/true,
                                   /*alt=*/false, /*command=*/false);
+        ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_TAB,
+                                  /*control=*/false, /*shift=*/true,
+                                  /*alt=*/false, /*command=*/false);
         ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_LEFT,
                                   /*control=*/true, /*shift=*/false,
                                   /*alt=*/false, /*command=*/false);

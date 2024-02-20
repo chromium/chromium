@@ -9,6 +9,8 @@
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/wm/desks/desk_action_button.h"
+#include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -53,6 +55,14 @@ void AddDesksBarTraversableViews(
       out_traversable_views.push_back(mini_view->desk_preview());
       if (auto* profiles_button = mini_view->desk_profiles_button()) {
         out_traversable_views.push_back(profiles_button);
+      }
+      auto* desk_action_view = mini_view->desk_action_view();
+      if (desk_action_view->combine_desks_button()->CanShow()) {
+        out_traversable_views.push_back(
+            desk_action_view->combine_desks_button());
+      }
+      if (desk_action_view->close_all_button()->CanShow()) {
+        out_traversable_views.push_back(desk_action_view->close_all_button());
       }
       out_traversable_views.push_back(mini_view->desk_name_view());
     }

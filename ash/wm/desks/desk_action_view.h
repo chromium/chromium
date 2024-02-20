@@ -16,7 +16,8 @@
 
 namespace ash {
 
-class CloseButton;
+class DeskActionButton;
+class DeskMiniView;
 
 // A view that holds buttons that act on a single DeskMiniView instance, such as
 // combining two desks or closing a desk and all of its windows.
@@ -29,39 +30,36 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
                  const std::u16string& close_all_target_name,
                  base::RepeatingClosure combine_desks_callback,
                  base::RepeatingClosure close_all_callback,
-                 base::RepeatingClosure focus_change_callback);
+                 base::RepeatingClosure focus_change_callback,
+                 DeskMiniView* mini_view);
   DeskActionView(const DeskActionView&) = delete;
   DeskActionView& operator=(const DeskActionView&) = delete;
   ~DeskActionView() override;
 
-  const CloseButton* close_all_button() const { return close_all_button_; }
-  CloseButton* close_all_button() { return close_all_button_; }
+  const DeskActionButton* close_all_button() const { return close_all_button_; }
+  DeskActionButton* close_all_button() { return close_all_button_; }
 
-  const CloseButton* combine_desks_button() const {
+  const DeskActionButton* combine_desks_button() const {
     return combine_desks_button_;
   }
+  DeskActionButton* combine_desks_button() { return combine_desks_button_; }
 
-  // Returns true if either `combine_desks_button_` or `close_all_button_` has
+  DeskMiniView* mini_view() { return mini_view_; }
+
+  // Indicates if any child has focus. If in overview, it means
+  // `OverviewFocusableView` is focused; otherwise it means `ui::View` has
   // focus.
   bool ChildHasFocus() const;
 
-  // Changes the tooltip assigned to `combine_desks_button_` to use
-  // `new_combine_desks_target_name` as the name of the target desk where
-  // windows will be moved if `combine_desks_button_` is pressed.
-  void UpdateCombineDesksTooltip(
-      const std::u16string& new_combine_desks_target_name);
-
-  // Changes the visibility of the combine desks button so that it can reflect
-  // whether there are windows on the desk.
-  void SetCombineDesksButtonVisibility(bool visible);
+  void OnFocusChange();
 
  private:
   // views::ViewObserver:
   void OnViewFocused(views::View* observed) override;
   void OnViewBlurred(views::View* observed) override;
 
-  raw_ptr<CloseButton> combine_desks_button_;
-  raw_ptr<CloseButton> close_all_button_;
+  raw_ptr<DeskActionButton> combine_desks_button_;
+  raw_ptr<DeskActionButton> close_all_button_;
 
   // Maintains blurred rounded rect background without clipping. Useful when
   // generating a focus ring that will partially extend outside of the view.
@@ -70,6 +68,9 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
   // This is set on creation and notifies the mini view when a child view is
   // focused or blurred.
   base::RepeatingClosure focus_change_callback_;
+
+  // Desk mini view that owns this desk action view.
+  raw_ptr<DeskMiniView> mini_view_;
 };
 
 }  // namespace ash
