@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -30,6 +31,11 @@ namespace app_list {
 namespace {
 constexpr base::TimeDelta kOneDay = base::Days(1);
 const char kCookieName[] = "SOCS";
+
+void LogStatus(SocsCookieFetcher::Status status) {
+  base::UmaHistogramEnumeration("Ash.EssentialSearch.Status", status);
+}
+
 }  // namespace
 
 const net::BackoffEntry::Policy
@@ -223,6 +229,9 @@ void EssentialSearchManager::OnCookieAddedToUserProfile(
     return;
   }
 
+  // Log success of fetching the cookie and adding it to the user profile.
+  LogStatus(SocsCookieFetcher::Status::kOk);
+
   // After the SOCS cookie is added to the user profile, Schedule a SOCS cookie
   // refresh to ensure a valid SOCS cookie is maintained.
   temporary_disable_search_suggest_ = false;
@@ -256,7 +265,7 @@ void EssentialSearchManager::CancelPendingRequests() {
 }
 
 void EssentialSearchManager::OnApiCallFailed(SocsCookieFetcher::Status status) {
-  // TODO(b/312542928): collect UMA with the error type.
+  LogStatus(status);
   retry_backoff_.InformOfRequest(false);
   RefetchAfter(retry_backoff_.GetTimeUntilRelease());
 }

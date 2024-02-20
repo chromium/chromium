@@ -1062,6 +1062,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Quick Settings Passed"/>
 </enum>
 
+<enum name="EssentialSearchStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Failed to serialize request body"/>
+  <int value="2" label="Server error"/>
+  <int value="3" label="Empty response"/>
+  <int value="4" label="Failed to parse the response"/>
+  <int value="5" label="Response is not a JSON dictionary"/>
+  <int value="6" label="Response does not contain cookie header"/>
+  <int value="7" label="Invalid cookie header"/>
+  <int value="8" label="Failed to add SOCS cookie to user profile"/>
+</enum>
+
 <enum name="ExpandButtonClickAction">
   <int value="0" label="Expand Individual"/>
   <int value="1" label="Collapse Individual"/>

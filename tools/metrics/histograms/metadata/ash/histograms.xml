@@ -3177,6 +3177,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.EssentialSearch.Status" enum="EssentialSearchStatus"
+    expires_after="2024-08-30">
+  <owner>ayag@chromium.org</owner>
+  <owner>mohammedabdon@chromium.org</owner>
+  <owner>cros-3pidp@google.com</owner>
+  <summary>
+    Records the outcome of a call to chromeoscompliance API. Reported once per
+    call. Chromeoscompliance API is called every time the user signs in, unlocks
+    the device, or stays in session for 24 hours. This event would only occur if
+    EssentialSearchEnabled policy set.
+  </summary>
+</histogram>
+
 <histogram name="Ash.EventLatency.Core.NoOverflow.TotalLatency" units="ms"
     expires_after="2024-06-30">
   <owner>xiyuan@chromium.org</owner>
