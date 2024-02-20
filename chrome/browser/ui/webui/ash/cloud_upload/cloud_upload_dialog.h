@@ -176,13 +176,11 @@ class CloudOpenTask : public BrowserListObserver,
   void OpenUploadedDriveUrl(const GURL& url,
                             const OfficeTaskResult task_result);
   void OpenODFSUrls(const OfficeTaskResult task_result_uma);
-  void OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
-      base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback);
-  void CheckEmailAndOpenURLs(
-      const std::string& android_onedrive_email,
-      base::OnceCallback<void(OfficeOneDriveOpenErrors)> callback,
+  void CheckEmailAndOpenAndroidOneDriveURLs(
       base::expected<cloud_upload::ODFSMetadata, base::File::Error>
           metadata_or_error);
+  bool OpenAndroidOneDriveUrl(
+      const storage::FileSystemURL& android_onedrive_url);
 
   bool ShouldShowConfirmationDialog();
   void ConfirmMoveOrStartUpload();
@@ -266,14 +264,6 @@ bool UrlIsOnAndroidOneDrive(Profile* profile, const FileSystemURL& url);
 // DocumentsProvider.
 std::optional<std::string> GetEmailFromAndroidOneDriveRootDoc(
     const std::string& root_document_id);
-
-// If the Microsoft account logged into the Android OneDrive matches the account
-// logged into ODFS, open office files from ODFS that were originally selected
-// from Android OneDrive. Open the files in the MS 365 PWA. Fails if the Android
-// OneDrive URLS cannot be converted to valid ODFS file paths.
-void OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
-    Profile* profile,
-    const std::vector<storage::FileSystemURL>& android_onedrive_urls);
 
 // Converts the |android_onedrive_file_url| for a file in OneDrive to the
 // equivalent ODFS file path which is then parsed to detect the corresponding
