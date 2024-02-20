@@ -564,18 +564,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void StartWithLogFile(bool launching_at_login_screen,
                         BrowserLauncher::LaunchParamsFromBackground params);
 
-  // ash::SessionManagerClient::Observer:
-  void EmitLoginPromptVisibleCalled() override;
-
-  // BrowserServiceHostObserver:
-  void OnBrowserRelaunchRequested(CrosapiId id) override;
-
-  // CloudPolicyCore::Observer:
-  void OnCoreConnected(policy::CloudPolicyCore* core) override;
-  void OnRefreshSchedulerStarted(policy::CloudPolicyCore* core) override;
-  void OnCoreDisconnecting(policy::CloudPolicyCore* core) override;
-  void OnCoreDestruction(policy::CloudPolicyCore* core) override;
-
   // Called when the Mojo connection to lacros-chrome is disconnected. It may be
   // "just a Mojo error" or "lacros-chrome crash". This method posts a
   // shutdown-blocking async task that waits lacros-chrome to exit, giving it a
@@ -625,10 +613,17 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Launch "Go to files" if the migration error page was clicked.
   void HandleGoToFiles();
 
-  // Sets user policy to be propagated to Lacros and subscribes to the user
-  // policy updates in Ash.
-  void PrepareLacrosPolicies();
-  policy::CloudPolicyCore* GetDeviceAccountPolicyCore();
+  // ash::SessionManagerClient::Observer:
+  void EmitLoginPromptVisibleCalled() override;
+
+  // BrowserServiceHostObserver:
+  void OnBrowserRelaunchRequested(CrosapiId id) override;
+
+  // CloudPolicyCore::Observer:
+  void OnCoreConnected(policy::CloudPolicyCore* core) override;
+  void OnRefreshSchedulerStarted(policy::CloudPolicyCore* core) override;
+  void OnCoreDisconnecting(policy::CloudPolicyCore* core) override;
+  void OnCoreDestruction(policy::CloudPolicyCore* core) override;
 
   // policy::CloudPolicyStore::Observer:
   void OnStoreLoaded(policy::CloudPolicyStore* store) override;

@@ -617,6 +617,7 @@ BrowserManager::BrowserManager(
     CHECK_IS_TEST();
   }
 
+  // UserManager may not be initialized for unit tests.
   if (user_manager::UserManager::IsInitialized()) {
     user_manager_observation_.Observe(user_manager::UserManager::Get());
   }
@@ -819,8 +820,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
 
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
-
-  PrepareLacrosPolicies();
 
   // Perform the UMA recording for the current Lacros mode of operation.
   RecordLacrosLaunchMode();
@@ -1368,8 +1367,32 @@ void BrowserManager::OnRefreshSchedulerDestruction(
 }
 
 void BrowserManager::OnUserProfileCreated(const user_manager::User& user) {
+  // Ignore if `user` is not primary.
   if (!user_manager::UserManager::Get()->IsPrimaryUser(&user)) {
     return;
+  }
+
+  // The lifetime of `BrowserManager` is longer than lifetime of various
+  // classes, for which we register as an observer below. The RemoveObserver
+  // function is therefore called in various handlers invoked by those classes
+  // and not in the destructor.
+  policy::CloudPolicyCore* core = browser_util::GetCloudPolicyCoreForUser(user);
+  if (core) {
+    core->AddObserver(this);
+    if (core->refresh_scheduler()) {
+      core->refresh_scheduler()->AddObserver(this);
+    }
+
+    policy::CloudPolicyStore* store = core->store();
+    if (store && store->policy_fetch_response()) {
+      store->AddObserver(this);
+    }
+  }
+
+  policy::ComponentCloudPolicyService* component_policy_service =
+      browser_util::GetComponentCloudPolicyServiceForUser(user);
+  if (component_policy_service) {
+    component_policy_service->AddObserver(this);
   }
 
   // Check if Lacros is enabled for crash reporting. This must happen after the
@@ -1511,7 +1534,6 @@ void BrowserManager::ResumeLaunchAfterProfileAdded() {
   CHECK_EQ(state_, State::WAITING_OWNER_FETCH);
   // Execute actions that we couldn't run when pre-launching at login screen,
   // because they required the user to be logged in.
-  PrepareLacrosPolicies();
   RecordLacrosLaunchMode();
   crosapi::lacros_startup_state::SetLacrosStartupState(true);
   RecordDataVerForPrimaryUser();
@@ -1543,39 +1565,6 @@ void BrowserManager::HandleGoToFiles() {
     files_app_launcher_->Launch(base::BindOnce(
         browser_util::ClearGotoFilesClicked, g_browser_process->local_state(),
         std::move(user_id_hash)));
-  }
-}
-
-void BrowserManager::PrepareLacrosPolicies() {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user) {
-    LOG(ERROR) << "No primary user.";
-    return;
-  }
-
-  // The lifetime of `BrowserManager` is longer than lifetime of various
-  // classes, for which we register as an observer below. The RemoveObserver
-  // function is therefore called in various handlers invoked by those classes
-  // and not in the destructor.
-  policy::CloudPolicyCore* core =
-      browser_util::GetCloudPolicyCoreForUser(*user);
-  if (core) {
-    core->AddObserver(this);
-    if (core->refresh_scheduler()) {
-      core->refresh_scheduler()->AddObserver(this);
-    }
-
-    policy::CloudPolicyStore* store = core->store();
-    if (store && store->policy_fetch_response()) {
-      store->AddObserver(this);
-    }
-  }
-
-  policy::ComponentCloudPolicyService* component_policy_service =
-      browser_util::GetComponentCloudPolicyServiceForUser(*user);
-  if (component_policy_service) {
-    component_policy_service->AddObserver(this);
   }
 }
 
