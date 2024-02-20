@@ -8648,6 +8648,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "wifi-direct",
+    "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "windows-scrolling-personality",
     "owners": [ "arakeri@microsoft.com", "gastonr@microsoft.com" ],
     "expiry_milestone": 130

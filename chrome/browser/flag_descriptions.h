@@ -4215,6 +4215,9 @@ extern const char kWelcomeTourForceUserEligibilityDescription[];
 extern const char kWifiConnectMacAddressRandomizationName[];
 extern const char kWifiConnectMacAddressRandomizationDescription[];
 
+extern const char kWifiDirectName[];
+extern const char kWifiDirectDescription[];
+
 extern const char kWindowSplittingName[];
 extern const char kWindowSplittingDescription[];
 

@@ -7331,6 +7331,10 @@ const char kWifiConnectMacAddressRandomizationDescription[] =
     "Randomize MAC address when connecting to unmanaged (non-enterprise) "
     "WiFi networks.";
 
+const char kWifiDirectName[] = "Wifi Direct";
+const char kWifiDirectDescription[] =
+    "Enables the WiFi direct functionalities in ChromeOS";
+
 const char kWindowSplittingName[] = "CrOS Labs - Window splitting";
 const char kWindowSplittingDescription[] =
     "Enables splitting windows by dragging one over another.";
