@@ -181,12 +181,14 @@ CompositorGpuThread::GetSharedContextState() {
   const auto& workarounds = gpu_channel_manager_->gpu_driver_bug_workarounds();
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-  // TODO(1504543): Determine if we need to set up a DawnCachingInterfaceFactory
-  // and/or a cache blob callback.
-  dawn_context_provider_ =
-      gpu::DawnContextProvider::Create(gpu_preferences, workarounds);
-  if (!dawn_context_provider_) {
-    DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
+  if (gpu_preferences.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
+    // TODO(1504543): Determine if we need to set up a
+    // DawnCachingInterfaceFactory and/or a cache blob callback.
+    dawn_context_provider_ =
+        gpu::DawnContextProvider::Create(gpu_preferences, workarounds);
+    if (!dawn_context_provider_) {
+      DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
+    }
   }
 #endif
 
