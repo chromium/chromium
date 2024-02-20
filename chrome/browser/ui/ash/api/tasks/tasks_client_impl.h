@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/323974821): Move this file to the Tasks API directory.
-#ifndef CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_TASKS_CLIENT_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_TASKS_CLIENT_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -31,16 +30,14 @@ class Tasks;
 }  // namespace tasks
 }  // namespace google_apis
 
-namespace ash {
+namespace ash::api {
 
-namespace api {
 struct Task;
 struct TaskList;
-}  // namespace api
 
-// Provides implementation for `api::TasksClient`. Responsible for
-// communication with Google Tasks API.
-class TasksClientImpl : public api::TasksClient {
+// Provides implementation for `TasksClient`. Responsible for communication with
+// Google Tasks API.
+class TasksClientImpl : public TasksClient {
  public:
   // Provides an instance of `google_apis::RequestSender` for the client.
   using CreateRequestSenderCallback =
@@ -55,26 +52,26 @@ class TasksClientImpl : public api::TasksClient {
   TasksClientImpl& operator=(const TasksClientImpl&) = delete;
   ~TasksClientImpl() override;
 
-  // api::TasksClient:
+  // TasksClient:
   void GetTaskLists(bool force_fetch,
-                    api::TasksClient::GetTaskListsCallback callback) override;
+                    TasksClient::GetTaskListsCallback callback) override;
   void GetTasks(const std::string& task_list_id,
                 bool force_fetch,
-                api::TasksClient::GetTasksCallback callback) override;
+                TasksClient::GetTasksCallback callback) override;
   void MarkAsCompleted(const std::string& task_list_id,
                        const std::string& task_id,
                        bool completed) override;
   void AddTask(const std::string& task_list_id,
                const std::string& title,
-               api::TasksClient::OnTaskSavedCallback callback) override;
+               TasksClient::OnTaskSavedCallback callback) override;
   void UpdateTask(const std::string& task_list_id,
                   const std::string& task_id,
                   const std::string& title,
                   bool completed,
-                  api::TasksClient::OnTaskSavedCallback callback) override;
+                  TasksClient::OnTaskSavedCallback callback) override;
   void InvalidateCache() override;
   void OnGlanceablesBubbleClosed(
-      api::TasksClient::OnAllPendingCompletedTasksSavedCallback callback =
+      TasksClient::OnAllPendingCompletedTasksSavedCallback callback =
           base::DoNothing()) override;
 
   using TaskListsRequestCallback =
@@ -104,7 +101,7 @@ class TasksClientImpl : public api::TasksClient {
     FetchStatus status = FetchStatus::kNotFresh;
     // Callbacks to be called when all task lists get fetched using tasks API.
     // Should be non-empty if a task lists fetch is in progress.
-    std::vector<api::TasksClient::GetTaskListsCallback> callbacks;
+    std::vector<TasksClient::GetTaskListsCallback> callbacks;
   };
 
   // A structure that keeps track of fetch status and list of pending callbacks
@@ -118,7 +115,7 @@ class TasksClientImpl : public api::TasksClient {
     // tasks API.
     // Should be non-empty if a tasks fetch for the target task list is in
     // progress.
-    std::vector<api::TasksClient::GetTasksCallback> callbacks;
+    std::vector<TasksClient::GetTasksCallback> callbacks;
   };
 
   // Fetches one page of task lists data.
@@ -196,7 +193,7 @@ class TasksClientImpl : public api::TasksClient {
   // `result`             - newly created task or HTTP error.
   void OnTaskAdded(const std::string& task_list_id,
                    const base::Time& request_start_time,
-                   api::TasksClient::OnTaskSavedCallback callback,
+                   TasksClient::OnTaskSavedCallback callback,
                    base::expected<std::unique_ptr<google_apis::tasks::Task>,
                                   google_apis::ApiErrorCode> result);
 
@@ -207,7 +204,7 @@ class TasksClientImpl : public api::TasksClient {
   // `result`             - updated task or HTTP error.
   void OnTaskUpdated(const std::string& task_list_id,
                      const base::Time& request_start_time,
-                     api::TasksClient::OnTaskSavedCallback callback,
+                     TasksClient::OnTaskSavedCallback callback,
                      base::expected<std::unique_ptr<google_apis::tasks::Task>,
                                     google_apis::ApiErrorCode> result);
 
@@ -247,10 +244,10 @@ class TasksClientImpl : public api::TasksClient {
   TaskListsFetchState task_lists_fetch_state_;
 
   // All available task lists.
-  ui::ListModel<api::TaskList> task_lists_;
+  ui::ListModel<TaskList> task_lists_;
 
   // All available tasks grouped by task list id.
-  std::map<std::string, ui::ListModel<api::Task>> tasks_in_task_lists_;
+  std::map<std::string, ui::ListModel<Task>> tasks_in_task_lists_;
 
   // Map that contains fetch states for tasks requests from different task
   // lists. Mapped by the task list id.
@@ -258,7 +255,7 @@ class TasksClientImpl : public api::TasksClient {
 
   // Stub tasks list model that can be used to return an empty task list to
   // `GetTasks()` requests.
-  ui::ListModel<api::Task> stub_task_list_;
+  ui::ListModel<Task> stub_task_list_;
 
   // Callbacks invoked whenever a tasks API request is made. Used primarily
   // in tests.
@@ -270,6 +267,6 @@ class TasksClientImpl : public api::TasksClient {
   base::WeakPtrFactory<TasksClientImpl> weak_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace ash::api
 
-#endif  // CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_TASKS_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_

@@ -9,11 +9,9 @@
 #include "base/containers/flat_map.h"
 #include "components/account_id/account_id.h"
 
-namespace ash {
+namespace ash::api {
 
 class TasksClientImpl;
-
-namespace api {
 
 class ChromeTasksDelegate : public TasksDelegate {
  public:
@@ -51,8 +49,6 @@ class ChromeTasksDelegate : public TasksDelegate {
   base::flat_map<AccountId, std::unique_ptr<TasksClientImpl>> clients_;
 };
 
-}  // namespace api
-
-}  // namespace ash
+}  // namespace ash::api
 
 #endif  // CHROME_BROWSER_UI_ASH_API_TASKS_CHROME_TASKS_DELEGATE_H_

@@ -16,7 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.h"
+#include "chrome/browser/ui/ash/api/tasks/tasks_client_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -71,7 +71,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // request for system admins and regulators. The client requests this callback
 // on creation so that it can use different callbacks to create dummy auth
 // services in testing situations (See
-// chrome/browser/ui/ash/glanceabes/glanceables_tasks_client_impl_unittest.cc).
+// chrome/browser/ui/ash/api/tasks/tasks_client_impl_unittest.cc).
 std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
     const std::vector<std::string>& scopes,
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {

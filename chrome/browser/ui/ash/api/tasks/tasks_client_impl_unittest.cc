@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.h"
+#include "chrome/browser/ui/ash/api/tasks/tasks_client_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -37,7 +37,7 @@
 #include "ui/base/models/list_model.h"
 #include "ui/base/models/list_model_observer.h"
 
-namespace ash {
+namespace ash::api {
 namespace {
 
 using ::base::test::TestFuture;
@@ -104,9 +104,9 @@ constexpr char kDefaultTasksResponseContent[] = R"(
     }
   )";
 
-using TaskListsFuture = TestFuture<bool, const ui::ListModel<api::TaskList>*>;
+using TaskListsFuture = TestFuture<bool, const ui::ListModel<TaskList>*>;
 
-using TasksFuture = TestFuture<bool, const ui::ListModel<api::Task>*>;
+using TasksFuture = TestFuture<bool, const ui::ListModel<Task>*>;
 
 // Helper class to simplify mocking `net::EmbeddedTestServer` responses,
 // especially useful for subsequent responses when testing pagination logic.
@@ -1831,7 +1831,7 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.InsertTask.Status", /*expected_count=*/0);
 
-  TestFuture<const api::Task*> add_task_future;
+  TestFuture<const Task*> add_task_future;
   client()->AddTask("test-task-list-id", "New task",
                     add_task_future.GetCallback());
 
@@ -1894,7 +1894,7 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
       "Ash.Glanceables.Api.Tasks.PatchTask.Status", /*expected_count=*/0);
 
   // Update the task.
-  TestFuture<const api::Task*> update_task_future;
+  TestFuture<const Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
                        /*completed=*/true, update_task_future.GetCallback());
   ASSERT_TRUE(update_task_future.Wait());
@@ -1922,7 +1922,7 @@ TEST_F(TasksClientImplTest, UpdatesTaskOnHttpError) {
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.PatchTask.Status", /*expected_count=*/0);
 
-  TestFuture<const api::Task*> update_task_future;
+  TestFuture<const Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
                        /*completed=*/false, update_task_future.GetCallback());
 
@@ -1937,4 +1937,4 @@ TEST_F(TasksClientImplTest, UpdatesTaskOnHttpError) {
       /*expected_bucket_count=*/1);
 }
 
-}  // namespace ash
+}  // namespace ash::api

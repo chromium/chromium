@@ -26,12 +26,15 @@ struct NetworkTrafficAnnotationTag;
 
 namespace signin {
 class IdentityManager;
-}  // namespace signin
+}
 
 namespace ash {
 
-class GlanceablesClassroomClientImpl;
+namespace api {
 class TasksClientImpl;
+}  // namespace api
+
+class GlanceablesClassroomClientImpl;
 
 // Browser context keyed service that owns implementations of interfaces from
 // ash/ needed to communicate with different Google services as part of
@@ -102,7 +105,7 @@ class GlanceablesKeyedService : public KeyedService {
   std::unique_ptr<GlanceablesClassroomClientImpl> classroom_client_;
 
   // Instance of the `api::TasksClient` interface implementation.
-  std::unique_ptr<TasksClientImpl> tasks_client_;
+  std::unique_ptr<api::TasksClientImpl> tasks_client_;
 
   // The registrar used to watch prefs changes.
   PrefChangeRegistrar pref_change_registrar_;

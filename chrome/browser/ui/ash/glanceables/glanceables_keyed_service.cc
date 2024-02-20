@@ -24,8 +24,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/api/tasks/tasks_client_impl.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.h"
-#include "chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -160,7 +160,7 @@ void GlanceablesKeyedService::RegisterClients() {
       base::Unretained(this));
   classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
       base::DefaultClock::GetInstance(), create_request_sender_callback);
-  tasks_client_ = std::make_unique<TasksClientImpl>(
+  tasks_client_ = std::make_unique<api::TasksClientImpl>(
       create_request_sender_callback, kTasksTrafficAnnotation);
 
   Shell::Get()->glanceables_controller()->UpdateClientsRegistration(

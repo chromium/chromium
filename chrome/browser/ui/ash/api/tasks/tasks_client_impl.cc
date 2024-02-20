@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/323974821): Move this file to the Tasks API directory.
-#include "chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.h"
+#include "chrome/browser/ui/ash/api/tasks/tasks_client_impl.h"
 
 #include <algorithm>
 #include <iterator>
@@ -32,7 +31,7 @@
 #include "google_apis/tasks/tasks_api_task_status.h"
 #include "ui/base/models/list_model.h"
 
-namespace ash {
+namespace ash::api {
 namespace {
 
 using ::google_apis::ApiErrorCode;
@@ -40,19 +39,14 @@ using ::google_apis::tasks::InsertTaskRequest;
 using ::google_apis::tasks::ListTaskListsRequest;
 using ::google_apis::tasks::ListTasksRequest;
 using ::google_apis::tasks::PatchTaskRequest;
-using ::google_apis::tasks::Task;
-using ::google_apis::tasks::TaskLink;
-using ::google_apis::tasks::TaskList;
-using ::google_apis::tasks::TaskLists;
 using ::google_apis::tasks::TaskRequestPayload;
-using ::google_apis::tasks::Tasks;
 using ::google_apis::tasks::TaskStatus;
 
 // Converts `raw_tasks` received from Google Tasks API to ash-friendly types.
-std::vector<std::unique_ptr<api::Task>> ConvertTasks(
-    const std::vector<std::unique_ptr<Task>>& raw_tasks) {
+std::vector<std::unique_ptr<Task>> ConvertTasks(
+    const std::vector<std::unique_ptr<google_apis::tasks::Task>>& raw_tasks) {
   // Find root level tasks and collect task ids that have subtasks in one pass.
-  std::vector<const Task*> root_tasks;
+  std::vector<const google_apis::tasks::Task*> root_tasks;
   base::flat_set<std::string> tasks_with_subtasks;
   for (const auto& item : raw_tasks) {
     if (item->parent_id().empty()) {
@@ -68,13 +62,14 @@ std::vector<std::unique_ptr<api::Task>> ConvertTasks(
   // there is a possibility that with further optimizations and plans to keep
   // only top N visible tasks in memory, the sorting will need to be done at
   // this layer.
-  std::sort(root_tasks.begin(), root_tasks.end(),
-            [](const Task* a, const Task* b) {
-              return a->position().compare(b->position()) < 0;
-            });
+  std::sort(
+      root_tasks.begin(), root_tasks.end(),
+      [](const google_apis::tasks::Task* a, const google_apis::tasks::Task* b) {
+        return a->position().compare(b->position()) < 0;
+      });
 
   // Convert `root_tasks` to ash-friendly types.
-  std::vector<std::unique_ptr<api::Task>> converted_tasks;
+  std::vector<std::unique_ptr<Task>> converted_tasks;
   converted_tasks.reserve(root_tasks.size());
   for (const auto* const root_task : root_tasks) {
     const bool completed = root_task->status() == TaskStatus::kCompleted;
@@ -82,10 +77,11 @@ std::vector<std::unique_ptr<api::Task>> ConvertTasks(
     const bool has_email_link =
         std::find_if(root_task->links().begin(), root_task->links().end(),
                      [](const auto& link) {
-                       return link->type() == TaskLink::Type::kEmail;
+                       return link->type() ==
+                              google_apis::tasks::TaskLink::Type::kEmail;
                      }) != root_task->links().end();
     const bool has_notes = !root_task->notes().empty();
-    converted_tasks.push_back(std::make_unique<api::Task>(
+    converted_tasks.push_back(std::make_unique<Task>(
         root_task->id(), root_task->title(), root_task->due(), completed,
         has_subtasks, has_email_link, has_notes, root_task->updated()));
   }
@@ -112,9 +108,8 @@ TasksClientImpl::TasksClientImpl(
 
 TasksClientImpl::~TasksClientImpl() = default;
 
-void TasksClientImpl::GetTaskLists(
-    bool force_fetch,
-    api::TasksClient::GetTaskListsCallback callback) {
+void TasksClientImpl::GetTaskLists(bool force_fetch,
+                                   TasksClient::GetTaskListsCallback callback) {
   if (task_lists_fetch_state_.status == FetchStatus::kFresh && !force_fetch) {
     std::move(callback).Run(/*success=*/true, &task_lists_);
     return;
@@ -125,13 +120,13 @@ void TasksClientImpl::GetTaskLists(
   if (task_lists_fetch_state_.status != FetchStatus::kRefreshing) {
     task_lists_fetch_state_.status = FetchStatus::kRefreshing;
     FetchTaskListsPage(/*page_token=*/"", /*page_number=*/1,
-                       /*aggregated_raw_task_lists=*/{});
+                       /*accumulated_raw_task_lists=*/{});
   }
 }
 
 void TasksClientImpl::GetTasks(const std::string& task_list_id,
                                bool force_fetch,
-                               api::TasksClient::GetTasksCallback callback) {
+                               TasksClient::GetTasksCallback callback) {
   CHECK(!task_list_id.empty());
 
   const auto [iter, inserted] = tasks_in_task_lists_.emplace(
@@ -175,7 +170,7 @@ void TasksClientImpl::MarkAsCompleted(const std::string& task_list_id,
 
 void TasksClientImpl::AddTask(const std::string& task_list_id,
                               const std::string& title,
-                              api::TasksClient::OnTaskSavedCallback callback) {
+                              TasksClient::OnTaskSavedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!title.empty());
   CHECK(callback);
@@ -188,12 +183,11 @@ void TasksClientImpl::AddTask(const std::string& task_list_id,
                      task_list_id, base::Time::Now(), std::move(callback))));
 }
 
-void TasksClientImpl::UpdateTask(
-    const std::string& task_list_id,
-    const std::string& task_id,
-    const std::string& title,
-    bool completed,
-    api::TasksClient::OnTaskSavedCallback callback) {
+void TasksClientImpl::UpdateTask(const std::string& task_list_id,
+                                 const std::string& task_id,
+                                 const std::string& title,
+                                 bool completed,
+                                 TasksClient::OnTaskSavedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!task_id.empty());
   CHECK(!title.empty());
@@ -222,14 +216,14 @@ void TasksClientImpl::InvalidateCache() {
 
   if (task_lists_fetch_state_.status == FetchStatus::kRefreshing) {
     RunGetTaskListsCallbacks(FetchStatus::kNotFresh,
-                             /*accumulated_raw_tasks=*/{});
+                             /*accumulated_raw_task_lists=*/{});
   } else {
     task_lists_fetch_state_.status = FetchStatus::kNotFresh;
   }
 }
 
 void TasksClientImpl::OnGlanceablesBubbleClosed(
-    api::TasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
+    TasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
   // TODO(b/324462272): We need to watch this. This could cause one client to
   // cancel the in-flight callbacks for requests sent by another client. This
   // could become an issue when we have multiple clients for one
@@ -288,7 +282,8 @@ void TasksClientImpl::OnTaskListsPageFetched(
     int page_number,
     std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
         accumulated_raw_task_lists,
-    base::expected<std::unique_ptr<TaskLists>, ApiErrorCode> result) {
+    base::expected<std::unique_ptr<google_apis::tasks::TaskLists>, ApiErrorCode>
+        result) {
   // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.GetTaskLists.Latency",
                           base::Time::Now() - request_start_time);
@@ -297,7 +292,7 @@ void TasksClientImpl::OnTaskListsPageFetched(
 
   if (!result.has_value()) {
     RunGetTaskListsCallbacks(FetchStatus::kNotFresh,
-                             /*accumulated_raw_tasks=*/{});
+                             /*accumulated_raw_task_lists=*/{});
     return;
   }
 
@@ -324,7 +319,8 @@ void TasksClientImpl::FetchTasksPage(
     const std::string& task_list_id,
     const std::string& page_token,
     int page_number,
-    std::vector<std::unique_ptr<Task>> accumulated_raw_tasks) {
+    std::vector<std::unique_ptr<google_apis::tasks::Task>>
+        accumulated_raw_tasks) {
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(std::make_unique<ListTasksRequest>(
       request_sender, task_list_id, page_token,
@@ -340,10 +336,12 @@ void TasksClientImpl::FetchTasksPage(
 
 void TasksClientImpl::OnTasksPageFetched(
     const std::string& task_list_id,
-    std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
+    std::vector<std::unique_ptr<google_apis::tasks::Task>>
+        accumulated_raw_tasks,
     const base::Time& request_start_time,
     int page_number,
-    base::expected<std::unique_ptr<Tasks>, ApiErrorCode> result) {
+    base::expected<std::unique_ptr<google_apis::tasks::Tasks>, ApiErrorCode>
+        result) {
   // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.GetTasks.Latency",
                           base::Time::Now() - request_start_time);
@@ -395,7 +393,7 @@ void TasksClientImpl::RunGetTaskListsCallbacks(
 
     for (const auto& raw_item : accumulated_raw_task_lists) {
       abandoned_task_lists.erase(raw_item->id());
-      task_lists_.Add(std::make_unique<api::TaskList>(
+      task_lists_.Add(std::make_unique<TaskList>(
           raw_item->id(), raw_item->title(), raw_item->updated()));
     }
 
@@ -417,7 +415,8 @@ void TasksClientImpl::RunGetTaskListsCallbacks(
 void TasksClientImpl::RunGetTasksCallbacks(
     const std::string& task_list_id,
     FetchStatus final_fetch_status,
-    std::vector<std::unique_ptr<Task>> accumulated_raw_tasks) {
+    std::vector<std::unique_ptr<google_apis::tasks::Task>>
+        accumulated_raw_tasks) {
   auto fetch_state_it = tasks_fetch_state_.find(task_list_id);
   if (fetch_state_it == tasks_fetch_state_.end()) {
     return;
@@ -454,7 +453,8 @@ void TasksClientImpl::RunGetTasksCallbacks(
 void TasksClientImpl::OnMarkedAsCompleted(
     const base::Time& request_start_time,
     base::RepeatingClosure on_done,
-    base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
+    base::expected<std::unique_ptr<google_apis::tasks::Task>, ApiErrorCode>
+        result) {
   // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
                           base::Time::Now() - request_start_time);
@@ -466,8 +466,9 @@ void TasksClientImpl::OnMarkedAsCompleted(
 void TasksClientImpl::OnTaskAdded(
     const std::string& task_list_id,
     const base::Time& request_start_time,
-    api::TasksClient::OnTaskSavedCallback callback,
-    base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
+    TasksClient::OnTaskSavedCallback callback,
+    base::expected<std::unique_ptr<google_apis::tasks::Task>, ApiErrorCode>
+        result) {
   // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.InsertTask.Latency",
                           base::Time::Now() - request_start_time);
@@ -487,19 +488,20 @@ void TasksClientImpl::OnTaskAdded(
 
   const auto* const task = iter->second.AddAt(
       /*index=*/0,
-      std::make_unique<api::Task>(result.value()->id(), result.value()->title(),
-                                  /*due=*/std::nullopt, /*completed=*/false,
-                                  /*has_subtasks=*/false,
-                                  /*has_email_link=*/false, /*has_notes=*/false,
-                                  result.value()->updated()));
+      std::make_unique<Task>(result.value()->id(), result.value()->title(),
+                             /*due=*/std::nullopt, /*completed=*/false,
+                             /*has_subtasks=*/false,
+                             /*has_email_link=*/false, /*has_notes=*/false,
+                             result.value()->updated()));
   std::move(callback).Run(/*task=*/task);
 }
 
 void TasksClientImpl::OnTaskUpdated(
     const std::string& task_list_id,
     const base::Time& request_start_time,
-    api::TasksClient::OnTaskSavedCallback callback,
-    base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
+    TasksClient::OnTaskSavedCallback callback,
+    base::expected<std::unique_ptr<google_apis::tasks::Task>, ApiErrorCode>
+        result) {
   // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
                           base::Time::Now() - request_start_time);
@@ -517,7 +519,7 @@ void TasksClientImpl::OnTaskUpdated(
     return;
   }
 
-  Task* result_data = result->get();
+  const auto* const result_data = result->get();
   const auto task_iter =
       std::find_if(tasks_iter->second.begin(), tasks_iter->second.end(),
                    [&result_data](const auto& task) {
@@ -528,7 +530,7 @@ void TasksClientImpl::OnTaskUpdated(
     return;
   }
 
-  ash::api::Task* task = task_iter->get();
+  auto* const task = task_iter->get();
   task->title = result_data->title();
   task->completed = result_data->status() == TaskStatus::kCompleted;
   task->updated = result_data->updated();
@@ -547,4 +549,4 @@ google_apis::RequestSender* TasksClientImpl::GetRequestSender() {
   return request_sender_.get();
 }
 
-}  // namespace ash
+}  // namespace ash::api
