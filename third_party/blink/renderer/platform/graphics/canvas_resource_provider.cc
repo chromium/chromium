@@ -1058,6 +1058,14 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
     uint32_t shared_image_usage_flags,
     CanvasResourceHost* resource_host) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  // The SharedImages created by this provider serve as a means of import/export
+  // between VideoFrames/canvas and WebGPU, e.g.:
+  // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
+  //   WebGPU textures will then be read by clients)
+  // * Export from WebGPU into canvas via
+  //   GpuCanvasContext::CopyTextureToResourceProvider() (the export happens via
+  //   the WebGPU interface)
+  // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
   return CreateSharedImageProvider(
       info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo,
