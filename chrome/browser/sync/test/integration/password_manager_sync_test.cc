@@ -412,7 +412,6 @@ class PasswordManagerSyncTest : public SyncTest {
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   content::WebContents* web_contents = nullptr;
@@ -462,18 +461,15 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
 
     // Save the password and check the store.
     BubbleObserver bubble_observer(web_contents);
-    EXPECT_TRUE(
-        bubble_observer.IsDefaultStoreChangedPromptShownAutomatically());
-    bubble_observer.AcknowledgeDefaultStoreChange();
-
     ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
     bubble_observer.AcceptSavePrompt();
 
-    EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(),
-                testing::Contains(MatchesLogin("localuser", "localpass")));
+    std::vector<std::unique_ptr<password_manager::PasswordForm>>
+        profile_credentials = GetAllLoginsFromProfilePasswordStore();
+    EXPECT_THAT(profile_credentials,
+                ElementsAre(MatchesLogin("localuser", "localpass")));
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInProfileStore) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
