@@ -145,6 +145,9 @@ void PickerSearchController::AppendPostBurnInResults(
 void PickerSearchController::HandleCrosSearchResults(
     ash::AppListSearchResultType type,
     std::vector<PickerSearchResult> results) {
+  if (IsSearchStopped()) {
+    return;
+  }
   omnibox_results_ = std::move(results);
 
   if (IsPostBurnIn()) {
