@@ -319,45 +319,55 @@ void OptimizedSession::AddItem(CRWSessionStorage* legacy_item) {
 // Migrates session stored in `from` in legacy format to `dest` in optimized
 // format. The web sessions files (if present) are stored in `web_sessions`.
 // Returns whether the migration status.
-MigrationStatus MigrateSessionToOptimizedInternal(
+MigrationResult MigrateSessionToOptimizedInternal(
     const base::FilePath& from,
     const base::FilePath& dest,
-    const base::FilePath& web_sessions) {
+    const base::FilePath& web_sessions,
+    int32_t next_session_identifier) {
   const base::FilePath legacy_path = from.Append(kLegacySessionFilename);
   if (!FileExists(legacy_path)) {
-    return MigrationStatus::kSuccess;
+    return MigrationResult::Success(next_session_identifier);
   }
 
   SessionWindowIOS* legacy = ReadSessionWindow(legacy_path);
   if (!legacy) {
-    return MigrationStatus::kFailure;
+    return MigrationResult::Failure();
+  }
+
+  // If the identifiers loaded from disk are invalid, assign new identifiers.
+  for (CRWSessionStorage* storage in legacy.sessions) {
+    if (!storage.uniqueIdentifier.valid()) {
+      storage.uniqueIdentifier =
+          web::WebStateID::FromSerializedValue(next_session_identifier++);
+    }
   }
 
   std::optional<OptimizedSession> optimized =
       OptimizedSession::FromLegacy(legacy);
 
   if (!optimized || !optimized->SaveTo(dest, web_sessions)) {
-    return MigrationStatus::kFailure;
+    return MigrationResult::Failure();
   }
 
-  return MigrationStatus::kSuccess;
+  return MigrationResult::Success(next_session_identifier);
 }
 
 // Migrates session stored in `from` in optimized format to `dest` in legacy
 // format. The web sessions files (if present) are stored in `web_sessions`.
 // Returns whether the migration status.
-MigrationStatus MigrateSessionToLegacyInternal(
+MigrationResult MigrateSessionToLegacyInternal(
     const base::FilePath& from,
     const base::FilePath& dest,
-    const base::FilePath& web_sessions) {
+    const base::FilePath& web_sessions,
+    int32_t next_session_identifier) {
   const base::FilePath metadata_path = from.Append(kSessionMetadataFilename);
   if (!FileExists(metadata_path)) {
-    return MigrationStatus::kSuccess;
+    return MigrationResult::Success(next_session_identifier);
   }
 
   std::optional<OptimizedSession> optimized = OptimizedSession::FromPath(from);
   if (!optimized) {
-    return MigrationStatus::kFailure;
+    return MigrationResult::Failure();
   }
 
   SessionWindowIOS* legacy = optimized->ToLegacy();
@@ -365,7 +375,7 @@ MigrationStatus MigrateSessionToLegacyInternal(
 
   // Write the legacy session to destination.
   if (!WriteSessionWindow(dest.Append(kLegacySessionFilename), legacy)) {
-    return MigrationStatus::kFailure;
+    return MigrationResult::Failure();
   }
 
   // Migrate the web session files if possible.
@@ -386,13 +396,14 @@ MigrationStatus MigrateSessionToLegacyInternal(
     }
   }
 
-  return MigrationStatus::kSuccess;
+  return MigrationResult::Success(next_session_identifier);
 }
 
 // Helper for MigrateSessionsInPathsToOptimized(...) that migrate the data
 // but performs no cleanup. It stops at the first failure.
-MigrationStatus MigrateSessionsInPathsToOptimizedNoCleanup(
-    const std::vector<base::FilePath>& paths) {
+MigrationResult MigrateSessionsInPathsToOptimizedNoCleanup(
+    const std::vector<base::FilePath>& paths,
+    int32_t next_session_identifier) {
   for (const base::FilePath& path : paths) {
     const base::FilePath from_dir = path.Append(kLegacySessionsDirname);
     const base::FilePath dest_dir = path.Append(kSessionRestorationDirname);
@@ -402,22 +413,26 @@ MigrationStatus MigrateSessionsInPathsToOptimizedNoCleanup(
     base::FileEnumerator iter(from_dir, false, file_types);
     for (base::FilePath name = iter.Next(); !name.empty(); name = iter.Next()) {
       const base::FilePath basename = name.BaseName();
-      const MigrationStatus result = MigrateSessionToOptimizedInternal(
-          from_dir.Append(basename), dest_dir.Append(basename), sessions);
+      const MigrationResult result = MigrateSessionToOptimizedInternal(
+          from_dir.Append(basename), dest_dir.Append(basename), sessions,
+          next_session_identifier);
 
-      if (result != MigrationStatus::kSuccess) {
-        return MigrationStatus::kFailure;
+      if (result.status != MigrationResult::Status::kSuccess) {
+        return MigrationResult::Failure();
       }
+
+      next_session_identifier = result.next_session_identifier;
     }
   }
 
-  return MigrationStatus::kSuccess;
+  return MigrationResult::Success(next_session_identifier);
 }
 
 // Helper for MigrateSessionsInPathsToLegacy(...) that migrate the data
 // but performs no cleanup. It stops at the first failure.
-MigrationStatus MigrateSessionsInPathsToLegacyNoCleanup(
-    const std::vector<base::FilePath>& paths) {
+MigrationResult MigrateSessionsInPathsToLegacyNoCleanup(
+    const std::vector<base::FilePath>& paths,
+    int32_t next_session_identifier) {
   for (const base::FilePath& path : paths) {
     const base::FilePath from_dir = path.Append(kSessionRestorationDirname);
     const base::FilePath dest_dir = path.Append(kLegacySessionsDirname);
@@ -427,16 +442,19 @@ MigrationStatus MigrateSessionsInPathsToLegacyNoCleanup(
     base::FileEnumerator iter(from_dir, false, file_types);
     for (base::FilePath name = iter.Next(); !name.empty(); name = iter.Next()) {
       const base::FilePath basename = name.BaseName();
-      const MigrationStatus result = MigrateSessionToLegacyInternal(
-          from_dir.Append(basename), dest_dir.Append(basename), sessions);
+      const MigrationResult result = MigrateSessionToLegacyInternal(
+          from_dir.Append(basename), dest_dir.Append(basename), sessions,
+          next_session_identifier);
 
-      if (result != MigrationStatus::kSuccess) {
-        return MigrationStatus::kFailure;
+      if (result.status != MigrationResult::Status::kSuccess) {
+        return MigrationResult::Failure();
       }
+
+      next_session_identifier = result.next_session_identifier;
     }
   }
 
-  return MigrationStatus::kSuccess;
+  return MigrationResult::Success(next_session_identifier);
 }
 
 // Deletes optimized session directories in `paths`.
@@ -469,47 +487,50 @@ void DeleteLegacySessions(const std::vector<base::FilePath>& paths) {
 
 }  // namespace
 
-MigrationStatus MigrateSessionsInPathsToOptimized(
-    const std::vector<base::FilePath>& paths) {
+MigrationResult MigrateSessionsInPathsToOptimized(
+    const std::vector<base::FilePath>& paths,
+    int32_t next_session_identifier) {
   // Try to perform the migration, stopping at the first failure.
-  const MigrationStatus status =
-      MigrateSessionsInPathsToOptimizedNoCleanup(paths);
+  const MigrationResult result = MigrateSessionsInPathsToOptimizedNoCleanup(
+      paths, next_session_identifier);
 
   // Cleanup after the migration by deleting either the partially migrated
   // data (in case of failure) or original data (in case of success).
-  switch (status) {
-    case MigrationStatus::kSuccess:
+  switch (result.status) {
+    case MigrationResult::Status::kSuccess:
       // The data has been successfully migrated to optimized storage,
       // delete the legacy storage (including the cache of WKWebView
       // native session data).
       DeleteLegacySessions(paths);
       break;
 
-    case MigrationStatus::kFailure:
+    case MigrationResult::Status::kFailure:
       // The migration to optimized format failed, delete any data that
       // may have been written in the optimised storage directory.
       DeleteOptimizedSessions(paths);
       break;
   }
 
-  return status;
+  return result;
 }
 
-MigrationStatus MigrateSessionsInPathsToLegacy(
-    const std::vector<base::FilePath>& paths) {
+MigrationResult MigrateSessionsInPathsToLegacy(
+    const std::vector<base::FilePath>& paths,
+    int32_t next_session_identifier) {
   // Try to perform the migration, stopping at the first failure.
-  const MigrationStatus status = MigrateSessionsInPathsToLegacyNoCleanup(paths);
+  const MigrationResult result =
+      MigrateSessionsInPathsToLegacyNoCleanup(paths, next_session_identifier);
 
   // Cleanup after the migration by deleting either the partially migrated
   // data (in case of failure) or original data (in case of success).
-  switch (status) {
-    case MigrationStatus::kSuccess:
+  switch (result.status) {
+    case MigrationResult::Status::kSuccess:
       // The data has been successfully migrated to legacy storage,
       // delete the optimized storage.
       DeleteOptimizedSessions(paths);
       break;
 
-    case MigrationStatus::kFailure:
+    case MigrationResult::Status::kFailure:
       // The migration to legacy format failed, delete any data that
       // may have been written in the legacy storage directory. Also
       // delete the cache of WKWebView native session data.
@@ -517,7 +538,42 @@ MigrationStatus MigrateSessionsInPathsToLegacy(
       break;
   }
 
-  return status;
+  return result;
+}
+
+// Comparison operators for testing.
+bool operator==(const MigrationResult& lhs, const MigrationResult& rhs) {
+  switch (lhs.status) {
+    case MigrationResult::Status::kSuccess:
+      return rhs.status == MigrationResult::Status::kSuccess &&
+             rhs.next_session_identifier == lhs.next_session_identifier;
+
+    case MigrationResult::Status::kFailure:
+      return rhs.status == MigrationResult::Status::kFailure;
+  }
+}
+
+bool operator!=(const MigrationResult& lhs, const MigrationResult& rhs) {
+  switch (lhs.status) {
+    case MigrationResult::Status::kSuccess:
+      return rhs.status != MigrationResult::Status::kSuccess ||
+             rhs.next_session_identifier != lhs.next_session_identifier;
+
+    case MigrationResult::Status::kFailure:
+      return rhs.status != MigrationResult::Status::kFailure;
+  }
+}
+
+// Insertion operator for testing.
+std::ostream& operator<<(std::ostream& stream, const MigrationResult& result) {
+  switch (result.status) {
+    case MigrationResult::Status::kSuccess:
+      return stream << "MigrationResult::Status::Success("
+                    << result.next_session_identifier << ")";
+
+    case MigrationResult::Status::kFailure:
+      return stream << "MigrationResult::Status::Failure()";
+  }
 }
 
 }  // namespace ios::sessions

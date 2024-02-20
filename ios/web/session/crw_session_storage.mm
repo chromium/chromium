@@ -243,10 +243,11 @@ NSString* const kTabIdKey = @"TabId";
     // If no unique identifier was read, or it was invalid, generate a
     // new one.
     static_assert(sizeof(_uniqueIdentifier.identifier()) == sizeof(int32_t));
-    _uniqueIdentifier = web::WebStateID::FromSerializedValue(
-        [decoder decodeInt32ForKey:kUniqueIdentifierKey]);
-    if (!_uniqueIdentifier.valid()) {
-      _uniqueIdentifier = web::WebStateID::NewUnique();
+    const int32_t decodedUniqueIdentifier =
+        [decoder decodeInt32ForKey:kUniqueIdentifierKey];
+    if (web::WebStateID::IsValidValue(decodedUniqueIdentifier)) {
+      _uniqueIdentifier =
+          web::WebStateID::FromSerializedValue(decodedUniqueIdentifier);
     }
 
     if ([decoder containsValueForKey:kCreationTimeKey]) {

@@ -33,6 +33,7 @@
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 
@@ -282,8 +283,17 @@ using SaveSessionCallback =
 }
 
 - (SessionWindowIOS*)loadSessionFromPath:(NSString*)sessionPath {
-  return ios::sessions::ReadSessionWindow(
+  SessionWindowIOS* sessionWindowIOS = ios::sessions::ReadSessionWindow(
       base::apple::NSStringToFilePath(sessionPath));
+
+  // If the identifiers loaded from disk are invalid, assign new identifiers.
+  for (CRWSessionStorage* sessionStorage in sessionWindowIOS.sessions) {
+    if (!sessionStorage.uniqueIdentifier.valid()) {
+      sessionStorage.uniqueIdentifier = web::WebStateID::NewUnique();
+    }
+  }
+
+  return sessionWindowIOS;
 }
 
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
