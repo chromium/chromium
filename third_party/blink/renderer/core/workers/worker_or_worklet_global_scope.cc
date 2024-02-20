@@ -286,11 +286,16 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   used_features_.set(static_cast<size_t>(feature));
 
   // Record CountUse users for investigating crbug.com/40918057.
+  base::UmaHistogramSparse("ServiceWorker.CountUse.WebFeature",
+                           static_cast<int>(feature));
   {
     WorkerOrWorkletInterfaceNameType type =
         WorkerOrWorkletInterfaceNameType::kOther;
     if (IsDedicatedWorkerGlobalScope()) {
       type = WorkerOrWorkletInterfaceNameType::kDedicatedWorkerGlobalScope;
+      base::UmaHistogramSparse(
+          "ServiceWorker.CountUse.DedicatedWorker.WebFeature",
+          static_cast<int>(feature));
     } else if (IsSharedWorkerGlobalScope()) {
       type = WorkerOrWorkletInterfaceNameType::kSharedWorkerGlobalScope;
     } else if (IsServiceWorkerGlobalScope()) {

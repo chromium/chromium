@@ -249,6 +249,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.CountUse.DedicatedWorker.WebFeature"
+    units="WebFeature" expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    When WorkerOrWorkletGlobalScope::CountUse() is called for a dedicated
+    worker, this UMA records the WebFeature to be recorded with the CountUse().
+    Metrics that does not limit to the dedicated worker caller exists as
+    ServiceWorker.CountUse.WebFeature. This UMA is for investigating
+    crbug.com/40918057.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.CountUse.WebFeature" units="WebFeature"
+    expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    When WorkerOrWorkletGlobalScope::CountUse() is called for a dedicated
+    worker, this UMA records the WebFeature to be recorded with the CountUse().
+    This UMA is for investigating crbug.com/40918057.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.Database.DestroyDatabaseResult"
     enum="ServiceWorkerDatabaseStatus" expires_after="2024-06-01">
   <owner>yyanagisawa@google.com</owner>
