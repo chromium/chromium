@@ -103,6 +103,7 @@ class UndoPropertyObserver : public ui::ImplicitAnimationObserver,
 // whether the given `window` belongs to a group or not.
 gfx::RoundedCornersF GetRoundedCornersForTransformWindow(aura::Window* window,
                                                          float scale) {
+  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
     if (SnapGroup* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
@@ -111,12 +112,12 @@ gfx::RoundedCornersF GetRoundedCornersForTransformWindow(aura::Window* window,
                        /*upper_left=*/0,
                        /*upper_right=*/0, /*lower_right=*/0,
                        /*lower_left=*/
-                       kWindowMiniViewCornerRadius / scale)
+                       corner_radius / scale)
                  : gfx::RoundedCornersF(
                        /*upper_left=*/0,
                        /*upper_right=*/0,
                        /*lower_right=*/
-                       kWindowMiniViewCornerRadius / scale,
+                       corner_radius / scale,
                        /*lower_left=*/0);
     }
   }
@@ -124,8 +125,8 @@ gfx::RoundedCornersF GetRoundedCornersForTransformWindow(aura::Window* window,
   return gfx::RoundedCornersF(
       /*upper_left=*/0,
       /*upper_right=*/0,
-      /*lower_right=*/kWindowMiniViewCornerRadius / scale,
-      /*lower_left=*/kWindowMiniViewCornerRadius / scale);
+      /*lower_right=*/corner_radius / scale,
+      /*lower_left=*/corner_radius / scale);
 }
 
 }  // namespace

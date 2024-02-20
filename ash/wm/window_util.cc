@@ -35,12 +35,14 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_constants.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -168,6 +170,12 @@ aura::Window* FindTopMostChild(aura::Window* parent,
 }
 
 }  // namespace
+
+int GetMiniWindowRoundedCornerRadius() {
+  return chromeos::features::IsRoundedWindowsEnabled()
+             ? chromeos::features::RoundedWindowsRadius()
+             : kWindowMiniViewCornerRadius;
+}
 
 aura::Window* GetActiveWindow() {
   if (auto* activation_client =

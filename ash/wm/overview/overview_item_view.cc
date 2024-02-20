@@ -14,6 +14,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/containers/contains.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -182,17 +183,17 @@ void OverviewItemView::RefreshItemVisuals() {
     const aura::Window* window = overview_item_->GetWindow();
     if (SnapGroup* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      SetRoundedCornersRadius(
-          window == snap_group->window1()
-              ? gfx::RoundedCornersF(
-                    /*upper_left=*/kWindowMiniViewCornerRadius,
-                    /*upper_right=*/0, /*lower_right=*/0,
-                    /*lower_left=*/kWindowMiniViewCornerRadius)
-              : gfx::RoundedCornersF(
-                    /*upper_left=*/0,
-                    /*upper_right=*/kWindowMiniViewCornerRadius,
-                    /*lower_right=*/kWindowMiniViewCornerRadius,
-                    /*lower_left=*/0));
+      const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
+      SetRoundedCornersRadius(window == snap_group->window1()
+                                  ? gfx::RoundedCornersF(
+                                        /*upper_left=*/corner_radius,
+                                        /*upper_right=*/0, /*lower_right=*/0,
+                                        /*lower_left=*/corner_radius)
+                                  : gfx::RoundedCornersF(
+                                        /*upper_left=*/0,
+                                        /*upper_right=*/corner_radius,
+                                        /*lower_right=*/corner_radius,
+                                        /*lower_left=*/0));
     }
   }
 

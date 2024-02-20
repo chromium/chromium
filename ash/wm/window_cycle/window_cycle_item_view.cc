@@ -202,14 +202,15 @@ void GroupContainerCycleView::SetShowPreview(bool show) {
 
 void GroupContainerCycleView::RefreshItemVisuals() {
   if (mini_views_.size() == 2u) {
+    const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
     mini_views_[0]->SetRoundedCornersRadius(gfx::RoundedCornersF(
-        /*upper_left=*/kWindowMiniViewCornerRadius,
+        /*upper_left=*/corner_radius,
         /*upper_right=*/0, /*lower_right=*/0,
-        /*lower_left=*/kWindowMiniViewCornerRadius));
+        /*lower_left=*/corner_radius));
     mini_views_[1]->SetRoundedCornersRadius(gfx::RoundedCornersF(
         /*upper_left=*/0,
-        /*upper_right=*/kWindowMiniViewCornerRadius,
-        /*lower_right=*/kWindowMiniViewCornerRadius,
+        /*upper_right=*/corner_radius,
+        /*lower_right=*/corner_radius,
         /*lower_left=*/0));
   }
 

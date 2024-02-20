@@ -35,6 +35,8 @@ class View;
 
 namespace ash::window_util {
 
+ASH_EXPORT int GetMiniWindowRoundedCornerRadius();
+
 // See ui/wm/core/window_util.h for ActivateWindow(), DeactivateWindow(),
 // IsActiveWindow() and CanActivateWindow().
 ASH_EXPORT aura::Window* GetActiveWindow();

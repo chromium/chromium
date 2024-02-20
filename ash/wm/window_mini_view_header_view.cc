@@ -9,6 +9,7 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -124,9 +125,9 @@ void WindowMiniViewHeaderView::ResetRoundedCorners() {
 
 gfx::RoundedCornersF WindowMiniViewHeaderView::GetHeaderRoundedCorners(
     aura::Window* window) const {
+  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
   return header_view_rounded_corners_.value_or(
-      gfx::RoundedCornersF(kWindowMiniViewHeaderCornerRadius,
-                           kWindowMiniViewHeaderCornerRadius, 0, 0));
+      gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));
 }
 
 BEGIN_METADATA(WindowMiniViewHeaderView)
