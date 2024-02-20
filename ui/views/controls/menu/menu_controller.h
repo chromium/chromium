@@ -250,6 +250,7 @@ class VIEWS_EXPORT MenuController
 
   // WidgetObserver overrides:
   void OnWidgetDestroying(Widget* widget) override;
+  void OnWidgetShowStateChanged(Widget* widget) override;
 
   // Only used for testing.
   bool IsCancelAllTimerRunningForTest();

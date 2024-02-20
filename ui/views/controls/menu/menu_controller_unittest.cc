@@ -2373,6 +2373,17 @@ TEST_F(MenuControllerTest, AsynchronousCancelEvent) {
   EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
 }
 
+TEST_F(MenuControllerTest, WidgetStateChangeCancelsMenu) {
+  ExitMenuRun();
+  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
+                         MenuAnchorPosition::kTopLeft, false, false);
+  EXPECT_TRUE(showing());
+  EXPECT_EQ(MenuController::ExitType::kNone, menu_controller()->exit_type());
+  owner()->SetFullscreen(true);
+  EXPECT_FALSE(showing());
+  EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
+}
+
 // TODO(pkasting): The test below fails most of the time on Wayland; not clear
 // it's important to support this case.
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && !BUILDFLAG(IS_OZONE_WAYLAND)

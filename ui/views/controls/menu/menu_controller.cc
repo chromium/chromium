@@ -559,6 +559,18 @@ MenuController* MenuController::GetActiveInstance() {
   return active_instance_;
 }
 
+void MenuController::OnWidgetShowStateChanged(Widget* widget) {
+  CHECK_EQ(owner_, widget);
+
+  // See crbug.com/40914555. Whenever browser widget has show state change close
+  // all the open menus, unless the widget is not visible, which can happen in
+  // menu creation tests, which in turn results in menu gets canceled
+  // immediately.
+  if (widget->IsVisible()) {
+    Cancel(ExitType::kAll);
+  }
+}
+
 void MenuController::Run(Widget* parent,
                          MenuButtonController* button_controller,
                          MenuItemView* root,
