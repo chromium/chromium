@@ -8,7 +8,7 @@ import {PrivacyHubBrowserProxyImpl, SettingsPrivacyHubGeolocationSubpage} from '
 import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, Router, routes, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertLT, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
@@ -100,6 +100,16 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
   function getAppList(): DomRepeat|null {
     return privacyHubGeolocationSubpage.shadowRoot!.querySelector('#appList');
+  }
+
+  function getNthAppName(i: number): string|null {
+    const appPermissionRows =
+        privacyHubGeolocationSubpage.shadowRoot!.querySelectorAll(
+            '#appsSection > div > settings-privacy-hub-app-permission-row');
+    assertLT(i, appPermissionRows.length);
+
+    return appPermissionRows[i]!.shadowRoot!.querySelector(
+                                                '#appName')!.textContent;
   }
 
   function checkService(
@@ -249,6 +259,32 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     await flushTasks();
 
     assertEquals(0, getAppList()!.items!.length);
+  });
+
+  test('AppList is alphabetically sorted', async () => {
+    await initPage();
+    const app1 = createApp(
+        'app1_id', 'app1_name', PermissionType.kLocation, TriState.kAllow);
+    const app2 = createApp(
+        'app2_id', 'app2_name', PermissionType.kLocation, TriState.kAsk);
+    const app3 = createApp(
+        'app3_id', 'app3_name', PermissionType.kLocation, TriState.kAsk);
+    const app4 = createApp(
+        'app4_id', 'app4_name', PermissionType.kLocation, TriState.kBlock);
+
+
+    await initializeObserver();
+    simulateAppUpdate(app3);
+    simulateAppUpdate(app1);
+    simulateAppUpdate(app4);
+    simulateAppUpdate(app2);
+    await flushTasks();
+
+    assertEquals(4, getAppList()!.items!.length);
+    assertEquals(app1.name, getNthAppName(0));
+    assertEquals(app2.name, getNthAppName(1));
+    assertEquals(app3.name, getNthAppName(2));
+    assertEquals(app4.name, getNthAppName(3));
   });
 
   test('Metric recorded when clicked', async () => {

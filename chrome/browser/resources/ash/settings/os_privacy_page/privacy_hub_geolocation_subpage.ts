@@ -174,6 +174,13 @@ export class SettingsPrivacyHubGeolocationSubpage extends
     this.appPermissionsObserverReceiver_!.$.close();
   }
 
+  /**
+   * The function is used for sorting app names alphabetically.
+   */
+  private alphabeticalSort_(first: App, second: App): number {
+    return first.name.localeCompare(second.name);
+  }
+
   private async updateAppList_(): Promise<void> {
     const apps = (await this.mojoInterfaceProvider_.getApps()).apps;
     this.appList_ = apps.filter(hasLocationPermission);
