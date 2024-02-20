@@ -253,7 +253,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnPrimary};
   mixer[kColorOmniboxChipBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorOmniboxChipBlockedActivityIndicatorBackground] = {
-      ui::kColorSysSurface};
+      ui::kColorSysBaseContainerElevated};
   mixer[kColorOmniboxChipBlockedActivityIndicatorForeground] = {
       ui::kColorSysOnSurface};
   mixer[kColorOmniboxChipForegroundLowVisibility] = {ui::kColorSysOnSurface};
