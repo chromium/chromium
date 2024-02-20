@@ -366,7 +366,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
                                   // async onsuccess; ignore vs. assert.
   // Maintain the isolate so that all externally allocated memory can be
   // registered against it.
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
 
@@ -429,7 +429,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   // getting post-processed.
   //
   // The IDBRequestQueueItem is owned by the result queue in IDBTransaction.
-  raw_ptr<IDBRequestQueueItem, ExperimentalRenderer> queue_item_ = nullptr;
+  raw_ptr<IDBRequestQueueItem> queue_item_ = nullptr;
 
   probe::AsyncTaskContext async_task_context_;
 };

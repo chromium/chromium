@@ -135,7 +135,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
 
     net::LoadTimingInfo last_load_timing;
     network::URLLoaderCompletionStatus completion_status;
-    raw_ptr<MojoURLLoaderClient, ExperimentalRenderer> url_laoder_client;
+    raw_ptr<MojoURLLoaderClient> url_laoder_client;
   };
 
  private:
@@ -256,7 +256,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
   std::unique_ptr<ThrottlingURLLoader> url_loader_;
   std::unique_ptr<MojoURLLoaderClient> client_;
   std::unique_ptr<MockResourceRequestSender> resource_request_sender_;
-  raw_ptr<MockResourceRequestSender::Context, ExperimentalRenderer> context_;
+  raw_ptr<MockResourceRequestSender::Context> context_;
   int request_id_ = 0;
   mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
 };

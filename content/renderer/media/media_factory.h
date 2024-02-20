@@ -161,7 +161,7 @@ class MediaFactory {
 
   // The render frame we're helping. RenderFrameImpl owns this factory, so the
   // pointer will always be valid.
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
 
   // The media interface provider attached to this frame, lazily initialized.
   std::unique_ptr<MediaInterfaceFactory> media_interface_factory_;

@@ -64,7 +64,7 @@ class PLATFORM_EXPORT PaintRecordBuilder final
 
  private:
   std::optional<PaintController> own_paint_controller_;
-  raw_ptr<PaintController, ExperimentalRenderer> paint_controller_;
+  raw_ptr<PaintController> paint_controller_;
   GraphicsContext context_;
 };
 

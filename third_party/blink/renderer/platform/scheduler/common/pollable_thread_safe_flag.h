@@ -33,7 +33,7 @@ class PollableThreadSafeFlag {
 
  private:
   std::atomic<bool> flag_;
-  raw_ptr<base::Lock, ExperimentalRenderer> write_lock_;  // Not owned.
+  raw_ptr<base::Lock> write_lock_;  // Not owned.
 };
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_POLLABLE_THREAD_SAFE_FLAG_H_

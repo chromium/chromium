@@ -52,7 +52,7 @@ class GCController : public gin::Wrappable<GCController> {
   void AsyncCollectAllWithEmptyStack(
       v8::UniquePersistent<v8::Function> callback);
 
-  const raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
+  const raw_ptr<blink::WebLocalFrame> frame_;
   base::WeakPtrFactory<GCController> weak_ptr_factory_{this};
 };
 

@@ -283,7 +283,7 @@ class ConversionContext {
     // UpdateSaveLayerBounds().
     size_t save_layer_id;
     // The transform space when the SaveLayer[Alpha]Op was emitted.
-    raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer> transform;
+    raw_ptr<const TransformPaintPropertyNode> transform;
     // Records the bounds of the effect which initiated the entry. Note that
     // the effect is not |effect| (which is the previous effect), but the
     // |current_effect_| when this entry is the top of the stack.

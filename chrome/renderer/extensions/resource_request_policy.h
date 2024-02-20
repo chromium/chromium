@@ -49,7 +49,7 @@ class ResourceRequestPolicy {
   // Determine if the host is web accessible.
   bool IsWebAccessibleHost(const std::string& host);
 
-  raw_ptr<Dispatcher, ExperimentalRenderer> dispatcher_;
+  raw_ptr<Dispatcher> dispatcher_;
 
   // 1:1 mapping of extension IDs with any potentially web- or webview-
   // accessible resources to their corresponding GUIDs.

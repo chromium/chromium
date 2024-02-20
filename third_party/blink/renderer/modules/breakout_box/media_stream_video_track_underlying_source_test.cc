@@ -113,8 +113,7 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
 
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
-  const raw_ptr<PushableMediaStreamVideoSource, ExperimentalRenderer>
-      pushable_video_source_;
+  const raw_ptr<PushableMediaStreamVideoSource> pushable_video_source_;
   const Persistent<MediaStreamSource> media_stream_source_;
 };
 

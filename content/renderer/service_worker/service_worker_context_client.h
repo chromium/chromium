@@ -237,7 +237,7 @@ class ServiceWorkerContextClient
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
   // Not owned; |this| is destroyed when |proxy_| becomes invalid.
-  raw_ptr<blink::WebServiceWorkerContextProxy, ExperimentalRenderer> proxy_;
+  raw_ptr<blink::WebServiceWorkerContextProxy> proxy_;
 
   // These Mojo objects are bound on the worker thread.
   mojo::PendingReceiver<blink::mojom::ServiceWorker>
@@ -272,7 +272,7 @@ class ServiceWorkerContextClient
       service_worker_provider_info_;
 
   // Must be accessed on the initiator thread only.
-  raw_ptr<EmbeddedWorkerInstanceClientImpl, ExperimentalRenderer> owner_;
+  raw_ptr<EmbeddedWorkerInstanceClientImpl> owner_;
 
   // Initialized on the worker thread in WorkerContextStarted and
   // destructed on the worker thread in WillDestroyWorkerContext.

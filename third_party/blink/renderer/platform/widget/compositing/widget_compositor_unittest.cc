@@ -70,7 +70,7 @@ class FakeWidgetCompositor : public WidgetCompositor {
 
   cc::LayerTreeHost* LayerTreeHost() const override { return layer_tree_host_; }
 
-  raw_ptr<cc::LayerTreeHost, ExperimentalRenderer> layer_tree_host_;
+  raw_ptr<cc::LayerTreeHost> layer_tree_host_;
 };
 
 class WidgetCompositorTest : public cc::LayerTreeTest {

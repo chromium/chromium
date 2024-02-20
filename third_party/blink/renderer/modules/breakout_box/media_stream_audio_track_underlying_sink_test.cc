@@ -122,8 +122,7 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   Persistent<MediaStreamSource> media_stream_source_;
   Persistent<MediaStreamComponent> media_stream_component_;
 
-  raw_ptr<PushableMediaStreamAudioSource, ExperimentalRenderer>
-      pushable_audio_source_;
+  raw_ptr<PushableMediaStreamAudioSource> pushable_audio_source_;
 };
 
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,

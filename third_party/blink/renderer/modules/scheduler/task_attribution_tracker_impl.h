@@ -124,7 +124,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     ScriptState* GetScriptState() const { return script_state_; }
 
    private:
-    raw_ptr<TaskAttributionTrackerImpl, ExperimentalRenderer> task_tracker_;
+    raw_ptr<TaskAttributionTrackerImpl> task_tracker_;
     TaskAttributionId scope_task_id_;
     Persistent<TaskAttributionInfo> running_task_to_be_restored_;
     Persistent<ScriptWrappableTaskState> continuation_state_to_be_restored_;

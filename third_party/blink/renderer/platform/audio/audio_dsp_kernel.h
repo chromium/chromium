@@ -81,7 +81,7 @@ class PLATFORM_EXPORT AudioDSPKernel {
  protected:
   // This raw pointer is safe because the AudioDSPKernelProcessor object is
   // guaranteed to be kept alive while the AudioDSPKernel object is alive.
-  raw_ptr<AudioDSPKernelProcessor, ExperimentalRenderer> kernel_processor_;
+  raw_ptr<AudioDSPKernelProcessor> kernel_processor_;
   float sample_rate_;
   unsigned render_quantum_frames_;
 };

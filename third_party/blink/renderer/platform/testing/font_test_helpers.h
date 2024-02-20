@@ -55,7 +55,7 @@ class ScopedTestFontPrewarmer {
 
  private:
   TestFontPrewarmer current_;
-  raw_ptr<WebFontPrewarmer, ExperimentalRenderer> saved_;
+  raw_ptr<WebFontPrewarmer> saved_;
 };
 #endif
 

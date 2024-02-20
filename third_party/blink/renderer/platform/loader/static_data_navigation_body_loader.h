@@ -35,8 +35,7 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
   void Continue();
 
   scoped_refptr<SharedBuffer> data_;
-  raw_ptr<WebNavigationBodyLoader::Client, ExperimentalRenderer> client_ =
-      nullptr;
+  raw_ptr<WebNavigationBodyLoader::Client> client_ = nullptr;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   bool sent_all_data_ = false;
   bool received_all_data_ = false;

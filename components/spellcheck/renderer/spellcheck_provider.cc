@@ -58,7 +58,7 @@ class SpellCheckProvider::DictionaryUpdateObserverImpl
   void OnDictionaryUpdated(const WebVector<WebString>& words_added) override;
 
  private:
-  raw_ptr<SpellCheckProvider, ExperimentalRenderer> owner_;
+  raw_ptr<SpellCheckProvider> owner_;
 };
 
 SpellCheckProvider::DictionaryUpdateObserverImpl::DictionaryUpdateObserverImpl(

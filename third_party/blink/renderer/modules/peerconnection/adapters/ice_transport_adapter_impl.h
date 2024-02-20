@@ -52,7 +52,7 @@ class IceTransportAdapterImpl final : public IceTransportAdapter,
       std::optional<rtc::NetworkRoute> new_network_route);
   void OnRoleConflict(cricket::IceTransportInternal* transport);
 
-  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
+  const raw_ptr<Delegate> delegate_;
   rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel_;
 };
 

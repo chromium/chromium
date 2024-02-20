@@ -170,7 +170,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   viz::BeginFrameAck current_begin_frame_ack_;
 
-  raw_ptr<CanvasResourceDispatcherClient, ExperimentalRenderer> client_;
+  raw_ptr<CanvasResourceDispatcherClient> client_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner>

@@ -135,7 +135,7 @@ class APIRequestHandler {
     PendingRequest(PendingRequest&&);
     PendingRequest& operator=(PendingRequest&&);
 
-    raw_ptr<v8::Isolate, ExperimentalRenderer> isolate;
+    raw_ptr<v8::Isolate> isolate;
     v8::Global<v8::Context> context;
     std::string method_name;
 
@@ -182,7 +182,7 @@ class APIRequestHandler {
 
   // The exception handler for the bindings system; guaranteed to be valid
   // during this object's lifetime.
-  const raw_ptr<ExceptionHandler, ExperimentalRenderer> exception_handler_;
+  const raw_ptr<ExceptionHandler> exception_handler_;
 
   // The response validator used to check the responses for resolved requests.
   // Null if response validation is disabled.

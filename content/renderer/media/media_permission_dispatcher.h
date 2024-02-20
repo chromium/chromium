@@ -98,7 +98,7 @@ class MediaPermissionDispatcher : public media::MediaPermission {
   // The |RenderFrameImpl| that owns this MediaPermissionDispatcher.  It's okay
   // to hold a raw pointer here because the lifetime of this object is bounded
   // by the render frame's life (the latter holds a unique pointer to this).
-  const raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
+  const raw_ptr<RenderFrameImpl> render_frame_;
 
   // Used to safely post MediaPermission calls for execution on |task_runner_|.
   base::WeakPtr<MediaPermissionDispatcher> weak_ptr_;

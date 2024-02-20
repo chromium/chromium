@@ -221,7 +221,7 @@ class FilteredEventListeners final : public APIEventListeners {
 
   // The listener tracker to notify of added or removed listeners. Required to
   // outlive this object. Must be non-null.
-  raw_ptr<ListenerTracker, ExperimentalRenderer> listener_tracker_ = nullptr;
+  raw_ptr<ListenerTracker> listener_tracker_ = nullptr;
 };
 
 }  // namespace extensions

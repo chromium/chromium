@@ -110,7 +110,7 @@ class PepperPlatformAudioOutputDev
 
   void NotifyStreamCreationFailed();
 
-  raw_ptr<PepperAudioOutputHost, ExperimentalRenderer> client_;
+  raw_ptr<PepperAudioOutputHost> client_;
 
   // Used to send/receive IPC. THIS MUST ONLY BE ACCESSED ON THE
   // I/O thread except to send messages and get the message loop.

@@ -82,7 +82,7 @@ class FIFOClient {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
 
-  raw_ptr<PushPullFIFO, ExperimentalRenderer> fifo_;
+  raw_ptr<PushPullFIFO> fifo_;
   scoped_refptr<AudioBus> bus_;
   std::unique_ptr<NonMainThread> client_thread_;
   std::unique_ptr<base::WaitableEvent> done_event_;

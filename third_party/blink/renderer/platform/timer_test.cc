@@ -680,9 +680,7 @@ class TaskObserver : public base::TaskObserver {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<Vector<scoped_refptr<base::SingleThreadTaskRunner>>,
-          ExperimentalRenderer>
-      run_order_;
+  raw_ptr<Vector<scoped_refptr<base::SingleThreadTaskRunner>>> run_order_;
 };
 
 }  // namespace

@@ -330,15 +330,14 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   bool HasQueuedEventsReadyForDispatch(bool frame_aligned);
 
-  raw_ptr<InputHandlerProxyClient, ExperimentalRenderer> client_;
+  raw_ptr<InputHandlerProxyClient> client_;
 
   // The input handler object is owned by the compositor delegate. The input
   // handler must call WillShutdown() on this class before it is deleted at
   // which point this pointer will be cleared.
-  raw_ptr<cc::InputHandler, ExperimentalRenderer> input_handler_;
+  raw_ptr<cc::InputHandler> input_handler_;
 
-  raw_ptr<SynchronousInputHandler, ExperimentalRenderer>
-      synchronous_input_handler_;
+  raw_ptr<SynchronousInputHandler> synchronous_input_handler_;
 
   // This should be true when a pinch is in progress. The sequence of events is
   // as follows: GSB GPB GSU GPU ... GPE GSE.
@@ -389,7 +388,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // latency component should be added for injected GestureScrollUpdates.
   bool last_injected_gesture_was_begin_;
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   std::unique_ptr<cc::SnapFlingController> snap_fling_controller_;
 

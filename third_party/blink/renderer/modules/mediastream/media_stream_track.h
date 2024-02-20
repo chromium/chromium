@@ -61,7 +61,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   // For carrying data to the FromTransferredState method.
   struct TransferredValues {
-    raw_ptr<const WrapperTypeInfo, ExperimentalRenderer> track_impl_subtype;
+    raw_ptr<const WrapperTypeInfo> track_impl_subtype;
     base::UnguessableToken session_id;
     base::UnguessableToken transfer_id;
     String kind;

@@ -55,9 +55,7 @@ class GCOwner final : public GarbageCollected<GCOwner<Mode, ContextType>>,
  private:
   HeapMojoReceiverSet<sample::blink::Service, GCOwner, Mode, ContextType>
       receiver_set_;
-  raw_ptr<HeapMojoReceiverSetGCBaseTest<Mode, ContextType>,
-          ExperimentalRenderer>
-      test_;
+  raw_ptr<HeapMojoReceiverSetGCBaseTest<Mode, ContextType>> test_;
 };
 
 template <HeapMojoWrapperMode Mode, typename ContextType>

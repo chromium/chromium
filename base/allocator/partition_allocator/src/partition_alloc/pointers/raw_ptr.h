@@ -1099,13 +1099,6 @@ constexpr inline auto AllowUninitialized =
 // This is not meant to be added manually. You can ignore this flag.
 constexpr inline auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 
-// Temporary annotation for new pointers added during the renderer rewrite.
-// TODO(crbug.com/1444624): Find pre-existing dangling pointers and remove
-// this annotation.
-//
-// DO NOT ADD new occurrences of this.
-constexpr inline auto ExperimentalRenderer = base::RawPtrTraits::kEmpty;
-
 // Temporary introduced alias in the context of rewriting std::vector<T*> into
 // std::vector<raw_ptr<T>> and in order to temporarily bypass the dangling ptr
 // checks on the CQ. This alias will be removed gradually after the cl lands and

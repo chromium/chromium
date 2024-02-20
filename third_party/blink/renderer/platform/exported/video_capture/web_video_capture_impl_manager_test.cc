@@ -109,7 +109,7 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
   MOCK_METHOD2(OnLog, void(const base::UnguessableToken&, const String&));
 
-  const raw_ptr<PauseResumeCallback, ExperimentalRenderer> pause_callback_;
+  const raw_ptr<PauseResumeCallback> pause_callback_;
   base::OnceClosure destruct_callback_;
 };
 
@@ -135,7 +135,7 @@ class MockVideoCaptureImplManager : public WebVideoCaptureImplManager {
     return std::move(video_capture_impl);
   }
 
-  const raw_ptr<PauseResumeCallback, ExperimentalRenderer> pause_callback_;
+  const raw_ptr<PauseResumeCallback> pause_callback_;
   const base::RepeatingClosure stop_capture_callback_;
 };
 
@@ -244,8 +244,7 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
       platform_;
   base::RunLoop cleanup_run_loop_;
   std::unique_ptr<MockVideoCaptureImplManager> manager_;
-  raw_ptr<BrowserInterfaceBrokerProxy, ExperimentalRenderer>
-      browser_interface_broker_;
+  raw_ptr<BrowserInterfaceBrokerProxy> browser_interface_broker_;
 };
 
 // Multiple clients with the same session id. There is only one

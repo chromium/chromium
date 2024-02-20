@@ -99,7 +99,7 @@ class MODULES_EXPORT AudioNodeOutput final {
 
   // This reference is safe because the AudioHandler owns this AudioNodeOutput
   // object.
-  const raw_ref<AudioHandler, ExperimentalRenderer> handler_;
+  const raw_ref<AudioHandler> handler_;
 
   // fanOutCount() is the number of AudioNodeInputs that we're connected to.
   // This method should not be called in audio thread rendering code, instead

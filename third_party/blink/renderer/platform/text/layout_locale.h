@@ -99,7 +99,7 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   mutable scoped_refptr<QuotesData> quotes_data_;
 
   // hb_language_t is defined in hb.h, which not all files can include.
-  raw_ptr<const hb_language_impl_t, ExperimentalRenderer> harfbuzz_language_;
+  raw_ptr<const hb_language_impl_t> harfbuzz_language_;
 
   UScriptCode script_;
   mutable UScriptCode script_for_han_;

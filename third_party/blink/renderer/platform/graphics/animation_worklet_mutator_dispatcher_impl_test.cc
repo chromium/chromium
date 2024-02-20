@@ -113,7 +113,7 @@ class AnimationWorkletMutatorDispatcherImplTest : public ::testing::Test {
 
   test::TaskEnvironment task_environment_;
   std::unique_ptr<::testing::StrictMock<MockCompositorMutatorClient>> client_;
-  raw_ptr<AnimationWorkletMutatorDispatcherImpl, ExperimentalRenderer> mutator_;
+  raw_ptr<AnimationWorkletMutatorDispatcherImpl> mutator_;
 };
 
 std::unique_ptr<AnimationWorkletDispatcherInput> CreateTestMutatorInput() {

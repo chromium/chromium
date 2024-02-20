@@ -94,8 +94,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
 
   void ConfigureEncoder(const gfx::Size& size, bool use_native_input);
 
-  const raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   const media::VideoCodecProfile codec_;
   const std::optional<uint8_t> level_;
   const media::Bitrate::Mode bitrate_mode_;

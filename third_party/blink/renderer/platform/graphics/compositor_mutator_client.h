@@ -34,7 +34,7 @@ class PLATFORM_EXPORT CompositorMutatorClient : public cc::LayerTreeMutator,
 
  private:
   std::unique_ptr<AnimationWorkletMutatorDispatcherImpl> mutator_;
-  raw_ptr<cc::LayerTreeMutatorClient, ExperimentalRenderer> client_;
+  raw_ptr<cc::LayerTreeMutatorClient> client_;
 };
 
 }  // namespace blink

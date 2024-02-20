@@ -68,7 +68,7 @@ class PLATFORM_EXPORT CooperativeSchedulingManager {
   int allowed_stack_scope_depth_ = 0;
   bool running_nested_loop_ = false;
   base::TimeTicks wait_until_;
-  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_;
+  raw_ptr<const base::TickClock> clock_;
   bool feature_enabled_ = true;
 };
 

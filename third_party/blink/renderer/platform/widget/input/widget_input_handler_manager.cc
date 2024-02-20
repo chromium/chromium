@@ -164,7 +164,7 @@ class SynchronousCompositorProxyRegistry
   scoped_refptr<base::SingleThreadTaskRunner>
       compositor_thread_default_task_runner_;
   std::unique_ptr<SynchronousCompositorProxy> proxy_;
-  raw_ptr<SynchronousLayerTreeFrameSink, ExperimentalRenderer> sink_ = nullptr;
+  raw_ptr<SynchronousLayerTreeFrameSink> sink_ = nullptr;
 };
 
 #endif

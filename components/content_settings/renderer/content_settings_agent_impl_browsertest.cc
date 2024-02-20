@@ -86,7 +86,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
   }
 
  private:
-  raw_ptr<Log, ExperimentalRenderer> log_;
+  raw_ptr<Log> log_;
 };
 
 class MockContentSettingsAgentDelegate

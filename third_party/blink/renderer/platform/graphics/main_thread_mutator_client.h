@@ -28,7 +28,7 @@ class PLATFORM_EXPORT MainThreadMutatorClient : public MutatorClient {
 
  private:
   std::unique_ptr<AnimationWorkletMutatorDispatcherImpl> mutator_;
-  raw_ptr<MutatorClient, ExperimentalRenderer> delegate_;
+  raw_ptr<MutatorClient> delegate_;
 };
 
 }  // namespace blink

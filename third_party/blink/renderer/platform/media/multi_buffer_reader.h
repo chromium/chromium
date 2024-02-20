@@ -141,7 +141,7 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   void Call(base::OnceClosure cb) const;
 
   // The multibuffer we're wrapping, not owned.
-  raw_ptr<MultiBuffer, ExperimentalRenderer> multibuffer_;
+  raw_ptr<MultiBuffer> multibuffer_;
 
   // We're not interested in reading past this position.
   int64_t end_;

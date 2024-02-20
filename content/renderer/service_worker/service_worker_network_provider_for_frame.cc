@@ -58,7 +58,7 @@ class ServiceWorkerNetworkProviderForFrame::NewDocumentObserver
   }
 
  private:
-  raw_ptr<ServiceWorkerNetworkProviderForFrame, ExperimentalRenderer> owner_;
+  raw_ptr<ServiceWorkerNetworkProviderForFrame> owner_;
 };
 
 // static

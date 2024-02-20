@@ -255,7 +255,7 @@ class V8BinderContext {
     callback->Run(args);
   }
 
-  const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
   v8::HandleScope handle_scope_;
   v8::Local<v8::Context> context_;
   v8::Context::Scope context_scope_;

@@ -74,7 +74,7 @@ struct StubScriptFunction {
       return ScriptValue();
     }
 
-    const raw_ref<StubScriptFunction, ExperimentalRenderer> owner_;
+    const raw_ref<StubScriptFunction> owner_;
   };
 };
 
@@ -340,7 +340,7 @@ class StubWebServiceWorkerProvider {
     }
 
    private:
-    const raw_ref<StubWebServiceWorkerProvider, ExperimentalRenderer> owner_;
+    const raw_ref<StubWebServiceWorkerProvider> owner_;
     Vector<std::unique_ptr<WebServiceWorkerRegistrationCallbacks>>
         registration_callbacks_to_delete_;
     Vector<std::unique_ptr<WebServiceWorkerGetRegistrationCallbacks>>

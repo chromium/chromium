@@ -291,13 +291,12 @@ class RenderThreadImplBrowserTest : public testing::Test,
   scoped_refptr<QuitOnTestMsgFilter> test_msg_filter_;
 #endif
 
-  raw_ptr<blink::scheduler::WebMockThreadScheduler, ExperimentalRenderer>
-      main_thread_scheduler_;
+  raw_ptr<blink::scheduler::WebMockThreadScheduler> main_thread_scheduler_;
 
   // RenderThreadImpl doesn't currently support a proper shutdown sequence
   // and it's okay when we're running in multi-process mode because renderers
   // get killed by the OS. Memory leaks aren't nice but it's test-only.
-  raw_ptr<RenderThreadImpl, ExperimentalRenderer> thread_;
+  raw_ptr<RenderThreadImpl> thread_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };
@@ -470,8 +469,7 @@ class RenderThreadImplGpuMemoryBufferBrowserTest
         base::Unretained(this)));
   }
 
-  raw_ptr<gpu::GpuMemoryBufferManager, ExperimentalRenderer>
-      memory_buffer_manager_ = nullptr;
+  raw_ptr<gpu::GpuMemoryBufferManager> memory_buffer_manager_ = nullptr;
 };
 
 // https://crbug.com/652531

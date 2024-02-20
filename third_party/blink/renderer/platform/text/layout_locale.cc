@@ -29,10 +29,9 @@ struct PerThreadData {
           scoped_refptr<LayoutLocale>,
           CaseFoldingHashTraits<AtomicString>>
       locale_map;
-  raw_ptr<const LayoutLocale, ExperimentalRenderer> default_locale = nullptr;
-  raw_ptr<const LayoutLocale, ExperimentalRenderer> system_locale = nullptr;
-  raw_ptr<const LayoutLocale, ExperimentalRenderer> default_locale_for_han =
-      nullptr;
+  raw_ptr<const LayoutLocale> default_locale = nullptr;
+  raw_ptr<const LayoutLocale> system_locale = nullptr;
+  raw_ptr<const LayoutLocale> default_locale_for_han = nullptr;
   bool default_locale_for_han_computed = false;
   String current_accept_languages;
 };
@@ -44,7 +43,7 @@ PerThreadData& GetPerThreadData() {
 
 struct DelimiterConfig {
   ULocaleDataDelimiterType type;
-  raw_ptr<UChar, ExperimentalRenderer> result;
+  raw_ptr<UChar> result;
 };
 // Use  ICU ulocdata to find quote delimiters for an ICU locale
 // https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ulocdata_8h.html#a0bf1fdd1a86918871ae2c84b5ce8421f

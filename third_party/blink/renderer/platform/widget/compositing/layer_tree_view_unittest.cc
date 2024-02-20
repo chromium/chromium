@@ -199,8 +199,8 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
   void EndTest() { run_loop_->Quit(); }
 
  private:
-  raw_ptr<FakeLayerTreeViewDelegate, ExperimentalRenderer> delegate_;
-  raw_ptr<base::RunLoop, ExperimentalRenderer> run_loop_ = nullptr;
+  raw_ptr<FakeLayerTreeViewDelegate> delegate_;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
   int expected_successes_ = 0;
   int expected_requests_ = 0;
   FailureMode failure_mode_ = kNoFailure;
@@ -314,7 +314,7 @@ class VisibilityTestLayerTreeView : public LayerTreeView {
 
  private:
   int num_requests_sent_ = 0;
-  raw_ptr<base::RunLoop, ExperimentalRenderer> run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
 };
 
 TEST(LayerTreeViewTest, VisibilityTest) {

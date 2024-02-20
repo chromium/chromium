@@ -725,7 +725,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Notifies the `client_` and the `delegate_` about metadata change.
   void DidMediaMetadataChange();
 
-  const raw_ptr<WebLocalFrame, ExperimentalRenderer> frame_;
+  const raw_ptr<WebLocalFrame> frame_;
 
   WebMediaPlayer::NetworkState network_state_ =
       WebMediaPlayer::kNetworkStateEmpty;
@@ -818,9 +818,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Whether the current decoder requires a restart on overlay transitions.
   bool decoder_requires_restart_for_overlay_ = false;
 
-  const raw_ptr<WebMediaPlayerClient, ExperimentalRenderer> client_;
-  const raw_ptr<WebMediaPlayerEncryptedMediaClient, ExperimentalRenderer>
-      encrypted_client_;
+  const raw_ptr<WebMediaPlayerClient> client_;
+  const raw_ptr<WebMediaPlayerEncryptedMediaClient> encrypted_client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
   // |delegate_id_|; an id provided after registering with the delegate.  The
@@ -833,7 +832,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // before the frame is destroyed). RenderFrameImpl owns |delegate_| and is
   // guaranteed to outlive |this|; thus it is safe to store |delegate_| as a raw
   // pointer.
-  raw_ptr<WebMediaPlayerDelegate, ExperimentalRenderer> delegate_;
+  raw_ptr<WebMediaPlayerDelegate> delegate_;
   int delegate_id_ = 0;
 
   // The playback state last reported to |delegate_|, to avoid setting duplicate
@@ -858,10 +857,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Manages the lifetime of the DataSource, and soon the Demuxer.
   std::unique_ptr<media::DemuxerManager> demuxer_manager_;
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
-  const raw_ptr<UrlIndex, ExperimentalRenderer> url_index_;
+  const raw_ptr<UrlIndex> url_index_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   // Video rendering members.

@@ -54,7 +54,7 @@ class TestingPlatformSupportForGpuMemoryBuffer
   scoped_refptr<viz::TestSharedImageInterface> sii_;
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   base::Thread media_thread_;
-  raw_ptr<gpu::Capabilities, ExperimentalRenderer> capabilities_ = nullptr;
+  raw_ptr<gpu::Capabilities> capabilities_ = nullptr;
 };
 
 }  // namespace blink

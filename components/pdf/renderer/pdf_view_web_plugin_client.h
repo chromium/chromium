@@ -87,12 +87,12 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
  private:
   blink::WebLocalFrame* GetFrame() const;
 
-  const raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  const raw_ptr<content::RenderFrame> render_frame_;
 
   const std::unique_ptr<content::V8ValueConverter> v8_value_converter_;
-  const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
 
-  raw_ptr<blink::WebPluginContainer, ExperimentalRenderer> plugin_container_;
+  raw_ptr<blink::WebPluginContainer> plugin_container_;
 
   base::WeakPtrFactory<PdfViewWebPluginClient> weak_factory_{this};
 };

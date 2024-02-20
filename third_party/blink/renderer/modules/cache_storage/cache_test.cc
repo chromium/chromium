@@ -259,10 +259,9 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
 
   const mojom::blink::CacheStorageError error_;
 
-  raw_ptr<const String, ExperimentalRenderer> expected_url_;
-  raw_ptr<const mojom::blink::CacheQueryOptionsPtr, ExperimentalRenderer>
-      expected_query_options_;
-  raw_ptr<const Vector<mojom::blink::BatchOperationPtr>, ExperimentalRenderer>
+  raw_ptr<const String> expected_url_;
+  raw_ptr<const mojom::blink::CacheQueryOptionsPtr> expected_query_options_;
+  raw_ptr<const Vector<mojom::blink::BatchOperationPtr>>
       expected_batch_operations_;
 
   std::string last_error_web_cache_method_called_;

@@ -147,7 +147,7 @@ class OpConverterAndTracker {
   }
 
  private:
-  raw_ptr<PaintPreviewTracker, ExperimentalRenderer> tracker_;
+  raw_ptr<PaintPreviewTracker> tracker_;
   absl::variant<absl::monostate, cc::DrawImageOp, cc::DrawImageRectOp>
       converted_op_;
 };

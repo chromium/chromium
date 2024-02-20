@@ -78,7 +78,7 @@ class PLATFORM_EXPORT GraphicsContextStateSaver final {
   bool Saved() const { return save_and_restore_; }
 
  private:
-  const raw_ref<GraphicsContext, ExperimentalRenderer> context_;
+  const raw_ref<GraphicsContext> context_;
   bool save_and_restore_;
 };
 

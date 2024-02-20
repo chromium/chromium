@@ -121,7 +121,7 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
   std::optional<base::TimeTicks> start_timestamp_;
 
   // WebRTC real time clock, needed to determine NTP offset.
-  raw_ptr<webrtc::Clock, ExperimentalRenderer> clock_;
+  raw_ptr<webrtc::Clock> clock_;
 
   // Offset between NTP clock and WebRTC clock.
   const int64_t ntp_offset_;

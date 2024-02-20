@@ -219,7 +219,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   scoped_refptr<UrlData> url_data_;
   scoped_refptr<UrlData> redirected_to_;
   // The loader is owned by the UrlData above.
-  raw_ptr<ResourceMultiBufferDataProvider, ExperimentalRenderer> loader_;
+  raw_ptr<ResourceMultiBufferDataProvider> loader_;
 
   uint8_t data_[kDataSize];
 };

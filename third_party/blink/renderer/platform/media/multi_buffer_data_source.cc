@@ -86,7 +86,7 @@ class MultiBufferDataSource::ReadOperation {
  private:
   const int64_t position_;
   const int size_;
-  raw_ptr<uint8_t, ExperimentalRenderer> data_;
+  raw_ptr<uint8_t> data_;
   media::DataSource::ReadCB callback_;
 };
 

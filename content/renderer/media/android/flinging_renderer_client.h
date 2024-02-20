@@ -56,7 +56,7 @@ class CONTENT_EXPORT FlingingRendererClient
  private:
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
-  raw_ptr<media::RendererClient, ExperimentalRenderer> client_;
+  raw_ptr<media::RendererClient> client_;
 
   media::RemotePlayStateChangeCB remote_play_state_change_cb_;
 

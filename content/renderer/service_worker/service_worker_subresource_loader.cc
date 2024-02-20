@@ -193,7 +193,7 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
   void OnAborted() override { owner_->OnBodyReadingComplete(net::ERR_ABORTED); }
 
  private:
-  raw_ptr<ServiceWorkerSubresourceLoader, ExperimentalRenderer> owner_;
+  raw_ptr<ServiceWorkerSubresourceLoader> owner_;
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
 };
 

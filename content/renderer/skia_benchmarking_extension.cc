@@ -106,7 +106,7 @@ class PicturePlaybackController : public SkPicture::AbortCallback {
   bool abort() override { return canvas_->CommandCount() > playback_count_; }
 
  private:
-  const raw_ref<const skia::BenchmarkingCanvas, ExperimentalRenderer> canvas_;
+  const raw_ref<const skia::BenchmarkingCanvas> canvas_;
   size_t playback_count_;
 };
 

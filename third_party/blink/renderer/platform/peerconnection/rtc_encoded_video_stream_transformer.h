@@ -78,7 +78,7 @@ class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
     friend class RTCEncodedVideoStreamTransformer;
 
     base::Lock transformer_lock_;
-    raw_ptr<RTCEncodedVideoStreamTransformer, ExperimentalRenderer> transformer_
+    raw_ptr<RTCEncodedVideoStreamTransformer> transformer_
         GUARDED_BY(transformer_lock_);
   };
 

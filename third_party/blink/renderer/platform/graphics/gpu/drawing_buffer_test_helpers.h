@@ -477,7 +477,7 @@ class DrawingBufferForTests : public DrawingBuffer {
         ContextProvider()->SharedImageInterface());
   }
 
-  raw_ptr<bool, ExperimentalRenderer> live_;
+  raw_ptr<bool> live_;
 
   int RecycledBitmapCount() { return recycled_bitmaps_.size(); }
 };

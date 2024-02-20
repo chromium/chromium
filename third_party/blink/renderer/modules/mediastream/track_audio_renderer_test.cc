@@ -236,7 +236,7 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
   int total_frames_captured_ = 0;
   int frames_captured_since_last_reconfig_ = 0;
 
-  raw_ptr<FakeMediaStreamAudioSource, ExperimentalRenderer> fake_source_;
+  raw_ptr<FakeMediaStreamAudioSource> fake_source_;
 };
 
 TEST_P(TrackAudioRendererTest, SingleCapture) {

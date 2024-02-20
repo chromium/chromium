@@ -77,8 +77,7 @@ class RendererCommandForwarder : public media::mojom::Renderer {
   }
 
  private:
-  const raw_ptr<PlaybackCommandForwardingRenderer, ExperimentalRenderer>
-      owning_renderer_;
+  const raw_ptr<PlaybackCommandForwardingRenderer> owning_renderer_;
   mojo::Receiver<media::mojom::Renderer> playback_controller_;
 };
 

@@ -1066,7 +1066,7 @@ class OnlineStateObserver : public NetworkStateNotifier::NetworkStateObserver {
     handle_.reset();
     task_runner_->RunUntilIdle();
   }
-  raw_ptr<FakeTaskRunner, ExperimentalRenderer> task_runner_;
+  raw_ptr<FakeTaskRunner> task_runner_;
   std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle> handle_;
   int count = 0;
 };

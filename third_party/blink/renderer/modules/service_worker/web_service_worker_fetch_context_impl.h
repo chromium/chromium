@@ -133,11 +133,9 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
       pending_subresource_loader_updater_;
 
   // This is owned by ThreadedMessagingProxyBase on the main thread.
-  raw_ptr<base::WaitableEvent, ExperimentalRenderer>
-      terminate_sync_load_event_ = nullptr;
+  raw_ptr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
 
-  raw_ptr<AcceptLanguagesWatcher, ExperimentalRenderer>
-      accept_languages_watcher_ = nullptr;
+  raw_ptr<AcceptLanguagesWatcher> accept_languages_watcher_ = nullptr;
 
   Vector<String> cors_exempt_header_list_;
   bool is_offline_mode_ = false;

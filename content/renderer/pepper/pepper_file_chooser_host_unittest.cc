@@ -91,7 +91,7 @@ class MockFileChooser : public FileChooser {
       const base::FilePath& directory_path,
       EnumerateChosenDirectoryCallback callback) override {}
 
-  raw_ptr<blink::BrowserInterfaceBrokerProxy, ExperimentalRenderer> broker_;
+  raw_ptr<blink::BrowserInterfaceBrokerProxy> broker_;
   mojo::ReceiverSet<FileChooser> receivers_;
   OpenFileChooserCallback callback_;
   FileChooserParamsPtr params_;

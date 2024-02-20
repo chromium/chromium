@@ -29,7 +29,7 @@ namespace {
 struct ContextProviderCreationInfo {
   // Inputs.
   Platform::ContextAttributes context_attributes;
-  raw_ptr<Platform::GraphicsInfo, ExperimentalRenderer> gl_info;
+  raw_ptr<Platform::GraphicsInfo> gl_info;
   KURL url;
   // Outputs.
   std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;

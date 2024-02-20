@@ -61,7 +61,7 @@ class PepperPlatformVideoCapture {
   base::OnceClosure release_device_cb_;
   base::OnceClosure stop_capture_cb_;
 
-  raw_ptr<PepperVideoCaptureHost, ExperimentalRenderer> handler_;
+  raw_ptr<PepperVideoCaptureHost> handler_;
 
   // Whether we have a pending request to open a device. We have to make sure
   // there isn't any pending request before this object goes away.

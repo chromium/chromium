@@ -669,7 +669,7 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
              form_renderer_id, result);
   }
 
-  raw_ptr<PasswordAutofillAgent, ExperimentalRenderer> agent_ = nullptr;
+  raw_ptr<PasswordAutofillAgent> agent_ = nullptr;
   base::WeakPtrFactory<DeferringPasswordManagerDriver> weak_ptr_factory_{this};
 };
 

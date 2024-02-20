@@ -68,7 +68,7 @@ class StreamControlChannel : public mojom::DemuxerConnector,
   bool has_javascript_been_configured_ = false;
   EnableReceiverCallback enable_receiver_callback_;
 
-  const raw_ptr<Client, ExperimentalRenderer> client_;
+  const raw_ptr<Client> client_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

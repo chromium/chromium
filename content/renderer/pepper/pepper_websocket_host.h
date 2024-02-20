@@ -65,7 +65,7 @@ class PepperWebSocketHost : public ppapi::host::ResourceHost,
                         const std::string& message);
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
 
   // IPC reply parameters.
   ppapi::host::ReplyMessageContext connect_reply_;

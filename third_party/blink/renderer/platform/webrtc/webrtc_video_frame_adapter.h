@@ -108,8 +108,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
         GUARDED_BY(context_provider_lock_);
 
-    raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-        gpu_factories_;
+    raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
     // Handles frame conversions. Maintains an internal scratch space buffer.
     media::VideoFrameConverter frame_converter_;

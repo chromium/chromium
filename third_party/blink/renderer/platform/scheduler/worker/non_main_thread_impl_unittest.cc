@@ -49,7 +49,7 @@ class TestObserver : public Thread::TaskObserver {
   }
 
  private:
-  raw_ptr<StringBuilder, ExperimentalRenderer> calls_;  // NOT OWNED
+  raw_ptr<StringBuilder> calls_;  // NOT OWNED
 };
 
 void RunTestTask(StringBuilder* calls) {

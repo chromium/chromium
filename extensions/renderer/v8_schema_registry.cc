@@ -98,7 +98,7 @@ class SchemaRegistryNativeHandler : public ObjectBackedNativeHandler {
   }
 
   std::unique_ptr<ScriptContext> context_;
-  raw_ptr<V8SchemaRegistry, ExperimentalRenderer> registry_;
+  raw_ptr<V8SchemaRegistry> registry_;
 };
 
 }  // namespace

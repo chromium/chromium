@@ -85,7 +85,7 @@ class DatabaseThread final : public GarbageCollected<DatabaseThread> {
 
   std::unique_ptr<SQLTransactionClient> transaction_client_;
   CrossThreadPersistent<SQLTransactionCoordinator> transaction_coordinator_;
-  raw_ptr<base::WaitableEvent, ExperimentalRenderer> cleanup_sync_;
+  raw_ptr<base::WaitableEvent> cleanup_sync_;
 
   base::Lock termination_requested_lock_;
   bool termination_requested_ GUARDED_BY(termination_requested_lock_);

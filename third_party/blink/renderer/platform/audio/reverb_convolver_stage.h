@@ -85,7 +85,7 @@ class ReverbConvolverStage {
 
   AudioFloatArray pre_delay_buffer_;
 
-  raw_ptr<ReverbAccumulationBuffer, ExperimentalRenderer> accumulation_buffer_;
+  raw_ptr<ReverbAccumulationBuffer> accumulation_buffer_;
   uint32_t accumulation_read_index_;
   size_t input_read_index_;
 

@@ -53,7 +53,7 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
   void AddAgent(Agent* agent) override {}
 
  private:
-  const raw_ref<WebThreadScheduler, ExperimentalRenderer> web_thread_scheduler_;
+  const raw_ref<WebThreadScheduler> web_thread_scheduler_;
 };
 
 }  // namespace scheduler

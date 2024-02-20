@@ -90,7 +90,7 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
   int max_task_starvation_count_;
 
   bool can_advance_virtual_time_;
-  raw_ptr<SchedulerHelper, ExperimentalRenderer> helper_;  // NOT OWNED
+  raw_ptr<SchedulerHelper> helper_;  // NOT OWNED
 
   // VirtualTime is usually doled out in 100ms intervals using fences and this
   // variable let us honor a request to MaybeAdvanceVirtualTime that straddles

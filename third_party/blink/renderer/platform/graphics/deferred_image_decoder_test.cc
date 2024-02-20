@@ -147,7 +147,7 @@ class DeferredImageDecoderTest : public testing::Test,
   test::TaskEnvironment task_environment_;
   // Don't own this but saves the pointer to query states.
   PaintImage::Id paint_image_id_;
-  raw_ptr<MockImageDecoder, ExperimentalRenderer> actual_decoder_;
+  raw_ptr<MockImageDecoder> actual_decoder_;
   std::unique_ptr<DeferredImageDecoder> lazy_decoder_;
   SkBitmap bitmap_;
   std::unique_ptr<cc::PaintCanvas> canvas_;

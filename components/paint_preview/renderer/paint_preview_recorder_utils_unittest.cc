@@ -287,7 +287,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
   cc::PaintRecorder recorder;
 
   // Valid after SetUp() until SerializeAsSkPicture() is called.
-  raw_ptr<cc::PaintCanvas, ExperimentalRenderer> canvas = nullptr;
+  raw_ptr<cc::PaintCanvas> canvas = nullptr;
 
  protected:
   base::test::TaskEnvironment task_environment_;

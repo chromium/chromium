@@ -135,8 +135,7 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   std::optional<TaskQueueThrottler> throttler_;
 
   // Not owned.
-  raw_ptr<NonMainThreadSchedulerBase, ExperimentalRenderer>
-      non_main_thread_scheduler_;
+  raw_ptr<NonMainThreadSchedulerBase> non_main_thread_scheduler_;
 
   // Set if this is queue is used for the web-exposed scheduling API. Used to
   // differentiate initial tasks from continuations for prioritization.

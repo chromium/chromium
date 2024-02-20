@@ -828,9 +828,8 @@ class ScopedNewFrameInterfaceProviderExerciser {
     EXPECT_TRUE(frame->GetWebFrame()->GetCurrentHistoryItem().IsNull());
   }
 
-  raw_ptr<FrameCreationObservingRendererClient, ExperimentalRenderer>
-      frame_creation_observer_;
-  raw_ptr<TestRenderFrame, ExperimentalRenderer> frame_ = nullptr;
+  raw_ptr<FrameCreationObservingRendererClient> frame_creation_observer_;
+  raw_ptr<TestRenderFrame> frame_ = nullptr;
   std::optional<std::string> html_override_for_first_load_;
   GURL first_committed_url_;
 
@@ -923,8 +922,8 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
 
  private:
   // Owned by RenderViewTest.
-  raw_ptr<FrameCreationObservingRendererClient, ExperimentalRenderer>
-      frame_creation_observer_ = nullptr;
+  raw_ptr<FrameCreationObservingRendererClient> frame_creation_observer_ =
+      nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

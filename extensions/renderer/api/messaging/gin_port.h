@@ -135,7 +135,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
   const std::string name_;
 
   // The associated APIEventHandler. Guaranteed to outlive this object.
-  const raw_ptr<APIEventHandler, ExperimentalRenderer> event_handler_;
+  const raw_ptr<APIEventHandler> event_handler_;
 
   // The delegate for handling the message passing between ports. Guaranteed to
   // outlive this object.

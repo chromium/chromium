@@ -68,7 +68,7 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
   }
   void OnDestruct() override { injection_->invalidate_render_frame(); }
 
-  raw_ptr<ScriptInjection, ExperimentalRenderer> injection_;
+  raw_ptr<ScriptInjection> injection_;
 };
 
 ScriptInjection::ScriptInjection(

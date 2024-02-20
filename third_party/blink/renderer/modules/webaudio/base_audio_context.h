@@ -440,7 +440,7 @@ class MODULES_EXPORT BaseAudioContext
   // reference to the WorkerThread associated with the AudioWorkletGlobalScope.
   // This cannot be nullptr once it is assigned from AudioWorkletThread until
   // the BaseAudioContext goes away.
-  raw_ptr<WorkerThread, ExperimentalRenderer> audio_worklet_thread_ = nullptr;
+  raw_ptr<WorkerThread> audio_worklet_thread_ = nullptr;
 };
 
 }  // namespace blink

@@ -409,7 +409,7 @@ class CONTENT_EXPORT RenderFrameObserver
   // can null out its pointer.
   void RenderFrameGone();
 
-  raw_ptr<RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrame> render_frame_;
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // The routing ID of the associated RenderFrame.

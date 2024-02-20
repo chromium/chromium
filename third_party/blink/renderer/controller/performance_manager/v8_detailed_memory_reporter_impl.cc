@@ -240,7 +240,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
 
     std::move(callback_).Run(std::move(result_));
   }
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_ = nullptr;
   GetV8MemoryUsageCallback callback_;
   mojom::blink::PerProcessV8MemoryUsagePtr result_;
   bool main_measurement_done_ = false;

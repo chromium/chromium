@@ -167,7 +167,7 @@ class PasswordGenerationAgent::DeferringPasswordGenerationDriver
     DeferMsg(&mojom::PasswordGenerationDriver::GenerationElementLostFocus);
   }
 
-  raw_ptr<PasswordGenerationAgent, ExperimentalRenderer> agent_ = nullptr;
+  raw_ptr<PasswordGenerationAgent> agent_ = nullptr;
   base::WeakPtrFactory<DeferringPasswordGenerationDriver> weak_ptr_factory_{
       this};
 };

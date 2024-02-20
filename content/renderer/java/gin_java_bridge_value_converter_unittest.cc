@@ -39,7 +39,7 @@ class GinJavaBridgeValueConverterTest : public testing::Test {
 
   void TearDown() override { context_.Reset(); }
 
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;

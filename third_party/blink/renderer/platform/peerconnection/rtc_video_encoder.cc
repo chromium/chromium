@@ -138,8 +138,8 @@ class SignaledValue {
   bool IsValid() { return event; }
 
  private:
-  raw_ptr<base::WaitableEvent, ExperimentalRenderer> event;
-  raw_ptr<int32_t, ExperimentalRenderer> val;
+  raw_ptr<base::WaitableEvent> event;
+  raw_ptr<int32_t> val;
 };
 
 class ScopedSignaledValue {
@@ -710,8 +710,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Factory for creating VEAs, shared memory buffers, etc.
-  const raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
       encoder_metrics_provider_factory_;
@@ -812,8 +811,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   // webrtc::VideoEncoder encode complete callback.
   // TODO(b/257021675): Don't guard this by |lock_|
-  raw_ptr<webrtc::EncodedImageCallback, ExperimentalRenderer>
-      encoded_image_callback_ GUARDED_BY(lock_){nullptr};
+  raw_ptr<webrtc::EncodedImageCallback> encoded_image_callback_
+      GUARDED_BY(lock_){nullptr};
 
   // They are bound to |gpu_task_runner_|, which is sequence checked by
   // |sequence_checker|.

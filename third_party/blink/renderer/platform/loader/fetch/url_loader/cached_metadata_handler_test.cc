@@ -73,7 +73,7 @@ class CodeCacheHostMockImpl : public mojom::blink::CodeCacheHost {
     sim_->CacheMetadataInCacheStorage(url);
   }
 
-  raw_ptr<MockGeneratedCodeCache, ExperimentalRenderer> sim_;
+  raw_ptr<MockGeneratedCodeCache> sim_;
 };
 
 ResourceResponse CreateTestResourceResponse() {

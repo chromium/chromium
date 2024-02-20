@@ -67,7 +67,7 @@ class PLATFORM_EXPORT SurfaceLayerBridge
   scoped_refptr<cc::SolidColorLayer> solid_color_layer_;
 
   // The |observer_| handles unregistering the contents layer on its own.
-  raw_ptr<WebSurfaceLayerBridgeObserver, ExperimentalRenderer> observer_;
+  raw_ptr<WebSurfaceLayerBridgeObserver> observer_;
   cc::UpdateSubmissionStateCB update_submission_state_callback_;
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
   mojo::Receiver<blink::mojom::blink::EmbeddedFrameSinkClient> receiver_{this};

@@ -174,7 +174,7 @@ class ParkableImageBaseTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_env_;
-  raw_ptr<InMemoryDataAllocator, ExperimentalRenderer> allocator_for_testing_;
+  raw_ptr<InMemoryDataAllocator> allocator_for_testing_;
 };
 
 // Parking is enabled for these tests.

@@ -394,7 +394,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // references on the signaling thread during GC.
   scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
 
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_ = nullptr;
+  raw_ptr<blink::WebLocalFrame> frame_ = nullptr;
 
   // Map and owners of track adapters. Every track that is in use by the peer
   // connection has an associated blink and webrtc layer representation of it.

@@ -26,7 +26,7 @@ class PageCaptureCustomBindings : public ObjectBackedNativeHandler {
   void SendResponseAck(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // The IPCMessageSender for this context. Must outlive this class.
-  const raw_ptr<IPCMessageSender, ExperimentalRenderer> ipc_message_sender_;
+  const raw_ptr<IPCMessageSender> ipc_message_sender_;
 };
 
 }  // namespace extensions

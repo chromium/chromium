@@ -96,7 +96,7 @@ class TestingPlatformSupport : public Platform {
  protected:
   class TestingBrowserInterfaceBroker;
 
-  const raw_ptr<Platform, ExperimentalRenderer> old_platform_;
+  const raw_ptr<Platform> old_platform_;
   scoped_refptr<TestingBrowserInterfaceBroker> interface_broker_;
 
  private:
@@ -155,7 +155,7 @@ class ScopedTestingPlatformSupport final {
 
  private:
   std::unique_ptr<T> testing_platform_support_;
-  raw_ptr<Platform, ExperimentalRenderer> original_platform_;
+  raw_ptr<Platform> original_platform_;
 };
 
 class ScopedUnittestsEnvironmentSetup final {

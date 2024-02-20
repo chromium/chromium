@@ -89,7 +89,7 @@ class V8Unwinder : public base::Unwinder {
                     const base::ModuleCache::Module* b) const;
   };
 
-  const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
   const v8::JSEntryStubs js_entry_stubs_;
   const v8::MemoryRange embedded_code_range_;
 

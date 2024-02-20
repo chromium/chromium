@@ -216,7 +216,7 @@ class ImageDataAutoMapper {
   bool is_valid() const { return is_valid_; }
 
  private:
-  raw_ptr<PPB_ImageData_Impl, ExperimentalRenderer> image_data_;
+  raw_ptr<PPB_ImageData_Impl> image_data_;
   bool is_valid_;
   bool needs_unmap_;
 };

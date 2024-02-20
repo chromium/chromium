@@ -58,8 +58,7 @@ class PLATFORM_EXPORT RTCVideoDecoderFactory
 
  private:
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   base::WeakPtr<media::DecoderFactory> decoder_factory_;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

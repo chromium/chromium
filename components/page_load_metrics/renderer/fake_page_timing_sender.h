@@ -171,7 +171,7 @@ class FakePageTimingSender : public PageTimingSender {
       base::ReadOnlySharedMemoryRegion shared_memory) override;
 
  private:
-  const raw_ptr<PageTimingValidator, ExperimentalRenderer> validator_;
+  const raw_ptr<PageTimingValidator> validator_;
 };
 
 }  // namespace page_load_metrics

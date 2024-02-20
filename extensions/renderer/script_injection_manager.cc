@@ -95,7 +95,7 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void InvalidateAndResetFrame(bool force_reset);
 
   // The owning ScriptInjectionManager.
-  raw_ptr<ScriptInjectionManager, ExperimentalRenderer> manager_;
+  raw_ptr<ScriptInjectionManager> manager_;
 
   bool should_run_idle_ = true;
 

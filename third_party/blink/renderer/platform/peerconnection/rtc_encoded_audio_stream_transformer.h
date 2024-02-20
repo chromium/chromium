@@ -70,7 +70,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
     friend class RTCEncodedAudioStreamTransformer;
 
     base::Lock transformer_lock_;
-    raw_ptr<RTCEncodedAudioStreamTransformer, ExperimentalRenderer> transformer_
+    raw_ptr<RTCEncodedAudioStreamTransformer> transformer_
         GUARDED_BY(transformer_lock_);
   };
 

@@ -90,7 +90,7 @@ class PepperPlatformAudioOutput
 
   // The client to notify when the stream is created. THIS MUST ONLY BE
   // ACCESSED ON THE MAIN THREAD.
-  raw_ptr<AudioHelper, ExperimentalRenderer> client_;
+  raw_ptr<AudioHelper> client_;
 
   // Used to send/receive IPC. THIS MUST ONLY BE ACCESSED ON THE
   // I/O thread except to send messages and get the message loop.

@@ -81,7 +81,7 @@ class PlaybackCommandForwardingRendererFactory : public media::RendererFactory {
  private:
   mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls_;
 
-  raw_ptr<media::RendererFactory, ExperimentalRenderer> real_renderer_factory_;
+  raw_ptr<media::RendererFactory> real_renderer_factory_;
   bool has_create_been_called_ = false;
 };
 

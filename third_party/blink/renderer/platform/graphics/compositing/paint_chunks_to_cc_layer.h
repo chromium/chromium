@@ -35,7 +35,7 @@ struct RasterUnderInvalidationCheckingParams {
         interest_rect(interest_rect),
         debug_name(debug_name) {}
 
-  const raw_ref<RasterInvalidationTracking, ExperimentalRenderer> tracking;
+  const raw_ref<RasterInvalidationTracking> tracking;
   gfx::Rect interest_rect;
   String debug_name;
 };

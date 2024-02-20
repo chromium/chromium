@@ -103,11 +103,11 @@ class PepperVideoCaptureHost : public ppapi::host::ResourceHost {
     ~BufferInfo();
 
     bool in_use;
-    raw_ptr<void, ExperimentalRenderer> data;
+    raw_ptr<void> data;
     scoped_refptr<PPB_Buffer_Impl> buffer;
   };
 
-  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHostImpl> renderer_ppapi_host_;
 
   gfx::Size alloc_size_;
   std::vector<BufferInfo> buffers_;

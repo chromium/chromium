@@ -199,8 +199,7 @@ class FormTracker : public content::RenderFrameObserver,
   FieldRef last_interacted_formless_element_;
 
   // TODO(crbug.com/1483242): Remove.
-  raw_ptr<blink::WebFormElementObserver, ExperimentalRenderer>
-      form_element_observer_ = nullptr;
+  raw_ptr<blink::WebFormElementObserver> form_element_observer_ = nullptr;
 
   SEQUENCE_CHECKER(form_tracker_sequence_checker_);
 

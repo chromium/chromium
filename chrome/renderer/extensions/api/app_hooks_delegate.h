@@ -68,13 +68,13 @@ class AppHooksDelegate : public APIBindingHooksDelegate {
   void OnAppInstallStateResponse(int request_id, const std::string& state);
 
   // Dispatcher handle. Not owned.
-  raw_ptr<Dispatcher, ExperimentalRenderer> dispatcher_ = nullptr;
+  raw_ptr<Dispatcher> dispatcher_ = nullptr;
 
-  raw_ptr<APIRequestHandler, ExperimentalRenderer> request_handler_ = nullptr;
+  raw_ptr<APIRequestHandler> request_handler_ = nullptr;
 
   // IPC sender used for activity log call.
   // Not owned. This is owned by NativeExtensionBindingsSystem.
-  raw_ptr<IPCMessageSender, ExperimentalRenderer> ipc_sender_ = nullptr;
+  raw_ptr<IPCMessageSender> ipc_sender_ = nullptr;
 
   base::WeakPtrFactory<AppHooksDelegate> weak_factory_{this};
 };

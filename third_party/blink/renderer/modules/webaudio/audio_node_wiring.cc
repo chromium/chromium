@@ -17,7 +17,7 @@ namespace {
 using AudioNodeOutputSet = HashSet<AudioNodeOutput*>;
 
 struct FindOutputResult {
-  const raw_ref<AudioNodeOutputSet, ExperimentalRenderer> output_set;
+  const raw_ref<AudioNodeOutputSet> output_set;
   AudioNodeOutputSet::const_iterator iterator;
   bool is_disabled;
 };

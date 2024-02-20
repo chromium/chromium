@@ -59,7 +59,7 @@ blink::WebTextInputType ConvertTextInputType(ui::TextInputType type) {
 
 struct PepperWebPluginImpl::InitData {
   scoped_refptr<PluginModule> module;
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame;
+  raw_ptr<RenderFrameImpl> render_frame;
   std::vector<std::string> arg_names;
   std::vector<std::string> arg_values;
   GURL url;

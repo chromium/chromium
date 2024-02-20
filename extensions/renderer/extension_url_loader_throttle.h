@@ -48,7 +48,7 @@ class ExtensionURLLoaderThrottle : public blink::URLLoaderThrottle {
   // blink::URLLoaderThrottle:
   void DetachFromCurrentSequence() override;
 
-  raw_ptr<ExtensionThrottleManager, ExperimentalRenderer> manager_ = nullptr;
+  raw_ptr<ExtensionThrottleManager> manager_ = nullptr;
   GURL start_request_url_;
 };
 

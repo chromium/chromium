@@ -200,8 +200,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   gfx::ColorSpace rendering_color_space_;
 
-  const raw_ptr<gpu::GpuMemoryBufferManager, ExperimentalRenderer>
-      gpu_memory_buffer_manager_;
+  const raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 };
 
 }  // namespace content

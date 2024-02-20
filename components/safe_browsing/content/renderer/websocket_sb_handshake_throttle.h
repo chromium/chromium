@@ -75,7 +75,7 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
   GURL url_;
   blink::WebSocketHandshakeThrottle::OnCompletion completion_callback_;
   mojo::Remote<mojom::SafeBrowsingUrlChecker> url_checker_;
-  raw_ptr<mojom::SafeBrowsing, ExperimentalRenderer> safe_browsing_;
+  raw_ptr<mojom::SafeBrowsing> safe_browsing_;
   std::unique_ptr<mojo::Receiver<mojom::UrlCheckNotifier>> notifier_receiver_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -86,8 +86,7 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
       const blink::WebSecurityOrigin& creator_origin,
       const blink::WebSecurityOrigin& isolated_world_origin);
 
-  raw_ptr<mojom::ExtensionWebRequestReporter, ExperimentalRenderer>
-      extension_web_request_reporter_;
+  raw_ptr<mojom::ExtensionWebRequestReporter> extension_web_request_reporter_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // |state_| is used to validate that events happen in the right order. It

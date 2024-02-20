@@ -102,7 +102,7 @@ struct APIBinding::MethodData {
   // sendMessage).
   const std::string full_name;
   // The expected API signature.
-  raw_ptr<const APISignature, ExperimentalRenderer> signature;
+  raw_ptr<const APISignature> signature;
   // The callback used by the v8 function.
   APIBinding::HandlerCallback callback;
 };
@@ -160,7 +160,7 @@ struct APIBinding::EventData {
   // EventData is only accessed from the callbacks associated with the
   // APIBinding, and both the APIBinding and APIEventHandler are owned by the
   // same object (the APIBindingsSystem).
-  raw_ptr<APIBinding, ExperimentalRenderer> binding;
+  raw_ptr<APIBinding> binding;
 };
 
 struct APIBinding::CustomPropertyData {
@@ -179,7 +179,7 @@ struct APIBinding::CustomPropertyData {
   // chrome.storage.local.
   std::string property_name;
   // Values curried into this particular type from the schema.
-  raw_ptr<const base::Value::List, ExperimentalRenderer> property_values;
+  raw_ptr<const base::Value::List> property_values;
 
   CreateCustomType create_custom_type;
 };

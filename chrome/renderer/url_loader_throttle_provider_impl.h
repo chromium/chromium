@@ -71,8 +71,7 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   blink::URLLoaderThrottleProviderType type_;
-  const raw_ptr<ChromeContentRendererClient, ExperimentalRenderer>
-      chrome_content_renderer_client_;
+  const raw_ptr<ChromeContentRendererClient> chrome_content_renderer_client_;
 
   mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
       pending_safe_browsing_;

@@ -274,7 +274,7 @@ class AutofillAgent : public content::RenderFrameObserver,
     FieldRendererId focused_field_id_;
     mojom::FocusedFieldType focused_field_type_ =
         mojom::FocusedFieldType::kUnknown;
-    const raw_ref<AutofillAgent, ExperimentalRenderer> agent_;
+    const raw_ref<AutofillAgent> agent_;
   };
 
   // content::RenderFrameObserver:

@@ -350,8 +350,7 @@ class LineHelper {
     }
   }
 
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityTextRunInfo>,
-                ExperimentalRenderer>
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityTextRunInfo>>
       text_runs_;
   size_t start_index_;
   float accumulated_weight_top_;
@@ -1516,54 +1515,39 @@ class PdfAccessibilityTreeBuilder {
 
   base::WeakPtr<PdfAccessibilityTree> pdf_accessibility_tree_;
   std::vector<uint32_t> text_run_start_indices_;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityTextRunInfo>,
-                ExperimentalRenderer>
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityTextRunInfo>>
       text_runs_;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityCharInfo>,
-                ExperimentalRenderer>
-      chars_;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityLinkInfo>,
-                ExperimentalRenderer>
-      links_;
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityCharInfo>> chars_;
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityLinkInfo>> links_;
   uint32_t current_link_index_ = 0;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityImageInfo>,
-                ExperimentalRenderer>
-      images_;
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityImageInfo>> images_;
   uint32_t current_image_index_ = 0;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityHighlightInfo>,
-                ExperimentalRenderer>
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityHighlightInfo>>
       highlights_;
   uint32_t current_highlight_index_ = 0;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityTextFieldInfo>,
-                ExperimentalRenderer>
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityTextFieldInfo>>
       text_fields_;
   uint32_t current_text_field_index_ = 0;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityButtonInfo>,
-                ExperimentalRenderer>
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityButtonInfo>>
       buttons_;
   uint32_t current_button_index_ = 0;
-  const raw_ref<const std::vector<chrome_pdf::AccessibilityChoiceFieldInfo>,
-                ExperimentalRenderer>
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityChoiceFieldInfo>>
       choice_fields_;
   uint32_t current_choice_field_index_ = 0;
   uint32_t page_index_;
-  raw_ptr<ui::AXNodeData, ExperimentalRenderer> root_node_;
-  raw_ptr<ui::AXNodeData, ExperimentalRenderer> page_node_;
-  raw_ptr<content::RenderAccessibility, ExperimentalRenderer>
-      render_accessibility_;
-  raw_ptr<std::vector<std::unique_ptr<ui::AXNodeData>>, ExperimentalRenderer>
-      nodes_;
-  raw_ptr<std::map<int32_t, chrome_pdf::PageCharacterIndex>,
-          ExperimentalRenderer>
+  raw_ptr<ui::AXNodeData> root_node_;
+  raw_ptr<ui::AXNodeData> page_node_;
+  raw_ptr<content::RenderAccessibility> render_accessibility_;
+  raw_ptr<std::vector<std::unique_ptr<ui::AXNodeData>>> nodes_;
+  raw_ptr<std::map<int32_t, chrome_pdf::PageCharacterIndex>>
       node_id_to_page_char_index_;
-  raw_ptr<std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>,
-          ExperimentalRenderer>
+  raw_ptr<std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>>
       node_id_to_annotation_info_;
   float heading_font_size_threshold_ = 0;
   float paragraph_spacing_threshold_ = 0;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  raw_ptr<PdfOcrService, ExperimentalRenderer> ocr_service_ = nullptr;
+  raw_ptr<PdfOcrService> ocr_service_ = nullptr;
   const bool has_accessible_text_;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };

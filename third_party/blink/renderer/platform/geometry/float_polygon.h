@@ -133,7 +133,7 @@ class PLATFORM_EXPORT FloatPolygonEdge final : public VertexPair {
   unsigned vertex_index1_;
   unsigned vertex_index2_;
   unsigned edge_index_;
-  raw_ptr<const FloatPolygon, ExperimentalRenderer> polygon_;
+  raw_ptr<const FloatPolygon> polygon_;
 };
 
 }  // namespace blink

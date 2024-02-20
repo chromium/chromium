@@ -82,7 +82,7 @@ class PLATFORM_EXPORT VSyncTickProvider : public MetronomeSource::TickProvider {
     kDrivenByVSync
   };
 
-  const raw_ref<VSyncProvider, ExperimentalRenderer> vsync_provider_;
+  const raw_ref<VSyncProvider> vsync_provider_;
   const scoped_refptr<base::SequencedTaskRunner> sequence_;
   SEQUENCE_CHECKER(sequence_checker_);
 

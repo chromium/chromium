@@ -113,8 +113,8 @@ class PLATFORM_EXPORT FrameTaskQueueController {
 
   const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_impl_;
-  const raw_ptr<FrameSchedulerImpl, ExperimentalRenderer> frame_scheduler_impl_;
-  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
+  const raw_ptr<FrameSchedulerImpl> frame_scheduler_impl_;
+  const raw_ptr<Delegate> delegate_;
 
   using TaskQueueMap =
       WTF::HashMap<MainThreadTaskQueue::QueueTraitsKeyType,

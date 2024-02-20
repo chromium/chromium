@@ -64,7 +64,7 @@ class SearchBoxIconURLHelper: public SearchBox::IconURLHelper {
       override;
 
  private:
-  raw_ptr<const SearchBox, ExperimentalRenderer> search_box_;
+  raw_ptr<const SearchBox> search_box_;
 };
 
 SearchBoxIconURLHelper::SearchBoxIconURLHelper(const SearchBox* search_box)

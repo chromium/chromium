@@ -24,8 +24,7 @@ static const size_t kMinAllocSize = 4096;
 }  // namespace
 
 struct RWBuffer::BufferBlock {
-  raw_ptr<RWBuffer::BufferBlock, ExperimentalRenderer>
-      next_;                     // updated by the writer
+  raw_ptr<RWBuffer::BufferBlock> next_;  // updated by the writer
   size_t used_;                  // updated by the writer
   const size_t capacity_;
 

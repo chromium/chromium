@@ -81,7 +81,7 @@ class AggregatedMetricReporter {
 
   std::array<ValueType, static_cast<size_t>(TaskClass::kCount)>
       unreported_values_ = {};
-  raw_ptr<base::HistogramBase, ExperimentalRenderer> value_per_type_histogram_;
+  raw_ptr<base::HistogramBase> value_per_type_histogram_;
   AggregatorFuncPtr aggregator_;
 
   THREAD_CHECKER(thread_checker_);

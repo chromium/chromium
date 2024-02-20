@@ -43,7 +43,7 @@ class ScopedFakeClock : public rtc::ClockInterface {
   }
 
  private:
-  const raw_ptr<ClockInterface, ExperimentalRenderer> prev_clock_;
+  const raw_ptr<ClockInterface> prev_clock_;
   int64_t time_ns_;
 };
 

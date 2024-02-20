@@ -62,8 +62,7 @@ class HunspellEngine : public SpellingEngine {
   // This flag is true if we have requested dictionary.
   bool dictionary_requested_;
 
-  raw_ptr<service_manager::LocalInterfaceProvider, ExperimentalRenderer>
-      embedder_provider_;
+  raw_ptr<service_manager::LocalInterfaceProvider> embedder_provider_;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_HUNSPELL_ENGINE_H_

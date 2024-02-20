@@ -331,8 +331,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
-  const raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   // Used for DCHECKs to ensure method calls are executed on the correct thread.
   SEQUENCE_CHECKER(video_sequence_checker_);

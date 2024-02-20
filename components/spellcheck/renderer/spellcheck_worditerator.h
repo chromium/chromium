@@ -200,7 +200,7 @@ class SpellcheckWordIterator {
 
   // The language-specific attributes used for filtering out non-word
   // characters.
-  raw_ptr<const SpellcheckCharAttribute, ExperimentalRenderer> attribute_;
+  raw_ptr<const SpellcheckCharAttribute> attribute_;
 
   // The break iterator.
   std::unique_ptr<base::i18n::BreakIterator> iterator_;

@@ -65,7 +65,7 @@ class APIActivityLogger : public ObjectBackedNativeHandler {
   //
   // Valid to use so long as there's a valid ScriptContext associated with the
   // call-site.
-  raw_ptr<IPCMessageSender, ExperimentalRenderer> ipc_sender_ = nullptr;
+  raw_ptr<IPCMessageSender> ipc_sender_ = nullptr;
 };
 
 }  // namespace extensions

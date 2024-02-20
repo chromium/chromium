@@ -80,7 +80,7 @@ class CONTENT_EXPORT StreamTextureHost
       std::optional<gpu::VulkanYCbCrInfo> ycbcr_info) override;
 
   int32_t route_id_;
-  raw_ptr<Listener, ExperimentalRenderer> listener_;
+  raw_ptr<Listener> listener_;
   scoped_refptr<gpu::GpuChannelHost> channel_;
   uint32_t release_id_ = 0;
 

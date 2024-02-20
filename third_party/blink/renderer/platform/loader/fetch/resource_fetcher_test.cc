@@ -664,7 +664,7 @@ class RequestSameResourceOnComplete
   String DebugName() const override { return "RequestSameResourceOnComplete"; }
 
  private:
-  raw_ptr<URLLoaderMockFactory, ExperimentalRenderer> mock_factory_;
+  raw_ptr<URLLoaderMockFactory> mock_factory_;
   bool notify_finished_called_ = false;
   scoped_refptr<const SecurityOrigin> source_origin_;
 };

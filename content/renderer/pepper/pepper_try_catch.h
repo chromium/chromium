@@ -48,7 +48,7 @@ class CONTENT_EXPORT PepperTryCatch {
   // shouldn't keep the instance around for too long.
   scoped_refptr<PepperPluginInstanceImpl> instance_;
 
-  raw_ptr<V8VarConverter, ExperimentalRenderer> var_converter_;
+  raw_ptr<V8VarConverter> var_converter_;
 };
 
 // Catches var exceptions and emits a v8 exception.
@@ -105,7 +105,7 @@ class PepperTryCatchVar : public PepperTryCatch {
 
   v8::TryCatch try_catch_;
 
-  raw_ptr<PP_Var, ExperimentalRenderer> exception_;
+  raw_ptr<PP_Var> exception_;
   bool exception_is_set_;
 };
 

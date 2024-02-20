@@ -446,7 +446,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner;
     scoped_refptr<base::SingleThreadTaskRunner> current_task_runner;
     const char* trace_event_scope_name;
-    raw_ptr<void, ExperimentalRenderer> trace_event_scope_id;
+    raw_ptr<void> trace_event_scope_id;
   };
 
   void BeginAgentGroupSchedulerScope(
@@ -489,8 +489,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     ~RendererPauseHandleImpl() override;
 
    private:
-    raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
-        scheduler_;  // NOT OWNED
+    raw_ptr<MainThreadSchedulerImpl> scheduler_;  // NOT OWNED
   };
 
   // IdleHelper::Delegate implementation:

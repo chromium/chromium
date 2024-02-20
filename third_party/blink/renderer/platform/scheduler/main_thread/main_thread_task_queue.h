@@ -389,7 +389,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     QueueType queue_type;
     TaskQueue::Spec spec;
     WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler;
-    raw_ptr<FrameSchedulerImpl, ExperimentalRenderer> frame_scheduler = nullptr;
+    raw_ptr<FrameSchedulerImpl> frame_scheduler = nullptr;
     QueueTraits queue_traits;
     std::optional<WebSchedulingQueueType> web_scheduling_queue_type;
     std::optional<WebSchedulingPriority> web_scheduling_priority;
@@ -584,8 +584,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   std::optional<WebSchedulingPriority> web_scheduling_priority_;
 
   // Needed to notify renderer scheduler about completed tasks.
-  raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
-      main_thread_scheduler_;  // NOT OWNED
+  raw_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
 
   WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
@@ -595,8 +594,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   raw_ptr<FrameSchedulerImpl, DanglingUntriaged> frame_scheduler_;  // NOT OWNED
 
   // The WakeUpBudgetPool for this TaskQueue, if any.
-  raw_ptr<WakeUpBudgetPool, ExperimentalRenderer> wake_up_budget_pool_{
-      nullptr};  // NOT OWNED
+  raw_ptr<WakeUpBudgetPool> wake_up_budget_pool_{nullptr};  // NOT OWNED
 
   std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
       on_ipc_task_posted_callback_handle_;

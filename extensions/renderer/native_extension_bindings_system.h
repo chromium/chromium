@@ -159,7 +159,7 @@ class NativeExtensionBindingsSystem {
   // content scripts running in an isolated world.
   void SetScriptingParams(ScriptContext* context);
 
-  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<IPCMessageSender> ipc_message_sender_;
 

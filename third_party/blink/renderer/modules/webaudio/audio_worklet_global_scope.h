@@ -135,8 +135,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   // AudioWorkletObjectProxy manages the cross-thread messaging to
   // AudioWorkletMessagingProxy on the main thread. AudioWorkletObjectProxy
   // outlives AudioWorkletGlobalScope, this raw pointer is safe.
-  raw_ptr<AudioWorkletObjectProxy, ExperimentalRenderer> object_proxy_ =
-      nullptr;
+  raw_ptr<AudioWorkletObjectProxy> object_proxy_ = nullptr;
 };
 
 template <>

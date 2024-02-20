@@ -61,7 +61,7 @@ class CONTENT_EXPORT PepperFileChooserHost final
                               const std::vector<int>& browser_ids);
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext reply_context_;
   raw_ptr<CompletionHandler, DanglingUntriaged> handler_;

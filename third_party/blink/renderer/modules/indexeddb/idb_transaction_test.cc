@@ -110,7 +110,7 @@ class IDBTransactionTest : public testing::Test,
   }
 
   test::TaskEnvironment task_environment_;
-  raw_ptr<URLLoaderMockFactory, ExperimentalRenderer> url_loader_mock_factory_;
+  raw_ptr<URLLoaderMockFactory> url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;
   Persistent<IDBObjectStore> store_;

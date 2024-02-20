@@ -82,8 +82,8 @@ class URLLoaderMock : public URLLoader {
  private:
   void Cancel();
 
-  raw_ptr<URLLoaderMockFactoryImpl, ExperimentalRenderer> factory_ = nullptr;
-  raw_ptr<URLLoaderClient, ExperimentalRenderer> client_ = nullptr;
+  raw_ptr<URLLoaderMockFactoryImpl> factory_ = nullptr;
+  raw_ptr<URLLoaderClient> client_ = nullptr;
   bool is_deferred_ = false;
 
   base::WeakPtrFactory<URLLoaderMock> weak_factory_{this};

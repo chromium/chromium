@@ -104,7 +104,7 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   scoped_refptr<PepperPluginInstanceImpl> instance_;
   gfx::Rect plugin_rect_;
   PP_Var instance_object_;
-  raw_ptr<blink::WebPluginContainer, ExperimentalRenderer> container_;
+  raw_ptr<blink::WebPluginContainer> container_;
 };
 
 }  // namespace content

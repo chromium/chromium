@@ -47,7 +47,7 @@ struct APIEventPerContextData : public base::SupportsUserData::Data {
 
   // The associated v8::Isolate. Since this object is cleaned up at context
   // destruction, this should always be valid.
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate;
+  raw_ptr<v8::Isolate> isolate;
 
   // A map from event name -> event emitter.
   std::map<std::string, v8::Global<v8::Object>> emitters;

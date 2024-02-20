@@ -56,7 +56,7 @@ class PepperPlatformCameraDevice {
   base::UnguessableToken session_id_;
   base::OnceClosure release_device_cb_;
 
-  raw_ptr<PepperCameraDeviceHost, ExperimentalRenderer> handler_;
+  raw_ptr<PepperCameraDeviceHost> handler_;
 
   // Whether we have a pending request to open a device. We have to make sure
   // there isn't any pending request before this object goes away.

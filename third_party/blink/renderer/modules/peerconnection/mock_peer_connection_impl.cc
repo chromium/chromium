@@ -111,8 +111,7 @@ class MockDtmfSender : public DtmfSenderInterface {
   int inter_tone_gap() const override { return inter_tone_gap_; }
 
  private:
-  raw_ptr<DtmfSenderObserverInterface, ExperimentalRenderer> observer_ =
-      nullptr;
+  raw_ptr<DtmfSenderObserverInterface> observer_ = nullptr;
   std::string tones_;
   int duration_ = 0;
   int inter_tone_gap_ = 0;

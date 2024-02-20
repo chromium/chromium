@@ -155,7 +155,7 @@ class MockTextCheckingCompletion : public blink::WebTextCheckingCompletion {
 
   void DidCancelCheckingText() override { result_->completion_count_++; }
 
-  raw_ptr<MockTextCheckingResult, ExperimentalRenderer> result_;
+  raw_ptr<MockTextCheckingResult> result_;
 };
 
 // Operates unit tests for the content::SpellCheck::SpellCheckWord() function

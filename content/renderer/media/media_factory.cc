@@ -177,7 +177,7 @@ class FrameFetchContext : public blink::ResourceFetchContext {
   }
 
  private:
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
+  raw_ptr<blink::WebLocalFrame> frame_;
 };
 
 // Obtains the media ContextProvider and calls the given callback on the same

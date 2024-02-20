@@ -217,12 +217,12 @@ class MODULES_EXPORT MediaCapabilities final
   HeapHashMap<int, Member<PendingCallbackState>> pending_cb_map_;
 
   // Makes it possible to override the WebrtcDecodingInfoHandler in tests.
-  raw_ptr<WebrtcDecodingInfoHandler, ExperimentalRenderer>
-      webrtc_decoding_info_handler_for_test_ = nullptr;
+  raw_ptr<WebrtcDecodingInfoHandler> webrtc_decoding_info_handler_for_test_ =
+      nullptr;
 
   // Makes it possible to override the WebrtcEncodingInfoHandler in tests.
-  raw_ptr<WebrtcEncodingInfoHandler, ExperimentalRenderer>
-      webrtc_encoding_info_handler_for_test_ = nullptr;
+  raw_ptr<WebrtcEncodingInfoHandler> webrtc_encoding_info_handler_for_test_ =
+      nullptr;
 };
 
 }  // namespace blink

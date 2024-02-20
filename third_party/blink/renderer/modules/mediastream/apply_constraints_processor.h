@@ -112,8 +112,7 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   std::unique_ptr<ScopedMediaStreamTrace> video_device_request_trace_;
 
   // TODO(crbug.com/704136): Change to use Member.
-  raw_ptr<blink::MediaStreamVideoSource, ExperimentalRenderer> video_source_ =
-      nullptr;
+  raw_ptr<blink::MediaStreamVideoSource> video_source_ = nullptr;
   base::OnceClosure request_completed_cb_;
 
   const Member<LocalFrame> frame_;

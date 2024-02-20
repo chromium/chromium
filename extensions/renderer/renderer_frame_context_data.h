@@ -46,7 +46,7 @@ class RendererFrameContextData : public FrameContextData {
   uintptr_t GetId() const override;
 
  private:
-  const raw_ptr<const blink::WebLocalFrame, ExperimentalRenderer> frame_;
+  const raw_ptr<const blink::WebLocalFrame> frame_;
 };
 
 }  // namespace extensions

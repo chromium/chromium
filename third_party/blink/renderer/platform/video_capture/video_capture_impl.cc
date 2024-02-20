@@ -263,8 +263,7 @@ struct VideoCaptureImpl::BufferContext
   // The following is for |buffer_type == GPU_MEMORY_BUFFER_HANDLE|.
 
   // Uses to create SharedImage from |gpu_memory_buffer_|.
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_ = nullptr;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
   // The task runner that |gpu_factories_| runs on.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 

@@ -57,8 +57,8 @@ class GamepadSharedMemoryReader
 
   base::ReadOnlySharedMemoryRegion renderer_shared_buffer_region_;
   base::ReadOnlySharedMemoryMapping renderer_shared_buffer_mapping_;
-  raw_ptr<const device::GamepadHardwareBuffer, ExperimentalRenderer>
-      gamepad_hardware_buffer_ = nullptr;
+  raw_ptr<const device::GamepadHardwareBuffer> gamepad_hardware_buffer_ =
+      nullptr;
 
   bool ever_interacted_with_ = false;
 
@@ -66,7 +66,7 @@ class GamepadSharedMemoryReader
                    GamepadSharedMemoryReader>
       receiver_;
   HeapMojoRemote<device::mojom::blink::GamepadMonitor> gamepad_monitor_remote_;
-  raw_ptr<blink::GamepadListener, ExperimentalRenderer> listener_ = nullptr;
+  raw_ptr<blink::GamepadListener> listener_ = nullptr;
 };
 
 }  // namespace blink

@@ -136,8 +136,7 @@ class CONTENT_EXPORT AXImageAnnotator : public AXAnnotator,
   std::string GetDocumentUrl() const;
 
   // Weak, owns us.
-  const raw_ptr<RenderAccessibilityImpl, ExperimentalRenderer>
-      render_accessibility_;
+  const raw_ptr<RenderAccessibilityImpl> render_accessibility_;
 
   // A pointer to the automatic image annotation service.
   mojo::Remote<image_annotation::mojom::Annotator> annotator_;

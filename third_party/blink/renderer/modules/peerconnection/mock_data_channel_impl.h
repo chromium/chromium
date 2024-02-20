@@ -55,7 +55,7 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   bool reliable_;
   webrtc::DataChannelInterface::DataState state_;
   webrtc::DataChannelInit config_;
-  raw_ptr<webrtc::DataChannelObserver, ExperimentalRenderer> observer_;
+  raw_ptr<webrtc::DataChannelObserver> observer_;
 };
 
 }  // namespace blink

@@ -125,8 +125,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   const blink::WebAudioLatencyHint latency_hint_;
 
   // The WebAudio renderer's callback; directs to `AudioDestination::Render()`.
-  const raw_ptr<media::AudioRendererSink::RenderCallback, ExperimentalRenderer>
-      webaudio_callback_;
+  const raw_ptr<media::AudioRendererSink::RenderCallback> webaudio_callback_;
 
   // To avoid the need for locking, ensure the control methods of the
   // blink::WebAudioDevice implementation are called on the same thread.

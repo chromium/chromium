@@ -141,9 +141,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
                                    const ui::AXTreeUpdate& tree_update);
 
     // `image_fetcher_` owns `this`.
-    const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher,
-                  ExperimentalRenderer>
-        image_fetcher_;
+    const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher> image_fetcher_;
 
     uint32_t pages_per_batch_;
     uint32_t remaining_page_count_;
@@ -354,15 +352,12 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // ‌PdfAccessibilityTree belongs to the PDF plugin which is created by the
   // renderer. `render_frame_` is reset when renderer sends OnDestruct() to its
   // observers.
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<content::RenderFrame> render_frame_;
 
   // Unowned. Must outlive `this`.
-  const raw_ptr<chrome_pdf::PdfAccessibilityActionHandler, ExperimentalRenderer>
-      action_handler_;
-  const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher, ExperimentalRenderer>
-      image_fetcher_;
-  const raw_ptr<blink::WebPluginContainer, ExperimentalRenderer>
-      plugin_container_;
+  const raw_ptr<chrome_pdf::PdfAccessibilityActionHandler> action_handler_;
+  const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher> image_fetcher_;
+  const raw_ptr<blink::WebPluginContainer> plugin_container_;
 
   // `zoom_` signifies the zoom level set in for the browser content.
   // `scale_` signifies the scale level set by user. Scale is applied

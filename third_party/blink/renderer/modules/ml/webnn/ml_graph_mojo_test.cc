@@ -152,7 +152,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         std::move(blink_remote)));
   }
 
-  const raw_ref<MLGraphTestMojo, ExperimentalRenderer> helper_;
+  const raw_ref<MLGraphTestMojo> helper_;
   mojo::Receiver<blink_mojom::WebNNContextProvider> receiver_;
 };
 
@@ -182,8 +182,7 @@ class ScopedWebNNServiceBinder {
 
  private:
   std::unique_ptr<FakeWebNNContextProvider> fake_webnn_context_provider_;
-  const raw_ref<const BrowserInterfaceBrokerProxy, ExperimentalRenderer>
-      interface_broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy> interface_broker_;
 };
 
 MLGraphMojo* ToMLGraphMojo(V8TestingScope* scope, ScriptValue value) {

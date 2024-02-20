@@ -55,7 +55,7 @@ class CONTENT_EXPORT AXAnnotatorsManager {
   void ClearAnnotatorsForTesting();
 
   // The RenderAccessibilityManager that owns us.
-  raw_ptr<RenderAccessibilityImpl, ExperimentalRenderer> render_accessibility_;
+  raw_ptr<RenderAccessibilityImpl> render_accessibility_;
 
   std::vector<std::unique_ptr<AXAnnotator>> ax_annotators_;
 };

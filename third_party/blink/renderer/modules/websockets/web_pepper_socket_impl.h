@@ -76,7 +76,7 @@ class WebPepperSocketImpl final : public WebPepperSocket {
 
  private:
   Persistent<WebSocketChannel> private_;
-  raw_ptr<WebPepperSocketClient, ExperimentalRenderer> client_;
+  raw_ptr<WebPepperSocketClient> client_;
   Persistent<WebPepperSocketChannelClientProxy> channel_proxy_;
   WebString subprotocol_;
   bool is_closing_or_closed_;

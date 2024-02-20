@@ -60,7 +60,7 @@ class PaintUnderInvalidationChecker {
   DisplayItemList& OldDisplayItemList();
   DisplayItemList& NewDisplayItemList();
 
-  const raw_ref<PaintController, ExperimentalRenderer> paint_controller_;
+  const raw_ref<PaintController> paint_controller_;
 
   // Points to the cached display item which is expected to match the nextnew
   // display item.

@@ -53,8 +53,7 @@ class WebGPUContextProviderForTest
   void CallLostContextCallback() { lost_context_callback_.Run(); }
 
  private:
-  raw_ptr<base::MockCallback<base::OnceClosure>, ExperimentalRenderer>
-      destruction_callback_;
+  raw_ptr<base::MockCallback<base::OnceClosure>> destruction_callback_;
   base::RepeatingClosure lost_context_callback_;
 };
 

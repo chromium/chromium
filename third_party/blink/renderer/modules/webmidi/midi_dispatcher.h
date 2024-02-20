@@ -69,7 +69,7 @@ class MIDIDispatcher : public GarbageCollected<MIDIDispatcher>,
   void Trace(Visitor* visitor) const;
 
  private:
-  raw_ptr<Client, ExperimentalRenderer> client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   bool initialized_ = false;
 

@@ -56,7 +56,7 @@ class AomContentAxTree : public blink::WebComputedAXTree {
                                   blink::WebAOMBoolAttribute,
                                   bool* out_param);
   ui::AXTree tree_;
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
 };
 
 }  // namespace content

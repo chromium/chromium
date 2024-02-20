@@ -67,8 +67,7 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
  private:
   void ReportLowThreadLoadForPageAlmostIdleSignal(int load_percentage);
 
-  raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
-      main_thread_scheduler_;  // NOT OWNED
+  raw_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
 
   // Set to true when OnRendererShutdown is called. Used to ensure that metrics
   // that need to cross IPC boundaries aren't sent, as they cause additional

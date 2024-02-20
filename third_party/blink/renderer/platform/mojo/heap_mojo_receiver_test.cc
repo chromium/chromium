@@ -59,7 +59,7 @@ class ReceiverOwner : public GarbageCollected<ReceiverOwner<Mode>>,
   void GetPort(mojo::PendingReceiver<sample::blink::Port> port) override {}
 
   HeapMojoReceiver<sample::blink::Service, ReceiverOwner, Mode> receiver_;
-  raw_ptr<HeapMojoReceiverGCBaseTest<Mode>, ExperimentalRenderer> test_;
+  raw_ptr<HeapMojoReceiverGCBaseTest<Mode>> test_;
 };
 
 template <HeapMojoWrapperMode Mode>

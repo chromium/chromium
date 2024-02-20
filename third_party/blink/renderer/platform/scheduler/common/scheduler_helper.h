@@ -131,7 +131,7 @@ class PLATFORM_EXPORT SchedulerHelper
   virtual void ShutdownAllQueues() {}
 
   THREAD_CHECKER(thread_checker_);
-  raw_ptr<base::sequence_manager::SequenceManager, ExperimentalRenderer>
+  raw_ptr<base::sequence_manager::SequenceManager>
       sequence_manager_;  // NOT OWNED
 
  private:
@@ -139,7 +139,7 @@ class PLATFORM_EXPORT SchedulerHelper
 
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 
-  raw_ptr<Observer, ExperimentalRenderer> observer_;  // NOT OWNED
+  raw_ptr<Observer> observer_;  // NOT OWNED
 
   UkmTaskSampler ukm_task_sampler_;
   // Depth of nested_runloop.

@@ -124,7 +124,7 @@ class MODULES_EXPORT ReclaimableCodec
   // Whether this codec is holding on to platform resources.
   bool is_applying_pressure_ = false;
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Period of time after which a codec is considered to be inactive.
   base::TimeDelta inactivity_threshold_;

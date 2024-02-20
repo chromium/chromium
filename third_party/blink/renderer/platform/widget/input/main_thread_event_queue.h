@@ -175,7 +175,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   friend class QueuedWebInputEvent;
   friend class MainThreadEventQueueTest;
   friend class MainThreadEventQueueInitializationTest;
-  raw_ptr<MainThreadEventQueueClient, ExperimentalRenderer> client_;
+  raw_ptr<MainThreadEventQueueClient> client_;
   bool last_touch_start_forced_nonblocking_due_to_fling_;
   bool needs_low_latency_;
   bool needs_unbuffered_input_for_debugger_;

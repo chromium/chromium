@@ -162,7 +162,7 @@ class PLATFORM_EXPORT ElasticOverscrollController {
   bool CanScrollVertically() const;
 
   base::TimeTicks momentum_animation_start_time_;
-  raw_ptr<cc::ScrollElasticityHelper, ExperimentalRenderer> helper_;
+  raw_ptr<cc::ScrollElasticityHelper> helper_;
   State state_;
 
   // If there is no overscroll, require a minimum overscroll delta before

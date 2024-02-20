@@ -335,12 +335,12 @@ class PLATFORM_EXPORT RuntimeCallStats {
   const base::TickClock* clock() const { return clock_; }
 
  private:
-  raw_ptr<RuntimeCallTimer, ExperimentalRenderer> current_timer_ = nullptr;
+  raw_ptr<RuntimeCallTimer> current_timer_ = nullptr;
   bool in_use_ = false;
   RuntimeCallCounter counters_[static_cast<int>(CounterId::kNumberOfCounters)];
   static const int number_of_counters_ =
       static_cast<int>(CounterId::kNumberOfCounters);
-  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_ = nullptr;
+  raw_ptr<const base::TickClock> clock_ = nullptr;
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
   typedef HashMap<const char*, std::unique_ptr<RuntimeCallCounter>> CounterMap;

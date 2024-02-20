@@ -66,7 +66,7 @@ class SoftwareDevice : public viz::SoftwareOutputDevice {
   void EndPaint() override {}
 
  private:
-  raw_ptr<SkCanvas*, ExperimentalRenderer> canvas_;
+  raw_ptr<SkCanvas*> canvas_;
 };
 
 // This is used with resourceless software draws.

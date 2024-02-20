@@ -89,10 +89,9 @@ class SyncLoadContext::SignalHelper final {
     }
   }
 
-  raw_ptr<SyncLoadContext, ExperimentalRenderer> context_;
-  raw_ptr<base::WaitableEvent, ExperimentalRenderer>
-      redirect_or_response_event_;
-  raw_ptr<base::WaitableEvent, ExperimentalRenderer> abort_event_;
+  raw_ptr<SyncLoadContext> context_;
+  raw_ptr<base::WaitableEvent> redirect_or_response_event_;
+  raw_ptr<base::WaitableEvent> abort_event_;
   base::WaitableEventWatcher abort_watcher_;
   std::optional<base::OneShotTimer> timeout_timer_;
 };

@@ -216,11 +216,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                  bool mark_plugin_subtree_dirty);
 
   // The RenderAccessibilityManager that owns us.
-  raw_ptr<RenderAccessibilityManager, ExperimentalRenderer>
-      render_accessibility_manager_;
+  raw_ptr<RenderAccessibilityManager> render_accessibility_manager_;
 
   // The associated RenderFrameImpl by means of the RenderAccessibilityManager.
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
 
   // This keeps accessibility enabled as long as it lives.
   std::unique_ptr<blink::WebAXContext> ax_context_;
@@ -233,7 +232,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // AXTreeSerializer's AXSourceNodeVectorType is not a vector<raw_ptr> due to
   // performance regressions detected in blink_perf.accessibility tests.
   RAW_PTR_EXCLUSION std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
-  raw_ptr<PluginAXTreeSource, ExperimentalRenderer> plugin_tree_source_;
+  raw_ptr<PluginAXTreeSource> plugin_tree_source_;
 
   // Token to return this token in the next IPC, so that RenderFrameHostImpl
   // can discard stale data, when the token does not match the expected token.

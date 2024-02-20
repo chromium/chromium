@@ -403,8 +403,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // TODO(bashi): Consider to have a separate class to put this logic?
   struct PendingServiceWorker {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-    raw_ptr<blink::WebServiceWorkerContextProxy, ExperimentalRenderer>
-        context_proxy;
+    raw_ptr<blink::WebServiceWorkerContextProxy> context_proxy;
 
     PendingServiceWorker(blink::WebServiceWorkerContextProxy* context_proxy);
     ~PendingServiceWorker();

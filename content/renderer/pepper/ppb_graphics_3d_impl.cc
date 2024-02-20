@@ -155,7 +155,7 @@ class PPB_Graphics3D_Impl::ColorBuffer {
   enum class State { kDetached, kAttached, kInCompositor };
 
   State state = State::kDetached;
-  const raw_ptr<gpu::SharedImageInterface, ExperimentalRenderer> sii_;
+  const raw_ptr<gpu::SharedImageInterface> sii_;
   const gfx::Size size_;
   scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
   // SyncToken to wait on before re-using this color buffer.

@@ -53,7 +53,7 @@ class PLATFORM_EXPORT WebMemoryAllocatorDump final {
   blink::WebMemoryAllocatorDumpGuid Guid() const;
 
  private:
-  raw_ptr<base::trace_event::MemoryAllocatorDump, ExperimentalRenderer>
+  raw_ptr<base::trace_event::MemoryAllocatorDump>
       memory_allocator_dump_;  // Not owned.
   blink::WebMemoryAllocatorDumpGuid guid_;
 };

@@ -74,7 +74,7 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
   // For set jsObject.onmessage.
   void SetOnMessage(v8::Isolate* isolate, v8::Local<v8::Value> value);
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<content::RenderFrame> render_frame_;
   std::u16string js_object_name_;
   v8::Global<v8::Function> on_message_;
   std::vector<v8::Global<v8::Function>> listeners_;

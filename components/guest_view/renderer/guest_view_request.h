@@ -57,9 +57,9 @@ class GuestViewAttachRequest {
  private:
   void OnAcknowledged();
 
-  const raw_ptr<GuestViewContainer, ExperimentalRenderer> container_;
+  const raw_ptr<GuestViewContainer> container_;
   v8::Global<v8::Function> callback_;
-  const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
   const int guest_instance_id_;
   const base::Value::Dict params_;
   mojo::AssociatedRemote<mojom::GuestViewHost> remote_;

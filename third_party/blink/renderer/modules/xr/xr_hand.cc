@@ -41,8 +41,7 @@ class XRHandIterationSource final
 
  private:
   wtf_size_t index_;
-  const raw_ref<const HeapVector<Member<XRJointSpace>>, ExperimentalRenderer>
-      joints_;
+  const raw_ref<const HeapVector<Member<XRJointSpace>>> joints_;
   Member<XRHand> xr_hand_;  // Owner object of `joints_`
 };
 

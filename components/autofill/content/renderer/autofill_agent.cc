@@ -181,7 +181,7 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
              field, old_value);
   }
 
-  const raw_ref<AutofillAgent, ExperimentalRenderer> agent_;
+  const raw_ref<AutofillAgent> agent_;
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
 };
 

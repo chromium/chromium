@@ -78,8 +78,8 @@ class TestWebTransportCreator final
   // |browser_interface_broker_| is cached here because we need to use it in the
   // destructor. This means ScopedWebTransporHelper must always be destroyed
   // before the ExecutionContext that owns the BrowserInterfaceBrokerProxy.
-  raw_ptr<const BrowserInterfaceBrokerProxy, ExperimentalRenderer>
-      browser_interface_broker_ = nullptr;
+  raw_ptr<const BrowserInterfaceBrokerProxy> browser_interface_broker_ =
+      nullptr;
   Persistent<WebTransport> web_transport_;
   mojo::Remote<network::mojom::blink::WebTransportClient> client_remote_;
   mojo::Receiver<mojom::blink::WebTransportConnector> connector_receiver_{this};

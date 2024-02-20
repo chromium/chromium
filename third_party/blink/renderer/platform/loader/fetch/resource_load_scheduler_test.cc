@@ -67,7 +67,7 @@ class MockClient final : public GarbageCollected<MockClient>,
  private:
   Member<DetachableConsoleLogger> console_logger_ =
       MakeGarbageCollected<DetachableConsoleLogger>();
-  raw_ptr<MockClientDelegate, ExperimentalRenderer> delegate_;
+  raw_ptr<MockClientDelegate> delegate_;
   bool was_run_ = false;
 };
 

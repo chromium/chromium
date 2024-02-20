@@ -38,7 +38,7 @@ class PLATFORM_EXPORT CustomCountHistogram {
  protected:
   explicit CustomCountHistogram(base::HistogramBase*);
 
-  raw_ptr<base::HistogramBase, ExperimentalRenderer> histogram_;
+  raw_ptr<base::HistogramBase> histogram_;
 };
 
 template <typename Derived>
@@ -60,9 +60,9 @@ class ScopedUsHistogramTimerBase {
   }
 
  private:
-  const raw_ref<const base::TickClock, ExperimentalRenderer> clock_;
+  const raw_ref<const base::TickClock> clock_;
   base::TimeTicks start_time_;
-  const raw_ref<CustomCountHistogram, ExperimentalRenderer> counter_;
+  const raw_ref<CustomCountHistogram> counter_;
 };
 
 class ScopedUsHistogramTimer

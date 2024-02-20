@@ -100,7 +100,7 @@ class PostMessageSupport {
   // the messages are forwarded to the target frame.
   bool is_active_ = false;
 
-  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<PostMessageSupport> weak_factory_{this};
 };

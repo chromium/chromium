@@ -134,7 +134,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
 
   // Clock used for calculating when players have become stale. May be
   // overridden for testing.
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Players with a video track.
   base::flat_set<int> players_with_video_;

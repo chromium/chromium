@@ -133,8 +133,8 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
       std::move(on_microtask_checkpoint_).Run();
   }
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_;  // Not owned.
-  raw_ptr<Vector<String>, ExperimentalRenderer> timeline_;      // Not owned.
+  raw_ptr<const base::TickClock> clock_;  // Not owned.
+  raw_ptr<Vector<String>> timeline_;      // Not owned.
   base::OnceClosure on_microtask_checkpoint_;
 };
 

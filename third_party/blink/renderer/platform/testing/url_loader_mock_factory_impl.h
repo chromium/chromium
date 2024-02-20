@@ -106,7 +106,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   static bool ReadFile(const base::FilePath& file_path,
                        scoped_refptr<SharedBuffer>& data);
 
-  raw_ptr<URLLoaderTestDelegate, ExperimentalRenderer> delegate_ = nullptr;
+  raw_ptr<URLLoaderTestDelegate> delegate_ = nullptr;
 
   // The loaders that have not being served data yet.
   using LoaderToRequestMap =
@@ -127,7 +127,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   using ProtocolToResponseMap = HashMap<String, ResponseInfo>;
   ProtocolToResponseMap protocol_to_response_info_;
 
-  raw_ptr<TestingPlatformSupport, ExperimentalRenderer> platform_;
+  raw_ptr<TestingPlatformSupport> platform_;
 };
 
 }  // namespace blink

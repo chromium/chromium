@@ -122,7 +122,7 @@ class WebFrameTestProxy : public RenderFrameImpl,
 
   TestRunner* test_runner();
 
-  const raw_ptr<TestRunner, ExperimentalRenderer> test_runner_;
+  const raw_ptr<TestRunner> test_runner_;
 
   std::unique_ptr<SpellCheckClient> spell_check_;
 

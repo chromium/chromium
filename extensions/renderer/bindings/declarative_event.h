@@ -53,7 +53,7 @@ class DeclarativeEvent final : public gin::Wrappable<DeclarativeEvent> {
 
   std::string event_name_;
 
-  raw_ptr<APITypeReferenceMap, ExperimentalRenderer> type_refs_;
+  raw_ptr<APITypeReferenceMap> type_refs_;
 
   raw_ptr<APIRequestHandler, DanglingUntriaged> request_handler_;
 

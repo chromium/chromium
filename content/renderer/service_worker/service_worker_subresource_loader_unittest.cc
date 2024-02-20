@@ -499,7 +499,7 @@ class FakeServiceWorkerContainerHost
 
  private:
   int get_controller_service_worker_count_ = 0;
-  raw_ptr<FakeControllerServiceWorker, ExperimentalRenderer> fake_controller_;
+  raw_ptr<FakeControllerServiceWorker> fake_controller_;
   mojo::ReceiverSet<blink::mojom::ServiceWorkerContainerHost> receivers_;
 };
 

@@ -41,7 +41,7 @@ class WebRtcLoggingClientRecorder : public mojom::WebRtcLoggingClient {
   void OnStopped() override { log_->on_stopped_count++; }
 
  private:
-  const raw_ptr<Log, ExperimentalRenderer> log_;
+  const raw_ptr<Log> log_;
 };
 
 }  // namespace

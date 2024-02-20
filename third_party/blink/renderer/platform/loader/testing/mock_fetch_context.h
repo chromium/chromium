@@ -116,8 +116,8 @@ class MockFetchContext : public FetchContext {
   }
 
  private:
-  raw_ptr<mojom::ResourceLoadInfoNotifier, ExperimentalRenderer>
-      resource_load_info_notifier_ = nullptr;
+  raw_ptr<mojom::ResourceLoadInfoNotifier> resource_load_info_notifier_ =
+      nullptr;
   std::unique_ptr<WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;
   Vector<String> blocked_urls_;

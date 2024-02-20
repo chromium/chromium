@@ -174,7 +174,7 @@ class PLATFORM_EXPORT LayerTreeView
   // class should do nothing in calls from the LayerTreeHost, and just wait to
   // be destroyed. It is not expected to be used at all after Disconnect()
   // outside of handling/dropping LayerTreeHost client calls.
-  raw_ptr<LayerTreeViewDelegate, ExperimentalRenderer> delegate_;
+  raw_ptr<LayerTreeViewDelegate> delegate_;
   std::unique_ptr<cc::LayerTreeHost> layer_tree_host_;
 
   enum class FrameSinkState {

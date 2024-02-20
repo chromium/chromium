@@ -232,7 +232,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
     void OnDestruct() override { bindings_->OnFrameDestroyed(); }
 
    private:
-    const raw_ptr<TestRunnerBindings, ExperimentalRenderer> bindings_;
+    const raw_ptr<TestRunnerBindings> bindings_;
   };
 
   explicit TestRunnerBindings(TestRunner* test_runner,
@@ -2455,7 +2455,7 @@ class TestRunner::MainWindowTracker : public blink::WebViewObserver {
   }
 
  private:
-  const raw_ptr<TestRunner, ExperimentalRenderer> test_runner_;
+  const raw_ptr<TestRunner> test_runner_;
 };
 
 TestRunner::WorkQueue::WorkQueue(TestRunner* controller)

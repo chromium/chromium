@@ -63,13 +63,12 @@ class ChromeContentSettingsAgentDelegate
       const blink::WebSecurityOrigin& origin) const;
 
   // Owned by ChromeContentRendererClient and outlive us.
-  raw_ptr<extensions::Dispatcher, ExperimentalRenderer> extension_dispatcher_ =
-      nullptr;
+  raw_ptr<extensions::Dispatcher> extension_dispatcher_ = nullptr;
 #endif
 
   base::flat_set<std::string> temporarily_allowed_plugins_;
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_ = nullptr;
+  raw_ptr<content::RenderFrame> render_frame_ = nullptr;
 };
 
 #endif  // CHROME_RENDERER_CHROME_CONTENT_SETTINGS_AGENT_DELEGATE_H_

@@ -47,8 +47,7 @@ class GCOwner final : public GarbageCollected<GCOwner<Mode>> {
 
  private:
   HeapMojoAssociatedRemoteSet<sample::blink::Service, Mode> remote_set_;
-  raw_ptr<HeapMojoAssociatedRemoteSetGCBaseTest<Mode>, ExperimentalRenderer>
-      test_;
+  raw_ptr<HeapMojoAssociatedRemoteSetGCBaseTest<Mode>> test_;
 };
 
 template <HeapMojoWrapperMode Mode>

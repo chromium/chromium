@@ -32,8 +32,7 @@ struct ColorSpaceConversionConstants {
 
 struct ExternalTextureSource {
   scoped_refptr<media::VideoFrame> media_video_frame = nullptr;
-  raw_ptr<media::PaintCanvasVideoRenderer, ExperimentalRenderer>
-      video_renderer = nullptr;
+  raw_ptr<media::PaintCanvasVideoRenderer> video_renderer = nullptr;
   std::optional<media::VideoFrame::ID> media_video_frame_unique_id =
       std::nullopt;
   bool valid = false;

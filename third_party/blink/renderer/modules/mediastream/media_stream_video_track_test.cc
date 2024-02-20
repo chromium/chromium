@@ -230,7 +230,7 @@ class CheckThreadHelper {
 
  private:
   base::OnceClosure callback_;
-  raw_ptr<bool, ExperimentalRenderer> correct_;
+  raw_ptr<bool> correct_;
   THREAD_CHECKER(thread_checker_);
 };
 

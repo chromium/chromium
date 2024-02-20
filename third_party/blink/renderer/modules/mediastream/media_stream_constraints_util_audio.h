@@ -77,8 +77,7 @@ class MODULES_EXPORT AudioDeviceCaptureCapability {
   const media::AudioParameters& Parameters() const;
 
  private:
-  raw_ptr<blink::MediaStreamAudioSource, ExperimentalRenderer> source_ =
-      nullptr;
+  raw_ptr<blink::MediaStreamAudioSource> source_ = nullptr;
   String device_id_;
   String group_id_;
   media::AudioParameters parameters_;

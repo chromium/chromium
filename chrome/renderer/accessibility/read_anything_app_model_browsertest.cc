@@ -287,7 +287,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
  private:
   // ReadAnythingAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
-  raw_ptr<ReadAnythingAppModel, ExperimentalRenderer> model_ = nullptr;
+  raw_ptr<ReadAnythingAppModel> model_ = nullptr;
 };
 
 TEST_F(ReadAnythingAppModelTest, Theme) {

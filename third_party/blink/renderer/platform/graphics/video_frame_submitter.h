@@ -145,8 +145,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       scoped_refptr<media::VideoFrame> video_frame,
       media::VideoTransformation transform);
 
-  raw_ptr<cc::VideoFrameProvider, ExperimentalRenderer> video_frame_provider_ =
-      nullptr;
+  raw_ptr<cc::VideoFrameProvider> video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> remote_frame_sink_;
@@ -164,8 +163,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   // Points to either `remote_frame_sink_` or `bundle_proxy_` depending
   // on whether UseVideoFrameSinkBundle is enabled.
-  raw_ptr<viz::mojom::blink::CompositorFrameSink, ExperimentalRenderer>
-      compositor_frame_sink_ = nullptr;
+  raw_ptr<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_ =
+      nullptr;
 
   // Current rendering state. Set by StartRendering() and StopRendering().
   bool is_rendering_ = false;

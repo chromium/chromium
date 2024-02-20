@@ -584,7 +584,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // This is owned by paint_recorder_. Never delete this object.
   // Drawing operations are allowed only after the first BeginRecording() which
   // initializes this to not null.
-  raw_ptr<cc::PaintCanvas, ExperimentalRenderer> canvas_ = nullptr;
+  raw_ptr<cc::PaintCanvas> canvas_ = nullptr;
 
   const raw_ref<PaintController, DanglingUntriaged> paint_controller_;
 
@@ -597,7 +597,7 @@ class PLATFORM_EXPORT GraphicsContext {
   wtf_size_t paint_state_index_ = 0;
 
   // Raw pointer to the current state.
-  raw_ptr<GraphicsContextState, ExperimentalRenderer> paint_state_ = nullptr;
+  raw_ptr<GraphicsContextState> paint_state_ = nullptr;
 
   PaintRecorder paint_recorder_;
 

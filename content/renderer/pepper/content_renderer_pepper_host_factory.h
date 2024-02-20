@@ -37,7 +37,7 @@ class ContentRendererPepperHostFactory : public ppapi::host::HostFactory {
   const ppapi::PpapiPermissions& GetPermissions() const;
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> host_;
+  raw_ptr<RendererPpapiHostImpl> host_;
 };
 
 }  // namespace content

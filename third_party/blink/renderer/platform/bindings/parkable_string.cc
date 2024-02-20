@@ -178,7 +178,7 @@ struct BackgroundTaskParams final {
 
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner;
   const scoped_refptr<ParkableStringImpl> string;
-  raw_ptr<const void, ExperimentalRenderer> data;
+  raw_ptr<const void> data;
   const size_t size;
   std::unique_ptr<ReservedChunk> reserved_chunk;
 };

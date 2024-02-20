@@ -151,7 +151,7 @@ struct APIHooksPerContextData : public base::SupportsUserData::Data {
     }
   }
 
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate;
+  raw_ptr<v8::Isolate> isolate;
 
   std::map<std::string, v8::Global<v8::Object>> hook_interfaces;
 

@@ -238,7 +238,7 @@ class MojoURLLoaderClient::BodyBuffer final
     owner_->FlushDeferredMessages();
   }
 
-  const raw_ptr<MojoURLLoaderClient, ExperimentalRenderer> owner_;
+  const raw_ptr<MojoURLLoaderClient> owner_;
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::SimpleWatcher writable_watcher_;
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;

@@ -206,8 +206,8 @@ class ScriptContext {
     ~ScopedFrameDocumentLoader();
 
    private:
-    raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
-    raw_ptr<blink::WebDocumentLoader, ExperimentalRenderer> document_loader_;
+    raw_ptr<blink::WebLocalFrame> frame_;
+    raw_ptr<blink::WebDocumentLoader> document_loader_;
   };
 
   // TODO(devlin): Move all these Get*URL*() methods out of here? While they are
@@ -296,7 +296,7 @@ class ScriptContext {
 
   // The WebLocalFrame associated with this context. This can be NULL because
   // this object can outlive is destroyed asynchronously.
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> web_frame_;
+  raw_ptr<blink::WebLocalFrame> web_frame_;
 
   // The HostID associated with this context. For extensions, the HostID
   // HostType should match kExtensions and the ID should match
@@ -334,7 +334,7 @@ class ScriptContext {
   // invalidation.
   std::vector<base::OnceClosure> invalidate_observers_;
 
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   GURL url_;
 

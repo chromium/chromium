@@ -244,7 +244,7 @@ class WebRtcAudioRendererTest : public testing::Test {
       agent_group_scheduler_;
   raw_ptr<WebView, DanglingUntriaged> web_view_ = nullptr;
   WebLocalFrameClient web_local_frame_client_;
-  raw_ptr<WebLocalFrame, ExperimentalRenderer> web_local_frame_ = nullptr;
+  raw_ptr<WebLocalFrame> web_local_frame_ = nullptr;
   scoped_refptr<blink::WebRtcAudioRenderer> renderer_;
   scoped_refptr<blink::WebMediaStreamAudioRenderer> renderer_proxy_;
 };

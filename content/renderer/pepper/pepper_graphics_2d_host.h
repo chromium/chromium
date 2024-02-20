@@ -196,13 +196,13 @@ class CONTENT_EXPORT PepperGraphics2DHost final
       const gpu::SyncToken& sync_token,
       bool lost);
 
-  raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
 
   scoped_refptr<PPB_ImageData_Impl> image_data_;
 
   // Non-owning pointer to the plugin instance this context is currently bound
   // to, if any. If the context is currently unbound, this will be NULL.
-  raw_ptr<PepperPluginInstanceImpl, ExperimentalRenderer> bound_instance_;
+  raw_ptr<PepperPluginInstanceImpl> bound_instance_;
 
   // Keeps track of all drawing commands queued before a Flush call.
   struct QueuedOperation;

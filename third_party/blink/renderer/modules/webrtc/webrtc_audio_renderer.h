@@ -325,7 +325,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // Audio data source from the browser process.
   //
   // TODO(crbug.com/704136): Make it a Member.
-  raw_ptr<WebRtcAudioRendererSource, ExperimentalRenderer> source_;
+  raw_ptr<WebRtcAudioRendererSource> source_;
 
   // Protects access to |state_|, |source_|, |audio_fifo_|,
   // |audio_delay_milliseconds_|, |fifo_delay_milliseconds_|, |current_time_|,

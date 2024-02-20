@@ -86,7 +86,7 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   void StartIdlePeriodForTesting() override;
 
  private:
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_ = nullptr;
 };
 
 }  // namespace scheduler

@@ -38,7 +38,7 @@ class CONTENT_EXPORT RendererMainPlatformDelegate {
 
  private:
 #if BUILDFLAG(IS_WIN)
-  const raw_ref<const MainFunctionParams, ExperimentalRenderer> parameters_;
+  const raw_ref<const MainFunctionParams> parameters_;
 #endif
 };
 

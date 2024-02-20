@@ -30,7 +30,7 @@ class ApiDefinitionsNatives : public ObjectBackedNativeHandler {
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // Not owned.
-  raw_ptr<Dispatcher, ExperimentalRenderer> dispatcher_;
+  raw_ptr<Dispatcher> dispatcher_;
 };
 
 }  // namespace extensions

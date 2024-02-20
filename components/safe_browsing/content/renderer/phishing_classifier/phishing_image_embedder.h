@@ -74,8 +74,7 @@ class PhishingImageEmbedder {
   // Clears the current state of the ImageEmbedder.
   void Clear();
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer>
-      render_frame_;  // owns us.
+  raw_ptr<content::RenderFrame> render_frame_;  // owns us.
   std::unique_ptr<PhishingVisualFeatureExtractor> visual_extractor_;
 
   // State for any in-progress image embedding extraction.

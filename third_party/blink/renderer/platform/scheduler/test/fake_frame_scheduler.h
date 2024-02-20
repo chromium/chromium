@@ -170,7 +170,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   }
 
  private:
-  raw_ptr<PageScheduler, ExperimentalRenderer> page_scheduler_;  // NOT OWNED
+  raw_ptr<PageScheduler> page_scheduler_;  // NOT OWNED
 
   bool is_page_visible_;
   bool is_frame_visible_;

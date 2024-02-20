@@ -104,7 +104,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
       weak_context_provider_;
-  raw_ptr<gpu::GpuMemoryBufferManager, ExperimentalRenderer> gmb_manager_;
+  raw_ptr<gpu::GpuMemoryBufferManager> gmb_manager_;
 };
 
 }  // namespace

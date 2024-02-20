@@ -106,10 +106,10 @@ class SmoothnessHelperTest : public testing::Test {
   std::unique_ptr<SmoothnessHelper> helper_;
 
   // Max bad consecutive windows by frame drop LTC.
-  raw_ptr<MockLearningTaskController, ExperimentalRenderer> bad_ltc_;
+  raw_ptr<MockLearningTaskController> bad_ltc_;
 
   // Max consecutive NNRs LTC.
-  raw_ptr<MockLearningTaskController, ExperimentalRenderer> nnr_ltc_;
+  raw_ptr<MockLearningTaskController> nnr_ltc_;
 
   MockClient client_;
   FeatureVector features_;

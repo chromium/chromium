@@ -91,7 +91,7 @@ class DedicatedWorkerHostFactoryClient final
   void OnScriptLoadStartFailed() override;
 
   // |worker_| owns |this|.
-  raw_ptr<blink::WebDedicatedWorker, ExperimentalRenderer> worker_;
+  raw_ptr<blink::WebDedicatedWorker> worker_;
 
   scoped_refptr<blink::ChildURLLoaderFactoryBundle>
       subresource_loader_factory_bundle_;

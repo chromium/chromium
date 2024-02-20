@@ -41,7 +41,7 @@ class ScopedPixelLocalStorageInterrupt {
   }
 
  private:
-  const raw_ptr<blink::DrawingBuffer::Client, ExperimentalRenderer> client_;
+  const raw_ptr<blink::DrawingBuffer::Client> client_;
 };
 
 }  // namespace

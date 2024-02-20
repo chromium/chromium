@@ -367,7 +367,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const bool is_origin_top_left_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
-  raw_ptr<CanvasResourceHost, ExperimentalRenderer> resource_host_ = nullptr;
+  raw_ptr<CanvasResourceHost> resource_host_ = nullptr;
   // Recording accumulating draw ops. This pointer is always valid and safe to
   // dereference.
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;

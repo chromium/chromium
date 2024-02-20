@@ -62,13 +62,13 @@ class ArgumentSpecUnitTest : public gin::V8Test {
                   TestResult result)
         : spec(spec), script_source(script_source), expected_result(result) {}
 
-    const raw_ref<const ArgumentSpec, ExperimentalRenderer> spec;
+    const raw_ref<const ArgumentSpec> spec;
     std::string_view script_source;
     TestResult expected_result;
     std::string_view expected_json;
     std::string_view expected_error;
     std::string_view expected_thrown_message;
-    raw_ptr<const base::Value, ExperimentalRenderer> expected_value = nullptr;
+    raw_ptr<const base::Value> expected_value = nullptr;
     bool should_convert_to_base = true;
     bool should_convert_to_v8 = false;
     V8Validator validate_v8;

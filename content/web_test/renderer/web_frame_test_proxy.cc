@@ -232,7 +232,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     render_frame()->GetWebFrame()->PrintEnd();
   }
 
-  const raw_ptr<TestRunner, ExperimentalRenderer> test_runner_;
+  const raw_ptr<TestRunner> test_runner_;
 };
 
 }  // namespace

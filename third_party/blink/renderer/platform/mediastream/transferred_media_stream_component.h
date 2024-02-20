@@ -75,7 +75,7 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
 
  private:
   struct AddSinkArgs {
-    raw_ptr<WebMediaStreamSink, ExperimentalRenderer> sink;
+    raw_ptr<WebMediaStreamSink> sink;
     VideoCaptureDeliverFrameCB callback;
     MediaStreamVideoSink::IsSecure is_secure;
     MediaStreamVideoSink::UsesAlpha uses_alpha;

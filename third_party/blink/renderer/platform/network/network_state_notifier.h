@@ -116,9 +116,9 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     ~NetworkStateObserverHandle();
 
    private:
-    raw_ptr<NetworkStateNotifier, ExperimentalRenderer> notifier_;
+    raw_ptr<NetworkStateNotifier> notifier_;
     ObserverType type_;
-    raw_ptr<NetworkStateObserver, ExperimentalRenderer> observer_;
+    raw_ptr<NetworkStateObserver> observer_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   };
 

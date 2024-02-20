@@ -217,8 +217,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device_;
 
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   THREAD_CHECKER(thread_checker_);
 };

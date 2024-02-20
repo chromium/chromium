@@ -117,7 +117,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
  private:
   // Pointer to the client interested in events from this
   // `MemoryManagedPaintRecorder`. If `nullptr`, notifications are disabled.
-  raw_ptr<Client, ExperimentalRenderer> client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   const gfx::Size size_;
 
@@ -133,8 +133,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
 
   // Points to the current canvas we are recording into, either `main_canvas_`
   // or `side_canvas_`.
-  raw_ptr<MemoryManagedPaintCanvas, ExperimentalRenderer> current_canvas_ =
-      &main_canvas_;
+  raw_ptr<MemoryManagedPaintCanvas> current_canvas_ = &main_canvas_;
 };
 
 }  // namespace blink

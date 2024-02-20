@@ -564,7 +564,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
   blink::mojom::blink::MediaStreamRequestResult result_ =
       blink::mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
   String constraint_name_;
-  raw_ptr<RequestState, ExperimentalRenderer> state_;
+  raw_ptr<RequestState> state_;
 };
 
 class UserMediaClientUnderTest : public UserMediaClient {
@@ -593,7 +593,7 @@ class UserMediaClientUnderTest : public UserMediaClient {
   }
 
  private:
-  raw_ptr<RequestState, ExperimentalRenderer> state_;
+  raw_ptr<RequestState> state_;
 };
 
 class UserMediaChromeClient : public EmptyChromeClient {

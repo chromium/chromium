@@ -344,7 +344,7 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
   std::string sdp_mid_;
   int sdp_mline_index_;
   std::string ice_sdp_;
-  raw_ptr<webrtc::PeerConnectionObserver, ExperimentalRenderer> observer_;
+  raw_ptr<webrtc::PeerConnectionObserver> observer_;
   webrtc::RTCErrorType setconfiguration_error_type_ =
       webrtc::RTCErrorType::NONE;
   rtc::scoped_refptr<webrtc::RTCStatsReport> stats_report_;

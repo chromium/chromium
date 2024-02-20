@@ -115,7 +115,7 @@ class APIEventHandler {
 
   // The exception handler associated with the bindings system; guaranteed to
   // outlive this object.
-  const raw_ptr<ExceptionHandler, ExperimentalRenderer> exception_handler_;
+  const raw_ptr<ExceptionHandler> exception_handler_;
 
   // The response validator used to verify event arguments. Only non-null if
   // validation is enabled.

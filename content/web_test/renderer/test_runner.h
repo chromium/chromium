@@ -323,7 +323,7 @@ class TestRunner {
     // Collection of flags to be synced with the browser process.
     TrackedDictionary states_;
 
-    raw_ptr<TestRunner, ExperimentalRenderer> controller_;
+    raw_ptr<TestRunner> controller_;
   };
 
   // If the main test window's main frame is hosted in this renderer process,

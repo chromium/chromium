@@ -90,7 +90,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
   GetOrCreateRemoteRenderAccessibilityHost();
 
   // The RenderFrameImpl that owns us.
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
 
   // Valid only while an accessibility mode including kWebContents is set.
   std::unique_ptr<RenderAccessibilityImpl> render_accessibility_;

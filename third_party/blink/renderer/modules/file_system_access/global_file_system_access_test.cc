@@ -105,7 +105,7 @@ class MockFileSystemAccessManager
   base::OnceClosure reached_callback_;
   ChooseEntriesResponseCallback choose_entries_response_callback_;
   mojo::ReceiverSet<mojom::blink::FileSystemAccessManager> receivers_;
-  const raw_ref<BrowserInterfaceBrokerProxy, ExperimentalRenderer> broker_;
+  const raw_ref<BrowserInterfaceBrokerProxy> broker_;
 };
 
 class GlobalFileSystemAccessTest : public PageTestBase {

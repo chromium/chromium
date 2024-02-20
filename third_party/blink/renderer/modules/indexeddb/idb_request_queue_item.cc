@@ -114,7 +114,7 @@ class IDBDatabaseGetAllResultSinkImpl
 
  private:
   mojo::Receiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver_;
-  raw_ptr<IDBRequestQueueItem, ExperimentalRenderer> owner_;
+  raw_ptr<IDBRequestQueueItem> owner_;
   bool key_only_;
 
   WTF::Vector<mojom::blink::IDBReturnValuePtr> values_;

@@ -48,7 +48,7 @@ class PLATFORM_EXPORT RenderWidgetSignals {
   void IncNumVisibleRenderWidgetsWithTouchHandlers();
   void DecNumVisibleRenderWidgetsWithTouchHandlers();
 
-  raw_ptr<Observer, ExperimentalRenderer> observer_;  // NOT OWNED
+  raw_ptr<Observer> observer_;  // NOT OWNED
   int num_visible_render_widgets_;
   int num_visible_render_widgets_with_touch_handlers_;
 };

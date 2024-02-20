@@ -57,7 +57,7 @@ class MockLockOrientationCallback : public blink::WebLockOrientationCallback {
   }
 
  private:
-  raw_ptr<LockOrientationResultHolder, ExperimentalRenderer> results_;
+  raw_ptr<LockOrientationResultHolder> results_;
 };
 
 class ScreenOrientationControllerTest : public PageTestBase {

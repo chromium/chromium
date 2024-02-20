@@ -33,7 +33,7 @@ class TestEventHandler : public BatchingMediaLog::EventHandler {
   }
 
  private:
-  raw_ptr<BatchingMediaLogTest, ExperimentalRenderer> test_cls_;
+  raw_ptr<BatchingMediaLogTest> test_cls_;
 };
 
 class BatchingMediaLogTest : public testing::Test {

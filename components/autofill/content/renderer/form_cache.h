@@ -118,7 +118,7 @@ class FormCache {
   void PruneInitialValueCaches(const std::set<FieldRendererId>& ids_to_retain);
 
   // The frame this FormCache is associated with. Weak reference.
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
+  raw_ptr<blink::WebLocalFrame> frame_;
 
   // The cached forms. Used to prevent re-extraction of forms.
   std::map<FormRendererId, FormData> extracted_forms_;

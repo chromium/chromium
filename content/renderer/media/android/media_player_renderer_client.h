@@ -85,15 +85,15 @@ class CONTENT_EXPORT MediaPlayerRendererClient
 
   // The underlying type should always be a MediaUrlDemuxer, but we only use
   // methods from the MediaResource interface.
-  raw_ptr<media::MediaResource, ExperimentalRenderer> media_resource_;
+  raw_ptr<media::MediaResource> media_resource_;
 
   // Owns the StreamTexture whose surface is used by MediaPlayerRenderer.
   // Provides the VideoFrames to |sink_|.
   media::ScopedStreamTextureWrapper stream_texture_wrapper_;
 
-  raw_ptr<media::RendererClient, ExperimentalRenderer> client_;
+  raw_ptr<media::RendererClient> client_;
 
-  raw_ptr<media::VideoRendererSink, ExperimentalRenderer> sink_;
+  raw_ptr<media::VideoRendererSink> sink_;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   // Used by |stream_texture_wrapper_| to signal OnFrameAvailable() and to send

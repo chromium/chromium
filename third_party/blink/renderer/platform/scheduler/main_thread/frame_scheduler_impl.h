@@ -341,10 +341,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_;  // NOT OWNED
-  raw_ptr<PageSchedulerImpl, ExperimentalRenderer>
-      parent_page_scheduler_;  // NOT OWNED
-  raw_ptr<FrameScheduler::Delegate, ExperimentalRenderer>
-      delegate_;  // NOT OWNED
+  raw_ptr<PageSchedulerImpl> parent_page_scheduler_;  // NOT OWNED
+  raw_ptr<FrameScheduler::Delegate> delegate_;        // NOT OWNED
   TraceableState<bool, TracingCategory::kInfo> frame_visible_;
   TraceableState<bool, TracingCategory::kInfo> is_visible_area_large_;
   TraceableState<bool, TracingCategory::kInfo> had_user_activation_;

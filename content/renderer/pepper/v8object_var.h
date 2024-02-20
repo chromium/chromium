@@ -56,7 +56,7 @@ class CONTENT_EXPORT V8ObjectVar : public Var {
  private:
   ~V8ObjectVar() override;
 
-  raw_ptr<content::PepperPluginInstanceImpl, ExperimentalRenderer> instance_;
+  raw_ptr<content::PepperPluginInstanceImpl> instance_;
 
   v8::Persistent<v8::Object> v8_object_;
 };

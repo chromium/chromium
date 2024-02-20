@@ -55,7 +55,7 @@ class MediaStreamTrackMetricsObserver {
   std::string track_id_;
 
   // Non-owning.
-  raw_ptr<MediaStreamTrackMetrics, ExperimentalRenderer> owner_;
+  raw_ptr<MediaStreamTrackMetrics> owner_;
   base::ThreadChecker thread_checker_;
 };
 

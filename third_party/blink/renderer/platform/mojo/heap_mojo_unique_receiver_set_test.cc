@@ -93,7 +93,7 @@ class MockService : public sample::blink::Service {
   void GetPort(mojo::PendingReceiver<sample::blink::Port> receiver) override {}
 
  private:
-  raw_ptr<T, ExperimentalRenderer> test_;
+  raw_ptr<T> test_;
 };
 
 }  // namespace

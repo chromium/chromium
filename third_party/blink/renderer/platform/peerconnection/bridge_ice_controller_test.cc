@@ -705,8 +705,8 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   void Recheck() { env.FastForwardBy(base::Milliseconds(recheck_delay_ms)); }
 
   const int recheck_delay_ms = 10;
-  raw_ptr<const Connection, ExperimentalRenderer> conn = nullptr;
-  raw_ptr<const Connection, ExperimentalRenderer> conn_two = nullptr;
+  raw_ptr<const Connection> conn = nullptr;
+  raw_ptr<const Connection> conn_two = nullptr;
   // This field is not vector<raw_ptr<...>> due to interaction with third_party
   // api.
   RAW_PTR_EXCLUSION const std::vector<const Connection*>

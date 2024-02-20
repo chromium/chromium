@@ -154,7 +154,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler_;
 
-  const raw_ref<RenderThread, ExperimentalRenderer> render_thread_;
+  const raw_ref<RenderThread> render_thread_;
 
   // Implementation of `mojom::AgentSchedulingGroup`, used for responding to
   // calls from the (browser-side) `AgentSchedulingGroupHost`.

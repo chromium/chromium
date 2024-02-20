@@ -114,7 +114,7 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
     // loop.
     scoped_refptr<base::SingleThreadTaskRunner> internal_task_runner_;
 
-    raw_ptr<NonMainThreadImpl, ExperimentalRenderer> thread_;
+    raw_ptr<NonMainThreadImpl> thread_;
 
     // The following variables are "owned" by the worker thread
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
@@ -122,7 +122,7 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
     std::unique_ptr<scheduler::NonMainThreadSchedulerBase>
         non_main_thread_scheduler_;
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
-    raw_ptr<base::RunLoop, ExperimentalRenderer> run_loop_;
+    raw_ptr<base::RunLoop> run_loop_;
     bool supports_gc_;
     std::unique_ptr<GCSupport> gc_support_;
   };

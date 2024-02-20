@@ -126,7 +126,7 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
       WebMediaStreamTrack::ContentHintType::kNone;
   std::unique_ptr<MediaStreamTrackPlatform> platform_track_;
   // Frame where the referenced platform track was created, if applicable.
-  raw_ptr<WebLocalFrame, ExperimentalRenderer> creation_frame_ = nullptr;
+  raw_ptr<WebLocalFrame> creation_frame_ = nullptr;
 };
 
 }  // namespace blink

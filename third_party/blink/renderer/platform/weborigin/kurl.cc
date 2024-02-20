@@ -116,7 +116,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   }
 
  private:
-  raw_ptr<const WTF::TextEncoding, ExperimentalRenderer> encoding_;
+  raw_ptr<const WTF::TextEncoding> encoding_;
 };
 
 }  // namespace

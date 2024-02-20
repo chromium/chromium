@@ -91,8 +91,7 @@ class TraceableVariable {
   virtual void OnTraceLogEnabled() = 0;
 
  private:
-  const raw_ptr<TraceableVariableController, ExperimentalRenderer>
-      controller_;  // Not owned.
+  const raw_ptr<TraceableVariableController> controller_;  // Not owned.
 };
 
 // TRACE_EVENT macros define static variable to cache a pointer to the state

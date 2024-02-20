@@ -145,8 +145,8 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
   }
 
  private:
-  raw_ptr<bool, ExperimentalRenderer> alive_;
-  raw_ptr<FakeProviderClient, ExperimentalRenderer> client_;
+  raw_ptr<bool> alive_;
+  raw_ptr<FakeProviderClient> client_;
   WGPUTextureDescriptor texture_desc_;
 };
 
@@ -179,8 +179,8 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  raw_ptr<MockWebGPUInterface, ExperimentalRenderer> webgpu_;
-  raw_ptr<viz::TestSharedImageInterface, ExperimentalRenderer> sii_;
+  raw_ptr<MockWebGPUInterface> webgpu_;
+  raw_ptr<viz::TestSharedImageInterface> sii_;
   FakeProviderClient client_;
   scoped_refptr<WebGPUSwapBufferProviderForTests> provider_;
   bool provider_alive_ = true;

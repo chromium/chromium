@@ -125,8 +125,8 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
   int32_t max_blocks_after_defer_;
   size_t file_size_;
   bool must_read_whole_file_;
-  raw_ptr<MultiBuffer, ExperimentalRenderer> multibuffer_;
-  raw_ptr<media::TestRandom, ExperimentalRenderer> rnd_;
+  raw_ptr<MultiBuffer> multibuffer_;
+  raw_ptr<media::TestRandom> rnd_;
 };
 
 }  // namespace
@@ -222,7 +222,7 @@ class TestMultiBuffer : public MultiBuffer {
   int32_t max_blocks_after_defer_;
   bool must_read_whole_file_;
   int32_t writers_created_;
-  raw_ptr<media::TestRandom, ExperimentalRenderer> rnd_;
+  raw_ptr<media::TestRandom> rnd_;
 };
 
 class MultiBufferTest : public testing::Test {
@@ -551,7 +551,7 @@ class ReadHelper {
   int64_t end_;
   int64_t max_read_size_;
   int64_t read_size_;
-  raw_ptr<media::TestRandom, ExperimentalRenderer> rnd_;
+  raw_ptr<media::TestRandom> rnd_;
   MultiBufferReader reader_;
 };
 

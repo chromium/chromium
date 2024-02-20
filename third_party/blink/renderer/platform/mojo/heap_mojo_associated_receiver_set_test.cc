@@ -85,8 +85,7 @@ class GCOwner : public GarbageCollected<GCOwner<Mode>>,
  private:
   HeapMojoAssociatedReceiverSet<sample::blink::Service, GCOwner, Mode>
       associated_receiver_set_;
-  raw_ptr<HeapMojoAssociatedReceiverSetGCBaseTest<Mode>, ExperimentalRenderer>
-      test_;
+  raw_ptr<HeapMojoAssociatedReceiverSetGCBaseTest<Mode>> test_;
 };
 
 }  // namespace

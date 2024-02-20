@@ -160,8 +160,8 @@ class TestVector {
     return reinterpret_cast<size_t>(p) % kMaxByteAlignment;
   }
 
-  raw_ptr<T, ExperimentalRenderer | AllowPtrArithmetic> p_;
-  raw_ptr<const MemoryLayout, ExperimentalRenderer> memory_layout_;
+  raw_ptr<T, AllowPtrArithmetic> p_;
+  raw_ptr<const MemoryLayout> memory_layout_;
   size_t size_;
 };
 

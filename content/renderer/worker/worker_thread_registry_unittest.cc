@@ -31,7 +31,7 @@ class MockObserver : public WorkerThread::Observer {
         .WillByDefault(testing::Invoke(this, &MockObserver::RemoveSelf));
   }
   void RemoveSelf() { WorkerThread::RemoveObserver(this); }
-  raw_ptr<WorkerThreadRegistry, ExperimentalRenderer> runner_;
+  raw_ptr<WorkerThreadRegistry> runner_;
 };
 
 TEST_F(WorkerThreadRegistryTest, BasicObservingAndWorkerId) {

@@ -76,8 +76,7 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
   void onClearPaymentInstruments(ScriptPromiseResolver*,
                                  payments::mojom::blink::PaymentHandlerStatus);
 
-  const raw_ref<const HeapMojoRemote<payments::mojom::blink::PaymentManager>,
-                ExperimentalRenderer>
+  const raw_ref<const HeapMojoRemote<payments::mojom::blink::PaymentManager>>
       manager_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;

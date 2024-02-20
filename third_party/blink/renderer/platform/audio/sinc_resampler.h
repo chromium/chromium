@@ -88,12 +88,12 @@ class SincResampler {
   // Source is copied into this buffer for each processing pass.
   AudioFloatArray input_buffer_;
 
-  raw_ptr<const float, ExperimentalRenderer> source_;
+  raw_ptr<const float> source_;
   unsigned source_frames_available_;
 
   // m_sourceProvider is used to provide the audio input stream to the
   // resampler.
-  raw_ptr<AudioSourceProvider, ExperimentalRenderer> source_provider_;
+  raw_ptr<AudioSourceProvider> source_provider_;
 
   // The buffer is primed once at the very beginning of processing.
   bool is_buffer_primed_;

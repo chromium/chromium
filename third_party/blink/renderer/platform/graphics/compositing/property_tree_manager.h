@@ -306,24 +306,24 @@ class PropertyTreeManager {
 
   void UpdatePixelMovingFilterClipExpanders();
 
-  const raw_ref<PropertyTreeManagerClient, ExperimentalRenderer> client_;
+  const raw_ref<PropertyTreeManagerClient> client_;
 
   // Property trees which should be updated by the manager.
-  const raw_ref<cc::PropertyTrees, ExperimentalRenderer> property_trees_;
+  const raw_ref<cc::PropertyTrees> property_trees_;
 
   // See comment above EffectState about holding direct references to data
   // owned by PropertyTrees.
-  const raw_ref<cc::ClipTree, ExperimentalRenderer> clip_tree_;
-  const raw_ref<cc::EffectTree, ExperimentalRenderer> effect_tree_;
-  const raw_ref<cc::ScrollTree, ExperimentalRenderer> scroll_tree_;
-  const raw_ref<cc::TransformTree, ExperimentalRenderer> transform_tree_;
+  const raw_ref<cc::ClipTree> clip_tree_;
+  const raw_ref<cc::EffectTree> effect_tree_;
+  const raw_ref<cc::ScrollTree> scroll_tree_;
+  const raw_ref<cc::TransformTree> transform_tree_;
 
   // The special layer which is the parent of every other layers.
   // This is where clip mask layers we generated for synthesized clips are
   // appended into.
-  const raw_ref<cc::Layer, ExperimentalRenderer> root_layer_;
+  const raw_ref<cc::Layer> root_layer_;
 
-  const raw_ref<LayerListBuilder, ExperimentalRenderer> layer_list_builder_;
+  const raw_ref<LayerListBuilder> layer_list_builder_;
 
   int new_sequence_number_;
 

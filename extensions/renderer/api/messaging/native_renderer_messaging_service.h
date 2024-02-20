@@ -241,8 +241,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   base::SafeRef<NativeRendererMessagingService> AsSafeRef();
 
   // The associated bindings system; guaranteed to outlive this object.
-  const raw_ptr<NativeExtensionBindingsSystem, ExperimentalRenderer>
-      bindings_system_;
+  const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
 
   OneTimeMessageHandler one_time_message_handler_;
   std::unique_ptr<MessagePortScope> default_scope_;

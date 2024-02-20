@@ -46,7 +46,7 @@ class RequestTestExtraData : public WebURLRequestExtraData {
  private:
   ~RequestTestExtraData() override { *alive_ = false; }
 
-  raw_ptr<bool, ExperimentalRenderer> alive_;
+  raw_ptr<bool> alive_;
 };
 
 }  // anonymous namespace

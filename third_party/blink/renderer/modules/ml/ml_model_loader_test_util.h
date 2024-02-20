@@ -53,8 +53,7 @@ class ScopedSetMLServiceBinder {
   ~ScopedSetMLServiceBinder();
 
  private:
-  const raw_ref<const BrowserInterfaceBrokerProxy, ExperimentalRenderer>
-      interface_broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy> interface_broker_;
 };
 
 // A fake MLModelLoader Mojo interface implementation that backs a Blink

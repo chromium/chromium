@@ -424,7 +424,7 @@ class PaymentResponseFunction : public ScriptFunction::Callable {
   }
 
  private:
-  const raw_ptr<ScriptValue, ExperimentalRenderer> value_;
+  const raw_ptr<ScriptValue> value_;
 };
 
 // If the merchant requests shipping information, the resolved show() promise

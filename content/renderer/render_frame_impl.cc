@@ -770,11 +770,8 @@ class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
   }
 
  private:
-  const raw_ref<const base::flat_map<GURL, base::FilePath>,
-                ExperimentalRenderer>
-      url_to_local_path_;
-  const raw_ref<const base::flat_map<blink::FrameToken, base::FilePath>,
-                ExperimentalRenderer>
+  const raw_ref<const base::flat_map<GURL, base::FilePath>> url_to_local_path_;
+  const raw_ref<const base::flat_map<blink::FrameToken, base::FilePath>>
       frame_token_to_local_path_;
 };
 
@@ -830,10 +827,8 @@ class MHTMLPartsGenerationDelegate
   }
 
  private:
-  const raw_ref<const mojom::SerializeAsMHTMLParams, ExperimentalRenderer>
-      params_;
-  raw_ptr<std::unordered_set<std::string>, ExperimentalRenderer>
-      serialized_resources_uri_digests_;
+  const raw_ref<const mojom::SerializeAsMHTMLParams> params_;
+  raw_ptr<std::unordered_set<std::string>> serialized_resources_uri_digests_;
 };
 
 bool IsHttpPost(const blink::WebURLRequest& request) {
@@ -1431,7 +1426,7 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
  private:
   // |RenderFrameImpl| owns |this|, so |frame_| is guaranteed to outlive |this|.
   // Will be nulled if |Detach()| has been called.
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> frame_;
+  raw_ptr<RenderFrameImpl> frame_;
   bool committing_ = false;
   WebData data_;
   std::unique_ptr<blink::WebNavigationParams> navigation_params_;

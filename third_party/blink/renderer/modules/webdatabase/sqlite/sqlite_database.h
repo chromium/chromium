@@ -136,7 +136,7 @@ class SQLiteDatabase {
 
   int PageSize();
 
-  raw_ptr<sqlite3, ExperimentalRenderer> db_ = nullptr;
+  raw_ptr<sqlite3> db_ = nullptr;
   int page_size_ = -1;
 
   bool transaction_in_progress_ = false;
@@ -146,8 +146,8 @@ class SQLiteDatabase {
   // The raw pointer usage is safe because the DatabaseAuthorizer is guaranteed
   // to outlive this instance. The DatabaseAuthorizer is owned by the same
   // Database that owns this instance.
-  raw_ptr<DatabaseAuthorizer, ExperimentalRenderer> authorizer_
-      GUARDED_BY(authorizer_lock_) = nullptr;
+  raw_ptr<DatabaseAuthorizer> authorizer_ GUARDED_BY(authorizer_lock_) =
+      nullptr;
 
   base::PlatformThreadId opening_thread_ = 0;
 

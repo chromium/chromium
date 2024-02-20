@@ -67,10 +67,9 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public WebSourceBuffer {
   void NotifyParseWarning(const media::SourceBufferParseWarning warning);
 
   std::string id_;
-  raw_ptr<media::ChunkDemuxer, ExperimentalRenderer>
-      demuxer_;  // Owned by WebMediaPlayerImpl.
+  raw_ptr<media::ChunkDemuxer> demuxer_;  // Owned by WebMediaPlayerImpl.
 
-  raw_ptr<WebSourceBufferClient, ExperimentalRenderer> client_;
+  raw_ptr<WebSourceBufferClient> client_;
 
   // Controls the offset applied to timestamps when processing appended media
   // segments. It is initially 0, which indicates that no offset is being

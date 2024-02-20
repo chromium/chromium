@@ -134,7 +134,7 @@ class MODULES_EXPORT StorageNamespace final
   HeapHashSet<WeakMember<InspectorDOMStorageAgent>> inspector_agents_;
 
   // Lives globally.
-  raw_ptr<StorageController, ExperimentalRenderer> controller_;
+  raw_ptr<StorageController> controller_;
   String namespace_id_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // `StorageNamespace` is a per-Page object and doesn't have any

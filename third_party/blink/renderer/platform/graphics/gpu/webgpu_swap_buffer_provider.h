@@ -158,7 +158,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void ReleaseWGPUTextureAccessIfNeeded();
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  raw_ptr<Client, ExperimentalRenderer> client_;
+  raw_ptr<Client> client_;
   WGPUDevice device_;
   scoped_refptr<cc::TextureLayer> layer_;
   bool neutered_ = false;

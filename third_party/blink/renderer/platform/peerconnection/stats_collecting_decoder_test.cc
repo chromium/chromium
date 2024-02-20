@@ -94,8 +94,8 @@ class MockDecoder : public webrtc::VideoDecoder {
   }
 
  private:
-  const raw_ptr<bool, ExperimentalRenderer> is_hw_accelerated_;
-  raw_ptr<webrtc::DecodedImageCallback, ExperimentalRenderer> callback_;
+  const raw_ptr<bool> is_hw_accelerated_;
+  raw_ptr<webrtc::DecodedImageCallback> callback_;
 };
 
 class MockDecodedImageCallback : public webrtc::DecodedImageCallback {

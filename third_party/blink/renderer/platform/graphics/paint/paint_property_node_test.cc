@@ -16,7 +16,7 @@ class PaintPropertyNodeTest : public testing::Test {
  protected:
   template <typename NodeType>
   struct Tree {
-    raw_ptr<const NodeType, ExperimentalRenderer> root;
+    raw_ptr<const NodeType> root;
     scoped_refptr<NodeType> ancestor;
     scoped_refptr<NodeType> child1;
     scoped_refptr<NodeType> child2;

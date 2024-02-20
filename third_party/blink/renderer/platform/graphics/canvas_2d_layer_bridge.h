@@ -139,7 +139,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   };
   mutable SnapshotState snapshot_state_;
 
-  raw_ptr<CanvasResourceHost, ExperimentalRenderer> resource_host_;
+  raw_ptr<CanvasResourceHost> resource_host_;
   viz::TransferableResource previous_frame_resource_;
 
   base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};

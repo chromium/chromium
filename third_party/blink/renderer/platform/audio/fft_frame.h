@@ -183,7 +183,7 @@ class PLATFORM_EXPORT FFTFrame {
     PFFFT_Setup* GetSetup() const { return setup_; }
 
    private:
-    raw_ptr<PFFFT_Setup, ExperimentalRenderer> setup_;
+    raw_ptr<PFFFT_Setup> setup_;
   };
 
   // Returns the HashMap that holds all of the possible FFTSetup objects.  This

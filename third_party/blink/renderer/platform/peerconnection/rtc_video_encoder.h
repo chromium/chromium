@@ -103,8 +103,7 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   const bool is_constrained_h264_;
 
   // Factory for creating VEAs, shared memory buffers, etc.
-  const raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
       encoder_metrics_provider_factory_;

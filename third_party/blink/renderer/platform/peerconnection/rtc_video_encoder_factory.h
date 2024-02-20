@@ -49,8 +49,7 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
  private:
   void CheckAndWaitEncoderSupportStatusIfNeeded() const;
 
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
       encoder_metrics_provider_factory_;

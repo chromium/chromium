@@ -456,7 +456,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // The client which handles behaviour specific to the type of widget.
   // It's the owner of the widget and will outlive this class.
-  const raw_ptr<WidgetBaseClient, ExperimentalRenderer> client_;
+  const raw_ptr<WidgetBaseClient> client_;
 
   mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_;
   mojo::AssociatedReceiver<mojom::blink::Widget> receiver_;
@@ -533,7 +533,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // It is possible that one ImeEventGuard is nested inside another
   // ImeEventGuard. We keep track of the outermost one, and update it as needed.
-  raw_ptr<ImeEventGuard, ExperimentalRenderer> ime_event_guard_ = nullptr;
+  raw_ptr<ImeEventGuard> ime_event_guard_ = nullptr;
 
   // The screen rects of the view and the window that contains it. These do not
   // include any scaling by device scale factor, so are logical pixels not

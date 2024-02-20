@@ -101,8 +101,7 @@ class GetAPINatives : public ObjectBackedNativeHandler {
   }
 
  private:
-  raw_ptr<NativeExtensionBindingsSystem, ExperimentalRenderer>
-      bindings_system_ = nullptr;
+  raw_ptr<NativeExtensionBindingsSystem> bindings_system_ = nullptr;
 };
 
 }  // namespace

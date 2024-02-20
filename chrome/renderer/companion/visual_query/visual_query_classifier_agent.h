@@ -75,7 +75,7 @@ class VisualQueryClassifierAgent : public content::RenderFrameObserver,
   bool is_retrying_ = false;
 
   // Pointer to RenderFrame used for DOM traversal and extract image bytes.
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_ = nullptr;
+  raw_ptr<content::RenderFrame> render_frame_ = nullptr;
 
   // Using a memory-mapped file to reduce memory consumption of model bytes.
   base::MemoryMappedFile visual_model_;

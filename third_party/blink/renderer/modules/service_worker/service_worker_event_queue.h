@@ -304,7 +304,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   bool is_ready_for_processing_events_ = false;
 
   // |tick_clock_| outlives |this|.
-  const raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // Monotonically increasing number. Event id should not start from zero since
   // HashMap in Blink requires non-zero keys.

@@ -45,7 +45,7 @@ class CONTROLLER_EXPORT PrivateMemoryFootprintProvider
   void SetPrivateMemoryFootprint(uint64_t private_memory_footprint_bytes);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_;
+  raw_ptr<const base::TickClock> clock_;
 };
 
 }  // namespace blink

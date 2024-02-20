@@ -19,7 +19,7 @@ class JSONValueDeletionVerifier : public JSONValue {
   ~JSONValueDeletionVerifier() override { ++(*counter_); }
 
  private:
-  const raw_ref<int, ExperimentalRenderer> counter_;
+  const raw_ref<int> counter_;
 };
 
 }  // namespace

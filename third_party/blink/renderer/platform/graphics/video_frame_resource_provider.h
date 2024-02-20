@@ -64,7 +64,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
  private:
   const cc::LayerTreeSettings settings_;
 
-  raw_ptr<viz::RasterContextProvider, ExperimentalRenderer> context_provider_;
+  raw_ptr<viz::RasterContextProvider> context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   std::unique_ptr<media::VideoResourceUpdater> resource_updater_;
   bool use_sync_primitives_ = false;

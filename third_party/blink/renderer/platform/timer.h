@@ -121,7 +121,7 @@ class PLATFORM_EXPORT TimerBase {
   base::Location location_;
   scoped_refptr<base::SingleThreadTaskRunner> web_task_runner_;
   // The tick clock used to calculate the run time for scheduled tasks.
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
   base::subtle::DelayPolicy delay_policy_;
 
 #if DCHECK_IS_ON()

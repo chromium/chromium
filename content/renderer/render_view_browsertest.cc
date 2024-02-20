@@ -312,7 +312,7 @@ class CommonParamsFrameLoadWaiter : public FrameLoadWaiter {
   }
 
   blink::mojom::CommonNavigationParamsPtr common_params_;
-  raw_ptr<const RenderFrameImpl, ExperimentalRenderer> frame_;
+  raw_ptr<const RenderFrameImpl> frame_;
 };
 
 }  // namespace

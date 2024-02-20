@@ -248,7 +248,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   std::string Placeholder();
 
   blink::WebAXObject accessibility_object_;
-  raw_ptr<Factory, ExperimentalRenderer> factory_;
+  raw_ptr<Factory> factory_;
 
   v8::Global<v8::Function> notification_callback_;
 };

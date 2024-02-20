@@ -225,8 +225,7 @@ class RTCVideoDecoderAdapter::Impl {
   void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
-  const raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   // Set on Initialize().
   std::unique_ptr<media::MediaLog> media_log_;
@@ -235,8 +234,7 @@ class RTCVideoDecoderAdapter::Impl {
 
   int32_t outstanding_decode_requests_ = 0;
   std::optional<base::TimeTicks> start_time_;
-  raw_ptr<webrtc::DecodedImageCallback, ExperimentalRenderer>
-      decode_complete_callback_ = nullptr;
+  raw_ptr<webrtc::DecodedImageCallback> decode_complete_callback_ = nullptr;
   int32_t consecutive_error_count_ = 0;
   // Requests that have not been submitted to the decoder yet.
   WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_;

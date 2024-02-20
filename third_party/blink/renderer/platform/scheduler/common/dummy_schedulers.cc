@@ -245,7 +245,7 @@ class SimpleMainThread : public MainThread {
  private:
   bool IsSimpleMainThread() const override { return true; }
 
-  raw_ptr<ThreadScheduler, ExperimentalRenderer> scheduler_ptr_;
+  raw_ptr<ThreadScheduler> scheduler_ptr_;
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_task_runner_for_testing_;
 };

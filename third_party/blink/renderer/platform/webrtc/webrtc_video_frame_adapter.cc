@@ -129,8 +129,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return manager;
   }
 
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 };
 

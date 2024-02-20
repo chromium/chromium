@@ -39,7 +39,7 @@ void NotificationsNativeHandler::GetNotificationImageSizes(
 
   struct {
     const char* key;
-    const raw_ref<const gfx::Size, ExperimentalRenderer> size;
+    const raw_ref<const gfx::Size> size;
   } entries[] = {
       {"icon", raw_ref(bitmap_sizes.icon_size)},
       {"image", raw_ref(bitmap_sizes.image_size)},

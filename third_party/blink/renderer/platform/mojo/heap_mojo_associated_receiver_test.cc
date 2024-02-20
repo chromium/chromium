@@ -66,8 +66,7 @@ class AssociatedReceiverOwner
                              AssociatedReceiverOwner,
                              Mode>
       associated_receiver_;
-  raw_ptr<HeapMojoAssociatedReceiverGCBaseTest<Mode>, ExperimentalRenderer>
-      test_;
+  raw_ptr<HeapMojoAssociatedReceiverGCBaseTest<Mode>> test_;
 };
 
 template <HeapMojoWrapperMode Mode>

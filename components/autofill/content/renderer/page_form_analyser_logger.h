@@ -42,7 +42,7 @@ class PageFormAnalyserLogger {
   virtual void Flush();
 
  private:
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
+  raw_ptr<blink::WebLocalFrame> frame_;
 
   // Though PageFormAnalyserLogger provides buffering, it is intended to be
   // simply over the course of a single analysis, for ordering purposes.

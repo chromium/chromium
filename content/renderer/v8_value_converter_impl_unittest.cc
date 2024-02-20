@@ -54,7 +54,7 @@ class ScopedAvoidIdentityHashForTesting {
   ~ScopedAvoidIdentityHashForTesting();
 
  private:
-  raw_ptr<content::V8ValueConverterImpl, ExperimentalRenderer> converter_;
+  raw_ptr<content::V8ValueConverterImpl> converter_;
 };
 
 ScopedAvoidIdentityHashForTesting::ScopedAvoidIdentityHashForTesting(
@@ -262,7 +262,7 @@ class V8ValueConverterImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   gin::IsolateHolder isolate_holder_;
   v8::Isolate::Scope isolate_scope_;
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_ = nullptr;
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;

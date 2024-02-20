@@ -85,7 +85,7 @@ class GLStringQuery {
   }
 
  private:
-  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
 };
 
 }  // namespace blink

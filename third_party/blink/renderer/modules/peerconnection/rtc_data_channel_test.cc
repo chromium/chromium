@@ -233,7 +233,7 @@ class MockDataChannel : public webrtc::DataChannelInterface {
 
   // Accessed on signaling thread.
   uint64_t buffered_amount_;
-  raw_ptr<webrtc::DataChannelObserver, ExperimentalRenderer> observer_;
+  raw_ptr<webrtc::DataChannelObserver> observer_;
   webrtc::DataChannelInterface::DataState state_;
 };
 

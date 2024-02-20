@@ -45,7 +45,7 @@ class AXNodeDataAOMPropertyClient : public AOMPropertyClient {
 
  private:
   Persistent<AXObjectCacheImpl> ax_object_cache_;
-  const raw_ref<ui::AXNodeData, ExperimentalRenderer> node_data_;
+  const raw_ref<ui::AXNodeData> node_data_;
 };
 
 }  // namespace blink

@@ -33,7 +33,7 @@ class TestGinObject : public gin::Wrappable<TestGinObject> {
   TestGinObject(bool* alive) : alive_(alive) { *alive_ = true; }
   ~TestGinObject() override { *alive_ = false; }
 
-  raw_ptr<bool, ExperimentalRenderer> alive_;
+  raw_ptr<bool> alive_;
 };
 
 gin::WrapperInfo TestGinObject::kWrapperInfo = { gin::kEmbedderNativeGin };

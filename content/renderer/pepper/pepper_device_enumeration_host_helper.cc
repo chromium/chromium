@@ -120,7 +120,7 @@ class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest {
   bool requested() const { return requested_; }
 
  private:
-  const raw_ptr<PepperDeviceEnumerationHostHelper, ExperimentalRenderer> owner_;
+  const raw_ptr<PepperDeviceEnumerationHostHelper> owner_;
   PepperDeviceEnumerationHostHelper::Delegate::DevicesCallback callback_;
   bool requested_;
   size_t subscription_id_;

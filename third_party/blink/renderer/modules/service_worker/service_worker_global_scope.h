@@ -636,7 +636,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   Member<::blink::ServiceWorker> service_worker_;
 
   // Registry of interfaces exposed to the browser from Service Workers.
-  const raw_ptr<InterfaceRegistry, ExperimentalRenderer> interface_registry_;
+  const raw_ptr<InterfaceRegistry> interface_registry_;
 
   // Map from service worker version id to JavaScript ServiceWorker object in
   // current execution context.

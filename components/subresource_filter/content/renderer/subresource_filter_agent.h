@@ -144,7 +144,7 @@ class SubresourceFilterAgent
       const blink::RemoteFrameToken& placeholder_token) override;
 
   // Owned by the ChromeContentRendererClient and outlives us.
-  raw_ptr<UnverifiedRulesetDealer, ExperimentalRenderer> ruleset_dealer_;
+  raw_ptr<UnverifiedRulesetDealer> ruleset_dealer_;
 
   mojom::ActivationState activation_state_for_next_document_;
 

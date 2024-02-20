@@ -59,7 +59,7 @@ class StreamTimestampOffsetTracker
 
   base::TimeDelta audio_position_ = {};
   base::TimeDelta offset_ = {};
-  raw_ptr<media::DemuxerHost, ExperimentalRenderer> demuxer_host_ = nullptr;
+  raw_ptr<media::DemuxerHost> demuxer_host_ = nullptr;
 };
 
 namespace {

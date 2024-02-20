@@ -113,14 +113,14 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
       const ui::LatencyInfo& original_latency_info,
       const cc::EventMetrics* original_metrics);
 
-  raw_ptr<WidgetBase, ExperimentalRenderer> widget_;
+  raw_ptr<WidgetBase> widget_;
 
   // Are we currently handling an input event?
   bool handling_input_event_ = false;
 
   // Current state from HandleInputEvent. This variable is stack allocated
   // and is not owned.
-  raw_ptr<HandlingState, ExperimentalRenderer> handling_input_state_ = nullptr;
+  raw_ptr<HandlingState> handling_input_state_ = nullptr;
 
   // We store the current cursor object so we can avoid spamming SetCursor
   // messages.

@@ -151,26 +151,24 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   static bool IsAnimatedWebp(const std::vector<uint8_t>& image_data);
 
   // Have the same lifetime as us.
-  raw_ptr<translate::TranslateAgent, ExperimentalRenderer> translate_agent_;
-  raw_ptr<optimization_guide::PageTextAgent, ExperimentalRenderer>
-      page_text_agent_;
+  raw_ptr<translate::TranslateAgent> translate_agent_;
+  raw_ptr<optimization_guide::PageTextAgent> page_text_agent_;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  raw_ptr<safe_browsing::PhishingClassifierDelegate, ExperimentalRenderer>
-      phishing_classifier_ = nullptr;
-  raw_ptr<safe_browsing::PhishingImageEmbedderDelegate, ExperimentalRenderer>
+  raw_ptr<safe_browsing::PhishingClassifierDelegate> phishing_classifier_ =
+      nullptr;
+  raw_ptr<safe_browsing::PhishingImageEmbedderDelegate>
       phishing_image_embedder_ = nullptr;
 #endif
 
   // Owned by ChromeContentRendererClient and outlive us.
-  raw_ptr<web_cache::WebCacheImpl, ExperimentalRenderer> web_cache_impl_;
+  raw_ptr<web_cache::WebCacheImpl> web_cache_impl_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.
   std::vector<std::u16string> webui_javascript_;
 
   // Add visual query agent to suggest visually relevant items on the page.
-  raw_ptr<companion::visual_query::VisualQueryClassifierAgent,
-          ExperimentalRenderer>
+  raw_ptr<companion::visual_query::VisualQueryClassifierAgent>
       visual_classifier_ = nullptr;
 #endif
 

@@ -116,7 +116,7 @@ class MODULES_EXPORT IDBValue final {
   // Used to register memory externally allocated by the IDBValue, and to
   // unregister that memory in the destructor. Unused in other construction
   // paths.
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_ = nullptr;
   int64_t external_allocated_size_ = 0;
 };
 

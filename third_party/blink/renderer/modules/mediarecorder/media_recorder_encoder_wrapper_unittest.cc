@@ -104,7 +104,7 @@ class MockVideoEncoderWrapper : public media::VideoEncoder {
   }
 
  private:
-  const raw_ptr<media::MockVideoEncoder, ExperimentalRenderer> mock_encoder_;
+  const raw_ptr<media::MockVideoEncoder> mock_encoder_;
   base::OnceClosure dtor_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);

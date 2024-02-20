@@ -123,10 +123,10 @@ class MockEncoder : public webrtc::VideoEncoder {
 
  private:
   int frame_counter_ = 0;
-  raw_ptr<base::test::TaskEnvironment, ExperimentalRenderer> task_environment_;
-  raw_ptr<int, ExperimentalRenderer> spatial_layers_;
-  const raw_ptr<bool, ExperimentalRenderer> is_hw_accelerated_;
-  raw_ptr<webrtc::EncodedImageCallback, ExperimentalRenderer> callback_;
+  raw_ptr<base::test::TaskEnvironment> task_environment_;
+  raw_ptr<int> spatial_layers_;
+  const raw_ptr<bool> is_hw_accelerated_;
+  raw_ptr<webrtc::EncodedImageCallback> callback_;
 };
 
 class FakeEncodedImageCallback : public webrtc::EncodedImageCallback {

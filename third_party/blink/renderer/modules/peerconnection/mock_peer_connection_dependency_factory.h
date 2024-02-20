@@ -126,8 +126,7 @@ class MockWebRtcVideoTrack
   bool enabled_;
   TrackState state_;
   ObserverSet observers_;
-  raw_ptr<rtc::VideoSinkInterface<webrtc::VideoFrame>, ExperimentalRenderer>
-      sink_;
+  raw_ptr<rtc::VideoSinkInterface<webrtc::VideoFrame>> sink_;
 };
 
 class MockMediaStream : public webrtc::MediaStreamInterface {

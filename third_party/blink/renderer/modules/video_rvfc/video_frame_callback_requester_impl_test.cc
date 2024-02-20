@@ -167,7 +167,7 @@ class VfcRequesterParameterVerifierCallback
 
   double now_;
   bool was_invoked_ = false;
-  const raw_ref<DocumentLoadTiming, ExperimentalRenderer> timing_;
+  const raw_ref<DocumentLoadTiming> timing_;
 };
 
 }  // namespace

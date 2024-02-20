@@ -320,9 +320,9 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
 
   // All members are non-const due to the series of initialize() calls needed.
   // |mock_source_| is owned by |source_|, |track_| by |component_|.
-  raw_ptr<MockMediaStreamVideoSource, ExperimentalRenderer> mock_source_;
+  raw_ptr<MockMediaStreamVideoSource> mock_source_;
   Persistent<MediaStreamSource> source_;
-  raw_ptr<MediaStreamVideoTrack, ExperimentalRenderer> track_;
+  raw_ptr<MediaStreamVideoTrack> track_;
   Persistent<MediaStreamComponent> component_;
 
   std::unique_ptr<VideoTrackRecorderImpl> video_track_recorder_;

@@ -83,7 +83,7 @@ class VideoDecoderShim {
   std::unique_ptr<DecoderImpl> decoder_impl_;
   State state_;
 
-  raw_ptr<PepperVideoDecoderHost, ExperimentalRenderer> host_;
+  raw_ptr<PepperVideoDecoderHost> host_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<viz::ContextProviderCommandBuffer>
       shared_main_thread_context_provider_;

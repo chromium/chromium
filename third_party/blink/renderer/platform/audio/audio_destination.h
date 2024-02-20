@@ -184,7 +184,7 @@ class PLATFORM_EXPORT AudioDestination final
 
   // Accessed by rendering thread: the render callback function of WebAudio
   // engine. (i.e. DestinationNode)
-  const raw_ref<AudioIOCallback, ExperimentalRenderer> callback_;
+  const raw_ref<AudioIOCallback> callback_;
 
   // Accessed by rendering thread.
   size_t frames_elapsed_ = 0;

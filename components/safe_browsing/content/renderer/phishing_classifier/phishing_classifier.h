@@ -172,8 +172,7 @@ class PhishingClassifier {
   // State for any in-progress extraction.
   std::unique_ptr<FeatureMap> features_;
   std::unique_ptr<std::set<uint32_t>> shingle_hashes_;
-  raw_ptr<const std::u16string, ExperimentalRenderer>
-      page_text_;  // owned by the caller
+  raw_ptr<const std::u16string> page_text_;  // owned by the caller
   std::unique_ptr<SkBitmap> bitmap_;
   std::unique_ptr<VisualFeatures> visual_features_;
   DoneCallback done_callback_;

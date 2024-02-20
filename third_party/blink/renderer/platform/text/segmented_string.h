@@ -355,8 +355,7 @@ class PLATFORM_EXPORT SegmentedString {
   bool closed_;
   bool empty_;
   UChar current_char_;
-  raw_ptr<const SegmentedString, ExperimentalRenderer> next_segmented_string_ =
-      nullptr;
+  raw_ptr<const SegmentedString> next_segmented_string_ = nullptr;
 };
 
 }  // namespace blink

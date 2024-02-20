@@ -688,7 +688,7 @@ class HeaderAndFooterContext {
     }
 
    private:
-    raw_ptr<blink::WebNavigationControl, ExperimentalRenderer> frame_ = nullptr;
+    raw_ptr<blink::WebNavigationControl> frame_ = nullptr;
   };
 
   explicit HeaderAndFooterContext(const blink::WebLocalFrame& source_frame)
@@ -894,15 +894,14 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
 
   FrameReference frame_;
   FrameReference original_frame_;
-  raw_ptr<blink::WebNavigationControl, ExperimentalRenderer>
-      navigation_control_ = nullptr;
+  raw_ptr<blink::WebNavigationControl> navigation_control_ = nullptr;
   blink::WebNode node_to_print_;
   bool owns_web_view_ = false;
   mojom::PrintParamsPtr selection_only_print_params_;
   uint32_t page_count_ = 0;
   base::OnceClosure on_ready_;
   bool is_printing_started_ = false;
-  const raw_ref<blink::scheduler::WebAgentGroupScheduler, ExperimentalRenderer>
+  const raw_ref<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler_;
 
   base::WeakPtrFactory<PrepareFrameAndViewForPrint> weak_ptr_factory_{this};

@@ -71,7 +71,7 @@ class GuestViewContainer {
   std::unique_ptr<GuestViewAttachRequest> pending_response_;
 
   v8::Global<v8::Function> destruction_callback_;
-  raw_ptr<v8::Isolate, ExperimentalRenderer> destruction_isolate_ = nullptr;
+  raw_ptr<v8::Isolate> destruction_isolate_ = nullptr;
 
   base::WeakPtrFactory<GuestViewContainer> weak_ptr_factory_{this};
 };

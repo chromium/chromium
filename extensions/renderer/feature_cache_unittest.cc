@@ -29,7 +29,7 @@ namespace {
 
 struct FakeContext {
   mojom::ContextType context_type;
-  raw_ptr<const Extension, ExperimentalRenderer> extension;
+  raw_ptr<const Extension> extension;
   const GURL url;
 };
 

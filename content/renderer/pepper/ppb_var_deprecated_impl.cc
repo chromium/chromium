@@ -73,8 +73,8 @@ class ObjectAccessor {
   V8VarConverter* converter() { return converter_.get(); }
 
  private:
-  raw_ptr<V8ObjectVar, ExperimentalRenderer> object_var_;
-  raw_ptr<PepperPluginInstanceImpl, ExperimentalRenderer> instance_;
+  raw_ptr<V8ObjectVar> object_var_;
+  raw_ptr<PepperPluginInstanceImpl> instance_;
   std::unique_ptr<V8VarConverter> converter_;
 };
 

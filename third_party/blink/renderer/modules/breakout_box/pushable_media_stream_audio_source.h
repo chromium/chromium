@@ -71,7 +71,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     // It is not necessary to guard it with |lock_| to read its value on
     // |main_task_runner_|. This helps avoid deadlocks in
     // Stop()/OnSourceDestroyedOrStopped() interactions.
-    raw_ptr<PushableMediaStreamAudioSource, ExperimentalRenderer> source_;
+    raw_ptr<PushableMediaStreamAudioSource> source_;
     // The same apples to |is_running_|, but since it does not have complex
     // interactions with owners, like |source_| does, we always guard it for
     // simplicity.

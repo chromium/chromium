@@ -91,7 +91,7 @@ class PLATFORM_EXPORT BufferedDataSourceHostImpl
   base::circular_deque<std::pair<base::TimeTicks, uint64_t>> download_history_;
   base::RepeatingClosure progress_cb_;
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   FRIEND_TEST_ALL_PREFIXES(BufferedDataSourceHostImplTest, CanPlayThrough);
   FRIEND_TEST_ALL_PREFIXES(BufferedDataSourceHostImplTest,

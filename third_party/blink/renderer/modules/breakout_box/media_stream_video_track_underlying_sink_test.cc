@@ -78,8 +78,7 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<MediaStreamSource> media_stream_source_;
-  raw_ptr<PushableMediaStreamVideoSource, ExperimentalRenderer>
-      pushable_video_source_;
+  raw_ptr<PushableMediaStreamVideoSource> pushable_video_source_;
 };
 
 // TODO(1153092): Test flakes, likely due to completing before background

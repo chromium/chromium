@@ -129,7 +129,7 @@ class VideoEncoderShim::EncoderImpl {
     ~BitstreamBuffer() {}
 
     media::BitstreamBuffer buffer;
-    raw_ptr<uint8_t, ExperimentalRenderer> mem;
+    raw_ptr<uint8_t> mem;
   };
 
   void DoEncode();

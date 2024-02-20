@@ -417,7 +417,7 @@ class URLLoaderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle body_handle_;
   std::unique_ptr<TestURLLoaderClient> client_;
-  raw_ptr<MockResourceRequestSender, ExperimentalRenderer> sender_ = nullptr;
+  raw_ptr<MockResourceRequestSender> sender_ = nullptr;
 };
 
 TEST_F(URLLoaderTest, Success) {

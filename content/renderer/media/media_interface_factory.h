@@ -91,8 +91,7 @@ class MediaInterfaceFactory final : public media::mojom::InterfaceFactory {
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
   void OnConnectionError();
 
-  raw_ptr<blink::BrowserInterfaceBrokerProxy, ExperimentalRenderer>
-      interface_broker_;
+  raw_ptr<blink::BrowserInterfaceBrokerProxy> interface_broker_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

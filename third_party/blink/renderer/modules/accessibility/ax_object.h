@@ -129,7 +129,7 @@ class NameSource {
   bool superseded = false;
   bool invalid = false;
   ax::mojom::blink::NameFrom type = ax::mojom::blink::NameFrom::kNone;
-  const raw_ref<const QualifiedName, ExperimentalRenderer> attribute;
+  const raw_ref<const QualifiedName> attribute;
   AtomicString attribute_value;
   AXTextSource native_source = kAXTextFromNativeSourceUninitialized;
   AXRelatedObjectVector related_objects;
@@ -152,7 +152,7 @@ class DescriptionSource {
   bool invalid = false;
   ax::mojom::blink::DescriptionFrom type =
       ax::mojom::blink::DescriptionFrom::kNone;
-  const raw_ref<const QualifiedName, ExperimentalRenderer> attribute;
+  const raw_ref<const QualifiedName> attribute;
   AtomicString attribute_value;
   AXTextSource native_source = kAXTextFromNativeSourceUninitialized;
   AXRelatedObjectVector related_objects;

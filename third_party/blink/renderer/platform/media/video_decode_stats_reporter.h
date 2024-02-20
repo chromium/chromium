@@ -173,7 +173,7 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
 
   // Clock for |stats_cb_timer_| and getting current tick count (NowTicks()).
   // Tests may supply a mock clock via the constructor.
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Timer for all stats callbacks. Timer interval will be dynamically set based
   // on state of reporter. See calls to RunStatsTimerAtIntervalMs().

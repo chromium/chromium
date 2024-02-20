@@ -185,8 +185,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
                                          base::TimeTicks new_deadline,
                                          base::TimeTicks optional_now);
 
-    raw_ptr<SchedulerHelper, ExperimentalRenderer> helper_;  // NOT OWNED
-    raw_ptr<Delegate, ExperimentalRenderer> delegate_;       // NOT OWNED
+    raw_ptr<SchedulerHelper> helper_;  // NOT OWNED
+    raw_ptr<Delegate> delegate_;       // NOT OWNED
 
     IdlePeriodState idle_period_state_;
     base::TimeTicks idle_period_deadline_;
@@ -224,8 +224,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // Returns true if |state| represents being within a long idle period state.
   static bool IsInLongIdlePeriod(IdlePeriodState state);
 
-  raw_ptr<SchedulerHelper, ExperimentalRenderer> helper_;  // NOT OWNED
-  raw_ptr<Delegate, ExperimentalRenderer> delegate_;       // NOT OWNED
+  raw_ptr<SchedulerHelper> helper_;  // NOT OWNED
+  raw_ptr<Delegate> delegate_;       // NOT OWNED
   raw_ptr<base::sequence_manager::TaskQueue, DanglingUntriaged>
       idle_queue_;  // NOT OWNED
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;

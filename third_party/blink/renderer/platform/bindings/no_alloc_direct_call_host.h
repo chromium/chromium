@@ -79,8 +79,7 @@ class PLATFORM_EXPORT NoAllocDirectCallHost {
 
  private:
   WTF::Vector<DeferrableAction> deferred_actions_;
-  raw_ptr<v8::FastApiCallbackOptions, ExperimentalRenderer> callback_options_ =
-      nullptr;
+  raw_ptr<v8::FastApiCallbackOptions> callback_options_ = nullptr;
 };
 
 class NoAllocDirectCallScope {

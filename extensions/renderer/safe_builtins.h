@@ -46,7 +46,7 @@ class SafeBuiltins {
   v8::Local<v8::Object> GetPromise() const;
 
  private:
-  raw_ptr<ScriptContext, ExperimentalRenderer> context_;
+  raw_ptr<ScriptContext> context_;
 };
 
 }  //  namespace extensions

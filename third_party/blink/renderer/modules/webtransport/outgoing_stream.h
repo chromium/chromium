@@ -154,9 +154,9 @@ class MODULES_EXPORT OutgoingStream final
    private:
     // We need the isolate to call |AdjustAmountOfExternalAllocatedMemory| for
     // the memory stored in |buffer_|.
-    raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+    raw_ptr<v8::Isolate> isolate_;
     size_t length_ = 0u;
-    raw_ptr<uint8_t, ExperimentalRenderer> buffer_ = nullptr;
+    raw_ptr<uint8_t> buffer_ = nullptr;
   };
 
   const Member<ScriptState> script_state_;

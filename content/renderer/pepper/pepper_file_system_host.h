@@ -78,7 +78,7 @@ class PepperFileSystemHost final : public ppapi::host::ResourceHost {
 
   blink::mojom::FileSystemManager* GetFileSystemManager();
 
-  raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
   ppapi::host::ReplyMessageContext reply_context_;
 
   PP_FileSystemType type_;

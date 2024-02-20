@@ -103,7 +103,7 @@ class PepperURLLoaderHost : public ppapi::host::ResourceHost,
   void UpdateProgress();
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHostImpl> renderer_ppapi_host_;
 
   // If true, then the plugin instance is a full-frame plugin and we're just
   // wrapping the main document's loader (i.e. loader_ is null).
