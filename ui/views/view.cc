@@ -899,6 +899,10 @@ void View::Layout(PassKey) {
 }
 
 void View::InvalidateLayout() {
+  // We should never need to invalidate during a layout call; this tracks
+  // how many times that is happening.
+  ++invalidates_during_layout_;
+
   // Always invalidate up. This is needed to handle the case of us already being
   // valid, but not our parent.
   needs_layout_ = true;
@@ -3441,6 +3445,8 @@ bool View::HasLayoutManager() const {
 }
 
 void View::LayoutImmediately(bool collect_trace) {
+  invalidates_during_layout_ = 0;
+
   ++layouts_since_last_paint_;
   base::AutoReset allow_layout(&layout_allowed_, true);
   if (collect_trace) {
@@ -3451,6 +3457,9 @@ void View::LayoutImmediately(bool collect_trace) {
   } else {
     Layout(PassKey());
   }
+
+  UMA_HISTOGRAM_COUNTS_100("Views.InvalidatesDuringLayout",
+                           invalidates_during_layout_);
 }
 
 // Input -----------------------------------------------------------------------
