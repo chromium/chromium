@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
-#include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/test/fake_scrollbar.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,7 +137,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNonNinePatch) {
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   // We should create PaintedScrollbarLayer instead of
-  // PaintedOverlayScrollbarLayer for non-nine-patch overlay scrollbars.
+  // NinePatchThumbScrollbarLayer for non-nine-patch overlay scrollbars.
   ASSERT_EQ(cc::ScrollbarLayerBase::kPainted, layer->GetScrollbarLayerType());
   EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
 
@@ -161,7 +159,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNinePatch) {
       &scroll_state_.Transform(), element_id, cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
-  ASSERT_EQ(cc::ScrollbarLayerBase::kPaintedOverlay,
+  ASSERT_EQ(cc::ScrollbarLayerBase::kNinePatchThumb,
             layer->GetScrollbarLayerType());
   EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
 

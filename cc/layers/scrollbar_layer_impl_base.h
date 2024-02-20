@@ -77,7 +77,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   virtual bool JumpOnTrackClick() const;
   virtual ScrollbarPart IdentifyScrollbarPart(
       const gfx::PointF position_in_widget) const;
-  // Only Aura (PaintedOverlayScrollbar) and Fluent (PaintedScrollbar) overlay
+  // Only Aura (NinePatchThumbScrollbar) and Fluent (PaintedScrollbar) overlay
   // scrollbars need to know tickmarks's state to trigger the painting of the
   // scrollbar's track.
   bool has_find_in_page_tickmarks() const {

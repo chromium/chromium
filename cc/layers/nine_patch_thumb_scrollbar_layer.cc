@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer.h"
 
 #include <algorithm>
 #include <memory>
@@ -10,7 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "cc/base/math_util.h"
-#include "cc/layers/painted_overlay_scrollbar_layer_impl.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_manager.h"
@@ -25,29 +25,29 @@
 
 namespace cc {
 
-std::unique_ptr<LayerImpl> PaintedOverlayScrollbarLayer::CreateLayerImpl(
+std::unique_ptr<LayerImpl> NinePatchThumbScrollbarLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  return PaintedOverlayScrollbarLayerImpl::Create(
+  return NinePatchThumbScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), is_left_side_vertical_scrollbar());
 }
 
-scoped_refptr<PaintedOverlayScrollbarLayer>
-PaintedOverlayScrollbarLayer::CreateOrReuse(
+scoped_refptr<NinePatchThumbScrollbarLayer>
+NinePatchThumbScrollbarLayer::CreateOrReuse(
     scoped_refptr<Scrollbar> scrollbar,
-    PaintedOverlayScrollbarLayer* existing_layer) {
+    NinePatchThumbScrollbarLayer* existing_layer) {
   if (existing_layer &&
       existing_layer->scrollbar_.Read(*existing_layer)->IsSame(*scrollbar))
     return existing_layer;
   return Create(std::move(scrollbar));
 }
 
-scoped_refptr<PaintedOverlayScrollbarLayer>
-PaintedOverlayScrollbarLayer::Create(scoped_refptr<Scrollbar> scrollbar) {
+scoped_refptr<NinePatchThumbScrollbarLayer>
+NinePatchThumbScrollbarLayer::Create(scoped_refptr<Scrollbar> scrollbar) {
   return base::WrapRefCounted(
-      new PaintedOverlayScrollbarLayer(std::move(scrollbar)));
+      new NinePatchThumbScrollbarLayer(std::move(scrollbar)));
 }
 
-PaintedOverlayScrollbarLayer::PaintedOverlayScrollbarLayer(
+NinePatchThumbScrollbarLayer::NinePatchThumbScrollbarLayer(
     scoped_refptr<Scrollbar> scrollbar)
     : ScrollbarLayerBase(scrollbar->Orientation(),
                          scrollbar->IsLeftSideVerticalScrollbar()),
@@ -57,20 +57,20 @@ PaintedOverlayScrollbarLayer::PaintedOverlayScrollbarLayer(
   DCHECK(scrollbar_.Read(*this)->UsesNinePatchThumbResource());
 }
 
-PaintedOverlayScrollbarLayer::~PaintedOverlayScrollbarLayer() = default;
+NinePatchThumbScrollbarLayer::~NinePatchThumbScrollbarLayer() = default;
 
-bool PaintedOverlayScrollbarLayer::OpacityCanAnimateOnImplThread() const {
+bool NinePatchThumbScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return true;
 }
 
-void PaintedOverlayScrollbarLayer::PushPropertiesTo(
+void NinePatchThumbScrollbarLayer::PushPropertiesTo(
     LayerImpl* layer,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
   ScrollbarLayerBase::PushPropertiesTo(layer, commit_state, unsafe_state);
 
-  PaintedOverlayScrollbarLayerImpl* scrollbar_layer =
-      static_cast<PaintedOverlayScrollbarLayerImpl*>(layer);
+  NinePatchThumbScrollbarLayerImpl* scrollbar_layer =
+      static_cast<NinePatchThumbScrollbarLayerImpl*>(layer);
 
   if (orientation() == ScrollbarOrientation::kHorizontal) {
     scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).height());
@@ -107,7 +107,7 @@ void PaintedOverlayScrollbarLayer::PushPropertiesTo(
     scrollbar_layer->set_track_ui_resource_id(0);
 }
 
-void PaintedOverlayScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {
+void NinePatchThumbScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // When the LTH is set to null or has changed, then this layer should remove
   // all of its associated resources.
   if (host != layer_tree_host()) {
@@ -118,7 +118,7 @@ void PaintedOverlayScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {
   ScrollbarLayerBase::SetLayerTreeHost(host);
 }
 
-bool PaintedOverlayScrollbarLayer::Update() {
+bool NinePatchThumbScrollbarLayer::Update() {
   // These properties should never change.
   DCHECK_EQ(orientation(), scrollbar_.Read(*this)->Orientation());
   DCHECK_EQ(is_left_side_vertical_scrollbar(),
@@ -132,7 +132,7 @@ bool PaintedOverlayScrollbarLayer::Update() {
 
   updated |= UpdateProperty(scrollbar_.Read(*this)->TrackRect(),
                             &track_rect_.Write(*this));
-  // Ignore ThumbRect's location because the PaintedOverlayScrollbarLayerImpl
+  // Ignore ThumbRect's location because the NinePatchThumbScrollbarLayerImpl
   // will compute it from scroll offset.
   updated |= UpdateProperty(scrollbar_.Read(*this)->ThumbRect().size(),
                             &thumb_size_.Write(*this));
@@ -143,7 +143,7 @@ bool PaintedOverlayScrollbarLayer::Update() {
   return updated;
 }
 
-bool PaintedOverlayScrollbarLayer::PaintThumbIfNeeded() {
+bool NinePatchThumbScrollbarLayer::PaintThumbIfNeeded() {
   auto& scrollbar = scrollbar_.Read(*this);
   if (!scrollbar->NeedsRepaintPart(ScrollbarPart::kThumb) &&
       thumb_resource_.Read(*this)) {
@@ -172,7 +172,7 @@ bool PaintedOverlayScrollbarLayer::PaintThumbIfNeeded() {
   return true;
 }
 
-bool PaintedOverlayScrollbarLayer::PaintTickmarks() {
+bool NinePatchThumbScrollbarLayer::PaintTickmarks() {
   if (!has_find_in_page_tickmarks()) {
     if (!track_resource_.Read(*this)) {
       return false;
@@ -206,8 +206,8 @@ bool PaintedOverlayScrollbarLayer::PaintTickmarks() {
 }
 
 ScrollbarLayerBase::ScrollbarLayerType
-PaintedOverlayScrollbarLayer::GetScrollbarLayerType() const {
-  return kPaintedOverlay;
+NinePatchThumbScrollbarLayer::GetScrollbarLayerType() const {
+  return kNinePatchThumb;
 }
 
 }  // namespace cc

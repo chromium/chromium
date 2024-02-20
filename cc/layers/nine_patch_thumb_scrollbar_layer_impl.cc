@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/layers/painted_overlay_scrollbar_layer_impl.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 
 #include <memory>
 #include <vector>
@@ -14,16 +14,16 @@
 
 namespace cc {
 
-std::unique_ptr<PaintedOverlayScrollbarLayerImpl>
-PaintedOverlayScrollbarLayerImpl::Create(LayerTreeImpl* tree_impl,
+std::unique_ptr<NinePatchThumbScrollbarLayerImpl>
+NinePatchThumbScrollbarLayerImpl::Create(LayerTreeImpl* tree_impl,
                                          int id,
                                          ScrollbarOrientation orientation,
                                          bool is_left_side_vertical_scrollbar) {
-  return base::WrapUnique(new PaintedOverlayScrollbarLayerImpl(
+  return base::WrapUnique(new NinePatchThumbScrollbarLayerImpl(
       tree_impl, id, orientation, is_left_side_vertical_scrollbar));
 }
 
-PaintedOverlayScrollbarLayerImpl::PaintedOverlayScrollbarLayerImpl(
+NinePatchThumbScrollbarLayerImpl::NinePatchThumbScrollbarLayerImpl(
     LayerTreeImpl* tree_impl,
     int id,
     ScrollbarOrientation orientation,
@@ -40,19 +40,19 @@ PaintedOverlayScrollbarLayerImpl::PaintedOverlayScrollbarLayerImpl(
       track_start_(0),
       track_length_(0) {}
 
-PaintedOverlayScrollbarLayerImpl::~PaintedOverlayScrollbarLayerImpl() = default;
+NinePatchThumbScrollbarLayerImpl::~NinePatchThumbScrollbarLayerImpl() = default;
 
-std::unique_ptr<LayerImpl> PaintedOverlayScrollbarLayerImpl::CreateLayerImpl(
+std::unique_ptr<LayerImpl> NinePatchThumbScrollbarLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  return PaintedOverlayScrollbarLayerImpl::Create(
+  return NinePatchThumbScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), is_left_side_vertical_scrollbar());
 }
 
-void PaintedOverlayScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
+void NinePatchThumbScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   ScrollbarLayerImplBase::PushPropertiesTo(layer);
 
-  PaintedOverlayScrollbarLayerImpl* scrollbar_layer =
-      static_cast<PaintedOverlayScrollbarLayerImpl*>(layer);
+  NinePatchThumbScrollbarLayerImpl* scrollbar_layer =
+      static_cast<NinePatchThumbScrollbarLayerImpl*>(layer);
 
   scrollbar_layer->SetThumbThickness(thumb_thickness_);
   scrollbar_layer->SetThumbLength(thumb_length_);
@@ -66,14 +66,14 @@ void PaintedOverlayScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   scrollbar_layer->set_track_ui_resource_id(track_ui_resource_id_);
 }
 
-bool PaintedOverlayScrollbarLayerImpl::WillDraw(
+bool NinePatchThumbScrollbarLayerImpl::WillDraw(
     DrawMode draw_mode,
     viz::ClientResourceProvider* resource_provider) {
   DCHECK(draw_mode != DRAW_MODE_RESOURCELESS_SOFTWARE);
   return LayerImpl::WillDraw(draw_mode, resource_provider);
 }
 
-void PaintedOverlayScrollbarLayerImpl::AppendQuads(
+void NinePatchThumbScrollbarLayerImpl::AppendQuads(
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =
@@ -82,7 +82,7 @@ void PaintedOverlayScrollbarLayerImpl::AppendQuads(
   AppendTrackQuads(render_pass, append_quads_data, shared_quad_state);
 }
 
-void PaintedOverlayScrollbarLayerImpl::AppendThumbQuads(
+void NinePatchThumbScrollbarLayerImpl::AppendThumbQuads(
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state) {
@@ -135,7 +135,7 @@ void PaintedOverlayScrollbarLayerImpl::AppendThumbQuads(
                                    shared_quad_state, patches);
 }
 
-void PaintedOverlayScrollbarLayerImpl::AppendTrackQuads(
+void NinePatchThumbScrollbarLayerImpl::AppendTrackQuads(
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state) {
@@ -169,72 +169,72 @@ void PaintedOverlayScrollbarLayerImpl::AppendTrackQuads(
   ValidateQuadResources(quad);
 }
 
-void PaintedOverlayScrollbarLayerImpl::SetThumbThickness(int thumb_thickness) {
+void NinePatchThumbScrollbarLayerImpl::SetThumbThickness(int thumb_thickness) {
   if (thumb_thickness_ == thumb_thickness)
     return;
   thumb_thickness_ = thumb_thickness;
   NoteLayerPropertyChanged();
 }
 
-int PaintedOverlayScrollbarLayerImpl::ThumbThickness() const {
+int NinePatchThumbScrollbarLayerImpl::ThumbThickness() const {
   return thumb_thickness_;
 }
 
-void PaintedOverlayScrollbarLayerImpl::SetThumbLength(int thumb_length) {
+void NinePatchThumbScrollbarLayerImpl::SetThumbLength(int thumb_length) {
   if (thumb_length_ == thumb_length)
     return;
   thumb_length_ = thumb_length;
   NoteLayerPropertyChanged();
 }
 
-int PaintedOverlayScrollbarLayerImpl::ThumbLength() const {
+int NinePatchThumbScrollbarLayerImpl::ThumbLength() const {
   return thumb_length_;
 }
 
-void PaintedOverlayScrollbarLayerImpl::SetTrackStart(int track_start) {
+void NinePatchThumbScrollbarLayerImpl::SetTrackStart(int track_start) {
   if (track_start_ == track_start)
     return;
   track_start_ = track_start;
   NoteLayerPropertyChanged();
 }
 
-int PaintedOverlayScrollbarLayerImpl::TrackStart() const {
+int NinePatchThumbScrollbarLayerImpl::TrackStart() const {
   return track_start_;
 }
 
-void PaintedOverlayScrollbarLayerImpl::SetTrackLength(int track_length) {
+void NinePatchThumbScrollbarLayerImpl::SetTrackLength(int track_length) {
   if (track_length_ == track_length)
     return;
   track_length_ = track_length;
   NoteLayerPropertyChanged();
 }
 
-void PaintedOverlayScrollbarLayerImpl::SetImageBounds(const gfx::Size& bounds) {
+void NinePatchThumbScrollbarLayerImpl::SetImageBounds(const gfx::Size& bounds) {
   if (image_bounds_ == bounds)
     return;
   image_bounds_ = bounds;
   NoteLayerPropertyChanged();
 }
 
-void PaintedOverlayScrollbarLayerImpl::SetAperture(const gfx::Rect& aperture) {
+void NinePatchThumbScrollbarLayerImpl::SetAperture(const gfx::Rect& aperture) {
   if (aperture_ == aperture)
     return;
   aperture_ = aperture;
   NoteLayerPropertyChanged();
 }
 
-float PaintedOverlayScrollbarLayerImpl::TrackLength() const {
+float NinePatchThumbScrollbarLayerImpl::TrackLength() const {
   return track_length_ + (orientation() == ScrollbarOrientation::kVertical
                               ? vertical_adjust()
                               : 0);
 }
 
-bool PaintedOverlayScrollbarLayerImpl::IsThumbResizable() const {
+bool NinePatchThumbScrollbarLayerImpl::IsThumbResizable() const {
   return false;
 }
 
-const char* PaintedOverlayScrollbarLayerImpl::LayerTypeAsString() const {
-  return "cc::PaintedOverlayScrollbarLayerImpl";
+const char* NinePatchThumbScrollbarLayerImpl::LayerTypeAsString() const {
+  return "cc::NinePatchThumbScrollbarLayerImpl";
 }
 
 }  // namespace cc

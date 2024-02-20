@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_LAYERS_PAINTED_OVERLAY_SCROLLBAR_LAYER_IMPL_H_
-#define CC_LAYERS_PAINTED_OVERLAY_SCROLLBAR_LAYER_IMPL_H_
+#ifndef CC_LAYERS_NINE_PATCH_THUMB_SCROLLBAR_LAYER_IMPL_H_
+#define CC_LAYERS_NINE_PATCH_THUMB_SCROLLBAR_LAYER_IMPL_H_
 
 #include <memory>
 
@@ -17,19 +17,19 @@ namespace cc {
 
 class LayerTreeImpl;
 
-class CC_EXPORT PaintedOverlayScrollbarLayerImpl
+class CC_EXPORT NinePatchThumbScrollbarLayerImpl
     : public ScrollbarLayerImplBase {
  public:
-  static std::unique_ptr<PaintedOverlayScrollbarLayerImpl> Create(
+  static std::unique_ptr<NinePatchThumbScrollbarLayerImpl> Create(
       LayerTreeImpl* tree_impl,
       int id,
       ScrollbarOrientation orientation,
       bool is_left_side_vertical_scrollbar);
-  PaintedOverlayScrollbarLayerImpl(const PaintedOverlayScrollbarLayerImpl&) =
+  NinePatchThumbScrollbarLayerImpl(const NinePatchThumbScrollbarLayerImpl&) =
       delete;
-  PaintedOverlayScrollbarLayerImpl& operator=(
-      const PaintedOverlayScrollbarLayerImpl&) = delete;
-  ~PaintedOverlayScrollbarLayerImpl() override;
+  NinePatchThumbScrollbarLayerImpl& operator=(
+      const NinePatchThumbScrollbarLayerImpl&) = delete;
+  ~NinePatchThumbScrollbarLayerImpl() override;
 
   // LayerImpl implementation.
   std::unique_ptr<LayerImpl> CreateLayerImpl(
@@ -58,7 +58,7 @@ class CC_EXPORT PaintedOverlayScrollbarLayerImpl
   }
 
  protected:
-  PaintedOverlayScrollbarLayerImpl(LayerTreeImpl* tree_impl,
+  NinePatchThumbScrollbarLayerImpl(LayerTreeImpl* tree_impl,
                                    int id,
                                    ScrollbarOrientation orientation,
                                    bool is_left_side_vertical_scrollbar);
@@ -96,4 +96,4 @@ class CC_EXPORT PaintedOverlayScrollbarLayerImpl
 };
 
 }  // namespace cc
-#endif  // CC_LAYERS_PAINTED_OVERLAY_SCROLLBAR_LAYER_IMPL_H_
+#endif  // CC_LAYERS_NINE_PATCH_THUMB_SCROLLBAR_LAYER_IMPL_H_

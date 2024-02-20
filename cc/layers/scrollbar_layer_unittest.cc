@@ -12,7 +12,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/append_quads_data.h"
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/scrollbar_layer_base.h"
@@ -164,9 +164,9 @@ class AuraScrollbarLayerTest : public BaseScrollbarLayerTest,
                                enable_fluent_overlay_scrollbar) {}
 };
 
-class FakePaintedOverlayScrollbar : public FakeScrollbar {
+class FakeNinePatchThumbScrollbar : public FakeScrollbar {
  public:
-  FakePaintedOverlayScrollbar() {
+  FakeNinePatchThumbScrollbar() {
     set_should_paint(true);
     set_has_thumb(true);
     set_is_overlay(true);
@@ -180,18 +180,18 @@ class FakePaintedOverlayScrollbar : public FakeScrollbar {
   }
 
  private:
-  ~FakePaintedOverlayScrollbar() override = default;
+  ~FakeNinePatchThumbScrollbar() override = default;
 };
 
-// Test that a painted overlay scrollbar will repaint and recrate its resource
+// Test that a nine-patch-thumb scrollbar will repaint and recrate its resource
 // after its been disposed, even if Blink doesn't think it requires a repaint.
 // crbug.com/704656.
-TEST_F(ScrollbarLayerTest, RepaintOverlayWhenResourceDisposed) {
+TEST_F(ScrollbarLayerTest, RepaintNinePatchWhenResourceDisposed) {
   scoped_refptr<Layer> layer_tree_root = Layer::Create();
   scoped_refptr<Layer> content_layer = Layer::Create();
-  auto fake_scrollbar = base::MakeRefCounted<FakePaintedOverlayScrollbar>();
-  scoped_refptr<PaintedOverlayScrollbarLayer> scrollbar_layer =
-      PaintedOverlayScrollbarLayer::Create(fake_scrollbar);
+  auto fake_scrollbar = base::MakeRefCounted<FakeNinePatchThumbScrollbar>();
+  scoped_refptr<NinePatchThumbScrollbarLayer> scrollbar_layer =
+      NinePatchThumbScrollbarLayer::Create(fake_scrollbar);
   scrollbar_layer->SetScrollElementId(layer_tree_root->element_id());
 
   // Setup.
@@ -321,10 +321,10 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   scoped_refptr<PaintedScrollbarLayer> painted_scrollbar_layer =
       PaintedScrollbarLayer::Create(base::MakeRefCounted<FakeScrollbar>());
   painted_scrollbar_layer->SetScrollElementId(layer_a->element_id());
-  scoped_refptr<PaintedOverlayScrollbarLayer> painted_overlay_scrollbar_layer =
-      PaintedOverlayScrollbarLayer::Create(
+  scoped_refptr<NinePatchThumbScrollbarLayer> nine_patch_thumb_scrollbar_layer =
+      NinePatchThumbScrollbarLayer::Create(
           base::MakeRefCounted<FakeNinePatchScrollbar>());
-  painted_overlay_scrollbar_layer->SetScrollElementId(layer_a->element_id());
+  nine_patch_thumb_scrollbar_layer->SetScrollElementId(layer_a->element_id());
   scoped_refptr<SolidColorScrollbarLayer> solid_color_scrollbar_layer =
       SolidColorScrollbarLayer::Create(ScrollbarOrientation::kVertical, 1, 1,
                                        false);
@@ -334,7 +334,7 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   layer_tree_root->AddChild(layer_a);
   layer_tree_root->AddChild(layer_b);
   layer_tree_root->AddChild(painted_scrollbar_layer);
-  layer_tree_root->AddChild(painted_overlay_scrollbar_layer);
+  layer_tree_root->AddChild(nine_patch_thumb_scrollbar_layer);
   layer_tree_root->AddChild(solid_color_scrollbar_layer);
 
   layer_tree_host_->UpdateLayers();
@@ -345,10 +345,10 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
       static_cast<ScrollbarLayerImplBase*>(
           layer_impl_tree_root->layer_tree_impl()->LayerById(
               painted_scrollbar_layer->id()));
-  ScrollbarLayerImplBase* painted_overlay_scrollbar_layer_impl =
+  ScrollbarLayerImplBase* nine_patch_thumb_scrollbar_layer_impl =
       static_cast<ScrollbarLayerImplBase*>(
           layer_impl_tree_root->layer_tree_impl()->LayerById(
-              painted_overlay_scrollbar_layer->id()));
+              nine_patch_thumb_scrollbar_layer->id()));
   ScrollbarLayerImplBase* solid_color_scrollbar_layer_impl =
       static_cast<ScrollbarLayerImplBase*>(
           layer_impl_tree_root->layer_tree_impl()->LayerById(
@@ -356,13 +356,13 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
 
   ASSERT_EQ(painted_scrollbar_layer_impl->scroll_element_id_,
             layer_a->element_id());
-  ASSERT_EQ(painted_overlay_scrollbar_layer_impl->scroll_element_id_,
+  ASSERT_EQ(nine_patch_thumb_scrollbar_layer_impl->scroll_element_id_,
             layer_a->element_id());
   ASSERT_EQ(solid_color_scrollbar_layer_impl->scroll_element_id_,
             layer_a->element_id());
 
   painted_scrollbar_layer->SetScrollElementId(layer_b->element_id());
-  painted_overlay_scrollbar_layer->SetScrollElementId(layer_b->element_id());
+  nine_patch_thumb_scrollbar_layer->SetScrollElementId(layer_b->element_id());
   solid_color_scrollbar_layer->SetScrollElementId(layer_b->element_id());
 
   ASSERT_TRUE(layer_tree_host_->needs_commit());
@@ -388,7 +388,7 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
 
   EXPECT_EQ(painted_scrollbar_layer_impl->scroll_element_id_,
             layer_b->element_id());
-  EXPECT_EQ(painted_overlay_scrollbar_layer_impl->scroll_element_id_,
+  EXPECT_EQ(nine_patch_thumb_scrollbar_layer_impl->scroll_element_id_,
             layer_b->element_id());
   EXPECT_EQ(solid_color_scrollbar_layer_impl->scroll_element_id_,
             layer_b->element_id());

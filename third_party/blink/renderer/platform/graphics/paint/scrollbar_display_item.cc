@@ -6,9 +6,7 @@
 
 #include "base/trace_event/traced_value.h"
 #include "cc/input/scrollbar.h"
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
-#include "cc/layers/painted_scrollbar_layer.h"
-#include "cc/layers/solid_color_scrollbar_layer.h"
+#include "cc/layers/scrollbar_layer_base.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"

@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "cc/input/scrollbar.h"
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/paint/paint_canvas.h"
@@ -197,9 +197,9 @@ class LayerTreeHostOverlayScrollbarsPixelTest
   float thickness_scale_;
 };
 
-class PaintedOverlayScrollbar : public FakeScrollbar {
+class NinePatchThumbScrollbar : public FakeScrollbar {
  public:
-  PaintedOverlayScrollbar() {
+  NinePatchThumbScrollbar() {
     set_should_paint(true);
     set_has_thumb(true);
     set_orientation(ScrollbarOrientation::kVertical);
@@ -242,7 +242,7 @@ class PaintedOverlayScrollbar : public FakeScrollbar {
   }
 
  private:
-  ~PaintedOverlayScrollbar() override = default;
+  ~NinePatchThumbScrollbar() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -254,15 +254,15 @@ INSTANTIATE_TEST_SUITE_P(All,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     LayerTreeHostOverlayScrollbarsPixelTest);
 
-// Simulate increasing the thickness of a painted overlay scrollbar. Ensure that
+// Simulate increasing the thickness of a NinePatchThumbScrollbar. Ensure that
 // the scrollbar border remains crisp.
 TEST_P(LayerTreeHostOverlayScrollbarsPixelTest, NinePatchScrollbarScaledUp) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(400, 400), SK_ColorWHITE);
 
-  auto scrollbar = base::MakeRefCounted<PaintedOverlayScrollbar>();
-  scoped_refptr<PaintedOverlayScrollbarLayer> layer =
-      PaintedOverlayScrollbarLayer::Create(std::move(scrollbar));
+  auto scrollbar = base::MakeRefCounted<NinePatchThumbScrollbar>();
+  scoped_refptr<NinePatchThumbScrollbarLayer> layer =
+      NinePatchThumbScrollbarLayer::Create(std::move(scrollbar));
 
   scrollbar_layer_id_ = layer->id();
   thickness_scale_ = 5.f;
@@ -278,15 +278,15 @@ TEST_P(LayerTreeHostOverlayScrollbarsPixelTest, NinePatchScrollbarScaledUp) {
       base::FilePath(FILE_PATH_LITERAL("overlay_scrollbar_scaled_up.png")));
 }
 
-// Simulate decreasing the thickness of a painted overlay scrollbar. Ensure that
+// Simulate decreasing the thickness of a NinePatchThumbScrollbar. Ensure that
 // the scrollbar border remains crisp.
 TEST_P(LayerTreeHostOverlayScrollbarsPixelTest, NinePatchScrollbarScaledDown) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(400, 400), SK_ColorWHITE);
 
-  auto scrollbar = base::MakeRefCounted<PaintedOverlayScrollbar>();
-  scoped_refptr<PaintedOverlayScrollbarLayer> layer =
-      PaintedOverlayScrollbarLayer::Create(std::move(scrollbar));
+  auto scrollbar = base::MakeRefCounted<NinePatchThumbScrollbar>();
+  scoped_refptr<NinePatchThumbScrollbarLayer> layer =
+      NinePatchThumbScrollbarLayer::Create(std::move(scrollbar));
 
   scrollbar_layer_id_ = layer->id();
   thickness_scale_ = 0.4f;

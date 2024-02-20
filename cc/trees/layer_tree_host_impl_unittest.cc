@@ -36,7 +36,7 @@
 #include "cc/input/scrollbar_controller.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/layer_impl.h"
-#include "cc/layers/painted_overlay_scrollbar_layer_impl.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/render_surface_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
@@ -14045,7 +14045,7 @@ TEST_F(LayerTreeHostImplTest, FadedOutPaintedOverlayScrollbarHitTest) {
 
   // Set up the scrollbar and its dimensions.
   LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
-  auto* scrollbar = AddLayer<PaintedOverlayScrollbarLayerImpl>(
+  auto* scrollbar = AddLayer<NinePatchThumbScrollbarLayerImpl>(
       layer_tree_impl, ScrollbarOrientation::kVertical, false);
   SetupScrollbarLayerCommon(scroll_layer, scrollbar);
   scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -14070,7 +14070,7 @@ TEST_F(LayerTreeHostImplTest, FadedOutPaintedOverlayScrollbarHitTest) {
   TestInputHandlerClient input_handler_client;
   GetInputHandler().BindToClient(&input_handler_client);
 
-  // PaintedOverlayScrollbarLayerImpl(s) don't have a track, so we test thumb
+  // NinePatchThumbScrollbarLayerImpl(s) don't have a track, so we test thumb
   // drags instead. Start with 0.8 opacity. Scrolling is expected to occur in
   // this case.
   auto& scrollbar_effect_node = CreateEffectNode(scrollbar);

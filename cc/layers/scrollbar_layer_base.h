@@ -36,7 +36,7 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
   enum ScrollbarLayerType {
     kSolidColor,
     kPainted,
-    kPaintedOverlay,
+    kNinePatchThumb,
   };
   virtual ScrollbarLayerType GetScrollbarLayerType() const = 0;
 

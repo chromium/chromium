@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_LAYERS_PAINTED_OVERLAY_SCROLLBAR_LAYER_H_
-#define CC_LAYERS_PAINTED_OVERLAY_SCROLLBAR_LAYER_H_
+#ifndef CC_LAYERS_NINE_PATCH_THUMB_SCROLLBAR_LAYER_H_
+#define CC_LAYERS_NINE_PATCH_THUMB_SCROLLBAR_LAYER_H_
 
 #include <memory>
 
@@ -15,23 +15,22 @@
 
 namespace cc {
 
-// For composited overlay scrollbars with nine-patch thumb. For overlay
-// scrollbars whose thumb is not nine-patch, use PaintedScrollbarLayer or
-// SolidColorScrollbarLayer. In practice, this is used for non-custom
-// overlay scrollbars on Win/Linux.
-class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
+// For composited scrollbars with nine-patch thumb. The track is not painted
+// unless there are tick marks. In practice, this is used for non-custom
+// overlay aura scrollbars on non-Mac desktop platforms.
+class CC_EXPORT NinePatchThumbScrollbarLayer : public ScrollbarLayerBase {
  public:
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
-  static scoped_refptr<PaintedOverlayScrollbarLayer> CreateOrReuse(
+  static scoped_refptr<NinePatchThumbScrollbarLayer> CreateOrReuse(
       scoped_refptr<Scrollbar> scrollbar,
-      PaintedOverlayScrollbarLayer* existing_layer);
-  static scoped_refptr<PaintedOverlayScrollbarLayer> Create(
+      NinePatchThumbScrollbarLayer* existing_layer);
+  static scoped_refptr<NinePatchThumbScrollbarLayer> Create(
       scoped_refptr<Scrollbar> scrollbar);
 
-  PaintedOverlayScrollbarLayer(const PaintedOverlayScrollbarLayer&) = delete;
-  PaintedOverlayScrollbarLayer& operator=(const PaintedOverlayScrollbarLayer&) =
+  NinePatchThumbScrollbarLayer(const NinePatchThumbScrollbarLayer&) = delete;
+  NinePatchThumbScrollbarLayer& operator=(const NinePatchThumbScrollbarLayer&) =
       delete;
 
   bool OpacityCanAnimateOnImplThread() const override;
@@ -44,8 +43,8 @@ class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
   ScrollbarLayerType GetScrollbarLayerType() const override;
 
  protected:
-  explicit PaintedOverlayScrollbarLayer(scoped_refptr<Scrollbar> scrollbar);
-  ~PaintedOverlayScrollbarLayer() override;
+  explicit NinePatchThumbScrollbarLayer(scoped_refptr<Scrollbar> scrollbar);
+  ~NinePatchThumbScrollbarLayer() override;
 
  private:
   template <typename T>
@@ -72,4 +71,4 @@ class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
 
 }  // namespace cc
 
-#endif  // CC_LAYERS_PAINTED_OVERLAY_SCROLLBAR_LAYER_H_
+#endif  // CC_LAYERS_NINE_PATCH_THUMB_SCROLLBAR_LAYER_H_

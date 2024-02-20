@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/scrollbar_layer_impl_base.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
@@ -31,7 +31,7 @@ scoped_refptr<ScrollbarLayerBase> ScrollbarLayerBase::CreateOrReuse(
     needed_type = kSolidColor;
   } else if (scrollbar->UsesNinePatchThumbResource()) {
     DCHECK(scrollbar->IsOverlay());
-    needed_type = kPaintedOverlay;
+    needed_type = kNinePatchThumb;
   }
 
   if (existing_layer &&
@@ -52,10 +52,10 @@ scoped_refptr<ScrollbarLayerBase> ScrollbarLayerBase::CreateOrReuse(
       return PaintedScrollbarLayer::CreateOrReuse(
           std::move(scrollbar),
           static_cast<PaintedScrollbarLayer*>(existing_layer));
-    case kPaintedOverlay:
-      return PaintedOverlayScrollbarLayer::CreateOrReuse(
+    case kNinePatchThumb:
+      return NinePatchThumbScrollbarLayer::CreateOrReuse(
           std::move(scrollbar),
-          static_cast<PaintedOverlayScrollbarLayer*>(existing_layer));
+          static_cast<NinePatchThumbScrollbarLayer*>(existing_layer));
   }
 
   NOTREACHED();

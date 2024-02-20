@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer.h"
 
 #include "cc/animation/animation_host.h"
 #include "cc/test/fake_layer_tree_host.h"
@@ -47,7 +47,7 @@ class MockScrollbar : public FakeScrollbar {
   bool paint_tickmarks_called_ = false;
 };
 
-TEST(PaintedOverlayScrollbarLayerTest, PaintTickmarks) {
+TEST(NinePatchThumbScrollbarLayerTest, PaintTickmarks) {
   FakeLayerTreeHostClient fake_client_;
   TestTaskGraphRunner task_graph_runner_;
 
@@ -58,8 +58,8 @@ TEST(PaintedOverlayScrollbarLayerTest, PaintTickmarks) {
   auto scrollbar = base::MakeRefCounted<MockScrollbar>();
   scrollbar->set_has_tickmarks(false);
 
-  scoped_refptr<PaintedOverlayScrollbarLayer> scrollbar_layer =
-      PaintedOverlayScrollbarLayer::Create(scrollbar);
+  scoped_refptr<NinePatchThumbScrollbarLayer> scrollbar_layer =
+      NinePatchThumbScrollbarLayer::Create(scrollbar);
 
   scrollbar_layer->SetIsDrawable(true);
   scrollbar_layer->SetBounds(gfx::Size(100, 100));
