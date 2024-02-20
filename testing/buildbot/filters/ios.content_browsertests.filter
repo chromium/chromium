@@ -161,6 +161,9 @@
 # TODO(crbug.com/1482265): These consistently fail.
 -All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink
 
+# TODO(crbug.com/325678250): This test is failing due to the line wrapping.
+-All/DumpAccessibilityTreeTest.AccessibilityInputRadioCheckboxLabel/blink
+
 # TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
 -BackForwardCacheBrowserTestNoTestingConfig.CCNSAndWebSocketBothRecorded
