@@ -89,7 +89,7 @@ public class HubTabSwitcherMetricsRecorder {
                 int previousIndex = filter.indexOf(previousTab);
                 int currentIndex = filter.indexOf(tab);
                 if (previousIndex != currentIndex) {
-                    if (filter.getRelatedTabList(tab.getId()).size() == 1) {
+                    if (!filter.isTabInTabGroup(tab)) {
                         RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
                     }
                     // The sign on this metric is inverted from the direction of travel in the tab
@@ -111,7 +111,7 @@ public class HubTabSwitcherMetricsRecorder {
 
             TabModelFilter filter =
                     mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
-            if (filter.getRelatedTabList(tab.getId()).size() == 1) {
+            if (!filter.isTabInTabGroup(tab)) {
                 RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
             }
         }

@@ -627,11 +627,26 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
+    public void openDialogButton_SingleTab_IsTabGroup() {
+        // Mock that tab 1 is a single tab.
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1));
+        doReturn(tabs).when(mTabModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(true).when(mTabModelFilter).isTabInTabGroup(mTab1);
+
+        TabListMediator.TabActionListener listener = mMediator.openTabGridDialog(mTab1);
+        assertThat(listener, notNullValue());
+
+        listener.run(TAB1_ID);
+        verify(mTabGridDialogController).resetWithListOfTabs(eq(tabs));
+    }
+
+    @Test
     public void openDialogButton_TabGroup_NotEmpty() {
         // Set up a tab group.
         Tab newTab = prepareTab(TAB4_ID, TAB4_TITLE);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
         doReturn(tabs).when(mTabModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(true).when(mTabModelFilter).isTabInTabGroup(mTab1);
 
         TabListMediator.TabActionListener listener = mMediator.openTabGridDialog(mTab1);
         assertThat(listener, notNullValue());
@@ -642,8 +657,10 @@ public class TabSwitcherMediatorUnitTest {
 
     @Test
     public void openDialogButton_TabGroup_Empty() {
-        // Assume that due to tab model change, current group becomes empty in current model.
+        // Assume that due to tab model change, current group becomes empty in current model, but
+        // was already open.
         doReturn(new ArrayList<>()).when(mTabModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(true).when(mTabModelFilter).isTabInTabGroup(mTab1);
 
         TabListMediator.TabActionListener listener = mMediator.openTabGridDialog(mTab1);
         assertThat(listener, notNullValue());

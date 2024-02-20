@@ -549,6 +549,8 @@ class TabSwitcherMediator
 
         Tab fromTab = TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), lastId);
         assert fromTab != null;
+        TabModelFilter filter =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
         if (mIncognitoStateWhenShown == mTabModelSelector.isIncognitoSelected()) {
             if (tab.getId() == mTabIdWhenShown) {
                 if (mMode == TabListCoordinator.TabListMode.GRID) {
@@ -560,20 +562,12 @@ class TabSwitcherMediator
                 RecordHistogram.recordSparseHistogram(
                         "Tabs.TabOffsetOfSwitch." + TabSwitcherCoordinator.COMPONENT_NAME, 0);
             } else {
-                int fromIndex =
-                        mTabModelSelector
-                                .getTabModelFilterProvider()
-                                .getCurrentTabModelFilter()
-                                .indexOf(fromTab);
-                int toIndex =
-                        mTabModelSelector
-                                .getTabModelFilterProvider()
-                                .getCurrentTabModelFilter()
-                                .indexOf(tab);
+                int fromIndex = filter.indexOf(fromTab);
+                int toIndex = filter.indexOf(tab);
 
                 if (fromIndex != toIndex) {
                     // Only log when you switch a tab page directly from tab switcher.
-                    if (getRelatedTabs(tab.getId()).size() == 1) {
+                    if (!filter.isTabInTabGroup(tab)) {
                         RecordUserAction.record(
                                 "MobileTabSwitched." + TabSwitcherCoordinator.COMPONENT_NAME);
                     }
@@ -594,7 +588,7 @@ class TabSwitcherMediator
                 RecordUserAction.record("MobileTabSwitched");
             }
             // Only log when you switch a tab page directly from tab switcher.
-            if (getRelatedTabs(tab.getId()).size() == 1) {
+            if (!filter.isTabInTabGroup(tab)) {
                 RecordUserAction.record(
                         "MobileTabSwitched." + TabSwitcherCoordinator.COMPONENT_NAME);
             }
@@ -1020,7 +1014,7 @@ class TabSwitcherMediator
     @Nullable
     public TabListMediator.TabActionListener openTabGridDialog(Tab tab) {
         if (!ableToOpenDialog(tab)) return null;
-        assert getRelatedTabs(tab.getId()).size() != 1;
+        assert isTabInTabGroup(tab);
         return tabId -> {
             List<Tab> relatedTabs = getRelatedTabs(tabId);
             if (relatedTabs.size() == 0) {
@@ -1051,15 +1045,19 @@ class TabSwitcherMediator
     }
 
     private boolean ableToOpenDialog(Tab tab) {
-        return mTabModelSelector.isIncognitoSelected() == tab.isIncognito()
-                && getRelatedTabs(tab.getId()).size() != 1;
+        return mTabModelSelector.isIncognitoSelected() == tab.isIncognito() && isTabInTabGroup(tab);
+    }
+
+    private TabModelFilter getCurrentTabModelFilter() {
+        return mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
     }
 
     private List<Tab> getRelatedTabs(int tabId) {
-        return mTabModelSelector
-                .getTabModelFilterProvider()
-                .getCurrentTabModelFilter()
-                .getRelatedTabList(tabId);
+        return getCurrentTabModelFilter().getRelatedTabList(tabId);
+    }
+
+    private boolean isTabInTabGroup(Tab tab) {
+        return getCurrentTabModelFilter().isTabInTabGroup(tab);
     }
 
     private void notifyBackPressStateChanged(boolean noop) {
