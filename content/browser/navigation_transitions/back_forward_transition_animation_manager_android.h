@@ -18,8 +18,9 @@ class BackGestureEvent;
 namespace content {
 
 class NavigationControllerImpl;
-class RenderWidgetHost;
+class NavigationRequest;
 class WebContentsViewAndroid;
+class RenderFrameHostImpl;
 
 // A wrapper class that forwards the gesture event APIs to the `animator_`. It
 // limits the APIs explosed to the embedder. Owned by `WebContentsViewAndroid`.
@@ -49,35 +50,34 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void OnGestureCancelled() override;
   void OnGestureInvoked() override;
 
-  // This is called when `RenderWidgetHost` is swapped: that is the old
-  // `RenderWidgetHostView` is removed from the View tree but the new
-  // `RenderWidgetHostView` has not yet been inserted.
+  // This is called before the `old_host` is swapped out and before the
+  // `new_host` is swapped in.
   //
-  // Note: This API won't get called if the navigation does not commit
-  // (204/205/Download), or the navigation is cancelled (aborted by the user) or
-  // replaced (by another browser-initiated navigation).
-  //
-  // TODO(https://crbug.com/1510570): This won't work for same-doc navigations.
-  // We need to listen to `OnLocalSurfaceIdChanged` when we bump the `SurfaceId`
-  // for same-doc navigations.
+  // Note:
+  // 1. This API won't get called if the navigation does not commit
+  //    (204/205/Download), or the navigation is cancelled (aborted by the user)
+  //    or replaced (by another browser-initiated navigation). We use
+  //    `DidFinishNavigation()` for those cases.
+  // 2. `old_host` might be the same as `new_host`. This can only happen for
+  //    navigating away from a crashed frame (early-swap), or for same-RFH
+  //    navigations.
   //
   // TODO(https://crbug.com/1515412): This also won't work for the initial
   // navigation away from "about:blank". We might be able to treat this
   // navigation as a same-doc one.
   //
   // TODO(https://crbug.com/936696): Check the status of RD when it is close to
-  // launch. Without RD we need to make sure the LocalSurfaceId is updated for
-  // every navigation.
-  //
-  // TODO(https://crbug.com/1515590): Should consider subscribe to FCP. FCP
-  // works mainframe as well as subframes navigations, with the exceptions of
-  // same-doc navigations.
-  void OnRenderWidgetHostViewSwapped(RenderWidgetHost* old_widget_host,
-                                     RenderWidgetHost* new_widget_host);
+  // launch. Without RD we need to make sure no frames from the old document is
+  // associated with the updated LocalSurfaceId (https://crbug.com/1445976).
+  void OnDidNavigatePrimaryMainFramePreCommit(
+      const NavigationRequest& navigation_request,
+      RenderFrameHostImpl* old_host,
+      RenderFrameHostImpl* new_host);
 
-  // `animator_` invokes this callback to erase itself, when all the animation
-  // has finished in the browser UI.
-  void OnAnimationsFinished();
+  // `animator_` invokes this callback to destroy itself, when all the animation
+  // has finished in the browser UI. Also use this to abort processing the
+  // gesture when an unrelated navigation occurs during the animation.
+  void SynchronouslyDestroyAnimator();
 
   WebContentsViewAndroid* web_contents_view_android() const {
     return web_contents_view_android_;
@@ -93,6 +93,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   }
 
  private:
+  // The browser test needs to access the test-only `animator_`.
+  friend class BackForwardTransitionAnimationManagerBrowserTest;
+
   // The owning `WebContentsViewAndroid`. Guaranteed to outlive `this`.
   const raw_ptr<WebContentsViewAndroid> web_contents_view_android_;
 
@@ -118,7 +121,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   //
   // Only instantiated if the user gesture will trigger an animated session
   // history preview. Created when the eligible `OnGestureStarted()` arrives,
-  // and destroyed when the animations finish (`OnAnimationsFinished()`).
+  // and destroyed when `SynchronouslyDestroyAnimator()` is called (either when
+  // the animations finished or animations have to aborted).
   //
   // `animator_` is only instantiated via `animator_factory_`. Tests can
   // override the `animator_factory_` via `set_animator_factory_for_testing()`.

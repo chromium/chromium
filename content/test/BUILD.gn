@@ -1663,6 +1663,7 @@ test("content_browsertests") {
   if (is_android) {
     sources += [
       "../browser/gpu/gpu_background_kill_android_browsertest.cc",
+      "../browser/navigation_transitions/back_forward_transition_animation_manager_android_browsertest.cc",
       "../browser/network/quic_connection_migration_android_browsertest.cc",
 
       # TODO(https://crbug.com/1442929): move out of Android once we can capture

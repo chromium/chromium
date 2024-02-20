@@ -82,7 +82,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // some may change during navigation (e.g. due to server redirects).
 
   // Get a unique ID for this navigation.
-  virtual int64_t GetNavigationId() = 0;
+  virtual int64_t GetNavigationId() const = 0;
 
   // Get the page UKM ID that will be in use once this navigation fully commits
   // (typically the eventual value of

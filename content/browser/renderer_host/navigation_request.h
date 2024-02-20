@@ -325,7 +325,7 @@ class CONTENT_EXPORT NavigationRequest
   bool ShouldRequestSiteIsolationForCOOP();
 
   // NavigationHandle implementation:
-  int64_t GetNavigationId() override;
+  int64_t GetNavigationId() const override;
   ukm::SourceId GetNextPageUkmSourceId() override;
   const GURL& GetURL() override;
   SiteInstanceImpl* GetStartingSiteInstance() override;
