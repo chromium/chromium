@@ -160,6 +160,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     protected Context mContext;
     private final String mProductVersion;
     protected long mNativeObj;
+    protected long mNativeAssistDataObj;
     private boolean mIsHovering;
     private int mLastHoverId = View.NO_ID;
     private int mCurrentRootId;
@@ -1121,6 +1122,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (webContents != null && !webContents.isDestroyed()) {
             Bundle extras = viewRoot.getExtras();
             extras.putCharSequence(EXTRAS_KEY_URL, webContents.getVisibleUrl().getSpec());
+        }
+
+        // Stubbed.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
+            mNativeAssistDataObj =
+                    WebContentsAccessibilityImplJni.get()
+                            .initForAssistData(
+                                    WebContentsAccessibilityImpl.this,
+                                    webContents,
+                                    new AssistDataBuilder());
         }
 
         mHasFinishedLatestAccessibilitySnapshot = false;
@@ -2179,6 +2190,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 WebContentsAccessibilityImpl caller,
                 long axTreePtr,
                 AccessibilityNodeInfoBuilder builder);
+
+        long initForAssistData(
+                WebContentsAccessibilityImpl caller,
+                WebContents webContents,
+                AssistDataBuilder builder);
 
         void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
 

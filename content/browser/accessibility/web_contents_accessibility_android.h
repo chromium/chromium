@@ -65,6 +65,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       jlong ax_tree_update_ptr,
       const base::android::JavaParamRef<jobject>&
           jaccessibility_node_info_builder);
+  WebContentsAccessibilityAndroid(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jassist_data_builder,
+      WebContents* web_contents);
 
   WebContentsAccessibilityAndroid(const WebContentsAccessibilityAndroid&) =
       delete;
@@ -376,6 +381,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // A weak reference to the Java WebContentsAccessibilityAndroid object.
   JavaObjectWeakGlobalRef java_ref_;
   JavaObjectWeakGlobalRef java_anib_ref_;
+
+  // A weak reference to the AssistData tree builder which will only be
+  // instantiated after a request from the Android framework.
+  JavaObjectWeakGlobalRef java_adb_ref_;
 
   raw_ptr<WebContentsImpl> web_contents_;
 

@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/AccessibilityNodeInfoBuilder_jni.h"
+#include "content/public/android/content_jni_headers/AssistDataBuilder_jni.h"
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 #include "content/public/common/content_features.h"
 #include "net/base/data_url.h"
@@ -219,6 +220,23 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
       *ax_tree_snapshot, GetWeakPtr(), nullptr);
   snapshot_root_manager_->BuildAXTreeHitTestCache();
   connector_ = nullptr;
+}
+
+WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& jassist_data_builder,
+    WebContents* web_contents)
+    : java_ref_(env, obj),
+      java_adb_ref_(env, jassist_data_builder),
+      web_contents_(static_cast<WebContentsImpl*>(web_contents)) {
+  // A Connector is not required for a simple snapshot.
+  connector_ = nullptr;
+
+  // Stubbed method.
+  if (!jassist_data_builder.is_null()) {
+    Java_AssistDataBuilder_stubbed(env, jassist_data_builder);
+  }
 }
 
 WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
@@ -1705,6 +1723,18 @@ jlong JNI_WebContentsAccessibilityImpl_Init(
 
   return reinterpret_cast<intptr_t>(new WebContentsAccessibilityAndroid(
       env, obj, web_contents, jaccessibility_node_info_builder));
+}
+
+jlong JNI_WebContentsAccessibilityImpl_InitForAssistData(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& jassist_data_builder) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);
+
+  return reinterpret_cast<intptr_t>(new WebContentsAccessibilityAndroid(
+      env, obj, jassist_data_builder, web_contents));
 }
 
 void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
