@@ -1004,16 +1004,28 @@ void OutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
   if (!container_builder->HasMulticolsWithPendingOOFs())
     return;
 
+  FragmentBuilder::MulticolCollection multicols_handled;
   FragmentBuilder::MulticolCollection multicols_with_pending_oofs;
   container_builder->SwapMulticolsWithPendingOOFs(&multicols_with_pending_oofs);
   DCHECK(!multicols_with_pending_oofs.empty());
 
   while (!multicols_with_pending_oofs.empty()) {
-    for (auto& multicol : multicols_with_pending_oofs)
+    for (auto& multicol : multicols_with_pending_oofs) {
+      DCHECK(!multicols_handled.Contains(multicol.key));
       LayoutOOFsInMulticol(BlockNode(multicol.key), multicol.value);
+      multicols_handled.insert(multicol.key, multicol.value);
+    }
     multicols_with_pending_oofs.clear();
-    container_builder->SwapMulticolsWithPendingOOFs(
-        &multicols_with_pending_oofs);
+
+    // Additional inner multicols may have been added while handling outer
+    // ones. Add those that we haven't seen yet, and handle them.
+    FragmentBuilder::MulticolCollection new_multicols;
+    container_builder->SwapMulticolsWithPendingOOFs(&new_multicols);
+    for (auto& multicol : new_multicols) {
+      if (!multicols_handled.Contains(multicol.key)) {
+        multicols_with_pending_oofs.insert(multicol.key, multicol.value);
+      }
+    }
   }
 }
 
@@ -1249,9 +1261,15 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
   limited_multicol_container_builder.TransferOutOfFlowCandidates(
       container_builder_, multicol_offset, multicol_info);
 
-  // Handle any inner multicols with OOF descendants that may have propagated up
+  // Add any inner multicols with OOF descendants that may have propagated up
   // while laying out the direct OOF descendants of the current multicol.
-  HandleMulticolsWithPendingOOFs(&limited_multicol_container_builder);
+  FragmentBuilder::MulticolCollection multicols_with_pending_oofs;
+  limited_multicol_container_builder.SwapMulticolsWithPendingOOFs(
+      &multicols_with_pending_oofs);
+  for (auto& descendant : multicols_with_pending_oofs) {
+    container_builder_->AddMulticolWithPendingOOFs(BlockNode(descendant.key),
+                                                   descendant.value);
+  }
 }
 
 void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
