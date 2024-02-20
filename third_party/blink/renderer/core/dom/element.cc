@@ -9286,7 +9286,7 @@ void Element::RebuildTransitionPseudoLayoutTree(
                                                rebuild_pseudo_tree);
 }
 
-bool Element::IsInertRoot() {
+bool Element::IsInertRoot() const {
   return FastHasAttribute(html_names::kInertAttr) && IsHTMLElement();
 }
 

@@ -1292,7 +1292,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Returns true if the element has the 'inert' attribute, forcing itself and
   // all its subtree to be inert.
-  bool IsInertRoot();
+  bool IsInertRoot() const;
 
   FocusgroupFlags GetFocusgroupFlags() const;
 

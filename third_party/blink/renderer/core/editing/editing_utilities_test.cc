@@ -150,6 +150,25 @@ TEST_F(EditingUtilitiesTest, IsEditablePositionWithSpan) {
   EXPECT_TRUE(IsEditablePosition(Position(target, 0)));
 }
 
+// https://issues.chromium.org/issues/41490809
+TEST_F(EditingUtilitiesTest, IsEditablePositionWithVisibleInertElement) {
+  SetBodyContent(
+      R"(<div contenteditable><span inert id="target">abc</span></div>)");
+  Element& target = *GetElementById("target");
+  EXPECT_TRUE(IsEditablePosition(Position::BeforeNode(target)));
+  EXPECT_FALSE(IsEditablePosition(Position(target.firstChild(), 0)));
+}
+
+// https://issues.chromium.org/issues/41490809
+TEST_F(EditingUtilitiesTest, IsEditablePositionWithInVisibleInertElement) {
+  SetBodyContent(
+      R"(<div contenteditable>
+        <span inert id="target" style="display: none;">abc</span></div>)");
+  Element& target = *GetElementById("target");
+  EXPECT_TRUE(IsEditablePosition(Position::BeforeNode(target)));
+  EXPECT_FALSE(IsEditablePosition(Position(target.firstChild(), 0)));
+}
+
 TEST_F(EditingUtilitiesTest, isEditablePositionWithTable) {
   // We would like to have below DOM tree without HTML, HEAD and BODY element.
   //   <table id=table><caption>foo</caption></table>
