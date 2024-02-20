@@ -21,6 +21,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsAutoPictureInPictureMidSentence';
     case ContentSettingsTypes.AUTOMATIC_DOWNLOADS:
       return 'siteSettingsAutomaticDownloadsMidSentence';
+    case ContentSettingsTypes.AUTOMATIC_FULLSCREEN:
+      return 'siteSettingsAutomaticFullscreenMidSentence';
     case ContentSettingsTypes.BACKGROUND_SYNC:
       return 'siteSettingsBackgroundSyncMidSentence';
     case ContentSettingsTypes.BLUETOOTH_DEVICES:

@@ -125,6 +125,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   private getAllowOptionForCategory_(): ContentSetting {
     switch (this.category) {
       case ContentSettingsTypes.ADS:
+      case ContentSettingsTypes.AUTOMATIC_FULLSCREEN:
       case ContentSettingsTypes.BACKGROUND_SYNC:
       case ContentSettingsTypes.FEDERATED_IDENTITY_API:
       case ContentSettingsTypes.IMAGES:

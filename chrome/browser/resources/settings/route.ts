@@ -143,6 +143,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_STORAGE_ACCESS =
         r.SITE_SETTINGS.createChild('storageAccess');
   }
+  if (loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting')) {
+    r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN =
+        r.SITE_SETTINGS.createChild('automaticFullscreen');
+  }
 }
 
 /**

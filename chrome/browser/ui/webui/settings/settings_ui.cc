@@ -106,6 +106,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/content_features.h"
 #include "crypto/crypto_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
@@ -561,6 +562,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "autoPictureInPictureEnabled",
       base::FeatureList::IsEnabled(
           blink::features::kMediaSessionEnterPictureInPicture));
+
+  html_source->AddBoolean("enableAutomaticFullscreenContentSetting",
+                          base::FeatureList::IsEnabled(
+                              features::kAutomaticFullscreenContentSetting));
 
   // AI
   optimization_guide::proto::ModelExecutionFeature

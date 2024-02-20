@@ -237,6 +237,15 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsFileSystemWriteBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
+      id: Id.AUTOMATIC_FULLSCREEN,
+      label: 'siteSettingsAutomaticFullscreen',
+      icon: 'cr:fullscreen',
+      disabledLabel: 'siteSettingsAutomaticFullscreenBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_LOCAL_FONTS,
       id: Id.LOCAL_FONTS,
       label: 'fonts',
@@ -498,6 +507,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.SITE_DATA,
               Id.PERFORMANCE,
               Id.JAVASCRIPT_JIT,
+              Id.AUTOMATIC_FULLSCREEN,
             ]),
           };
         },

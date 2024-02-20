@@ -1334,10 +1334,11 @@ void SiteSettingsHandler::HandleGetCategoryList(const base::Value::List& args) {
 
   CHECK_EQ(2U, args.size());
   std::string callback_id = args[0].GetString();
+  const std::string& origin_string = args[1].GetString();
 
   base::Value::List result;
   for (ContentSettingsType content_type :
-       site_settings::GetVisiblePermissionCategories()) {
+       site_settings::GetVisiblePermissionCategories(origin_string, profile_)) {
     result.Append(site_settings::ContentSettingsTypeToGroupName(content_type));
   }
 

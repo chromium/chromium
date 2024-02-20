@@ -122,9 +122,11 @@ ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name);
 base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type);
 
 // Returns a list of all content settings types that correspond to permissions
-// and which should be displayed in chrome://settings, for any situation not
-// tied to particular a origin.
-const std::vector<ContentSettingsType>& GetVisiblePermissionCategories();
+// and which should be displayed in chrome://settings. An origin and profile may
+// be passed to get lists pertinent to particular origins and their settings.
+std::vector<ContentSettingsType> GetVisiblePermissionCategories(
+    const std::string& origin = std::string(),
+    Profile* profile = nullptr);
 
 // Converts a SiteSettingSource to its string identifier.
 std::string SiteSettingSourceToString(const SiteSettingSource source);

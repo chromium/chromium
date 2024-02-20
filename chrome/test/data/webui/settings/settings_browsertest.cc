@@ -909,6 +909,10 @@ class SettingsPrivacyPageTestNoTestingConfig : public SettingsPrivacyPageTest {
     SettingsPrivacyPageTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutomaticFullscreenContentSetting};
 };
 
 // Tests that the content settings page for Web Printing is not shown by
@@ -1241,7 +1245,11 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-class SettingsSiteDetailsTest : public SettingsBrowserTest {};
+class SettingsSiteDetailsTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutomaticFullscreenContentSetting};
+};
 
 // Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
 // https://crbug.com/825304 - later for other platforms in crbug.com/1021219.
@@ -1297,6 +1305,7 @@ class SettingsSiteSettingsPageTest : public SettingsBrowserTest {
         {
             content_settings::features::kSafetyCheckUnusedSitePermissions,
             permissions::features::kPermissionStorageAccessAPI,
+            features::kAutomaticFullscreenContentSetting,
             features::kSafetyHub,
         },
         {});

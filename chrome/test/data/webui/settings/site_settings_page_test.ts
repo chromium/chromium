@@ -241,6 +241,17 @@ suite('SiteSettingsPage', function() {
         '#storage-access'));
   });
 
+  test('AutomaticFullscreenRow', async function() {
+    const expandButton =
+        page.shadowRoot!.querySelector<CrExpandButtonElement>('#expandContent');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await expandButton.updateComplete;
+    assertTrue(isChildVisible(
+      page.shadowRoot!.querySelector('#advancedContentList')!,
+      '#automatic-fullscreen'));
+  });
+
   // TODO(crbug/1443466): Remove after SafetyHub is launched.
   test('UnusedSitePermissionsControlToggleExists', function() {
     assertTrue(isChildVisible(page, '#unusedSitePermissionsRevocationToggle'));
