@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
@@ -1153,6 +1154,43 @@ TEST_F(FasterSplitScreenTest, WindowBoundsRefreshedOnDisplayChanges) {
       window1->GetBoundsInScreen(),
       gfx::Rect(0, 0, work_area_bounds_2.width() * chromeos::kTwoThirdSnapRatio,
                 work_area_bounds_2.height()));
+}
+
+// Tests that the grid and faster splitview widget is updated on keyboard
+// and work area bounds changes.
+TEST_F(FasterSplitScreenTest, KeyboardAndWorkAreaBoundsChanges) {
+  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  SnapOneTestWindow(window1.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifySplitViewOverviewSession(window1.get());
+
+  // Show the virtual keyboard. Test we refresh the grid and widget bounds.
+  SetVirtualKeyboardEnabled(true);
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+  keyboard_controller->ShowKeyboard(true);
+  VerifySplitViewOverviewSession(window1.get());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(window1.get())->GetStateType());
+  auto* overview_grid = GetOverviewGridForRoot(window1->GetRootWindow());
+  EXPECT_TRUE(GetOverviewGridBounds().Contains(
+      overview_grid->GetFasterSplitView()->GetBoundsInScreen()));
+
+  // Hide the virtual keyboard. Test we refresh the grid and widget bounds.
+  keyboard_controller->HideKeyboardByUser();
+  VerifySplitViewOverviewSession(window1.get());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(window1.get())->GetStateType());
+  EXPECT_TRUE(GetOverviewGridBounds().Contains(
+      overview_grid->GetFasterSplitView()->GetBoundsInScreen()));
+
+  // Show the docked magnifier, which ends overview.
+  auto* docked_magnifier_controller =
+      Shell::Get()->docked_magnifier_controller();
+  docked_magnifier_controller->SetEnabled(/*enabled=*/true);
+  EXPECT_FALSE(IsInOverviewSession());
+  // TODO(sophiewen): Consider testing no faster splitview widget.
 }
 
 // Test to verify that there will be no crash when dragging the snapped window
