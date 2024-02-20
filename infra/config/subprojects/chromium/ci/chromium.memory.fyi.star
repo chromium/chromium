@@ -8,7 +8,7 @@ load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
-load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/builder_health_indicators.star", "blank_low_value_thresholds", "health_spec", "modified_default")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -67,6 +67,9 @@ ci.builder(
         short_name = "msan",
     ),
     execution_timeout = 6 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -102,6 +105,9 @@ ci.builder(
         short_name = "tsan",
     ),
     execution_timeout = 4 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -136,6 +142,9 @@ ci.builder(
         short_name = "fyi",
     ),
     execution_timeout = 6 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -176,6 +185,9 @@ ci.builder(
         short_name = "lsan",
     ),
     execution_timeout = 12 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -213,5 +225,8 @@ ci.builder(
         short_name = "ubsan",
     ),
     execution_timeout = 12 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )

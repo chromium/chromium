@@ -10,7 +10,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
-load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/builder_health_indicators.star", "blank_low_value_thresholds", "health_spec", "modified_default")
 load("//lib/xcode.star", "xcode")
 
 ci.defaults.set(
@@ -2034,6 +2034,9 @@ ci.builder(
         category = "celab",
     ),
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     properties = {
         "exclude": "chrome_only",
         "pool_name": "celab-chromium-ci",

@@ -63,7 +63,7 @@ _blank_unhealthy_thresholds = struct(
     ),
 )
 
-_blank_low_value_thresholds = struct(
+blank_low_value_thresholds = struct(
     fail_rate = struct(
         average = None,
     ),
@@ -101,7 +101,7 @@ def low_value_thresholds(
     thresholds = {"fail_rate": fail_rate}
     fail_if_any_none_val(thresholds)
 
-    return structs.evolve(_blank_low_value_thresholds, **thresholds)
+    return structs.evolve(blank_low_value_thresholds, **thresholds)
 
 def fail_if_any_none_val(vals):
     for k, v in vals.items():

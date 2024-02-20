@@ -10,7 +10,7 @@ load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/xcode.star", "xcode")
 load("//project.star", "settings")
-load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/builder_health_indicators.star", "blank_low_value_thresholds", "health_spec", "modified_default")
 
 # crbug/1408581 - The code coverage CI builders are expected to be triggered
 # off the same ref every 24 hours. This poller is configured with a schedule
@@ -523,6 +523,9 @@ coverage_builder(
         ),
     ],
     coverage_test_types = ["overall", "unit"],
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
