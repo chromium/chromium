@@ -64,10 +64,9 @@ ASH_EXPORT scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     uint32_t shared_image_usage,
     gfx::BufferUsage buffer_usage);
 
-// Creates a UiResource of a given `size` and `format`. Uses the SharedImage
-// that `mailbox` is referencing if that is non-zero, in which case the created
-// UiResource does not own that SharedImage. Otherwise creates a new SharedImage
-// and has the UiResource take ownership of that SharedImage.
+// Creates a UiResource of a given `size` and `format` using the SharedImage
+// that `mailbox` (which must be non-zero) is referencing. The created
+// UiResource does not own that SharedImage.
 ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
     UiSourceId ui_source_id,
@@ -77,10 +76,8 @@ ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     gpu::SyncToken sync_token);
 
 // Creates and configures a compositor frame. Uses the SharedImage that
-// `shared_image` is referencing if that is non-null, in which case the created
-// UiResource does not own that SharedImage. Otherwise creates a new SharedImage
-// if needing to create a new UiResource and has the UiResource take ownership
-// of that SharedImage.
+// `shared_image` (which must be non-null) is referencing. The created
+// UiResource does not own that SharedImage.
 ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     const gfx::Rect& content_rect,
