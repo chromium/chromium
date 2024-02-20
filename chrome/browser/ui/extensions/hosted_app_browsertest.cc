@@ -313,8 +313,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
     ASSERT_NO_FATAL_FAILURE(std::move(action).Run());
 
     // Wait until the main browser set to be the last active one.
-    ui_test_utils::BrowserSetLastActiveWaiter last_active_waiter(browser());
-    last_active_waiter.Wait();
+    ui_test_utils::WaitForBrowserSetLastActive(browser());
 
     EXPECT_EQ(num_browsers, chrome::GetBrowserCount(profile()));
     EXPECT_EQ(browser(), chrome::FindLastActive());
@@ -404,8 +403,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
   url_observer.Wait();
 
   // Wait until app_browser_ becomes the last active one.
-  ui_test_utils::BrowserSetLastActiveWaiter last_active_waiter(app_browser_);
-  last_active_waiter.Wait();
+  ui_test_utils::WaitForBrowserSetLastActive(app_browser_);
 
   const GURL url = embedded_test_server()->GetURL(
       "app.com", "/click_modifier/new_window.html");
@@ -446,9 +444,23 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   CheckWebContentsDoesNotHaveAppPrefs(current_tab);
 
+  ui_test_utils::BrowserChangeObserver app_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   Browser* app_browser =
       web_app::ReparentWebContentsIntoAppBrowser(current_tab, app_id_);
   ASSERT_NE(browser(), app_browser);
+
+  // Wait for the target parent app browser window to become the last active
+  // one.
+  if (GetParam() == AppType::HOSTED_APP) {
+    // For hosted app, |current_tab| will reparent-ed into the existing
+    // |app_browser_|.
+    ui_test_utils::WaitForBrowserSetLastActive(app_browser_);
+  } else {  // WEB_APP
+    // For web app, |current_tab| will be reparent-ed to a new created app
+    // window.
+    ui_test_utils::WaitForBrowserSetLastActive(app_browser_observer.Wait());
+  }
 
   CheckWebContentsHasAppPrefs(
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents());

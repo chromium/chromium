@@ -302,6 +302,22 @@ class BrowserSetLastActiveWaiter : public BrowserListObserver {
 // Toggles browser fullscreen mode, then wait for its completion.
 void ToggleFullscreenModeAndWait(Browser* browser);
 
+// Waits for |browser| becomes the last active browser.
+// By default, the waiting will be satisfied if the expected |browser| is the
+// last active browser in BrowserList. In most cases, this is enough for the
+// testing code depending on chrome::FindLastActive(). In some cases, for
+// example, when there is only one browser in the BrowserList, |browser| can be
+// returned as the last active browser even if the asynchronous Wayland UI event
+// has not arrived yet (i.e. BrowserList::SetLastActive() is not triggered and
+// the code observing BrowserList::OnSetLastActive() will not be called). If the
+// test case depends on the code observing BrowserList::OnSetLastActive() being
+// executed first, we can configure the waiter to be satisfied upon
+// OnBrowserSetLastActive is observed by passing
+// |wait_for_set_last_active_observed| being true.
+void WaitForBrowserSetLastActive(
+    Browser* browser,
+    bool wait_for_set_last_active_observed = false);
+
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(
     Browser* browser,

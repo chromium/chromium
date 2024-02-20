@@ -1106,6 +1106,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   Profile* other_profile_ptr = other_profile.get();
   profile_manager->RegisterTestingProfile(std::move(other_profile), true);
   Browser* other_profile_browser = CreateBrowser(other_profile_ptr);
+  ui_test_utils::WaitForBrowserSetLastActive(other_profile_browser);
 
   ASSERT_NO_FATAL_FAILURE(CreateStalledDownload(browser()));
   {
@@ -1116,8 +1117,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   // When the shutdown is cancelled, the downloads page should be opened in a
   // browser for that profile. Because there are no browsers for that profile, a
   // new browser should be opened.
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_CANCELS_CLOSE);
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
   Browser* opened_browser = BrowserList::GetInstance()->GetLastActive();
   ASSERT_TRUE(opened_browser);

@@ -596,6 +596,12 @@ void BrowserSetLastActiveWaiter::OnBrowserSetLastActive(Browser* browser) {
   }
 }
 
+void WaitForBrowserSetLastActive(Browser* browser,
+                                 bool wait_for_set_last_active_observed) {
+  BrowserSetLastActiveWaiter waiter(browser, wait_for_set_last_active_observed);
+  waiter.Wait();
+}
+
 void SendToOmniboxAndSubmit(Browser* browser,
                             const std::string& input,
                             base::TimeTicks match_selection_timestamp) {
