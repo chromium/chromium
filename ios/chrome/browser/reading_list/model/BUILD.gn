@@ -29,7 +29,6 @@ source_set("model") {
   ]
   deps = [
     ":constants",
-    ":reading_list_remover",
     "//base",
     "//components/browser_sync",
     "//components/dom_distiller/ios",
@@ -76,7 +75,6 @@ source_set("model") {
     "//url",
   ]
   public_deps = [ "//ios/chrome/browser/dom_distiller/model" ]
-  allow_circular_includes_from = [ ":reading_list_remover" ]
 }
 
 source_set("reading_list_remover") {
@@ -85,6 +83,7 @@ source_set("reading_list_remover") {
     "reading_list_remover_helper.mm",
   ]
   deps = [
+    ":model",
     "//base",
     "//components/reading_list/core",
     "//ios/chrome/browser/shared/model/browser_state",

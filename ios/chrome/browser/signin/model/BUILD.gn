@@ -82,7 +82,6 @@ source_set("model") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/policy/model:policy_util",
-    "//ios/chrome/browser/reading_list/model:reading_list_remover",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -91,6 +90,10 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
+
+    # TODO(crbug.com/325587123): This should depend on
+    # //ios/chrome/browser/sync/model but doing so creates a circular
+    # dependency.
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web_state_list/model",

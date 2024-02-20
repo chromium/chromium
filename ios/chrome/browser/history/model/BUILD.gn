@@ -36,6 +36,10 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/signin/model",
+
+    # TODO(crbug.com/325586862): This should depend on
+    # //ios/chrome/browser/sync/model but doing so creates a circular
+    # dependency.
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/web",
