@@ -102,9 +102,6 @@
 // Returns the matcher for an enabled cancel button in a navigation bar.
 + (id<GREYMatcher>)navigationBarCancelButton;
 
-// Returns matcher for a close button.
-+ (id<GREYMatcher>)closeButton;
-
 // Returns matcher for close tab context menu button.
 + (id<GREYMatcher>)closeTabMenuButton;
 

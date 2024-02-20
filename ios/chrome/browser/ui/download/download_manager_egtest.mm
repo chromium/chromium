@@ -155,7 +155,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
       assertWithMatcher:grey_notNil()];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CloseButton()]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kDownloadManagerCloseButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:DownloadButton()]

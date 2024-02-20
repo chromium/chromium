@@ -366,12 +366,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
-+ (id<GREYMatcher>)closeButton {
-  return grey_allOf(
-      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(IDS_CLOSE)],
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
-}
-
 + (id<GREYMatcher>)closeTabMenuButton {
   return grey_allOf(
       [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:

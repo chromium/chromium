@@ -137,10 +137,6 @@ id<GREYMatcher> NavigationBarCancelButton() {
   return [ChromeMatchersAppInterface navigationBarCancelButton];
 }
 
-id<GREYMatcher> CloseButton() {
-  return [ChromeMatchersAppInterface closeButton];
-}
-
 id<GREYMatcher> ForwardButton() {
   return [ChromeMatchersAppInterface forwardButton];
 }

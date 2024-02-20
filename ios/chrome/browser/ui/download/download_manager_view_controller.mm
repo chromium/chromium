@@ -598,6 +598,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    _closeButton.accessibilityIdentifier =
+        kDownloadManagerCloseButtonAccessibilityIdentifier;
   }
 
   return _closeButton;

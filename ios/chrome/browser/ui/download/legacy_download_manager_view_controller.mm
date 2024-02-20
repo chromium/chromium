@@ -456,6 +456,8 @@ NSString* GetSizeString(long long size_in_bytes) {
            forControlEvents:UIControlEventTouchUpInside];
 
     _closeButton.pointerInteractionEnabled = YES;
+    _closeButton.accessibilityIdentifier =
+        kDownloadManagerCloseButtonAccessibilityIdentifier;
   }
   return _closeButton;
 }
