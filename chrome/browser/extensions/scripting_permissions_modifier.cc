@@ -196,11 +196,8 @@ void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
   const PermissionSet& withheld =
       extension_->permissions_data()->withheld_permissions();
 
-  PermissionSet permissions(APIPermissionSet(), ManifestPermissionSet(),
-                            withheld.explicit_hosts().Clone(),
-                            withheld.scriptable_hosts().Clone());
-  PermissionsUpdater(browser_context_)
-      .GrantRuntimePermissions(*extension_, permissions, base::DoNothing());
+  GrantHostPermission(withheld.explicit_hosts().Clone(),
+                      withheld.scriptable_hosts().Clone(), base::DoNothing());
 }
 
 void ScriptingPermissionsModifier::WithholdHostPermissions(
