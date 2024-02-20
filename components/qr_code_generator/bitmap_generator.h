@@ -33,25 +33,28 @@ enum class CenterImage {
   kPasskey,
 };
 
-// Structure for returning QR Code image data.
-struct QRImage {
-  // Image data for generated QR code.
-  SkBitmap bitmap;
+// This gives the size of the required "quiet zone" that needs to be added to
+// the image returned by `GenerateBitmap`.  The size is expressed in pixels of
+// the returned `SkBitmap`.  A margin of light-colored pixels (that is this many
+// pixels wide) needs to be added to the returned image on the left, right, top,
+// and bottom.
+//
+// See also https://www.qrcode.com/en/howto/code.html which has diagrams and
+// additional explanation about the "quiet zone".
+extern const int kQuietZoneSizePixels;
 
-  // Size of the generated QR code in elements. Note that `bitmap` will be
-  // upscaled, so this does not represent the returned image size.
-  //
-  // TODO: This member wouldn't be needed if `Generate` took care of
-  // generating a "quiet zone" of 4 or more modules (instead of putting that
-  // responsibility on the caller).  See also
-  // https://www.qrcode.com/en/howto/code.html.
-  gfx::Size data_size;
-};
-
-base::expected<QRImage, Error> GenerateBitmap(base::span<const uint8_t> data,
-                                              ModuleStyle module_style,
-                                              LocatorStyle locator_style,
-                                              CenterImage center_image);
+// Generates an `SkBitmap` with a QR code that encodes the `data`.
+//
+// WARNING: The caller is responsible for adding light-colored margins of
+// `kQuietZoneSize` pixels around the returned image.
+// TODO(lukasza): Move "quiet zone" painting/resizing into `GenerateBitmap`
+// (this may require testing that callers that didn't add the quiet zone are
+// okay with differently-sized images and margins). See also
+// `QRCodeGeneratorBubble::AddQRCodeQuietZone`.
+base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,
+                                               ModuleStyle module_style,
+                                               LocatorStyle locator_style,
+                                               CenterImage center_image);
 
 }  // namespace qr_code_generator
 

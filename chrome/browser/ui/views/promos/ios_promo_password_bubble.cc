@@ -227,7 +227,7 @@ std::unique_ptr<views::View> CreateFooter(
   views::ImageView* image_view =
       views::AsViewClass<views::ImageView>(qr_code_views.front());
 
-  image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(qr_image->bitmap));
+  image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(qr_image.value()));
 
   return built_footer_view;
 }

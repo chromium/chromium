@@ -60,12 +60,9 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   // e.g.: www.foo.com may suggest qrcode_foo.png.
   static const std::u16string GetQRCodeFilenameForURL(const GURL& url);
 
-  // Given an image |image| of a QR code, adds the required "quiet zone" padding
-  // around the outside of it. The |size| size is given in QR code tiles, not in
-  // pixels or dips. Both |image| and |size| must be square, and the resulting
-  // image is also square.
+  // Given a square `image`, produce a new image that contains `image` with the
+  // mandatory "quiet zone" worth of white padding around the original image.
   static gfx::ImageSkia AddQRCodeQuietZone(const gfx::ImageSkia& image,
-                                           const gfx::Size& size,
                                            SkColor background_color);
 
   views::ImageView* image_for_testing() { return qr_code_image_; }

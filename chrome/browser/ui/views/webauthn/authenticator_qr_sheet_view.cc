@@ -70,7 +70,7 @@ class AuthenticatorQRViewCentered : public views::View {
     CHECK(qr_code.has_value(), base::NotFatalUntil::M124);
 
     qr_code_image_->SetImage(ui::ImageModel::FromImageSkia(
-        gfx::ImageSkia::CreateFrom1xBitmap(qr_code->bitmap)));
+        gfx::ImageSkia::CreateFrom1xBitmap(qr_code.value())));
     qr_code_image_->SetVisible(true);
   }
 

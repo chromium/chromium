@@ -30,7 +30,7 @@ static ScopedJavaLocalRef<jobject> JNI_QRCodeGenerator_GenerateBitmap(
 
   ScopedJavaLocalRef<jobject> java_bitmap;
   if (qr_image.has_value()) {
-    java_bitmap = gfx::ConvertToJavaBitmap(qr_image->bitmap);
+    java_bitmap = gfx::ConvertToJavaBitmap(qr_image.value());
   }
   return java_bitmap;
 }

@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/qr_code_generator/bitmap_generator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,9 +42,7 @@ TEST_F(QRCodeGeneratorBubbleTest, SuggestedDownloadURLNoIP) {
 
 TEST_F(QRCodeGeneratorBubbleTest, GeneratedCodeHasQuietZone) {
   const int kBaseSizeDip = 16;
-  const int kQuietZoneTiles = 4;
-  const int kTileToDip = 2;
-  const int kQuietZoneDip = kQuietZoneTiles * kTileToDip;
+  const int kQuietZoneDip = qr_code_generator::kQuietZoneSizePixels;
 
   SkBitmap base_bitmap;
   base_bitmap.allocN32Pixels(kBaseSizeDip, kBaseSizeDip);
@@ -52,7 +51,6 @@ TEST_F(QRCodeGeneratorBubbleTest, GeneratedCodeHasQuietZone) {
 
   auto image = QRCodeGeneratorBubble::AddQRCodeQuietZone(
       base_image,
-      gfx::Size(kBaseSizeDip / kTileToDip, kBaseSizeDip / kTileToDip),
       SK_ColorTRANSPARENT);
 
   EXPECT_EQ(base_image.width(), kBaseSizeDip);

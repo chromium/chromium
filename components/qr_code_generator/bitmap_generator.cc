@@ -266,10 +266,12 @@ SkBitmap RenderBitmap(base::span<const uint8_t> data,
 
 }  // namespace
 
-base::expected<QRImage, Error> GenerateBitmap(base::span<const uint8_t> data,
-                                              ModuleStyle module_style,
-                                              LocatorStyle locator_style,
-                                              CenterImage center_image) {
+const int kQuietZoneSizePixels = kModuleSizePixels * 4;
+
+base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,
+                                               ModuleStyle module_style,
+                                               LocatorStyle locator_style,
+                                               CenterImage center_image) {
   SCOPED_UMA_HISTOGRAM_TIMER("Sharing.QRCodeGeneration.Duration");
 
   GeneratedCode qr_code;
@@ -293,16 +295,13 @@ base::expected<QRImage, Error> GenerateBitmap(base::span<const uint8_t> data,
     byte &= 1;
   }
 
-  QRImage result;
   {
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
         "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2");
-    result.data_size = {qr_code.qr_size, qr_code.qr_size};
-    result.bitmap =
-        RenderBitmap(base::make_span(qr_code.data), result.data_size,
-                     module_style, locator_style, center_image);
+    gfx::Size data_size = {qr_code.qr_size, qr_code.qr_size};
+    return RenderBitmap(base::make_span(qr_code.data), data_size, module_style,
+                        locator_style, center_image);
   }
-  return result;
 }
 
 }  // namespace qr_code_generator

@@ -75,7 +75,7 @@ void ChromeShimlessRmaDelegate::GenerateQrCode(
   DCHECK(response.has_value()) << "url: " << url;
   if (response.has_value()) {
     std::vector<unsigned char> bytes;
-    gfx::PNGCodec::EncodeBGRASkBitmap(response->bitmap, false, &bytes);
+    gfx::PNGCodec::EncodeBGRASkBitmap(response.value(), false, &bytes);
     std::move(callback).Run(std::string(bytes.begin(), bytes.end()));
   } else {
     SCOPED_CRASH_KEY_STRING1024("RMA", "QRCodeGeneration", url);

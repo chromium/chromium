@@ -138,7 +138,7 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
 
   std::string input = base::UTF16ToUTF8(textfield_url_->GetText());
 
-  base::expected<qr_code_generator::QRImage, qr_code_generator::Error> qr_code;
+  base::expected<SkBitmap, qr_code_generator::Error> qr_code;
   if (qrcode_error_override_.has_value()) {
     qr_code = base::unexpected(qrcode_error_override_.value());
   } else {
@@ -154,9 +154,9 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
   }
 
   HideErrors(true);
-  UpdateQRImage(AddQRCodeQuietZone(
-      gfx::ImageSkia::CreateFrom1xBitmap(qr_code->bitmap), qr_code->data_size,
-      GetColorProvider()->GetColor(kColorQrCodeBackground)));
+  UpdateQRImage(
+      AddQRCodeQuietZone(gfx::ImageSkia::CreateFrom1xBitmap(qr_code.value()),
+                         GetColorProvider()->GetColor(kColorQrCodeBackground)));
 }
 
 void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
@@ -398,26 +398,17 @@ const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
   return base::UTF8ToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
 }
 
-// Given a square |image| and a size in QR code tiles (*not* in pixels or
-// dips) |qr_size|, produce a new image that contains |image| with the
-// mandatory 4 tiles worth of white padding around the original image.
 // static
 gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
     const gfx::ImageSkia& image,
-    const gfx::Size& qr_size,
     SkColor background_color) {
   const gfx::Size image_size(image.width(), image.height());
 
   DCHECK(IsSquare(image_size));
-  DCHECK(IsSquare(qr_size));
 
-  // Set by the QR code specification. We need to leave this many tiles blank on
-  // *each side* of the image.
-  const int kQuietZoneSizeTiles = 4;
-  const int tile_size = image.width() / qr_size.width();
   const gfx::Size background_size =
-      image_size + gfx::Size(kQuietZoneSizeTiles * tile_size * 2,
-                             kQuietZoneSizeTiles * tile_size * 2);
+      image_size + gfx::Size(qr_code_generator::kQuietZoneSizePixels * 2,
+                             qr_code_generator::kQuietZoneSizePixels * 2);
 
   auto final_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
       CreateBackgroundImageSkia(background_size, background_color), image);

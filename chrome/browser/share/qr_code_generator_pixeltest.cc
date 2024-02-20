@@ -35,15 +35,11 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
 
     // Version 1 of QR codes has 21x21 modules/tiles/pixels.  Verify that the
     // returned QR image has a size that is at least 21x21.
-    ASSERT_GE(response->data_size.width(), 21);
+    ASSERT_GE(response->height(), 21);
+    ASSERT_GE(response->width(), 21);
 
     // The QR code should be a square.
-    ASSERT_EQ(response->data_size.width(), response->data_size.height());
-    ASSERT_EQ(response->bitmap.width(), response->bitmap.height());
-
-    // The bitmap size should be a multiple of the QR size.
-    ASSERT_EQ(response->bitmap.width() % response->data_size.width(), 0);
-    ASSERT_EQ(response->bitmap.height() % response->data_size.height(), 0);
+    ASSERT_EQ(response->width(), response->height());
 
     // Verify that the expected UMA metrics got logged.
     // TODO(1246137): Cover BytesToQrPixels and QrPixelsToQrImage as well.
@@ -62,7 +58,7 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
       ASSERT_TRUE(pixel_diff->CompareScreenshot(
           ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
               test_info, ui::test::SkiaGoldPixelDiff::GetPlatform()),
-          response->bitmap));
+          response.value()));
     }
 #endif
   }
