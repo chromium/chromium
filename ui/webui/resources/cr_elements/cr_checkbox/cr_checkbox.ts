@@ -56,7 +56,6 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-        observer: 'checkedChanged_',
         notify: true,
       },
 
@@ -91,17 +90,6 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   override ready() {
     super.ready();
 
-    // <if expr="chromeos_ash">
-    // TODO(b/309689294) Remove this once CrOS UIs migrate to Jellybean
-    // components and no longer use cr-elements.
-    // Force stamp the ripple element to enable CrOS focus styles. Ripple
-    // visibility is controlled by the event listeners below.
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.getRipple();
-    }
-    // </if>
-
-    this.removeAttribute('unresolved');
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('pointerup', this.hideRipple_.bind(this));
     if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
@@ -121,9 +109,12 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     return this.$.checkbox;
   }
 
-  private checkedChanged_() {
-    this.$.checkbox.setAttribute(
-        'aria-checked', this.checked ? 'true' : 'false');
+  private getAriaChecked_(): string {
+    return this.checked ? 'true' : 'false';
+  }
+
+  private getAriaDisabled_(): string {
+    return this.disabled ? 'true' : 'false';
   }
 
   private disabledChanged_(_current: boolean, previous: boolean) {
@@ -132,8 +123,6 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     }
 
     this.tabIndex = this.disabled ? -1 : 0;
-    this.$.checkbox.setAttribute(
-        'aria-disabled', this.disabled ? 'true' : 'false');
   }
 
   private showRipple_() {

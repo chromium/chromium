@@ -208,8 +208,10 @@
       }
     </style>
     <div id="checkbox" tabindex$="[[tabIndex]]" role="checkbox"
-        on-keydown="onKeyDown_" on-keyup="onKeyUp_" aria-disabled="false"
-        aria-checked="false" aria-labelledby="label-container"
+        on-keydown="onKeyDown_" on-keyup="onKeyUp_"
+        aria-disabled="[[getAriaDisabled_(disabled)]]"
+        aria-checked="[[getAriaChecked_(checked)]]"
+        aria-labelledby="label-container"
         aria-describedby="ariaDescription">
       <!-- Inline SVG paints faster than loading it from a separate file. -->
       <svg id="checkmark" width="12" height="12" viewBox="0 0 12 12"
