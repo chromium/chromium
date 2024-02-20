@@ -22,14 +22,17 @@ const unsigned kInvalidFallbackMetricsValue = static_cast<unsigned>(-1);
 // The HarfBuzzFontData struct carries user-pointer data for
 // |hb_font_t| callback functions/operations. It contains metrics and OpenType
 // layout information related to a font scaled to a particular size.
-struct HarfBuzzFontData final {
-  USING_FAST_MALLOC(HarfBuzzFontData);
-
+struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
  public:
-  HarfBuzzFontData() : vertical_data_(nullptr), range_set_(nullptr) {}
+  explicit HarfBuzzFontData(hb_font_t* unscaled_font)
+      : unscaled_font_(hb::unique_ptr<hb_font_t>(unscaled_font)),
+        vertical_data_(nullptr),
+        range_set_(nullptr) {}
 
   HarfBuzzFontData(const HarfBuzzFontData&) = delete;
   HarfBuzzFontData& operator=(const HarfBuzzFontData&) = delete;
+
+  void Trace(Visitor*) const {}
 
   // The vertical origin and vertical advance functions in HarfBuzzFace require
   // the ascent and height metrics as fallback in case no specific vertical
@@ -78,6 +81,7 @@ struct HarfBuzzFontData final {
     return vertical_data_;
   }
 
+  const hb::unique_ptr<hb_font_t> unscaled_font_;
   SkFont font_;
 
   // Capture these scaled fallback metrics from FontPlatformData so that a

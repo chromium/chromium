@@ -6,12 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_CACHE_H_
 
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
-#include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
-
-#include <hb.h>
-#include <hb-cplusplus.hh>
-
-#include <memory>
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -25,39 +22,21 @@ struct HarfBuzzFontData;
 // FIXME, crbug.com/609099: We should fix the FontCache to only keep one
 // FontPlatformData object independent of size, then consider using this here.
 
-class HbFontCacheEntry : public RefCounted<HbFontCacheEntry> {
-  USING_FAST_MALLOC(HbFontCacheEntry);
-
- public:
-  static scoped_refptr<HbFontCacheEntry> Create(hb_font_t* hb_font);
-
-  hb_font_t* HbFont() { return hb_font_.get(); }
-  HarfBuzzFontData* HbFontData() { return hb_font_data_.get(); }
-
-  ~HbFontCacheEntry();
-
- private:
-  explicit HbFontCacheEntry(hb_font_t* font);
-
-  hb::unique_ptr<hb_font_t> hb_font_;
-  std::unique_ptr<HarfBuzzFontData> hb_font_data_;
-};
-
 class HarfBuzzFontCache final {
- public:
-  HarfBuzzFontCache();
-  ~HarfBuzzFontCache();
+  DISALLOW_NEW();
 
-  HbFontCacheEntry* RefOrNew(uint64_t unique_id,
-                             const FontPlatformData* platform_data);
-  void Remove(uint64_t unique_id);
+ public:
+  void Trace(Visitor* visitor) const;
+  // See "harfbuzz_face.cc" for |HarfBuzzFontCache::GetOrCreateFontData()|
+  // implementation.
+  HarfBuzzFontData* GetOrCreate(uint64_t unique_id,
+                                const FontPlatformData* platform_data);
 
  private:
-  using HbFontDataMap = HashMap<uint64_t,
-                                scoped_refptr<HbFontCacheEntry>,
-                                IntWithZeroKeyHashTraits<uint64_t>>;
-
-  HbFontDataMap font_map_;
+  HeapHashMap<uint64_t,
+              WeakMember<HarfBuzzFontData>,
+              IntWithZeroKeyHashTraits<uint64_t>>
+      font_map_;
 };
 
 }  // namespace blink
