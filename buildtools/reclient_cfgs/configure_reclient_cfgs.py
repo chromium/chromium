@@ -118,7 +118,7 @@ class CipdAuthError(CipdError):
 
 
 def CipdEnsure(pkg_name, ref, directory, quiet):
-    print("ensure %s %s in %s" % (pkg_name, ref, directory))
+    logging.info("ensure %s %s in %s", pkg_name, ref, directory)
     log_level = "warning" if quiet else "info"
     ensure_file = """
 $ParanoidMode CheckIntegrity
@@ -146,10 +146,10 @@ def IsCipdLoggedIn():
     ps = subprocess.run(
         ' '.join(['cipd', 'auth-info']),
         shell=True, capture_output=True, text=True)
-    logging.info(
+    logging.warning(
         "log for http://b/304677840: stdout from cipd auth-info: %s",
         ps.stdout)
-    logging.info(
+    logging.warning(
         "log for http://b/304677840: stderr from cipd auth-info: %s",
         ps.stderr)
     return ps.returncode == 0

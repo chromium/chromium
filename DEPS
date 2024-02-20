@@ -5584,6 +5584,7 @@ hooks = [
                'reproxy.cfg.template',
                '--rewrapper_cfg_project',
                Var('rewrapper_cfg_project'),
+               '--quiet',
                ],
   },
   {
@@ -5599,6 +5600,7 @@ hooks = [
                '--rewrapper_cfg_project',
                Var('rewrapper_cfg_project'),
                '--skip_remoteexec_cfg_fetch',
+               '--quiet',
                ],
   },
   # Configure Siso for developer builds.
