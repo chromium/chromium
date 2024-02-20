@@ -22,7 +22,6 @@
 
 class MediaAccessHandler;
 class MediaStreamCaptureIndicator;
-class Profile;
 
 namespace extensions {
 class Extension;
@@ -106,23 +105,17 @@ class MediaCaptureDevicesDispatcher
   // signleton.
   void DisableDeviceEnumerationForTesting();
 
-  // Helper to get default device IDs. If the returned value is an empty string,
-  // it means that there is no default device for the given device |type|. The
-  // only supported |type| values are
-  // blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE and
-  // blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE.
-  // Must be called on the UI thread.
-  std::string GetDefaultDeviceIDForProfile(Profile* profile,
-                                           blink::mojom::MediaStreamType type);
-
   // webrtc::MediaStreamDeviceEnumeratorImpl:
   const blink::MediaStreamDevices& GetAudioCaptureDevices() const override;
   const blink::MediaStreamDevices& GetVideoCaptureDevices() const override;
-  void GetDefaultDevicesForBrowserContext(
-      content::BrowserContext* context,
-      bool audio,
-      bool video,
-      blink::mojom::StreamDevices& devices) override;
+  const std::optional<blink::MediaStreamDevice>
+  GetPreferredAudioDeviceForBrowserContext(
+      content::BrowserContext* browser_context,
+      const std::vector<std::string>& eligible_audio_device_ids) const override;
+  const std::optional<blink::MediaStreamDevice>
+  GetPreferredVideoDeviceForBrowserContext(
+      content::BrowserContext* browser_context,
+      const std::vector<std::string>& eligible_video_device_ids) const override;
 
   // content::MediaObserver:
   void OnAudioCaptureDevicesChanged() override;

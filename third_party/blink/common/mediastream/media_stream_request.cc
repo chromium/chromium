@@ -174,6 +174,11 @@ bool MediaStreamDevice::IsSameDevice(
          session_id_ == other_device.session_id_;
 }
 
+bool MediaStreamDevice::operator==(
+    const MediaStreamDevice& other_device) const {
+  return IsSameDevice(other_device);
+}
+
 blink::MediaStreamDevices ToMediaStreamDevicesList(
     const blink::mojom::StreamDevicesSet& stream_devices_set) {
   blink::MediaStreamDevices devices;

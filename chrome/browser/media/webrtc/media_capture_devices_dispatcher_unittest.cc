@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/media_access_handler.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,6 +50,27 @@ class MockMediaAccessHandler : public MediaAccessHandler {
   const blink::mojom::MediaStreamType supported_type_;
 };
 
+blink::MediaStreamDevices CreateFakeDevices(
+    blink::mojom::MediaStreamType type) {
+  blink::MediaStreamDevices devices;
+  devices.reserve(3);
+  for (size_t i = 0; i < devices.capacity(); ++i) {
+    devices.emplace_back(type, "id_" + base::NumberToString(i),
+                         "name " + base::NumberToString(i));
+  }
+  return devices;
+}
+
+std::vector<std::string> GetIds(const blink::MediaStreamDevices& devices,
+                                size_t start_index) {
+  CHECK_LT(start_index, devices.size());
+  std::vector<std::string> device_ids;
+  for (auto it = devices.begin() + start_index; it != devices.end(); ++it) {
+    device_ids.push_back(it->id);
+  }
+  return device_ids;
+}
+
 }  // namespace
 
 class MediaCaptureDevicesDispatcherTest
@@ -69,6 +91,24 @@ class MediaCaptureDevicesDispatcherTest
   void UpdateVideoScreenCaptureStatus(
       const blink::mojom::MediaStreamType type) {
     dispatcher_->UpdateVideoScreenCaptureStatus(0, 0, 0, type, false);
+  }
+
+  void UpdateAudioDevicePreferenceRanking(
+      const typename blink::MediaStreamDevices::const_iterator
+          preferred_device_iter) {
+    CHECK(profile()->GetPrefs());
+    media_prefs::UpdateAudioDevicePreferenceRanking(
+        *profile()->GetPrefs(), preferred_device_iter,
+        dispatcher_->GetAudioCaptureDevices());
+  }
+
+  void UpdateVideoDevicePreferenceRanking(
+      const typename blink::MediaStreamDevices::const_iterator
+          preferred_device_iter) {
+    CHECK(profile()->GetPrefs());
+    media_prefs::UpdateVideoDevicePreferenceRanking(
+        *profile()->GetPrefs(), preferred_device_iter,
+        dispatcher_->GetVideoCaptureDevices());
   }
 
  protected:
@@ -94,4 +134,82 @@ TEST_F(MediaCaptureDevicesDispatcherTest,
   UpdateVideoScreenCaptureStatus(stream_type1);
   EXPECT_CALL(*handler2, UpdateVideoScreenCaptureStatus(_, _, _, _));
   UpdateVideoScreenCaptureStatus(stream_type2);
+}
+
+TEST_F(MediaCaptureDevicesDispatcherTest,
+       GetPreferredAudioDeviceForBrowserContext) {
+  const auto kFakeAudioDevices =
+      CreateFakeDevices(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+  dispatcher_->SetTestAudioCaptureDevices(kFakeAudioDevices);
+  UpdateAudioDevicePreferenceRanking(
+      dispatcher_->GetAudioCaptureDevices().end() - 1);
+  UpdateAudioDevicePreferenceRanking(
+      dispatcher_->GetAudioCaptureDevices().begin());
+  // Ranking at this point is [device_0, device_2, device_1].
+
+  // Exclude the first device from the eligible list to exercise filtering.
+  const auto eligible_device_ids = GetIds(kFakeAudioDevices, 1);
+  const auto preferred_device =
+      dispatcher_->GetPreferredAudioDeviceForBrowserContext(
+          browser_context(), eligible_device_ids);
+  ASSERT_TRUE(preferred_device->IsSameDevice(kFakeAudioDevices.back()));
+}
+
+TEST_F(
+    MediaCaptureDevicesDispatcherTest,
+    GetPreferredAudioDeviceForBrowserContext_EmptyEligibleDevicesReturnsDefault) {
+  const auto kFakeAudioDevices =
+      CreateFakeDevices(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+  dispatcher_->SetTestAudioCaptureDevices(kFakeAudioDevices);
+  UpdateAudioDevicePreferenceRanking(
+      dispatcher_->GetAudioCaptureDevices().end() - 1);
+  UpdateAudioDevicePreferenceRanking(
+      dispatcher_->GetAudioCaptureDevices().begin());
+  // Ranking at this point is [device_0, device_2, device_1].
+
+  // Pass empty eligible devices to disable filtering.
+  const auto preferred_device =
+      dispatcher_->GetPreferredAudioDeviceForBrowserContext(browser_context(),
+                                                            {});
+  // Preferred device should be the most preferred device in the ranking without
+  // any filtering. That device is device_0.
+  ASSERT_TRUE(preferred_device->IsSameDevice(kFakeAudioDevices.front()));
+}
+
+TEST_F(MediaCaptureDevicesDispatcherTest,
+       GetPreferredVideoDeviceForBrowserContext) {
+  const auto kFakeVideoDevices =
+      CreateFakeDevices(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  dispatcher_->SetTestVideoCaptureDevices(kFakeVideoDevices);
+  UpdateVideoDevicePreferenceRanking(
+      dispatcher_->GetVideoCaptureDevices().end() - 1);
+  UpdateVideoDevicePreferenceRanking(
+      dispatcher_->GetVideoCaptureDevices().begin());
+  // Ranking at this point is [device_0, device_2, device_1].
+
+  // Exclude the first device from the eligible list to exercise filtering.
+  const auto eligible_device_ids = GetIds(kFakeVideoDevices, 1);
+  const auto preferred_device =
+      dispatcher_->GetPreferredVideoDeviceForBrowserContext(
+          browser_context(), eligible_device_ids);
+  ASSERT_TRUE(preferred_device->IsSameDevice(kFakeVideoDevices.back()));
+}
+
+TEST_F(
+    MediaCaptureDevicesDispatcherTest,
+    GetPreferredVideoDeviceForBrowserContext_EmptyEligibleDevicesReturnsDefault) {
+  const auto kFakeVideoDevices =
+      CreateFakeDevices(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  dispatcher_->SetTestVideoCaptureDevices(kFakeVideoDevices);
+  UpdateVideoDevicePreferenceRanking(
+      dispatcher_->GetVideoCaptureDevices().end() - 1);
+  UpdateVideoDevicePreferenceRanking(
+      dispatcher_->GetVideoCaptureDevices().begin());
+  // Ranking at this point is [device_0, device_2, device_1].
+
+  // Exclude the first device from the eligible list to exercise filtering.
+  const auto preferred_device =
+      dispatcher_->GetPreferredVideoDeviceForBrowserContext(browser_context(),
+                                                            {});
+  ASSERT_TRUE(preferred_device->IsSameDevice(kFakeVideoDevices.front()));
 }

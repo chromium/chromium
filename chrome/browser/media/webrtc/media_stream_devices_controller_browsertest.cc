@@ -190,7 +190,7 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
       bool request_pan_tilt_zoom_permission) {
     return CreateRequestWithType(audio_id, video_id,
                                  request_pan_tilt_zoom_permission,
-                                 blink::MEDIA_DEVICE_ACCESS);
+                                 blink::MEDIA_GENERATE_STREAM);
   }
 
   void InitWithUrl(const GURL& url) {
