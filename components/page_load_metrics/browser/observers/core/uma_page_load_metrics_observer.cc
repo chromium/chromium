@@ -78,6 +78,15 @@ std::unique_ptr<base::trace_event::TracedValue> FirstInputDelayTraceData(
   return data;
 }
 
+#define TRACE_WITH_TIMESTAMP0(category_group, name, trace_id, begin_time,   \
+                              end_time)                                     \
+  do {                                                                      \
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(category_group, name,  \
+                                                     trace_id, begin_time); \
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(category_group, name,    \
+                                                   trace_id, end_time);     \
+  } while (0)
+
 }  // namespace
 
 namespace internal {
@@ -712,6 +721,12 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramCommitSentToFirstSubresourceLoadStart,
         timing_info.request_start - commit_sent_time);
+
+    TRACE_WITH_TIMESTAMP0(
+        "loading", "CommitSentToFirstSubresourceLoadStart",
+        TRACE_ID_WITH_SCOPE("CommitSentToFirstSubresourceLoadStart",
+                            TRACE_ID_LOCAL(this)),
+        commit_sent_time, timing_info.request_start);
   }
 }
 
