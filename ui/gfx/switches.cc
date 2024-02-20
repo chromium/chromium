@@ -25,6 +25,10 @@ const char kEnableNativeGpuMemoryBuffers[] = "enable-native-gpu-memory-buffers";
 // settings.
 const char kForcePrefersReducedMotion[] = "force-prefers-reduced-motion";
 
+// Forces whether the user desires no reduced motion, regardless of system
+// settings.
+const char kForcePrefersNoReducedMotion[] = "force-prefers-no-reduced-motion";
+
 // Run in headless mode, i.e., without a UI or display server dependencies.
 const char kHeadless[] = "headless";
 
