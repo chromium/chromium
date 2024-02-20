@@ -8,10 +8,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -538,7 +535,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mHidingTokenHolder.releaseToken(token);
     }
 
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     private boolean shouldShowAndroidControls() {
         if (mControlContainer == null) return false;
         if (mHidingTokenHolder.hasTokens()) {
@@ -546,24 +542,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         }
         if (offsetOverridden()) return true;
 
-        boolean showControls = !BrowserControlsUtils.drawControlsAsTexture(this);
-        ViewGroup contentView = mTab != null ? mTab.getContentView() : null;
-        if (contentView == null) return showControls;
-
-        for (int i = 0; i < contentView.getChildCount(); i++) {
-            View child = contentView.getChildAt(i);
-            if (!(child.getLayoutParams() instanceof FrameLayout.LayoutParams)) continue;
-
-            FrameLayout.LayoutParams layoutParams =
-                    (FrameLayout.LayoutParams) child.getLayoutParams();
-            if (Gravity.TOP == (layoutParams.gravity & Gravity.FILL_VERTICAL)) {
-                TraceEvent.instant("BCM::showAndroidControls" + child.getId());
-                showControls = true;
-                break;
-            }
-        }
-
-        return showControls;
+        return !BrowserControlsUtils.drawControlsAsTexture(this);
     }
 
     /**
