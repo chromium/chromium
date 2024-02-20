@@ -280,7 +280,7 @@ void LocationIconView::UpdateIcon() {
   const bool is_vector_icon = !icon.IsEmpty() && icon.IsVectorIcon() &&
                               icon.GetVectorIcon().vector_icon();
   if (is_vector_icon) {
-    const std::string icon_name = icon.GetVectorIcon().vector_icon()->name;
+    const char* const icon_name = icon.GetVectorIcon().vector_icon()->name;
     if (icon_name == vector_icons::kGoogleSuperGIcon.name ||
         icon_name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
       // Remove the inkdrop around the Google G logo since we cannot interact
