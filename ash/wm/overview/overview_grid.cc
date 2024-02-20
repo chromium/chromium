@@ -718,7 +718,9 @@ void OverviewGrid::PositionWindows(
 
   // Create a feedback button that shows even when no items are present (e.g.,
   // for Pine).
-  UpdateFeedbackButton();
+  if (features::IsForestFeatureEnabled()) {
+    UpdateFeedbackButton();
+  }
 
   if (item_list_.empty()) {
     return;
@@ -3024,6 +3026,8 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
 }
 
 void OverviewGrid::UpdateFeedbackButton() {
+  CHECK(features::IsForestFeatureEnabled());
+
   if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
     feedback_widget_.reset();
     return;
