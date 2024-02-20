@@ -1917,7 +1917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.CharacterIndex" units="ms"
-    expires_after="2024-04-03">
+    expires_after="2024-08-18">
   <owner>kouhei@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1933,7 +1933,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.FirstRect" units="ms"
-    expires_after="2024-07-07">
+    expires_after="2024-08-18">
   <owner>kouhei@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1949,7 +1949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.LockWait" units="ms"
-    expires_after="2024-04-03">
+    expires_after="2024-08-18">
   <owner>kouhei@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
