@@ -38,6 +38,7 @@
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
@@ -144,6 +145,7 @@ class DisplayOverlayController::FocusCycler {
     if (auto it = std::find(widget_list_.begin(), widget_list_.end(), widget);
         it == widget_list_.end()) {
       widget_list_.emplace_back(widget);
+      OnWidgetListUpdated();
     }
   }
 
@@ -151,6 +153,27 @@ class DisplayOverlayController::FocusCycler {
     if (auto it = std::find(widget_list_.begin(), widget_list_.end(), widget);
         it != widget_list_.end()) {
       widget_list_.erase(it);
+      OnWidgetListUpdated();
+    }
+  }
+
+  void OnWidgetListUpdated() {
+    const size_t widget_list_size = widget_list_.size();
+    if (widget_list_size <= 1u) {
+      return;
+    }
+
+    // Update the widget's accessibility tree.
+    for (size_t i = 0; i < widget_list_size; i++) {
+      auto* curr_view = widget_list_[i]->GetContentsView();
+      auto& curr_view_a11y = curr_view->GetViewAccessibility();
+      const size_t prev_index = (i + widget_list_size - 1u) % widget_list_size;
+      const size_t next_index = (i + 1u) % widget_list_size;
+
+      curr_view_a11y.OverridePreviousFocus(widget_list_[prev_index]);
+      curr_view_a11y.OverrideNextFocus(widget_list_[next_index]);
+      curr_view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
+                                          /*send_native_event=*/true);
     }
   }
 
