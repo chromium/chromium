@@ -7,11 +7,11 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <numbers>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/numerics/math_constants.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "printing/mojom/print.mojom.h"
@@ -32,7 +32,7 @@ void RotatePage(CGContextRef context, const CGRect& rect, int num_rotations) {
       // content is now "off screen". Shift it right to move it back on screen.
       CGContextTranslateCTM(context, rect.size.width, 0);
       // Rotates counter-clockwise by 90 degrees.
-      CGContextRotateCTM(context, base::kPiDouble / 2);
+      CGContextRotateCTM(context, std::numbers::pi / 2);
       break;
     case 2:
       // After rotating by 180 degrees with the axis at the origin, the page
@@ -40,14 +40,14 @@ void RotatePage(CGContextRef context, const CGRect& rect, int num_rotations) {
       // screen.
       CGContextTranslateCTM(context, rect.size.width, rect.size.height);
       // Rotates counter-clockwise by 90 degrees.
-      CGContextRotateCTM(context, base::kPiDouble);
+      CGContextRotateCTM(context, std::numbers::pi);
       break;
     case 3:
       // After rotating by 270 degrees with the axis at the origin, the page
       // content is now "off screen". Shift it right to move it back on screen.
       CGContextTranslateCTM(context, 0, rect.size.height);
       // Rotates counter-clockwise by 90 degrees.
-      CGContextRotateCTM(context, -base::kPiDouble / 2);
+      CGContextRotateCTM(context, -std::numbers::pi / 2);
       break;
     default:
       NOTREACHED();

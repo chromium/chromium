@@ -6,6 +6,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import <numbers>
+
 #import "base/check.h"
 #import "base/ios/block_types.h"
 #import "base/numerics/math_constants.h"
@@ -521,17 +523,17 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
                    }
                    completion:nil];
 
-  [UIView
-      animateWithDuration:0.1
-               animations:^{
-                 CATransform3D rotation = CATransform3DMakeRotation(
-                     MapValueToRange({kFullThreshold / 2.0, kFullThreshold},
-                                     {-base::kPiFloat / 2, base::kPiFloat / 4},
-                                     self.verticalOffset),
-                     0, 0, 1);
-                 self.reloadActionImageView.layer.transform = rotation;
-               }
-               completion:nil];
+  [UIView animateWithDuration:0.1
+                   animations:^{
+                     CATransform3D rotation = CATransform3DMakeRotation(
+                         MapValueToRange({kFullThreshold / 2.0, kFullThreshold},
+                                         {-std::numbers::pi_v<float> / 2,
+                                          std::numbers::pi_v<float> / 4},
+                                         self.verticalOffset),
+                         0, 0, 1);
+                     self.reloadActionImageView.layer.transform = rotation;
+                   }
+                   completion:nil];
 }
 
 - (void)layoutActionLabels {
@@ -866,7 +868,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   CGFloat deformationDirection = dx > 0 ? 1 : -1;
   for (int i = 0; i < kBezierPathPointCount; i++) {
     CGPoint p;
-    float angle = i * 2 * base::kPiFloat / kBezierPathPointCount;
+    float angle = i * 2 * std::numbers::pi_v<float> / kBezierPathPointCount;
 
     // Circle centered on 0.
     p.x = cos(angle) * radius;

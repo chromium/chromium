@@ -8,8 +8,8 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/clamp_float_geometry.h"
@@ -32,7 +32,7 @@ namespace {
 const double kEpsilon = std::numeric_limits<float>::epsilon();
 
 double TanDegrees(double degrees) {
-  return std::tan(DegToRad(degrees));
+  return std::tan(base::DegToRad(degrees));
 }
 
 inline bool ApproximatelyZero(double x, double tolerance) {

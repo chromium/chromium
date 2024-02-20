@@ -11,6 +11,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/numerics/angle_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -24,7 +25,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/velocity_tracker/motion_event.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -196,7 +196,7 @@ WebTouchPoint CreateWebTouchPoint(const MotionEvent& event,
 
   float major_radius = event.GetTouchMajor(pointer_index) / 2.f;
   float minor_radius = event.GetTouchMinor(pointer_index) / 2.f;
-  float orientation_deg = gfx::RadToDeg(event.GetOrientation(pointer_index));
+  float orientation_deg = base::RadToDeg(event.GetOrientation(pointer_index));
 
   DCHECK_GE(major_radius, 0);
   DCHECK_GE(minor_radius, 0);

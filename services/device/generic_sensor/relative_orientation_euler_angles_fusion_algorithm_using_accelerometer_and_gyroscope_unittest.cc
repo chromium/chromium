@@ -4,6 +4,8 @@
 
 #include "services/device/generic_sensor/relative_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_gyroscope.h"
 
+#include <numbers>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -155,7 +157,7 @@ TEST_F(
   double accel_z = base::kMeanGravityDouble;
   double gyro_x = 0.0;
   double gyro_y = 0.0;
-  double gyro_z = base::kPiDouble;
+  double gyro_z = std::numbers::pi;
   const std::vector<double> gyro_timestamp = {0.5, 1.0, 1.5, 2.0, 2.5};
   const std::vector<double> expected_relative_orientation_alpha = {
       0.0, 90.0, 180.0, 270.0, 0.0};
@@ -179,7 +181,7 @@ TEST_F(
   double accel_z = base::kMeanGravityDouble;
   double gyro_x = 0.0;
   double gyro_y = 0.0;
-  double gyro_z = -base::kPiDouble;
+  double gyro_z = -std::numbers::pi;
   const std::vector<double> gyro_timestamp = {0.5, 1.0, 1.5, 2.0, 2.5};
   const std::vector<double> expected_relative_orientation_alpha = {
       0.0, 270.0, 180.0, 90.0, 0.0};
@@ -199,11 +201,11 @@ TEST_F(
     RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscopeTest,
     GryoscopeXReadingNonZeroValues) {
   // Test the device rotates around x-axis in 360 degrees with positive |gyro_x|
-  // reading, and in each step it rotates base::kPiDouble/6 radians.
+  // reading, and in each step it rotates pi/6 radians.
   double accel_x = 0.0;
   double accel_y = 0.0;
   double accel_z = 0.0;
-  double gyro_x = base::kPiDouble;
+  double gyro_x = std::numbers::pi;
   double gyro_y = 0.0;
   double gyro_z = 0.0;
   double gyro_timestamp = 1.0 / 6.0;
@@ -245,11 +247,11 @@ TEST_F(
   }
 
   // Test the device rotates around x-axis in 360 degrees with negative |gyro_x|
-  // reading, and in each step it rotates base::kPiDouble/6 radians.
+  // reading, and in each step it rotates std::numbers::pi/6 radians.
   fusion_algorithm_->Reset();
   accel_y = 0.0;
   accel_z = 0.0;
-  gyro_x = -base::kPiDouble;
+  gyro_x = -std::numbers::pi;
   gyro_timestamp = 1.0 / 6.0;
   angle = 0.0;
   for (size_t i = 0; i < expected_relative_orientation_beta.size(); ++i) {
@@ -272,12 +274,12 @@ TEST_F(
     RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscopeTest,
     GryoscopeYReadingNonZeroValues) {
   // Test the device rotates around y-axis in 360 degrees with positive |gyro_y|
-  // reading, and in each step it rotates base::kPiDouble/6 radians.
+  // reading, and in each step it rotates std::numbers::pi/6 radians.
   double accel_x = 0.0;
   double accel_y = 0.0;
   double accel_z = 0.0;
   double gyro_x = 0.0;
-  double gyro_y = base::kPiDouble;
+  double gyro_y = std::numbers::pi;
   double gyro_z = 0.0;
   double gyro_timestamp = 1.0 / 6.0;
   const double kTimestampIncrement = 1.0 / 6.0;
@@ -309,11 +311,11 @@ TEST_F(
   }
 
   // Test the device rotates around y-axis in 360 degrees with negative |gyro_y|
-  // reading, and in each step it rotates base::kPiDouble/6 radians.
+  // reading, and in each step it rotates std::numbers::pi/6 radians.
   fusion_algorithm_->Reset();
   accel_x = 0.0;
   accel_z = 0.0;
-  gyro_y = -base::kPiDouble;
+  gyro_y = -std::numbers::pi;
   gyro_timestamp = 1.0 / 6.0;
   angle = 0.0;
   for (size_t i = 0; i < expected_relative_orientation_beta.size(); ++i) {
@@ -340,7 +342,7 @@ TEST_F(
   const std::vector<double> accel_z = {0.0, 1.0, 2.0, 3.0, 4.0};
   double gyro_x = 0.0;
   double gyro_y = 0.0;
-  double gyro_z = base::kPiDouble;
+  double gyro_z = std::numbers::pi;
   const std::vector<double> gyro_timestamp = {0.5, 1.0, 1.5, 2.0, 2.5};
   const std::vector<double> expected_relative_orientation_alpha = {
       0.0, 90.0, 180.0, 270.0, 0.0};

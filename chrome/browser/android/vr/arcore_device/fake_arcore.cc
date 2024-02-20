@@ -6,7 +6,7 @@
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/containers/contains.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace {}
@@ -192,7 +192,7 @@ gfx::Transform FakeArCore::GetProjectionMatrix(float near, float far) {
   // simulation of ArCore should apply cropping to the underlying fixed-aspect
   // simulated camera image.
   constexpr float fov_half_angle_degrees = 30.f;
-  float base_tan = tanf(fov_half_angle_degrees * base::kPiFloat / 180.f);
+  float base_tan = tanf(base::DegToRad(fov_half_angle_degrees));
   float right_tan;
   float up_tan;
   if (display_rotation_ == display::Display::Rotation::ROTATE_0 ||

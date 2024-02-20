@@ -10,6 +10,7 @@
 #include <array>
 #include <cmath>
 #include <memory>
+#include <numbers>
 #include <numeric>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/numerics/math_constants.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
 #include "base/task/single_thread_task_runner.h"
@@ -639,7 +639,7 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
       std::swap(start, end);
     const double value = gfx::Tween::DoubleValueBetween(
         complete_animation_.GetCurrentValue(), start, end);
-    const double opacity = std::sin((value + 0.5) * base::kPiDouble) / 2 + 0.5;
+    const double opacity = std::sin((value + 0.5) * std::numbers::pi) / 2 + 0.5;
     canvas->SaveLayerAlpha(
         static_cast<uint8_t>(gfx::Tween::IntValueBetween(opacity, 0, 255)));
     PaintDownloadProgress(canvas, progress_bounds, base::TimeDelta(), 100);
@@ -647,8 +647,8 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
   } else if (scanning_animation_.is_animating()) {
     DCHECK_EQ(download::DownloadItemMode::kDeepScanning, mode_);
     const double value = gfx::Tween::DoubleValueBetween(
-        scanning_animation_.GetCurrentValue(), 0, 2 * base::kPiDouble);
-    const double opacity = std::sin(value + base::kPiDouble / 2) / 2 + 0.5;
+        scanning_animation_.GetCurrentValue(), 0, 2 * std::numbers::pi);
+    const double opacity = std::sin(value + std::numbers::pi / 2) / 2 + 0.5;
     canvas->SaveLayerAlpha(
         static_cast<uint8_t>(gfx::Tween::IntValueBetween(opacity, 0, 255)));
     PaintDownloadProgress(canvas, GetIconBounds(), base::TimeDelta(), 100);

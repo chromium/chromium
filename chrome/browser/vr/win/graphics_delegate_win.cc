@@ -4,7 +4,6 @@
 
 #include "chrome/browser/vr/win/graphics_delegate_win.h"
 
-#include "base/numerics/math_constants.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/common/gpu_stream_constants.h"

@@ -5,6 +5,7 @@
 #include <gtk/gtk.h>
 
 #include <memory>
+#include <numbers>
 #include <vector>
 
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/numerics/math_constants.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/base/string_resources.h"
@@ -70,14 +70,14 @@ void AddRoundRectPath(cairo_t* cairo_context,
                       int height,
                       int radius) {
   cairo_new_sub_path(cairo_context);
-  cairo_arc(cairo_context, width - radius, radius, radius, -base::kPiDouble / 2,
-            0);
+  cairo_arc(cairo_context, width - radius, radius, radius,
+            -std::numbers::pi / 2, 0);
   cairo_arc(cairo_context, width - radius, height - radius, radius, 0,
-            base::kPiDouble / 2);
-  cairo_arc(cairo_context, radius, height - radius, radius, base::kPiDouble / 2,
-            base::kPiDouble);
-  cairo_arc(cairo_context, radius, radius, radius, base::kPiDouble,
-            3 * base::kPiDouble / 2);
+            std::numbers::pi / 2);
+  cairo_arc(cairo_context, radius, height - radius, radius,
+            std::numbers::pi / 2, std::numbers::pi);
+  cairo_arc(cairo_context, radius, radius, radius, std::numbers::pi,
+            3 * std::numbers::pi / 2);
   cairo_close_path(cairo_context);
 }
 

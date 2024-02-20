@@ -6,7 +6,7 @@
 
 #import <cmath>
 
-#import "ui/gfx/geometry/angle_conversions.h"
+#import "base/numerics/angle_conversions.h"
 
 namespace {
 
@@ -94,7 +94,7 @@ const CGFloat kDefaultMinSwipeXThreshold = 4;
   CGPoint currentPoint = [touch locationInView:self.view];
   CGFloat dy = currentPoint.y - _startPoint.y;
   CGFloat dx = std::abs(currentPoint.x - _startPoint.x);
-  CGFloat degrees = std::fabs(gfx::RadToDeg(std::atan2(dy, dx)));
+  CGFloat degrees = std::fabs(base::RadToDeg(std::atan2(dy, dx)));
   if (degrees > kMaxSwipeYAngle) {
     self.state = UIGestureRecognizerStateFailed;
     return;

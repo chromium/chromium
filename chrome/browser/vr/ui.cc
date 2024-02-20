@@ -13,7 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/model/model.h"
@@ -30,7 +30,7 @@ namespace vr {
 
 namespace {
 
-constexpr float kMargin = 1.f * base::kPiFloat / 180;
+constexpr float kMargin = base::DegToRad(1.0f);
 
 UiElementName UserFriendlyElementNameToUiElementName(
     UserFriendlyElementName name) {
@@ -177,14 +177,11 @@ FovRectangle Ui::GetMinimalFov(const gfx::Transform& view_matrix,
                                const FovRectangle& fov_recommended,
                                float z_near) {
   // Calculate boundary of Z near plane in view space.
-  float z_near_left =
-      -z_near * std::tan(fov_recommended.left * base::kPiFloat / 180);
-  float z_near_right =
-      z_near * std::tan(fov_recommended.right * base::kPiFloat / 180);
+  float z_near_left = -z_near * std::tan(base::DegToRad(fov_recommended.left));
+  float z_near_right = z_near * std::tan(base::DegToRad(fov_recommended.right));
   float z_near_bottom =
-      -z_near * std::tan(fov_recommended.bottom * base::kPiFloat / 180);
-  float z_near_top =
-      z_near * std::tan(fov_recommended.top * base::kPiFloat / 180);
+      -z_near * std::tan(base::DegToRad(fov_recommended.bottom));
+  float z_near_top = z_near * std::tan(base::DegToRad(fov_recommended.top));
 
   float left = z_near_right;
   float right = z_near_left;
@@ -250,10 +247,10 @@ FovRectangle Ui::GetMinimalFov(const gfx::Transform& view_matrix,
   bottom = std::max(bottom - margin, z_near_bottom);
   top = std::min(top + margin, z_near_top);
 
-  float left_degrees = std::atan(-left / z_near) * 180 / base::kPiFloat;
-  float right_degrees = std::atan(right / z_near) * 180 / base::kPiFloat;
-  float bottom_degrees = std::atan(-bottom / z_near) * 180 / base::kPiFloat;
-  float top_degrees = std::atan(top / z_near) * 180 / base::kPiFloat;
+  float left_degrees = base::RadToDeg(std::atan(-left / z_near));
+  float right_degrees = base::RadToDeg(std::atan(right / z_near));
+  float bottom_degrees = base::RadToDeg(std::atan(-bottom / z_near));
+  float top_degrees = base::RadToDeg(std::atan(top / z_near));
   return FovRectangle{left_degrees, right_degrees, bottom_degrees, top_degrees};
 }
 

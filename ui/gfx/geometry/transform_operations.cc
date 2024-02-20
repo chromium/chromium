@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "ui/gfx/geometry/angle_conversions.h"
+#include "base/numerics/angle_conversions.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -140,7 +140,7 @@ bool TransformOperations::IsTranslation() const {
 }
 
 static SkScalar TanDegrees(double degrees) {
-  return SkDoubleToScalar(std::tan(DegToRad(degrees)));
+  return SkDoubleToScalar(std::tan(base::DegToRad(degrees)));
 }
 
 bool TransformOperations::ScaleComponent(SkScalar* scale) const {

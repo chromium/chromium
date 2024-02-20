@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"

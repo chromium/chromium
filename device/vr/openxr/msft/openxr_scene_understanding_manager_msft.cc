@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <numbers>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -193,7 +194,7 @@ OpenXRSceneUnderstandingManagerMSFT::RequestHitTest(
         // before returning it to blink.
         gfx::Quaternion plane_direction_webxr =
             plane_direction_openxr *
-            gfx::Quaternion(gfx::Vector3dF(1, 0, 0), base::kPiDouble / 2);
+            gfx::Quaternion(gfx::Vector3dF(1, 0, 0), std::numbers::pi / 2);
         mojo_hit->mojo_from_result =
             device::Pose(hitpoint_position, plane_direction_webxr);
         DVLOG(3) << __func__ << ": adding hit test result, position="

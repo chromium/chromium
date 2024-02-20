@@ -15,7 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -53,11 +53,11 @@ namespace chrome_pdf {
 
 namespace {
 
-constexpr float k45DegreesInRadians = base::kPiFloat / 4;
-constexpr float k90DegreesInRadians = base::kPiFloat / 2;
-constexpr float k180DegreesInRadians = base::kPiFloat;
-constexpr float k270DegreesInRadians = 3 * base::kPiFloat / 2;
-constexpr float k360DegreesInRadians = 2 * base::kPiFloat;
+constexpr float k45DegreesInRadians = base::DegToRad(45.0f);
+constexpr float k90DegreesInRadians = base::DegToRad(90.0f);
+constexpr float k180DegreesInRadians = base::DegToRad(180.0f);
+constexpr float k270DegreesInRadians = base::DegToRad(270.0f);
+constexpr float k360DegreesInRadians = base::DegToRad(360.0f);
 
 constexpr float kPointsToPixels = static_cast<float>(printing::kPixelsPerInch) /
                                   static_cast<float>(printing::kPointsPerInch);

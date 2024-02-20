@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/ui_scene_creator.h"
 
 #include <memory>
+#include <numbers>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -188,7 +188,7 @@ void ApplyFloorTransform(Rect* floor) {
   floor->SetSize(1.0f, 1.0f);
   floor->SetScale(kSceneSize, kSceneSize, kSceneSize);
   floor->SetTranslate(0.0, kFloorHeight, 0.0);
-  floor->SetRotate(1, 0, 0, -base::kPiFloat / 2);
+  floor->SetRotate(1, 0, 0, -std::numbers::pi_v<float> / 2);
 }
 
 void SetVisibleInLayout(UiElement* e, bool v) {

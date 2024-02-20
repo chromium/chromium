@@ -8,12 +8,14 @@
 
 #include <algorithm>
 #include <limits>
+#include <numbers>
 #include <optional>
 #include <ostream>
 
+#include "base/numerics/angle_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/angle_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
@@ -1156,7 +1158,7 @@ TEST(XFormTest, BlendForRotationAboutX) {
   to.Blend(from, 0.0);
   EXPECT_EQ(from, to);
 
-  double expectedRotationAngle = gfx::DegToRad(22.5);
+  double expectedRotationAngle = base::DegToRad(22.5);
   to = Transform();
   to.RotateAbout(Vector3dF(1.0, 0.0, 0.0), 90.0);
   to.Blend(from, 0.25);
@@ -1167,7 +1169,7 @@ TEST(XFormTest, BlendForRotationAboutX) {
                    std::cos(expectedRotationAngle), 0.0, to, kErrorThreshold);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
-  expectedRotationAngle = gfx::DegToRad(45.0);
+  expectedRotationAngle = base::DegToRad(45.0);
   to = Transform();
   to.RotateAbout(Vector3dF(1.0, 0.0, 0.0), 90.0);
   to.Blend(from, 0.5);
@@ -1197,7 +1199,7 @@ TEST(XFormTest, BlendForRotationAboutY) {
   to.Blend(from, 0.0);
   EXPECT_EQ(from, to);
 
-  double expectedRotationAngle = gfx::DegToRad(22.5);
+  double expectedRotationAngle = base::DegToRad(22.5);
   to = Transform();
   to.RotateAbout(Vector3dF(0.0, 1.0, 0.0), 90.0);
   to.Blend(from, 0.25);
@@ -1208,7 +1210,7 @@ TEST(XFormTest, BlendForRotationAboutY) {
                    std::cos(expectedRotationAngle), 0.0, to, kErrorThreshold);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
-  expectedRotationAngle = gfx::DegToRad(45.0);
+  expectedRotationAngle = base::DegToRad(45.0);
   to = Transform();
   to.RotateAbout(Vector3dF(0.0, 1.0, 0.0), 90.0);
   to.Blend(from, 0.5);
@@ -1238,7 +1240,7 @@ TEST(XFormTest, BlendForRotationAboutZ) {
   to.Blend(from, 0.0);
   EXPECT_EQ(from, to);
 
-  double expectedRotationAngle = gfx::DegToRad(22.5);
+  double expectedRotationAngle = base::DegToRad(22.5);
   to = Transform();
   to.RotateAbout(Vector3dF(0.0, 0.0, 1.0), 90.0);
   to.Blend(from, 0.25);
@@ -1251,7 +1253,7 @@ TEST(XFormTest, BlendForRotationAboutZ) {
   EXPECT_ROW2_EQ(0.0, 0.0, 1.0, 0.0, to);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
-  expectedRotationAngle = gfx::DegToRad(45.0);
+  expectedRotationAngle = base::DegToRad(45.0);
   to = Transform();
   to.RotateAbout(Vector3dF(0.0, 0.0, 1.0), 90.0);
   to.Blend(from, 0.5);
@@ -1361,9 +1363,8 @@ gfx::DecomposedTransform GetRotationDecomp(double x,
   return decomp;
 }
 
-const double kCos30deg = std::cos(base::kPiDouble / 6);
+const double kCos30deg = std::cos(base::DegToRad(30.0));
 const double kSin30deg = 0.5;
-const double kRoot2 = std::sqrt(2);
 
 TEST(XFormTest, QuaternionFromRotationMatrix) {
   // Test rotation around each axis.
@@ -1397,7 +1398,8 @@ TEST(XFormTest, QuaternionFromRotationMatrix) {
   ASSERT_TRUE(decomp);
   EXPECT_QUATERNION_NEAR(
       decomp->quaternion,
-      gfx::Quaternion(kSin30deg / kRoot2, kSin30deg / kRoot2, 0, kCos30deg),
+      gfx::Quaternion(kSin30deg / std::numbers::sqrt2,
+                      kSin30deg / std::numbers::sqrt2, 0, kCos30deg),
       1e-6);
 
   // Test edge tests.
@@ -1458,9 +1460,10 @@ TEST(XFormTest, QuaternionToRotationMatrixTest) {
   // Test non-axis aligned rotation
   Transform rotate_xy_60deg;
   rotate_xy_60deg.RotateAbout(1, 1, 0, 60);
-  EXPECT_TRANSFORM_EQ(rotate_xy_60deg, Transform::Compose(GetRotationDecomp(
-                                           kSin30deg / kRoot2,
-                                           kSin30deg / kRoot2, 0, kCos30deg)));
+  EXPECT_TRANSFORM_EQ(rotate_xy_60deg,
+                      Transform::Compose(GetRotationDecomp(
+                          kSin30deg / std::numbers::sqrt2,
+                          kSin30deg / std::numbers::sqrt2, 0, kCos30deg)));
 
   // Test 180deg rotation.
   auto rotate_z_180deg = Transform::Affine(-1, 0, 0, -1, 0, 0);
@@ -1503,7 +1506,8 @@ TEST(XFormTest, QuaternionInterpolation) {
   to_matrix.RotateAbout(0, 0, 1, 90);
   EXPECT_TRUE(to_matrix.Blend(from_matrix, 0.5));
   Transform expected;
-  expected.RotateAbout(1 / kRoot2, 0, 1 / kRoot2, 70.528778372);
+  expected.RotateAbout(1 / std::numbers::sqrt2, 0, 1 / std::numbers::sqrt2,
+                       70.528778372);
   EXPECT_TRANSFORM_EQ(expected, to_matrix);
 }
 
@@ -1539,7 +1543,7 @@ TEST(XFormTest, DecomposeTranslateRotateScale) {
     EXPECT_FLOAT_EQ(decomp->translate[0], degrees * 2);
     EXPECT_FLOAT_EQ(decomp->translate[1], -degrees * 3);
     double rotation =
-        gfx::RadToDeg(std::acos(double{decomp->quaternion.w()}) * 2);
+        base::RadToDeg(std::acos(double{decomp->quaternion.w()}) * 2);
     while (rotation < 0.0)
       rotation += 360.0;
     while (rotation > 360.0)
@@ -1585,16 +1589,15 @@ TEST(XFormTest, Decompose2d) {
           {0, 0, 0}, {1, 1, 1}, {0, 0, 0}, {0, 0, 0, 1}, {0, 0, 1, 0}}),
       decomp_rotate_180);
 
-  const double kSqrt2 = std::sqrt(2);
-  const double kInvSqrt2 = 1.0 / kSqrt2;
   DecomposedTransform decomp_rotate_90 =
       *Transform::Make90degRotation().Decompose();
   EXPECT_DECOMPOSED_TRANSFORM_EQ(
-      (DecomposedTransform{{0, 0, 0},
-                           {1, 1, 1},
-                           {0, 0, 0},
-                           {0, 0, 0, 1},
-                           {0, 0, kInvSqrt2, kInvSqrt2}}),
+      (DecomposedTransform{
+          {0, 0, 0},
+          {1, 1, 1},
+          {0, 0, 0},
+          {0, 0, 0, 1},
+          {0, 0, 1.0 / std::numbers::sqrt2, 1.0 / std::numbers::sqrt2}}),
       decomp_rotate_90);
 
   auto translate_rotate_90 =
@@ -1602,22 +1605,23 @@ TEST(XFormTest, Decompose2d) {
   DecomposedTransform decomp_translate_rotate_90 =
       *translate_rotate_90.Decompose();
   EXPECT_DECOMPOSED_TRANSFORM_EQ(
-      (DecomposedTransform{{-1, 1, 0},
-                           {1, 1, 1},
-                           {0, 0, 0},
-                           {0, 0, 0, 1},
-                           {0, 0, kInvSqrt2, kInvSqrt2}}),
+      (DecomposedTransform{
+          {-1, 1, 0},
+          {1, 1, 1},
+          {0, 0, 0},
+          {0, 0, 0, 1},
+          {0, 0, 1.0 / std::numbers::sqrt2, 1.0 / std::numbers::sqrt2}}),
       decomp_translate_rotate_90);
 
   DecomposedTransform decomp_skew_rotate =
       *Transform::Affine(1, 1, 1, 0, 0, 0).Decompose();
   EXPECT_DECOMPOSED_TRANSFORM_EQ(
       (DecomposedTransform{{0, 0, 0},
-                           {kSqrt2, -kInvSqrt2, 1},
+                           {std::numbers::sqrt2, -1.0 / std::numbers::sqrt2, 1},
                            {-1, 0, 0},
                            {0, 0, 0, 1},
-                           {0, 0, std::sin(base::kPiDouble / 8),
-                            std::cos(base::kPiDouble / 8)}}),
+                           {0, 0, std::sin(std::numbers::pi / 8),
+                            std::cos(std::numbers::pi / 8)}}),
       decomp_skew_rotate);
 }
 

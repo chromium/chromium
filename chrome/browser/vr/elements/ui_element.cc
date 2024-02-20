@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -18,7 +19,6 @@
 #include "device/vr/vr_gl_util.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace vr {
@@ -338,7 +338,7 @@ void UiElement::SetTranslate(float x, float y, float z) {
 }
 
 void UiElement::SetRotate(float x, float y, float z, float radians) {
-  float degrees = gfx::RadToDeg(radians);
+  float degrees = base::RadToDeg(radians);
 
   if (x == transform_operations_.at(kRotateIndex).rotate.axis.x &&
       y == transform_operations_.at(kRotateIndex).rotate.axis.y &&

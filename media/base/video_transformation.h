@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/numerics/math_constants.h"
 #include "media/base/media_export.h"
 
 namespace media {

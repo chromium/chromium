@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -83,7 +84,6 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1636,7 +1636,7 @@ void SkiaRenderer::PrepareGradient(
 
   SkPoint start_end[2];
 
-  float rad_angle = gfx::DegToRad(static_cast<float>(angle));
+  float rad_angle = base::DegToRad(static_cast<float>(angle));
   float s = std::sin(rad_angle);
   float c = std::cos(rad_angle);
 

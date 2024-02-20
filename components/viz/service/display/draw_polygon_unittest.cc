@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <numbers>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/bsp_compare_result.h"
 #include "components/viz/service/display/draw_polygon.h"
@@ -160,7 +160,7 @@ TEST(DrawPolygonConstructionTest, ManyVertexNormal) {
   std::vector<gfx::Point3F> vertices_c;
   std::vector<gfx::Point3F> vertices_d;
   for (int i = 0; i < 100; i++) {
-    const double step = i * base::kPiDouble / 50;
+    const double step = i * std::numbers::pi / 50;
     vertices_c.emplace_back(cos(step), sin(step), 0.0f);
     vertices_d.emplace_back(cos(step) + 99.0f, sin(step) + 99.0f, 100.0f);
   }

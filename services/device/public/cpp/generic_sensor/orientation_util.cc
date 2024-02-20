@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#include "ui/gfx/geometry/angle_conversions.h"
+#include "base/numerics/angle_conversions.h"
 
 namespace device {
 
@@ -21,9 +21,9 @@ bool ComputeQuaternionFromEulerAngles(double alpha,
     return false;
   }
 
-  const double half_x_angle = gfx::DegToRad(beta) * 0.5;
-  const double half_y_angle = gfx::DegToRad(gamma) * 0.5;
-  const double half_z_angle = gfx::DegToRad(alpha) * 0.5;
+  const double half_x_angle = base::DegToRad(beta) * 0.5;
+  const double half_y_angle = base::DegToRad(gamma) * 0.5;
+  const double half_z_angle = base::DegToRad(alpha) * 0.5;
 
   const double cos_z = std::cos(half_z_angle);
   const double sin_z = std::sin(half_z_angle);

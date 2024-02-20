@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <memory>
+#include <numbers>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/math_constants.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -42,7 +42,7 @@ double GetNormalRandom(double average, double stddev) {
   // Based on Box-Muller transform, see
   // http://en.wikipedia.org/wiki/Box_Muller_transform .
   return average + stddev * sqrt(-2.0 * log(1.0 - RandDouble())) *
-                       cos(RandDouble() * 2.0 * base::kPiDouble);
+                       cos(RandDouble() * 2.0 * std::numbers::pi);
 }
 
 class FakeUdpSocket : public rtc::AsyncPacketSocket {

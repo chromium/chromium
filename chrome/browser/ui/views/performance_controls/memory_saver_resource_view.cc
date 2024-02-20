@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
+
 #include <string>
 
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -159,9 +160,9 @@ class GaugeView : public views::FlexLayoutView {
     flags.setAntiAlias(true);
 
     // Vector of length 1 in the direction of the tick mark.
-    gfx::Vector2dF unit_vector(
-        std::cos(-angle_degrees * base::kPiDouble / 180),
-        std::sin(-angle_degrees * base::kPiDouble / 180));
+    const double angle_radians = base::DegToRad(angle_degrees);
+    const gfx::Vector2dF unit_vector(std::cos(-angle_radians),
+                                     std::sin(-angle_radians));
 
     // Draw a line from the inner edge of the arc to the outer edge of the arc.
     canvas->DrawLine(

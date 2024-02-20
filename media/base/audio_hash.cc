@@ -5,9 +5,9 @@
 #include "media/base/audio_hash.h"
 
 #include <cmath>
+#include <numbers>
 #include <sstream>
 
-#include "base/numerics/math_constants.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_bus.h"
 
@@ -35,7 +35,7 @@ void AudioHash::Update(const AudioBus* audio_bus, int frames) {
       if (ch == 0) {
         audio_hash_[kHashIndex] +=
             channel[i] +
-            std::sin(2.0 * base::kPiDouble * base::kPiDouble * kSampleIndex);
+            std::sin(2.0 * std::numbers::pi * std::numbers::pi * kSampleIndex);
       } else {
         audio_hash_[kHashIndex] += channel[i];
       }

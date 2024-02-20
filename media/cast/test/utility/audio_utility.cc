@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <numbers>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/numerics/math_constants.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/cast/test/utility/audio_utility.h"
@@ -111,7 +111,7 @@ bool EncodeTimestamp(uint16_t timestamp,
   for (size_t i = 0; i < length; i++) {
     double mix_of_components = 0.0;
     for (size_t f = 0; f < frequencies.size(); f++) {
-      mix_of_components += sin((i + sample_offset) * base::kPiDouble * 2.0 *
+      mix_of_components += sin((i + sample_offset) * std::numbers::pi * 2.0 *
                                frequencies[f] / kSamplingFrequency);
     }
     mix_of_components /= kNumBits + 1;
@@ -135,9 +135,9 @@ double DecodeOneFrequency(const float* samples,
   double cos_sum = 0.0;
   for (size_t i = 0; i < length; i++) {
     sin_sum += samples[i] *
-               sin(i * base::kPiDouble * 2 * frequency / kSamplingFrequency);
+               sin(i * std::numbers::pi * 2 * frequency / kSamplingFrequency);
     cos_sum += samples[i] *
-               cos(i * base::kPiDouble * 2 * frequency / kSamplingFrequency);
+               cos(i * std::numbers::pi * 2 * frequency / kSamplingFrequency);
   }
   return sqrt(sin_sum * sin_sum + cos_sum * cos_sum);
 }

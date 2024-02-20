@@ -8,12 +8,12 @@
 #include <numeric>
 #include <tuple>
 
+#include "base/numerics/angle_conversions.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/ext/skcolorspace_trfn.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace gfx {
 
@@ -436,12 +436,12 @@ std::tuple<float, float, float> XYZD65ToOklab(float x, float y, float z) {
 }
 
 std::tuple<float, float, float> LchToLab(float l, float c, float h) {
-  return std::make_tuple(l, c * std::cos(gfx::DegToRad(h)),
-                         c * std::sin(gfx::DegToRad(h)));
+  return std::make_tuple(l, c * std::cos(base::DegToRad(h)),
+                         c * std::sin(base::DegToRad(h)));
 }
 std::tuple<float, float, float> LabToLch(float l, float a, float b) {
   return std::make_tuple(l, std::sqrt(a * a + b * b),
-                         gfx::RadToDeg(atan2f(b, a)));
+                         base::RadToDeg(atan2f(b, a)));
 }
 
 std::tuple<float, float, float> DisplayP3ToXYZD50(float r, float g, float b) {

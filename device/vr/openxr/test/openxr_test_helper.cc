@@ -13,7 +13,6 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 

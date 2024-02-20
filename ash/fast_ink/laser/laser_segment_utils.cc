@@ -8,7 +8,7 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "ui/gfx/geometry/angle_conversions.h"
+#include "base/numerics/angle_conversions.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -31,7 +31,7 @@ float QuadraticEquation(bool use_plus, float a, float b, float c) {
 float AngleOfPointInNewCoordinates(const gfx::PointF& origin,
                                    const gfx::Vector2dF& direction,
                                    const gfx::PointF& point) {
-  double angle_degrees = gfx::RadToDeg(atan2(direction.y(), direction.x()));
+  double angle_degrees = base::RadToDeg(atan2(direction.y(), direction.x()));
   gfx::Transform transform;
   transform.Rotate(-angle_degrees);
   transform.Translate(-origin.x(), -origin.y());

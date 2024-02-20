@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "ui/events/gesture_detection/scale_gesture_listeners.h"
 #include "ui/events/velocity_tracker/motion_event.h"
@@ -369,7 +370,7 @@ float ScaleGestureDetector::CalculateAngle(const MotionEvent& event,
     // `std::atan2` returns value in (-pi, pi].
     // `std::atan2(y, x)`'s value when both x and y are `0` depends
     // on the implementation, but we explicitly use `0` here.
-    return std::atan2(delta_y, delta_x) * 180.f / base::kPiFloat;
+    return base::RadToDeg(std::atan2(delta_y, delta_x));
   }
   return 0.f;
 }

@@ -4,11 +4,11 @@
 
 #include "content/browser/navigation_transitions/physics_model.h"
 
+#include <numbers>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/numerics/math_constants.h"
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
 
@@ -131,7 +131,8 @@ class Spring {
         damping_ratio_(damping_ratio),
         device_scale_factor_(device_scaling_factor) {
     float stiffness =
-        std::pow(2 * base::kPiFloat / frequency_response_, 2) * mass_;
+        std::pow(2 * std::numbers::pi_v<float> / frequency_response_, 2) *
+        mass_;
     undamped_natural_frequency_ = std::sqrt(stiffness / mass_);
     damped_natural_frequency_ =
         undamped_natural_frequency_ *

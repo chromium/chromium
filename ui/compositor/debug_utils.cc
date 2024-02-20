@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "cc/trees/layer_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
@@ -117,7 +117,7 @@ void PrintLayerHierarchyImp(const Layer* layer,
 
       *out << '\n' << property_indent_str;
       *out << "rotation: ";
-      *out << std::acos(decomp->quaternion.w()) * 360.0 / base::kPiDouble;
+      *out << base::RadToDeg(std::acos(decomp->quaternion.w()) * 2);
 
       *out << '\n' << property_indent_str;
       *out << "scale: " << decomp->scale[0];

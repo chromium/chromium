@@ -24,7 +24,6 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"

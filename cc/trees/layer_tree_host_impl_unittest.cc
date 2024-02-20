@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -94,7 +95,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "ui/events/types/scroll_input_type.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -9148,7 +9148,7 @@ TEST_F(LayerTreeHostImplTest, ScrollNonAxisAlignedRotatedLayer) {
     // amount proportional to the angle between it and the input scroll delta.
     gfx::Vector2dF expected_scroll_delta(
         0, std::floor(gesture_scroll_delta.y() *
-                      std::cos(gfx::DegToRad(child_layer_angle))));
+                      std::cos(base::DegToRad(child_layer_angle))));
     std::unique_ptr<CompositorCommitData> commit_data =
         host_impl_->ProcessCompositorDeltas(
             /* main_thread_mutator_host */ nullptr);
@@ -9186,7 +9186,7 @@ TEST_F(LayerTreeHostImplTest, ScrollNonAxisAlignedRotatedLayer) {
     // amount proportional to the angle between it and the input scroll delta.
     gfx::Vector2dF expected_scroll_delta(
         0, std::floor(-gesture_scroll_delta.x() *
-                      std::sin(gfx::DegToRad(child_layer_angle))));
+                      std::sin(base::DegToRad(child_layer_angle))));
     std::unique_ptr<CompositorCommitData> commit_data =
         host_impl_->ProcessCompositorDeltas(
             /* main_thread_mutator_host */ nullptr);

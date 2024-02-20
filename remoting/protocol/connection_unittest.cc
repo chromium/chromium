@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <numbers>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -146,7 +147,7 @@ class TestAudioSource : public AudioSource {
   static int16_t GetSampleValue(double pos, int frequency) {
     const int kMaxSampleValue = 32767;
     return static_cast<int>(
-        sin(pos * 2 * base::kPiDouble * frequency / kAudioSampleRate) *
+        sin(pos * 2 * std::numbers::pi * frequency / kAudioSampleRate) *
             kMaxSampleValue +
         0.5);
   }

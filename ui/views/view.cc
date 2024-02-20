@@ -53,7 +53,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_target_iterator.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"

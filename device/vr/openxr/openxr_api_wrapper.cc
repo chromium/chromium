@@ -14,6 +14,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
@@ -30,7 +31,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/size.h"
@@ -991,10 +991,10 @@ mojom::XRViewPtr OpenXrApiWrapper::CreateView(
   view->mojo_from_view = XrPoseToGfxTransform(xr_view.pose);
 
   view->field_of_view = mojom::VRFieldOfView::New();
-  view->field_of_view->up_degrees = gfx::RadToDeg(xr_view.fov.angleUp);
-  view->field_of_view->down_degrees = gfx::RadToDeg(-xr_view.fov.angleDown);
-  view->field_of_view->left_degrees = gfx::RadToDeg(-xr_view.fov.angleLeft);
-  view->field_of_view->right_degrees = gfx::RadToDeg(xr_view.fov.angleRight);
+  view->field_of_view->up_degrees = base::RadToDeg(xr_view.fov.angleUp);
+  view->field_of_view->down_degrees = base::RadToDeg(-xr_view.fov.angleDown);
+  view->field_of_view->left_degrees = base::RadToDeg(-xr_view.fov.angleLeft);
+  view->field_of_view->right_degrees = base::RadToDeg(xr_view.fov.angleRight);
 
   view->viewport =
       gfx::Rect(x_offset, 0, view_config.Properties()[view_index].Width(),

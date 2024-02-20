@@ -6,8 +6,8 @@
 
 #include <cmath>
 
+#include "base/numerics/angle_conversions.h"
 #include "chrome/browser/vr/pose_util.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace vr {
 
@@ -98,7 +98,7 @@ bool ViewportAwareRoot::AdjustRotationForHeadPose(
   }
   viewport_aware_total_rotation_ += degrees;
   viewport_aware_total_rotation_ = fmod(viewport_aware_total_rotation_, 360.0f);
-  SetRotate(0.f, 1.f, 0.f, gfx::DegToRad(viewport_aware_total_rotation_));
+  SetRotate(0.f, 1.f, 0.f, base::DegToRad(viewport_aware_total_rotation_));
 
   // Immediately hide the element.
   SetVisibleImmediately(false);
@@ -112,7 +112,7 @@ void ViewportAwareRoot::Reset() {
   viewport_aware_total_rotation_ = 0.f;
   x_center = 0;
   z_center = 0;
-  SetRotate(0.f, 1.f, 0.f, gfx::DegToRad(viewport_aware_total_rotation_));
+  SetRotate(0.f, 1.f, 0.f, base::DegToRad(viewport_aware_total_rotation_));
 }
 
 bool ViewportAwareRoot::HasVisibleChildren() {

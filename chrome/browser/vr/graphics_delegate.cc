@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "chrome/browser/vr/fov_rectangle.h"
 #include "chrome/browser/vr/frame_type.h"
 #include "chrome/browser/vr/model/camera_model.h"
@@ -34,13 +34,10 @@ CameraModel CameraModelViewProjFromXRView(
   bool is_invertible = model.view_matrix.GetInverse(&model.view_matrix);
   DCHECK(is_invertible);
 
-  float up_tan = tanf(view->field_of_view->up_degrees * base::kPiFloat / 180.0);
-  float left_tan =
-      tanf(view->field_of_view->left_degrees * base::kPiFloat / 180.0);
-  float right_tan =
-      tanf(view->field_of_view->right_degrees * base::kPiFloat / 180.0);
-  float down_tan =
-      tanf(view->field_of_view->down_degrees * base::kPiFloat / 180.0);
+  float up_tan = tanf(base::DegToRad(view->field_of_view->up_degrees));
+  float left_tan = tanf(base::DegToRad(view->field_of_view->left_degrees));
+  float right_tan = tanf(base::DegToRad(view->field_of_view->right_degrees));
+  float down_tan = tanf(base::DegToRad(view->field_of_view->down_degrees));
   float x_scale = 2.0f / (left_tan + right_tan);
   float y_scale = 2.0f / (up_tan + down_tan);
   // clang-format off

@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <limits>
 #include <utility>
+
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/jni_android.h"
 #include "base/containers/contains.h"
@@ -16,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -33,7 +35,6 @@
 #include "device/vr/util/transform_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_bindings.h"
@@ -592,10 +593,10 @@ void ArCoreGl::RecalculateUvsAndProjection() {
 
   // VRFieldOfView wants positive angles.
   mojom::VRFieldOfViewPtr field_of_view = mojom::VRFieldOfView::New();
-  field_of_view->left_degrees = gfx::RadToDeg(atanf(-left / depth_near));
-  field_of_view->right_degrees = gfx::RadToDeg(atanf(right / depth_near));
-  field_of_view->down_degrees = gfx::RadToDeg(atanf(-bottom / depth_near));
-  field_of_view->up_degrees = gfx::RadToDeg(atanf(top / depth_near));
+  field_of_view->left_degrees = base::RadToDeg(atanf(-left / depth_near));
+  field_of_view->right_degrees = base::RadToDeg(atanf(right / depth_near));
+  field_of_view->down_degrees = base::RadToDeg(atanf(-bottom / depth_near));
+  field_of_view->up_degrees = base::RadToDeg(atanf(top / depth_near));
   DVLOG(3) << " fov degrees up=" << field_of_view->up_degrees
            << " down=" << field_of_view->down_degrees
            << " left=" << field_of_view->left_degrees

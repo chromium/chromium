@@ -7,13 +7,13 @@
 
 #include <algorithm>
 #include <limits>
+#include <numbers>
 
 #include "skia/ext/image_operations.h"
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/numerics/math_constants.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -56,7 +56,7 @@ float EvalLanczos(int filter_size, float x) {
   if (x > -std::numeric_limits<float>::epsilon() &&
       x < std::numeric_limits<float>::epsilon())
     return 1.0f;  // Special case the discontinuity at the origin.
-  float xpi = x * base::kPiFloat;
+  float xpi = x * std::numbers::pi_v<float>;
   return (sin(xpi) / xpi) *  // sinc(x)
           sin(xpi / filter_size) / (xpi / filter_size);  // sinc(x/filter_size)
 }
@@ -82,7 +82,7 @@ float EvalHamming(int filter_size, float x) {
   if (x > -std::numeric_limits<float>::epsilon() &&
       x < std::numeric_limits<float>::epsilon())
     return 1.0f;  // Special case the sinc discontinuity at the origin.
-  const float xpi = x * base::kPiFloat;
+  const float xpi = x * std::numbers::pi_v<float>;
 
   return ((sin(xpi) / xpi) *  // sinc(x)
           (0.54f + 0.46f * cos(xpi / filter_size)));  // hamming(x)

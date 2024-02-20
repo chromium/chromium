@@ -11,7 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
@@ -198,8 +198,8 @@ void ConvertTiltOrientationToTiltXY(float tilt_rad,
                                     float* tilt_y) {
   float r = sinf(tilt_rad);
   float z = cosf(tilt_rad);
-  *tilt_x = atan2f(sinf(-orientation_rad) * r, z) * 180.f / base::kPiFloat;
-  *tilt_y = atan2f(cosf(-orientation_rad) * r, z) * 180.f / base::kPiFloat;
+  *tilt_x = base::RadToDeg(atan2f(sinf(-orientation_rad) * r, z));
+  *tilt_y = base::RadToDeg(atan2f(cosf(-orientation_rad) * r, z));
 }
 
 }  // namespace

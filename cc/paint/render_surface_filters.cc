@@ -8,7 +8,7 @@
 
 #include "cc/paint/render_surface_filters.h"
 
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/paint/paint_filter.h"
@@ -65,8 +65,8 @@ void GetSaturateMatrix(float amount, float matrix[20]) {
 }
 
 void GetHueRotateMatrix(float hue, float matrix[20]) {
-  float cos_hue = cosf(hue * base::kPiFloat / 180.f);
-  float sin_hue = sinf(hue * base::kPiFloat / 180.f);
+  float cos_hue = cosf(base::DegToRad(hue));
+  float sin_hue = sinf(base::DegToRad(hue));
   matrix[0] = 0.213f + cos_hue * 0.787f - sin_hue * 0.213f;
   matrix[1] = 0.715f - cos_hue * 0.715f - sin_hue * 0.715f;
   matrix[2] = 0.072f - cos_hue * 0.072f + sin_hue * 0.928f;

@@ -1,5 +1,6 @@
 include_rules = [
     "+base/run_loop.h",
+    "+base/numerics/angle_conversions.h"
     "+services/device/public/mojom/sensor.mojom-blink.h",
     "+services/device/public/mojom/sensor.mojom-blink-forward.h",
     "+services/device/public/mojom/sensor_provider.mojom-blink.h",

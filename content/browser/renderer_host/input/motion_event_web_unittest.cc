@@ -6,7 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/numerics/math_constants.h"
+#include <numbers>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/test/motion_event_test_utils.h"
@@ -19,8 +20,9 @@ using ui::PointerProperties;
 namespace content {
 
 TEST(MotionEventWebTest, Constructor) {
-  const float pi = base::kPiFloat;
-  const float orientations[] = {-pi, -2.f * pi / 3, -pi / 2};
+  const float orientations[] = {-std::numbers::pi_v<float>,
+                                -2 * std::numbers::pi_v<float> / 3,
+                                -std::numbers::pi_v<float> / 2};
   const float tilts_x[] = {0.f, -180 / 4, -180 / 3};
   const float tilts_y[] = {0.5f, 180 / 2, 180 / 3};
   const float twists[] = {60, 160, 260};
@@ -78,10 +80,10 @@ TEST(MotionEventWebTest, Constructor) {
       } else {
         // For non-stylus pointers and for styluses with a zero tilt angle,
         // orientation quadrant information is lost.
-        EXPECT_NEAR(
-            fmod(orientation + base::kPiFloat + 1e-4, base::kPiFloat / 2) -
-                1e-4,
-            event.GetOrientation(pointer_index), 1e-4);
+        EXPECT_NEAR(fmod(orientation + std::numbers::pi_v<float> + 1e-4,
+                         std::numbers::pi_v<float> / 2) -
+                        1e-4,
+                    event.GetOrientation(pointer_index), 1e-4);
       }
 
       generic_event.RemovePointerAt(pointer_index);

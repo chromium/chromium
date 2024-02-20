@@ -28,7 +28,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/callback_helpers.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
@@ -276,17 +276,15 @@ TEST_P(PipWindowResizerTest, PipWindowCanTiltWithPinch) {
                  /*angle=*/30.f);
 
   // Confirm that the window has tilt applied with transform.
-  float tilt_angle = std::atan2(window()->transform().rc(1, 0),
-                                window()->transform().rc(0, 0)) *
-                     180.f / base::kPiFloat;
+  float tilt_angle = base::RadToDeg(std::atan2(window()->transform().rc(1, 0),
+                                               window()->transform().rc(0, 0)));
   EXPECT_GE(tilt_angle, 3.f);
 
   // Pinch with a negative angle.
   resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/1.f,
                  /*angle=*/-60.f);
-  tilt_angle = std::atan2(window()->transform().rc(1, 0),
-                          window()->transform().rc(0, 0)) *
-               180.f / base::kPiFloat;
+  tilt_angle = base::RadToDeg(std::atan2(window()->transform().rc(1, 0),
+                                         window()->transform().rc(0, 0)));
 
   // Confirm that the window has tilt applied with transform.
   EXPECT_LE(tilt_angle, -3.f);

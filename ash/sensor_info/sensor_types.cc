@@ -5,7 +5,6 @@
 #include "ash/sensor_info/sensor_types.h"
 
 #include "base/check_op.h"
-#include "base/numerics/math_constants.h"
 
 namespace ash {
 

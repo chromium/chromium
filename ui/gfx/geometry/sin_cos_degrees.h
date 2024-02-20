@@ -5,11 +5,11 @@
 #ifndef UI_GFX_GEOMETRY_SIN_COS_DEGREES_H_
 #define UI_GFX_GEOMETRY_SIN_COS_DEGREES_H_
 
-#include "angle_conversions.h"
-#include "base/numerics/math_constants.h"
-
 #include <algorithm>
 #include <cmath>
+#include <numbers>
+
+#include "base/numerics/angle_conversions.h"
 
 namespace gfx {
 
@@ -44,10 +44,11 @@ inline SinCos SinCosDegrees(double degrees) {
     int octant = static_cast<int>(n45degrees);
     if (octant == n45degrees) {
       constexpr SinCos kSinCosN45[] = {
-          {0, 1},  {base::kSqrtHalfDouble, base::kSqrtHalfDouble},
-          {1, 0},  {base::kSqrtHalfDouble, -base::kSqrtHalfDouble},
-          {0, -1}, {-base::kSqrtHalfDouble, -base::kSqrtHalfDouble},
-          {-1, 0}, {-base::kSqrtHalfDouble, base::kSqrtHalfDouble}};
+          {0, 1},  {std::numbers::sqrt2 / 2, std::numbers::sqrt2 / 2},
+          {1, 0},  {std::numbers::sqrt2 / 2, -std::numbers::sqrt2 / 2},
+          {0, -1}, {-std::numbers::sqrt2 / 2, -std::numbers::sqrt2 / 2},
+          {-1, 0}, {-std::numbers::sqrt2 / 2, std::numbers::sqrt2 / 2}};
+
       return kSinCosN45[octant & 7];
     }
 
@@ -67,7 +68,7 @@ inline SinCos SinCosDegrees(double degrees) {
       degrees = 45.0 - degrees;
     }
 
-    double rad = DegToRad(degrees);
+    double rad = base::DegToRad(degrees);
     double s = std::sin(rad);
     double c = std::cos(rad);
 
@@ -96,7 +97,7 @@ inline SinCos SinCosDegrees(double degrees) {
 
   // Slow path for extreme cases.
   degrees = std::fmod(degrees, 360.0);
-  double rad = DegToRad(degrees);
+  double rad = base::DegToRad(degrees);
   return SinCos{std::sin(rad), std::cos(rad)};
 }
 

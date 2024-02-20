@@ -6,6 +6,7 @@
 
 #include <objbase.h>
 
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -995,9 +996,9 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckGyrometerReadingConversion) {
   auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
   EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
       .WillOnce(testing::Invoke([&](const SensorReading& reading) {
-        EXPECT_EQ(gfx::DegToRad(expected_x), reading.gyro.x);
-        EXPECT_EQ(gfx::DegToRad(expected_y), reading.gyro.y);
-        EXPECT_EQ(gfx::DegToRad(expected_z), reading.gyro.z);
+        EXPECT_EQ(base::DegToRad(expected_x), reading.gyro.x);
+        EXPECT_EQ(base::DegToRad(expected_y), reading.gyro.y);
+        EXPECT_EQ(base::DegToRad(expected_z), reading.gyro.z);
       }));
 
   sensor->SetClient(mock_client.get());
