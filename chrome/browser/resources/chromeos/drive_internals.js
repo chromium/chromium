@@ -261,7 +261,7 @@ function updateOtherServiceLogsUrl(url) {
  * Adds a new row to the syncing paths table upon successful completion.
  * @param {string} path The path that was synced.
  * @param {string} status The drive::FileError as a string without the
- *     FILE_ERROR_ prefix.
+ *     "FILE_ERROR_" prefix.
  */
 function onAddSyncPath(path, status) {
   $('mirroring-path-status').textContent = status;
@@ -293,7 +293,8 @@ function onAddSyncPath(path, status) {
 /**
  * Remove a path from the syncing table.
  * @param {string} path The path that was synced.
- * @param {string} status The drive::FileError as a string.
+ * @param {string} status The drive::FileError as a string without the
+ *     "FILE_ERROR_" prefix.
  */
 function onRemoveSyncPath(path, status) {
   if (status !== 'OK') {
