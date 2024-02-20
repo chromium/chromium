@@ -14,6 +14,8 @@
 #include "base/location.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 
+class Browser;
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -32,6 +34,9 @@ namespace browser_test_util {
 // Waits for the Window to be created. |id| comes from |GetWindowId|.
 // Returns false if the operation times out.
 [[nodiscard]] bool WaitForWindowCreation(const std::string& id);
+
+// Convenience wrapper of the above.
+[[nodiscard]] bool WaitForWindowCreation(Browser* browser);
 
 // Waits for the window to be destroyed. |id| comes from |GetWindowId|.
 // WaitForWindowDestruction requires the window to be already completely closed,

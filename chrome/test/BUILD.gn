@@ -3358,6 +3358,11 @@ if (!is_android) {
     }
 
     if (is_chromeos_lacros) {
+      sources -= [
+        #  Needs crosapi for Lacros, so it's part of lacros_chrome_browsertests.
+        "../browser/ui/webui/profile_helper_browsertest.cc",
+      ]
+
       sources += [
         "../browser/apps/app_service/metrics/website_metrics_browsertest.cc",
         "../browser/apps/app_service/webapk/webapk_utils_lacros_browsertest.cc",
@@ -5475,6 +5480,7 @@ if (is_chromeos_lacros) {
 
     deps = [
       "//chrome/browser",
+      "//chrome/browser/ui",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//components/account_manager_core:test_support",
@@ -5597,6 +5603,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
+      "../browser/ui/webui/profile_helper_browsertest.cc",
       "../browser/ui/webui/side_panel/read_anything/read_anything_app_views_toolbar_browsertest.cc",
       "../browser/upgrade_detector/get_installed_version_lacros_browsertest.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",

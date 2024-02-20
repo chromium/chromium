@@ -31,6 +31,10 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_ui.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/browser_test_util.h"
+#endif
+
 namespace {
 
 Profile* CreateProfile() {
@@ -109,13 +113,7 @@ class ProfileHelperTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/1486054): Times out consistently on lacros asan builds.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_OpenNewWindowForProfile DISABLED_OpenNewWindowForProfile
-#else
-#define MAYBE_OpenNewWindowForProfile OpenNewWindowForProfile
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-IN_PROC_BROWSER_TEST_F(ProfileHelperTest, MAYBE_OpenNewWindowForProfile) {
+IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
   BrowserList* browser_list = BrowserList::GetInstance();
 
   Browser* original_browser = browser();
@@ -131,14 +129,19 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, MAYBE_OpenNewWindowForProfile) {
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_EQ(original_browser, browser_list->GetLastActive());
 
-  // Open additional browser will add new window and activates it.
+  // Opening additional browser will add new window and activate it.
   Profile* additional_profile = CreateProfile();
   activation_observer =
       std::make_unique<ExpectBrowserActivationForProfile>(additional_profile);
   webui::OpenNewWindowForProfile(additional_profile);
   EXPECT_EQ(2u, browser_list->size());
   activation_observer->Wait();
-  EXPECT_EQ(additional_profile, browser_list->GetLastActive()->profile());
+  Browser* additional_browser = browser_list->GetLastActive();
+  EXPECT_EQ(additional_profile, additional_browser->profile());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Await complete window creation to avoid interference with the next steps.
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(additional_browser));
+#endif
 
 // On Macs OpenNewWindowForProfile does not activate existing browser
 // while non of the browser windows have focus. BrowserWindowCocoa::Show() got

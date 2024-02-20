@@ -9,6 +9,8 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/env.h"
@@ -137,6 +139,12 @@ bool WaitForElementCreation(const std::string& element_name) {
 
 bool WaitForWindowCreation(const std::string& id) {
   return WaitForWindow(id, /*exists=*/true);
+}
+
+bool WaitForWindowCreation(Browser* browser) {
+  aura::Window* root = browser->window()->GetNativeWindow()->GetRootWindow();
+  return WaitForWindow(lacros_window_utility::GetRootWindowUniqueId(root),
+                       /*exists=*/true);
 }
 
 bool WaitForWindowDestruction(const std::string& id) {
