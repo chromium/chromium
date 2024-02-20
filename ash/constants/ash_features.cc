@@ -2408,7 +2408,7 @@ BASE_FEATURE(kProjectorAccountSwitchNotification,
 
 // Controls whether to use USM for serverside speech recognition for projector.
 BASE_FEATURE(kProjectorUseUSMForS3,
-             "kProjectorUseUSMForS3",
+             "ProjectorUseUSMForS3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to show promise icons during app installations.
