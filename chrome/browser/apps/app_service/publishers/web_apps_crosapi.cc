@@ -167,12 +167,16 @@ void WebAppsCrosapi::GetMenuModel(
   bool is_system_web_app = false;
   bool can_use_uninstall = false;
   bool can_close = true;
+  bool allow_window_mode_selection = true;
   WindowMode display_mode = WindowMode::kUnknown;
 
   proxy_->AppRegistryCache().ForOneApp(
-      app_id, [&is_system_web_app, &can_use_uninstall, &can_close,
-               &display_mode](const AppUpdate& update) {
+      app_id,
+      [&is_system_web_app, &allow_window_mode_selection, &can_use_uninstall,
+       &can_close, &display_mode](const AppUpdate& update) {
         is_system_web_app = update.InstallReason() == InstallReason::kSystem;
+        allow_window_mode_selection =
+            update.AllowWindowModeSelection().value_or(true);
         can_use_uninstall = update.AllowUninstall().value_or(false);
         can_close = update.AllowClose().value_or(true);
         display_mode = update.WindowMode();
@@ -181,7 +185,8 @@ void WebAppsCrosapi::GetMenuModel(
   MenuItems menu_items;
 
   if (display_mode != WindowMode::kUnknown && !is_system_web_app && can_close) {
-    if (chromeos::features::IsCrosShortstandEnabled()) {
+    if (chromeos::features::IsCrosShortstandEnabled() ||
+        !allow_window_mode_selection) {
       apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
     } else {

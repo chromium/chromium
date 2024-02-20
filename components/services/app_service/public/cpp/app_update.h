@@ -188,6 +188,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   std::optional<bool> ResizeLocked() const;
   bool ResizeLockedChanged() const;
 
+  std::optional<bool> AllowWindowModeSelection() const;
+  bool AllowWindowModeSelectionChanged() const;
+
   apps::WindowMode WindowMode() const;
   bool WindowModeChanged() const;
 

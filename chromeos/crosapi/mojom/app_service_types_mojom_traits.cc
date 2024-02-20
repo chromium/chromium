@@ -166,6 +166,13 @@ StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::allow_close(
   return ConvertOptionalBoolToMojomOptionalBool(r->allow_close);
 }
 
+// static
+crosapi::mojom::OptionalBool
+StructTraits<crosapi::mojom::AppDataView,
+             apps::AppPtr>::allow_window_mode_selection(const apps::AppPtr& r) {
+  return ConvertOptionalBoolToMojomOptionalBool(r->allow_window_mode_selection);
+}
+
 bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
     crosapi::mojom::AppDataView data,
     apps::AppPtr* out) {
@@ -294,6 +301,11 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
     return false;
   }
 
+  crosapi::mojom::OptionalBool allow_window_mode_selection;
+  if (!data.ReadAllowWindowModeSelection(&allow_window_mode_selection)) {
+    return false;
+  }
+
   auto app = std::make_unique<apps::App>(app_type, app_id);
   app->readiness = readiness;
   app->name = name;
@@ -336,6 +348,8 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   app->app_size_in_bytes = app_size_in_bytes;
   app->data_size_in_bytes = data_size_in_bytes;
   app->allow_close = ConvertMojomOptionalBoolToOptionalBool(allow_close);
+  app->allow_window_mode_selection =
+      ConvertMojomOptionalBoolToOptionalBool(allow_window_mode_selection);
   *out = std::move(app);
   return true;
 }

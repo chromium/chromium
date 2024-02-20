@@ -119,6 +119,9 @@ class AppUpdateTest : public testing::Test {
   std::optional<bool> expect_resize_locked_;
   bool expect_resize_locked_changed_;
 
+  std::optional<bool> expect_allow_window_mode_selection_;
+  bool expect_allow_window_mode_selection_changed_;
+
   WindowMode expect_window_mode_;
   bool expect_window_mode_changed_;
 
@@ -174,6 +177,7 @@ class AppUpdateTest : public testing::Test {
     expect_paused_changed_ = false;
     expect_intent_filters_changed_ = false;
     expect_resize_locked_changed_ = false;
+    expect_allow_window_mode_selection_changed_ = false;
     expect_window_mode_changed_ = false;
     expect_run_on_os_login_changed_ = false;
     expect_allow_close_changed_ = false;
@@ -270,6 +274,11 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_resize_locked_, u.ResizeLocked());
     EXPECT_EQ(expect_resize_locked_changed_, u.ResizeLockedChanged());
 
+    EXPECT_EQ(expect_allow_window_mode_selection_,
+              u.AllowWindowModeSelection());
+    EXPECT_EQ(expect_allow_window_mode_selection_changed_,
+              u.AllowWindowModeSelectionChanged());
+
     EXPECT_EQ(expect_window_mode_, u.WindowMode());
     EXPECT_EQ(expect_window_mode_changed_, u.WindowModeChanged());
 
@@ -322,6 +331,7 @@ class AppUpdateTest : public testing::Test {
     expect_handles_intents_ = std::nullopt;
     expect_has_badge_ = std::nullopt;
     expect_paused_ = std::nullopt;
+    expect_allow_window_mode_selection_ = true;
     expect_intent_filters_.clear();
     expect_resize_locked_ = std::nullopt;
     expect_window_mode_ = WindowMode::kUnknown;
@@ -1054,6 +1064,31 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_resize_locked_, state->resize_locked);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // AllowWindowModeSelection tests.
+
+    if (state) {
+      state->allow_window_mode_selection = false;
+      expect_allow_window_mode_selection_ = false;
+      expect_allow_window_mode_selection_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->allow_window_mode_selection = true;
+      expect_allow_window_mode_selection_ = true;
+      expect_allow_window_mode_selection_changed_ = true;
+      expect_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_allow_window_mode_selection_,
+                state->allow_window_mode_selection);
       ExpectNoChange();
       CheckExpects(u);
     }

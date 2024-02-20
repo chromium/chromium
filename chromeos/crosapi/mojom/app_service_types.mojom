@@ -116,6 +116,10 @@ struct App {
   [MinVersion=22]
   // Whether the app publisher allows the app to be closed.
   OptionalBool allow_close@32;
+
+  [MinVersion=23]
+  // Whether the app publisher allows the user to select app open mode.
+  OptionalBool allow_window_mode_selection@33;
 };
 
 // The types of apps available in the registry.

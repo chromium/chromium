@@ -69,6 +69,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
 
   input->is_platform_app = true;
   input->allow_close = true;
+  input->allow_window_mode_selection = true;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -131,6 +132,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
 
   EXPECT_TRUE(output->is_platform_app.value());
   EXPECT_TRUE(output->allow_close.value());
+  EXPECT_TRUE(output->allow_window_mode_selection.value());
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -161,6 +163,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->app_size_in_bytes = std::nullopt;
   input->data_size_in_bytes = std::nullopt;
   input->allow_close = std::nullopt;
+  input->allow_window_mode_selection = std::nullopt;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -199,6 +202,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   EXPECT_TRUE(output->handles_intents);
   EXPECT_FALSE(output->is_platform_app.has_value());
   EXPECT_FALSE(output->allow_close.has_value());
+  EXPECT_FALSE(output->allow_window_mode_selection.has_value());
 }
 
 // Test that serialization and deserialization works with updating app type.

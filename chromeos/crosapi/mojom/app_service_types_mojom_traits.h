@@ -125,6 +125,9 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
 
   static crosapi::mojom::OptionalBool allow_close(const apps::AppPtr& r);
 
+  static crosapi::mojom::OptionalBool allow_window_mode_selection(
+      const apps::AppPtr& r);
+
   static bool Read(crosapi::mojom::AppDataView data, apps::AppPtr* out);
 };
 

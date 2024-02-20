@@ -140,6 +140,11 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // Whether the app can be closed by the user.
   std::optional<bool> allow_close;
 
+  // If the value is false, User will not be able to select open mode (i.e.
+  // open in new window or in new tab) for the app. The app will default to be
+  // opened in a new window.
+  std::optional<bool> allow_window_mode_selection;
+
   // Storage space size for app and associated data.
   std::optional<uint64_t> app_size_in_bytes;
   std::optional<uint64_t> data_size_in_bytes;

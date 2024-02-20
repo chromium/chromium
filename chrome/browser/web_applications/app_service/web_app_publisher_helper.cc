@@ -690,6 +690,9 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
   app->permissions = CreatePermissions(web_app);
 
+  // Isolated web apps can only be opened in window.
+  app->allow_window_mode_selection = !web_app->isolation_data().has_value();
+
   SetWebAppShowInFields(web_app, *app);
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -374,6 +374,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
                  std::optional<bool> allow_close = std::nullopt,
                  std::optional<bool> has_badge = std::nullopt,
                  std::optional<bool> paused = std::nullopt,
+                 std::optional<bool> allow_window_mode_selection = std::nullopt,
                  WindowMode window_mode = WindowMode::kUnknown) {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
@@ -397,6 +398,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     if (!permissions.empty()) {
       EXPECT_TRUE(IsEqual(permissions, cache.states_[app_id]->permissions));
     }
+
     VerifyOptionalBool(is_platform_app, cache.states_[app_id]->is_platform_app);
     VerifyOptionalBool(recommendable, cache.states_[app_id]->recommendable);
     VerifyOptionalBool(searchable, cache.states_[app_id]->searchable);
@@ -411,6 +413,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     VerifyOptionalBool(allow_close, cache.states_[app_id]->allow_close);
     VerifyOptionalBool(has_badge, cache.states_[app_id]->has_badge);
     VerifyOptionalBool(paused, cache.states_[app_id]->paused);
+    VerifyOptionalBool(allow_window_mode_selection,
+                       cache.states_[app_id]->allow_window_mode_selection);
     if (window_mode != WindowMode::kUnknown) {
       EXPECT_EQ(window_mode, cache.states_[app_id]->window_mode);
     }
@@ -501,14 +505,16 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
           app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
           {}, app_info->last_launch_time, app_info->install_time,
-          apps::Permissions(), /*is_platform_app=*/false,
+          apps::Permissions(),
+          /*is_platform_app=*/false,
           /*recommendable=*/true, /*searchable=*/true,
           /*show_in_launcher=*/true, /*show_in_shelf=*/true,
           /*show_in_search=*/true, /*show_in_management=*/true,
           /*handles_intents=*/true,
           /*allow_uninstall=*/app_info->ready && !app_info->sticky,
           /*allow_close=*/true,
-          /*has_badge=*/false, /*paused=*/false);
+          /*has_badge=*/false, /*paused=*/false,
+          /*allow_window_mode_selection=*/std::nullopt);
       // Simulate the app is removed.
       RemoveArcApp(app_id);
       VerifyAppIsRemoved(app_id);
@@ -530,14 +536,16 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
           app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
           {}, app_info->last_launch_time, app_info->install_time,
-          MakeFakePermissions(), /*is_platform_app=*/false,
+          MakeFakePermissions(),
+          /*is_platform_app=*/false,
           /*recommendable=*/true, /*searchable=*/true,
           /*show_in_launcher=*/true, /*show_in_shelf=*/true,
           /*show_in_search=*/true, /*show_in_management=*/true,
           /*handles_intents=*/true,
           /*allow_uninstall=*/app_info->ready && !app_info->sticky,
           /*allow_close=*/true,
-          /*has_badge=*/false, /*paused=*/false);
+          /*has_badge=*/false, /*paused=*/false,
+          /*allow_window_mode_selection=*/std::nullopt);
 
       // Test OnAppLastLaunchTimeUpdated.
       const base::Time before_time = base::Time::Now();
@@ -656,12 +664,14 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
               l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
               Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
               additional_search_terms, base::Time(), base::Time(),
-              apps::Permissions(), /*is_platform_app=*/false,
-              internal_app.recommendable, internal_app.searchable,
-              internal_app.show_in_launcher, internal_app.searchable,
-              internal_app.searchable, /*show_in_management=*/false,
-              internal_app.show_in_launcher, /*allow_uninstall=*/false,
-              /*allow_close=*/true);
+              apps::Permissions(),
+              /*is_platform_app=*/false, internal_app.recommendable,
+              internal_app.searchable, internal_app.show_in_launcher,
+              internal_app.searchable, internal_app.searchable,
+              /*show_in_management=*/false, internal_app.show_in_launcher,
+              /*allow_uninstall=*/false,
+              /*allow_close=*/true,
+              /*allow_window_mode_selection=*/std::nullopt);
   }
   VerifyAppTypeIsInitialized(AppType::kBuiltIn);
 }
@@ -777,6 +787,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     app->allow_close = true;
     app->has_badge = false;
     app->paused = false;
+    app->allow_window_mode_selection = std::nullopt;
     apps.push_back(std::move(app));
     chrome_apps->OnApps(std::move(apps));
   }
@@ -807,6 +818,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     app->allow_close = true;
     app->has_badge = true;
     app->paused = true;
+    app->allow_window_mode_selection = true;
     app->window_mode = WindowMode::kBrowser;
     apps.push_back(std::move(app));
     web_apps_crosapi->OnApps(std::move(apps));
@@ -827,7 +839,7 @@ TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/false,
-            /*allow_close=*/true);
+            /*allow_close=*/true, /*allow_window_mode_selection=*/std::nullopt);
   VerifyAppTypeIsInitialized(AppType::kStandaloneBrowser);
 }
 
@@ -842,7 +854,8 @@ TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
             /*show_in_search=*/false, /*show_in_management=*/false,
             /*handles_intents=*/false, /*allow_uninstall=*/false,
             /*allow_close=*/true,
-            /*has_badge=*/false, /*paused=*/false);
+            /*has_badge=*/false, /*paused=*/false,
+            /*allow_window_mode_selection=*/std::nullopt);
 }
 
 // Verify the app is not updated when not register to CrosApi,
@@ -963,7 +976,8 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*allow_close=*/true,
-            /*has_badge=*/true, /*paused=*/true, WindowMode::kBrowser);
+            /*has_badge=*/true, /*paused=*/true,
+            /*allow_window_mode_selection=*/true, WindowMode::kBrowser);
 }
 
 // Verify the app is not updated when not register to CrosApi,
@@ -1349,7 +1363,8 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*allow_close=*/true,
-            /*has_badge=*/false, /*paused=*/false);
+            /*has_badge=*/false, /*paused=*/false,
+            /*allow_window_mode_selection=*/std::nullopt);
   VerifyAppTypeIsInitialized(AppType::kChromeApp);
 
   // Uninstall the Chrome app.
@@ -1358,14 +1373,16 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   VerifyApp(AppType::kChromeApp, store->id(), store->name(),
             Readiness::kUninstalledByUser, InstallReason::kDefault,
             InstallSource::kChromeWebStore, {}, base::Time(), base::Time(),
-            apps::Permissions(), /*is_platform_app=*/true,
+            apps::Permissions(),
+            /*is_platform_app=*/true,
             /*recommendable=*/true,
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*allow_close=*/true,
-            /*has_badge=*/false, /*paused=*/false);
+            /*has_badge=*/false, /*paused=*/false,
+            /*allow_window_mode_selection=*/std::nullopt);
 
   // Reinstall the Chrome app.
   service_->AddExtension(store.get());
@@ -1378,7 +1395,8 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*allow_close=*/true,
-            /*has_badge=*/false, /*paused=*/false);
+            /*has_badge=*/false, /*paused=*/false,
+            /*allow_window_mode_selection=*/std::nullopt);
 
   // Test OnExtensionLastLaunchTimeChanged.
   extensions::ExtensionPrefs::Get(profile())->SetLastLaunchTime(
@@ -1397,14 +1415,16 @@ TEST_F(PublisherTest, WebAppsOnApps) {
 
   VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady,
             InstallReason::kSync, InstallSource::kBrowser, {}, base::Time(),
-            base::Time(), apps::Permissions(), /*is_platform_app=*/false,
+            base::Time(), apps::Permissions(),
+            /*is_platform_app=*/false,
             /*recommendable=*/true,
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*allow_close=*/true,
-            /*has_badge=*/false, /*paused=*/false, WindowMode::kWindow);
+            /*has_badge=*/false, /*paused=*/false,
+            /*allow_window_mode_selection=*/true, WindowMode::kWindow);
   VerifyIntentFilters(app_id);
   VerifyAppTypeIsInitialized(AppType::kWeb);
 }

@@ -164,6 +164,7 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(allow_uninstall);
   SET_OPTIONAL_VALUE(has_badge);
   SET_OPTIONAL_VALUE(paused);
+  SET_OPTIONAL_VALUE(allow_window_mode_selection);
 
   if (!delta->intent_filters.empty()) {
     state->intent_filters.clear();
@@ -249,6 +250,7 @@ bool AppUpdate::IsChanged(const App* state, const App* delta) {
          update.AllowUninstallChanged() || update.HasBadgeChanged() ||
          update.PausedChanged() || update.IntentFiltersChanged() ||
          update.ResizeLockedChanged() || update.WindowModeChanged() ||
+         update.AllowWindowModeSelectionChanged() ||
          update.RunOnOsLoginChanged() || update.AllowCloseChanged() ||
          update.AppSizeInBytesChanged() || update.DataSizeInBytesChanged() ||
          update.SupportedLocalesChanged() || update.SelectedLocaleChanged() ||
@@ -531,6 +533,14 @@ bool AppUpdate::ResizeLockedChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(resize_locked);
 }
 
+std::optional<bool> AppUpdate::AllowWindowModeSelection() const {
+  GET_VALUE_WITH_FALLBACK(allow_window_mode_selection, true);
+}
+
+bool AppUpdate::AllowWindowModeSelectionChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(allow_window_mode_selection);
+}
+
 apps::WindowMode AppUpdate::WindowMode() const {
   GET_VALUE_WITH_DEFAULT_VALUE(window_mode, WindowMode::kUnknown)
 }
@@ -665,6 +675,8 @@ operator<<(std::ostream& out, const AppUpdate& app) {
 
   out << "ResizeLocked: " << PRINT_OPTIONAL_BOOL(app.ResizeLocked())
       << std::endl;
+  out << "AllowWindowModeSelection: "
+      << PRINT_OPTIONAL_BOOL(app.AllowWindowModeSelection()) << std::endl;
   out << "WindowMode: " << EnumToString(app.WindowMode()) << std::endl;
   if (app.RunOnOsLogin().has_value()) {
     out << "RunOnOsLoginMode: "
