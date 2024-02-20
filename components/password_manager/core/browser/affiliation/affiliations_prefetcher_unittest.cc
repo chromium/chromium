@@ -336,9 +336,8 @@ TEST_F(
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 }
 
-// Stores credentials for Android applications between Initialize() and
-// DoDeferredInitialization(). Verifies that corresponding affiliation
-// information gets prefetched.
+// Stores credentials for Android applications after Initialize(). Verifies that
+// corresponding affiliation information gets prefetched.
 TEST_F(AffiliationsPrefetcherTest,
        PrefetchAffiliationsForAndroidCredentialsAddedInInitializationDelay) {
   // Wait until PasswordStore initialisation is complete and
@@ -351,8 +350,8 @@ TEST_F(AffiliationsPrefetcherTest,
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 }
 
-// Stores credentials for Android applications after DoDeferredInitialization().
-// Verifies that corresponding affiliation information gets prefetched.
+// Stores credentials for Android applications. Verifies that corresponding
+// affiliation information gets prefetched.
 TEST_F(AffiliationsPrefetcherTest,
        PrefetchAffiliationsForAndroidCredentialsAddedAfterInitialization) {
   ExpectKeepPrefetchForFacets({});

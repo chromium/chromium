@@ -73,9 +73,6 @@ class AffiliatedMatchHelper {
   static bool IsValidWebCredential(const PasswordFormDigest& form);
 
  private:
-  // Reads all autofillable credentials from the password store and starts
-  // observing the store for future changes.
-  void DoDeferredInitialization();
 
   // Called back by AffiliationService to supply the list of facets
   // affiliated with the Android credential in |form|. Injects affiliation and
