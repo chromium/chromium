@@ -5407,6 +5407,13 @@
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
     ],
     'modifications': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
+          # resolved.
+          '--gtest_filter=-WebXrVrPermissionsBrowserTest.TestPermissionPersists',
+        ],
+      },
       'Win10 FYI x64 Release (Intel)': {
         'args': [
           # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
