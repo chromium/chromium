@@ -76,6 +76,7 @@ source_set("spotlight") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "base_spotlight_manager_unittest.mm",
     "bookmark_spotlight_manager_unittest.mm",
     "open_tabs_spotlight_manager_unittest.mm",
     "reading_list_spotlight_manager_unittest.mm",

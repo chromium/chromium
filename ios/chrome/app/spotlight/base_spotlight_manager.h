@@ -30,8 +30,21 @@
 /// Set at shutdown. Will not continue indexing when set.
 @property(nonatomic, readonly) BOOL isShuttingDown;
 
+/// Tracks the app background state.
+/// Processing data (e.g. accessing databases, like Spotlight) in background is
+/// risky and may cause background watchdog kills etc.
+@property(nonatomic, assign) BOOL isAppInBackground;
+
 /// Called before the instance is deallocated.
 - (void)shutdown NS_REQUIRES_SUPER;
+
+// Do not call this method. Can be overridden in subclasses.
+// Called on UIApplicationDidEnterBackgroundNotification.
+- (void)appDidEnterBackground NS_REQUIRES_SUPER;
+
+// Do not call this method. Can be overridden in subclasses.
+// Called on UIApplicationWillEnterForegroundNotification.
+- (void)appWillEnterForeground NS_REQUIRES_SUPER;
 
 @end
 
