@@ -20,14 +20,8 @@ build_webui("build") {
     "svg/illo_loading_scanner.svg",
     "svg/illo_no_scanner.svg",
     "svg/illo_ready_to_scan.svg",
-    "svg/no_scanners_dark.svg",
-    "svg/no_scanners.svg",
-    "svg/ready_to_scan_dark.svg",
-    "svg/ready_to_scan.svg",
     "svg/remove_page.svg",
     "svg/rescan_page.svg",
-    "svg/scanners_loading_dark.svg",
-    "svg/scanners_loading.svg",
   ]
 
   css_files = [

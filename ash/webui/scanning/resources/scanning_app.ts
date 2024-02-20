@@ -34,7 +34,6 @@ import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -425,22 +424,10 @@ export class ScanningAppElement extends ScanningAppElementBase implements
   override connectedCallback() {
     super.connectedCallback();
 
-    if (loadTimeData.getBoolean('isJellyEnabledForScanningApp')) {
-      // TODO(b/276493795): After the Jelly experiment is launched, replace
-      // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
-      // Also add `theme/typography.css` to `index.html`.
-      document.querySelector('link[href*=\'cros_styles.css\']')
-          ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
-      const typographyLink = document.createElement('link');
-      typographyLink.href = 'chrome://theme/typography.css';
-      typographyLink.rel = 'stylesheet';
-      document.head.appendChild(typographyLink);
-      document.body.classList.add('jelly-enabled');
-      /** @suppress {checkTypes} */
-      (function() {
-        ColorChangeUpdater.forDocument().start();
-      })();
-    }
+    /** @suppress {checkTypes} */
+    (function() {
+      ColorChangeUpdater.forDocument().start();
+    })();
   }
 
   override disconnectedCallback() {

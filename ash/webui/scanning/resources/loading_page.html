@@ -56,39 +56,20 @@
     height: 256px;
   }
 </style>
-<iron-media-query query="(prefers-color-scheme: dark)"
-  query-matches="{{isDarkModeEnabled}}">
-</iron-media-query>
 <div id="loadingContainer">
   <div id="loadingDiv" hidden="[[noScannersAvailable]]">
-    <!-- TODO(b/276493795): After the Jelly experiment is launched, remove
-                            used image elements and SVGs. -->
-    <template is="dom-if" if="[[!isJellyEnabled]]">
-      <img src$="[[getScannersLoadingSvgSrc(isDarkModeEnabled)]]"
-          alt="[[i18n('scannersLoadingText')]]">
-    </template>
-    <template is="dom-if" if="[[isJellyEnabled]]">
-      <svg preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 257 256">
-        <title>[[i18n('scannersLoadingText')]]</title>
-        <use href="svg/illo_loading_scanner.svg#illo_loading_scanner"></use>
-      </svg>
-    </template>
+    <svg preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 257 256">
+      <title>[[i18n('scannersLoadingText')]]</title>
+      <use href="svg/illo_loading_scanner.svg#illo_loading_scanner"></use>
+    </svg>
     <h1>[[i18n('scannersLoadingText')]]</h1>
     <paper-progress indeterminate></paper-progress>
   </div>
   <div id="noScannersDiv" hidden="[[!noScannersAvailable]]">
-    <!-- TODO(b/276493795): After the Jelly experiment is launched, remove
-                            used image elements and SVGs. -->
-    <template is="dom-if" if="[[!isJellyEnabled]]">
-      <img src$="[[getNoScannersSvgSrc(isDarkModeEnabled)]]"
-          alt="[[i18n('noScannersText')]]">
-    </template>
-    <template is="dom-if" if="[[isJellyEnabled]]">
-      <svg preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 257 256">
-        <title>[[i18n('noScannersSubtext')]]</title>
-        <use href="svg/illo_no_scanner.svg#illo_no_scanner"></use>
-      </svg>
-    </template>
+    <svg preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 257 256">
+      <title>[[i18n('noScannersSubtext')]]</title>
+      <use href="svg/illo_no_scanner.svg#illo_no_scanner"></use>
+    </svg>
     <h1>[[i18n('noScannersText')]]</h1>
     <span id="noScannersSubtext">[[i18n('noScannersSubtext')]]</span>
     <div id="buttonDiv">

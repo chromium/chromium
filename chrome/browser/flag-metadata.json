@@ -7268,14 +7268,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "scanning-app-jelly",
-    "owners": [
-      "//ash/webui/scanning/OWNERS",
-      "cros-peripherals@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel@chromium.org", "mnissler@chromium.org" ],
     // This flag never expires because some users need to override CPU security

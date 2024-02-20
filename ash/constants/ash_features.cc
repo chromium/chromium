@@ -2494,12 +2494,6 @@ BASE_FEATURE(kScalableIphClientConfig,
              "ScalableIphClientConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the jelly colors will be used in the scanning app. Requires
-// jelly-colors flag to also be enabled.
-BASE_FEATURE(kScanningAppJelly,
-             "ScanningAppJelly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables screensaver customized running time.
 BASE_FEATURE(kScreenSaverDuration,
              "ScreenSaverDuration",
@@ -3753,11 +3747,6 @@ bool IsIppClientInfoEnabled() {
 bool IsJellyEnabledForDiagnosticsApp() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kDiagnosticsAppJelly);
-}
-
-bool IsJellyEnabledForScanningApp() {
-  return chromeos::features::IsJellyEnabled() &&
-         base::FeatureList::IsEnabled(kScanningAppJelly);
 }
 
 bool IsJellyEnabledForShortcutCustomization() {

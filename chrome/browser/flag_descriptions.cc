@@ -7103,12 +7103,6 @@ const char kScalableIphDebugName[] = "Scalable Iph Debug";
 const char kScalableIphDebugDescription[] =
     "Enables debug feature of Scalable Iph";
 
-const char kScanningAppJellyName[] =
-    "Enable jelly colors for the Scanning App.";
-const char kScanningAppJellyDescription[] =
-    "Enable jelly colors for the Scanning App. Requires "
-    "jelly-colors flag to be enabled.";
-
 const char kScreencastV2Name[] = "Screencast V2";
 const char kScreencastV2Description[] = "Enable V2 features for Screencast app";
 

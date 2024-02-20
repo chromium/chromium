@@ -4080,9 +4080,6 @@ extern const char kArcInputOverlayDescriptionAlphaV2[];
 extern const char kScalableIphDebugName[];
 extern const char kScalableIphDebugDescription[];
 
-extern const char kScanningAppJellyName[];
-extern const char kScanningAppJellyDescription[];
-
 extern const char kScreencastV2Name[];
 extern const char kScreencastV2Description[];
 

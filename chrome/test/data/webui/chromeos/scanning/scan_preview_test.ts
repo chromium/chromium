@@ -10,9 +10,9 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AccessibilityFeaturesInterface, ForceHiddenElementsVisibleObserverRemote} from 'chrome://scanning/accessibility_features.mojom-webui.js';
+import type {AccessibilityFeaturesInterface, ForceHiddenElementsVisibleObserverRemote} from 'chrome://scanning/accessibility_features.mojom-webui.js';
 import {setAccessibilityFeaturesForTesting} from 'chrome://scanning/mojo_interface_provider.js';
-import {ScanPreviewElement} from 'chrome://scanning/scan_preview.js';
+import type {ScanPreviewElement} from 'chrome://scanning/scan_preview.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -65,13 +65,6 @@ suite('scanPreviewTest', function() {
   function setFakePrefersColorSchemeDark(enabled: boolean): Promise<void> {
     assert(scanPreview);
     fakePrefersColorSchemeDarkMediaQuery.matches = enabled;
-
-    return flushTasks();
-  }
-
-  function setJellyEnabled(enabled: boolean): Promise<void> {
-    assert(scanPreview);
-    scanPreview?.setIsJellyEnabledForTesting(enabled);
 
     return flushTasks();
   }
@@ -477,30 +470,9 @@ suite('scanPreviewTest', function() {
         getComputedStyle(actionToolbar).getPropertyValue('visibility'));
   });
 
-  // TODO(b/276493795): After the Jelly experiment is launched, remove test.
-  // Verify correct svg displayed when page is in dark mode.
-  test('readyToScanSvgSetByColorScheme', async () => {
-    assert(scanPreview);
-    await setJellyEnabled(false);
-    const srcBase = 'chrome://scanning/';
-    const lightModeSvg = `${srcBase}svg/ready_to_scan.svg`;
-    const darkModeSvg = `${srcBase}svg/ready_to_scan_dark.svg`;
-    const getReadyToScanVisual = (): HTMLImageElement => strictQuery(
-        '#readyToScanImg', scanPreview!.shadowRoot, HTMLImageElement);
-
-    // Mock media query state for light mode.
-    await setFakePrefersColorSchemeDark(false);
-    assertEquals(lightModeSvg, getReadyToScanVisual().src);
-
-    // Mock media query state for dark mode.
-    await setFakePrefersColorSchemeDark(true);
-    assertEquals(darkModeSvg, getReadyToScanVisual().src);
-  });
-
   // Verify "ready to scan" dynamic SVG use when dynamic colors enabled.
   test('jellyColors_ReadyToScanSvg', async () => {
     assert(scanPreview);
-    await setJellyEnabled(true);
     const dynamicSvg = `svg/illo_ready_to_scan.svg#illo_ready_to_scan`;
 
     const getReadyToScanVisual = (): SVGUseElement => strictQuery(

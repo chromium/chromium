@@ -158,29 +158,18 @@
     z-index: 1;
   }
 </style>
-<iron-media-query query="(prefers-color-scheme: dark)"
-  query-matches="{{isDarkModeEnabled}}">
-</iron-media-query>
 <div id="previewDiv" class="preview" aria-label="[[previewAriaLabel]]"
     tabindex="0" on-scroll="onScannedImagesScroll">
   <div id="helpOrProgress" class="preview-item" aria-hidden="true"
       hidden$="[[!showHelpOrProgress]]">
     <div id="helpDiv" hidden$="[[!showHelperText]]">
-      <template is="dom-if" if="[[!isJellyEnabled]]">
-        <img id="readyToScanImg"
-            src$="[[getReadyToScanSvgSrc(isDarkModeEnabled)]]"
-            alt="[[i18n('scanPreviewHelperText')]]">
-        </img>
-      </template>
-      <template is="dom-if" if="[[isJellyEnabled]]">
-        <span class="svg-wrapper">
-          <svg id="readyToScanSvg" preserveAspectRatio="xMidYMid meet"
-              role="img" viewBox="0 0 257 256">
-            <title>[[i18n('scanPreviewHelperText')]]</title>
-            <use href="svg/illo_ready_to_scan.svg#illo_ready_to_scan"></use>
-          </svg>
-        </span>
-      </template>
+      <span class="svg-wrapper">
+        <svg id="readyToScanSvg" preserveAspectRatio="xMidYMid meet"
+            role="img" viewBox="0 0 257 256">
+          <title>[[i18n('scanPreviewHelperText')]]</title>
+          <use href="svg/illo_ready_to_scan.svg#illo_ready_to_scan"></use>
+        </svg>
+      </span>
       <span id="helperText">
         [[i18n('scanPreviewHelperText')]]
       </span>

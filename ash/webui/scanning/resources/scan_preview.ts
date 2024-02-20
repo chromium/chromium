@@ -7,14 +7,12 @@ import './scanning_fonts.css.js';
 import './scanning_shared.css.js';
 import './strings.m.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ForceHiddenElementsVisibleObserverInterface, ForceHiddenElementsVisibleObserverReceiver} from './accessibility_features.mojom-webui.js';
@@ -60,17 +58,6 @@ export class ScanPreviewElement extends ScanPreviewElementBase implements
       appState: {
         type: Number,
         observer: ScanPreviewElement.prototype.appStateChanged,
-      },
-
-      isDarkModeEnabled: {
-        type: Boolean,
-      },
-
-      isJellyEnabled: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isJellyEnabledForScanningApp');
-        },
       },
 
       /**
@@ -192,8 +179,6 @@ export class ScanPreviewElement extends ScanPreviewElementBase implements
 
   appState: AppState;
   objectUrls: string[];
-  private isDarkModeEnabled: boolean;
-  private isJellyEnabled: boolean;
   private pageNumber: number;
   private progressPercent: number;
   private showHelpOrProgress: boolean;
@@ -585,10 +570,6 @@ export class ScanPreviewElement extends ScanPreviewElementBase implements
     this.style.setProperty('--action-toolbar-left', leftPosition + 'px');
   }
 
-  setIsJellyEnabledForTesting(enabled: boolean): void {
-    this.isJellyEnabled = enabled;
-  }
-
   /**
    * Called when the "show-remove-page-dialog" event fires from the action
    * toolbar button click.
@@ -763,16 +744,6 @@ export class ScanPreviewElement extends ScanPreviewElementBase implements
   private getScannedImageAriaLabel(index: number): string {
     return this.i18n(
         'multiPageImageAriaLabel', index + 1, this.objectUrls.length);
-  }
-
-  /**
-   * Determines correct SVG for "ready to scan" based on dark mode.
-   * @protected
-   * @return {string}
-   */
-  private getReadyToScanSvgSrc(): string {
-    return this.isDarkModeEnabled ? 'svg/ready_to_scan_dark.svg' :
-                                    'svg/ready_to_scan.svg';
   }
 
   setIsMultiPageScanForTesting(isMultiPageScan: boolean): void {
