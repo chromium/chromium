@@ -572,10 +572,9 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 
   std::vector<gfx::BufferPlane> planes;
 
-  // The SharedImages here are used to back VideoFrames. They may be read by
-  // the raster interface for format conversion, which will entail GLES2_READ
-  // if OOP-R is not enabled.
-  // NOTE: GLES2_READ can be removed once OOP-R ships definitively.
+  // The SharedImages here are used to back VideoFrames. They may be read by the
+  // raster interface for format conversion (e.g., for 2-copy import into WebGL)
+  // as well as by the GLES2 interface for one-copy import into WebGL.
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
