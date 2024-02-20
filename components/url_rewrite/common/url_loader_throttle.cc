@@ -193,11 +193,6 @@ void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
   *defer = false;
 }
 
-bool URLLoaderThrottle::makes_unsafe_redirect() {
-  // WillStartRequest() does not make cross-scheme redirects.
-  return false;
-}
-
 void URLLoaderThrottle::ApplyRule(network::ResourceRequest* request,
                                   const mojom::UrlRequestRulePtr& rule) {
   // Prevent applying rules on redirect navigations.

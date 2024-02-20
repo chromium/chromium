@@ -231,11 +231,6 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
       const network::URLLoaderCompletionStatus& status,
       bool* defer);
 
-  // Must return true if the throttle may make cross-scheme redirects
-  // (which is usually considered unsafe, so allowed only if the setting
-  // is made very explicitly).
-  virtual bool makes_unsafe_redirect();
-
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
  protected:
