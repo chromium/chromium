@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -65,6 +66,7 @@ public class SigninAccountPickerCoordinatorTest {
     @Mock private WindowAndroid mWindowAndroidMock;
     @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncherMock;
     @Mock private SigninAccountPickerCoordinator.Delegate mDelegateMock;
+    @Mock private AccountPickerBottomSheetMediator mMediator;
 
     private final @SigninAccessPoint int mAccessPoint = SigninAccessPoint.NTP_SIGNED_OUT_ICON;
     private Activity mActivity;
@@ -109,7 +111,7 @@ public class SigninAccountPickerCoordinatorTest {
                         })
                 .when(mSigninManagerMock)
                 .signin(eq(mCoreAccountInfoMock), anyInt(), any());
-        mCoordinator.signIn(mCoreAccountInfoMock, error -> {});
+        mCoordinator.signIn(mCoreAccountInfoMock, mMediator);
 
         // Verify that the SigninManager starts sign-in then a dialog is shown for history opt-in.
         verify(mSigninManagerMock, times(1))
@@ -122,7 +124,7 @@ public class SigninAccountPickerCoordinatorTest {
     @MediumTest
     public void testSignIn_signInNotAllowed() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        mCoordinator.signIn(mCoreAccountInfoMock, error -> {});
+        mCoordinator.signIn(mCoreAccountInfoMock, mMediator);
 
         // Verify that the SigninManager never start sign-in and no dialog is shown for history
         // opt-in.
@@ -143,7 +145,7 @@ public class SigninAccountPickerCoordinatorTest {
                 .when(mSigninManagerMock)
                 .signin(eq(mCoreAccountInfoMock), anyInt(), any());
 
-        mCoordinator.signIn(mCoreAccountInfoMock, error -> {});
+        mCoordinator.signIn(mCoreAccountInfoMock, mMediator);
 
         // Verify that the SigninManager starts sign-in but no dialog is shown for history opt-in.
         // TODO(https://crbug.com/1520793): Update the verification when the final error states will

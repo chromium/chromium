@@ -29,7 +29,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -56,7 +56,7 @@ public class SigninBottomSheetCoordinatorTest {
 
     @Mock private Profile mProfileMock;
 
-    @Mock private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinatorMock;
+    @Mock private AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediatorMock;
 
     @Mock private Runnable mOnSigninSuccessCallbackMock;
 
@@ -98,7 +98,7 @@ public class SigninBottomSheetCoordinatorTest {
                         eq(mCoreAccountInfo),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         any());
-        mSigninCoordinator.signIn(mCoreAccountInfo, error -> {});
+        mSigninCoordinator.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
         verify(mSigninManagerMock)
                 .signin(
                         eq(mCoreAccountInfo),
@@ -123,9 +123,7 @@ public class SigninBottomSheetCoordinatorTest {
                         eq(mCoreAccountInfo),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         any());
-        mSigninCoordinator.setAccountPickerBottomSheetCoordinator(
-                mAccountPickerBottomSheetCoordinatorMock);
-        mSigninCoordinator.signIn(mCoreAccountInfo, error -> {});
+        mSigninCoordinator.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
         histogramWatcher.assertExpected();
     }
 
@@ -137,7 +135,7 @@ public class SigninBottomSheetCoordinatorTest {
                         SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         mSigninCoordinator.setToastOverrideForTesting();
-        mSigninCoordinator.signIn(mCoreAccountInfo, error -> {});
+        mSigninCoordinator.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
         verify(mSigninManagerMock, never()).signin(eq(mCoreAccountInfo), anyInt(), any());
         watchSigninDisabledToastShownHistogram.assertExpected();
     }
@@ -161,7 +159,7 @@ public class SigninBottomSheetCoordinatorTest {
                         })
                 .when(mSigninManagerMock)
                 .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO), any());
-        coordinator.signIn(mCoreAccountInfo, error -> {});
+        coordinator.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
         verify(mOnSigninSuccessCallbackMock, times(1)).run();
     }
 
@@ -184,9 +182,7 @@ public class SigninBottomSheetCoordinatorTest {
                         })
                 .when(mSigninManagerMock)
                 .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO), any());
-        coordinator.setAccountPickerBottomSheetCoordinator(
-                mAccountPickerBottomSheetCoordinatorMock);
-        coordinator.signIn(mCoreAccountInfo, error -> {});
+        coordinator.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
         verify(mOnSigninSuccessCallbackMock, times(0)).run();
     }
 }

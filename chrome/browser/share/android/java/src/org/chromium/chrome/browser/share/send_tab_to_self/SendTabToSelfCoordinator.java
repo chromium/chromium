@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -16,13 +15,13 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.WindowAndroid;
@@ -113,9 +112,7 @@ public class SendTabToSelfCoordinator {
         public void onAccountPickerDestroy() {}
 
         @Override
-        public void signIn(
-                CoreAccountInfo accountInfo,
-                Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+        public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
             signinManager.signin(
                     accountInfo,
@@ -127,7 +124,9 @@ public class SendTabToSelfCoordinator {
                         }
 
                         @Override
-                        public void onSignInAborted() {}
+                        public void onSignInAborted() {
+                            mediator.switchToTryAgainView();
+                        }
                     });
         }
 

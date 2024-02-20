@@ -72,8 +72,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -676,16 +674,13 @@ public class AccountPickerBottomSheetTest {
                         .expectIntRecords(
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SHOWN,
-                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
-                                AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN)
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
                         .build();
         // Throws a connection error during the sign-in action
         doAnswer(
                         invocation -> {
-                            Callback<GoogleServiceAuthError> onSignInErrorCallback =
-                                    invocation.getArgument(1);
-                            onSignInErrorCallback.onResult(
-                                    new GoogleServiceAuthError(State.CONNECTION_FAILED));
+                            ((AccountPickerBottomSheetMediator) invocation.getArgument(1))
+                                    .switchToTryAgainView();
                             return null;
                         })
                 .when(mAccountPickerDelegateMock)
@@ -714,16 +709,13 @@ public class AccountPickerBottomSheetTest {
                         .expectIntRecords(
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SHOWN,
-                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
-                                AccountConsistencyPromoAction.AUTH_ERROR_SHOWN)
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
                         .build();
         // Throws an auth error during the sign-in action
         doAnswer(
                         invocation -> {
-                            Callback<GoogleServiceAuthError> onSignInErrorCallback =
-                                    invocation.getArgument(1);
-                            onSignInErrorCallback.onResult(
-                                    new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS));
+                            ((AccountPickerBottomSheetMediator) invocation.getArgument(1))
+                                    .switchToAuthErrorView();
                             return null;
                         })
                 .when(mAccountPickerDelegateMock)
@@ -750,10 +742,8 @@ public class AccountPickerBottomSheetTest {
         // Throws a connection error during the sign-in action
         doAnswer(
                         invocation -> {
-                            Callback<GoogleServiceAuthError> onSignInErrorCallback =
-                                    invocation.getArgument(1);
-                            onSignInErrorCallback.onResult(
-                                    new GoogleServiceAuthError(State.CONNECTION_FAILED));
+                            ((AccountPickerBottomSheetMediator) invocation.getArgument(1))
+                                    .switchToTryAgainView();
                             return null;
                         })
                 .when(mAccountPickerDelegateMock)
@@ -773,10 +763,8 @@ public class AccountPickerBottomSheetTest {
         // Throws an auth error during the sign-in action
         doAnswer(
                         invocation -> {
-                            Callback<GoogleServiceAuthError> onSignInErrorCallback =
-                                    invocation.getArgument(1);
-                            onSignInErrorCallback.onResult(
-                                    new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS));
+                            ((AccountPickerBottomSheetMediator) invocation.getArgument(1))
+                                    .switchToAuthErrorView();
                             return null;
                         })
                 .when(mAccountPickerDelegateMock)

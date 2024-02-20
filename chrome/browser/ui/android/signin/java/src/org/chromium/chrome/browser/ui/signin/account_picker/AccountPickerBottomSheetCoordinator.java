@@ -154,8 +154,4 @@ public class AccountPickerBottomSheetCoordinator {
     public View getBottomSheetViewForTesting() {
         return mView.getContentView();
     }
-
-    public void setTryAgainBottomSheetView() {
-        mAccountPickerBottomSheetMediator.setTryAgainBottomSheetView();
-    }
 }

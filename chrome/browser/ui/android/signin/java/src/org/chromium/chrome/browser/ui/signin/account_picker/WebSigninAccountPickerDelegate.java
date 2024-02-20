@@ -7,18 +7,20 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -55,8 +57,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     }
 
     @Override
-    public void signIn(
-            CoreAccountInfo accountInfo, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+    public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
         if (mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // In case an error is fired because cookies are taking longer to generate than usual,
             // if user retries the sign-in from the error screen, we need to sign out the user
@@ -68,8 +69,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
                 mWebSigninBridgeFactory.create(
                         mProfile,
                         accountInfo,
-                        createWebSigninBridgeListener(
-                                mCurrentTab, mContinueUrl, onSignInErrorCallback));
+                        createWebSigninBridgeListener(mCurrentTab, mContinueUrl, mediator));
         mSigninManager.signin(
                 accountInfo,
                 SigninAccessPoint.WEB_SIGNIN,
@@ -82,7 +82,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
 
                     @Override
                     public void onSignInAborted() {
-                        WebSigninAccountPickerDelegate.this.destroyWebSigninBridge();
+                        mediator.switchToTryAgainView();
                     }
                 });
     }
@@ -92,14 +92,23 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
         return EntryPoint.WEB_SIGNIN;
     }
 
-    private static WebSigninBridge.Listener createWebSigninBridgeListener(
-            Tab tab, String continueUrl, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+    private WebSigninBridge.Listener createWebSigninBridgeListener(
+            Tab tab, String continueUrl, AccountPickerBottomSheetMediator mediator) {
         return new WebSigninBridge.Listener() {
             @MainThread
             @Override
             public void onSigninFailed(GoogleServiceAuthError error) {
                 ThreadUtils.assertOnUiThread();
-                onSignInErrorCallback.onResult(error);
+                @AccountConsistencyPromoAction int promoAction;
+                if (error.getState() == State.INVALID_GAIA_CREDENTIALS) {
+                    promoAction = AccountConsistencyPromoAction.AUTH_ERROR_SHOWN;
+                    mediator.switchToAuthErrorView();
+                } else {
+                    promoAction = AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN;
+                    mediator.switchToTryAgainView();
+                }
+                SigninMetricsUtils.logAccountConsistencyPromoAction(
+                        promoAction, SigninAccessPoint.WEB_SIGNIN);
             }
 
             @MainThread

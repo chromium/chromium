@@ -12,7 +12,6 @@ import static org.hamcrest.core.AllOf.allOf;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.AfterClass;
@@ -25,7 +24,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -43,8 +41,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -66,34 +62,33 @@ public class AccountPickerBottomSheetRenderTest {
     private static final String TEST_EMAIL2 = "test.account2@gmail.com";
 
     private static final class CustomAccountPickerDelegate implements AccountPickerDelegate {
-        private @Nullable GoogleServiceAuthError mError;
         private @EntryPoint int mEntryPoint = EntryPoint.WEB_SIGNIN;
+        private boolean mSwitchToTryAgainView;
+        private boolean mSwitchToAuthErrorView;
 
-        CustomAccountPickerDelegate() {
-            mError = null;
-        }
-
-        void setError(@State int state) {
-            mError = new GoogleServiceAuthError(state);
-        }
-
-        void clearError() {
-            mError = null;
-        }
+        CustomAccountPickerDelegate() {}
 
         void setSendTabToSelfEntryPoint() {
             mEntryPoint = EntryPoint.SEND_TAB_TO_SELF;
+        }
+
+        void setSwitchToTryAgainView(boolean tryAgain) {
+            mSwitchToTryAgainView = tryAgain;
+        }
+
+        void setSwitchToAuthErrorView(boolean authError) {
+            mSwitchToAuthErrorView = authError;
         }
 
         @Override
         public void onAccountPickerDestroy() {}
 
         @Override
-        public void signIn(
-                CoreAccountInfo accountInfo,
-                Callback<GoogleServiceAuthError> onSignInErrorCallback) {
-            if (mError != null) {
-                onSignInErrorCallback.onResult(mError);
+        public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
+            if (mSwitchToTryAgainView) {
+                mediator.switchToTryAgainView();
+            } else if (mSwitchToAuthErrorView) {
+                mediator.switchToAuthErrorView();
             }
         }
 
@@ -224,11 +219,10 @@ public class AccountPickerBottomSheetRenderTest {
     public void testTryAgainButtonOnSignInGeneralErrorSheet(boolean nightModeEnabled)
             throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
-        mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
+        mAccountPickerDelegate.setSwitchToTryAgainView(true);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
-        // Clear the error so that the sign-in could continue normally.
-        mAccountPickerDelegate.clearError();
+        mAccountPickerDelegate.setSwitchToTryAgainView(false);
         clickContinueButtonAndCheckSigninInProgressView();
     }
 
@@ -238,29 +232,9 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninGeneralErrorView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
-        mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
+        mAccountPickerDelegate.setSwitchToTryAgainView(true);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
-        mRenderTestRule.render(
-                mCoordinator.getBottomSheetViewForTesting(), "signin_general_error_sheet");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSetTryAgainBottomSheetView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
-        mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
-        buildAndShowCollapsedBottomSheet();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-                    bottomSheetView
-                            .findViewById(R.id.account_picker_continue_as_button)
-                            .performClick();
-                    mCoordinator.setTryAgainBottomSheetView();
-                });
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_general_error_sheet");
     }
@@ -271,7 +245,7 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
-        mAccountPickerDelegate.setError(State.INVALID_GAIA_CREDENTIALS);
+        mAccountPickerDelegate.setSwitchToAuthErrorView(true);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(

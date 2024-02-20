@@ -11,10 +11,10 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -26,7 +26,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -164,8 +163,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
      *     not used in this flow.
      */
     @Override
-    public void signIn(
-            CoreAccountInfo accountInfo, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+    public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
         SigninManager.SignInCallback callback =
                 new SigninManager.SignInCallback() {
                     @Override
@@ -175,13 +173,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
 
                     @Override
                     public void onSignInAborted() {
-                        // onSignInErrorCallback was meant to be called by the WebSigninBridge which
-                        // is not used in this sign-in flow, as we do not need to wait for cookies
-                        // to propagate.
-                        // Instead of calling AccountPickerBottomSheetMediator.onSigninFailed()
-                        // from the signin bridge we directly perform the creation of the "try
-                        // again" bottom sheet view:
-                        mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
+                        mediator.switchToTryAgainView();
                     }
                 };
 

@@ -26,8 +26,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
@@ -38,7 +36,7 @@ import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import java.util.List;
 
 /** Mediator of the account picker bottom sheet in web sign-in flow. */
-class AccountPickerBottomSheetMediator
+public class AccountPickerBottomSheetMediator
         implements AccountPickerCoordinator.Listener,
                 AccountPickerBottomSheetView.BackPressListener,
                 AccountsChangeObserver,
@@ -190,8 +188,14 @@ class AccountPickerBottomSheetMediator
         mModel.removeObserver(mModelPropertyChangedObserver);
     }
 
-    public void setTryAgainBottomSheetView() {
+    /** Switches the bottom sheet to the general error view that allows the user to try again. */
+    public void switchToTryAgainView() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
+    }
+
+    /** Switches the bottom sheet to the auth error view that asks the user to sign in again. */
+    public void switchToAuthErrorView() {
+        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_AUTH_ERROR);
     }
 
     private void updateAccounts(List<CoreAccountInfo> coreAccountInfos) {
@@ -302,21 +306,7 @@ class AccountPickerBottomSheetMediator
         if (accountInfo == null) {
             return;
         }
-        mAccountPickerDelegate.signIn(accountInfo, this::onSigninFailed);
-    }
-
-    private void onSigninFailed(GoogleServiceAuthError error) {
-        final @AccountConsistencyPromoAction int promoAction;
-        final @ViewState int newViewState;
-        if (error.getState() == State.INVALID_GAIA_CREDENTIALS) {
-            promoAction = AccountConsistencyPromoAction.AUTH_ERROR_SHOWN;
-            newViewState = ViewState.SIGNIN_AUTH_ERROR;
-        } else {
-            promoAction = AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN;
-            newViewState = ViewState.SIGNIN_GENERAL_ERROR;
-        }
-        logAccountConsistencyPromoAction(promoAction);
-        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, newViewState);
+        mAccountPickerDelegate.signIn(accountInfo, this);
     }
 
     private void updateCredentials() {
