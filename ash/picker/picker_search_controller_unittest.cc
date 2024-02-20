@@ -29,7 +29,6 @@ namespace {
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
-using testing::DoAll;
 using testing::Each;
 using testing::ElementsAre;
 using testing::Eq;
@@ -233,11 +232,13 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
     search_started = false;
   });
   ON_CALL(client, StartCrosSearch)
-      .WillByDefault(DoAll(SaveArg<1>(client.cros_search_callback()),
-                           [&search_started, &client]() {
-                             client.StopCrosQuery();
-                             search_started = true;
-                           }));
+      .WillByDefault([&search_started, &client](
+                         const std::u16string& query,
+                         PickerClient::CrosSearchResultsCallback callback) {
+        client.StopCrosQuery();
+        search_started = true;
+        *client.cros_search_callback() = std::move(callback);
+      });
   // Function only used for the below `EXPECT_CALL` to ensure that we don't call
   // the search callback with an empty callback after the initial state.
   testing::MockFunction<void()> after_start_search;
