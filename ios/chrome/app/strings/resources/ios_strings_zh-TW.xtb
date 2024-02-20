@@ -688,7 +688,7 @@
 <translation id="4642472735733036929">已停止追蹤價格</translation>
 <translation id="4645575059429386691">你的家長已停用這項功能</translation>
 <translation id="4650125387981512669">以「<ph name="FIRST_RUN_ACCOUNT_NAME" />」的身分登入繼續使用</translation>
-<translation id="4652817563047461855">確保密碼安全、檢查密碼是否外洩，並提供可保護上網安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="4652817563047461855">確保密碼安全、檢查密碼是否外洩，並取得可保護上網安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">儲存</translation>
 <translation id="4659194143325814340">{count,plural, =1{閱讀清單上的 {count} 個頁面}other{閱讀清單上的 {count} 個頁面}}</translation>
 <translation id="4659667755519643272">進入分頁切換選項</translation>
@@ -1277,7 +1277,7 @@
 <translation id="7687508192620387263">有可用的日曆檔案</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7711440461521638739">目前未重複使用任何密碼</translation>
-<translation id="7719038820139380048">登入即可接收系統根據你的興趣提供的內容。</translation>
+<translation id="7719038820139380048">登入即可接收依個人興趣建議的內容。</translation>
 <translation id="7720410380936703141">再試一次</translation>
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
 <translation id="7726702057919861819">「選單」→「歷史記錄」→「清除瀏覽資料」</translation>
