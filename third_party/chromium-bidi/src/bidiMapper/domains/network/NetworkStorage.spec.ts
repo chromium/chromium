@@ -289,7 +289,7 @@ class MockCdpTarget {
   }
 }
 
-describe.only('NetworkStorage', () => {
+describe('NetworkStorage', () => {
   let processedEvents = new Map<
     ChromiumBidi.Event['method'],
     ChromiumBidi.Event['params']
