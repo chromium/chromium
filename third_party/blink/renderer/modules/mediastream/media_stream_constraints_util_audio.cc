@@ -1663,6 +1663,32 @@ AudioCaptureSettings SelectSettingsAudioCapture(
                                     should_disable_hardware_noise_suppression);
 }
 
+MODULES_EXPORT base::expected<Vector<blink::AudioCaptureSettings>, std::string>
+SelectEligibleSettingsAudioCapture(
+    const AudioDeviceCaptureCapabilities& capabilities,
+    const MediaConstraints& constraints,
+    mojom::blink::MediaStreamType stream_type,
+    bool should_disable_hardware_noise_suppression,
+    bool is_reconfiguration_allowed) {
+  Vector<AudioCaptureSettings> settings;
+  std::string failed_constraint_name;
+  for (const auto& device : capabilities) {
+    const auto device_settings = SelectSettingsAudioCapture(
+        {device}, constraints, stream_type,
+        should_disable_hardware_noise_suppression, is_reconfiguration_allowed);
+    if (device_settings.HasValue()) {
+      settings.push_back(device_settings);
+    } else {
+      failed_constraint_name = device_settings.failed_constraint_name();
+    }
+  }
+
+  if (settings.empty()) {
+    return base::unexpected(failed_constraint_name);
+  }
+  return settings;
+}
+
 std::tuple<int, int> GetMinMaxBufferSizesForAudioParameters(
     const media::AudioParameters& parameters) {
   const int default_buffer_size = parameters.frames_per_buffer();

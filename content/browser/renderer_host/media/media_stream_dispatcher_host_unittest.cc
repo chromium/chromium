@@ -150,9 +150,7 @@ class MockMediaStreamDispatcherHost
                          const blink::StreamControls& controls) {
     MediaStreamDispatcherHost::GenerateStreams(
         page_request_id, controls, false,
-        blink::mojom::StreamSelectionInfo::New(
-            blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-            std::nullopt),
+        blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
         base::DoNothing());
   }
 
@@ -162,9 +160,7 @@ class MockMediaStreamDispatcherHost
     quit_closures_.push(std::move(quit_closure));
     MediaStreamDispatcherHost::GenerateStreams(
         page_request_id, controls, false,
-        blink::mojom::StreamSelectionInfo::New(
-            blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-            std::nullopt),
+        blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
         base::BindOnce(&MockMediaStreamDispatcherHost::OnStreamsGenerated,
                        base::Unretained(this), page_request_id));
   }

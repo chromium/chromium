@@ -94,6 +94,14 @@ class MockMojoMediaStreamDispatcherHost
     stream_devices_ = devices;
   }
 
+  void SetAppendSessionIdToDeviceIds(bool append_session_id_to_device_ids) {
+    append_session_id_to_device_ids_ = append_session_id_to_device_ids;
+  }
+
+  // Appends the `session_id_ to the passed `device_id` if
+  // `append_session_id_to_device_ids_` is true.
+  std::string MaybeAppendSessionId(std::string device_id);
+
  private:
   int request_id_ = -1;
   int request_stream_counter_ = 0;
@@ -105,6 +113,7 @@ class MockMojoMediaStreamDispatcherHost
   GenerateStreamsCallback generate_stream_cb_;
   GetOpenDeviceCallback get_open_device_cb_;
   mojo::Receiver<mojom::blink::MediaStreamDispatcherHost> receiver_{this};
+  bool append_session_id_to_device_ids_ = false;
 };
 
 }  // namespace blink

@@ -74,7 +74,6 @@ using ::blink::mojom::CapturedSurfaceControlResult;
 using ::blink::mojom::MediaStreamType;
 using ::blink::mojom::StreamSelectionInfo;
 using ::blink::mojom::StreamSelectionInfoPtr;
-using ::blink::mojom::StreamSelectionStrategy;
 using ::testing::_;
 using testing::ElementsAre;
 using ::testing::Invoke;
@@ -400,6 +399,12 @@ CapturedWheelActionPtr MakeCapturedWheelActionPtr() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+blink::mojom::StreamSelectionInfoPtr NewSearchBySessionId(
+    base::flat_map<std::string, base::UnguessableToken> session_id_map) {
+  return blink::mojom::StreamSelectionInfo::NewSearchBySessionId(
+      blink::mojom::SearchBySessionId::New(session_id_map));
+}
+
 }  // namespace
 
 class MediaStreamManagerTest : public ::testing::Test {
@@ -484,16 +489,13 @@ class MediaStreamManagerTest : public ::testing::Test {
         render_frame_host_id, requester_id, page_request_id, controls,
         MediaDeviceSaltAndOrigin::Empty(), /*user_gesture=*/false,
         /*audio_stream_selection_info_ptr=*/
-        blink::mojom::StreamSelectionInfo::New(
-            /*strategy=*/blink::mojom::StreamSelectionStrategy::
-                FORCE_NEW_STREAM,
-            /*session_id=*/session),
-        /*generate_stream_cb=*/base::DoNothing(),
-        /*device_stopped_cb=*/base::DoNothing(),
-        /*device_changed_cb=*/base::DoNothing(),
-        /*device_request_state_change_cb=*/base::DoNothing(),
-        /*device_capture_configuration_change_cb=*/base::DoNothing(),
-        /*device_capture_handle_change_cb=*/base::DoNothing(),
+        NewSearchBySessionId({}),
+        /*generate_stream_callback=*/base::DoNothing(),
+        /*device_stopped_callback=*/base::DoNothing(),
+        /*device_changed_callback=*/base::DoNothing(),
+        /*device_request_state_change_callback=*/base::DoNothing(),
+        /*device_capture_configuration_change_callback=*/base::DoNothing(),
+        /*device_capture_handle_change_callback=*/base::DoNothing(),
         /*zoom_level_change_callback=*/base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
@@ -576,9 +578,7 @@ class MediaStreamManagerTest : public ::testing::Test {
     media_stream_manager_->GenerateStreams(
         kRenderFrameHostId, requester_id, page_request_id, controls,
         MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
-        StreamSelectionInfo::New(
-            blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-            std::nullopt),
+        StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
         std::move(generate_stream_callback), stopped_callback.Get(),
         std::move(changed_callback), std::move(request_state_change_callback),
         std::move(capture_configuration_change_callback),
@@ -659,8 +659,7 @@ class MediaStreamManagerTest : public ::testing::Test {
   }
 
   blink::MediaStreamDevice CreateOrSearchAudioDeviceStream(
-      const StreamSelectionStrategy& strategy,
-      const std::optional<base::UnguessableToken>& session_id,
+      StreamSelectionInfoPtr selection_info,
       GlobalRenderFrameHostId render_frame_host_id = kRenderFrameHostId,
       const blink::StreamControls& controls =
           blink::StreamControls(true /* request_audio */,
@@ -686,12 +685,10 @@ class MediaStreamManagerTest : public ::testing::Test {
         capture_handle_change_callback;
     MediaStreamManager::ZoomLevelChangeCallback zoom_level_change_callback;
 
-    StreamSelectionInfoPtr info =
-        StreamSelectionInfo::New(strategy, session_id);
     media_stream_manager_->GenerateStreams(
         render_frame_host_id, requester_id, page_request_id, controls,
         MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
-        std::move(info), std::move(generate_stream_callback),
+        std::move(selection_info), std::move(generate_stream_callback),
         std::move(stopped_callback), std::move(changed_callback),
         std::move(request_state_change_callback),
         std::move(capture_configuration_change_callback),
@@ -927,8 +924,7 @@ TEST_F(MediaStreamManagerTest, GenerateSameStreamForAudioDevice) {
   std::set<base::UnguessableToken> session_ids;
   for (int i = 0; i < num_call_iterations; ++i) {
     blink::MediaStreamDevice audio_device = CreateOrSearchAudioDeviceStream(
-        blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-        std::nullopt);
+        blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}));
 
     EXPECT_EQ(audio_device.id, "default");
     EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
@@ -951,8 +947,8 @@ TEST_F(MediaStreamManagerTest, GenerateDifferentStreamsForAudioDevice) {
   // new stream each time.
   std::set<base::UnguessableToken> session_ids;
   for (size_t i = 0; i < num_call_iterations; ++i) {
-    blink::MediaStreamDevice audio_device = CreateOrSearchAudioDeviceStream(
-        blink::mojom::StreamSelectionStrategy::FORCE_NEW_STREAM, std::nullopt);
+    blink::MediaStreamDevice audio_device =
+        CreateOrSearchAudioDeviceStream(NewSearchBySessionId({}));
 
     EXPECT_EQ(audio_device.id, "default");
     EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
@@ -971,19 +967,23 @@ TEST_F(MediaStreamManagerTest, GenerateAndReuseStreamForAudioDevice) {
 
   const int num_call_iterations = 3;
 
-  // Test that if |info.strategy| is provided as SEARCH_BY_SESSION_ID with
-  // |info.session_id| set to an non-existing ID a new stream is provided and
+  // Test that `StreamSelectionInfo` is provided as `SearchBySessionId` with
+  // the id set to an non-existing ID a new stream is provided and
   // that if the ID is valid, that the stream is reused.
   auto token = base::UnguessableToken::Create();
-  blink::MediaStreamDevice reference_device = CreateOrSearchAudioDeviceStream(
-      blink::mojom::StreamSelectionStrategy::SEARCH_BY_SESSION_ID, token);
+  blink::MediaStreamDevice reference_device =
+      CreateOrSearchAudioDeviceStream(NewSearchBySessionId(
+          {{media::AudioDeviceDescription::kDefaultDeviceId, token}}));
   EXPECT_NE(reference_device.session_id(), token);
 
   for (int i = 0; i < num_call_iterations; ++i) {
-    blink::MediaStreamDevice audio_device = CreateOrSearchAudioDeviceStream(
-        blink::mojom::StreamSelectionStrategy::SEARCH_BY_SESSION_ID,
-        reference_device.session_id());
-    EXPECT_EQ(audio_device.id, "default");
+    blink::MediaStreamDevice audio_device =
+        CreateOrSearchAudioDeviceStream(NewSearchBySessionId({
+            {media::AudioDeviceDescription::kDefaultDeviceId,
+             reference_device.session_id()},
+            {GetAudioInputDeviceId(0), token},
+        }));
+    EXPECT_EQ(audio_device.id, media::AudioDeviceDescription::kDefaultDeviceId);
     EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
               audio_device.type);
     EXPECT_TRUE(audio_device.session_id());
@@ -1046,9 +1046,7 @@ TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
   media_stream_manager_->GenerateStreams(
       render_frame_host_id, requester_id, page_request_id, controls,
       MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
-      StreamSelectionInfo::New(
-          blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-          std::nullopt),
+      StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
       std::move(generate_stream_callback),
       MediaStreamManager::DeviceStoppedCallback(),
       MediaStreamManager::DeviceChangedCallback(),
@@ -1106,9 +1104,7 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceStopped) {
   media_stream_manager_->GenerateStreams(
       kRenderFrameHostId, requester_id, page_request_id, controls,
       MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
-      StreamSelectionInfo::New(
-          blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-          std::nullopt),
+      StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
       std::move(generate_stream_callback), std::move(stopped_callback),
       std::move(changed_callback), std::move(request_state_change_callback),
       std::move(capture_configuration_change_callback),
@@ -1178,9 +1174,7 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
   media_stream_manager_->GenerateStreams(
       kRenderFrameHostId, requester_id, page_request_id, controls,
       MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
-      StreamSelectionInfo::New(
-          blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-          std::nullopt),
+      StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
       std::move(generate_stream_callback), std::move(stopped_callback),
       std::move(changed_callback), std::move(request_state_change_callback),
       std::move(capture_configuration_change_callback),
@@ -1395,16 +1389,12 @@ class MediaStreamManagerTestWithWebContents : public MediaStreamManagerTest {
         controls, salt_and_origin,
         /*user_gesture=*/false,
         /*audio_stream_selection_info_ptr=*/
-        blink::mojom::StreamSelectionInfo::New(
-            /*strategy=*/blink::mojom::StreamSelectionStrategy::
-                FORCE_NEW_STREAM,
-            std::nullopt),
-        std::move(generate_stream_cb),
-        /*device_stopped_cb=*/base::DoNothing(),
-        /*device_changed_cb=*/base::DoNothing(),
+        NewSearchBySessionId({}), std::move(generate_stream_cb),
+        /*device_stopped_callback=*/base::DoNothing(),
+        /*device_changed_callback=*/base::DoNothing(),
         /*device_request_state_change_cb*/ base::DoNothing(),
-        /*device_capture_configuration_change_cb=*/base::DoNothing(),
-        /*device_capture_handle_change_cb=*/base::DoNothing(),
+        /*device_capture_configuration_change_callback=*/base::DoNothing(),
+        /*device_capture_handle_change_callback=*/base::DoNothing(),
         /*zoom_level_change_callback=*/base::DoNothing());
   }
 
@@ -1548,8 +1538,8 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
 
   void RequestDeviceCaptureTypeAudioDevice() {
     // Generate stream on first renderer.
-    original_device_ = CreateOrSearchAudioDeviceStream(
-        blink::mojom::StreamSelectionStrategy::FORCE_NEW_STREAM, std::nullopt);
+    original_device_ =
+        CreateOrSearchAudioDeviceStream(NewSearchBySessionId({}));
     existing_device_session_id_ = original_device_.session_id();
 
     EXPECT_EQ(original_device_.type,
@@ -1581,15 +1571,13 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
         render_frame_host_id_, requester_id_,
         /*page_request_id=*/1, controls, MediaDeviceSaltAndOrigin::Empty(),
         /*user_gesture=*/false,
-        StreamSelectionInfo::New(
-            blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-            std::nullopt),
+        blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
         std::move(generate_stream_callback),
-        /*device_stopped_cb=*/base::DoNothing(),
-        /*device_changed_cb=*/base::DoNothing(),
-        /*device_request_state_change_cb=*/base::DoNothing(),
-        /*device_capture_configuration_change_cb=*/base::DoNothing(),
-        /*device_capture_handle_change_cb=*/base::DoNothing(),
+        /*device_stopped_callback=*/base::DoNothing(),
+        /*device_changed_callback=*/base::DoNothing(),
+        /*device_request_state_change_callback=*/base::DoNothing(),
+        /*device_capture_configuration_change_callback=*/base::DoNothing(),
+        /*device_capture_handle_change_callback=*/base::DoNothing(),
         /*zoom_level_change_callback=*/base::DoNothing());
     run_loop.Run();
 
@@ -1616,11 +1604,11 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
         GlobalRenderFrameHostId{3, 4}, /*requester_id=*/2,
         /*page_request_id=*/2, MediaDeviceSaltAndOrigin::Empty(),
         std::move(get_open_device_cb),
-        /*device_stopped_cb=*/base::DoNothing(),
-        /*device_changed_cb=*/base::DoNothing(),
-        /*device_request_state_change_cb=*/base::DoNothing(),
-        /*device_capture_configuration_change_cb=*/base::DoNothing(),
-        /*device_capture_handle_change_cb=*/base::DoNothing(),
+        /*device_stopped_callback=*/base::DoNothing(),
+        /*device_changed_callback=*/base::DoNothing(),
+        /*device_request_state_change_callback=*/base::DoNothing(),
+        /*device_capture_configuration_change_callback=*/base::DoNothing(),
+        /*device_capture_handle_change_callback=*/base::DoNothing(),
         /*zoom_level_change_callback=*/base::DoNothing());
     run_loop_.Run();
   }
@@ -1836,16 +1824,13 @@ class MediaStreamManagerCapturedSurfaceControlTest
     media_stream_manager_->GenerateStreams(
         rfhid, /*requester_id=*/1,
         /*page_request_id=*/1, controls, MediaDeviceSaltAndOrigin::Empty(),
-        /*user_gesture=*/true,
-        StreamSelectionInfo::New(
-            blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
-            std::nullopt),
+        /*user_gesture=*/true, StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
         std::move(generate_stream_callback),
-        /*device_stopped_cb=*/base::DoNothing(),
-        /*device_changed_cb=*/base::DoNothing(),
-        /*device_request_state_change_cb=*/base::DoNothing(),
-        /*device_capture_configuration_change_cb=*/base::DoNothing(),
-        /*device_capture_handle_change_cb=*/base::DoNothing(),
+        /*device_stopped_callback=*/base::DoNothing(),
+        /*device_changed_callback=*/base::DoNothing(),
+        /*device_request_state_change_callback=*/base::DoNothing(),
+        /*device_capture_configuration_change_callback=*/base::DoNothing(),
+        /*device_capture_handle_change_callback=*/base::DoNothing(),
         /*zoom_level_change_callback=*/
         base::BindRepeating(
             &MediaStreamManagerCapturedSurfaceControlTest::OnZoomLevelChange,

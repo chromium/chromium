@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -753,13 +754,9 @@ class UserMediaClientTest : public ::testing::Test {
     EXPECT_EQ(kRequestSucceeded, request_state());
     EXPECT_NE(std::nullopt, mock_dispatcher_host_.devices().audio_device);
     EXPECT_NE(std::nullopt, mock_dispatcher_host_.devices().video_device);
-    // MockMojoMediaStreamDispatcherHost appends its internal session ID to its
-    // internal device IDs.
-    EXPECT_EQ(expected_audio_device_id.Ascii() +
-                  mock_dispatcher_host_.session_id().ToString(),
+    EXPECT_EQ(expected_audio_device_id.Ascii(),
               mock_dispatcher_host_.devices().audio_device.value().id);
-    EXPECT_EQ(expected_video_device_id.Ascii() +
-                  mock_dispatcher_host_.session_id().ToString(),
+    EXPECT_EQ(expected_video_device_id.Ascii(),
               mock_dispatcher_host_.devices().video_device.value().id);
   }
 
@@ -823,6 +820,7 @@ TEST_F(UserMediaClientTest, GenerateMediaStream) {
 // Test that the same source object is used if two MediaStreams are generated
 // using the same source.
 TEST_F(UserMediaClientTest, GenerateTwoMediaStreamsWithSameSource) {
+  mock_dispatcher_host_.SetAppendSessionIdToDeviceIds(true);
   MediaStreamDescriptor* desc1 = RequestLocalMediaStream();
   MediaStreamDescriptor* desc2 = RequestLocalMediaStream();
 
@@ -846,6 +844,7 @@ TEST_F(UserMediaClientTest, GenerateTwoMediaStreamsWithSameSource) {
 // Test that the same source object is not used if two MediaStreams are
 // generated using different sources.
 TEST_F(UserMediaClientTest, GenerateTwoMediaStreamsWithDifferentSources) {
+  mock_dispatcher_host_.SetAppendSessionIdToDeviceIds(true);
   MediaStreamDescriptor* desc1 = RequestLocalMediaStream();
   // Make sure another device is selected (another |session_id|) in  the next
   // gUM request.
@@ -1707,4 +1706,60 @@ TEST_F(UserMediaClientTest, MultiDeviceOnStreamsGenerated) {
   DCHECK_EQ(devices_count, media_devices_dispatcher_host_mock->devices_count());
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+
+class UserMediaClientDeferredDeviceSelectionTest : public UserMediaClientTest {
+  void SetUp() override {
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            features::kCameraMicPreview,
+            features::kGetUserMediaDeferredDeviceSettingsSelection,
+        },
+        /*disabled_features=*/{});
+    UserMediaClientTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
+TEST_F(UserMediaClientDeferredDeviceSelectionTest, GenerateMediaStream) {
+  // Generate a stream with both audio and video.
+  MediaStreamDescriptor* mixed_desc = RequestLocalMediaStream();
+  EXPECT_TRUE(mixed_desc);
+}
+
+TEST_F(UserMediaClientDeferredDeviceSelectionTest,
+       CreateWithMandatoryInvalidAudioDeviceId) {
+  MediaConstraints audio_constraints =
+      CreateDeviceConstraints(fake_ids_->invalid_device);
+  UserMediaRequest* request =
+      UserMediaRequest::CreateForTesting(audio_constraints, MediaConstraints());
+  user_media_client_impl_->RequestUserMediaForTest(request);
+  EXPECT_EQ(kRequestFailed, request_state());
+}
+
+TEST_F(UserMediaClientDeferredDeviceSelectionTest,
+       CreateWithMandatoryInvalidVideoDeviceId) {
+  MediaConstraints video_constraints =
+      CreateDeviceConstraints(fake_ids_->invalid_device);
+  UserMediaRequest* request =
+      UserMediaRequest::CreateForTesting(MediaConstraints(), video_constraints);
+  user_media_client_impl_->RequestUserMediaForTest(request);
+  EXPECT_EQ(kRequestFailed, request_state());
+}
+
+TEST_F(UserMediaClientDeferredDeviceSelectionTest,
+       CreateWithMandatoryValidDeviceIds) {
+  MediaConstraints audio_constraints =
+      CreateDeviceConstraints(fake_ids_->audio_input_1);
+  MediaConstraints video_constraints =
+      CreateDeviceConstraints(fake_ids_->video_input_1);
+  TestValidRequestWithConstraints(audio_constraints, video_constraints,
+                                  fake_ids_->audio_input_1,
+                                  fake_ids_->video_input_1);
+}
+
+#endif
 }  // namespace blink

@@ -192,6 +192,14 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     }
   }
 
+  base::expected<Vector<blink::AudioCaptureSettings>, std::string>
+  SelectEligibleSettings(bool is_reconfigurable = false) {
+    MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
+    return SelectEligibleSettingsAudioCapture(
+        capabilities_, constraints, GetMediaStreamType(),
+        /*should_disable_hardware_noise_suppression=*/false, is_reconfigurable);
+  }
+
   // When googExperimentalEchoCancellation is not explicitly set, its default
   // value is always false on Android. On other platforms it behaves like other
   // audio-processing properties.
@@ -2049,6 +2057,37 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimentalEcWithSource) {
   EXPECT_TRUE(result.HasValue());
   EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
             EchoCancellationType::kEchoCancellationDisabled);
+}
+
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       SelectEligibleSettingsAudioDeviceCapture_NoEligibleDevices) {
+  if (!IsDeviceCapture()) {
+    // This test is irrelevant for non-device captures.
+    return;
+  }
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact("NONEXISTING");
+  auto result = SelectEligibleSettings();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(constraint_factory_.basic().device_id.GetName(), result.error());
+}
+
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       SelectEligibleSettingsAudioDeviceCapture_IncludesEligibleDevices) {
+  if (!IsDeviceCapture()) {
+    // This test is irrelevant for non-device captures.
+    return;
+  }
+  constraint_factory_.Reset();
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::AudioParameters::kAudioCDSampleRate);
+  auto result = SelectEligibleSettings();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(4u, result.value().size());
+  EXPECT_EQ("default_device", result.value()[0].device_id());
+  EXPECT_EQ("system_echo_canceller_device", result.value()[1].device_id());
+  EXPECT_EQ("4_channels_device", result.value()[2].device_id());
+  EXPECT_EQ("variable_latency_device", result.value()[3].device_id());
 }
 
 TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {

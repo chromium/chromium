@@ -77,13 +77,6 @@ enum MediaStreamRequestResult {
   NUM_MEDIA_REQUEST_RESULTS
 };
 
-// Strategies used to search an audio device stream.
-enum StreamSelectionStrategy {
-  SEARCH_BY_SESSION_ID,
-  SEARCH_BY_DEVICE_ID,
-  FORCE_NEW_STREAM,
-};
-
 // Type of state change for the corresponding requests.
 enum MediaStreamStateChange {
   PLAY,
@@ -99,12 +92,19 @@ enum PreferredDisplaySurface {
   BROWSER,
 };
 
+// This empty struct is used as a union option. Its presence will trigger
+// searching only by device ID. There is no other information needed.
+struct SearchOnlyByDeviceId {};
+struct SearchBySessionId {
+  // If `session_id_map` contains a mapping for the selected device id, then
+  // the session will be re-used, otherwise a new session will be created.
+  map<string, mojo_base.mojom.UnguessableToken> session_id_map;
+};
+
 // See MediaStreamDispatcherHost below for information.
-struct StreamSelectionInfo {
-  StreamSelectionStrategy strategy;
-  // When |strategy| is set to be SEARCH_BY_SESSION_ID, |session_id| must be
-  // specified and valid. It can be null otherwise.
-  mojo_base.mojom.UnguessableToken? session_id;
+union StreamSelectionInfo {
+  SearchOnlyByDeviceId search_only_by_device_id;
+  SearchBySessionId search_by_session_id;
 };
 
 // See public/common/mediastream/media_stream_request.h.

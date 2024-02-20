@@ -27,28 +27,24 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
   ++request_stream_counter_;
   stream_devices_ = blink::mojom::blink::StreamDevices();
 
-  blink::mojom::StreamSelectionStrategy strategy =
-      audio_stream_selection_info_ptr->strategy;
   if (controls.audio.requested() &&
-      (strategy == blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID ||
-       strategy == blink::mojom::StreamSelectionStrategy::FORCE_NEW_STREAM)) {
+      audio_stream_selection_info_ptr->is_search_by_session_id() &&
+      !audio_stream_selection_info_ptr->get_search_by_session_id().is_null()) {
     stream_devices_.audio_device = MediaStreamDevice(
         controls.audio.stream_type,
-        controls.audio.device_ids.front() + session_id_.ToString(),
-        "microphone");
-    stream_devices_.audio_device.value().set_session_id(session_id_);
-    stream_devices_.audio_device.value().matched_output_device_id =
-        "associated_output_device_id" + session_id_.ToString();
+        MaybeAppendSessionId(controls.audio.device_ids.front()), "microphone");
+    stream_devices_.audio_device->set_session_id(session_id_);
+    stream_devices_.audio_device->matched_output_device_id =
+        MaybeAppendSessionId("associated_output_device_id");
   }
 
   if (controls.video.requested()) {
     stream_devices_.video_device = MediaStreamDevice(
         controls.video.stream_type,
-        controls.video.device_ids.front() + session_id_.ToString(),
+        MaybeAppendSessionId(controls.video.device_ids.front()),
         "usb video camera");
-    stream_devices_.video_device.value().video_facing =
-        media::MEDIA_VIDEO_FACING_USER;
-    stream_devices_.video_device.value().set_session_id(session_id_);
+    stream_devices_.video_device->video_facing = media::MEDIA_VIDEO_FACING_USER;
+    stream_devices_.video_device->set_session_id(session_id_);
   }
 
   if (do_not_run_cb_) {
@@ -138,6 +134,14 @@ void MockMojoMediaStreamDispatcherHost::OpenDevice(
   device.set_session_id(session_id_);
   std::move(callback).Run(true /* success */,
                           "dummy" + String::Number(request_id), device);
+}
+
+std::string MockMojoMediaStreamDispatcherHost::MaybeAppendSessionId(
+    std::string device_id) {
+  if (!append_session_id_to_device_ids_) {
+    return device_id;
+  }
+  return device_id + session_id_.ToString();
 }
 
 }  // namespace blink
