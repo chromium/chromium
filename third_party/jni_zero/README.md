@@ -277,5 +277,5 @@ for more about the GN templates.
 
 ## Changing `jni_generator`
 
- * Python tests live in `integration_tests.py`
- * A working demo app exists as `//third_party/jni_zero/samples:sample_jni_apk`
+ * Python tests live in `test/integration_tests.py`
+ * A working demo app exists as `//third_party/jni_zero/sample:sample_jni_apk`
