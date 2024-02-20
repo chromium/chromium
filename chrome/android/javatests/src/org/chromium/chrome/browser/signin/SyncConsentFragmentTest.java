@@ -1042,7 +1042,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-    @DisabledTest(message = "b/325724184")
+    @DisabledTest(message = "b/325929365")
     public void testSignedInWithMinorModeUnknownWaitsForButtons() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
@@ -1063,7 +1063,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-    @DisabledTest(message = "b/325724184")
+    @DisabledTest(message = "b/325929365")
     public void testSignedInWithMinorModeUnknownHasEqualButtonsOnDeadline() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
@@ -1117,7 +1117,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-    @DisabledTest(message = "b/325724184")
+    @DisabledTest(message = "b/325929365")
     public void testSignedOutWithMinorModeUnknownWaitsForButtons() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
@@ -1133,7 +1133,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-    @DisabledTest(message = "b/325724184")
+    @DisabledTest(message = "b/325929365")
     public void testSignedOutWithMinorModeUnknownHasEqualButtonsOnDeadline() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
