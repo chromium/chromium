@@ -14,13 +14,8 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/page_entities_model_handler.h"
-#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-#include "components/optimization_guide/core/page_entities_model_handler_impl.h"
-#endif
 
 namespace optimization_guide {
 
@@ -54,19 +49,7 @@ void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
       "OptimizationGuide.PageContentAnnotationsModelManager."
       "PageEntitiesModelRequested",
       true);
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
-
-  page_entities_model_handler_ = std::make_unique<PageEntitiesModelHandlerImpl>(
-      optimization_guide_model_provider, background_task_runner);
-
-  page_entities_model_handler_->AddOnModelUpdatedCallback(
-      base::BindOnce(std::move(callback), true));
-#else
   std::move(callback).Run(false);
-#endif
 }
 
 void PageContentAnnotationsModelManager::
