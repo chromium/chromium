@@ -354,21 +354,12 @@ void TestSharedImageInterface::UpdateSharedImage(
 }
 
 scoped_refptr<gpu::ClientSharedImage>
-TestSharedImageInterface::AddReferenceToSharedImage(
-    const gpu::SyncToken& sync_token,
-    const gpu::Mailbox& mailbox,
-    SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage) {
-  shared_images_.insert(mailbox);
+TestSharedImageInterface::ImportSharedImage(
+    const gpu::ExportedSharedImage& exported_shared_image) {
+  shared_images_.insert(exported_shared_image.mailbox_);
   return base::MakeRefCounted<gpu::ClientSharedImage>(
-      mailbox,
-      gpu::ClientSharedImage::Metadata(format, size, color_space,
-                                       surface_origin, alpha_type, usage),
-      sync_token, holder_);
+      exported_shared_image.mailbox_, exported_shared_image.metadata_,
+      exported_shared_image.sync_token_, holder_);
 }
 
 void TestSharedImageInterface::DestroySharedImage(

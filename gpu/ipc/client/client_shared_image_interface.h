@@ -149,15 +149,8 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       SkAlphaType alpha_type,
       uint32_t usage) override;
 
-  scoped_refptr<ClientSharedImage> AddReferenceToSharedImage(
-      const SyncToken& sync_token,
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage) override;
+  scoped_refptr<ClientSharedImage> ImportSharedImage(
+      const ExportedSharedImage& exported_shared_image) override;
 
   const SharedImageCapabilities& GetCapabilities() override;
 

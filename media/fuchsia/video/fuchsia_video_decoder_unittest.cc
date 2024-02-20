@@ -211,15 +211,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     ADD_FAILURE();
   }
 
-  scoped_refptr<gpu::ClientSharedImage> AddReferenceToSharedImage(
-      const gpu::SyncToken& sync_token,
-      const gpu::Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage) override {
+  scoped_refptr<gpu::ClientSharedImage> ImportSharedImage(
+      const gpu::ExportedSharedImage& exported_shared_image) override {
     ADD_FAILURE();
     return nullptr;
   }

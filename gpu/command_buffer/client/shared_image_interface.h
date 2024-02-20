@@ -42,6 +42,7 @@ class D3DSharedFence;
 
 namespace gpu {
 class ClientSharedImage;
+struct ExportedSharedImage;
 class GpuMemoryBufferManager;
 struct SharedImageCapabilities;
 class SharedImageInterfaceHolder;
@@ -266,7 +267,13 @@ class GPU_EXPORT SharedImageInterface
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) = 0;
+      uint32_t usage);
+
+  // Imports SharedImage to this interface and returns an owning reference. It
+  // must be released via DestroySharedImage in the same way as for SharedImages
+  // created via CreateSharedImage().
+  virtual scoped_refptr<ClientSharedImage> ImportSharedImage(
+      const ExportedSharedImage& exported_shared_image) = 0;
 
   struct GPU_EXPORT SwapChainSharedImages {
     SwapChainSharedImages(scoped_refptr<gpu::ClientSharedImage> front_buffer,

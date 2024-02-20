@@ -14,7 +14,13 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+namespace viz {
+class TestSharedImageInterface;
+}
+
 namespace gpu {
+
+struct ExportedSharedImage;
 
 class GPU_EXPORT ClientSharedImage
     : public base::RefCountedThreadSafe<ClientSharedImage> {
@@ -92,6 +98,7 @@ class GPU_EXPORT ClientSharedImage
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 
   const Mailbox& mailbox() { return mailbox_; }
+  bool HasHolder() { return sii_holder_ != nullptr; }
 
   // Returns a clone of the GpuMemoryBufferHandle associated with this ClientSI.
   // Valid to call only if this instance was created with a non-null
@@ -117,6 +124,15 @@ class GPU_EXPORT ClientSharedImage
   // which can be used to read/write to the CPU mapped memory. The SharedImage
   // backing this ClientSI must have been created with CPU_READ/CPU_WRITE usage.
   std::unique_ptr<ScopedMapping> Map();
+
+  ExportedSharedImage Export();
+
+  // Returns an unowned reference. The caller should ensure that the original
+  // shared image outlives this reference. Note that it is preferable to use
+  // SharedImageInterface::ImportSharedImage() instead, which returns an owning
+  // reference.
+  static scoped_refptr<ClientSharedImage> ImportUnowned(
+      const ExportedSharedImage& exported_shared_image);
 
   static scoped_refptr<ClientSharedImage> CreateForTesting() {
     return base::MakeRefCounted<ClientSharedImage>(
@@ -145,6 +161,22 @@ class GPU_EXPORT ClientSharedImage
   SyncToken creation_sync_token_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
+};
+
+struct GPU_EXPORT ExportedSharedImage {
+ private:
+  friend class ClientSharedImage;
+  friend class SharedImageInterface;
+  friend class ClientSharedImageInterface;
+  friend class viz::TestSharedImageInterface;
+
+  ExportedSharedImage(const Mailbox& mailbox,
+                      const ClientSharedImage::Metadata& metadata,
+                      const SyncToken& sync_token);
+
+  const Mailbox mailbox_;
+  const ClientSharedImage::Metadata metadata_;
+  SyncToken sync_token_;
 };
 
 }  // namespace gpu

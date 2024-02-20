@@ -129,4 +129,25 @@ void ClientSharedImage::SetColorSpaceOnNativeBuffer(
 }
 #endif
 
+ExportedSharedImage ClientSharedImage::Export() {
+  if (creation_sync_token_.HasData() &&
+      !creation_sync_token_.verified_flush()) {
+    sii_holder_->Get()->VerifySyncToken(creation_sync_token_);
+  }
+  return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_);
+}
+
+scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
+    const ExportedSharedImage& exported_shared_image) {
+  return base::MakeRefCounted<ClientSharedImage>(
+      exported_shared_image.mailbox_, exported_shared_image.metadata_,
+      exported_shared_image.sync_token_, nullptr);
+}
+
+ExportedSharedImage::ExportedSharedImage(
+    const Mailbox& mailbox,
+    const ClientSharedImage::Metadata& metadata,
+    const SyncToken& sync_token)
+    : mailbox_(mailbox), metadata_(metadata), sync_token_(sync_token) {}
+
 }  // namespace gpu

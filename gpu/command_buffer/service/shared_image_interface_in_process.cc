@@ -862,15 +862,8 @@ void SharedImageInterfaceInProcess::ScheduleGpuTask(
 }
 
 scoped_refptr<ClientSharedImage>
-SharedImageInterfaceInProcess::AddReferenceToSharedImage(
-    const SyncToken& sync_token,
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage) {
+SharedImageInterfaceInProcess::ImportSharedImage(
+    const ExportedSharedImage& exported_shared_image) {
   // Secondary references are required only by client processes, so it shouldn't
   // be reachable here.
   NOTREACHED();

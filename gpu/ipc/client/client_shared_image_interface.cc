@@ -361,28 +361,22 @@ void ClientSharedImageInterface::DestroySharedImage(
     const SyncToken& sync_token,
     scoped_refptr<ClientSharedImage> client_shared_image) {
   CHECK(client_shared_image->HasOneRef());
+  CHECK(client_shared_image->HasHolder());
   DestroySharedImage(sync_token, client_shared_image->mailbox());
 }
 
-scoped_refptr<ClientSharedImage>
-ClientSharedImageInterface::AddReferenceToSharedImage(
-    const SyncToken& sync_token,
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage) {
+scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
+    const ExportedSharedImage& exported_shared_image) {
+  const auto& mailbox = exported_shared_image.mailbox_;
+  const auto& metadata = exported_shared_image.metadata_;
+  const auto& sync_token = exported_shared_image.sync_token_;
+
   DCHECK(!mailbox.IsZero());
   AddMailbox(mailbox);
-  proxy_->AddReferenceToSharedImage(sync_token, mailbox, usage);
+  proxy_->AddReferenceToSharedImage(sync_token, mailbox, metadata.usage);
 
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
-                                  alpha_type, usage),
-      sync_token, holder_);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, metadata, sync_token,
+                                                 holder_);
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
