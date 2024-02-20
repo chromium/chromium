@@ -211,6 +211,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_SHARE_THIS_PAGE_IPH_TEXT);
+  NSString* announcement =
+      l10n_util::GetNSString(IDS_IOS_SHARE_THIS_PAGE_IPH_ANNOUNCEMENT);
   CGPoint shareButtonAnchor = [self anchorPointToGuide:kShareButtonGuide
                                              direction:arrowDirection];
 
@@ -226,7 +228,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                     direction:arrowDirection
                     alignment:BubbleAlignmentBottomOrTrailing
                          text:text
-        voiceOverAnnouncement:nil
+        voiceOverAnnouncement:announcement
                   anchorPoint:shareButtonAnchor
                 presentAction:presentAction
                 dismissAction:dismissAction];
