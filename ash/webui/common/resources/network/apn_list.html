@@ -109,3 +109,11 @@
       on-close="onApnDetailDialogClose_">
   </apn-detail-dialog>
 </template>
+
+<template is="dom-if" if="[[shouldShowApnSelectionDialog_]]" restamp>
+  <apn-selection-dialog
+      guid="[[guid]]"
+      apn-list="[[managedCellularProperties.apnList]]"
+      on-close="onApnSelectionDialogClose_">
+  </apn-selection-dialog>
+</template>

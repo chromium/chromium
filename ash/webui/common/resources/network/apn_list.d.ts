@@ -24,6 +24,10 @@ export class ApnList extends PolymerElement {
       type: BooleanConstructor,
       value: boolean,
     },
+    shouldShowApnSelectionDialog_: {
+      type: BooleanConstructor,
+      value: boolean,
+    },
   };
   errorState: string;
   portalState: PortalState;
@@ -38,6 +42,8 @@ export class ApnList extends PolymerElement {
   private showApnDetailDialog_;
   private shouldShowApnDetailDialog_: boolean;
   private onApnDetailDialogClose_;
+  private shouldShowApnSelectionDialog_: boolean;
+  private onApnSelectionDialogClose_;
 }
 
 declare global {

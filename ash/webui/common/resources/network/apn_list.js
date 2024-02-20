@@ -12,6 +12,7 @@ import './network_shared.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/ash/common/network/apn_list_item.js';
 import 'chrome://resources/ash/common/network/apn_detail_dialog.js';
+import 'chrome://resources/ash/common/network/apn_selection_dialog.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {assert} from '//resources/ash/common/assert.js';
@@ -87,6 +88,12 @@ export class ApnList extends ApnListBase {
       apnDetailDialogMode_: {
         type: Object,
         value: ApnDetailDialogMode.CREATE,
+      },
+
+      /** @private */
+      shouldShowApnSelectionDialog_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -297,6 +304,15 @@ export class ApnList extends ApnListBase {
    */
   onApnDetailDialogClose_(event) {
     this.shouldShowApnDetailDialog_ = false;
+  }
+
+  /**
+   *
+   * @param event {!Event}
+   * @private
+   */
+  onApnSelectionDialogClose_(event) {
+    this.shouldShowApnSelectionDialog_ = false;
   }
 
   /**

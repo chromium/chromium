@@ -87,6 +87,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ApnDetailDialog) {
   RunSettingsTest("apn_detail_dialog_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ApnSelectionDialog) {
+  RunSettingsTest("apn_selection_dialog_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppLanguageSelectionDialog) {
   RunSettingsTest(
       "common/app_language_selection_dialog/"

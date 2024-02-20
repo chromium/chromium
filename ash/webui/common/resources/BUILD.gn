@@ -57,6 +57,7 @@ web_component_files = [
   "network/network_siminfo.js",
   "network/sim_lock_dialogs.js",
   "network/apn_detail_dialog.js",
+  "network/apn_selection_dialog.js",
   "smb_shares/add_smb_share_dialog.js",
 ]
 
@@ -232,11 +233,11 @@ ts_library("build_ts") {
   in_files = non_web_component_files_ts + web_component_files_ts + mojo_files_ts
   composite = true
   deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",
     "//third_party/polymer/v3_0:library",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -471,6 +472,7 @@ checked_in_dts_files = [
   "multidevice_setup/multidevice_setup.d.ts",
 
   "network/apn_detail_dialog.d.ts",
+  "network/apn_selection_dialog.d.ts",
   "network/apn_list.d.ts",
   "network/apn_list_item.d.ts",
   "network/cr_policy_network_indicator_mojo.d.ts",
