@@ -40,6 +40,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   void SetBackgroundColorId(ui::ColorId color_id);
   void SetPlaceholderTextColorId(ui::ColorId color_id);
   void SetActiveStateChangedCallback(base::RepeatingClosure callback);
+  void SetCornerRadius(int corner_radius);
 
   // Activates or deactivates the textfield. The textfield can only be edited if
   // it is active.
@@ -82,6 +83,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
 
   Type type_;
   std::unique_ptr<EventHandler> event_handler_;
+  int corner_radius_;
 
   // Text content to restore when changes are discarded.
   std::u16string restored_text_content_;
