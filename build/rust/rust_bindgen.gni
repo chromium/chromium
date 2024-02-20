@@ -27,8 +27,9 @@ if (host_os == "win") {
 
 # Template to build Rust/C bindings with bindgen.
 #
-# This template expands to a static_library containing the Rust side of the
-# bindings. Simply treat it as a public dependency.
+# This template expands to an action that generates the Rust side of the
+# bindings. Add it as a dependency and then incorporate
+# `get_target_outputs(target_name)[0]` into your Rust crate.
 #
 # Parameters:
 #
@@ -44,14 +45,24 @@ if (host_os == "win") {
 #   any configs here as if this were a C target.
 #
 # bindgen_flags: (optional)
-#    the additional bindgen flags which are passed to the executable
+#   The additional bindgen flags which are passed to the executable
+#
+# wrap_static_fns: (optional)
+#   If set to true, enables binding `static` and `static inline` functions in
+#   the header. Setting this causes the template to emit a source_set target
+#   named "${target_name}_static_fns", which must be incorporated into the
+#   build. Additionally, `get_target_outputs` will return both the Rust file and
+#   a generated C file, but callers can rely on the Rust file being first.
 #
 # Rust targets depending on the output must include! the generated file.
 #
 template("rust_bindgen") {
   assert(defined(invoker.header),
          "Must specify the C header file to make bindings for.")
-  action(target_name) {
+  wrap_static_fns = defined(invoker.wrap_static_fns) && invoker.wrap_static_fns
+
+  bindgen_target_name = target_name
+  action(bindgen_target_name) {
     # bindgen relies on knowing the {{defines}} and {{include_dirs}} required
     # to build the C++ headers which it's parsing. These are passed to the
     # script's args and are populated using deps and configs.
@@ -91,6 +102,15 @@ template("rust_bindgen") {
       "--libclang-path",
       rebase_path(_libclang_path, root_build_dir),
     ]
+
+    if (wrap_static_fns) {
+      out_gen_c = "$output_dir/${target_name}.c"
+      outputs += [ out_gen_c ]
+      args += [
+        "--wrap-static-fns",
+        rebase_path(out_gen_c, root_build_dir),
+      ]
+    }
 
     if (is_linux) {
       # Linux clang, and clang libs, use a shared libstdc++, which we must
@@ -191,6 +211,24 @@ template("rust_bindgen") {
       # we don't actually generate code within bindgen, the easier
       # option is to tell bindgen to ignore all CFI ignorelists.
       args += [ "-fno-sanitize-ignorelist" ]
+    }
+  }
+
+  if (wrap_static_fns) {
+    source_set("${target_name}_static_fns") {
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "configs",
+                                 ])
+      bindgen_output = get_target_outputs(":${bindgen_target_name}")
+
+      sources = filter_include(bindgen_output, [ "*.c" ])
+      deps += [ ":${bindgen_target_name}" ]
+
+      # bindgen generates a C file whose include is relative to the directory it
+      # runs from.
+      include_dirs = [ root_build_dir ]
     }
   }
 }

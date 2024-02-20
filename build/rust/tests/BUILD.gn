@@ -23,6 +23,7 @@ group("deps") {
   # All the rest require Rust.
   if (toolchain_has_rust) {
     deps += [
+      "//build/rust/tests/bindgen_static_fns_test",
       "//build/rust/tests/bindgen_test",
       "//build/rust/tests/test_aliased_deps",
       "//build/rust/tests/test_aliased_deps:test_aliased_deps_exe",
@@ -62,6 +63,7 @@ group("deps") {
 
     if (can_build_rust_unit_tests) {
       deps += [
+        "//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test_lib_unittests",
         "//build/rust/tests/bindgen_test:bindgen_test_lib_unittests",
         "//build/rust/tests/test_aliased_deps:test_aliased_deps_unittests",
         "//build/rust/tests/test_rlib_crate:target1_test_rlib_crate_v0_2_unittests",
