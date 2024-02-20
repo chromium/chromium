@@ -17,6 +17,9 @@ class PrefService;
 class PromosManager;
 
 // App agent that displays the Post Restore UI when needed.
+// TODO(crbug.com/325616341): This needs to handle multiple browser states in
+// some way. All of the services passed in are specific to a single browser
+// state, so the functionality needs to be clarified for multiple identities.
 @interface PostRestoreAppAgent : NSObject <AppStateAgent>
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager

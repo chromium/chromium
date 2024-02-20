@@ -13,6 +13,8 @@
 
 class ChromeBrowserState;
 
+// TODO(crbug.com/325612973) Remove this protocol and rewrite browsing data
+// removal as a keyed service.
 // Protocol for commands that relate to browsing data.
 @protocol BrowsingDataCommands <NSObject>
 

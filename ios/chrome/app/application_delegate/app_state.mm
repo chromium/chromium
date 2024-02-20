@@ -252,7 +252,8 @@ void FlushCookieStoreOnIOThread(
     return;
   }
 
-  // mainBrowserState may be empty in tests e.g.
+  // TODO(crbug.com/325596559): Do this for every loaded browser state. Remove
+  // the test condition. mainBrowserState may be empty in tests e.g.
   // `AppStateTest.applicationWillEnterForeground`.
   if (self.mainBrowserState &&
       base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
@@ -267,6 +268,8 @@ void FlushCookieStoreOnIOThread(
 
   [self.startupInformation expireFirstUserActionRecorder];
 
+  // TODO(crbug.com/325596562): Update this for multiple browser states and for
+  // per-state cookie storage.
   if (self.mainBrowserState && !_savingCookies) {
     // Record that saving the cookies has started to prevent posting multiple
     // tasks if the user quickly background, foreground and background the app
@@ -332,6 +335,9 @@ void FlushCookieStoreOnIOThread(
     return;
 
   _applicationInBackground = NO;
+  // TODO(crbug.com/325596368): Signal this for every browser state, so this
+  // update and the feature_engagement::TrackerFactory() update need to happen
+  // in parallel. Maybe: add per-profile observer methods.
   if (self.mainBrowserState) {
     AuthenticationServiceFactory::GetForBrowserState(self.mainBrowserState)
         ->OnApplicationWillEnterForeground();
@@ -359,6 +365,7 @@ void FlushCookieStoreOnIOThread(
                              connectedScenes:self.connectedScenes];
   [memoryHelper resetForegroundMemoryWarningCount];
 
+  // TODO(crbug.com/325596368): Do this for each browser state.
   if (self.mainBrowserState) {
     // Send the "Chrome Opened" event to the feature_engagement::Tracker on a
     // warm start.
@@ -452,6 +459,7 @@ void FlushCookieStoreOnIOThread(
   [self.startupInformation setIsColdStart:NO];
 
   // Record session metrics (self.mainBrowserState may be null during tests).
+  // TODO(crbug.com/325596568): Update for each browser state,
   if (self.mainBrowserState) {
     SessionMetrics::FromBrowserState(self.mainBrowserState)
         ->RecordAndClearSessionMetrics(

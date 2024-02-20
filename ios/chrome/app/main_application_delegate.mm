@@ -265,7 +265,7 @@ const int kMainIntentCheckDelay = 1;
     completionHandler();
     return;
   }
-  // TODO(crbug.com/1442203) Remove this Browser dependency, ideally by
+  // TODO(crbug.com/325613461) Remove this Browser dependency, ideally by
   // refactoring into a dedicated agent.
   Browser* browser =
       _mainController.browserProviderInterface.mainBrowserProvider.browser;
@@ -275,6 +275,8 @@ const int kMainIntentCheckDelay = 1;
     completionHandler();
     return;
   }
+  // TODO(crbug.com/325613461): Associate downloads with a specific file path to
+  // determine which browser state / download service to use here.
   download::BackgroundDownloadService* download_service =
       BackgroundDownloadServiceFactory::GetForBrowserState(
           browser->GetBrowserState());
@@ -428,8 +430,8 @@ const int kMainIntentCheckDelay = 1;
 // Notifies the Feature Engagement Tracker (FET) that the app has launched from
 // an external intent (i.e. through the share sheet), which is an eligibility
 // criterion for the default browser blue dot promo.
-// TODO(crbug.com/1442203) Remove this Browser dependency, ideally by
-// refactoring into a dedicated agent.
+// TODO(crbug.com/325614090): Change this to iterate and inform the feature
+// trackers for all of the browser states.
 - (void)notifyFETAppStartupFromExternalIntent {
   Browser* browser =
       _mainController.browserProviderInterface.mainBrowserProvider.browser;

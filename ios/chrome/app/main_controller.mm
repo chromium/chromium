@@ -256,6 +256,10 @@ void RegisterComponentsForUpdate() {
 const int kExternalFilesCleanupDelaySeconds = 60;
 
 // Delegate for the AuthenticationService.
+// TODO(crbug.com/325612973): When browsing data removal is factored into a
+// keyed service, make that service an AuthenticationServiceDelegate and just
+// assign it directly to the authentication service. That eliminates the need
+// for this class.
 class MainControllerAuthenticationServiceDelegate
     : public AuthenticationServiceDelegate {
  public:
@@ -526,6 +530,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
 
+  // TODO(crbug.com/325616341): Update PostRestoreAppAgent for multi-identity.
   [self.appState
       addAgent:
           [[PostRestoreAppAgent alloc]
@@ -537,6 +542,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                                         chromeBrowserState)
                          localState:GetApplicationContext()->GetLocalState()]];
 
+  // TODO(crbug.com/325616923): Update DockingPromoAppAgent for multiple browser
+  // states.
   if (IsDockingPromoEnabled()) {
     switch (DockingPromoExperimentTypeEnabled()) {
       case DockingPromoDisplayTriggerArm::kDuringFRE:
@@ -569,6 +576,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // MigrateSessionStorageFormat is synchronous if the storage is already in
   // the requested format, so this is safe to call and won't block the app
   // startup.
+  // TODO(crbug.com/325596571): Call this for each loaded app state. Figure out
+  // what to do with the completion handler.
   SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
       self.appState.mainBrowserState, requested_format,
       base::BindOnce(completion));
@@ -654,8 +663,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self scheduleLowPriorityStartupTasks];
 
   // Run after UI created to avoid trying to update UI before it is available.
-  // TODO(b/301676922): This should run for all browser states if multiple
-  // profiles become supported on iOS.
+  // TODO(crbug.com/325596559): This should run for all browser states.
   if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
     enterprise_idle::IdleServiceFactory::GetForBrowserState(
         self.appState.mainBrowserState)
@@ -817,6 +825,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 }
 
+// TODO(crbug.com/325614311): Get rid of this method/property completely.
 - (id<BrowserProviderInterface>)browserProviderInterface {
   if (self.appState.foregroundActiveScene) {
     return self.appState.foregroundActiveScene.browserProviderInterface;
@@ -878,6 +887,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // _chromeMain.reset() is a blocking call that regularly causes
   // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
   // this shutdown call. See: crbug.com/1328891
+  // TODO(crbug.com/325597817): Update this logic for multiple browser states.
   if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate)) {
     // Expected number of time the `completionBlock` defined below needs to
     // be called before it signal the semaphore. This corresponds to the
@@ -1007,6 +1017,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 
   // Track changes to default search engine.
+  // TODO(crbug.com/325611886): Update this for multiple browser states.
   TemplateURLService* service =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.appState.mainBrowserState);
@@ -1015,6 +1026,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleAppDistributionPings {
+  // TODO(crbug.com/325611888): Refactor this block to be a single method call.
+  // Have it handle multiple browser states.
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kSendInstallPingIfNecessary
                   block:^{
@@ -1067,6 +1080,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleSessionStateCacheCleanup {
+  // TODO(crbug.com/325612229): Refactor this to handle multiple browser states.
+  // Consider dedicated handling in DeferredInitializationRunner.
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kPurgeWebSessionStates
                   block:^{
@@ -1088,6 +1103,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self scheduleCrashReportUpload];
 
   // ClearSessionCookies() is not synchronous.
+  // TODO(crbug.com/325612247): Rewrite this to properly handle both multiwindow
+  // and multi- profile, and to not use `browserProviderInterface`.
   ChromeBrowserState* browserState = self.appState.mainBrowserState;
   if (cookie_util::ShouldClearSessionCookies(browserState->GetPrefs())) {
     cookie_util::ClearSessionCookies(
@@ -1321,6 +1338,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     return;
   }
 
+  // TODO(crbug.com/325612236): Rewrite this to use LocalStorage for time
+  // logging and to either do per-profile size logging or to aggregate to a
+  // single value for all profiles summed.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   NSDate* lastLogged = base::apple::ObjCCast<NSDate>(
       [defaults objectForKey:kLastApplicationStorageMetricsLogTime]);
@@ -1372,6 +1392,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 #pragma mark - Helper methods backed by interfaces.
 
+// TODO(crbug.com/325612259): Perform favicon cleanup for all browser states and
+// remove this helper.
 - (ChromeBrowserState*)currentBrowserState {
   if (!self.browserProviderInterface.currentBrowserProvider.browser) {
     return nullptr;
@@ -1383,6 +1405,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)cleanupSnapshots {
   // TODO(crbug.com/1116496): Browsers for disconnected scenes are not in the
   // BrowserList, so this may not reach all folders.
+  // TODO(crbug.com/325611897): Handle multiple browser states.
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(self.appState.mainBrowserState);
   for (Browser* browser : browser_list->AllRegularBrowsers()) {
@@ -1409,6 +1432,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     identifiers.insert(session_util::GetSessionIdentifier(identifier, true));
   }
 
+  // TODO(crbug.com/325612597): Iterate over all browser states.
   ChromeBrowserState* browserState = self.appState.mainBrowserState;
   base::RepeatingClosure dataDeletedClosure = ExpectNCall(
       browserState->HasOffTheRecordChromeBrowserState() ? 2u : 1u,
@@ -1427,6 +1451,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 #pragma mark - BrowsingDataCommands
 
+// TODO(crbug.com/325612973): Rewrite this completely to handle multi-profile
+// and not be part of MainController, or indeed to be driven by a command
+// protocol.
 - (void)removeBrowsingDataForBrowserState:(ChromeBrowserState*)browserState
                                timePeriod:(browsing_data::TimePeriod)timePeriod
                                removeMask:(BrowsingDataRemoveMask)removeMask
@@ -1513,6 +1540,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if (!browserState)
     return;
 
+  // TODO(crbug.com/325612259): Perform cleanup for all browser states.
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   // Only use the fallback to the Google server when fetching favicons for

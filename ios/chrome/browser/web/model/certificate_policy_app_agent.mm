@@ -100,6 +100,7 @@ void CleanCertificatePolicyCache(
 }
 
 - (void)appDidEnterBackground {
+  // TODO(crbug.com/325613163): Iterate over all browser states.
   ChromeBrowserState* browserState = self.appState.mainBrowserState;
 
   // Evict all the certificate policies except for the current entries of the

@@ -54,6 +54,7 @@ enum class PostCrashAction {
 @property(nonatomic, strong) CommandDispatcher* appCommandDispatcher;
 
 // The ChromeBrowserState associated with the main (non-OTR) browsing mode.
+// TODO(crbug.com/324417250) remove this property.
 @property(nonatomic, assign) ChromeBrowserState* mainBrowserState;
 
 // Container for startup information.
