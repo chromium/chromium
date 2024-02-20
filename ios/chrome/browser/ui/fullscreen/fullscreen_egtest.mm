@@ -479,4 +479,12 @@ void WaitforPDFExtensionView() {
 - (void)testEmpty {
 }
 
+- (void)testLongPDFScroll {
+  // TODO(b/326032734): reenable this test.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPhone.");
+  }
+  [super testLongPDFScroll];
+}
+
 @end
