@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -291,17 +292,27 @@ bool TipsNotificationClient::IsSceneLevelForegroundActive() {
 void TipsNotificationClient::ShowDefaultBrowserPromo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
-  [HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands)
-      showDefaultBrowserSettingsFromViewController:nil
-                                      sourceForUMA:DefaultBrowserPromoSource::
-                                                       kTipsNotification];
+  id<ApplicationCommands> application_handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  [application_handler dismissModalDialogsWithCompletion:^{
+    id<SettingsCommands> settings_handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
+    [settings_handler
+        showDefaultBrowserSettingsFromViewController:nil
+                                        sourceForUMA:DefaultBrowserPromoSource::
+                                                         kTipsNotification];
+  }];
 }
 
 void TipsNotificationClient::ShowWhatsNew() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  raw_ptr<Browser> browser = GetSceneLevelForegroundActiveBrowser();
-  [HandlerForProtocol(browser->GetCommandDispatcher(),
-                      BrowserCoordinatorCommands) showWhatsNew];
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  id<ApplicationCommands> application_handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  [application_handler dismissModalDialogsWithCompletion:^{
+    [HandlerForProtocol(browser->GetCommandDispatcher(),
+                        BrowserCoordinatorCommands) showWhatsNew];
+  }];
 }
 
 void TipsNotificationClient::ShowSignin() {
@@ -327,8 +338,12 @@ void TipsNotificationClient::ShowSignin() {
                             PROMO_ACTION_NO_SIGNIN_PROMO
                callback:nil];
 
-  [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
-      showSignin:command];
+  id<ApplicationCommands> application_handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  [application_handler dismissModalDialogsWithCompletion:^{
+    [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
+        showSignin:command];
+  }];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(
