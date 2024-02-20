@@ -31,6 +31,8 @@ component("user_manager") {
 
   if (is_chromeos_ash) {
     sources += [
+      "account_id_util.cc",
+      "account_id_util.h",
       "common_types.h",
       "include_exclude_account_id_filter.cc",
       "include_exclude_account_id_filter.h",
@@ -79,6 +81,7 @@ if (is_chromeos_ash) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "account_id_util_unittest.cc",
       "include_exclude_account_id_filter_unittest.cc",
       "known_user_unittest.cc",
       "user_unittest.cc",
