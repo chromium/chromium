@@ -4393,6 +4393,9 @@ message CertProvBackendError {
     // The Adapter uploaded a certificate that cannot be parsed or was issued
     // for a wrong public key.
     BAD_ADAPTER_CERTIFICATE_RECEIVED = 14;
+    // The requested certificate provisioning process cannot be found on
+    // Spanner.
+    CERTIFICATE_PROVISIONING_PROCESS_NOT_FOUND = 15;
   }
 
   // The specific error type.
