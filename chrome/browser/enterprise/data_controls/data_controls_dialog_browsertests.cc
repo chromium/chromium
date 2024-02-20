@@ -92,7 +92,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DataControlsDialogUiTest,
     testing::Values(DataControlsDialog::Type::kClipboardPasteBlock,
-                    DataControlsDialog::Type::kClipboardCopyBlock));
+                    DataControlsDialog::Type::kClipboardCopyBlock,
+                    DataControlsDialog::Type::kClipboardPasteWarn,
+                    DataControlsDialog::Type::kClipboardCopyWarn));
 
 IN_PROC_BROWSER_TEST_F(DataControlsDialogTest, ShowDialogMultipleTimes) {
   // Only 1 dialog should be shown for the same WebContents-Type pair.
@@ -116,9 +118,15 @@ IN_PROC_BROWSER_TEST_F(DataControlsDialogTest,
     DataControlsDialog::Show(
         browser()->tab_strip_model()->GetActiveWebContents(),
         DataControlsDialog::Type::kClipboardPasteBlock);
+    DataControlsDialog::Show(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        DataControlsDialog::Type::kClipboardPasteWarn);
+    DataControlsDialog::Show(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        DataControlsDialog::Type::kClipboardCopyWarn);
   }
 
-  ASSERT_EQ(constructor_called_count_, 2u);
+  ASSERT_EQ(constructor_called_count_, 4u);
   CloseDialogsAndWait();
 }
 

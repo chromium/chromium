@@ -49,9 +49,9 @@ class DataControlsDialog : public views::DialogDelegate {
   // available buttons, etc.
   enum class Type {
     kClipboardPasteBlock,
-    // kClipboardPasteWarn,
+    kClipboardPasteWarn,
     kClipboardCopyBlock,
-    // kClipboardCopyWarn,
+    kClipboardCopyWarn,
   };
 
   // Test observer to validate the dialog was shown/closed at appropriate
@@ -97,6 +97,12 @@ class DataControlsDialog : public views::DialogDelegate {
   DataControlsDialog(Type type,
                      content::WebContents* web_contents,
                      base::OnceCallback<void(bool bypassed)> callback);
+
+  // Calls `callbacks_` with the value in `bypasses`. "true" represents the user
+  // ignoring a warning and proceeding with the action, "false" corresponds to
+  // the user cancelling their action after seeing a warning. This should not be
+  // called for blocking dialogs.
+  void OnDialogButtonClicked(bool bypassed);
 
   // Helpers to create sub-views of the dialog.
   std::unique_ptr<views::View> CreateEnterpriseIcon() const;
