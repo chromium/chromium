@@ -656,7 +656,7 @@ void TapDoneButtonOnInfobarModal() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(
