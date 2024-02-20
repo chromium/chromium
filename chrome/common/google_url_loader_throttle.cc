@@ -313,8 +313,7 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 void GoogleURLLoaderThrottle::WillOnCompleteWithError(
-    const network::URLLoaderCompletionStatus& status,
-    bool* defer) {
+    const network::URLLoaderCompletionStatus& status) {
   if (is_covered_by_bound_session_) {
     RecordBoundSessionStatusMetrics(is_deferred_for_bound_session_,
                                     is_main_frame_navigation_);

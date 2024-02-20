@@ -396,8 +396,7 @@ TEST_P(GoogleURLLoaderThrottleTest,
       BoundSessionRequestThrottledHandler::UnblockAction::kResume,
       /*is_expected_navigation=*/false, kResumeTrigger);
   base::HistogramTester histogram_tester;
-  throttle()->WillOnCompleteWithError(network::URLLoaderCompletionStatus(),
-                                      nullptr);
+  throttle()->WillOnCompleteWithError(network::URLLoaderCompletionStatus());
   histogram_tester.ExpectBucketCount(
       "Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger.Failure",
       static_cast<int>(kResumeTrigger),

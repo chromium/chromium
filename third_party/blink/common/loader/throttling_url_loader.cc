@@ -599,9 +599,10 @@ bool ThrottlingURLLoader::HandleThrottleResult(URLLoaderThrottle* throttle,
   DCHECK(!deferring_throttles_.count(throttle));
   if (loader_completed_)
     return false;
-  *should_defer |= throttle_deferred;
-  if (throttle_deferred)
+  if (throttle_deferred) {
+    *should_defer = true;
     deferring_throttles_.insert({throttle, base::Time::Now()});
+  }
   return true;
 }
 
@@ -862,22 +863,14 @@ void ThrottlingURLLoader::OnComplete(
   if (!throttles_.empty() && status.error_code != net::OK) {
     pending_restart_flags_ = 0;
     has_pending_restart_ = false;
-    bool deferred = false;
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
-      bool throttle_deferred = false;
       base::Time start = base::Time::Now();
-      throttle->WillOnCompleteWithError(status, &throttle_deferred);
-      RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_COMPLETE),
-                                   start);
-      if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
+      throttle->WillOnCompleteWithError(status);
+      RecordExecutionTimeHistogram("WillOnCompleteWithError", start);
+      if (!HandleThrottleResult(throttle)) {
         return;
-    }
-
-    if (deferred) {
-      deferred_stage_ = DEFERRED_COMPLETE;
-      client_receiver_.Pause();
-      return;
+      }
     }
 
     if (has_pending_restart_) {
@@ -963,17 +956,6 @@ void ThrottlingURLLoader::Resume() {
       forwarding_client_->OnReceiveResponse(
           std::move(response_info_->response_head), std::move(body_),
           std::move(cached_metadata_));
-      // Note: |this| may be deleted here.
-      break;
-    }
-    case DEFERRED_COMPLETE: {
-      // TODO(eroman): For simplicity we require throttles that defer during
-      // WillOnCompleteWithError() to do a restart. We could support deferring
-      // and choosing not to restart if needed, however the current consumers
-      // don't need that.
-      CHECK(has_pending_restart_);
-
-      RestartWithFlagsNow();
       // Note: |this| may be deleted here.
       break;
     }
@@ -1068,8 +1050,6 @@ const char* ThrottlingURLLoader::GetStageNameForHistogram(DeferredStage stage) {
       return "BeforeWillProcessResponse";
     case DEFERRED_RESPONSE:
       return "WillProcessResponse";
-    case DEFERRED_COMPLETE:
-      return "WillOnCompleteWithError";
     default:
       NOTREACHED();
   }

@@ -61,8 +61,8 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  void WillOnCompleteWithError(const network::URLLoaderCompletionStatus& status,
-                               bool* defer) override;
+  void WillOnCompleteWithError(
+      const network::URLLoaderCompletionStatus& status) override;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
  private:

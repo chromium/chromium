@@ -140,13 +140,13 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   void StartNow();
   void RestartWithFlagsNow();
 
-  // Processes the result of a URLLoaderThrottle call, adding the throttle to
-  // the blocking set if it deferred and updating |*should_defer| accordingly.
+  // Processes the result of a URLLoaderThrottle call. If it's deferred, adds
+  // the throttle to the blocking set and updates |*should_defer| accordingly.
   // Returns |true| if the request should continue to be processed (regardless
   // of whether it's been deferred) or |false| if it's been cancelled.
   bool HandleThrottleResult(URLLoaderThrottle* throttle,
-                            bool throttle_deferred,
-                            bool* should_defer);
+                            bool throttle_deferred = false,
+                            bool* should_defer = nullptr);
 
   // Stops a given throttle from deferring the request. If this was not the last
   // deferring throttle, the request remains deferred. Otherwise it resumes
@@ -202,7 +202,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     DEFERRED_REDIRECT,
     DEFERRED_BEFORE_RESPONSE,
     DEFERRED_RESPONSE,
-    DEFERRED_COMPLETE
   };
   const char* GetStageNameForHistogram(DeferredStage stage);
 

@@ -79,8 +79,7 @@ void URLLoaderThrottle::BeforeWillRedirectRequest(
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {}
 
 void URLLoaderThrottle::WillOnCompleteWithError(
-    const network::URLLoaderCompletionStatus& status,
-    bool* defer) {}
+    const network::URLLoaderCompletionStatus& status) {}
 
 URLLoaderThrottle::URLLoaderThrottle() {}
 

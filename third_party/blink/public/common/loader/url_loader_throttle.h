@@ -221,8 +221,7 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
 
   // Called if there is a non-OK net::Error in the completion status.
   virtual void WillOnCompleteWithError(
-      const network::URLLoaderCompletionStatus& status,
-      bool* defer);
+      const network::URLLoaderCompletionStatus& status);
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
