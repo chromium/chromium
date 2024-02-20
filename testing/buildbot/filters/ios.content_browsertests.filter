@@ -31,9 +31,6 @@
 -All/TouchpadPinchBrowserTest.WheelListenerPreventingDoubleTap/1
 -All/TouchpadPinchBrowserTest.WheelListenerPreventingPinch/0
 -All/TouchpadPinchBrowserTest.WheelListenerPreventingPinch/1
--All/WorkerTest.WebSocketSharedWorker/0
--All/WorkerTest.WebSocketSharedWorker/1
--All/WorkerTest.WebSocketSharedWorker/2
 -BackForwardCacheBrowserTest.DoesNotCacheIfRunFileChooserIsInvoked
 -BackForwardCacheBrowserTest.WebSocketCachedIfClosed
 -BackForwardCacheBrowserTest.WebSocketNotCached
@@ -325,3 +322,10 @@
 -PortalHitTestBrowserTest.InputToOOPIFAfterActivation
 -WebRtcBrowserTest.CallAndVerifyVideoMutingWorks
 -WebRtcGetUserMediaBrowserTest.InvalidSourceIdInIFrameAndCloseInFailureCb
+
+# TODO(crbug.com/40274214): Assertion happens because |spawner_url_base_| is
+# empty.
+-All/WorkerTest.WebSocketSharedWorker/0
+-All/WorkerTest.WebSocketSharedWorker/1
+-All/WorkerTest.WebSocketSharedWorker/2
+-All/WorkerTest.WebSocketSharedWorker/3
