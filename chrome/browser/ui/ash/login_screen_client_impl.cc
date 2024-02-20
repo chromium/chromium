@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_auth_recorder.h"
@@ -55,8 +54,7 @@ LoginScreenClientImpl::Delegate::~Delegate() = default;
 LoginScreenClientImpl::ParentAccessDelegate::~ParentAccessDelegate() = default;
 
 LoginScreenClientImpl::LoginScreenClientImpl()
-    : auth_recorder_(std::make_unique<ash::LoginAuthRecorder>()),
-      unlock_survey_trigger_(std::make_unique<ash::HatsUnlockSurveyTrigger>()) {
+    : auth_recorder_(std::make_unique<ash::LoginAuthRecorder>()) {
   // Register this object as the client interface implementation.
   ash::LoginScreen::Get()->SetClient(this);
 
@@ -132,7 +130,6 @@ void LoginScreenClientImpl::AuthenticateUserWithPasswordOrPin(
                            ? ash::LoginAuthRecorder::AuthMethod::kPin
                            : ash::LoginAuthRecorder::AuthMethod::kPassword;
     auth_recorder_->RecordAuthMethod(auth_method);
-    unlock_survey_trigger_->ShowSurveyIfSelected(account_id, auth_method);
   } else {
     LOG(ERROR) << "Failed AuthenticateUserWithPasswordOrPin; no delegate";
     std::move(callback).Run(false);
@@ -145,8 +142,6 @@ void LoginScreenClientImpl::AuthenticateUserWithEasyUnlock(
     delegate_->HandleAuthenticateUserWithEasyUnlock(account_id);
     auth_recorder_->RecordAuthMethod(
         ash::LoginAuthRecorder::AuthMethod::kSmartlock);
-    unlock_survey_trigger_->ShowSurveyIfSelected(
-        account_id, ash::LoginAuthRecorder::AuthMethod::kSmartlock);
   }
 }
 
@@ -158,8 +153,6 @@ void LoginScreenClientImpl::AuthenticateUserWithChallengeResponse(
                                                            std::move(callback));
     auth_recorder_->RecordAuthMethod(
         ash::LoginAuthRecorder::AuthMethod::kChallengeResponse);
-    unlock_survey_trigger_->ShowSurveyIfSelected(
-        account_id, ash::LoginAuthRecorder::AuthMethod::kChallengeResponse);
   }
 }
 
@@ -172,8 +165,9 @@ ash::ParentCodeValidationResult LoginScreenClientImpl::ValidateParentAccessCode(
 }
 
 void LoginScreenClientImpl::OnFocusPod(const AccountId& account_id) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->HandleOnFocusPod(account_id);
+  }
 }
 
 void LoginScreenClientImpl::FocusLockScreenApps(bool reverse) {
@@ -187,8 +181,9 @@ void LoginScreenClientImpl::FocusLockScreenApps(bool reverse) {
 }
 
 void LoginScreenClientImpl::FocusOobeDialog() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->HandleFocusOobeDialog();
+  }
 }
 
 void LoginScreenClientImpl::ShowGaiaSignin(const AccountId& prefilled_account) {
@@ -210,8 +205,9 @@ void LoginScreenClientImpl::StartUserRecovery(
 void LoginScreenClientImpl::MakePreAuthenticationChecks(
     const AccountId& account_id,
     base::OnceClosure continuation) {
-  if (time_show_gaia_signin_initiated_.is_null())
+  if (time_show_gaia_signin_initiated_.is_null()) {
     time_show_gaia_signin_initiated_ = base::TimeTicks::Now();
+  }
   // Check trusted status as a workaround to ensure that device owner id is
   // ready. Device owner ID is necessary for IsApprovalRequired checks.
   auto continuation_split = base::SplitOnceCallback(std::move(continuation));
@@ -276,16 +272,18 @@ void LoginScreenClientImpl::RemoveUser(const AccountId& account_id) {
       ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   user_manager::UserManager::Get()->RemoveUser(
       account_id, user_manager::UserRemovalReason::LOCAL_USER_INITIATED);
-  if (ash::LoginDisplayHost::default_host())
+  if (ash::LoginDisplayHost::default_host()) {
     ash::LoginDisplayHost::default_host()->UpdateAddUserButtonStatus();
+  }
 }
 
 void LoginScreenClientImpl::LaunchPublicSession(
     const AccountId& account_id,
     const std::string& locale,
     const std::string& input_method) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->HandleLaunchPublicSession(account_id, locale, input_method);
+  }
 }
 
 void LoginScreenClientImpl::RequestPublicSessionKeyboardLayouts(
@@ -299,8 +297,9 @@ void LoginScreenClientImpl::RequestPublicSessionKeyboardLayouts(
 
 void LoginScreenClientImpl::HandleAccelerator(
     ash::LoginAcceleratorAction action) {
-  if (ash::LoginDisplayHost::default_host())
+  if (ash::LoginDisplayHost::default_host()) {
     ash::LoginDisplayHost::default_host()->HandleAccelerator(action);
+  }
 }
 
 void LoginScreenClientImpl::ShowAccountAccessHelpApp(
@@ -326,18 +325,21 @@ void LoginScreenClientImpl::ShowLockScreenNotificationSettings() {
 }
 
 void LoginScreenClientImpl::OnFocusLeavingSystemTray(bool reverse) {
-  for (ash::SystemTrayObserver& observer : system_tray_observers_)
+  for (ash::SystemTrayObserver& observer : system_tray_observers_) {
     observer.OnFocusLeavingSystemTray(reverse);
+  }
 }
 
 void LoginScreenClientImpl::OnSystemTrayBubbleShown() {
-  for (ash::SystemTrayObserver& observer : system_tray_observers_)
+  for (ash::SystemTrayObserver& observer : system_tray_observers_) {
     observer.OnSystemTrayBubbleShown();
+  }
 }
 
 void LoginScreenClientImpl::OnLoginScreenShown() {
-  for (LoginScreenShownObserver& observer : login_screen_shown_observers_)
+  for (LoginScreenShownObserver& observer : login_screen_shown_observers_) {
     observer.OnLoginScreenShown();
+  }
 }
 
 void LoginScreenClientImpl::CancelAddUser() {
@@ -379,18 +381,21 @@ void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(
   std::vector<ash::InputMethodItem> result;
 
   for (const auto& i : keyboard_layouts) {
-    if (!i.is_dict())
+    if (!i.is_dict()) {
       continue;
+    }
     const base::Value::Dict& dict = i.GetDict();
 
     ash::InputMethodItem input_method_item;
     const std::string* ime_id = dict.FindString("value");
-    if (ime_id)
+    if (ime_id) {
       input_method_item.ime_id = *ime_id;
+    }
 
     const std::string* title = dict.FindString("title");
-    if (title)
+    if (title) {
       input_method_item.title = *title;
+    }
 
     input_method_item.selected = dict.FindBool("selected").value_or(false);
     result.push_back(std::move(input_method_item));

@@ -396,13 +396,13 @@ const base::FeatureParam<bool> kDnsOverHttpsFallbackParam{&kDnsOverHttps,
                                                           "Fallback", true};
 
 // Sets whether the DoH setting is displayed in the settings UI.
-const base::FeatureParam<bool> kDnsOverHttpsShowUiParam {
-  &kDnsOverHttps, "ShowUi",
+const base::FeatureParam<bool> kDnsOverHttpsShowUiParam{&kDnsOverHttps,
+                                                        "ShowUi",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-      true
+                                                        true
 #else
-      false
+                                                        false
 #endif
 };
 
@@ -735,14 +735,6 @@ BASE_FEATURE(kHappinessTrackingSystemPerformance,
 // Enables or disables the Happiness Tracking System for Onboarding Experience.
 BASE_FEATURE(kHappinessTrackingSystemOnboarding,
              "HappinessTrackingOnboardingExperience",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables or disables the Happiness Tracking System for Unlock.
-BASE_FEATURE(kHappinessTrackingSystemUnlock,
-             "HappinessTrackingUnlock",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables or disables the Happiness Tracking System for Smart Lock.
-BASE_FEATURE(kHappinessTrackingSystemSmartLock,
-             "HappinessTrackingSmartLock",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables the Happiness Tracking System for ARC Games survey.
 BASE_FEATURE(kHappinessTrackingSystemArcGames,

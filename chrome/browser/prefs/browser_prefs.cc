@@ -996,6 +996,17 @@ constexpr std::array<const char*, 6u>
 // Deprecated 02/2024
 constexpr char kSearchEnginesChoiceProfile[] = "search_engines.choice_profile";
 
+// Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kHatsUnlockSurveyCycleEndTs[] =
+    "hats_unlock_cycle_end_timestamp";
+constexpr char kHatsUnlockDeviceIsSelected[] = "hats_unlock_device_is_selected";
+constexpr char kHatsSmartLockSurveyCycleEndTs[] =
+    "hats_smartlock_cycle_end_timestamp";
+constexpr char kHatsSmartLockDeviceIsSelected[] =
+    "hats_smartlock_device_is_selected";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1400,6 +1411,14 @@ void RegisterProfilePrefsForMigration(
   for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
     registry->RegisterIntegerPref(pref, -1);
   }
+#endif
+
+  // Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterInt64Pref(kHatsSmartLockSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(kHatsSmartLockDeviceIsSelected, false);
+  registry->RegisterInt64Pref(kHatsUnlockSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(kHatsUnlockDeviceIsSelected, false);
 #endif
 }
 
@@ -2657,6 +2676,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
     profile_prefs->ClearPref(pref);
   }
+#endif
+
+  // Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kHatsSmartLockSurveyCycleEndTs);
+  profile_prefs->ClearPref(kHatsSmartLockDeviceIsSelected);
+  profile_prefs->ClearPref(kHatsUnlockSurveyCycleEndTs);
+  profile_prefs->ClearPref(kHatsUnlockDeviceIsSelected);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

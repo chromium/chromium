@@ -429,14 +429,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kHatsOnboardingDeviceIsSelected,
                                 false);
 
-  registry->RegisterInt64Pref(::prefs::kHatsSmartLockSurveyCycleEndTs, 0);
-
-  registry->RegisterBooleanPref(::prefs::kHatsSmartLockDeviceIsSelected, false);
-
-  registry->RegisterInt64Pref(::prefs::kHatsUnlockSurveyCycleEndTs, 0);
-
-  registry->RegisterBooleanPref(::prefs::kHatsUnlockDeviceIsSelected, false);
-
   registry->RegisterInt64Pref(::prefs::kHatsArcGamesSurveyCycleEndTs, 0);
 
   registry->RegisterBooleanPref(::prefs::kHatsArcGamesDeviceIsSelected, false);
@@ -674,8 +666,9 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                             callback);
   ime_menu_activated_.Init(::prefs::kLanguageImeMenuActivated, prefs, callback);
   // Notifies the system tray to remove the IME items.
-  if (ime_menu_activated_.GetValue())
+  if (ime_menu_activated_.GetValue()) {
     input_method::InputMethodManager::Get()->ImeMenuActivationChanged(true);
+  }
 
   long_press_diacritics_enabled_.Init(prefs::kLongPressDiacriticsEnabled, prefs,
                                       callback);
@@ -696,8 +689,9 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   pref_change_registrar_.Add(::prefs::kResolveTimezoneByGeolocationMethod,
                              callback);
   pref_change_registrar_.Add(::prefs::kParentAccessCodeConfig, callback);
-  for (auto* copy_pref : kCopyToKnownUserPrefs)
+  for (auto* copy_pref : kCopyToKnownUserPrefs) {
     pref_change_registrar_.Add(copy_pref, callback);
+  }
 
   // Re-enable OTA update when feature flag is disabled by owner.
   auto* update_engine_client = UpdateEngineClient::Get();
@@ -763,8 +757,9 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   // As InputMethodManager only holds the active state for the active user,
   // SetState() is only called if the preferences belongs to the active user.
   // See https://crbug.com/841112.
-  if (user->is_active())
+  if (user->is_active()) {
     input_method_manager_->SetState(ime_state_);
+  }
 
   input_method_syncer_ =
       std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
@@ -774,8 +769,9 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   // login. For a regular user this is done in
   // UserSessionManager::InitProfilePreferences().
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kGuestSession))
+          switches::kGuestSession)) {
     session_manager->SetFirstLoginPrefs(profile, std::string(), std::string());
+  }
 }
 
 void Preferences::InitUserPrefsForTesting(
@@ -785,8 +781,9 @@ void Preferences::InitUserPrefsForTesting(
   user_ = user;
   ime_state_ = ime_state;
 
-  if (ime_state.get())
+  if (ime_state.get()) {
     input_method_manager_->SetState(ime_state);
+  }
 
   InitUserPrefs(prefs);
 
@@ -810,10 +807,11 @@ void Preferences::ReportBooleanPrefApplication(
     const std::string& changed_histogram_name,
     const std::string& started_histogram_name,
     bool sample) {
-  if (reason == REASON_PREF_CHANGED)
+  if (reason == REASON_PREF_CHANGED) {
     base::UmaHistogramBoolean(changed_histogram_name, sample);
-  else if (reason == REASON_INITIALIZATION)
+  } else if (reason == REASON_INITIALIZATION) {
     base::UmaHistogramBoolean(started_histogram_name, sample);
+  }
 }
 
 void Preferences::ReportSensitivityPrefApplication(
@@ -823,10 +821,11 @@ void Preferences::ReportSensitivityPrefApplication(
     int sensitivity_int) {
   system::PointerSensitivity sensitivity =
       static_cast<system::PointerSensitivity>(sensitivity_int);
-  if (reason == REASON_PREF_CHANGED)
+  if (reason == REASON_PREF_CHANGED) {
     base::UmaHistogramEnumeration(changed_histogram_name, sensitivity);
-  else if (reason == REASON_INITIALIZATION)
+  } else if (reason == REASON_INITIALIZATION) {
     base::UmaHistogramEnumeration(started_histogram_name, sensitivity);
+  }
 }
 
 void Preferences::ApplyPreferences(ApplyReason reason,
@@ -845,16 +844,18 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (user_is_primary_ && (reason == REASON_INITIALIZATION ||
                            pref_name == ::prefs::kPerformanceTracingEnabled)) {
     const bool enabled = performance_tracing_enabled_.GetValue();
-    if (enabled)
+    if (enabled) {
       tracing_manager_ = ContentTracingManager::Create();
-    else
+    } else {
       tracing_manager_.reset();
+    }
     SystemTrayClientImpl::Get()->SetPerformanceTracingIconVisible(enabled);
   }
   if (reason != REASON_PREF_CHANGED || pref_name == prefs::kTapToClickEnabled) {
     const bool enabled = tap_to_click_enabled_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetTapToClick(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Touchpad.TapToClick.Changed",
                                  "Touchpad.TapToClick.Started", enabled);
 
@@ -869,8 +870,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kEnableTouchpadThreeFingerClick) {
     const bool enabled = three_finger_click_enabled_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetThreeFingerClick(enabled);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kUnifiedDesktopEnabledByDefault) {
@@ -889,16 +891,18 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
     const bool enabled = natural_scroll_.GetValue();
     DVLOG(1) << "Natural scroll set to " << enabled;
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetNaturalScroll(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Touchpad.NaturalScroll.Changed",
                                  "Touchpad.NaturalScroll.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kMouseReverseScroll) {
     const bool enabled = mouse_reverse_scroll_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetReverseScroll(enabled);
+    }
   }
 
   if (reason != REASON_PREF_CHANGED || pref_name == prefs::kMouseSensitivity) {
@@ -923,8 +927,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const int sensitivity_int = AreScrollSettingsAllowed()
                                     ? mouse_scroll_sensitivity_.GetValue()
                                     : mouse_sensitivity_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetScrollSensitivity(sensitivity_int);
+    }
     ReportSensitivityPrefApplication(reason, "Mouse.ScrollSensitivity.Changed",
                                      "Mouse.ScrollSensitivity.Started",
                                      sensitivity_int);
@@ -959,8 +964,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const int sensitivity_int = AreScrollSettingsAllowed()
                                     ? touchpad_scroll_sensitivity_.GetValue()
                                     : touchpad_sensitivity_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetScrollSensitivity(sensitivity_int);
+    }
     ReportSensitivityPrefApplication(
         reason, "Touchpad.ScrollSensitivity.Changed",
         "Touchpad.ScrollSensitivity.Started", sensitivity_int);
@@ -968,8 +974,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kPrimaryMouseButtonRight) {
     const bool right = primary_mouse_button_right_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetPrimaryButtonRight(right);
+    }
     ReportBooleanPrefApplication(reason, "Mouse.PrimaryButtonRight.Changed",
                                  "Mouse.PrimaryButtonRight.Started", right);
     // Save owner preference in local state to use on login screen.
@@ -983,8 +990,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kPrimaryPointingStickButtonRight) {
     const bool right = primary_pointing_stick_button_right_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       pointing_stick_settings.SetPrimaryButtonRight(right);
+    }
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
       PrefService* prefs = g_browser_process->local_state();
@@ -996,34 +1004,39 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
   if (reason != REASON_PREF_CHANGED || pref_name == prefs::kMouseAcceleration) {
     const bool enabled = mouse_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetAcceleration(enabled);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kMouseScrollAcceleration) {
     const bool enabled = mouse_scroll_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetScrollAcceleration(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Mouse.ScrollAcceleration.Changed",
                                  "Mouse.ScrollAcceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kPointingStickAcceleration) {
     const bool enabled = pointing_stick_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       pointing_stick_settings.SetAcceleration(enabled);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadAcceleration) {
     const bool enabled = touchpad_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetAcceleration(enabled);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadScrollAcceleration) {
     const bool enabled = touchpad_scroll_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetScrollAcceleration(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Touchpad.ScrollAcceleration.Changed",
                                  "Touchpad.ScrollAcceleration.Started",
                                  enabled);
@@ -1031,16 +1044,18 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadHapticFeedback) {
     const bool enabled = touchpad_haptic_feedback_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetHapticFeedback(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Touchpad.HapticFeedback.Changed",
                                  "Touchpad.HapticFeedback.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadHapticClickSensitivity) {
     const int sensitivity_int = touchpad_haptic_click_sensitivity_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetHapticClickSensitivity(sensitivity_int);
+    }
     ReportSensitivityPrefApplication(
         reason, "Touchpad.HapticClickSensitivity.Changed",
         "Touchpad.HapticClickSensitivity.Started", sensitivity_int);
@@ -1070,12 +1085,14 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kXkbAutoRepeatDelay ||
       pref_name == prefs::kXkbAutoRepeatInterval) {
-    if (user_is_active)
+    if (user_is_active) {
       UpdateAutoRepeatRate();
+    }
   }
 
-  if (reason == REASON_INITIALIZATION)
+  if (reason == REASON_INITIALIZATION) {
     SetInputMethodList();
+  }
 
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kLanguageAllowedInputMethods) {
@@ -1097,8 +1114,10 @@ void Preferences::ApplyPreferences(ApplyReason reason,
           base::JoinString(ime_state_->GetEnabledInputMethodIds(), ","));
     }
   }
-  if (reason != REASON_PREF_CHANGED || pref_name == ::prefs::kAllowedLanguages)
+  if (reason != REASON_PREF_CHANGED ||
+      pref_name == ::prefs::kAllowedLanguages) {
     locale_util::RemoveDisallowedLanguagesFromPreferred(prefs_);
+  }
 
   if (reason != REASON_PREF_CHANGED ||
       pref_name == language::prefs::kPreferredLanguages) {
@@ -1305,12 +1324,14 @@ void Preferences::SetInputMethodList() {
   // calls are also necessary to restore the previous/current input method prefs
   // which could have been modified by the SetLanguageConfigStringListAsCSV call
   // above to the original state.
-  if (!previous_input_method_id.empty())
+  if (!previous_input_method_id.empty()) {
     ime_state_->ChangeInputMethod(previous_input_method_id,
                                   false /* show_message */);
-  if (!current_input_method_id.empty())
+  }
+  if (!current_input_method_id.empty()) {
     ime_state_->ChangeInputMethod(current_input_method_id,
                                   false /* show_message */);
+  }
 }
 
 void Preferences::UpdateAutoRepeatRate() {
@@ -1334,8 +1355,9 @@ void Preferences::UpdateAutoRepeatRate() {
 }
 
 void Preferences::ActiveUserChanged(user_manager::User* active_user) {
-  if (active_user != user_)
+  if (active_user != user_) {
     return;
+  }
   ApplyPreferences(REASON_ACTIVE_USER_CHANGED, "");
 }
 

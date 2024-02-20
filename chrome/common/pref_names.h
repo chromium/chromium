@@ -748,26 +748,6 @@ inline constexpr char kHatsOnboardingDeviceIsSelected[] =
     "hats_onboarding_device_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicates the end of the most recent Unlock Experience survey cycle.
-inline constexpr char kHatsUnlockSurveyCycleEndTs[] =
-    "hats_unlock_cycle_end_timestamp";
-
-// A boolean pref. Indicates if the device is selected for the HaTS Unlock
-// Experience survey
-inline constexpr char kHatsUnlockDeviceIsSelected[] =
-    "hats_unlock_device_is_selected";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicates the end of the most recent Smart Lock Experience survey cycle.
-inline constexpr char kHatsSmartLockSurveyCycleEndTs[] =
-    "hats_smartlock_cycle_end_timestamp";
-
-// A boolean pref. Indicates if the device is selected for the HaTS Smart Lock
-// Experience survey
-inline constexpr char kHatsSmartLockDeviceIsSelected[] =
-    "hats_smartlock_device_is_selected";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the most recent ARC Games survey cycle.
 inline constexpr char kHatsArcGamesSurveyCycleEndTs[] =
     "hats_arc_games_cycle_end_timestamp";
