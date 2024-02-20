@@ -159,8 +159,9 @@ def main():
     if os.path.exists(profiledir):
         shutil.rmtree(profiledir)
 
-    # Run the shortest benchmark first to fail early if anything is wrong.
+    # Run the shortest benchmarks first to fail early if anything is wrong.
     run_benchmark(['speedometer2'])
+    run_benchmark(['speedometer3'])
     run_benchmark(['jetstream2'])
 
     # These benchmarks require special access permissions:
