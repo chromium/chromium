@@ -21,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -41,6 +40,7 @@
 #include "components/sync/test/fake_sync_engine.h"
 #include "components/sync/test/sync_client_mock.h"
 #include "components/sync/test/sync_service_impl_bundle.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -239,7 +239,7 @@ class SyncServiceImplTest : public ::testing::Test {
 
   SyncClientMock* sync_client() { return sync_client_; }
 
-  TestingPrefServiceSimple* prefs() {
+  sync_preferences::TestingPrefServiceSyncable* prefs() {
     return sync_service_impl_bundle_.pref_service();
   }
 

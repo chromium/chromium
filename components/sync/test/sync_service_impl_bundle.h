@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
 #include "components/sync/test/sync_client_mock.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -40,7 +40,9 @@ class SyncServiceImplBundle {
 
   // Accessors
 
-  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return &pref_service_;
+  }
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
@@ -63,7 +65,7 @@ class SyncServiceImplBundle {
   }
 
  private:
-  TestingPrefServiceSimple pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   FakeSyncApiComponentFactory component_factory_;

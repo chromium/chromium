@@ -21,3 +21,8 @@ include_rules = [
   "+services/network/public/mojom",
   "+services/network/test",
 ]
+specific_include_rules = {
+  "sync_service_impl_unittest\.cc": [
+    "+components/sync_preferences",
+  ]
+}
