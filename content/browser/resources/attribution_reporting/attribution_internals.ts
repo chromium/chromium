@@ -613,8 +613,7 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     this.notifyRowsChanged();
   }
 
-  clear(): void {
-    this.storedReports = [];
+  clearTransient(): void {
     this.sentOrDroppedReports = [];
     this.notifyRowsChanged();
   }
@@ -1023,11 +1022,10 @@ class AttributionInternals implements ObserverInterface {
    * the data on completion.
    */
   clearStorage(): void {
-    this.sources.clear();
     this.sourceRegistrations.clear();
     this.triggers.clear();
-    this.eventLevelReports.clear();
-    this.aggregatableReports.clear();
+    this.eventLevelReports.clearTransient();
+    this.aggregatableReports.clearTransient();
     this.debugReports.clear();
     this.osRegistrations.clear();
     this.handler.clearStorage();

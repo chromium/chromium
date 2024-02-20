@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                  .Build();
 
   std::vector<AttributionReport> stored_reports;
-  stored_reports.push_back(report);
+  stored_reports.emplace_back(report);
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillRepeatedly(
@@ -815,6 +815,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                     bool delete_rate_limit_data, base::OnceClosure done) {
         stored_reports.clear();
         std::move(done).Run();
+        manager()->NotifyReportsChanged();
       });
 
   // Verify both rows get rendered.
@@ -863,10 +864,15 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   base::Time now = base::Time::Now();
 
-  ON_CALL(*manager(), GetActiveSourcesForWebUI)
-      .WillByDefault(
-          base::test::RunOnceCallbackRepeatedly<0>(std::vector<StoredSource>{
-              SourceBuilder(now).SetSourceEventId(5).BuildStored()}));
+  std::vector<StoredSource> stored_sources;
+  stored_sources.emplace_back(
+      SourceBuilder(now).SetSourceEventId(5).BuildStored());
+
+  EXPECT_CALL(*manager(), GetActiveSourcesForWebUI)
+      .WillRepeatedly(
+          [&](base::OnceCallback<void(std::vector<StoredSource>)> callback) {
+            std::move(callback).Run(stored_sources);
+          });
 
   manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).Build(),
@@ -874,11 +880,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_CALL(*manager(),
               ClearData(base::Time::Min(), base::Time::Max(), _, _, true, _))
-      .WillOnce([](base::Time delete_begin, base::Time delete_end,
-                   StoragePartition::StorageKeyMatcherFunction filter,
-                   BrowsingDataFilterBuilder* filter_builder,
-                   bool delete_rate_limit_data,
-                   base::OnceClosure done) { std::move(done).Run(); });
+      .WillOnce([&](base::Time delete_begin, base::Time delete_end,
+                    StoragePartition::StorageKeyMatcherFunction filter,
+                    BrowsingDataFilterBuilder* filter_builder,
+                    bool delete_rate_limit_data, base::OnceClosure done) {
+        stored_sources.clear();
+        std::move(done).Run();
+        manager()->NotifySourcesChanged();
+      });
 
   // Verify both rows get rendered.
   static constexpr char kScript[] = R"(
