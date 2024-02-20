@@ -119,7 +119,8 @@ const base::FeatureParam<int> kMaskedDomainListExperimentGroup{
     /*default_value=*/0};
 
 // Used to build the MDL component's installer attributes and possibly control
-// which release version is retrieved. Does not have any effect for WebView.
+// which release version is retrieved.
+// Altering this value via Finch does not have any effect for WebView.
 const base::FeatureParam<std::string> kMaskedDomainListExperimentalVersion{
     &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentalVersion",
     /*default_value=*/""};
