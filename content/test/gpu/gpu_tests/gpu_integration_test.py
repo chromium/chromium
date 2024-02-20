@@ -97,7 +97,6 @@ class GpuIntegrationTest(
     serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase):
 
   _disable_log_uploads = False
-  _extra_intel_device_id_with_overlays: Optional[str] = None
   _skip_post_test_cleanup_and_debug_info = False
   _skip_post_failure_browser_restart = False
   _enforce_browser_version = False
@@ -195,14 +194,17 @@ class GpuIntegrationTest(
     cls._skip_post_failure_browser_restart =\
         options.no_browser_restart_on_failure
     cls._disable_log_uploads = options.disable_log_uploads
-    cls._extra_intel_device_id_with_overlays = (
-        options.extra_intel_device_id_with_overlays)
     cls._enforce_browser_version = options.enforce_browser_version
 
   @classmethod
   def SetUpProcess(cls) -> None:
     super(GpuIntegrationTest, cls).SetUpProcess()
     cls._SetClassVariablesFromOptions(cls._finder_options)
+    # Handled here instead of in _SetClassVariablesFromOptions since we only
+    # ever want to do this once per process.
+    if cls._finder_options.extra_overlay_config_json:
+      overlay_support.ParseOverlayJsonFile(
+          cls._finder_options.extra_overlay_config_json)
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
@@ -216,9 +218,11 @@ class GpuIntegrationTest(
         action='store_true',
         default=False,
         help='Disables uploads of logs to cloud storage')
-    parser.add_option('--extra-intel-device-id-with-overlays',
-                      dest='extra_intel_device_id_with_overlays',
-                      help='The extra Intel device id with overlays')
+    parser.add_option('--extra-overlay-config-json',
+                      help=('A path to a JSON file containing additional '
+                            'overlay configs to use. See '
+                            'overlay_support.ParseOverlayJsonFile() for more '
+                            'information on expected format.'))
     parser.add_option('--skip-post-test-cleanup-and-debug-info',
                       action='store_true',
                       help=('Disables the automatic cleanup of minidumps after '
@@ -1039,13 +1043,6 @@ class GpuIntegrationTest(
         raise
     finally:
       GpuIntegrationTest._is_first_browser_start = False
-
-    # Append overlay support for extra Intel GPUs when the extra device id is
-    # current active GPU's device id
-    gpu = self.browser.GetSystemInfo().gpu.devices[0]
-    extra_device_id = self._extra_intel_device_id_with_overlays
-    if extra_device_id and extra_device_id != gpu.device_id:
-      overlay_support.AppendOverlayConfigWithExtraIntelGPU(gpu)
 
   @staticmethod
   def GetJSONResultsDelimiter() -> str:
