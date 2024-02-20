@@ -216,6 +216,8 @@ static_library("safe_browsing") {
         "cloud_content_scanning/file_opening_job.h",
         "cloud_content_scanning/multipart_uploader.cc",
         "cloud_content_scanning/multipart_uploader.h",
+        "cloud_content_scanning/resumable_uploader.cc",
+        "cloud_content_scanning/resumable_uploader.h",
         "download_protection/check_client_download_request.cc",
         "download_protection/check_client_download_request.h",
         "download_protection/check_client_download_request_base.cc",
