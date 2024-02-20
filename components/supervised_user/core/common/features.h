@@ -19,7 +19,6 @@ BASE_DECLARE_FEATURE(kLocalWebApprovals);
 
 // Flags related to supervision features on Desktop and iOS platforms.
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-BASE_DECLARE_FEATURE(kSupervisedPrefsControlledBySupervisedStore);
 BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
 

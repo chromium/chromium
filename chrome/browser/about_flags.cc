@@ -7805,13 +7805,6 @@ const FeatureEntry kFeatureEntries[] = {
              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop)},
 #endif
 
-    {"enable-family-link-prefs-controls",
-     flag_descriptions::kSupervisedPrefsControlledBySupervisedStoreName,
-     flag_descriptions::kSupervisedPrefsControlledBySupervisedStoreDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kSupervisedPrefsControlledBySupervisedStore)},
-
     {"enable-family-link-managed-ui",
      flag_descriptions::kEnableManagedByParentUiName,
      flag_descriptions::kEnableManagedByParentUiDescription,

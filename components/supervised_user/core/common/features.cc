@@ -72,14 +72,6 @@ BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kSupervisedPrefsControlledBySupervisedStore,
-             "SupervisedPrefsControlledBySupervisedStore",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Whether to display a "Managed by your parent" or similar text for supervised
 // users in various UI surfaces.
 BASE_FEATURE(kEnableManagedByParentUi,
@@ -148,8 +140,6 @@ bool IsChildAccountSupervisionEnabled() {
              supervised_user::
                  kEnableExtensionsPermissionsForSupervisedUsersOnDesktop) ||
 #endif
-         base::FeatureList::IsEnabled(
-             supervised_user::kSupervisedPrefsControlledBySupervisedStore) ||
          base::FeatureList::IsEnabled(
              supervised_user::kEnableManagedByParentUi);
 #endif

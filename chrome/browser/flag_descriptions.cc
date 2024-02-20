@@ -343,12 +343,6 @@ const char
         "installation. "
         "The enable-family-link-supervision flag must also be enabled.";
 
-const char kSupervisedPrefsControlledBySupervisedStoreName[] =
-    "Display updated UI for preferences managed by Family Link";
-const char kSupervisedPrefsControlledBySupervisedStoreDescription[] =
-    "Display updated UI for preferences managed by Family Link. "
-    "The enable-family-link-supervision flag must also be enabled.";
-
 const char kEnableManagedByParentUiName[] = "Enable Family Link management UI";
 const char kEnableManagedByParentUiDescription[] =
     "Enables UI indicating if a Profile is managed by Family Link parental "

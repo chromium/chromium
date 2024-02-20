@@ -2810,11 +2810,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "enable-family-link-prefs-controls",
-    "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 123
-  },
-  {
     "name": "enable-family-link-website-filtering",
     "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
     "expiry_milestone": 123

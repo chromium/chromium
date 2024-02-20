@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
@@ -162,12 +161,8 @@ void SupervisedUserSettingsService::SetActive(bool active) {
   if (active_) {
     // Child account supervised users must be signed in.
     SetLocalSetting(supervised_user::kSigninAllowed, base::Value(true));
-
-    if (base::FeatureList::IsEnabled(
-            supervised_user::kSupervisedPrefsControlledBySupervisedStore)) {
-      SetLocalSetting(supervised_user::kSigninAllowedOnNextStartup,
-                      base::Value(true));
-    }
+    SetLocalSetting(supervised_user::kSigninAllowedOnNextStartup,
+                    base::Value(true));
 
     // Always allow cookies, to avoid website compatibility issues.
     SetLocalSetting(supervised_user::kCookiesAlwaysAllowed, base::Value(true));

@@ -160,14 +160,12 @@ class SupervisedUserPreferencesTestWithUrlFilteringFeature
     if (IsURLFilteringEnabled()) {
       feature_list_.InitWithFeatures(
           {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-           supervised_user::kSupervisedPrefsControlledBySupervisedStore,
            supervised_user::kEnableManagedByParentUi},
           {});
     } else {
       feature_list_.InitWithFeatures(
           {},
           {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-           supervised_user::kSupervisedPrefsControlledBySupervisedStore,
            supervised_user::kEnableManagedByParentUi});
     }
 #endif

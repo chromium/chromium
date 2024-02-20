@@ -81,8 +81,7 @@ class SupervisedUserURLFilterTestBase : public MixinBasedInProcessBrowserTest {
     // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
     feature_list_.InitWithFeatures(
-        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-         supervised_user::kSupervisedPrefsControlledBySupervisedStore},
+        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
         {features::kHttpsUpgrades});
   }
   ~SupervisedUserURLFilterTestBase() override { feature_list_.Reset(); }

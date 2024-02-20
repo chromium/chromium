@@ -55,7 +55,6 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -1225,33 +1224,19 @@ std::optional<settings_api::PrefObject> PrefsUtil::GetPref(
     return pref_object;
   }
 #endif
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedPrefsControlledBySupervisedStore)) {
-    if (pref && pref->IsManaged()) {
-      pref_object->controlled_by = settings_api::ControlledBy::kUserPolicy;
-    }
-
-    if (pref && pref->IsManagedByCustodian()) {
-      pref_object->controlled_by =
-          settings_api::ControlledBy::kChildRestriction;
-    }
-
-    if (pref_object->controlled_by != settings_api::ControlledBy::kNone) {
-      pref_object->enforcement = settings_api::Enforcement::kEnforced;
-      return pref_object;
-    }
-  } else {
-    if (pref && pref->IsManaged()) {
-      if (profile_->IsChild()) {
-        pref_object->controlled_by =
-            settings_api::ControlledBy::kChildRestriction;
-      } else {
-        pref_object->controlled_by = settings_api::ControlledBy::kUserPolicy;
-      }
-      pref_object->enforcement = settings_api::Enforcement::kEnforced;
-      return pref_object;
-    }
+  if (pref && pref->IsManaged()) {
+    pref_object->controlled_by = settings_api::ControlledBy::kUserPolicy;
   }
+
+  if (pref && pref->IsManagedByCustodian()) {
+    pref_object->controlled_by = settings_api::ControlledBy::kChildRestriction;
+  }
+
+  if (pref_object->controlled_by != settings_api::ControlledBy::kNone) {
+    pref_object->enforcement = settings_api::Enforcement::kEnforced;
+    return pref_object;
+  }
+
   // A pref is recommended if it has a recommended value, regardless of whether
   // the current value is set by policy. The UI will test to see whether the
   // current value matches the recommended value and inform the user.

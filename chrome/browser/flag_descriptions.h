@@ -229,9 +229,6 @@ extern const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[];
 extern const char
     kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription[];
 
-extern const char kSupervisedPrefsControlledBySupervisedStoreName[];
-extern const char kSupervisedPrefsControlledBySupervisedStoreDescription[];
-
 extern const char kEnableManagedByParentUiName[];
 extern const char kEnableManagedByParentUiDescription[];
 #endif  // ENABLE_SUPERVISED_USERS

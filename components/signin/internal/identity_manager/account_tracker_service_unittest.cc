@@ -514,13 +514,11 @@ void AccountTrackerServiceTest::
   if (enable_supervision_on_desktop) {
     scoped_feature_list.InitWithFeatures(
         {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-         supervised_user::kSupervisedPrefsControlledBySupervisedStore,
          supervised_user::kEnableManagedByParentUi},
         {});
   } else {
     scoped_feature_list.InitWithFeatures(
         {}, {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-             supervised_user::kSupervisedPrefsControlledBySupervisedStore,
              supervised_user::kEnableManagedByParentUi});
   }
 
