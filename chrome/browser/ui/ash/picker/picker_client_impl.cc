@@ -62,12 +62,11 @@ void OnGifSearchResponse(PickerClientImpl::FetchGifsCallback callback,
   picker_results.reserve(response->results.size());
   for (const emoji_picker::mojom::GifResponsePtr& result : response->results) {
     CHECK(result);
-    // TODO: b/325339604 - Get an actual preview image for each gif from tenor.
+    const emoji_picker::mojom::GifUrlsPtr& urls = result->url;
+    CHECK(urls);
     picker_results.push_back(ash::PickerSearchResult::Gif(
-        CHECK_DEREF(result->url.get()).preview,
-        GURL("https://media.tenor.com/64BYBgDG41QAAAAF/"
-             "loading.png"),
-        result->preview_size, base::UTF8ToUTF16(result->content_description)));
+        urls->preview, urls->preview_image, result->preview_size,
+        base::UTF8ToUTF16(result->content_description)));
   }
 
   std::move(callback).Run(std::move(picker_results));
