@@ -205,6 +205,50 @@ bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
 }
 
 // static
+bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
+    const ThirdPartyCookieAllowMechanism& mechanism) {
+  switch (mechanism) {
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowByTopLevel3PCD:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSource1pDt:
+      return true;
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::kNone:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowByExplicitSetting:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowByGlobalSetting:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDHeuristics:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowByStorageAccess:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowByTopLevelStorageAccess:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowByCORSException:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowByEnterprisePolicyCookieAllowedForUrls:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceUnspecified:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceTest:
+
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSource3pDt:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceDogFood:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceCriticalSector:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceCuj:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceGovEduTld:
+      return false;
+  }
+}
+
+// static
 ThirdPartyCookieAllowMechanism
 CookieSettingsBase::TpcdMetadataSourceToAllowMechanism(
     const mojom::TpcdMetadataRuleSource& source) {

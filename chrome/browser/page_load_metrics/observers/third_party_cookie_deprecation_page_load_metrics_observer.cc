@@ -16,12 +16,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 namespace {
-
+using CookieSettingsBase = content_settings::CookieSettingsBase;
 using ThirdPartyCookieAllowMechanism =
-    content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism;
+    CookieSettingsBase::ThirdPartyCookieAllowMechanism;
 using OnboardingStatus =
     privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus;
 
@@ -156,6 +158,17 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
         allow_mechanism);
   }
 
+  if (CookieSettingsBase::Is1PDtRelatedAllowMechanism(allow_mechanism)) {
+    ukm::builders::Tpcd_Mitigations_Dt_FirstParty_Deployment(
+        GetDelegate()
+            .GetWebContents()
+            ->GetPrimaryMainFrame()
+            ->GetPageUkmSourceId())
+        .SetDeployed(allow_mechanism ==
+                     ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD)
+        .Record(ukm::UkmRecorder::Get());
+  }
+
   if (!is_blocked_by_experiment) {
     return;
   }
@@ -259,8 +272,8 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieReadUseCounters(
       // If the cookie access was allowed, record the mitigation that allowed it
       // if any.
       if (!blocked_by_policy) {
-        if (content_settings::CookieSettingsBase::
-                IsAnyTpcdMetadataAllowMechanism(allow_mechanism)) {
+        if (CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
+                allow_mechanism)) {
           status = is_ad_tagged ? CookieReadStatus::kAllowedMetadataGrantAd
                                 : CookieReadStatus::kAllowedMetadataGrant;
         } else if (allow_mechanism ==
@@ -304,9 +317,8 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieReadUseCounters(
           if (allow_mechanism_without_heuristics ==
               ThirdPartyCookieAllowMechanism::kNone) {
             status = CookieReadStatus::kBlockedAd;
-          } else if (content_settings::CookieSettingsBase::
-                         IsAnyTpcdMetadataAllowMechanism(
-                             allow_mechanism_without_heuristics)) {
+          } else if (CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
+                         allow_mechanism_without_heuristics)) {
             status = CookieReadStatus::kBlockedSkippedMetadataGrantAd;
           } else if (allow_mechanism_without_heuristics ==
                      ThirdPartyCookieAllowMechanism::kAllowBy3PCD) {

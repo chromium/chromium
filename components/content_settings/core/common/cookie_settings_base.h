@@ -97,6 +97,8 @@ class CookieSettingsBase {
     kAllowByStorageAccess = 6,
     kAllowByTopLevelStorageAccess = 7,
     kAllowByCORSException = 8,
+    // Allow by 1P (AKA First Party, Top-level) DT (Deprecation Trial) token
+    // being deployed.
     kAllowByTopLevel3PCD = 9,
     // Allow by Enterprise Policy: CookiesAllowedForUrls.
     kAllowByEnterprisePolicyCookieAllowedForUrls = 10,
@@ -131,6 +133,11 @@ class CookieSettingsBase {
   // Returns true if the allow mechanism represents one of the multiple allow
   // mechanisms derived from the TPCD Mitigations Metadata.
   static bool IsAnyTpcdMetadataAllowMechanism(
+      const ThirdPartyCookieAllowMechanism& mechanism);
+
+  // Returns true if the allow mechanism corresponds to the 1P (AKA First Party,
+  // Top-level) DT (Deprecation Trial).
+  static bool Is1PDtRelatedAllowMechanism(
       const ThirdPartyCookieAllowMechanism& mechanism);
 
   static ThirdPartyCookieAllowMechanism TpcdMetadataSourceToAllowMechanism(

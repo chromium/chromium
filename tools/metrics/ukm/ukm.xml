@@ -26505,6 +26505,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Tpcd.Mitigations.Dt.FirstParty.Deployment">
+  <owner>njeunje@google.com</owner>
+  <owner>tpcd-mitigations-team@google.com</owner>
+  <summary>
+    Recorded on a page load cadance for every third party cookie accessed.
+  </summary>
+  <metric name="Deployed" enum="Boolean">
+    <summary>
+      Indicates when an origin deployed its 1P (AKA First Party, top-level) DT
+      Token and thus was granted cookie access.
+    </summary>
+  </metric>
+</event>
+
 <event name="Translate">
   <owner>hamelphi@chromium.org</owner>
   <summary>
