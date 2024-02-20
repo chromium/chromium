@@ -7,9 +7,10 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import { MOVE_THRESHOLD_PX} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MOVE_THRESHOLD_PX} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
 suite('cr-toggle', function() {
@@ -93,7 +94,7 @@ suite('cr-toggle', function() {
 
   // Test that the control is toggled when the |checked| attribute is
   // programmatically changed.
-  test('ToggleByAttribute', function() {
+  test('ToggleByAttribute', async function() {
     eventToPromise('change', toggle).then(function() {
       // Should not fire 'change' event when state is changed programmatically.
       // Only user interaction should result in 'change' event.
@@ -101,9 +102,11 @@ suite('cr-toggle', function() {
     });
 
     toggle.checked = true;
+    await toggle.updateComplete;
     assertChecked();
 
     toggle.checked = false;
+    await toggle.updateComplete;
     assertNotChecked();
   });
 
@@ -169,50 +172,128 @@ suite('cr-toggle', function() {
 
   // Test that the control is toggled when the user presses the 'Enter' or
   // 'Space' key.
-  test('ToggleByKey', () => {
+  test('ToggleByKey', async () => {
     assertNotChecked();
+
     toggle.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter', repeat: true}));
+    await toggle.updateComplete;
     assertNotChecked();
+
     toggle.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+    await toggle.updateComplete;
     assertNotChecked();
+
     toggle.dispatchEvent(
         new KeyboardEvent('keydown', {key: ' ', repeat: true}));
+    await toggle.updateComplete;
     assertNotChecked();
+
     toggle.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await toggle.updateComplete;
     assertChecked();
+
     toggle.dispatchEvent(new KeyboardEvent('keyup', {key: ' '}));
+    await toggle.updateComplete;
     assertNotChecked();
   });
 
   // Test that the control is not affected by user interaction when disabled.
-  test('ToggleWhenDisabled', function() {
+  test('ToggleWhenDisabled', async function() {
     assertNotDisabled();
     toggle.disabled = true;
+    await toggle.updateComplete;
     assertDisabled();
 
     triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
+    await toggle.updateComplete;
     assertNotChecked();
     assertDisabled();
 
     toggle.disabled = false;
+    await toggle.updateComplete;
     triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
+    await toggle.updateComplete;
     assertChecked();
   });
 
   // Test that the control works as expected when the click() method is called.
-  test('ToggleWhenWithClick', function() {
+  test('ToggleWhenWithClick', async function() {
     assertNotDisabled();
     assertNotChecked();
 
     // State should change because control is enabled.
     toggle.click();
+    await toggle.updateComplete;
     assertChecked();
 
     // State should *not* change because control is disabled.
     toggle.disabled = true;
+    await toggle.updateComplete;
     assertDisabled();
+
     toggle.click();
+    await toggle.updateComplete;
     assertChecked();
+  });
+
+  // Test that 2-way bindings with Polymer parent elements are updated before
+  // the 'change' event is fired.
+  test('TwoWayBindingWithPolymerParent', function(done) {
+    class TestElement extends PolymerElement {
+      static get is() {
+        return 'test-element';
+      }
+
+      static get template() {
+        return html`
+          <cr-toggle checked="{{parentChecked}}"
+              on-change="onChange"
+              on-checked-changed="onCheckedChanged">
+          </cr-toggle>`;
+      }
+
+      static get properties() {
+        return {
+          parentChecked: Boolean,
+        };
+      }
+
+      parentChecked: boolean = false;
+      private events_: string[] = [];
+
+      onCheckedChanged(e: CustomEvent<{value: boolean}>) {
+        assertEquals(this.events_.length === 0 ? false : true, e.detail.value);
+        this.events_.push(e.type);
+        this.checkIfFinished_();
+      }
+
+      onChange(e: CustomEvent<boolean>) {
+        assertTrue(e.detail);
+        assertEquals(e.detail, element.parentChecked);
+        this.events_.push(e.type);
+        this.checkIfFinished_();
+      }
+
+      private checkIfFinished_() {
+        if (this.events_.length !== 3) {
+          return;
+        }
+
+        assertDeepEquals(
+            ['checked-changed', 'checked-changed', 'change'], this.events_);
+        done();
+      }
+    }
+
+    customElements.define(TestElement.is, TestElement);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const element = document.createElement('test-element') as TestElement;
+    document.body.appendChild(element);
+
+    const toggle = element.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!toggle);
+    toggle.click();
   });
 });

@@ -9,6 +9,7 @@ import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool,
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
 
@@ -118,7 +119,7 @@ suite('AppSettingsAppTest', () => {
         'app-management-more-permissions-item'));
   });
 
-  test('Toggle Run on OS Login', function() {
+  test('Toggle Run on OS Login', async function() {
     const runOnOsLoginItem = appSettingsApp.shadowRoot!.querySelector(
         'app-management-run-on-os-login-item')!;
     assertTrue(!!runOnOsLoginItem);
@@ -126,18 +127,20 @@ suite('AppSettingsAppTest', () => {
         runOnOsLoginItem.app.runOnOsLogin!.loginMode, RunOnOsLoginMode.kNotRun);
 
     runOnOsLoginItem.click();
+    await eventToPromise('change', runOnOsLoginItem);
     assertEquals(
         runOnOsLoginItem.app.runOnOsLogin!.loginMode,
         RunOnOsLoginMode.kWindowed);
 
     runOnOsLoginItem.click();
+    await eventToPromise('change', runOnOsLoginItem);
     assertEquals(
         runOnOsLoginItem.app.runOnOsLogin!.loginMode, RunOnOsLoginMode.kNotRun);
   });
 
   // Serves as a basic test of the presence of the File Handling item. More
   // comprehensive tests are located in the cross platform app_management test.
-  test('Toggle File Handling', function() {
+  test('Toggle File Handling', async function() {
     const fileHandlingItem = appSettingsApp.shadowRoot!.querySelector(
         'app-management-file-handling-item')!;
     assertTrue(!!fileHandlingItem);
@@ -148,23 +151,26 @@ suite('AppSettingsAppTest', () => {
             .querySelector<AppManagementToggleRowElement>('#toggle-row')!;
     assertTrue(!!toggleRow);
     toggleRow.click();
+    await eventToPromise('change', toggleRow);
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, true);
 
     toggleRow.click();
+    await eventToPromise('change', toggleRow);
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
   });
 
-  test('Toggle window mode', function() {
+  test('Toggle window mode', async function() {
     const windowModeItem =
         appSettingsApp.shadowRoot!.querySelector('app-management-window-mode-item')!;
     assertTrue(!!windowModeItem);
     assertEquals(windowModeItem.app.windowMode, WindowMode.kWindow);
 
     windowModeItem.click();
+    await eventToPromise('change', windowModeItem);
     assertEquals(windowModeItem.app.windowMode, WindowMode.kBrowser);
   });
 
-  test('Toggle permissions', function() {
+  test('Toggle permissions', async function() {
     const permsisionTypes: PermissionTypeIndex[] =
         ['kNotifications', 'kLocation', 'kCamera', 'kMicrophone'];
     for (const permissionType of permsisionTypes) {
@@ -175,9 +181,11 @@ suite('AppSettingsAppTest', () => {
       assertFalse(getPermissionValueBool(permissionItem.app, permissionType));
 
       permissionItem.click();
+      await eventToPromise('change', permissionItem);
       assertTrue(getPermissionValueBool(permissionItem.app, permissionType));
 
       permissionItem.click();
+      await eventToPromise('change', permissionItem);
       assertFalse(getPermissionValueBool(permissionItem.app, permissionType));
     }
   });

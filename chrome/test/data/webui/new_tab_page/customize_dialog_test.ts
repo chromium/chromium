@@ -158,7 +158,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
       assertTrue(customizeDialog.$.refreshToggle.checked);
     });
 
-    test('daily refresh toggle set to new value', () => {
+    test('daily refresh toggle set to new value', async () => {
       customizeDialog.$.backgrounds.selectedCollection = {
         id: 'abstract',
         label: '',
@@ -166,6 +166,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
       };
       assertFalse(customizeDialog.$.refreshToggle.checked);
       customizeDialog.$.refreshToggle.click();
+      await customizeDialog.$.refreshToggle.updateComplete;
       assertTrue(customizeDialog.$.refreshToggle.checked);
       customizeDialog.$.backgrounds.selectedCollection = {
         id: 'landscape',
@@ -212,6 +213,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
           previewImageUrl: {url: ''},
         };
         customizeDialog.$.refreshToggle.click();
+        await customizeDialog.$.refreshToggle.updateComplete;
         assertEquals(1, handler.getCallCount('setDailyRefreshCollectionId'));
         done();
         assertEquals(

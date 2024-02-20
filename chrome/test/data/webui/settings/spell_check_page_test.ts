@@ -112,6 +112,7 @@ suite('SpellCheck', function() {
           spellcheckLanguageRow.querySelector('cr-toggle');
       assertTrue(!!spellcheckLanguageToggle);
       spellcheckLanguageToggle.click();
+      await spellcheckLanguageToggle.updateComplete;
       assertFalse(spellcheckLanguageToggle.checked);
       assertEquals(
           0, spellcheckPage.getPref('spellcheck.dictionaries').value.length);
@@ -137,6 +138,7 @@ suite('SpellCheck', function() {
 
       // Disable the language.
       prefEnabledNbLanguageRow.querySelector('cr-toggle')!.click();
+      await prefEnabledNbLanguageRow.querySelector('cr-toggle')!.updateComplete;
       flush();
       assertEquals(2, getListItems().length);
 

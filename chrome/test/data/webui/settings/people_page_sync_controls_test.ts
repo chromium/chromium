@@ -342,6 +342,15 @@ suite('AutofillAndPaymentsToggles', async function() {
   let autofillCheckbox: CrToggleElement;
   let paymentsCheckbox: CrToggleElement;
 
+  function updateComplete(): Promise<void> {
+    return Promise
+        .all([
+          autofillCheckbox.updateComplete,
+          paymentsCheckbox.updateComplete,
+        ])
+        .then(() => {});
+  }
+
   setup(async function() {
     setupRouterWithSyncRoutes();
     const browserProxy = new TestSyncBrowserProxy();
@@ -380,21 +389,21 @@ suite('AutofillAndPaymentsToggles', async function() {
 
     // Disable Autofill sync.
     autofillCheckbox.click();
-    flush();
+    await updateComplete();
     assertFalse(autofillCheckbox.checked);
     assertFalse(paymentsCheckbox.checked);
     assertTrue(paymentsCheckbox.disabled);
 
     // Enable Autofill sync.
     autofillCheckbox.click();
-    flush();
+    await updateComplete();
     assertTrue(autofillCheckbox.checked);
     assertTrue(paymentsCheckbox.checked);
     assertFalse(paymentsCheckbox.disabled);
 
     // Disable Payment methods sync.
     paymentsCheckbox.click();
-    flush();
+    await updateComplete();
     assertTrue(autofillCheckbox.checked);
     assertFalse(paymentsCheckbox.checked);
     assertFalse(paymentsCheckbox.disabled);
@@ -407,21 +416,21 @@ suite('AutofillAndPaymentsToggles', async function() {
 
     // Disable Autofill sync.
     autofillCheckbox.click();
-    flush();
+    await updateComplete();
     assertFalse(autofillCheckbox.checked);
     assertTrue(paymentsCheckbox.checked);
     assertFalse(paymentsCheckbox.disabled);
 
     // Disable Payment methods sync.
     paymentsCheckbox.click();
-    flush();
+    await updateComplete();
     assertFalse(autofillCheckbox.checked);
     assertFalse(paymentsCheckbox.checked);
     assertFalse(paymentsCheckbox.disabled);
 
     // Enable Autofill sync.
     autofillCheckbox.click();
-    flush();
+    await updateComplete();
     assertTrue(autofillCheckbox.checked);
     assertFalse(paymentsCheckbox.checked);
     assertFalse(paymentsCheckbox.disabled);

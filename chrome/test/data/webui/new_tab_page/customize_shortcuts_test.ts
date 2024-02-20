@@ -79,8 +79,10 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
     customizeShortcuts.$.optionMostVisitedButton.click();
     assertUseMostVisited();
     customizeShortcuts.$.hideToggle.click();
+    await customizeShortcuts.$.hideToggle.updateComplete;
     assertHidden();
     customizeShortcuts.$.hideToggle.click();
+    await customizeShortcuts.$.hideToggle.updateComplete;
     assertUseMostVisited();
   });
 
@@ -113,6 +115,7 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
         /* customLinksEnabled= */ true, /* shortcutsVisible= */ true);
     assertCustomLinksEnabled();
     customizeShortcuts.$.hideToggle.click();
+    await customizeShortcuts.$.hideToggle.updateComplete;
     const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
     customizeShortcuts.apply();
     const [customLinksEnabled, visible] = await setSettingsCalled;

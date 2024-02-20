@@ -815,6 +815,7 @@ suite('AutofillSectionAddressTests', function() {
             'accountInfo.isAutofillSyncToggleEnabled == false');
 
     section.$.autofillSyncToggle.click();
+    await section.$.autofillSyncToggle.updateComplete;
 
     assertTrue(
         section.$.autofillSyncToggle.checked,
@@ -823,6 +824,7 @@ suite('AutofillSectionAddressTests', function() {
         autofillManager.getCallCount('setAutofillSyncToggleEnabled'), 1);
 
     section.$.autofillSyncToggle.click();
+    await section.$.autofillSyncToggle.updateComplete;
 
     assertFalse(
         section.$.autofillSyncToggle.checked,
