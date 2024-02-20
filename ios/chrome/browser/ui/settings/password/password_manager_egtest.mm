@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -345,7 +346,8 @@ id<GREYMatcher> PasswordManagerWidgetPromoInstructions() {
 // instruction screen.
 id<GREYMatcher> PasswordManagerWidgetPromoInstructionsCloseButton() {
   return grey_allOf(
-      ButtonWithAccessibilityLabel(l10n_util::GetNSString(IDS_CLOSE)),
+      grey_accessibilityID(
+          kConfirmationAlertSecondaryActionAccessibilityIdentifier),
       grey_interactable(), nullptr);
 }
 
