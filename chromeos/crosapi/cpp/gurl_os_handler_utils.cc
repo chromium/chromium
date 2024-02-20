@@ -80,9 +80,8 @@ GURL GetAshUrlFromLacrosUrl(GURL url) {
 bool IsAshUrlInList(const GURL& url, const std::vector<GURL>& list) {
   return std::any_of(list.begin(), list.end(), [&](const GURL& elem) {
     DCHECK(elem.is_valid());
-    DCHECK_EQ(elem, NormalizeAshUrl(elem, /*keep_path*/ true));
-    return elem == NormalizeAshUrl(url, /*keep_path*/ false) ||
-           elem == NormalizeAshUrl(url, /*keep_path*/ true);
+    DCHECK_EQ(elem, NormalizeAshUrl(elem));
+    return elem == NormalizeAshUrl(url);
   });
 }
 

@@ -58,23 +58,22 @@ TEST(GurlOsHandlerUtilsTest, IsAshUrlInList) {
   url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
   CHECK(GURL("chrome://version").has_host());
 
-  std::vector<GURL> list_of_urls = {GURL("chrome://flags"),
-                                    GURL("chrome://foo/bar")};
+  std::vector<GURL> list_of_urls = {GURL("chrome://foo")};
 
   EXPECT_FALSE(IsAshUrlInList(GURL("os://version"), list_of_urls));
   EXPECT_FALSE(IsAshUrlInList(GURL("chrome://version"), list_of_urls));
 
-  EXPECT_FALSE(IsAshUrlInList(GURL("os://flags"), list_of_urls));
-  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://flags"), list_of_urls));
-  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://flags?baz"), list_of_urls));
-  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://flags#baz"), list_of_urls));
-  EXPECT_FALSE(IsAshUrlInList(GURL("chrome://flagsz"), list_of_urls));
+  EXPECT_FALSE(IsAshUrlInList(GURL("os://foo"), list_of_urls));
+  EXPECT_FALSE(IsAshUrlInList(GURL("chrome://fooz"), list_of_urls));
 
-  EXPECT_FALSE(IsAshUrlInList(GURL("chrome://foo"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo?baz"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo#baz"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo?bar#baz"), list_of_urls));
   EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo/bar"), list_of_urls));
   EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo/bar?baz"), list_of_urls));
   EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo/bar#baz"), list_of_urls));
-  EXPECT_FALSE(IsAshUrlInList(GURL("chrome://foo/baz"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo/bar?baz#bax"), list_of_urls));
 }
 
 TEST(GurlOsHandlerUtilsTest, HasOsScheme) {
