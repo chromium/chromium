@@ -165,17 +165,6 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
     loader_->StopDeferringForThrottle(throttle_);
   }
 
-  void UpdateDeferredRequestHeaders(
-      const net::HttpRequestHeaders& modified_request_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_request_headers)
-      override {
-    if (!loader_)
-      return;
-    ScopedDelegateCall scoped_delegate_call(this);
-    loader_->UpdateDeferredRequestHeaders(modified_request_headers,
-                                          modified_cors_exempt_request_headers);
-  }
-
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,
       mojo::ScopedDataPipeConsumerHandle body) override {
@@ -997,23 +986,6 @@ void ThrottlingURLLoader::Resume() {
 void ThrottlingURLLoader::SetPriority(net::RequestPriority priority) {
   if (url_loader_)
     url_loader_->SetPriority(priority, -1);
-}
-
-void ThrottlingURLLoader::UpdateDeferredRequestHeaders(
-    const net::HttpRequestHeaders& modified_request_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_request_headers) {
-  if (deferred_stage_ == DEFERRED_START) {
-    start_info_->url_request.headers.MergeFrom(modified_request_headers);
-    start_info_->url_request.cors_exempt_headers.MergeFrom(
-        modified_cors_exempt_request_headers);
-  } else if (deferred_stage_ == DEFERRED_REDIRECT) {
-    modified_headers_.MergeFrom(modified_request_headers);
-    modified_cors_exempt_headers_.MergeFrom(
-        modified_cors_exempt_request_headers);
-  } else {
-    NOTREACHED()
-        << "Can only update headers of a request before it's sent out.";
-  }
 }
 
 void ThrottlingURLLoader::UpdateRequestHeaders(
