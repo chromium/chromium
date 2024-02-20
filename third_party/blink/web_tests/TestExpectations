@@ -2568,9 +2568,6 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 # https://logs.chromium.org/logs/infra/buildbucket/cr-buildbucket/8757448685637289873/+/u/Import_changes_from_WPT_to_Chromium/stdout
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
-# CQ-only DCHECK crash
-crbug.com/626703 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Timeout ]
-
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-all.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.html [ Timeout ]
@@ -3362,6 +3359,7 @@ crbug.com/1097992 external/wpt/css/css-pseudo/marker-font-variant-numeric-normal
 crbug.com/1060007 external/wpt/css/css-pseudo/marker-text-combine-upright.html [ Failure ]
 
 crbug.com/1498015 [ Mac11 ] external/wpt/css/printing/page-size-011-print.html [ Timeout ]
+crbug.com/325836823 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Timeout ]
 
 # iframe tests time out if the request is blocked as mixed content.
 crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/unset/iframe-tag.https.html [ Skip Timeout ]
