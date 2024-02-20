@@ -37,9 +37,16 @@ void NotifyPasswordAutofillSuggestionUsed() {
 }
 
 void NotifyPasswordSavedOrUpdated() {
+  // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
 
   LogAutofillUseForCriteriaExperiment();
 }
 
+void NotifyRemoteTabsGridViewed() {
+  // TODO(b/322358517): Migrate to FET.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
+  LogRemoteTabsUseForCriteriaExperiment();
+}
 }  // namespace default_browser

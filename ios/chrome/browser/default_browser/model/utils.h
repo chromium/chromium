@@ -217,10 +217,7 @@ void LogBookmarkUseForDefaultBrowserPromo();
 void LogAutofillUseForCriteriaExperiment();
 
 // Logs that the user has used remote tabs.
-void LogRemoteTabsUsedForDefaultBrowserPromo();
-
-// Logs that the user has used pinned tabs.
-void LogPinnedTabsUsedForDefaultBrowserPromo();
+void LogRemoteTabsUseForCriteriaExperiment();
 
 // Returns YES if the user has opened the app through first-party intent 2
 // times in the last 7 days, but across 2 user sessions (default 6 hours). Also

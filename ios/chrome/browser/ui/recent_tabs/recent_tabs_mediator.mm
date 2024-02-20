@@ -18,7 +18,7 @@
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/synced_session.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -396,7 +396,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   if (selected) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+    default_browser::NotifyRemoteTabsGridViewed();
 
     [self configureToolbarsButtons];
   }

@@ -16,7 +16,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -1702,7 +1701,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
             (PinnedTabsViewController*)pinnedTabsViewController
              didSelectItemWithID:(web::WebStateID)itemID {
   base::RecordAction(base::UserMetricsAction("MobileTabGridPinnedTabSelected"));
-  LogPinnedTabsUsedForDefaultBrowserPromo();
   // Record how long it took to select an item.
   [self reportTabSelectionTime];
 

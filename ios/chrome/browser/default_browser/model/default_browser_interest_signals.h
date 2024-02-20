@@ -27,6 +27,9 @@ void NotifyPasswordAutofillSuggestionUsed();
 // infobar.
 void NotifyPasswordSavedOrUpdated();
 
+// Records all necessary information when remote tabs grid is selected.
+void NotifyRemoteTabsGridViewed();
+
 }  // namespace default_browser
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_INTEREST_SIGNALS_H_

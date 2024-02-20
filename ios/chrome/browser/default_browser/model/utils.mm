@@ -708,6 +708,7 @@ void CleanupStorageForTriggerExperiment() {
   [defaults removeObjectForKey:kAllTimestampsAppLaunchWarmStart];
   [defaults removeObjectForKey:kAllTimestampsAppLaunchIndirectStart];
   [defaults removeObjectForKey:kAutofillUseCount];
+  [defaults removeObjectForKey:kSpecialTabsUseCount];
 }
 
 void LogCopyPasteInOmniboxForDefaultBrowserPromo() {
@@ -728,12 +729,12 @@ void LogAutofillUseForCriteriaExperiment() {
   StoreCurrentTimestampForKey(kAutofillUseCount);
 }
 
-void LogRemoteTabsUsedForDefaultBrowserPromo() {
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  StoreCurrentTimestampForKey(kSpecialTabsUseCount);
-}
+void LogRemoteTabsUseForCriteriaExperiment() {
+  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    CleanupStorageForTriggerExperiment();
+    return;
+  }
 
-void LogPinnedTabsUsedForDefaultBrowserPromo() {
   StoreCurrentTimestampForKey(kSpecialTabsUseCount);
 }
 

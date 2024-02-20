@@ -790,12 +790,11 @@ TEST_F(DefaultBrowserUtilsTest,
   }
 
   // Adding current timestamp should be counted.
-  LogRemoteTabsUsedForDefaultBrowserPromo();
-  LogPinnedTabsUsedForDefaultBrowserPromo();
+  LogRemoteTabsUseForCriteriaExperiment();
 
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
-    EXPECT_EQ(3, promo_stats.specialTabsUseCount);
+    EXPECT_EQ(2, promo_stats.specialTabsUseCount);
   }
 }
 

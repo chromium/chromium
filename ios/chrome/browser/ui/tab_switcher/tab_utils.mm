@@ -8,7 +8,6 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -123,8 +122,6 @@ int SetWebStatePinnedState(WebStateList* web_state_list,
   if (index == WebStateList::kInvalidIndex) {
     return WebStateList::kInvalidIndex;
   }
-
-  LogPinnedTabsUsedForDefaultBrowserPromo();
 
   return web_state_list->SetWebStatePinnedAt(index, pin_state);
 }
