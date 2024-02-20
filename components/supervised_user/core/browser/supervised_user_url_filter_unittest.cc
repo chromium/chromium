@@ -119,7 +119,8 @@ TEST_F(SupervisedUserURLFilterTest, Basic) {
   EXPECT_TRUE(IsURLAllowlisted("chrome://youtube.com/"));
   EXPECT_TRUE(IsURLAllowlisted("chrome://extensions/"));
   EXPECT_TRUE(IsURLAllowlisted("chrome-extension://foo/main.html"));
-  EXPECT_TRUE(IsURLAllowlisted("file:///home/chronos/user/Downloads/img.jpg"));
+  EXPECT_TRUE(
+      IsURLAllowlisted("file:///home/chronos/user/MyFiles/Downloads/img.jpg"));
 }
 
 TEST_F(SupervisedUserURLFilterTest, EffectiveURL) {
