@@ -739,29 +739,32 @@ bool EditContext::FirstRectForCharacterRange(uint32_t location,
                                              gfx::Rect& rect_in_viewport) {
   if (HasValidCompositionBounds()) {
     WebRange range = this->CompositionRange();
+    CHECK_GE(range.StartOffset(), 0);
+    CHECK_GE(range.EndOffset(), 0);
 
     // If the requested range is within the current composition range,
     // we'll use that to provide the result.
     if (base::saturated_cast<int>(location) >= range.StartOffset() &&
         base::saturated_cast<int>(location + length) <= range.EndOffset()) {
+      const size_t start_in_composition = location - range.StartOffset();
+      const size_t end_in_composition = location + length - range.StartOffset();
       if (length == 0) {
-        if (location == character_bounds_.size()) {
+        if (start_in_composition == character_bounds_.size()) {
           // Zero-width rect after the last character in the composition range
           rect_in_viewport =
-              gfx::Rect(character_bounds_[location - 1].right(),
-                        character_bounds_[location - 1].y(), 0,
-                        character_bounds_[location - 1].height());
+              gfx::Rect(character_bounds_[start_in_composition - 1].right(),
+                        character_bounds_[start_in_composition - 1].y(), 0,
+                        character_bounds_[start_in_composition - 1].height());
         } else {
           // Zero-width rect before the next character in the composition range
-          rect_in_viewport = gfx::Rect(character_bounds_[location].x(),
-                                       character_bounds_[location].y(), 0,
-                                       character_bounds_[location].height());
+          rect_in_viewport =
+              gfx::Rect(character_bounds_[start_in_composition].x(),
+                        character_bounds_[start_in_composition].y(), 0,
+                        character_bounds_[start_in_composition].height());
         }
       } else {
-        const int start_in_composition = location - range.StartOffset();
-        const int end_in_composition = location + length - range.StartOffset();
         gfx::Rect rect = character_bounds_[start_in_composition];
-        for (int i = start_in_composition + 1; i < end_in_composition; ++i) {
+        for (size_t i = start_in_composition + 1; i < end_in_composition; ++i) {
           rect.Union(character_bounds_[i]);
         }
 

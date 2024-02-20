@@ -540,6 +540,36 @@ test(function() {
   textInputController.setComposition("bar");
 
 }, 'Testing EditContext GC');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("abc")
+  textInputController.setComposition("def");
+  const rect1 = new DOMRect(0, 2, 4, 8);
+  const rect2 = new DOMRect(4, 2, 4, 8);
+  const rect3 = new DOMRect(8, 2, 4, 8);
+  editContext.updateCharacterBounds(3, [rect1, rect2, rect3]);
+  assert_array_equals(textInputController.firstRectForCharacterRange(2, 0), [], "0-width call at index 2 should get empty array");
+  assert_array_equals(textInputController.firstRectForCharacterRange(3, 0), [0, 2, 0, 8], "0-width call at index 3 should get caret position before first character");
+  assert_array_equals(textInputController.firstRectForCharacterRange(4, 0), [4, 2, 0, 8], "0-width call at index 4 should get caret position before second character");
+  assert_array_equals(textInputController.firstRectForCharacterRange(5, 0), [8, 2, 0, 8], "0-width call at index 5 should get caret position before third character");
+  assert_array_equals(textInputController.firstRectForCharacterRange(6, 0), [12, 2, 0, 8], "0-width call at index 6 should get caret position after third character");
+  assert_array_equals(textInputController.firstRectForCharacterRange(7, 0), [], "0-width call at index 7 should get empty array");
+
+  assert_array_equals(textInputController.firstRectForCharacterRange(3, 1), [0, 2, 4, 8], "1-width call at index 3 should get first character rect");
+  assert_array_equals(textInputController.firstRectForCharacterRange(4, 1), [4, 2, 4, 8], "1-width call at index 4 should get second character rect");
+  assert_array_equals(textInputController.firstRectForCharacterRange(5, 1), [8, 2, 4, 8], "1-width call at index 5 should get third character rect");
+  assert_array_equals(textInputController.firstRectForCharacterRange(6, 1), [], "1-width call at index 6 should get empty array");
+
+  assert_array_equals(textInputController.firstRectForCharacterRange(3, 3), [0, 2, 12, 8], "3-width call should join rects for characters 3-5");
+
+  test.remove();
+}, 'Testing firstRectForCharacterRange');
 </script>
 </body>
 </html>
