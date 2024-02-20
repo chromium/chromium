@@ -461,10 +461,15 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
 #endif
-    // No need to tag because the ref-count is not protected by MTE.
-    return reinterpret_cast<PartitionRefCount*>(refcount_address);
+    // In theory, no need to MTE-tag in the "previous slot" mode, because
+    // ref-count isn't protected by MTE. But it doesn't hurt to do so, and helps
+    // us avoid a branch (plus, can't easily #include partition_root.h here, due
+    // to cyclic dependencies).
+    // TODO(bartekn): Plumb the tag from the callers, so that it can be included
+    // in the calculations, and not re-read from memory.
+    return static_cast<PartitionRefCount*>(TagAddr(refcount_address));
   } else {
-    // No need to tag, as the metadata region isn't protected by MTE.
+    // No need to MTE-tag, as the metadata region isn't protected by MTE.
     PartitionRefCount* table_base = reinterpret_cast<PartitionRefCount*>(
         (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);
     size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift())

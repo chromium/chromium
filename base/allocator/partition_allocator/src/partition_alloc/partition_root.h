@@ -898,13 +898,17 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     if (brp_enabled()) {
       PA_DCHECK(settings.ref_count_size > 0);
-      PA_DCHECK((settings.ref_count_size % internal::kMemTagGranuleSize) == 0);
+      if (!ref_count_in_same_slot_) {
+        PA_DCHECK((settings.ref_count_size % internal::kMemTagGranuleSize) ==
+                  0);
+      }
     } else {
       PA_DCHECK(settings.ref_count_size == 0);
     }
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
-    // TODO(bartekn): Don't subtract ref-count size in the "same slot" mode.
-    return slot_size - settings.ref_count_size;
+    // Subtract ref-count size in the "previous slot" mode to avoid the MTE/BRP
+    // race (crbug.com/1445816).
+    return slot_size - (ref_count_in_same_slot_ ? 0 : settings.ref_count_size);
 #else  // PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
     return slot_size;
 #endif
@@ -922,6 +926,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   static void SetBrpRefCountInSameSlot(bool ref_count_in_same_slot) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     ref_count_in_same_slot_ = ref_count_in_same_slot;
+#endif
+  }
+
+  static bool GetBrpRefCountInSameSlot() {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    return ref_count_in_same_slot_;
+#else
+    return false;
 #endif
   }
 

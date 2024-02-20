@@ -447,9 +447,12 @@ class PartitionAllocTest
       ref_count_size = kPartitionRefCountSizeAdjustment;
       ref_count_size = AlignUpRefCountSizeForMac(ref_count_size);
 #if PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
-      // Note the brp_enabled() check above.
-      // TODO(bartekn): Don't increase ref-count size in the "same slot" mode.
-      if (allocator.root()->IsMemoryTaggingEnabled()) {
+      // When MTE is enabled together with BRP (crbug.com/1445816) in the
+      // "previous slot" mode (note the brp_enabled() check above), there is a
+      // race that can be avoided by making ref-count a multiple of the MTE
+      // granule and not tagging it.
+      if (allocator.root()->IsMemoryTaggingEnabled() &&
+          !PartitionRoot::GetBrpRefCountInSameSlot()) {
         ref_count_size = partition_alloc::internal::base::bits::AlignUp(
             ref_count_size, kMemTagGranuleSize);
       }

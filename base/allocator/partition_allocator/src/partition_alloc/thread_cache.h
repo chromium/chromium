@@ -614,7 +614,7 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   // When BRP is on in the "previous slot" mode, this slot may have a BRP
   // ref-count of the next, potentially allocated slot. Make sure we don't
   // overwrite it.
-  // TODO(bartekn): Ok to overwriter in the "same slot" mode.
+  // TODO(bartekn): Ok to overwrite in the "same slot" mode.
   int slot_size_remaining_in_16_bytes =
       (bucket.slot_size - internal::kInSlotRefCountBufferSize) / 16;
 
