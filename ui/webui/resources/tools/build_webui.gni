@@ -130,6 +130,14 @@ template("build_webui") {
         filter_exclude(invoker.static_files, non_preprocessed_files_filter)
   }
 
+  preprocessor_defines = []
+  if (use_blink) {
+    preprocessor_defines += chrome_grit_defines
+  }
+  if (defined(invoker.preprocessor_defines)) {
+    preprocessor_defines += invoker.preprocessor_defines
+  }
+
   ### Define the various targets that are required by the build pipeline.
 
   # Specifically the order in which these targets are executed is:
@@ -150,9 +158,7 @@ template("build_webui") {
     preprocess_if_expr("preprocess_static_files") {
       visibility = [ ":$generate_grd_target_name" ]
 
-      if (use_blink) {
-        defines = chrome_grit_defines
-      }
+      defines = preprocessor_defines
 
       in_folder = "."
       out_folder = preprocess_dir
@@ -170,9 +176,7 @@ template("build_webui") {
       visibility += [ ":create_source_maps" ]
     }
 
-    if (use_blink) {
-      defines = chrome_grit_defines
-    }
+    defines = preprocessor_defines
 
     in_folder = "."
     out_folder = preprocess_dir
@@ -217,9 +221,7 @@ template("build_webui") {
         ":html_wrapper_files",
       ]
 
-      if (use_blink) {
-        defines = chrome_grit_defines
-      }
+      defines = preprocessor_defines
 
       in_folder = "."
       out_folder = preprocess_dir
