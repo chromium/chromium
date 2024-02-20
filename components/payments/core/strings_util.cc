@@ -28,7 +28,7 @@ std::u16string GetShippingAddressLabelFromAutofillProfile(
   };
 
   return profile.ConstructInferredLabel(kLabelFields, std::size(kLabelFields),
-                                        std::size(kLabelFields), locale);
+                                        locale);
 }
 
 std::u16string GetShippingAddressSelectorInfoMessage(

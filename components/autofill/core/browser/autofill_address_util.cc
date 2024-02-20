@@ -256,8 +256,7 @@ std::u16string GetProfileDescription(const AutofillProfile& profile,
   }
 
   return profile.ConstructInferredLabel(
-      kDetailsFields, std::size(kDetailsFields),
-      /*num_fields_to_include=*/2, ui_language_code);
+      kDetailsFields, /*num_fields_to_include=*/2, ui_language_code);
 }
 
 std::vector<ProfileValueDifference> GetProfileDifferenceForUi(

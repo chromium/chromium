@@ -950,8 +950,7 @@ void AutofillProfile::CreateInferredLabels(
       labels_to_profiles;
   for (size_t i = 0; i < profiles.size(); ++i) {
     std::u16string label = profiles[i]->ConstructInferredLabel(
-        fields_to_use.data(), fields_to_use.size(), minimal_fields_shown,
-        app_locale);
+        fields_to_use, minimal_fields_shown, app_locale);
     std::u16string main_text =
         triggering_field_type
             ? profiles[i]->GetInfo(*triggering_field_type, app_locale)
@@ -976,8 +975,7 @@ void AutofillProfile::CreateInferredLabels(
 }
 
 std::u16string AutofillProfile::ConstructInferredLabel(
-    const FieldType* included_fields,
-    const size_t included_fields_size,
+    base::span<const FieldType> included_fields,
     size_t num_fields_to_use,
     const std::string& app_locale) const {
   // TODO(estade): use libaddressinput?
@@ -998,7 +996,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
   AutofillCountry country(address_region_code);
 
   std::vector<FieldType> remaining_fields;
-  for (size_t i = 0; i < included_fields_size && num_fields_to_use > 0; ++i) {
+  for (size_t i = 0; i < included_fields.size() && num_fields_to_use > 0; ++i) {
     if (!country.IsAddressFieldSettingAccessible(included_fields[i]) ||
         included_fields[i] == ADDRESS_HOME_COUNTRY) {
       remaining_fields.push_back(included_fields[i]);
@@ -1177,8 +1175,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
     }
 
     (*labels)[it] = profile->ConstructInferredLabel(
-        label_fields.data(), label_fields.size(), label_fields.size(),
-        app_locale);
+        label_fields, label_fields.size(), app_locale);
   }
 }
 

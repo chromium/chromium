@@ -764,7 +764,7 @@ PaymentSheetViewController::CreateContactInfoRow() {
       autofill::EMAIL_ADDRESS};
   const std::u16string preview =
       state()->contact_profiles()[0]->ConstructInferredLabel(
-          kLabelFields, std::size(kLabelFields), std::size(kLabelFields),
+          kLabelFields, std::size(kLabelFields),
           state()->GetApplicationLocale());
   if (state()->contact_profiles().size() == 1) {
     return builder.CreateWithButton(preview,

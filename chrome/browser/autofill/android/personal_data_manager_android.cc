@@ -323,8 +323,8 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
 
   return ConvertUTF16ToJavaString(
       env, profile.ConstructInferredLabel(
-               kLabelFields, kLabelFields_size, kLabelFields_size,
-               g_browser_process->GetApplicationLocale()));
+               base::span<const FieldType>(kLabelFields, kLabelFields_size),
+               kLabelFields_size, g_browser_process->GetApplicationLocale()));
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>
