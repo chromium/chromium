@@ -305,22 +305,6 @@ webapk_tmpl("webapk_chromeos") {
   apk_package_name = "org.chromium.webapk.chromeos"
 }
 
-webapk_tmpl("maps_go_webapk") {
-  config_file = "manifest/maps_go_manifest_config.json"
-  manifest_to_upload_dep = ":generate_manifest_for_upload"
-  apk_name = "MapsWebApk"
-  apk_package_name = "org.chromium.maps_go_webapk"
-}
-
-webapk_tmpl("uiautomator_maps_go_webapk") {
-  testonly = true
-  config_file = "manifest/maps_go_manifest_config.json"
-  manifest_to_upload_dep = ":generate_manifest_for_upload"
-  apk_name = "JavatestsMapsWebApk"
-  delta_config_file = "manifest/javatest_maps_go_manifest_config_delta.json"
-  apk_package_name = "org.chromium.test.maps_go_webapk"
-}
-
 webapk_tmpl("unbound_webapk") {
   config_file = "manifest/unbound_manifest_config.json"
   manifest_to_upload_dep = ":generate_manifest_for_upload"
