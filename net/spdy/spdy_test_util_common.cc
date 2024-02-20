@@ -602,8 +602,11 @@ void SpdyTestUtil::AddPriorityToHeaderBlock(
     uint8_t urgency = ConvertRequestPriorityToQuicPriority(request_priority);
     bool incremental = priority_incremental;
     quic::HttpStreamPriority priority{urgency, incremental};
-    (*headers)[kHttp2PriorityHeader] =
+    std::string serialized_priority =
         quic::SerializePriorityFieldValue(priority);
+    if (!serialized_priority.empty()) {
+      (*headers)[kHttp2PriorityHeader] = serialized_priority;
+    }
   }
 }
 

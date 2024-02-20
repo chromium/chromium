@@ -1385,8 +1385,11 @@ void QuicTestPacketMaker::AddPriorityHeader(spdy::SpdyPriority spdy_priority,
     if (client_priority_uses_incremental_) {
       priority.incremental = kDefaultPriorityIncremental;
     }
-    (*headers)[net::kHttp2PriorityHeader] =
+    std::string serialized_priority =
         quic::SerializePriorityFieldValue(priority);
+    if (!serialized_priority.empty()) {
+      (*headers)[net::kHttp2PriorityHeader] = serialized_priority;
+    }
   }
 }
 

@@ -93,6 +93,25 @@ TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersFromHttpRequestHTTP2) {
   EXPECT_EQ("Chrome/1.1", headers["user-agent"]);
 }
 
+TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersWithDefaultPriority) {
+  GURL url("https://www.google.com/index.html");
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = url;
+  request.priority_incremental = false;
+  request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
+  spdy::Http2HeaderBlock headers;
+  CreateSpdyHeadersFromHttpRequest(request, RequestPriority::DEFAULT_PRIORITY,
+                                   request.extra_headers, &headers);
+  EXPECT_EQ("GET", headers[":method"]);
+  EXPECT_EQ("https", headers[":scheme"]);
+  EXPECT_EQ("www.google.com", headers[":authority"]);
+  EXPECT_EQ("/index.html", headers[":path"]);
+  EXPECT_FALSE(headers.contains(net::kHttp2PriorityHeader));
+  EXPECT_FALSE(headers.contains(":version"));
+  EXPECT_EQ("Chrome/1.1", headers["user-agent"]);
+}
+
 TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersWithExistingPriority) {
   GURL url("https://www.google.com/index.html");
   HttpRequestInfo request;

@@ -227,9 +227,11 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
     uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority.value());
     bool incremental = info.priority_incremental;
     quic::HttpStreamPriority quic_priority{urgency, incremental};
-    AddUniqueSpdyHeader(kHttp2PriorityHeader,
-                        quic::SerializePriorityFieldValue(quic_priority),
-                        headers);
+    std::string serialized_priority =
+        quic::SerializePriorityFieldValue(quic_priority);
+    if (!serialized_priority.empty()) {
+      AddUniqueSpdyHeader(kHttp2PriorityHeader, serialized_priority, headers);
+    }
   }
 }
 
