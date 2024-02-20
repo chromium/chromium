@@ -473,6 +473,10 @@ void ViewAccessibility::SetDescription(
   SetDescription(base::UTF16ToUTF8(description), description_from);
 }
 
+void ViewAccessibility::SetIsSelected(bool selected) {
+  data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
+}
+
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
   DCHECK(IsValidRoleForViews(role)) << "Invalid role for Views.";
   override_data_.role = role;

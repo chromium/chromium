@@ -116,6 +116,8 @@ class VIEWS_EXPORT ViewAccessibility {
   ax::mojom::Role GetViewAccessibilityRole() const;
 
   void SetBounds(const gfx::RectF& bounds);
+  
+  void SetIsSelected(bool selected);
 
   // Note that `pos_in_set` starts from 1 not 0.
   void SetPosInSet(int pos_in_set);
