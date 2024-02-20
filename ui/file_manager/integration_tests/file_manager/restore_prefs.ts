@@ -4,7 +4,8 @@
 
 import {ENTRIES, RootPath, TestEntryInfo} from '../test_util.js';
 
-import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
+
 
 /**
  * Tests restoring the sorting order.
@@ -19,7 +20,7 @@ export async function restoreSortColumn() {
   ]);
 
   // Set up Files app.
-  let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  let appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Sort by name.
   await remoteCall.callRemoteTestUtil(
@@ -43,7 +44,7 @@ export async function restoreSortColumn() {
   await remoteCall.waitForFiles(appId, EXPECTED_FILES, {orderCheck: true});
 
   // Open another window, where the sorted column should be restored.
-  appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Check the sorted style of the header.
   await remoteCall.waitForElement(appId, iconSortedDesc);
@@ -57,7 +58,7 @@ export async function restoreSortColumn() {
  */
 export async function restoreCurrentView() {
   // Set up Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Check the initial view.
   await remoteCall.waitForElement(appId, '.thumbnail-grid[hidden]');
@@ -70,7 +71,7 @@ export async function restoreCurrentView() {
   await remoteCall.waitForElement(appId, '.detail-table[hidden]');
 
   // Open another window, where the current view is restored.
-  const appId2 = await openNewWindow(RootPath.DOWNLOADS);
+  const appId2 = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
 
   // Check the current view.
   await remoteCall.waitForElement(appId2, '.detail-table[hidden]');

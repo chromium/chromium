@@ -4,7 +4,8 @@
 
 import {ENTRIES, RootPath, TestEntryInfo} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
+
 
 /**
  * Tests the order is sorted correctly for each of the columns.
@@ -74,7 +75,7 @@ export async function sortColumns() {
     ENTRIES.hello,
   ]);
 
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   const iconSortedAsc =
       '.table-header-cell .sorted [iron-icon="files16:arrow_up_small"]';

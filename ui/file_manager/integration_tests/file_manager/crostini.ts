@@ -5,43 +5,43 @@
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 
-import {mountCrostini as mountCrostiniEx, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 const LINUX_FILES_TYPE = 'crostini';
 
 export async function mountCrostini() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
-  await mountCrostiniEx(appId);
+  await remoteCall.mountCrostini(appId);
 
   // Unmount and ensure fake root is shown.
   remoteCall.callRemoteTestUtil('unmount', null, ['crostini']);
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 }
 
 export async function mountCrostiniWithSubFolder() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   // Expect the expand icon is hidden for fake Crostini.
   await directoryTree.waitForItemExpandIconToHideByLabel('Linux files');
 
   // Add a sub folder to Crostini and mount it.
-  await mountCrostiniEx(appId, [ENTRIES.photos]);
+  await remoteCall.mountCrostini(appId, [ENTRIES.photos]);
 
   // Expect the expand icon shows now.
   await directoryTree.waitForItemExpandIconToShowByLabel('Linux files');
 }
 
 export async function enableDisableCrostini() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Ensure fake Linux files root is shown.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 
   // Disable Crostini, then ensure fake Linux files is removed.
@@ -62,14 +62,14 @@ export async function sharePathWithCrostini() {
   const shareMessageShown =
       '#banners > shared-with-crostini-pluginvm-banner:not([hidden])';
 
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   await remoteCall.isolateBannerForTesting(
       appId, 'shared-with-crostini-pluginvm-banner');
 
   // Ensure fake Linux files root is shown.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 
   // Mount crostini, and ensure real root is shown.
@@ -103,7 +103,7 @@ export async function sharePathWithCrostini() {
 }
 
 export async function pluginVmDirectoryNotSharedErrorDialog() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   const pluginVmAppDescriptor = {
     appId: 'plugin-vm-app-id',
     taskType: 'pluginvm',
@@ -179,7 +179,7 @@ export async function pluginVmDirectoryNotSharedErrorDialog() {
 
 export async function pluginVmFileOnExternalDriveErrorDialog() {
   // Use files outside of MyFiles to show 'copy' rather than 'move'.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
   const pluginVmAppDescriptor = {
     appId: 'plugin-vm-app-id',
     taskType: 'pluginvm',
@@ -256,7 +256,7 @@ export async function pluginVmFileOnExternalDriveErrorDialog() {
  * dialog is displayed if the containing folder isn't shared with Plugin VM.
  */
 export async function pluginVmFileDropFailErrorDialog() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Select 'hello.txt' file.
   await remoteCall.callRemoteTestUtil(

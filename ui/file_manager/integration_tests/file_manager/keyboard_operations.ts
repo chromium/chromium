@@ -4,7 +4,7 @@
 
 import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -33,8 +33,8 @@ async function waitAndAcceptDialog(appId: string): Promise<void> {
  * @param path The path to be tested, Downloads or Drive.
  */
 async function keyboardCopy(path: string) {
-  const appId =
-      await setupAndWaitUntilReady(path, [ENTRIES.world], [ENTRIES.world]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      path, [ENTRIES.world], [ENTRIES.world]);
 
   // Copy the file into the same file list.
   chrome.test.assertTrue(
@@ -65,8 +65,8 @@ async function keyboardCopy(path: string) {
  *     confirm the deletion.
  */
 async function keyboardDelete(path: string, confirmDeletion: boolean = false) {
-  const appId =
-      await setupAndWaitUntilReady(path, [ENTRIES.hello], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      path, [ENTRIES.hello], [ENTRIES.hello]);
 
   // Delete the file from the file list.
   chrome.test.assertTrue(
@@ -92,11 +92,11 @@ async function keyboardDelete(path: string, confirmDeletion: boolean = false) {
  */
 async function keyboardDeleteFolder(
     path: string, parentLabel: string, confirmDeletion: boolean = false) {
-  const appId =
-      await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      path, [ENTRIES.photos], [ENTRIES.photos]);
 
   // Expand the directory tree |treeItem|.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel(parentLabel);
 
   // Check: the folder should be shown in the directory tree.
@@ -161,11 +161,11 @@ async function renameFile(
 async function testRenameFolder(
     path: string, parentLabel: string): Promise<void> {
   const textInput = '#file-list .table-row[renaming] input.rename';
-  const appId =
-      await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      path, [ENTRIES.photos], [ENTRIES.photos]);
 
   // Expand the directory tree |treeItem|.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel(parentLabel);
 
   // Check: the photos folder should be shown in the directory tree.
@@ -225,8 +225,8 @@ async function testRenameFolder(
 async function testRenameFile(path: string): Promise<void> {
   const newFile = [['New File Name.txt', '51 bytes', 'Plain text', '']];
 
-  const appId =
-      await setupAndWaitUntilReady(path, [ENTRIES.hello], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      path, [ENTRIES.hello], [ENTRIES.hello]);
 
   // Rename the file.
   await renameFile(appId, 'hello.txt', 'New File Name.txt');
@@ -293,14 +293,14 @@ export function renameNewFolderDrive() {
  */
 export async function renameRemovableWithKeyboardOnFileList() {
   // Open Files app on local downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.world]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.world]);
 
   // Mount removable device with partitions.
   await sendTestMessage({name: 'mountUsbWithMultiplePartitionTypes'});
 
   // Wait and select the removable group by clicking the label.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectGroupRootItemByType('removable');
 
   // Focus on the file list.
@@ -354,8 +354,8 @@ export async function renameRemovableWithKeyboardOnFileList() {
  */
 export async function keyboardFocusOutlineVisible() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Check: the html element should have focus-outline-visible class.
   const htmlFocusOutlineVisible = ['html.focus-outline-visible'];
@@ -375,8 +375,8 @@ export async function keyboardFocusOutlineVisible() {
  */
 export async function keyboardFocusOutlineVisibleMouse() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Send mousedown to the toolbar delete button.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -403,8 +403,8 @@ export async function keyboardFocusOutlineVisibleMouse() {
  */
 export async function pointerActiveRemovedByTouch() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Send pointerdown to the list container.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -429,8 +429,8 @@ export async function pointerActiveRemovedByTouch() {
  */
 export async function noPointerActiveOnTouch() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Send pointerdown with touch to the list container.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -448,11 +448,11 @@ export async function noPointerActiveOnTouch() {
  */
 export async function keyboardSelectDriveDirectoryTree() {
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.world], [ENTRIES.hello]);
 
   // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Wait for Google Drive root to be available.
@@ -491,8 +491,8 @@ export async function keyboardSelectDriveDirectoryTree() {
  */
 export async function keyboardDisableCopyWhenDialogDisplayed() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
 
   // Select a file for deletion.
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
@@ -536,8 +536,8 @@ export async function keyboardDisableCopyWhenDialogDisplayed() {
  */
 export async function keyboardOpenNewWindow() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Grab the current open windows.
   const initialWindows = await remoteCall.getWindows();

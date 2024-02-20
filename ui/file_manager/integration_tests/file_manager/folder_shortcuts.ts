@@ -5,7 +5,7 @@
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 
-import {createShortcut, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -82,7 +82,7 @@ const DIRECTORY = {
  * @return Promise fulfilled on success.
  */
 async function expandDirectoryTree(appId: string): Promise<void> {
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.recursiveExpand(DIRECTORY.Drive.treeItem);
   await directoryTree.recursiveExpand(DIRECTORY.A.treeItem);
   await directoryTree.recursiveExpand(DIRECTORY.B.treeItem);
@@ -98,7 +98,7 @@ async function expandDirectoryTree(appId: string): Promise<void> {
  */
 async function navigateToDirectory(
     appId: string, directory: EntryInfo): Promise<void> {
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(directory.treeItem);
   await remoteCall.waitForFiles(appId, directory.contents);
 }
@@ -116,7 +116,7 @@ async function removeShortcut(
   const caller = getCaller();
   const removeShortcutMenuItem =
       '[command="#unpin-folder"]:not([hidden]):not([disabled])';
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   // Right-click for context menu with retry.
   await repeatUntil(async () => {
@@ -160,7 +160,7 @@ async function expectSelection(
     appId: string, currentDir: EntryInfo,
     shortcutDir: EntryInfo): Promise<void> {
   await remoteCall.waitForFiles(appId, currentDir.contents);
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForFocusedShortcutItemByLabel(shortcutDir.name);
 }
 
@@ -173,7 +173,7 @@ async function expectSelection(
  */
 async function clickShortcut(
     appId: string, directory: EntryInfo): Promise<void> {
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectShortcutItemByLabel(directory.name);
 }
 
@@ -182,23 +182,23 @@ async function clickShortcut(
  */
 export async function traverseFolderShortcuts() {
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], FOLDER_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], FOLDER_ENTRY_SET);
 
   // Expand the directory tree.
   await expandDirectoryTree(appId);
 
   // Create a shortcut to directory D.
-  await createShortcut(appId, DIRECTORY.D.name);
+  await remoteCall.createShortcut(appId, DIRECTORY.D.name);
 
   // Navigate to directory B.
   await navigateToDirectory(appId, DIRECTORY.B);
 
   // Create a shortcut to directory C.
-  await createShortcut(appId, DIRECTORY.C.name);
+  await remoteCall.createShortcut(appId, DIRECTORY.C.name);
 
   // Click the Drive root (My Drive).
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('My Drive');
 
   // Check: current directory and selection should be the Drive root.
@@ -242,7 +242,7 @@ export async function traverseFolderShortcuts() {
  */
 export async function addRemoveFolderShortcuts() {
   async function openFilesAppOnDrive() {
-    const appId = await openNewWindow(RootPath.DRIVE);
+    const appId = await remoteCall.openNewWindow(RootPath.DRIVE);
     await remoteCall.waitForElement(appId, '#file-list');
     await remoteCall.waitForFiles(appId, DIRECTORY.Drive.contents);
     return appId;
@@ -263,7 +263,7 @@ export async function addRemoveFolderShortcuts() {
   await sendTestMessage({appId: appId1, name: 'focusWindow'});
 
   // Create a shortcut to D.
-  await createShortcut(appId1, DIRECTORY.D.name);
+  await remoteCall.createShortcut(appId1, DIRECTORY.D.name);
 
   // Click the shortcut to D.
   await clickShortcut(appId1, DIRECTORY.D);
@@ -272,7 +272,7 @@ export async function addRemoveFolderShortcuts() {
   await expectSelection(appId1, DIRECTORY.D, DIRECTORY.D);
 
   // Create a shortcut to A from the other window.
-  await createShortcut(appId2, DIRECTORY.A.name);
+  await remoteCall.createShortcut(appId2, DIRECTORY.A.name);
 
   // Check: current directory and selection should still be D.
   await expectSelection(appId1, DIRECTORY.D, DIRECTORY.D);
@@ -281,7 +281,6 @@ export async function addRemoveFolderShortcuts() {
   await removeShortcut(appId2, DIRECTORY.D);
 
   // Check: directory D in the directory tree should be focused.
-  const directoryTree =
-      await DirectoryTreePageObject.create(appId1, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId1);
   await directoryTree.waitForFocusedItemByLabel('D');
 }

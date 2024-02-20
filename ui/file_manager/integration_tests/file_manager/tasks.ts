@@ -5,7 +5,7 @@
 import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {getCaller, pending, repeatUntil, RootPath} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {DOWNLOADS_FAKE_TASKS, FakeTask, FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 
@@ -50,7 +50,7 @@ const DRIVE_FAKE_TASKS = [
  * @param fakeTasks Fake tasks.
  */
 async function setupTaskTest(rootPath: string, fakeTasks: FakeTask[]) {
-  const appId = await setupAndWaitUntilReady(rootPath);
+  const appId = await remoteCall.setupAndWaitUntilReady(rootPath);
   await remoteCall.callRemoteTestUtil('overrideTasks', appId, [fakeTasks]);
   return appId;
 }
@@ -341,7 +341,7 @@ export async function noActionBarOpenForDirectories() {
 }
 
 export async function executeViaDblClick() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await remoteCall.callRemoteTestUtil(
       'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
   //  Double-click the file.
@@ -358,7 +358,7 @@ export async function executeViaDblClick() {
       'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
 
   // Click on the currently focused tree item to reset the file list selection.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectFocusedItem();
 
   // Double click on a different file.

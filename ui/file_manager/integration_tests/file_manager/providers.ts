@@ -4,7 +4,7 @@
 
 import {getHistogramCount, RootPath, sendTestMessage} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -37,7 +37,7 @@ function getProviderNameForTest(manifest: string): string {
  */
 async function setUpProvider(manifest: string) {
   await sendTestMessage({name: 'launchProviderExtension', manifest: manifest});
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   return appId;
 }
 
@@ -67,7 +67,7 @@ async function showProvidersMenu(appId: string) {
  * Confirms that a provided volume is mounted.
  */
 async function confirmVolume(appId: string, ejectExpected: boolean) {
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('provided');
 
   await directoryTree.waitForFocusedItemByType('provided');
@@ -220,7 +220,7 @@ export async function providerEject() {
   const appId = await setUpProvider(manifest);
 
   // Click to eject Test (1) provider/volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.ejectItemByType('provided');
 
   // Wait a11y-msg to have some text.
@@ -252,7 +252,7 @@ export async function deduplicatedUmaMetricForFileSystemProviders() {
   // SWA records only 1 mount event, if the FSP is loaded prior to the window
   // starting, it will always miss the load event leading to a false positive
   // test result.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Setup the FSP and wait for the volume to appear in the directory tree.
   await sendTestMessage({

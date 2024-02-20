@@ -4,7 +4,7 @@
 
 import {addEntries, ENTRIES, expectHistogramTotalCount, getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ZIP_ENTRY_SET, COMPLEX_ZIP_ENTRY_SET} from './test_data.js';
 
@@ -40,7 +40,7 @@ export async function zipFileOpenDownloads() {
   });
 
   // Open Files app on Downloads containing a zip file.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Select the zip file.
@@ -68,7 +68,7 @@ export async function zipNotifyFileTasks() {
   });
 
   // Open Files app on Downloads containing a zip file.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Open the zip file.
@@ -91,8 +91,8 @@ export async function zipFileOpenDrive() {
   });
 
   // Open Files app on Drive containing a zip file.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.zipArchive]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.zipArchive]);
 
   // Select the zip file.
   await remoteCall.waitUntilSelected(appId, ENTRIES.zipArchive.nameText);
@@ -119,14 +119,14 @@ export async function zipFileOpenUsb() {
   });
 
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.beautiful]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.beautiful]);
 
   // Mount empty USB volume in the Drive window.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('removable');
 
   // Add zip file to the USB volume.
@@ -166,8 +166,8 @@ function getZipSelectionFileListRowEntries() {
  */
 export async function zipCreateFileDownloads() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, ENTRIES.photos.nameText);
@@ -200,8 +200,8 @@ export async function zipCreateFileDownloads() {
  */
 export async function zipCreateFileDrive() {
   // Open Files app on Drive containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.photos]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.photos]);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, ENTRIES.photos.nameText);
@@ -234,7 +234,7 @@ export async function zipCreateFileDrive() {
  */
 export async function zipCreateFileDriveOffice() {
   // Open Files app on Drive containing ENTRIES.photos and ENTRIES.docxFile.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.photos, ENTRIES.docxFile]);
 
   // Select the files.
@@ -272,8 +272,8 @@ export async function zipCreateFileDriveOffice() {
  */
 export async function zipDoesntCreateFileEncrypted() {
   // Open Files app on Drive containing a test CSE file.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
   // Select the file.
   await remoteCall.waitAndClickElement(
@@ -300,14 +300,14 @@ export async function zipDoesntCreateFileEncrypted() {
  */
 export async function zipCreateFileUsb() {
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.beautiful]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.beautiful]);
 
   // Mount empty USB volume in the Drive window.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('removable');
 
   // Add ENTRIES.photos to the USB volume.
@@ -358,7 +358,8 @@ export async function zipExtractShowPanel() {
   });
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -427,7 +428,8 @@ export async function zipExtractShowMultiPanel() {
   });
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Select two ZIP files.
   await remoteCall.waitAndClickElement(
@@ -482,7 +484,8 @@ export async function zipExtractSelectionMenus() {
   const entries = BASIC_ZIP_ENTRY_SET;
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Select the first file (ENTRIES.hello).
   await remoteCall.waitUntilSelected(appId, entries[0]!.nameText);
@@ -601,7 +604,8 @@ export async function zipExtractCheckContent() {
   });
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -652,7 +656,8 @@ export async function zipExtractCheckDuplicates() {
       {name: 'expectFileTask', fileNames: [directory], openType: 'launch'});
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -728,7 +733,8 @@ export async function zipExtractCheckEncodings() {
   });
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -773,7 +779,8 @@ export async function zipExtractA11y() {
   const entry = ENTRIES.zipArchive;
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -800,7 +807,8 @@ export async function zipExtractNotEnoughSpace() {
   const entry = ENTRIES.zipExtArchive;  // 120TB fake archive.
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -856,10 +864,11 @@ export async function zipExtractFromReadOnly() {
   });
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
 
   // Navigate to Shared with me.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait for the navigation to complete.

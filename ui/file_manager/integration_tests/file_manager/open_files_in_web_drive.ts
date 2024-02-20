@@ -7,7 +7,8 @@
 
 import {ENTRIES, getBrowserWindows, RootPath, sendTestMessage, type TestEntryInfo} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
+
 
 /**
  * Tests context menu default task label for Google Drive items.
@@ -18,7 +19,8 @@ import {remoteCall, setupAndWaitUntilReady} from './background.js';
 async function checkDefaultTaskLabel(
     entry: TestEntryInfo, expectedLabel: string) {
   // Open Files.App on drive path, add entry to Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
 
   // Select the file.
   await remoteCall.waitAndClickElement(
@@ -64,7 +66,8 @@ async function webDriveFileOpen(
     openType: 'launch',
   });
   // Open Files.App on drive path, add entry to Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
 
   const path = entry.nameText;
   // Open the file from Files app.

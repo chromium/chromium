@@ -4,7 +4,7 @@
 
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN, BASIC_DRIVE_ENTRY_SET, BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN, BASIC_LOCAL_ENTRY_SET, BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET} from './test_data.js';
 
@@ -93,7 +93,7 @@ async function runHiddenFilesTestWithMenuItem(
  * Tests toggling the show-hidden-files menu option on Downloads.
  */
 export async function showHiddenFilesDownloads() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN, []);
 
   await runHiddenFilesTest(
@@ -104,7 +104,7 @@ export async function showHiddenFilesDownloads() {
  * Tests toggling the show-hidden-files menu option on Drive.
  */
 export async function showHiddenFilesDrive() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN);
 
   await runHiddenFilesTest(
@@ -117,7 +117,7 @@ export async function showHiddenFilesDrive() {
  */
 export async function showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles() {
   // Open Files.App on Play Files.
-  const appId = await openNewWindow(RootPath.ANDROID_FILES);
+  const appId = await remoteCall.openNewWindow(RootPath.ANDROID_FILES);
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET);
 
   // Wait for the file list to appear.
@@ -150,7 +150,7 @@ export async function showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles() {
   await remoteCall.waitForElement(appId, '#gear-menu[hidden]');
 
   // Navigate to Recent.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Recent');
 
   // Click the gear menu button.
@@ -171,7 +171,7 @@ export async function showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles() {
  */
 export async function enableToggleHiddenAndroidFoldersShowsHiddenFiles() {
   // Open Files.App on Play Files.
-  const appId = await openNewWindow(RootPath.ANDROID_FILES);
+  const appId = await remoteCall.openNewWindow(RootPath.ANDROID_FILES);
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN);
 
   // Wait for the file list to appear.
@@ -189,7 +189,7 @@ export async function enableToggleHiddenAndroidFoldersShowsHiddenFiles() {
  */
 export async function hideCurrentDirectoryByTogglingHiddenAndroidFolders() {
   const MENU_ITEM_SELECTOR = '#gear-menu-toggle-hidden-android-folders';
-  const appId = await openNewWindow(RootPath.ANDROID_FILES);
+  const appId = await remoteCall.openNewWindow(RootPath.ANDROID_FILES);
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN);
 
   // Wait for the file list to appear.
@@ -220,7 +220,7 @@ export async function hideCurrentDirectoryByTogglingHiddenAndroidFolders() {
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Navigate to "/My files/Play files/A".
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Play files/A');
 
   // Wait until current directory is changed to "/My files/Play files/A".
@@ -259,7 +259,7 @@ export async function showPasteIntoCurrentFolder() {
   await addEntries(['local'], entrySet);
 
   // Open Files.App on Downloads.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
   await remoteCall.waitForElement(appId, '#file-list');
 
   // Wait for the files to appear in the file list.
@@ -332,7 +332,7 @@ export async function showSelectAllInCurrentFolder() {
   const entrySet = [ENTRIES.newlyAdded];
 
   // Open Files.App on Downloads.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
   await remoteCall.waitForElement(appId, '#file-list');
 
   // Wait for the gear menu button to appear.
@@ -389,11 +389,11 @@ export async function showSelectAllInCurrentFolder() {
  * directory tree.
  */
 export async function newFolderInDownloads() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Open the gear menu.
@@ -420,8 +420,8 @@ export async function showFilesSettingsButton() {
   const filesSettingsWindowURL = 'chrome://os-settings/files';
 
   // Open Files.App on Downloads and wait for the gear menu button to appear.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
   await remoteCall.waitForElement(appId, '#gear-button');
 
   // Click the gear menu button.
@@ -454,7 +454,7 @@ export async function showSendFeedbackAction() {
   const feedbackWindowOrigin = 'chrome://os-feedback';
 
   // Open Files.App on Downloads.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
   await remoteCall.waitForElement(appId, '#file-list');
 
   // Wait for the gear menu button to appear.
@@ -495,7 +495,7 @@ export async function showSendFeedbackAction() {
  */
 export async function openHelpPageFromDownloadsVolume() {
   // Open Files App on Downloads.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
   await remoteCall.waitForElement(appId, '#file-list');
 
   // Click the gear menu button.
@@ -523,7 +523,7 @@ export async function openHelpPageFromDownloadsVolume() {
  */
 export async function openHelpPageFromDriveVolume() {
   // Open Files App on Downloads.
-  const appId = await openNewWindow(RootPath.DRIVE);
+  const appId = await remoteCall.openNewWindow(RootPath.DRIVE);
   await remoteCall.waitForElement(appId, '#file-list');
 
   // Click the gear menu button.
@@ -552,7 +552,7 @@ export async function openHelpPageFromDriveVolume() {
  * settings page when the user is navigating within local folders.
  */
 export async function enableDisableStorageSettingsLink() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN);
 
   // Click the gear menu button.
@@ -563,7 +563,7 @@ export async function enableDisableStorageSettingsLink() {
   await remoteCall.waitForElement(appId, '#volume-space-info[disabled]');
 
   // Navigate to Android files.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Play files');
 
   // Click the gear menu button.
@@ -593,8 +593,8 @@ export async function enableDisableStorageSettingsLink() {
  */
 export async function showAvailableStorageMyFiles() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Wait for the gear menu button to appear and click it.
   await remoteCall.waitAndClickElement(appId, '#gear-button');
@@ -620,8 +620,8 @@ export async function showAvailableStorageDrive() {
       1 * 1024 * 1024, 2 * 1024 * 1024, false);
 
   // Open Files app on Drive containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
 
   // Wait for the gear menu button to appear and click it.
   await remoteCall.waitAndClickElement(appId, '#gear-button');
@@ -652,10 +652,10 @@ export async function showAvailableStorageSmbfs() {
   await sendTestMessage({name: 'mountSmbfs'});
 
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/SMB Share');
 
   // Wait for the volume's file list to appear.
@@ -689,10 +689,10 @@ export async function showAvailableStorageDocProvider() {
       ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
 
   // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToHaveChildrenByType(
       documentsProviderVolumeType, /* hasChildren= */ true);
 
@@ -725,8 +725,8 @@ export async function showAvailableStorageDocProvider() {
  */
 export async function showManageMirrorSyncShowsOnlyInLocalRoot() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Wait for the gear menu button to appear and click it.
   await remoteCall.waitAndClickElement(appId, '#gear-button');
@@ -751,7 +751,7 @@ export async function showManageMirrorSyncShowsOnlyInLocalRoot() {
           '[command=\'#manage-mirrorsync\']:not([disabled][hidden])');
 
   // Navigate to the Google Drive root.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive');
 
   // Wait for the gear menu button to appear and click it.

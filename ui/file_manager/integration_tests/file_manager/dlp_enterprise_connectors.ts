@@ -4,7 +4,7 @@
 
 import {addEntries, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 const allowedFileEntry = new TestEntryInfo({
@@ -58,14 +58,14 @@ export async function twoWarningsProceeded() {
   await addEntries(['local'], [allowedFileEntry, warnedFileEntry]);
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [allowedFileEntry, warnedFileEntry], []);
 
   // Mount a USB volume.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Set the mock to pause the first task.
@@ -174,7 +174,7 @@ export async function differentBlockPolicies() {
       ['local'], [allowedFileEntry, blockedFileEntry1, blockedFileEntry2]);
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
       [allowedFileEntry, blockedFileEntry1, blockedFileEntry2], []);
 
@@ -182,7 +182,7 @@ export async function differentBlockPolicies() {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Set the mock to block one file.

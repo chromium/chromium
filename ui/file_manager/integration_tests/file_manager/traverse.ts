@@ -4,7 +4,7 @@
 
 import {addEntries, ENTRIES, RootPath} from '../test_util.js';
 
-import {openNewWindow, remoteCall} from './background.js';
+import {remoteCall} from './background.js';
 import {NESTED_ENTRY_SET} from './test_data.js';
 
 /**
@@ -13,7 +13,7 @@ import {NESTED_ENTRY_SET} from './test_data.js';
  */
 async function traverseDirectories(path: string) {
   // Open Files app. Do not add initial files.
-  const appId = await openNewWindow(path);
+  const appId = await remoteCall.openNewWindow(path);
 
   // Check the initial view.
   await remoteCall.waitForElement(appId, '#detail-table');

@@ -4,7 +4,7 @@
 
 import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {openNewWindow, remoteCall} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 interface TransferLocationOptions {
@@ -430,7 +430,7 @@ async function setupForFileTransferConnector(
   const destEntriesPromise =
       addEntries([transferInfo.destination.volumeName], dstContents);
 
-  const appId = await openNewWindow(RootPath.DOWNLOADS, {});
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS, {});
   await remoteCall.waitForElement(appId, '#detail-table');
 
   // Wait until the elements are loaded in the table.
@@ -477,7 +477,7 @@ async function verifyDirectoryRecursively(
       {ignoreLastModifiedTime: true});
 
   // 2. For each subdirectory: enter subdirectory and call recursion.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   for (const entry of currentEntries.filter(
            entry => entry.type === EntryType.DIRECTORY)) {
     currentSubDirectory.push(entry.nameText);
@@ -676,7 +676,7 @@ async function openFilesAppAndInitTransfer(
       transferInfo, entryTestSet, [ENTRIES.hello]);
 
   // Select the source folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(transferInfo.source.breadcrumbsPath);
 
   if (transferInfo.source.volumeName === 'android_files') {
@@ -752,7 +752,7 @@ async function verifyAfterPasteBlocking(
       await sendTestMessage({name: 'doesBypassRequireJustification'}) ===
       'true';
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   if (usesNewFileTransferConnectorUI &&
       expectedNumberOfWarnedFilesByConnectors > 0) {
@@ -889,7 +889,7 @@ async function verifyAfterPasteReportOnly(
       appId, expectedEntries, transferInfo.destination.breadcrumbsPath);
 
   // Verify contents of the source directory.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(transferInfo.source.breadcrumbsPath);
   let expectedSourceEntries = entryTestSet;
   if (transferInfo.isMove) {
@@ -937,7 +937,7 @@ async function verifyAfterPasteReportOnlyNoSpace(
       appId, expectedEntries, transferInfo.destination.breadcrumbsPath);
 
   // Verify contents of the source directory.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(transferInfo.source.breadcrumbsPath);
   // The source entries should be unchanged.
   const expectedSourceEntries = entryTestSet;

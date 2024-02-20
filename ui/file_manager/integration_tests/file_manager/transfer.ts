@@ -5,7 +5,7 @@
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, OFFLINE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
@@ -140,11 +140,11 @@ async function transferBetweenVolumes(transferInfo: TransferInfo) {
       ]);
 
   // Open files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, localFiles, driveFiles);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, localFiles, driveFiles);
 
   // Expand Drive root if either src or dst is within Drive.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   if (transferInfo.source.isTeamDrive || transferInfo.destination.isTeamDrive) {
     const myDriveContent = TestEntryInfo.getExpectedRows(driveFiles.filter(
         e => e.teamDriveName === '' && e.computerName === ''));
@@ -580,7 +580,8 @@ export async function transferDragDropActiveLeave() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -591,7 +592,7 @@ export async function transferDragDropActiveLeave() {
   await remoteCall.waitAndClickElement(appId, source);
 
   // Wait for the directory tree target.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByLabel('My files');
 
   // Check: the html element should not have drag-drop-active class.
@@ -620,10 +621,11 @@ export async function transferDragDropActiveDrop() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Expand Downloads to display "photos" folder in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel('Downloads');
 
   // The drag has to start in the file list column "name" text, otherwise it
@@ -663,7 +665,8 @@ export async function transferDragDropTreeItemAccepts() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -674,7 +677,7 @@ export async function transferDragDropTreeItemAccepts() {
   await remoteCall.waitAndClickElement(appId, source);
 
   // Wait for the directory tree target.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByLabel('My files');
 
   // Drag the source and hover it over the target.
@@ -704,7 +707,8 @@ export async function transferDragDropTreeItemDenies() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -715,7 +719,7 @@ export async function transferDragDropTreeItemDenies() {
   await remoteCall.waitAndClickElement(appId, source);
 
   // Wait for the directory tree target.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByLabel('Recent');
 
   // Drag the source and hover it over the target.
@@ -748,7 +752,8 @@ export async function transferDragAndHoverTreeItemEntryList() {
   await sendTestMessage({name: 'mountUsbWithPartitions'});
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -756,7 +761,7 @@ export async function transferDragAndHoverTreeItemEntryList() {
       `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
 
   // Wait for the directory tree target.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByLabel('Drive Label');
 
   // Drag the source and hover it over the target.
@@ -778,7 +783,8 @@ export async function transferDragAndHoverTreeItemFakeEntry() {
   await sendTestMessage({name: 'mountFakeUsb'});
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -786,8 +792,8 @@ export async function transferDragAndHoverTreeItemFakeEntry() {
       `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
 
   // Wait for the directory tree target.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  if (await isSinglePartitionFormat(appId)) {
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  if (await remoteCall.isSinglePartitionFormat(appId)) {
     await directoryTree.waitForItemByLabel('FAKEUSB');
     await directoryTree.expandTreeItemByLabel('FAKEUSB');
   }
@@ -798,7 +804,7 @@ export async function transferDragAndHoverTreeItemFakeEntry() {
       source, 'fake-usb', /* skipDrop= */ true);
 
   let navigationPath = '/fake-usb';
-  if (await isSinglePartitionFormat(appId)) {
+  if (await remoteCall.isSinglePartitionFormat(appId)) {
     navigationPath = '/FAKEUSB/fake-usb';
   }
   // Check: drag hovering should navigate the file list.
@@ -812,7 +818,8 @@ export async function transferDragFileListItemSelects() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // The drag has to start in the file list column "name" text, otherwise it
   // starts a drag-selection instead of a drag operation.
@@ -848,10 +855,11 @@ export async function transferDragAndDrop() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Expand Downloads to display "photos" folder in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel('Downloads');
 
   // The drag has to start in the file list column "name" text, otherwise it
@@ -891,10 +899,11 @@ export async function transferDragAndDropFolder() {
   const entries = [ENTRIES.directoryA, ENTRIES.directoryB, ENTRIES.directoryD];
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Expand Downloads to display folder "D" in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel('Downloads');
 
   // The drag has to start in the file list column "name" text, otherwise it
@@ -926,10 +935,11 @@ export async function transferDragAndHover() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Expand Downloads to display "photos" folder in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel('Downloads');
 
   // The drag has to start in the file list column "name" text, otherwise it
@@ -953,8 +963,8 @@ export async function transferDragAndHover() {
  * Tests dropping a file originated from the browser.
  */
 export async function transferDropBrowserFile() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Send drop event on current directory.
   chrome.test.assertTrue(
@@ -975,7 +985,8 @@ export async function transferDeletedFile() {
   const entry = ENTRIES.hello;
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -1025,7 +1036,8 @@ export async function transferInfoIsRemembered() {
   const entry = ENTRIES.hello;
 
   // Open files app.
-  let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  let appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -1049,7 +1061,7 @@ export async function transferInfoIsRemembered() {
   const secondaryText = panel.attributes['secondary-text'];
 
   // Open a Files app window again.
-  appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Check the feedback panel text is remembered.
   panel = await remoteCall.waitForElement(
@@ -1065,13 +1077,14 @@ export async function transferToUsbHasDestinationText() {
   const entry = ENTRIES.hello;
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Mount a USB volume.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Select the file.
@@ -1082,7 +1095,7 @@ export async function transferToUsbHasDestinationText() {
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']));
 
   let navigationPath = '/fake-usb';
-  if (await isSinglePartitionFormat(appId)) {
+  if (await remoteCall.isSinglePartitionFormat(appId)) {
     navigationPath = '/FAKEUSB/fake-usb';
   }
   // Select USB volume.
@@ -1113,7 +1126,8 @@ export async function transferDismissedErrorIsRemembered() {
   const entry = ENTRIES.hello;
 
   // Open Files app on Downloads.
-  let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  let appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select a file to copy.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -1127,7 +1141,7 @@ export async function transferDismissedErrorIsRemembered() {
       'forceErrorsOnFileOperations', appId, [true]));
 
   // Select Downloads.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Downloads');
 
   // Paste the file to begin a copy operation.
@@ -1153,7 +1167,8 @@ export async function transferDismissedErrorIsRemembered() {
       [['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']]));
 
   // Open a Files app window again.
-  appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Turn off the error generation for file operations.
   chrome.test.assertFalse(await remoteCall.callRemoteTestUtil(
@@ -1178,7 +1193,7 @@ export async function transferDismissedErrorIsRemembered() {
  * Tests no remaining time displayed for not supported operations like format.
  */
 export async function transferNotSupportedOperationHasNoRemainingTimeText() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Show a |format| progress panel.
   await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
@@ -1216,7 +1231,7 @@ export async function transferNotSupportedOperationHasNoRemainingTimeText() {
  * Use case: crbug/1137229
  */
 export async function transferUpdateSamePanelItem() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Show a |format| error in feedback panel.
   await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
@@ -1250,7 +1265,7 @@ export async function transferUpdateSamePanelItem() {
  * Tests prepraring message shown when the remaining time is zero.
  */
 export async function transferShowPreparingMessageForZeroRemainingTime() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Show a |copy| progress in feedback panel.
   await remoteCall.callRemoteTestUtil('sendProgressItem', null, [

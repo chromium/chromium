@@ -5,7 +5,7 @@
 import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, EntryType, getCaller, pending, REPEAT_UNTIL_INTERVAL, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 
-import {createShortcut, isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, COMPUTERS_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 
@@ -14,7 +14,7 @@ import {BASIC_DRIVE_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, COMPUTERS_ENTRY_SET, SHA
  * we add destination directory.
  */
 async function setupForDirectoryTreeContextMenuTest() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Add destination directory.
   await addEntries(['local'], [new TestEntryInfo({
@@ -50,7 +50,7 @@ async function clickDirectoryTreeContextMenuItem(
     appId: string, path: string, id: string) {
   const contextMenu = '#directory-tree-context-menu:not([hidden])';
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   // Right click photos directory.
   await directoryTree.showContextMenuForItemByPath(path);
@@ -71,7 +71,7 @@ async function clickDirectoryTreeContextMenuItem(
  */
 async function navigateToDestinationDirectoryAndTestPaste(appId: string) {
   // Navigates to destination directory.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/destination');
 
   // Confirm files before paste.
@@ -95,7 +95,7 @@ async function navigateToDestinationDirectoryAndTestPaste(appId: string) {
 async function renamePhotosDirectoryTo(
     appId: string, newName: string,
     useKeyboardShortcut: boolean): Promise<void> {
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   if (useKeyboardShortcut) {
     await directoryTree.triggerRenameWithKeyboardByLabel('photos');
   } else {
@@ -113,7 +113,7 @@ async function renameDirectoryFromDirectoryTreeSuccessCase(
     useKeyboardShortcut: boolean) {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await renamePhotosDirectoryTo(appId, 'New photos', useKeyboardShortcut);
 
@@ -129,7 +129,7 @@ async function renameDirectoryFromDirectoryTreeAndConfirmAlertDialog(
     newName: string) {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await renamePhotosDirectoryTo(appId, newName, false);
   // The folder name is not changed.
@@ -146,7 +146,7 @@ async function createDirectoryFromDirectoryTree(
     useKeyboardShortcut: boolean, changeCurrentDirectory: boolean) {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   if (changeCurrentDirectory) {
     await directoryTree.navigateToPath('/My files/Downloads/photos');
   } else {
@@ -187,7 +187,7 @@ async function checkContextMenu(
     menuStates: Array<Array<string|boolean>>, rootsMenu?: boolean,
     shortcutToPath?: string) {
   // Navigate to the folder that will test the context menu.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   const query =
       await directoryTree.navigateToPath(breadcrumbsPath, shortcutToPath);
 
@@ -269,7 +269,7 @@ async function checkContextMenu(
  */
 export async function dirCopyWithContextMenu() {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'copy');
   await navigateToDestinationDirectoryAndTestPaste(appId);
@@ -280,7 +280,7 @@ export async function dirCopyWithContextMenu() {
  */
 export async function dirCopyWithKeyboard() {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
 
   // Press Ctrl+C.
@@ -295,7 +295,7 @@ export async function dirCopyWithKeyboard() {
 export async function dirCopyWithoutChangingCurrent() {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel('Downloads');
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'copy');
   await navigateToDestinationDirectoryAndTestPaste(appId);
@@ -306,7 +306,7 @@ export async function dirCopyWithoutChangingCurrent() {
  */
 export async function dirCutWithContextMenu() {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'cut');
   await navigateToDestinationDirectoryAndTestPaste(appId);
@@ -320,7 +320,7 @@ export async function dirCutWithContextMenu() {
  */
 export async function dirCutWithKeyboard() {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
 
   // Press Ctrl+X.
@@ -338,7 +338,7 @@ export async function dirCutWithKeyboard() {
 export async function dirCutWithoutChangingCurrent() {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel('Downloads');
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'cut');
   await navigateToDestinationDirectoryAndTestPaste(appId);
@@ -353,7 +353,7 @@ export async function dirPasteWithContextMenu() {
   const destinationPath = '/Downloads/destination';
 
   // Copy photos directory as a test data.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await remoteCall.callRemoteTestUtil(
       'fakeKeyDown', appId, ['body', 'c', true /* ctrl */, false, false]);
@@ -384,7 +384,7 @@ export async function dirPasteWithoutChangingCurrent() {
   const destinationPath = '/Downloads/destination';
 
   const appId = await setupForDirectoryTreeContextMenuTest();
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel('Downloads');
   await directoryTree.focusTree();
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'copy');
@@ -411,7 +411,7 @@ export async function dirRenameWithContextMenu() {
  * folder. crbug.com/885328.
  */
 export async function dirRenameUpdateChildrenBreadcrumbs() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Add child-folder inside /photos/
   await addEntries(['local'], [new TestEntryInfo({
@@ -424,7 +424,7 @@ export async function dirRenameUpdateChildrenBreadcrumbs() {
                    })]);
 
   // Navigate to child folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos/child-folder');
 
   // Rename parent folder.
@@ -456,7 +456,7 @@ export async function dirRenameWithKeyboard() {
  */
 export async function dirRenameWithoutChangingCurrent() {
   const appId = await setupForDirectoryTreeContextMenuTest();
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByLabel('Downloads');
   await directoryTree.waitForItemByPath('/Downloads/photos');
   await renamePhotosDirectoryTo(
@@ -470,7 +470,7 @@ export async function dirRenameWithoutChangingCurrent() {
 export async function dirRenameToEmptyString() {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await renamePhotosDirectoryTo(appId, '', false);
   // The folder name is not changed.
@@ -492,13 +492,13 @@ export async function dirRenameToExisting() {
  */
 export async function dirRenameRemovableWithKeyboard() {
   // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Mount a single partition NTFS USB volume: they can be renamed.
   await sendTestMessage({name: 'mountFakeUsb', filesystem: 'ntfs'});
 
   // Wait for the USB mount and click the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('removable');
 
   // Check: the USB should be the currently focused directory tree item.
@@ -520,13 +520,13 @@ export async function dirRenameRemovableWithKeyboard() {
  */
 export async function dirRenameRemovableWithContentMenu() {
   // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Mount a single partition NTFS USB volume: they can be renamed.
   await sendTestMessage({name: 'mountFakeUsb', filesystem: 'ntfs'});
 
   // Wait for the USB mount and click the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('removable');
 
   // Check: the USB should be the currently focused directory tree item.
@@ -560,11 +560,11 @@ export async function dirRenameRemovableWithContentMenu() {
  */
 export async function dirContextMenuForRenameInput() {
   // Open Files app on local downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Navigate to the photos folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
 
   // Start renaming the photos folder.
@@ -630,9 +630,9 @@ export async function dirCreateMultipleFolders() {
   const caller = getCaller();
 
   // Open Files app on local downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   const createNewFolder = async (name: string) => {
     // Ctrl+E to create a new folder in downloads.
@@ -686,10 +686,10 @@ export async function dirCreateMultipleFolders() {
  */
 export async function dirContextMenuRecent() {
   // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Select Recent root.
@@ -723,7 +723,7 @@ export async function dirContextMenuZip() {
   ];
 
   // Open Files app on Downloads containing a ZIP file.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Select the ZIP file.
@@ -744,7 +744,7 @@ export async function dirContextMenuZip() {
       appId, '#roots-context-menu [command="#unmount"]:not([disabled])');
 
   // Ensure the archive has been removed.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemLostByLabel(ENTRIES.zipArchive.nameText);
 }
 
@@ -759,7 +759,7 @@ export async function dirContextMenuZipEject() {
   });
 
   // Open Files app on Downloads containing a zip file.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Select the ZIP file.
@@ -771,7 +771,7 @@ export async function dirContextMenuZipEject() {
       !!await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key),
       'fakeKeyDown failed');
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   // Focus on the eject button and right click the eject button.
   await directoryTree.showContextMenuForEjectButtonByLabel(
@@ -800,10 +800,11 @@ export async function dirContextMenuShortcut() {
   const entryName = entry.nameText;
 
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
 
   // Create a shortcut to directory D.
-  await createShortcut(appId, entryName);
+  await remoteCall.createShortcut(appId, entryName);
 
   // Check the context menu is on desired state.
   await checkContextMenu(
@@ -858,7 +859,7 @@ export async function dirContextMenuMyFilesWithPaste() {
   });
 
   // Open Files app on local Downloads.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
       [ENTRIES.beautiful, ENTRIES.photos, ENTRIES.hello, photosTwo, photosT],
       []);
@@ -903,8 +904,7 @@ export async function dirContextMenuMyFilesWithPaste() {
   }
 
   {
-    const directoryTree =
-        await DirectoryTreePageObject.create(appId, remoteCall);
+    const directoryTree = await DirectoryTreePageObject.create(appId);
     await directoryTree.navigateToPath('/My files/Downloads');
     // Select and copy photosT file into the clipboard to test
     // paste-into-folder command.
@@ -969,7 +969,7 @@ export async function dirContextMenuMyFiles() {
   ];
 
   // Open Files app on local Downloads.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
 
   // Check the context menu is on desired state for MyFiles.
@@ -985,7 +985,7 @@ export async function dirContextMenuMyFiles() {
       appId, '/My files/Downloads/photos', photosMenus, false /* rootMenu */);
 
   // Right click Linux files (FakeEntry).
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.showContextMenuForItemByLabel('Linux files');
 
   // Wait a few milliseconds to give menu a chance to display.
@@ -1019,13 +1019,13 @@ export async function dirContextMenuCrostini() {
   await addEntries(['crostini'], [ENTRIES.photos]);
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select Crostini, because the first right click doesn't show any context
   // menu, just actually mounts crostini converting the tree item from fake to
   // real root.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectPlaceholderItemByType('crostini');
 
   // Wait for the real root to appear.
@@ -1060,8 +1060,8 @@ export async function dirContextMenuPlayFiles() {
   await addEntries(['android_files'], [ENTRIES.directoryDocuments]);
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check the context menu for Play files.
   await checkContextMenu(
@@ -1142,10 +1142,10 @@ export async function dirContextMenuUsbs() {
   await sendTestMessage({name: 'mountFakeUsb', filesystem: 'ext4'});
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-  if (await isSinglePartitionFormat(appId)) {
+  if (await remoteCall.isSinglePartitionFormat(appId)) {
     // Check the context menu for single partition drive.
     await checkContextMenu(
         appId, '/FAKEUSB', ext4DeviceMenus, true /* rootMenu */);
@@ -1244,10 +1244,10 @@ export async function dirContextMenuUsbDcim() {
   await sendTestMessage({name: 'mountFakeUsbDcim'});
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-  if (await isSinglePartitionFormat(appId)) {
+  if (await remoteCall.isSinglePartitionFormat(appId)) {
     // Check the context menu for single partition USB.
     await checkContextMenu(
         appId, '/FAKEUSB/fake-usb', deviceUsbMenus, false /* rootMenu */);
@@ -1282,11 +1282,11 @@ export async function dirContextMenuMtp() {
   await sendTestMessage({name: 'mountFakeMtp'});
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select Recent root.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToHaveChildrenByLabel(
       'fake-mtp', /* hasChildren= */ true);
   await directoryTree.selectItemByLabel('fake-mtp');
@@ -1326,8 +1326,8 @@ export async function dirContextMenuFsp() {
   await sendTestMessage({name: 'launchProviderExtension', manifest: manifest});
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check the context menu for FSP root.
   await checkContextMenu(appId, '/Test (1)', fspMenus, true /* rootMenu */);
@@ -1354,11 +1354,11 @@ export async function dirContextMenuDocumentsProvider() {
   await addEntries(['documents_provider'], [ENTRIES.readOnlyFolder]);
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Wait for DocumentsProvider to appear.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToHaveChildrenByLabel(
       'DocumentsProvider', /* hasChildren= */ true);
 
@@ -1414,8 +1414,8 @@ export async function dirContextMenuMyDrive() {
   ];
 
   // Open Files App on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
@@ -1425,7 +1425,7 @@ export async function dirContextMenuMyDrive() {
       'execCommand failed');
 
   // Check that Google Drive is expanded.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToExpandByLabel('Google Drive');
 
   // Check the context menu for My Drive root.
@@ -1491,8 +1491,8 @@ export async function dirContextMenuSharedDrive() {
   ];
 
   // Open Files App on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], SHARED_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], SHARED_DRIVE_ENTRY_SET);
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
@@ -1502,7 +1502,7 @@ export async function dirContextMenuSharedDrive() {
       'execCommand failed');
 
   // Check that Google Drive is expanded.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToExpandByLabel('Google Drive');
 
   // Check the context menu for Shared drives grand root.
@@ -1536,11 +1536,11 @@ export async function dirContextMenuSharedDrive() {
  */
 export async function dirContextMenuSharedWithMe() {
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
 
   // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Select Shared with me root.
@@ -1564,11 +1564,11 @@ export async function dirContextMenuSharedWithMe() {
  */
 export async function dirContextMenuOffline() {
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
 
   // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Select Shared with me root.
@@ -1619,8 +1619,8 @@ export async function dirContextMenuComputers() {
   ];
 
   // Open Files App on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
@@ -1630,7 +1630,7 @@ export async function dirContextMenuComputers() {
       'execCommand failed');
 
   // Check that Google Drive is expanded.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToExpandByLabel('Google Drive');
 
   // Check the context menu for Computers grand root.
@@ -1654,8 +1654,8 @@ export async function dirContextMenuTrash() {
     ['#empty-trash', true],
   ];
 
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Check the context menu for Trash.
   await checkContextMenu(appId, '/Trash', trashMenu, /*rootMenu=*/ false);
@@ -1667,11 +1667,11 @@ export async function dirContextMenuTrash() {
  */
 export async function dirContextMenuFocus() {
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Wait for /My files/Downloads to appear in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByLabel('Downloads');
 
   // Right-click the /My files/Downloads tree row.
@@ -1698,11 +1698,11 @@ export async function dirContextMenuFocus() {
  */
 export async function dirContextMenuKeyboardNavigation() {
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Navigate to /My files/Downloads which will focus the Downloads tree item.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads');
 
   // Send a contextmenu event to the directory tree. Downloads is initially

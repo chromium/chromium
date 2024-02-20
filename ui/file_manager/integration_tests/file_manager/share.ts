@@ -4,7 +4,8 @@
 
 import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
+
 
 /*
  * Verify that sharing options for an encrypted files are limited to nearby
@@ -14,8 +15,8 @@ import {remoteCall, setupAndWaitUntilReady} from './background.js';
  * be removed.
  */
 export async function checkEncryptedSharesheetOptions() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
   await remoteCall.showContextMenuFor(appId, ENTRIES.testCSEFile.nameText);
 

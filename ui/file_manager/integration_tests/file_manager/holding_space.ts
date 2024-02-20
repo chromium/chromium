@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
+import {getCaller, openEntryChoosingWindow, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 
-import {openEntryChoosingWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
+
 
 /**
  * Tests that the holding space welcome banner appears and that it can be
@@ -12,7 +13,7 @@ import {openEntryChoosingWindow, remoteCall, setupAndWaitUntilReady} from './bac
  */
 export async function holdingSpaceWelcomeBanner() {
   // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   await remoteCall.isolateBannerForTesting(
       appId, 'holding-space-welcome-banner');
@@ -66,7 +67,7 @@ export async function holdingSpaceWelcomeBannerWillShowForModalDialogs() {
  */
 export async function holdingSpaceWelcomeBannerOnTabletModeChanged() {
   // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Check: `document.body` should indicate that tablet mode is disabled.
   chrome.test.assertFalse(

@@ -5,7 +5,7 @@
 import {DialogType} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, EntryType, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, FakeTask} from './test_data.js';
 
@@ -24,7 +24,7 @@ async function copyOrMove(
     chrome.test.assertTrue(false, 'copyOrMove invalid parameters');
   }
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads');
   await remoteCall.waitForFiles(appId, [file.getExpectedRow()]);
   await remoteCall.waitUntilSelected(appId, file.nameText);
@@ -149,7 +149,8 @@ export async function transferShowDlpToast() {
   const entry = ENTRIES.hello;
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Setup the restrictions.
   await sendTestMessage({
@@ -161,7 +162,7 @@ export async function transferShowDlpToast() {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Cut and paste the file.
@@ -200,7 +201,7 @@ export async function dlpShowManagedIcon() {
   await sendTestMessage({name: 'setIsRestrictedByAnyRuleRestrictions'});
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   const dlpManagedIcon = '#file-list .dlp-managed-icon.is-dlp-restricted';
 
@@ -239,7 +240,8 @@ export async function dlpContextMenuRestrictionDetails() {
   await sendTestMessage({name: 'setIsRestrictedByAnyRuleBlocked'});
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Wait for the DLP managed icon to be shown - this also means metadata has
   // been cached and can be used to show the context menu command.
@@ -284,8 +286,7 @@ export async function saveAsDlpRestrictedAndroid() {
   const closer = async (dialog: string) => {
     // Select My Files folder and wait for file list to display Downloads, Play
     // files, and Linux files.
-    const directoryTree =
-        await DirectoryTreePageObject.create(dialog, remoteCall);
+    const directoryTree = await DirectoryTreePageObject.create(dialog);
     await directoryTree.navigateToPath('/My files');
 
     await remoteCall.waitForFiles(
@@ -333,7 +334,7 @@ export async function saveAsDlpRestrictedAndroid() {
 
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [], closer));
 }
 
@@ -357,8 +358,7 @@ export async function saveAsDlpRestrictedVm() {
 
   const closer = async (dialog: string) => {
     // Select My Files folder and wait for file list.
-    const directoryTree =
-        await DirectoryTreePageObject.create(dialog, remoteCall);
+    const directoryTree = await DirectoryTreePageObject.create(dialog);
     await directoryTree.navigateToPath('/My files');
     const guestFilesRow = [guestName, '--', 'Folder'];
     await remoteCall.waitForFiles(
@@ -410,7 +410,7 @@ export async function saveAsDlpRestrictedVm() {
 
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [], closer));
 }
 
@@ -434,8 +434,7 @@ export async function saveAsDlpRestrictedCrostini() {
 
     // Select My Files folder and wait for file list to display Downloads, Play
     // files, and Linux files.
-    const directoryTree =
-        await DirectoryTreePageObject.create(dialog, remoteCall);
+    const directoryTree = await DirectoryTreePageObject.create(dialog);
     await directoryTree.navigateToPath('/My files');
     await remoteCall.waitForFiles(
         dialog, [downloadsRow, playFilesRow, linuxFilesRow],
@@ -472,7 +471,7 @@ export async function saveAsDlpRestrictedCrostini() {
 
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [ENTRIES.hello], closer));
 }
 
@@ -487,8 +486,7 @@ export async function saveAsDlpRestrictedUsb() {
   await sendTestMessage({name: 'setBlockedComponent', component: 'usb'});
 
   const closer = async (dialog: string) => {
-    const directoryTree =
-        await DirectoryTreePageObject.create(dialog, remoteCall);
+    const directoryTree = await DirectoryTreePageObject.create(dialog);
     // It should be disabled in the navigation list, but the eject button should
     // be enabled.
     let realTreeItem = await directoryTree.waitForItemByType('removable');
@@ -512,7 +510,7 @@ export async function saveAsDlpRestrictedUsb() {
 
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [], closer));
 }
 
@@ -524,8 +522,7 @@ export async function saveAsDlpRestrictedDrive() {
   await sendTestMessage({name: 'setBlockedComponent', component: 'drive'});
 
   const closer = async (dialog: string) => {
-    const directoryTree =
-        await DirectoryTreePageObject.create(dialog, remoteCall);
+    const directoryTree = await DirectoryTreePageObject.create(dialog);
     // It should be disabled in the navigation list, and the expand icon
     // shouldn't be visible.
     const treeItem = await directoryTree.waitForItemToHaveChildrenByLabel(
@@ -539,7 +536,7 @@ export async function saveAsDlpRestrictedDrive() {
 
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [], closer));
 }
 
@@ -565,7 +562,7 @@ export async function saveAsNonDlpRestricted() {
   // Open a save dialog in Play Files.
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'android_files', BASIC_ANDROID_ENTRY_SET,
           allowedCloser));
 }
@@ -596,7 +593,7 @@ export async function saveAsDlpRestrictedRedirectsToMyFiles() {
   // dialog should open in the default root instead.
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'android_files', [ENTRIES.hello], blockedCloser));
 }
 
@@ -652,7 +649,7 @@ export async function openDlpRestrictedFile() {
 
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET, closer));
 }
 
@@ -721,11 +718,11 @@ export async function openFolderDlpRestricted() {
 
   chrome.test.assertEq(
       undefined,
-      await openAndWaitForClosingDialog(
+      await remoteCall.openAndWaitForClosingDialog(
           {type: 'openFile'}, 'downloads', [ENTRIES.directoryA], closer));
 
   // Open Files app on Downloads as a folder picker.
-  const dialog = await setupAndWaitUntilReady(
+  const dialog = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, entries, [], {type: DialogType.SELECT_UPLOAD_FOLDER});
 
   // Verify that directoryA is not disabled.
@@ -752,7 +749,8 @@ export async function openFolderDlpRestricted() {
 export async function fileTasksDlpRestricted() {
   const entry = ENTRIES.hello;
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
   // Override file tasks so that some are DLP disabled.
   const fakeTasks = [
     new FakeTask(
@@ -820,7 +818,8 @@ export async function zipExtractRestrictedArchiveCheckContent() {
   await sendTestMessage({name: 'setupScopedFileAccessDelegateAllowed'});
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Wait for the DLP managed icon to be shown.
   await remoteCall.waitForElementsCount(
@@ -887,7 +886,8 @@ export async function blockShowsPanelItem() {
   await addEntries(['local'], [entry]);
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Setup the restrictions.
   await sendTestMessage({
@@ -899,7 +899,7 @@ export async function blockShowsPanelItem() {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Copy and paste the file to USB.
@@ -935,7 +935,8 @@ export async function warnShowsPanelItem() {
   await addEntries(['local'], [entry]);
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Set the mock to pause the first task.
   await sendTestMessage({
@@ -949,7 +950,7 @@ export async function warnShowsPanelItem() {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Copy and paste the file to USB.
@@ -994,7 +995,8 @@ export async function warnTimeoutShowsPanelItem() {
   await addEntries(['local'], [entry]);
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Set the mock to pause the first task.
   await sendTestMessage({
@@ -1008,7 +1010,7 @@ export async function warnTimeoutShowsPanelItem() {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Copy and paste the file to USB.
@@ -1044,7 +1046,8 @@ export async function mixedSummaryDisplayPanel() {
   await addEntries(['local'], [entry]);
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Block the second task.
   await sendTestMessage({
@@ -1056,7 +1059,7 @@ export async function mixedSummaryDisplayPanel() {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Copy and paste the file to USB.

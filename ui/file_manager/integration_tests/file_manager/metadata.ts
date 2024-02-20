@@ -5,7 +5,7 @@
 import {MetadataStats} from '../prod/file_manager/shared_types.js';
 import {addEntries, createTestFile, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
 
-import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
@@ -94,12 +94,12 @@ const testEntries = [
  */
 export async function metadataDrive() {
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, testEntries, testEntries);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, testEntries, testEntries);
 
   // Navigate 2 folders deep, because navigating in directory tree might
   // trigger further metadata fetches.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive/photos1/folder1');
 
   // Fetch the metadata stats.
@@ -133,12 +133,12 @@ export async function metadataDrive() {
  */
 export async function metadataDownloads() {
   // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, testEntries, testEntries);
 
   // Navigate 2 folders deep, because navigating in directory tree might
   // triggers further metadata fetches.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos1/folder1');
 
   // Fetch the metadata stats.
@@ -193,12 +193,13 @@ export async function metadataLargeDrive() {
   }
 
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, entries, entries);
-  console.log('setupAndWaitUntilReady finished!');
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, entries, entries);
+  console.log(' remoteCall.setupAndWaitUntilReady finished!');
 
   // Navigate only 1 folder deep,which is slightly different from
   // metadataDrive test.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive/folder1');
 
   // Wait for the metadata stats to reach the desired count.
@@ -268,11 +269,11 @@ export async function metadataTeamDrives() {
   const downloadsEntries = entries.slice(0, 7);
 
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, downloadsEntries, entries.concat(driveEntries));
 
   // Navigate to Shared drives root.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/Shared drives');
 
   // Expand Shared Drives, because expanding might need metadata.
@@ -325,11 +326,11 @@ export async function metadataDocumentsProvider() {
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
 
   // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount and click to open the
   // DocumentsProvider volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('documents_provider');
 
   // Check: the DocumentsProvider files should appear in the file list.

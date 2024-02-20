@@ -5,7 +5,7 @@
 import {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {mountCrostini, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET, RECENT_ENTRY_SET} from './test_data.js';
 
@@ -87,7 +87,7 @@ async function navigateToRecent(
     [RecentFilterType.DOCUMENT]: '/Documents',
   };
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Recent');
   // "All" button is activated by default, no need to click.
   if (type !== RecentFilterType.ALL) {
@@ -300,7 +300,7 @@ async function cutFileAndPasteTo(
     appId: string, fileName: string, newFolder: string) {
   await rightClickContextMenu(appId, fileName, 'cut');
   // Go to the new folder to paste.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(newFolder);
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
@@ -359,7 +359,7 @@ async function waitForEmptyFolderMessage(
  */
 export async function recentsDownloads() {
   // Populate downloads.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Verifies file list in Recents.
@@ -380,8 +380,8 @@ export async function recentsDownloads() {
  */
 export async function recentsDrive() {
   // Populate drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
 
   // Verifies file list in Recents.
   await verifyRecents(appId);
@@ -401,7 +401,7 @@ export async function recentsDrive() {
 export async function recentsPlayFiles() {
   // Populate Play Files.
   await addPlayFileEntries();
-  const appId = await openNewWindow(RootPath.ANDROID_FILES, {});
+  const appId = await remoteCall.openNewWindow(RootPath.ANDROID_FILES, {});
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Verifies file list in Recents. Audio files from Play Files folder are
@@ -420,7 +420,7 @@ export async function recentsPlayFiles() {
 export async function recentsSearchPlayFilesShowDownloads() {
   // Populate Play Files.
   await addPlayFileEntries();
-  const appId = await openNewWindow(RootPath.ANDROID_FILES, {});
+  const appId = await remoteCall.openNewWindow(RootPath.ANDROID_FILES, {});
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
   // Verify that the Recent view is correct.
   await verifyRecents(appId, [
@@ -429,7 +429,7 @@ export async function recentsSearchPlayFilesShowDownloads() {
     RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   // Rapidly switch between listing Downloads and accessing them via the Recent
   // view. We leave Downloads empty to make switching faster. The choice of 10
   // switches is somewhat arbitrary. The main thing we are testing is that
@@ -449,7 +449,8 @@ export async function recentsMyFiles() {
   // Populate My Files.
   addEntries(['my_files'], [ENTRIES.beautiful, ENTRIES.photos]);
 
-  const appId = await setupAndWaitUntilReady(RootPath.MY_FILES, [], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.MY_FILES, [], []);
 
   // Verify file list in Recents.
   await verifyRecents(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
@@ -464,7 +465,7 @@ export async function recentsCrostiniNotMounted() {
   // The crostini entries should not show up in recents.
   await addEntries(['crostini'], BASIC_CROSTINI_ENTRY_SET);
 
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
   await verifyRecents(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
 }
@@ -474,10 +475,10 @@ export async function recentsCrostiniNotMounted() {
  * recently will be displayed in Recent folder when Crostini has been mounted.
  */
 export async function recentsCrostiniMounted() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
   // Mount crostini and both downloads and crostini entries will be in recents.
-  await mountCrostini(appId);
+  await remoteCall.mountCrostini(appId);
   await verifyRecents(appId);
 }
 
@@ -487,7 +488,7 @@ export async function recentsCrostiniMounted() {
  */
 export async function recentsDownloadsAndDrive() {
   // Populate both downloads and drive with disjoint sets of files.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.hello, ENTRIES.photos],
       [ENTRIES.desktop, ENTRIES.world, ENTRIES.testDocument]);
   await verifyRecents(appId);
@@ -500,7 +501,7 @@ export async function recentsDownloadsAndDrive() {
 export async function recentsDownloadsAndDriveAndPlayFiles() {
   // Populate downloads, drive and play files.
   await addPlayFileEntries();
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.hello, ENTRIES.photos],
       [ENTRIES.desktop, ENTRIES.world, ENTRIES.testDocument]);
 
@@ -518,7 +519,7 @@ export async function recentsDownloadsAndDriveAndPlayFiles() {
  */
 export async function recentsDownloadsAndDriveWithOverlap() {
   // Populate both downloads and drive with overlapping sets of files.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await verifyRecents(appId, RECENT_ENTRY_SET.concat(RECENT_ENTRY_SET));
 }
 
@@ -530,7 +531,7 @@ export async function recentsDownloadsAndDriveWithOverlap() {
 export async function recentsNested() {
   // Populate downloads with nested folder structure. |desktop| is added to
   // ensure Recents has different files to Downloads/A/B/C
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
       NESTED_ENTRY_SET.concat([ENTRIES.deeplyBuriedSmallJpeg]), []);
 
@@ -547,7 +548,7 @@ export async function recentsNested() {
   await verifyBreadcrumbsPath(appId, '/My files/Downloads/A/B/C');
 
   // Check: The directory should be highlighted in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForSelectedItemByLabel('C');
   await directoryTree.waitForFocusableItemByLabel('C');
 }
@@ -557,7 +558,7 @@ export async function recentsNested() {
  * will be displayed in Recent Audio folder.
  */
 export async function recentAudioDownloads() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // ENTRIES.beautiful is recently-modified and has .ogg file extension.
   await verifyRecentAudio(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
@@ -569,7 +570,7 @@ export async function recentAudioDownloads() {
  * folder will be displayed in Recent Audio folder.
  */
 export async function recentAudioDownloadsAndDrive() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET);
   // TODO(b:267515423): Fix MIME type for Entries.beautiful.
   // ENTRIES.beautiful in BASIC_DRIVE_ENTRY_SET does not have mime type.
@@ -592,7 +593,7 @@ export async function recentAudioDownloadsAndDrive() {
  */
 export async function recentAudioDownloadsAndDriveAndPlayFiles() {
   await addPlayFileEntries();
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET);
   // TODO(b:267515423): Fix MIME type for Entries.beautiful.
   // ENTRIES.beautiful in BASIC_DRIVE_ENTRY_SET does not have mime type.
@@ -608,7 +609,7 @@ export async function recentAudioDownloadsAndDriveAndPlayFiles() {
  * be displayed in Recents Image folder.
  */
 export async function recentImagesDownloads() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // ENTRIES.desktop is recently-modified and has .png file extension.
   await verifyRecentImages(appId, [ENTRIES.desktop], /*trashButton=*/ true);
@@ -620,7 +621,7 @@ export async function recentImagesDownloads() {
  * in Recent Audio folder regardless of whether it's from Downloads or My Drive.
  */
 export async function recentImagesDownloadsAndDrive() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   // TODO(b:267515423): Fix MIME type for Entries.beautiful.
   // ENTRIES.desktop has 'image/png' mime type, too. Both the file in Downloads
   // and the file in Drive should be shown in Images.
@@ -636,7 +637,7 @@ export async function recentImagesDownloadsAndDrive() {
  */
 export async function recentImagesDownloadsAndDriveAndPlayFiles() {
   await addPlayFileEntries();
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await verifyRecentImages(appId, [
     ENTRIES.beautiful,
     ENTRIES.desktop,
@@ -652,7 +653,7 @@ export async function recentImagesDownloadsAndDriveAndPlayFiles() {
 export async function recentVideosDownloads() {
   // RECENTLY_MODIFIED_VIDEO is recently-modified and has .ogv file extension.
   // It should be shown in Videos.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
       BASIC_LOCAL_ENTRY_SET.concat(
           [RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_MOV_VIDEO]),
@@ -668,7 +669,7 @@ export async function recentVideosDownloads() {
  * in Recent Video folder regardless of whether it's from Downloads or My Drive.
  */
 export async function recentVideosDownloadsAndDrive() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
       BASIC_LOCAL_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]),
       BASIC_DRIVE_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]));
@@ -690,7 +691,7 @@ export async function recentVideosDownloadsAndDrive() {
  */
 export async function recentVideosDownloadsAndDriveAndPlayFiles() {
   await addPlayFileEntries();
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
       BASIC_LOCAL_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]),
       BASIC_DRIVE_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]));
@@ -710,7 +711,7 @@ export async function recentVideosDownloadsAndDriveAndPlayFiles() {
  * will be displayed in Recent Document folder.
  */
 export async function recentDocumentsDownloads() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT], []);
   await verifyRecentDocuments(
       appId, [RECENTLY_MODIFIED_DOCUMENT], /*trashButton=*/ true);
@@ -723,7 +724,7 @@ export async function recentDocumentsDownloads() {
  * Drive.
  */
 export async function recentDocumentsDownloadsAndDrive() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
       [RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_VIDEO]);
   // RECENTLY_MODIFIED_DOCUMENT exists in both local and drive folder, the
@@ -739,7 +740,7 @@ export async function recentDocumentsDownloadsAndDrive() {
  */
 export async function recentDocumentsDownloadsAndDriveAndPlayFiles() {
   await addPlayFileEntries();
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
       [RECENTLY_MODIFIED_DOCUMENT]);
   await verifyRecentDocuments(appId, [
@@ -754,7 +755,7 @@ export async function recentDocumentsDownloadsAndDriveAndPlayFiles() {
  * and the "All" filter button will become active and focus.
  */
 export async function recentsFilterResetToAll() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   await navigateToRecent(appId, RecentFilterType.AUDIO);
   // Clicks the active "Audio" filter button.
@@ -774,7 +775,7 @@ export async function recentsFilterResetToAll() {
  * correct a11y messages will be announced.
  */
 export async function recentsA11yMessages() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   await navigateToRecent(appId, RecentFilterType.IMAGE);
   // Checks "images filter on" a11y message is announced.
@@ -809,7 +810,7 @@ export async function recentsA11yMessages() {
  * Tests the read only flag on Recents view should be hidden.
  */
 export async function recentsReadOnlyHidden() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await navigateToRecent(appId);
   const readOnlyIndicator =
       await remoteCall.waitForElement(appId, ['#read-only-indicator']);
@@ -823,7 +824,7 @@ export async function recentsReadOnlyHidden() {
  */
 export async function recentsAllowDeletion() {
   await addPlayFileEntries();
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
   await navigateToRecent(appId);
   const files = TestEntryInfo.getExpectedRows([
@@ -868,7 +869,7 @@ export async function recentsAllowDeletion() {
  */
 export async function recentsAllowMultipleFilesDeletion() {
   await addPlayFileEntries();
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
   await navigateToRecent(appId);
   const files = TestEntryInfo.getExpectedRows([
@@ -917,7 +918,7 @@ export async function recentsAllowMultipleFilesDeletion() {
  * Downloads, Drive.
  */
 export async function recentsAllowRename() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
   await navigateToRecent(appId);
   const files =
@@ -949,8 +950,8 @@ export async function recentsAllowRename() {
  */
 export async function recentsNoRenameForPlayFiles() {
   await addPlayFileEntries();
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
   await navigateToRecent(appId);
   const files = TestEntryInfo.getExpectedRows([
     ENTRIES.beautiful,
@@ -977,7 +978,7 @@ export async function recentsNoRenameForPlayFiles() {
  * Tests cut operation can be performed in Recents view on files from Downloads.
  */
 export async function recentsAllowCutForDownloads() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.directoryA], []);
   const files = [ENTRIES.beautiful.getExpectedRow()];
   const newFolderBreadcrumb =
@@ -1005,7 +1006,7 @@ export async function recentsAllowCutForDownloads() {
  * Tests cut operation can be performed in Recents view on files from Drive.
  */
 export async function recentsAllowCutForDrive() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], [ENTRIES.desktop]);
   const files = TestEntryInfo.getExpectedRows([ENTRIES.desktop]);
   const newFolderBreadcrumb =
@@ -1034,7 +1035,7 @@ export async function recentsAllowCutForDrive() {
  */
 export async function recentsAllowCutForPlayFiles() {
   await addPlayFileEntries();
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
   const files = TestEntryInfo.getExpectedRows([
     RECENT_MODIFIED_ANDROID_DOCUMENT,
@@ -1071,7 +1072,7 @@ export async function recentsTimePeriodHeadings() {
   const todayFile = ENTRIES.hello.cloneWithModifiedDate(getDateWithDayDiff(0));
   const yesterdayFile =
       ENTRIES.desktop.cloneWithModifiedDate(getDateWithDayDiff(1));
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [todayFile, yesterdayFile], []);
   await navigateToRecent(appId);
   await remoteCall.waitForFiles(
@@ -1116,7 +1117,7 @@ export async function recentsTimePeriodHeadings() {
  * Tests message will show in Recents for empty folder.
  */
 export async function recentsEmptyFolderMessage() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
   await navigateToRecent(appId);
   // All filter is on by default.
@@ -1141,8 +1142,8 @@ export async function recentsEmptyFolderMessage() {
  * Tests message will show in Recents after the last file is deleted.
  */
 export async function recentsEmptyFolderMessageAfterDeletion() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
   await navigateToRecent(appId);
   const files = TestEntryInfo.getExpectedRows([ENTRIES.beautiful]);
   await remoteCall.waitForFiles(appId, files);
@@ -1182,8 +1183,8 @@ export async function recentsRespondToTimezoneChangeForListView() {
   const isEarlierThan2AM = (new Date()).getHours() < 2;
 
   // Open Files app and go to Recent tab.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [testFile], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [testFile], []);
   await navigateToRecent(appId);
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([testFile]), {
@@ -1246,8 +1247,8 @@ export async function recentsRespondToTimezoneChangeForGridView() {
   const isEarlierThan2AM = (new Date()).getHours() < 2;
 
   // Open Files app and go to Recent tab.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [testFile], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [testFile], []);
   await navigateToRecent(appId);
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([testFile]), {
@@ -1294,7 +1295,7 @@ export async function recentsRespectSearchWhenSwitchingFilter() {
   // utf8.txt
   const txtFile2 =
       ENTRIES.utf8Text.cloneWithModifiedDate(getDateWithDayDiff(5));
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, txtFile1, txtFile2], []);
   // Before search, 3 files shows in the Recent tab.
   await navigateToRecent(appId);
@@ -1323,7 +1324,7 @@ export async function recentsRespectSearchWhenSwitchingFilter() {
  * Checks that Recents folder shows files from file system provider.
  */
 export async function recentFileSystemProviderFiles() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // Add 4 levels of folders to the provided file system. We wish to test that
   // recently modified files appear in the Recent view, but also use this test

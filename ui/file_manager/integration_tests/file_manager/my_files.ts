@@ -4,7 +4,7 @@
 
 import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -14,7 +14,7 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
  */
 async function selectMyFiles(appId: string) {
   // Select My Files folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('My files');
 
   // Wait for file list to display Downloads and Crostini.
@@ -44,10 +44,10 @@ export async function showMyFiles() {
   ];
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   // Get the labels of the directory tree elements.
   const visibleElementLabels = await directoryTree.getVisibleItemLabels();
   chrome.test.assertEq(expectedElementLabels, visibleElementLabels);
@@ -70,14 +70,14 @@ export async function showMyFiles() {
  */
 export async function directoryTreeRefresh() {
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Mount a USB volume.
   await sendTestMessage({name: 'mountFakeUsb'});
 
   // Wait for the USB volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByType('removable');
 
   // Select Downloads folder.
@@ -90,8 +90,8 @@ export async function directoryTreeRefresh() {
  */
 export async function myFilesDisplaysAndOpensEntries() {
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select My files in directory tree.
   await selectMyFiles(appId);
@@ -107,7 +107,7 @@ export async function myFilesDisplaysAndOpensEntries() {
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Get the selected navigation tree item.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForSelectedItemByLabel('Downloads');
 }
 
@@ -128,16 +128,16 @@ export async function myFilesUpdatesChildren() {
   });
 
   // Add a hidden folder.
-  // It can't be added via setupAndWaitUntilReady, because it isn't
+  // It can't be added via  remoteCall.setupAndWaitUntilReady, because it isn't
   // displayed and that function waits all entries to be displayed.
   await addEntries(['local'], [hiddenFolder]);
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select Downloads folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads');
 
   // Wait for gear menu to be displayed.
@@ -187,8 +187,8 @@ export async function myFilesFolderRename() {
   const textInput = '#file-list .table-row[renaming] input.rename';
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Select My files in directory tree.
   await selectMyFiles(appId);
@@ -240,9 +240,9 @@ export async function myFilesFolderRename() {
  */
 export async function myFilesAutoExpandOnce() {
   // Open Files app on local Downloads.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.photos], [ENTRIES.beautiful]);
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   // Collapse MyFiles.
   await directoryTree.collapseTreeItemByLabel('My files');
@@ -275,9 +275,9 @@ export async function myFilesUpdatesWhenAndroidVolumeMounts() {
   await remoteCall.waitForVolumesCount(1);
 
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   // Click on My files and wait it to load.
   const downloadsRow = ['Downloads', '--', 'Folder'];
@@ -320,8 +320,8 @@ export async function myFilesUpdatesWhenAndroidVolumeMounts() {
  */
 export async function myFilesToolbarDelete() {
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select My files in directory tree.
   await selectMyFiles(appId);
@@ -340,7 +340,7 @@ export async function myFilesToolbarDelete() {
   await remoteCall.waitForElement(appId, hiddenDeleteButton);
 
   // Mount crostini and test real root entry.
-  await mountCrostini(appId);
+  await remoteCall.mountCrostini(appId);
 
   // Select My files in directory tree.
   await selectMyFiles(appId);

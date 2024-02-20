@@ -5,7 +5,7 @@
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 export async function installLinuxPackageDialog() {
@@ -14,13 +14,13 @@ export async function installLinuxPackageDialog() {
   const dialog = '#install-linux-package-dialog';
   const okButton = dialog + ' .cr-dialog-ok:not([hidden])';
 
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Add entries to crostini volume, but do not mount.
   await addEntries(['crostini'], [ENTRIES.debPackage]);
 
   // Linux files fake root is shown.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForPlaceholderItemByType('crostini');
 
   // Mount crostini, and ensure real root and files are shown.

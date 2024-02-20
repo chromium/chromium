@@ -5,7 +5,7 @@
 import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, FakeTask, RECENT_ENTRY_SET} from './test_data.js';
 
@@ -14,7 +14,7 @@ import {COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, FakeTask,
  * disabled) for different types of files.
  *
  * The names passed to the tests are file names to select. They are generated
- * from COMPLEX_DRIVE_ENTRY_SET (see setupAndWaitUntilReady).
+ * from COMPLEX_DRIVE_ENTRY_SET (see remoteCall.setupAndWaitUntilReady).
  */
 
 /**
@@ -78,8 +78,8 @@ async function checkContextMenu(
     commandId: string, path: string, expectedEnabledState: boolean,
     expectedHiddenState: boolean = false) {
   // Open Files App on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
 
   // Optionally copy hello.txt into the clipboard if needed.
   await maybeCopyToClipboard(appId, commandId);
@@ -274,7 +274,7 @@ export async function checkInstallWithLinuxDisabledForDebianFile() {
       '[command="#default-task"][hidden]';
 
   // Open FilesApp on Downloads with deb file.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.debPackage], []);
 
   // Disallow root access.
@@ -297,7 +297,7 @@ export async function checkInstallWithLinuxEnabledForDebianFile() {
       '[command="#default-task"]:not([hidden])';
 
   // Open FilesApp on Downloads with deb file.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.debPackage], []);
 
   // Select and right click the deb file to show its context menu.
@@ -317,8 +317,8 @@ export async function checkImportCrostiniImageDisabled() {
       '[command="#default-task"][hidden]';
 
   // Open FilesApp on Downloads with test.tini file.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tiniFile], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tiniFile], []);
 
   // Disable Crostini backup.
   await sendTestMessage(
@@ -341,8 +341,8 @@ export async function checkImportCrostiniImageEnabled() {
       '[command="#default-task"]:not([hidden])';
 
   // Open FilesApp on Downloads with test.tini file.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tiniFile], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tiniFile], []);
 
   // Select and right click the tini file to show its context menu.
   await selectFile(appId, 'test.tini');
@@ -357,7 +357,7 @@ export async function checkImportCrostiniImageEnabled() {
  */
 export async function checkContextMenusForInputElements() {
   // Open FilesApp on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Click on the search button to display the search box.
   await remoteCall.waitAndClickElement(appId, '#search-button');
@@ -407,7 +407,7 @@ export async function checkContextMenuForRenameInput() {
   const contextMenu = '#text-context-menu:not([hidden])';
 
   // Open FilesApp on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
@@ -458,14 +458,14 @@ export async function checkContextMenuForRenameInput() {
 async function checkContextMenuInDriveFolder(
     commandId: string, folderName: string, expectedEnabledState: boolean) {
   // Open Files App on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
 
   // Optionally copy hello.txt into the clipboard if needed.
   await maybeCopyToClipboard(appId, commandId);
 
   // Navigate to folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive/' + folderName);
 
   // Right-click inside the file list.
@@ -545,11 +545,11 @@ async function checkMyFilesRootItemContextMenu(
   }
 
   // Open FilesApp on Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Navigate to My files.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files');
 
   // Wait for the navigation to complete.
@@ -657,10 +657,10 @@ async function checkDocumentsProviderContextMenu(
       ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
 
   // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToHaveChildrenByType(
       documentsProviderVolumeType, /* hasChildren= */ true);
 
@@ -746,12 +746,12 @@ async function checkRecentsContextMenu(
     commandId: string, fileName: string, expectedEnabledState: boolean,
     selectMultiple?: boolean) {
   // Populate both downloads and drive with disjoint sets of files.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.hello, ENTRIES.photos],
       [ENTRIES.desktop, ENTRIES.world, ENTRIES.testDocument]);
 
   // Navigate to Recents.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/Recent');
 
   // Wait for the navigation to complete.
@@ -821,7 +821,7 @@ export async function checkGoToFileLocationDisabledInMultipleSelection() {
  */
 export async function checkContextMenuFocus() {
   // Open Files App on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Select the file |path|.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
@@ -848,7 +848,7 @@ export async function checkContextMenuFocus() {
 
 export async function checkDefaultTask() {
   // Open FilesApp on Downloads.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.photos, ENTRIES.hello], []);
 
   // Force a task for the `hello` file.
@@ -891,8 +891,8 @@ export async function checkDefaultTask() {
 
 export async function checkPolicyAssignedDefaultHasManagedIcon() {
   // Open FilesApp on Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Force a task for the `hello` file.
   const fakeDefaultTask = new FakeTask(
@@ -959,8 +959,8 @@ export async function checkPolicyAssignedDefaultHasManagedIcon() {
  * files.
  */
 export async function checkEncryptedCopyDisabled() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
   await remoteCall.showContextMenuFor(appId, ENTRIES.testCSEFile.nameText);
 
@@ -974,7 +974,7 @@ export async function checkEncryptedCopyDisabled() {
  * Google Drive.
  */
 export async function checkEncryptedMoveEnabled() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.testCSEFile, ENTRIES.photos]);
 
   await remoteCall.showContextMenuFor(appId, ENTRIES.testCSEFile.nameText);
@@ -991,7 +991,7 @@ export async function checkEncryptedMoveEnabled() {
 
   // Navigate to a folder, ENTRIES.photos appears to be just a writeable test
   // folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive/photos');
 
   // Right-click inside the file list.
@@ -1009,8 +1009,8 @@ export async function checkEncryptedMoveEnabled() {
  * of Google Drive.
  */
 export async function checkEncryptedCrossVolumeMoveDisabled() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
   await remoteCall.showContextMenuFor(appId, ENTRIES.testCSEFile.nameText);
 
@@ -1025,7 +1025,7 @@ export async function checkEncryptedCrossVolumeMoveDisabled() {
       'execCommand failed');
 
   // Navigate to a folder, “My files“ is just an example of a writeable one.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files');
 
   // Right-click inside the file list.

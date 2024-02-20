@@ -7,7 +7,8 @@
 
 import {ENTRIES, getBrowserWindows, RootPath, sendTestMessage, type TestEntryInfo} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
+
 
 /**
  * Tests opening a file with missing filename extension from Files app.
@@ -22,7 +23,7 @@ async function sniffedFileOpen(path: string, entry: TestEntryInfo) {
     openType: 'launch',
   });
   // Open Files.App on |path|, add imgpdf to Downloads and Drive.
-  const appId = await setupAndWaitUntilReady(path, [entry], [entry]);
+  const appId = await remoteCall.setupAndWaitUntilReady(path, [entry], [entry]);
 
   // Open the file from Files app.
   if (entry.mimeType === 'application/pdf') {

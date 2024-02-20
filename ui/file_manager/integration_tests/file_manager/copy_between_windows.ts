@@ -4,7 +4,7 @@
 
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {openNewWindow, remoteCall} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -20,8 +20,10 @@ const USB_VOLUME_TYPE = 'removable';
  */
 async function openTwoWindows(
     rootPath1: string, rootPath2: string): Promise<[string, string]> {
-  const windowIds =
-      await Promise.all([openNewWindow(rootPath1), openNewWindow(rootPath2)]);
+  const windowIds = await Promise.all([
+    remoteCall.openNewWindow(rootPath1),
+    remoteCall.openNewWindow(rootPath2),
+  ]);
 
   await Promise.all([
     remoteCall.waitForElement(windowIds[0], '#detail-table'),
@@ -129,8 +131,7 @@ export async function copyBetweenWindowsDriveToUsb() {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree =
-      await DirectoryTreePageObject.create(window1, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(window1);
   await directoryTree.selectItemByType(USB_VOLUME_TYPE);
 
   // Check: Downloads window is showing an empty USB volume.
@@ -167,8 +168,7 @@ export async function copyBetweenWindowsLocalToUsb() {
   await chrome.test.sendMessage(JSON.stringify({name: 'mountFakeUsbEmpty'}));
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree =
-      await DirectoryTreePageObject.create(window1, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(window1);
   await directoryTree.selectItemByType(USB_VOLUME_TYPE);
 
   // Check: Drive window is showing an empty USB volume.
@@ -205,8 +205,7 @@ export async function copyBetweenWindowsUsbToDrive() {
   await chrome.test.sendMessage(JSON.stringify({name: 'mountFakeUsbEmpty'}));
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree =
-      await DirectoryTreePageObject.create(window1, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(window1);
   await directoryTree.selectItemByType(USB_VOLUME_TYPE);
   // Check: Downloads window is showing an empty USB volume.
   await remoteCall.waitForFiles(window1, []);
@@ -242,8 +241,7 @@ export async function copyBetweenWindowsUsbToLocal() {
   await chrome.test.sendMessage(JSON.stringify({name: 'mountFakeUsbEmpty'}));
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree =
-      await DirectoryTreePageObject.create(window1, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(window1);
   await directoryTree.selectItemByType(USB_VOLUME_TYPE);
 
   // Check: Drive window is showing an empty USB volume.

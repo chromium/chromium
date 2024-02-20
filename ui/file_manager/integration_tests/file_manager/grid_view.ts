@@ -5,7 +5,7 @@
 import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
 
-import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {fileListKeyboardSelectionA11yImpl, fileListMouseSelectionA11yImpl} from './file_list.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
@@ -26,7 +26,7 @@ async function showGridView(
       expectedSet.map((entryInfo) => entryInfo.nameText).sort();
 
   // Open Files app on |rootPath|.
-  const appId = await setupAndWaitUntilReady(rootPath);
+  const appId = await remoteCall.setupAndWaitUntilReady(rootPath);
   // Disable all banners.
   await remoteCall.disableBannersForTesting(appId);
 
@@ -132,11 +132,11 @@ export async function showGridViewDocumentsProvider() {
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
 
   // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
   const documentsProviderVolumeType = 'documents_provider';
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToHaveChildrenByType(
       documentsProviderVolumeType, /* hasChildren= */ true);
 
@@ -179,8 +179,8 @@ export async function showGridViewDocumentsProvider() {
  * Tests that an encrypted file will have a corresponding icon.
  */
 export async function showGridViewEncryptedFile() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
   // Click the grid view button.
   await remoteCall.waitAndClickElement(appId, '#view-button');

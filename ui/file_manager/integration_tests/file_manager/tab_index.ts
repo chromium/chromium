@@ -5,7 +5,7 @@
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, RootPath, TestEntryInfo} from '../test_util.js';
 
-import {openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
@@ -20,7 +20,7 @@ async function getDismissButtonId(appId: string) {
  */
 export async function tabindexSearchBoxFocus() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Check that the file list has the focus on launch.
   await remoteCall.waitForElement(appId, ['#file-list:focus']);
@@ -54,7 +54,7 @@ export async function tabindexSearchBoxFocus() {
  */
 export async function tabindexFocus() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
   const driveWelcomeLinkQuery = '#banners > drive-welcome-banner:not([hidden])';
@@ -96,7 +96,7 @@ export async function tabindexFocus() {
  */
 export async function tabindexFocusDownloads() {
   // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   await remoteCall.isolateBannerForTesting(
       appId, 'holding-space-welcome-banner');
@@ -134,7 +134,7 @@ export async function tabindexFocusDownloads() {
  */
 export async function tabindexFocusDirectorySelected() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
   const driveWelcomeLinkQuery = '#banners > drive-welcome-banner:not([hidden])';
@@ -210,8 +210,8 @@ export async function tabindexFocusDirectorySelected() {
  *
  * @param dialogParams Dialog parameters to be passed to
  *     chrome.fileSystem.chooseEntry.
- * @param volumeType Volume icon type passed to the openAndWaitForClosingDialog
- *     function.
+ * @param volumeType Volume icon type passed to the
+ *     remoteCall.openAndWaitForClosingDialog function.
  * @param expectedSet Expected set of the entries.
  * @param initialize Initialization before test runs. The window ID is passed as
  *     an argument. If null, do nothing as initialization.
@@ -232,8 +232,7 @@ async function tabIndexFocus(
   ]);
 
   const selectAndCheckAndClose = async (appId: string) => {
-    const directoryTree =
-        await DirectoryTreePageObject.create(appId, remoteCall);
+    const directoryTree = await DirectoryTreePageObject.create(appId);
 
     if (dialogParams.type === 'saveFile') {
       await remoteCall.waitForElement(
@@ -241,12 +240,12 @@ async function tabIndexFocus(
     } else if (directoryTree.isNewTree) {
       await directoryTree.waitForFocusedItemByType(volumeType);
     } else {
-      // The openAndWaitForClosingDialog() below will select the tree item with
-      // the corresponding `volumeType` by fake mouse click, for new tree it
-      // will focus the tree item we do that programmatically, but for the old
-      // tree it won't focus the tree because it rely on "tabindex=0" on the
-      // <tree> element to focus which only works with physical mouse/touch,
-      // hence the checking of "file-list:focus" below.
+      // The  remoteCall.openAndWaitForClosingDialog() below will select the
+      // tree item with the corresponding `volumeType` by fake mouse click, for
+      // new tree it will focus the tree item we do that programmatically, but
+      // for the old tree it won't focus the tree because it rely on
+      // "tabindex=0" on the <tree> element to focus which only works with
+      // physical mouse/touch, hence the checking of "file-list:focus" below.
       await remoteCall.waitForElement(appId, ['#file-list:focus']);
     }
 
@@ -272,7 +271,7 @@ async function tabIndexFocus(
         'fakeKeyDown', appId, ['#file-list', 'Escape', false, false, false]));
   };
 
-  await openAndWaitForClosingDialog(
+  await remoteCall.openAndWaitForClosingDialog(
       dialogParams, volumeType, expectedSet, selectAndCheckAndClose);
 }
 

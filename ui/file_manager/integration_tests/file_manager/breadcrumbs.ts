@@ -7,7 +7,7 @@
 
 import {createNestedTestFolders, ENTRIES, getUserActionCount, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 async function getBreadcrumbTagName() {
@@ -16,12 +16,13 @@ async function getBreadcrumbTagName() {
 
 export async function breadcrumbsNavigate() {
   const files = [ENTRIES.hello, ENTRIES.photos];
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
 
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to Downloads/photos.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
 
   // Use the breadcrumbs to navigate back to Downloads.
@@ -44,8 +45,8 @@ export async function breadcrumbsDownloadsTranslation() {
   await sendTestMessage({name: 'switchLanguage', language: 'pt-PT'});
 
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Check the breadcrumbs for Downloads:
   // Os meu ficheiros => My files.
@@ -55,7 +56,7 @@ export async function breadcrumbsDownloadsTranslation() {
   chrome.test.assertEq('/Os meus ficheiros/Transferências', path);
 
   // Expand Downloads folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.expandTreeItemByPath('/Downloads');
 
   // Navigate to Downloads/photos.
@@ -74,14 +75,14 @@ export async function breadcrumbsRenderShortPath() {
   const nestedFolderTestEntries = createNestedTestFolders(1);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Check: the breadcrumb element should have a |path| attribute.
@@ -119,14 +120,14 @@ export async function breadcrumbsEliderButtonNotExist() {
   const nestedFolderTestEntries = createNestedTestFolders(2);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Check: the breadcrumb element should have a |path| attribute.
@@ -165,14 +166,14 @@ export async function breadcrumbsRenderLongPath() {
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Check: the breadcrumb element should have a |path| attribute.
@@ -210,14 +211,14 @@ export async function breadcrumbsMainButtonClick() {
   const nestedFolderTestEntries = createNestedTestFolders(2);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Check: the breadcrumb path attribute should be |breadcrumb|.
@@ -244,14 +245,14 @@ export async function breadcrumbsMainButtonEnterKey() {
   const nestedFolderTestEntries = createNestedTestFolders(2);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Check: the breadcrumb path attribute should be |breadcrumb|.
@@ -280,14 +281,14 @@ export async function breadcrumbsEliderButtonClick() {
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Click the breadcrumb elider button when it appears.
@@ -330,14 +331,14 @@ export async function breadcrumbsEliderButtonKeyboard() {
   const nestedFolderTestEntries = createNestedTestFolders(4);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Wait for the breadcrumb elider button to appear.
@@ -388,14 +389,14 @@ export async function breadcrumbsEliderMenuClickOutside() {
   const nestedFolderTestEntries = createNestedTestFolders(5);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Click the breadcrumb elider button when it appears.
@@ -422,14 +423,14 @@ export async function breadcrumbsEliderMenuItemClick() {
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Check: the breadcrumb path attribute should be |breadcrumb|.
@@ -476,14 +477,14 @@ export async function breadcrumbsEliderMenuItemTabLeft() {
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Click the breadcrumb elider button when it appears.
@@ -517,14 +518,14 @@ export async function breadcrumbsEliderMenuItemTabRight() {
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
   // Open FilesApp on Downloads containing the test entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, nestedFolderTestEntries, []);
   const breadcrumbsTag = await getBreadcrumbTagName();
 
   // Navigate to deepest folder.
   const breadcrumb = '/My files/Downloads/' +
       nestedFolderTestEntries.map(e => e.nameText).join('/');
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath(breadcrumb);
 
   // Click the breadcrumb elider button when it appears.
@@ -557,11 +558,11 @@ export async function breadcrumbsEliderMenuItemTabRight() {
 export async function breadcrumbNavigateBackToSharedWithMe() {
   // Open Files app on Drive containing "Shared with me" file entries.
   const sharedSubFolderName = ENTRIES.sharedWithMeDirectory.nameText;
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.sharedWithMeDirectory, ENTRIES.hello]);
 
   // Navigate to Shared with me.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait until the breadcrumb path is updated.

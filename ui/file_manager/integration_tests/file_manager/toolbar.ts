@@ -5,7 +5,7 @@
 import {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, DOWNLOADS_FAKE_TASKS} from './test_data.js';
 
@@ -15,7 +15,7 @@ import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, DOWN
 export async function toolbarDeleteWithMenuItemNoEntrySelected() {
   const contextMenu = '#file-context-menu:not([hidden])';
 
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Right click the list without selecting an entry.
   chrome.test.assertTrue(
@@ -37,8 +37,8 @@ export async function toolbarDeleteWithMenuItemNoEntrySelected() {
  */
 export async function toolbarDeleteButtonOpensDeleteConfirmDialog() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.desktop]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.desktop]);
 
   // Select My Desktop Background.png
   await remoteCall.waitUntilSelected(appId, ENTRIES.desktop.nameText);
@@ -61,8 +61,8 @@ export async function toolbarDeleteButtonOpensDeleteConfirmDialog() {
  */
 export async function toolbarDeleteButtonKeepFocus() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // USB delete never uses trash and always shows the delete dialog.
 
@@ -70,7 +70,7 @@ export async function toolbarDeleteButtonKeepFocus() {
   await sendTestMessage({name: 'mountFakeUsb'});
 
   // Wait for the USB volume to mount and click to open the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('removable');
 
   // Check: the USB files should appear in the file list.
@@ -121,7 +121,7 @@ export async function toolbarDeleteEntry() {
   ]);
 
   // Open Files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Confirm entries in the directory before the deletion.
   await remoteCall.waitForFiles(
@@ -149,13 +149,13 @@ export async function toolbarDeleteEntry() {
  */
 export async function toolbarRefreshButtonWithSelection() {
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Add files to the DocumentsProvider volume (which is non-watchable)
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
 
   // Wait for the DocumentsProvider volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('documents_provider');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/DocumentsProvider');
@@ -176,11 +176,11 @@ export async function toolbarRefreshButtonWithSelection() {
  */
 export async function toolbarRefreshButtonHiddenInRecents() {
   // Open files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Navigate to Recent.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Recent');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Recent');
 
@@ -193,13 +193,13 @@ export async function toolbarRefreshButtonHiddenInRecents() {
  */
 export async function toolbarRefreshButtonShownForNonWatchableVolume() {
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Add files to the DocumentsProvider volume (which is non-watchable)
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
 
   // Wait for the DocumentsProvider volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('documents_provider');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/DocumentsProvider');
@@ -213,8 +213,8 @@ export async function toolbarRefreshButtonShownForNonWatchableVolume() {
  */
 export async function toolbarRefreshButtonHiddenForWatchableVolume() {
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // It should start in Downloads.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
@@ -229,8 +229,8 @@ export async function toolbarRefreshButtonHiddenForWatchableVolume() {
  */
 export async function toolbarAltACommand() {
   // Open files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Press Alt+A in the File List.
   const altA = ['#file-list', 'a', false, false, true] as const;
@@ -252,7 +252,8 @@ export async function toolbarMultiMenuFollowsButton() {
   const entry = ENTRIES.hello;
 
   // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Override the tasks so the "Open" button becomes a dropdown button.
   await remoteCall.callRemoteTestUtil(
@@ -296,7 +297,7 @@ export async function toolbarMultiMenuFollowsButton() {
  * Tests that the sharesheet button is enabled and executable.
  */
 export async function toolbarSharesheetButtonWithSelection() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Fake chrome.fileManagerPrivate.sharesheetHasTargets to return true.
   let fakeData = {
@@ -336,7 +337,7 @@ export async function toolbarSharesheetButtonWithSelection() {
 export async function toolbarSharesheetContextMenuWithSelection() {
   const contextMenu = '#file-context-menu:not([hidden])';
 
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Fake chrome.fileManagerPrivate.sharesheetHasTargets to return true.
   let fakeData = {
@@ -386,7 +387,7 @@ export async function toolbarSharesheetContextMenuWithSelection() {
 export async function toolbarSharesheetNoEntrySelected() {
   const contextMenu = '#file-context-menu:not([hidden])';
 
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Fake chrome.fileManagerPrivate.sharesheetHasTargets to return true.
   const fakeData = {
@@ -419,8 +420,8 @@ export async function toolbarSharesheetNoEntrySelected() {
  * Tests that the cloud icon does not appear if bulk pinning is disabled.
  */
 export async function toolbarCloudIconShouldNotShowWhenBulkPinningDisabled() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 }
 
@@ -433,8 +434,8 @@ export async function
 toolbarCloudIconShouldNotShowIfPreferenceDisabledAndNoUIStateAvailable() {
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
 
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 }
 
@@ -443,8 +444,8 @@ toolbarCloudIconShouldNotShowIfPreferenceDisabledAndNoUIStateAvailable() {
  * progress.
  */
 export async function toolbarCloudIconShouldShowForInProgress() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 
   // Mock the free space returned by spaced to be 4 GB, the test files
@@ -465,8 +466,8 @@ export async function toolbarCloudIconShouldShowForInProgress() {
  * available to pin.
  */
 export async function toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 
   // Mock the free space available as 100 MB, this will trigger the
@@ -487,8 +488,8 @@ export async function toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned() {
  * returned (in this case `CannotGetFreeSpace`).
  */
 export async function toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 
   // Mock the free space returned by spaced to be 4 GB.
@@ -513,8 +514,8 @@ export async function toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace() {
  * and resizes correctly.
  */
 export async function toolbarCloudIconWhenPressedShouldOpenCloudPanel() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 
   // Mock the free space returned by spaced to be 4 GB.
@@ -543,8 +544,8 @@ export async function toolbarCloudIconWhenPressedShouldOpenCloudPanel() {
  * represents an offline state) and the user preference is disabled.
  */
 export async function toolbarCloudIconShouldNotShowWhenPrefDisabled() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 
   // Force the bulk pinning preference off.
@@ -574,8 +575,8 @@ export async function toolbarCloudIconShouldNotShowWhenPrefDisabled() {
  * represents an offline state) and the user preference is enabled.
  */
 export async function toolbarCloudIconShouldShowWhenPausedState() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 
   // Force the bulk pinning preference on.
@@ -629,7 +630,8 @@ export async function toolbarCloudIconShouldShowOnStartupEvenIfSyncing() {
   // Open a new window to the Drive root and ensure the cloud button is not
   // hidden. The cloud button will show on startup as it relies on the bulk
   // pinning preference to be set.
-  const appId = await openNewWindow(RootPath.DRIVE, /*appState=*/ {});
+  const appId =
+      await remoteCall.openNewWindow(RootPath.DRIVE, /*appState=*/ {});
   await remoteCall.waitForElement(appId, '#detail-table');
   await remoteCall.waitForElement(appId, '#cloud-button:not([hidden])');
 
@@ -647,8 +649,8 @@ export async function toolbarCloudIconShouldShowOnStartupEvenIfSyncing() {
  * on a metered network.
  */
 export async function toolbarCloudIconShouldShowWhenOnMeteredNetwork() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 
   // Force the bulk pinning preference on.

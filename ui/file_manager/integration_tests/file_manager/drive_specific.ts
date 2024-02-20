@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { createTestFile, ENTRIES, EntryType, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo } from '../test_util.js';
+import {createTestFile, ENTRIES, EntryType, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, waitForMediaApp} from '../test_util.js';
 
-import { remoteCall, setupAndWaitUntilReady, waitForMediaApp } from './background.js';
-import { DirectoryTreePageObject } from './page_objects/directory_tree.js';
-import { BASIC_DRIVE_ENTRY_SET, FakeTask, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET } from './test_data.js';
+import {remoteCall} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
+import {BASIC_DRIVE_ENTRY_SET, FakeTask, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
  * Expected files shown in the search results for 'hello'
@@ -84,10 +84,10 @@ async function waitForNotification(notificationId: string) {
  */
 export async function driveOpenSidebarOffline() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Click the icon of the Offline volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Offline');
 
   // Check: the file list should display the offline file set.
@@ -102,7 +102,7 @@ export async function driveOpenSidebarOffline() {
  */
 export async function driveOpenSidebarSharedWithMe() {
   // Open Files app on Drive containing "Shared with me" file entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
         ENTRIES.sharedWithMeDirectory,
         ENTRIES.sharedWithMeDirectoryFile,
@@ -110,7 +110,7 @@ export async function driveOpenSidebarSharedWithMe() {
 
   // Click the icon of the Shared With Me volume.
   // Use the icon for a click target.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait until the breadcrumb path is updated.
@@ -142,7 +142,7 @@ export async function driveOpenSidebarSharedWithMe() {
  */
 export async function drivePressEnterToSearch() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   remoteCall.typeSearchText(appId, 'hello');
 
@@ -169,11 +169,11 @@ export async function drivePressEnterToSearch() {
  */
 export async function drivePressClearSearch() {
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
 
   // Start the search from a sub-folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive/photos');
 
   // Search the text.
@@ -206,7 +206,7 @@ export async function drivePressClearSearch() {
  * files.
  */
 export async function drivePinMultiple() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Select world.ogv.
   await remoteCall.waitAndClickElement(
@@ -273,7 +273,7 @@ export async function drivePinMultiple() {
  * and that it does not affect multiple selections with non-hosted files.
  */
 export async function drivePinHosted() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Select Test Document.gdoc.
   await remoteCall.waitAndClickElement(
@@ -338,7 +338,7 @@ export async function drivePinHosted() {
  * TODO(b/296960734): Fix this test once the notification has been fixed.
  */
 export async function drivePinFileMobileNetwork() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
   const caller = getCaller();
   await sendTestMessage({name: 'useCellularNetwork'});
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
@@ -397,10 +397,10 @@ export async function drivePinFileMobileNetwork() {
  * within fake entries.
  */
 export async function drivePinToggleUpdatesInFakeEntries() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Navigate to the Offline fake entry.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/Offline');
 
   // Bring up the context menu for test.txt.
@@ -451,7 +451,7 @@ export async function drivePinToggleUpdatesInFakeEntries() {
  */
 export async function drivePressCtrlAFromSearch() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Focus the search box.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -478,7 +478,7 @@ export async function driveAvailableOfflineGearMenu() {
       'cr-menu-item[command="#toggle-pinned"]:not([disabled])';
 
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Select a file.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
@@ -514,7 +514,7 @@ export async function driveAvailableOfflineDirectoryGearMenu() {
       'cr-menu-item[command="#toggle-pinned"]:not([disabled])';
 
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Select a file.
   await remoteCall.waitUntilSelected(appId, 'photos');
@@ -547,7 +547,7 @@ export async function driveAvailableOfflineDirectoryGearMenu() {
  */
 export async function driveAvailableOfflineActionBar() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Check the "Available Offline" toggle is currently hidden as no file is
   // currently selected.
@@ -630,7 +630,7 @@ export async function driveAvailableOfflineActionBar() {
           '#pinned-toggle[checked]:not([disabled])');
 
   // Focus on the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Check the "Available Offline" toggle is still available in the action bar.
@@ -646,7 +646,7 @@ export async function driveAvailableOfflineActionBar() {
  * Tests following links to folders.
  */
 export async function driveLinkToDirectory() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
         ENTRIES.directoryA,
         ENTRIES.directoryB,
@@ -676,7 +676,7 @@ export async function driveLinkToDirectory() {
  * Tests opening files through folder links.
  */
 export async function driveLinkOpenFileThroughLinkedDirectory() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
         ENTRIES.directoryA,
         ENTRIES.directoryB,
@@ -709,7 +709,7 @@ export async function driveLinkOpenFileThroughLinkedDirectory() {
  * Tests opening files through transitive links.
  */
 export async function driveLinkOpenFileThroughTransitiveLink() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
         ENTRIES.directoryA,
         ENTRIES.directoryB,
@@ -740,7 +740,7 @@ export async function driveLinkOpenFileThroughTransitiveLink() {
  */
 export async function driveWelcomeBanner() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
   const driveWelcomeBannerQuery = '#banners > drive-welcome-banner';
@@ -751,7 +751,7 @@ export async function driveWelcomeBanner() {
   ];
 
   // Open the Drive volume in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Google Drive');
 
   // Check: the Drive welcome banner should appear.
@@ -771,7 +771,7 @@ export async function driveWelcomeBanner() {
  */
 export async function driveOfflineInfoBanner() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   await remoteCall.isolateBannerForTesting(
       appId, 'drive-offline-pinning-banner');
@@ -792,7 +792,7 @@ export async function driveOfflineInfoBanner() {
   await remoteCall.waitForElement(appId, driveOfflineBannerHiddenQuery);
 
   // Navigate to a different directory within Drive.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive/photos');
 
   // Check: the Drive offline info banner should stay hidden.
@@ -805,7 +805,7 @@ export async function driveOfflineInfoBanner() {
  */
 export async function driveEncryptionBadge() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.testCSEFile]);
 
   // Check: encrypted file has a badge.
@@ -857,8 +857,8 @@ export async function driveInlineSyncStatusSingleFileProgressEvents() {
   });
 
   // Open Files app on Drive and copy over entry to be uploaded.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [toBeUploaded]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [toBeUploaded]);
 
   // Fake the file starting to sync.
   await sendTestMessage({
@@ -927,7 +927,7 @@ export async function driveInlineSyncStatusParentFolderProgressEvents() {
   });
 
   // Open Files app on Drive and copy over entry to be uploaded.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [parentDir, toBeUploaded, toFailUploading]);
 
   // Fake syncing both files to Drive.
@@ -959,7 +959,7 @@ export async function driveInlineSyncStatusParentFolderProgressEvents() {
   await remoteCall.waitForElement(appId, syncInProgressQuery);
 
   // Go inside the some_folder folder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive/some_folder');
 
   // Fake toFailUploading.ogv failing to sync to Drive.
@@ -997,7 +997,7 @@ export async function driveInlineSyncStatusParentFolderProgressEvents() {
  */
 export async function driveEnableDocsOfflineDialog() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Open the Enable Docs Offline dialog.
   await openAndWaitForEnableDocsOfflineDialog(appId);
@@ -1075,7 +1075,7 @@ export async function driveEnableDocsOfflineDialogWithoutWindow() {
   await waitForNotification('enable-docs-offline');
 
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Check: the Enable Docs Offline dialog should appear in Files app.
   const dialogText = await remoteCall.waitForElement(
@@ -1100,8 +1100,8 @@ export async function driveEnableDocsOfflineDialogWithoutWindow() {
  */
 export async function driveEnableDocsOfflineDialogMultipleWindows() {
   // Open two Files app windows on Drive, and the second one should be focused.
-  const appId1 = await setupAndWaitUntilReady(RootPath.DRIVE, []);
-  const appId2 = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId1 = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId2 = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Open the Enable Docs Offline dialog and check that it appears in the second
   // window.
@@ -1123,7 +1123,7 @@ export async function driveEnableDocsOfflineDialogMultipleWindows() {
  */
 export async function driveEnableDocsOfflineDialogDisappearsOnUnmount() {
   // Open Files app on Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Open the Enable Docs Offline dialog.
   await openAndWaitForEnableDocsOfflineDialog(appId);
@@ -1142,7 +1142,7 @@ export async function driveEnableDocsOfflineDialogDisappearsOnUnmount() {
  */
 export async function driveDeleteDialogDoesntMentionPermanentDelete() {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Wait for the "hello.txt" file to appear.
   const helloTxtSelector = '#file-list [file-name="photos"]';
@@ -1182,7 +1182,7 @@ export async function driveGoogleOneOfferBannerEnabled() {
   const userActionGetPerk = 'FileBrowser.GoogleOneOffer.GetPerk';
   const userActionDismiss = 'FileBrowser.GoogleOneOffer.Dismiss';
 
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Visibility of a banner is controlled with hidden attribute once it gets
   // attached to the DOM.
@@ -1212,7 +1212,7 @@ export async function driveGoogleOneOfferBannerEnabled() {
  * is the default.
  */
 export async function driveGoogleOneOfferBannerDisabled() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // If Google One offer banner is not shown, Drive welcome banner should be
   // shown. We cannot test google-one-offer-banner[hidden] here as it should not
@@ -1227,7 +1227,7 @@ export async function driveGoogleOneOfferBannerDisabled() {
 export async function driveGoogleOneOfferBannerDismiss() {
   const userActionDismiss = 'FileBrowser.GoogleOneOffer.Dismiss';
 
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Visibility of a banner is controlled with hidden attribute once it gets
   // attached to the DOM.
@@ -1251,8 +1251,8 @@ export async function driveGoogleOneOfferBannerDismiss() {
  */
 export async function
 drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
 
 
   const toggleId = await remoteCall.isCrosComponents(appId) ?
@@ -1298,7 +1298,7 @@ drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled() {
  */
 export async function driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled() {
   // Open Files app on Drive containing "Shared with me" file entries.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.sharedWithMeDirectory]);
 
   // Enable the bulk pinning preference first.
@@ -1308,7 +1308,7 @@ export async function driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled() {
 
   // Navigate to the shared with me directory and assert that the pinned
   // property is not set on the directory.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/Shared with me');
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="Shared Directory"]:not(.pinned)');
@@ -1345,7 +1345,7 @@ export async function driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled() {
  */
 export async function
 drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [
     ENTRIES.hello,
     ENTRIES.sharedWithMeDirectory,
     ENTRIES.sharedWithMeDirectoryFile,
@@ -1357,7 +1357,7 @@ drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled() {
 
   // Click the Shared with me volume, it has no children so navigating using the
   // directory tree doesn't work.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait until the breadcrumb path is updated.
@@ -1406,8 +1406,8 @@ drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled() {
  */
 export async function
 driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.cantPinFile]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.cantPinFile]);
 
   // Ensure the `cant_pin.txt` file has the cant-pin class.
   await remoteCall.waitForElement(
@@ -1433,7 +1433,8 @@ export async function driveItemsOutOfViewportShouldUpdateTheirSyncStatus() {
     entries.push(emptyFile.cloneWithNewName(`File ${i}`));
   }
 
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], entries);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], entries);
 
   // Sort the table by the `name` column.
   await remoteCall.waitAndClickElement(
@@ -1538,8 +1539,8 @@ export async function driveAllItemsShouldBeQueuedIfTrackedByPinningManager() {
   await sendTestMessage({name: 'setBulkPinningShouldPinFiles', enabled: false});
 
   // Add a single empty file and load Files app up at the Drive root.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
 
   // Enable bulk pinning functionality.
   await remoteCall.setSpacedFreeSpace(4n << 30n);
@@ -1576,8 +1577,8 @@ export async function driveAllItemsShouldBeQueuedIfTrackedByPinningManager() {
 export async function driveDirtyItemsShouldBeDisplayedAsQueued() {
   // Add a single test file with the dirty metadata set to "true" and load Files
   // app up at the Drive root.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.dirty]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.dirty]);
 
   // The file should be displayed as "queued" despite it not having received any
   // progress events yet because dirty=true.
@@ -1603,7 +1604,7 @@ export async function driveDirtyItemsShouldBeDisplayedAsQueued() {
  * between the Drive welcome banner but before the Holding space banner).
  */
 export async function driveBulkPinningBannerDisabled() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Visibility of a banner is controlled with hidden attribute once it gets
   // attached to the DOM.
@@ -1629,7 +1630,7 @@ export async function driveBulkPinningBannerDisabled() {
  * after the Drive welcome banner).
  */
 export async function driveBulkPinningBannerEnabled() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Visibility of a banner is controlled with hidden attribute once it gets
   // attached to the DOM.
@@ -1654,7 +1655,7 @@ export async function driveBulkPinningBannerEnabled() {
  * Checks that we cannot open Google Doc without network connection.
  */
 export async function openDriveDocWhenOffline() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [
     ENTRIES.testDocument,
     ENTRIES.hello,
   ]);
@@ -1707,7 +1708,7 @@ export async function openDriveDocWhenOffline() {
  * later.
  */
 export async function completedSyncStatusDismissesAfter300Ms() {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [
     ENTRIES.hello,
   ]);
 
@@ -1740,7 +1741,8 @@ export async function driveOutOfOrganizationSpaceBanner() {
   await remoteCall.setPooledStorageQuotaUsage(
       1 * 1024 * 1024, 2 * 1024 * 1024, true);
 
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [ENTRIES.hello]);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [ENTRIES.hello]);
 
   await remoteCall.waitForElement(
       appId, 'drive-out-of-organization-space-banner');
@@ -1753,10 +1755,11 @@ export async function driveOutOfOrganizationSpaceBanner() {
 export async function copyDirectoryWithEncryptedFile() {
   const dir = ENTRIES.testCSEDirectory;
   const file = ENTRIES.testCSEFileInDirectory;
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [dir, file]);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [dir, file]);
   await sendTestMessage({name: 'mockDriveReadFailure', path: file.targetPath});
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My Drive');
 
   await remoteCall.waitForFiles(appId, [dir.getExpectedRow()]);

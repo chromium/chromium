@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ElementObject, KeyModifiers, VolumeType} from './prod/file_manager/shared_types.js';
-import {getCaller, pending, repeatUntil, sendTestMessage} from './test_util.js';
+import {DirectoryTreePageObject} from './file_manager/page_objects/directory_tree.js';
+import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './file_manager/test_data.js';
+import {ElementObject, FilesAppState, KeyModifiers, VolumeType} from './prod/file_manager/shared_types.js';
+import {addEntries, getCaller, openEntryChoosingWindow, pending, pollForChosenEntry, repeatUntil, sendTestMessage, TestEntryInfo} from './test_util.js';
 
 export type MenuObject = ElementObject&{
   items?: ElementObject[],
@@ -46,7 +48,7 @@ export class RemoteCall {
   /**
    * @param origin ID of the app to be manipulated.
    */
-  constructor(private origin_: string) {}
+  constructor(protected origin_: string) {}
 
   /**
    * Checks whether step by step tests are enabled or not.
@@ -1179,5 +1181,208 @@ export class RemoteCallFilesApp extends RemoteCall {
       totalUserBytes,
       organizationLimitExceeded,
     });
+  }
+
+  /**
+   * Opens a Files app's main window.
+   * @param initialRoot Root path to be used as a default current directory
+   *     during initialization. Can be null, for no default path.
+   * @param appState App state to be passed with on opening the Files app.
+   * @return Promise to be fulfilled after window creating.
+   */
+  async openNewWindow(initialRoot: null|string, appState?: null|FilesAppState):
+      Promise<string> {
+    appState = appState ?? {};
+    if (initialRoot) {
+      const tail = `external${initialRoot}`;
+      appState.currentDirectoryURL = `filesystem:${this.origin_}/${tail}`;
+    }
+
+    const launchDir = appState ? appState.currentDirectoryURL : undefined;
+    const type = appState ? appState.type : undefined;
+    const volumeFilter = appState ? appState.volumeFilter : undefined;
+    const searchQuery = appState ? appState.searchQuery : undefined;
+    const appId = await sendTestMessage({
+      name: 'launchFileManager',
+      launchDir,
+      type,
+      volumeFilter,
+      searchQuery,
+    });
+
+    return appId;
+  }
+
+  /**
+   * Opens a file dialog and waits for closing it.
+   * @param dialogParams Dialog parameters to be passed to
+   *     openEntryChoosingWindow() function.
+   * @param volumeType Volume icon type passed to the directory page object's
+   *     selectItemByType function.
+   * @param expectedSet Expected set of the entries.
+   * @param closeDialog Function to close the dialog.
+   * @param useBrowserOpen Whether to launch the select file dialog via a
+   *     browser OpenFile() call.
+   * @param debug Whether to debug the waitForWindow().
+   * @return Promise to be fulfilled with the result entry of the dialog.
+   */
+  async openAndWaitForClosingDialog(
+      dialogParams: chrome.fileSystem.ChooseEntryOptions, volumeType: string,
+      expectedSet: TestEntryInfo[], closeDialog: (a: string) => Promise<void>,
+      useBrowserOpen: boolean = false,
+      debug: boolean = false): Promise<unknown> {
+    const caller = getCaller();
+    let resultPromise;
+    if (useBrowserOpen) {
+      await sendTestMessage({name: 'runSelectFileDialog'});
+      resultPromise = async () => {
+        return await sendTestMessage(
+            {name: 'waitForSelectFileDialogNavigation'});
+      };
+    } else {
+      await openEntryChoosingWindow(dialogParams);
+      resultPromise = () => {
+        return pollForChosenEntry(caller);
+      };
+    }
+
+    const appId = await this.waitForWindow(debug);
+    await this.waitForElement(appId, '#file-list');
+    await this.waitFor('isFileManagerLoaded', appId, true);
+    const directoryTree = await DirectoryTreePageObject.create(appId);
+    await directoryTree.selectItemByType(volumeType);
+    await this.waitForFiles(appId, TestEntryInfo.getExpectedRows(expectedSet));
+    await closeDialog(appId);
+    await repeatUntil(async () => {
+      const windows = await this.getWindows();
+      if (windows[appId] !== appId) {
+        return;
+      }
+      return pending(caller, 'Waiting for Window %s to hide.', appId);
+    });
+    return await resultPromise();
+  }
+
+  /**
+   * Opens a Files app's main window and waits until it is initialized. Fills
+   * the window with initial files. Should be called for the first window only.
+   * @param initialRoot Root path to be used as a default current directory
+   *     during initialization. Can be null, for no default path.
+   * @param initialLocalEntries List of initial entries to load in Downloads
+   *     (defaults to a basic entry set).
+   * @param initialDriveEntries List of initial entries to load in Google Drive
+   *     (defaults to a basic entry set).
+   * @param appState App state to be passed with on opening the Files app.
+   * @return Promise to be fulfilled with the window ID.
+   */
+  async setupAndWaitUntilReady(
+      initialRoot: null|string,
+      initialLocalEntries: TestEntryInfo[] = BASIC_LOCAL_ENTRY_SET,
+      initialDriveEntries: TestEntryInfo[] = BASIC_DRIVE_ENTRY_SET,
+      appState?: FilesAppState): Promise<string> {
+    const localEntriesPromise = addEntries(['local'], initialLocalEntries);
+    const driveEntriesPromise = addEntries(['drive'], initialDriveEntries);
+
+    const appId = await this.openNewWindow(initialRoot, appState);
+    await this.waitForElement(appId, '#detail-table');
+
+    // Wait until the elements are loaded in the table.
+    await Promise.all([
+      this.waitForFileListChange(appId, 0),
+      localEntriesPromise,
+      driveEntriesPromise,
+    ]);
+    await this.waitFor('isFileManagerLoaded', appId, true);
+    return appId;
+  }
+
+  /**
+   * Creates a folder shortcut to |directoryName| using the context menu. Note
+   * the current directory must be a parent of the given |directoryName|.
+   *
+   * @param appId Files app windowId.
+   * @param directoryName Directory of shortcut to be created.
+   * @return Promise fulfilled on success.
+   */
+  async createShortcut(appId: string, directoryName: string): Promise<void> {
+    await this.waitUntilSelected(appId, directoryName);
+
+    await this.waitForElement(appId, ['.table-row[selected]']);
+    chrome.test.assertTrue(await this.callRemoteTestUtil(
+        'fakeMouseRightClick', appId, ['.table-row[selected]']));
+
+    await this.waitForElement(appId, '#file-context-menu:not([hidden])');
+    await this.waitForElement(
+        appId, '[command="#pin-folder"]:not([hidden]):not([disabled])');
+    chrome.test.assertTrue(await this.callRemoteTestUtil(
+        'fakeMouseClick', appId,
+        ['[command="#pin-folder"]:not([hidden]):not([disabled])']));
+
+    const directoryTree = await DirectoryTreePageObject.create(appId);
+    await directoryTree.waitForShortcutItemByLabel(directoryName);
+  }
+
+  /**
+   * Mounts crostini volume by clicking on the fake crostini root.
+   * @param appId Files app windowId.
+   * @param initialEntries List of initial entries to load in Crostini (defaults
+   *     to a basic entry set).
+   */
+  async mountCrostini(
+      appId: string,
+      initialEntries: TestEntryInfo[] = BASIC_CROSTINI_ENTRY_SET) {
+    const directoryTree = await DirectoryTreePageObject.create(appId);
+
+    // Add entries to crostini volume, but do not mount.
+    await addEntries(['crostini'], initialEntries);
+
+    // Linux files fake root is shown.
+    await directoryTree.waitForPlaceholderItemByType('crostini');
+
+    // Mount crostini, and ensure real root and files are shown.
+    await directoryTree.selectPlaceholderItemByType('crostini');
+    await directoryTree.waitForItemByType('crostini');
+    const files = TestEntryInfo.getExpectedRows(initialEntries);
+    await this.waitForFiles(appId, files);
+  }
+
+  /**
+   * Registers a GuestOS, mounts the volume, and populates it with tbe specified
+   * entries.
+   * @param appId Files app windowId.
+   * @param initialEntries List of initial entries to load in the volume.
+   */
+  async mountGuestOs(appId: string, initialEntries: TestEntryInfo[]) {
+    await sendTestMessage({
+      name: 'registerMountableGuest',
+      displayName: 'Bluejohn',
+      canMount: true,
+      vmType: 'bruschetta',
+    });
+    const directoryTree = await DirectoryTreePageObject.create(appId);
+
+    // Wait for the GuestOS fake root then click it.
+    await directoryTree.selectPlaceholderItemByType('bruschetta');
+
+    // Wait for the volume to get mounted.
+    await directoryTree.waitForItemByType('bruschetta');
+
+    // Add entries to GuestOS volume
+    await addEntries(['guest_os_0'], initialEntries);
+
+    // Ensure real root and files are shown.
+    const files = TestEntryInfo.getExpectedRows(initialEntries);
+    await this.waitForFiles(appId, files);
+  }
+
+  /**
+   * Returns true if the SinglePartitionFormat flag is on.
+   * @param appId Files app windowId.
+   */
+  async isSinglePartitionFormat(appId: string) {
+    const dialog =
+        await this.waitForElement(appId, ['files-format-dialog', 'cr-dialog']);
+    const flag = dialog.attributes['single-partition-format'] || '';
+    return !!flag;
   }
 }

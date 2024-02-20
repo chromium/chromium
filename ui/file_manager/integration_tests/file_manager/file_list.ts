@@ -5,7 +5,7 @@
 import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -46,8 +46,8 @@ async function tabUntilFileSelected(appId: string) {
  * Tests that file list column header have ARIA attributes.
  */
 export async function fileListAriaAttributes() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Fetch column header.
   const columnHeadersQuery = ['#detail-table .table-header [aria-describedby]'];
@@ -69,7 +69,7 @@ export async function fileListAriaAttributes() {
  * nothing is selected.
  */
 export async function fileListFocusFirstItem() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Send Tab keys to make file selected.
@@ -89,7 +89,7 @@ export async function fileListFocusFirstItem() {
  * Tab to focus the files list it selects the item that was last focused.
  */
 export async function fileListSelectLastFocusedItem() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Check: the file-list should have nothing selected.
@@ -148,7 +148,7 @@ export async function fileListSelectLastFocusedItem() {
  * Tab to focus the files list it selects the item that was last focused.
  */
 export async function fileListSortWithKeyboard() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Send shift-Tab key to tab into sort button.
@@ -226,7 +226,7 @@ async function countAndCheckLatestA11yMessage(
  * @param isGridView if the test is testing the grid view.
  */
 export async function fileListKeyboardSelectionA11yImpl(isGridView?: boolean) {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   let a11yMsgCount = 0;
@@ -303,7 +303,7 @@ export async function fileListKeyboardSelectionA11y() {
  * @param isGridView if the test is testing the grid view.
  */
 export async function fileListMouseSelectionA11yImpl(isGridView?: boolean) {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   let a11yMsgCount = 0;
@@ -366,7 +366,7 @@ export async function fileListMouseSelectionA11y() {
  * mode.
  */
 export async function fileListDeleteMultipleFiles() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Select first 2 items.
@@ -422,7 +422,7 @@ export async function fileListDeleteMultipleFiles() {
  * list item in selection mode. crbug.com/1094260
  */
 export async function fileListRenameSelectedItem() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Select 2 items.
@@ -473,8 +473,8 @@ export async function fileListRenameSelectedItem() {
  * having selected any file previously.
  */
 export async function fileListRenameFromSelectAll() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select all the files.
   const ctrlA = ['#file-list', 'a', true, false, false];

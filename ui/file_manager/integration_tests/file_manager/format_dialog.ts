@@ -4,7 +4,7 @@
 
 import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 
-import {isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -13,7 +13,7 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
  * @return Files app window ID.
  */
 async function setupFormatDialogTest(): Promise<string> {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await remoteCall.callRemoteTestUtil('overrideFormat', appId, []);
   return appId;
 }
@@ -25,13 +25,13 @@ async function setupFormatDialogTest(): Promise<string> {
  * @param usbLabel Label of usb to format.
  */
 async function openFormatDialog(appId: string, usbLabel: string) {
-  if (await isSinglePartitionFormat(appId)) {
+  if (await remoteCall.isSinglePartitionFormat(appId)) {
     await openFormatDialogWithSinglePartitionFormat(appId, usbLabel, 'FAKEUSB');
     return;
   }
 
   // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Right click on the USB's directory tree entry.
@@ -58,7 +58,7 @@ async function openFormatDialog(appId: string, usbLabel: string) {
 async function openFormatDialogWithSinglePartitionFormat(
     appId: string, usbLabel: string, deviceLabel: string) {
   // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Expand device tree entry to access partition entry.
@@ -310,11 +310,11 @@ export async function formatDialogGearMenu() {
   const appId = await setupFormatDialogTest();
 
   // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   let usbNavigationPath = '/fake-usb';
-  if (await isSinglePartitionFormat(appId)) {
+  if (await remoteCall.isSinglePartitionFormat(appId)) {
     usbNavigationPath = '/FAKEUSB/fake-usb';
   }
   // Navigate to the USB via the directory tree.

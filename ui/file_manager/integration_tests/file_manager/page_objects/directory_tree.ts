@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {type ElementObject} from '../../prod/file_manager/shared_types.js';
-import {RemoteCallFilesApp} from '../../remote_call.js';
 import {getCaller, pending, repeatUntil, sendTestMessage} from '../../test_util.js';
+import {remoteCall} from '../background.js';
 
 
 const FAKE_ENTRY_PATH_PREFIX = 'fake-entry:';
@@ -33,12 +33,10 @@ export class DirectoryTreePageObject {
    * Return a singleton instance of DirectoryTreePageObject. This will make sure
    * the directory tree DOM element is ready.
    */
-  static async create(appId: string, remoteCall: RemoteCallFilesApp):
-      Promise<DirectoryTreePageObject> {
+  static async create(appId: string): Promise<DirectoryTreePageObject> {
     const useNewTree =
         await sendTestMessage({name: 'isNewDirectoryTreeEnabled'}) === 'true';
-    const directoryTree =
-        new DirectoryTreePageObject(appId, remoteCall, useNewTree);
+    const directoryTree = new DirectoryTreePageObject(appId, useNewTree);
     remoteCall.waitForElement(appId, directoryTree.rootSelector);
     return directoryTree;
   }
@@ -50,9 +48,7 @@ export class DirectoryTreePageObject {
    * which will fetch the `useNewTree_` value and make sure the tree DOM element
    * is ready.
    */
-  constructor(
-      private appId_: string, private remoteCall_: RemoteCallFilesApp,
-      private useNewTree_: boolean) {
+  constructor(private appId_: string, private useNewTree_: boolean) {
     this.selectors_ = new DirectoryTreeSelectors(useNewTree_);
   }
 
@@ -90,7 +86,7 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item.
    */
   async waitForSelectedItemByLabel(label: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_, this.selectors_.itemByLabel(label, {selected: true}));
   }
 
@@ -101,7 +97,7 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item.
    */
   async waitForSelectedItemLostByLabel(label: string): Promise<void> {
-    await this.remoteCall_.waitForElementLost(
+    await remoteCall.waitForElementLost(
         this.appId_, this.selectors_.itemByLabel(label, {selected: true}));
   }
 
@@ -112,7 +108,7 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item
    */
   async waitForFocusedItemByLabel(label: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_, this.selectors_.itemByLabel(label, {focused: true}));
   }
 
@@ -124,12 +120,12 @@ export class DirectoryTreePageObject {
    */
   async waitForFocusableItemByLabel(label: string): Promise<ElementObject> {
     if (this.isNewTree) {
-      return this.remoteCall_.waitForElement(
+      return remoteCall.waitForElement(
           // Go inside shadow DOM to check tabindex.
           this.appId_,
           [this.selectors_.itemByLabel(label), 'li[tabindex="0"]']);
     }
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_, this.selectors_.itemByLabel(label, {focused: true}));
   }
 
@@ -140,7 +136,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async waitForFocusedItemByType(type: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.itemByType(
             type, /* isPlaceholder= */ false, {focused: true}));
@@ -154,7 +150,7 @@ export class DirectoryTreePageObject {
    */
   async waitForFocusedShortcutItemByLabel(label: string):
       Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.itemByLabel(label, {focused: true, shortcut: true}));
   }
@@ -167,7 +163,7 @@ export class DirectoryTreePageObject {
    */
   async waitForCurrentDirectoryItemByLabel(label: string):
       Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.itemByLabel(label, {currentDirectory: true}));
   }
@@ -187,7 +183,7 @@ export class DirectoryTreePageObject {
     const childItemsSelector = excludeEmptyChild ?
         this.selectors_.nonEmptyChildItems(itemSelector) :
         this.selectors_.childItems(itemSelector);
-    return this.remoteCall_.waitForElementsCount(
+    return remoteCall.waitForElementsCount(
         this.appId_, [childItemsSelector], count);
   }
 
@@ -201,15 +197,14 @@ export class DirectoryTreePageObject {
       Promise<void> {
     const itemSelector =
         this.selectors_.itemByType(type, /* isPlaceholder= */ true);
-    return this.remoteCall_.waitForElementsCount(
-        this.appId_, [itemSelector], count);
+    return remoteCall.waitForElementsCount(this.appId_, [itemSelector], count);
   }
 
   /** Get the currently focused tree item. */
   async getFocusedItem(): Promise<null|ElementObject> {
     const focusedItemSelector = this.selectors_.attachModifier(
         `${this.selectors_.root} ${this.selectors_.item}`, {focused: true});
-    const elements = await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
+    const elements = await remoteCall.callRemoteTestUtil<ElementObject[]>(
         'deepQueryAllElements', this.appId_, [focusedItemSelector]);
     if (elements && elements.length > 0) {
       return elements[0]!;
@@ -256,7 +251,7 @@ export class DirectoryTreePageObject {
     if (hasChildren) {
       await this.expandTreeItemByLabel(label);
     }
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.itemByLabel(label, {hasChildren: hasChildren}));
   }
@@ -274,7 +269,7 @@ export class DirectoryTreePageObject {
     if (hasChildren) {
       await this.expandTreeItemByType(type);
     }
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.itemByType(
             type, /* isPlaceholder= */ false, {hasChildren: hasChildren}));
@@ -287,7 +282,7 @@ export class DirectoryTreePageObject {
    */
   async waitForItemToMayHaveChildrenByLabel(label: string):
       Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.itemByLabel(label, {mayHaveChildren: true}));
   }
@@ -300,7 +295,7 @@ export class DirectoryTreePageObject {
   async waitForItemToExpandByLabel(label: string): Promise<void> {
     const expandedItemSelector =
         this.selectors_.itemByLabel(label, {expanded: true});
-    await this.remoteCall_.waitForElement(this.appId_, expandedItemSelector);
+    await remoteCall.waitForElement(this.appId_, expandedItemSelector);
   }
 
   /**
@@ -311,7 +306,7 @@ export class DirectoryTreePageObject {
   async waitForItemToCollapseByLabel(label: string): Promise<void> {
     const collapsedItemSelector =
         this.selectors_.itemByLabel(label, {expanded: false});
-    await this.remoteCall_.waitForElement(this.appId_, collapsedItemSelector);
+    await remoteCall.waitForElement(this.appId_, collapsedItemSelector);
   }
 
   /**
@@ -370,13 +365,12 @@ export class DirectoryTreePageObject {
     for (const parentLabel of paths) {
       // Wait for parent element to be displayed.
       query += ` ${this.selectors_.itemItselfByLabel(parentLabel)}`;
-      await this.remoteCall_.waitForElement(this.appId_, query);
+      await remoteCall.waitForElement(this.appId_, query);
 
       // Only expand if element isn't expanded yet.
-      const elements =
-          await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
-              'queryAllElements', this.appId_,
-              [this.selectors_.attachModifier(query, {expanded: true})]);
+      const elements = await remoteCall.callRemoteTestUtil<ElementObject[]>(
+          'queryAllElements', this.appId_,
+          [this.selectors_.attachModifier(query, {expanded: true})]);
       if (elements.length === 0) {
         await this.expandTreeItem_(query);
       }
@@ -411,18 +405,16 @@ export class DirectoryTreePageObject {
 
     // Navigate to the final entry.
     query += ` ${this.selectors_.itemItselfByLabel(leaf)}`;
-    await this.remoteCall_.waitAndClickElement(this.appId_, query);
+    await remoteCall.waitAndClickElement(this.appId_, query);
 
     // Wait directory to finish scanning its content.
-    await this.remoteCall_.waitForElement(
-        this.appId_, `[scan-completed="${leaf}"]`);
+    await remoteCall.waitForElement(this.appId_, `[scan-completed="${leaf}"]`);
 
     // If the search was not closed, wait for it to close.
-    await this.remoteCall_.waitForElement(
-        this.appId_, '#search-wrapper[collapsed]');
+    await remoteCall.waitForElement(this.appId_, '#search-wrapper[collapsed]');
 
     // Wait to navigation to final entry to finish.
-    await this.remoteCall_.waitUntilCurrentDirectoryIsChanged(
+    await remoteCall.waitUntilCurrentDirectoryIsChanged(
         this.appId_, (shortcutToPath || breadcrumbsPath));
 
     // Focus the directory tree.
@@ -441,8 +433,7 @@ export class DirectoryTreePageObject {
 
     const arrowUp =
         [this.selectors_.keyboardRecipient, 'ArrowUp', false, false, false];
-    await this.remoteCall_.callRemoteTestUtil(
-        'fakeKeyDown', this.appId_, arrowUp);
+    await remoteCall.callRemoteTestUtil('fakeKeyDown', this.appId_, arrowUp);
   }
 
   /**
@@ -456,8 +447,7 @@ export class DirectoryTreePageObject {
 
     const arrowUp =
         [this.selectors_.keyboardRecipient, 'ArrowDown', false, false, false];
-    await this.remoteCall_.callRemoteTestUtil(
-        'fakeKeyDown', this.appId_, arrowUp);
+    await remoteCall.callRemoteTestUtil('fakeKeyDown', this.appId_, arrowUp);
   }
 
   /**
@@ -470,8 +460,7 @@ export class DirectoryTreePageObject {
 
     const enter =
         [this.selectors_.keyboardRecipient, 'Enter', false, false, false];
-    await this.remoteCall_.callRemoteTestUtil(
-        'fakeKeyDown', this.appId_, enter);
+    await remoteCall.callRemoteTestUtil('fakeKeyDown', this.appId_, enter);
   }
 
   /**
@@ -480,7 +469,7 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item.
    */
   async waitForItemByLabel(label: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_, this.selectors_.itemByLabel(label));
   }
 
@@ -490,7 +479,7 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item.
    */
   async waitForItemLostByLabel(label: string): Promise<void> {
-    await this.remoteCall_.waitForElementLost(
+    await remoteCall.waitForElementLost(
         this.appId_, this.selectors_.itemByLabel(label));
   }
 
@@ -500,7 +489,7 @@ export class DirectoryTreePageObject {
    * @param path Path of the tree item.
    */
   async waitForItemByPath(path: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_, this.selectors_.itemByPath(path));
   }
 
@@ -510,13 +499,13 @@ export class DirectoryTreePageObject {
    * @param path Path of the tree item.
    */
   async waitForItemLostByPath(path: string): Promise<void> {
-    await this.remoteCall_.waitForElementLost(
+    await remoteCall.waitForElementLost(
         this.appId_, this.selectors_.itemByPath(path));
   }
 
   /** Returns the labels for all visible tree items. */
   async getVisibleItemLabels(): Promise<string[]> {
-    const allItems = await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
+    const allItems = await remoteCall.callRemoteTestUtil<ElementObject[]>(
         'queryAllElements', this.appId_, [
           `${this.selectors_.root} ${this.selectors_.item}`,
           ['visibility'],
@@ -532,7 +521,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async waitForItemByType(type: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ false));
   }
@@ -543,7 +532,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async waitForItemLostByType(type: string): Promise<void> {
-    await this.remoteCall_.waitForElementLost(
+    await remoteCall.waitForElementLost(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ false));
   }
@@ -554,7 +543,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async waitForPlaceholderItemByType(type: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ true));
   }
@@ -565,7 +554,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async waitForPlaceholderItemLostByType(type: string): Promise<void> {
-    await this.remoteCall_.waitForElementLost(
+    await remoteCall.waitForElementLost(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ true));
   }
@@ -576,7 +565,7 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item.
    */
   async waitForShortcutItemByLabel(label: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_, this.selectors_.itemByLabel(label, {shortcut: true}));
   }
 
@@ -586,7 +575,7 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item.
    */
   async waitForShortcutItemLostByLabel(label: string): Promise<void> {
-    await this.remoteCall_.waitForElementLost(
+    await remoteCall.waitForElementLost(
         this.appId_, this.selectors_.itemByLabel(label, {shortcut: true}));
   }
 
@@ -598,7 +587,7 @@ export class DirectoryTreePageObject {
    */
   async waitForChildItemByLabel(parentLabel: string, childLabel: string):
       Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.childItem(
             this.selectors_.itemByLabel(parentLabel),
@@ -614,7 +603,7 @@ export class DirectoryTreePageObject {
    */
   async waitForChildItemLostByLabel(parentLabel: string, childLabel: string):
       Promise<void> {
-    await this.remoteCall_.waitForElementLost(
+    await remoteCall.waitForElementLost(
         this.appId_,
         this.selectors_.childItem(
             this.selectors_.itemByLabel(parentLabel),
@@ -627,7 +616,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async waitForGroupRootItemByType(type: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_, this.selectors_.groupRootItemByType(type));
   }
 
@@ -640,7 +629,7 @@ export class DirectoryTreePageObject {
       Promise<ElementObject[]> {
     const parentItemSelector = this.selectors_.itemByLabel(parentLabel);
     const childItemsSelector = this.selectors_.childItems(parentItemSelector);
-    return this.remoteCall_.callRemoteTestUtil(
+    return remoteCall.callRemoteTestUtil(
         'queryAllElements', this.appId_, [childItemsSelector]);
   }
 
@@ -650,7 +639,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async waitForItemEjectButtonByType(type: string): Promise<ElementObject> {
-    return this.remoteCall_.waitForElement(
+    return remoteCall.waitForElement(
         this.appId_,
         this.selectors_.ejectButton(this.selectors_.itemByType(type)));
   }
@@ -661,7 +650,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async waitForItemEjectButtonLostByType(type: string): Promise<void> {
-    await this.remoteCall_.waitForElementLost(
+    await remoteCall.waitForElementLost(
         this.appId_,
         this.selectors_.ejectButton(this.selectors_.itemByType(type)));
   }
@@ -672,7 +661,7 @@ export class DirectoryTreePageObject {
    * @param type Type of the tree item.
    */
   async ejectItemByType(type: string): Promise<ElementObject> {
-    return this.remoteCall_.waitAndClickElement(
+    return remoteCall.waitAndClickElement(
         this.appId_,
         this.selectors_.ejectButton(this.selectors_.itemByType(type)));
   }
@@ -683,7 +672,7 @@ export class DirectoryTreePageObject {
    * @param label Label of the tree item.
    */
   async ejectItemByLabel(label: string): Promise<ElementObject> {
-    return this.remoteCall_.waitAndClickElement(
+    return remoteCall.waitAndClickElement(
         this.appId_,
         this.selectors_.ejectButton(this.selectors_.itemByLabel(label)));
   }
@@ -698,7 +687,7 @@ export class DirectoryTreePageObject {
         this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
     const caller = getCaller();
     return repeatUntil(async () => {
-      const element = await this.remoteCall_.waitForElementStyles(
+      const element = await remoteCall.waitForElementStyles(
           this.appId_,
           expandIcon,
           ['visibility'],
@@ -721,7 +710,7 @@ export class DirectoryTreePageObject {
         this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
     const caller = getCaller();
     return repeatUntil(async () => {
-      const element = await this.remoteCall_.waitForElementStyles(
+      const element = await remoteCall.waitForElementStyles(
           this.appId_,
           expandIcon,
           ['visibility'],
@@ -744,8 +733,8 @@ export class DirectoryTreePageObject {
         this.selectors_.itemByLabel(label, {acceptDrop: true});
     const itemDenyDrop =
         this.selectors_.itemByLabel(label, {acceptDrop: false});
-    await this.remoteCall_.waitForElement(this.appId_, itemAcceptDrop);
-    await this.remoteCall_.waitForElementLost(this.appId_, itemDenyDrop);
+    await remoteCall.waitForElement(this.appId_, itemAcceptDrop);
+    await remoteCall.waitForElementLost(this.appId_, itemDenyDrop);
   }
 
   /**
@@ -758,8 +747,8 @@ export class DirectoryTreePageObject {
         this.selectors_.itemByLabel(label, {acceptDrop: true});
     const itemDenyDrop =
         this.selectors_.itemByLabel(label, {acceptDrop: false});
-    await this.remoteCall_.waitForElement(this.appId_, itemDenyDrop);
-    await this.remoteCall_.waitForElementLost(this.appId_, itemAcceptDrop);
+    await remoteCall.waitForElement(this.appId_, itemDenyDrop);
+    await remoteCall.waitForElementLost(this.appId_, itemAcceptDrop);
   }
 
   /**
@@ -776,7 +765,7 @@ export class DirectoryTreePageObject {
       Promise<((dragEndQuery: string, dragLeave: boolean) => Promise<void>)> {
     const target = this.selectors_.itemByLabel(targetLabel);
     chrome.test.assertTrue(
-        await this.remoteCall_.callRemoteTestUtil(
+        await remoteCall.callRemoteTestUtil(
             'fakeDragAndDrop', this.appId_, [sourceQuery, target, skipDrop]),
         'fakeDragAndDrop failed');
     // A function is being returned to let the caller finish drop if drop
@@ -798,7 +787,7 @@ export class DirectoryTreePageObject {
       targetQuery: string, dragEndQuery: string,
       dragLeave: boolean): Promise<void> {
     chrome.test.assertTrue(
-        await this.remoteCall_.callRemoteTestUtil(
+        await remoteCall.callRemoteTestUtil(
             'fakeDragLeaveOrDrop', this.appId_,
             [dragEndQuery, targetQuery, dragLeave]),
         'fakeDragLeaveOrDrop failed');
@@ -820,8 +809,7 @@ export class DirectoryTreePageObject {
       false,
       false,
     ];
-    await this.remoteCall_.callRemoteTestUtil(
-        'fakeKeyDown', this.appId_, renameKey);
+    await remoteCall.callRemoteTestUtil('fakeKeyDown', this.appId_, renameKey);
   }
 
   /**
@@ -832,7 +820,7 @@ export class DirectoryTreePageObject {
   async waitForRenameInputByLabel(label: string): Promise<ElementObject> {
     const itemSelector = this.selectors_.itemByLabel(label);
     const textInput = this.selectors_.renameInput(itemSelector);
-    return this.remoteCall_.waitForElement(this.appId_, textInput);
+    return remoteCall.waitForElement(this.appId_, textInput);
   }
 
   /**
@@ -847,10 +835,10 @@ export class DirectoryTreePageObject {
     const itemSelector = this.selectors_.itemByLabel(label);
     // Check: the renaming text input element should appear.
     const textInputSelector = this.selectors_.renameInput(itemSelector);
-    await this.remoteCall_.waitForElement(this.appId_, textInputSelector);
+    await remoteCall.waitForElement(this.appId_, textInputSelector);
 
     // Enter the new name for the tree item.
-    await this.remoteCall_.inputText(this.appId_, textInputSelector, newName);
+    await remoteCall.inputText(this.appId_, textInputSelector, newName);
   }
 
   /**
@@ -866,17 +854,15 @@ export class DirectoryTreePageObject {
 
     // Press Enter key to end text input.
     const enterKey = [textInputSelector, 'Enter', false, false, false];
-    await this.remoteCall_.callRemoteTestUtil(
-        'fakeKeyDown', this.appId_, enterKey);
+    await remoteCall.callRemoteTestUtil('fakeKeyDown', this.appId_, enterKey);
 
     // Wait for the renaming input element to disappear.
-    await this.remoteCall_.waitForElementLost(this.appId_, textInputSelector);
+    await remoteCall.waitForElementLost(this.appId_, textInputSelector);
 
     // Wait until renaming is complete.
     const renamingItemSelector = this.selectors_.attachModifier(
         `${this.selectors_.root} ${this.selectors_.item}`, {renaming: true});
-    await this.remoteCall_.waitForElementLost(
-        this.appId_, renamingItemSelector);
+    await remoteCall.waitForElementLost(this.appId_, renamingItemSelector);
   }
 
   /**
@@ -889,8 +875,8 @@ export class DirectoryTreePageObject {
         this.selectors_.itemByLabel(label, {acceptDrop: true});
     const itemDenyDrop =
         this.selectors_.itemByLabel(label, {acceptDrop: false});
-    await this.remoteCall_.waitForElementLost(this.appId_, itemDenyDrop);
-    await this.remoteCall_.waitForElementLost(this.appId_, itemAcceptDrop);
+    await remoteCall.waitForElementLost(this.appId_, itemDenyDrop);
+    await remoteCall.waitForElementLost(this.appId_, itemAcceptDrop);
   }
 
   /**
@@ -989,15 +975,15 @@ export class DirectoryTreePageObject {
   async showContextMenuForEjectButtonByLabel(label: string): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label);
     const ejectButton = this.selectors_.ejectButton(itemSelector);
-    await this.remoteCall_.waitForElement(this.appId_, ejectButton);
+    await remoteCall.waitForElement(this.appId_, ejectButton);
     // Focus on the eject button.
     chrome.test.assertTrue(
-        !!await this.remoteCall_.callRemoteTestUtil(
+        !!await remoteCall.callRemoteTestUtil(
             'focus', this.appId_, [ejectButton]),
         'focus failed: eject button');
 
     // Right click the eject button.
-    await this.remoteCall_.waitAndRightClick(this.appId_, ejectButton);
+    await remoteCall.waitAndRightClick(this.appId_, ejectButton);
   }
 
   /**
@@ -1008,7 +994,7 @@ export class DirectoryTreePageObject {
   async showContextMenuForRenameInputByLabel(label: string): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label);
     const renameInput = this.selectors_.renameInput(itemSelector);
-    await this.remoteCall_.waitAndRightClick(this.appId_, renameInput);
+    await remoteCall.waitAndRightClick(this.appId_, renameInput);
   }
 
   /**
@@ -1016,7 +1002,7 @@ export class DirectoryTreePageObject {
    *
    */
   async focusTree(): Promise<void> {
-    await this.remoteCall_.callRemoteTestUtil(
+    await remoteCall.callRemoteTestUtil(
         'focus', this.appId_, [this.selectors_.root]);
   }
 
@@ -1033,18 +1019,18 @@ export class DirectoryTreePageObject {
           '.tree-item > .tree-row-wrapper > .tree-row > .tree-label-icon',
         ] :
         `${itemSelector} > .tree-row .item-icon`;
-    await this.remoteCall_.callRemoteTestUtil(
+    await remoteCall.callRemoteTestUtil(
         'fakeEvent', this.appId_, [iconSelector, 'blur']);
   }
 
   /** Show the context menu for a tree item by right clicking it. */
   private async showItemContextMenu_(itemSelector: string): Promise<void> {
-    await this.remoteCall_.waitAndRightClick(this.appId_, itemSelector);
+    await remoteCall.waitAndRightClick(this.appId_, itemSelector);
   }
 
   /** Select the tree item by clicking it. */
   private async selectItem_(itemSelector: string): Promise<void> {
-    await this.remoteCall_.waitAndClickElement(this.appId_, [itemSelector]);
+    await remoteCall.waitAndClickElement(this.appId_, [itemSelector]);
   }
 
   /**
@@ -1055,8 +1041,8 @@ export class DirectoryTreePageObject {
    */
   private async expandTreeItem_(itemSelector: string, allowEmpty?: boolean):
       Promise<void> {
-    await this.remoteCall_.waitForElement(this.appId_, itemSelector);
-    const elements = await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
+    await remoteCall.waitForElement(this.appId_, itemSelector);
+    const elements = await remoteCall.callRemoteTestUtil<ElementObject[]>(
         'queryAllElements', this.appId_,
         [this.selectors_.attachModifier(itemSelector, {expanded: true})]);
     // If it's already expanded just set the focus on directory tree.
@@ -1087,10 +1073,10 @@ export class DirectoryTreePageObject {
           `${itemSelector} > .tree-children`, {expanded: true});
     }
 
-    await this.remoteCall_.waitAndClickElement(this.appId_, expandIcon);
+    await remoteCall.waitAndClickElement(this.appId_, expandIcon);
     if (!allowEmpty) {
       // Wait for the expansion to finish.
-      await this.remoteCall_.waitForElement(this.appId_, expandedSubtree);
+      await remoteCall.waitForElement(this.appId_, expandedSubtree);
     }
     if (!this.useNewTree_) {
       // Force the focus on directory tree.
@@ -1104,8 +1090,8 @@ export class DirectoryTreePageObject {
    * @param itemSelector Selector to the tree item that should be expanded.
    */
   private async collapseTreeItem_(itemSelector: string): Promise<void> {
-    await this.remoteCall_.waitForElement(this.appId_, itemSelector);
-    const elements = await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
+    await remoteCall.waitForElement(this.appId_, itemSelector);
+    const elements = await remoteCall.callRemoteTestUtil<ElementObject[]>(
         'queryAllElements', this.appId_,
         [this.selectors_.attachModifier(itemSelector, {expanded: false})]);
     // If it's already collapsed just set the focus on directory tree.
@@ -1129,8 +1115,8 @@ export class DirectoryTreePageObject {
       })} > .tree-row:is([has-children=true], [may-have-children]) .expand-icon`;
     }
 
-    await this.remoteCall_.waitAndClickElement(this.appId_, expandIcon);
-    await this.remoteCall_.waitForElement(
+    await remoteCall.waitAndClickElement(this.appId_, expandIcon);
+    await remoteCall.waitForElement(
         this.appId_,
         this.selectors_.attachModifier(itemSelector, {expanded: false}));
     if (!this.useNewTree_) {

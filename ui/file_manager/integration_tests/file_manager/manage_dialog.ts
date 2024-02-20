@@ -4,7 +4,7 @@
 
 import {RootPath} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 
@@ -18,13 +18,12 @@ import {BASIC_DRIVE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 async function manageWithDriveExpectBrowserURL(
     path: string, url: string, teamDrive: string|undefined = undefined) {
   // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(SHARED_DRIVE_ENTRY_SET));
 
   // Navigate to the specified team drive if one is specified.
   if (teamDrive !== undefined) {
-    const directoryTree =
-        await DirectoryTreePageObject.create(appId, remoteCall);
+    const directoryTree = await DirectoryTreePageObject.create(appId);
     await directoryTree.navigateToPath(
         teamDrive === '' ? '/Shared drives' : `/Shared drives/${teamDrive}`);
 

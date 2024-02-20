@@ -5,7 +5,7 @@
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {isSinglePartitionFormat, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPUTERS_ENTRY_SET} from './test_data.js';
 
@@ -18,7 +18,7 @@ import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMP
  */
 async function fileDisplay(path: string, defaultEntries: TestEntryInfo[]) {
   // Open Files app on the given |path| with default file entries.
-  const appId = await setupAndWaitUntilReady(path);
+  const appId = await remoteCall.setupAndWaitUntilReady(path);
 
   // Verify the default file list is present in |result|.
   const defaultList = TestEntryInfo.getExpectedRows(defaultEntries).sort();
@@ -99,7 +99,7 @@ export async function fileDisplayLaunchOnDrive() {
   const appId = await remoteCall.waitForWindow();
 
   // Check: the app should be open on My Drive.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForSelectedItemByLabel('My Drive');
 }
 
@@ -118,7 +118,8 @@ export async function fileDisplayDriveOffline() {
       [ENTRIES.hello, ENTRIES.pinned, ENTRIES.photos, ENTRIES.testDocument];
 
   // is not assignable to parameter of type 'TestEntryInfo[]'.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], driveFiles);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], driveFiles);
 
   // Retrieve all file list entries that could be rendered 'offline'.
   // Use "first-child" here because opacity for offline only applies on the
@@ -183,8 +184,8 @@ async function checkDriveOnlineDisplay(appId: string) {
  */
 export async function fileDisplayDriveOnline() {
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
 
   await checkDriveOnlineDisplay(appId);
 }
@@ -214,11 +215,11 @@ export async function fileDisplayDriveOnlineNewWindow() {
  */
 export async function fileDisplayComputers() {
   // Open Files app on Drive with Computers registered.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
 
   // Navigate to Computer Grand Root.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/Computers');
 
   // Navigate to a Computer Root.
@@ -236,13 +237,13 @@ export async function fileDisplayMtp() {
   const MTP_VOLUME_TYPE = 'mtp';
 
   // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Mount MTP volume in the Downloads window.
   await sendTestMessage({name: 'mountFakeMtp'});
 
   // Wait for the MTP mount and click to open the MTP volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType(MTP_VOLUME_TYPE);
 
   // Verify the MTP file list.
@@ -257,13 +258,13 @@ export async function fileDisplayUsb() {
   const USB_VOLUME_TYPE = 'removable';
 
   // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Mount USB volume in the Downloads window.
   await sendTestMessage({name: 'mountFakeUsb'});
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType(USB_VOLUME_TYPE);
 
   // Verify the USB file list.
@@ -276,7 +277,7 @@ export async function fileDisplayUsb() {
  */
 export async function fileDisplayUsbPartition() {
   // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Mount USB device containing partitions.
   await sendTestMessage({name: 'mountUsbWithPartitions'});
@@ -284,7 +285,7 @@ export async function fileDisplayUsbPartition() {
   await sendTestMessage({name: 'mountFakeUsb'});
 
   // Wait for removable root to appear in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByLabel('Drive Label');
 
   // Wait for removable partition-1 to appear in the directory tree.
@@ -305,7 +306,7 @@ export async function fileDisplayUsbPartition() {
       childEntries.map(child => directoryTree.getItemLabel(child));
   chrome.test.assertEq(['partition-1', 'partition-2'], childEntryLabels);
 
-  if (await isSinglePartitionFormat(appId)) {
+  if (await remoteCall.isSinglePartitionFormat(appId)) {
     // Wait for USB to appear in the directory tree.
     await directoryTree.waitForItemByLabel('FAKEUSB');
     // Expand it before checking children items.
@@ -338,13 +339,13 @@ export async function fileDisplayUsbPartition() {
  */
 export async function fileDisplayUsbPartitionSort() {
   // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Mount removable device with partitions.
   await sendTestMessage({name: 'mountUsbWithMultiplePartitionTypes'});
 
   // Wait and select the removable group by clicking the label.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectGroupRootItemByType('removable');
 
   // Wait for partitions to appear in the file table list.
@@ -395,14 +396,14 @@ export async function fileDisplayUsbPartitionSort() {
  */
 export async function fileDisplayPartitionFileTable() {
   // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Mount removable partitions.
   await sendTestMessage({name: 'mountUsbWithPartitions'});
 
   // Wait for removable group to appear in the directory tree and select the
   // first removable group by clicking the label.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectGroupRootItemByType('removable');
 
   // Wait for removable partitions to appear in the file table.
@@ -426,7 +427,7 @@ export async function fileDisplayPartitionFileTable() {
 async function searchDownloads(
     searchTerm: string, expectedResults: TestEntryInfo[]) {
   // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Focus the search box.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -465,7 +466,7 @@ export async function fileSearchCaseInsensitive() {
 export async function fileSearchNotFound() {
   const searchTerm = 'blahblah';
 
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Focus the search box.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -495,7 +496,7 @@ export async function fileDisplayWithoutDownloadsVolume() {
   await remoteCall.waitForVolumesCount(1);
 
   // Open Files app without specifying the initial directory/root.
-  const appId = await openNewWindow(null, null);
+  const appId = await remoteCall.openNewWindow(null, null);
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
@@ -510,7 +511,7 @@ export async function fileDisplayWithoutVolumes() {
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Open Files app without specifying the initial directory/root.
-  const appId = await openNewWindow(null, null);
+  const appId = await remoteCall.openNewWindow(null, null);
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
@@ -527,7 +528,7 @@ export async function fileDisplayWithoutVolumesThenMountDownloads() {
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Open Files app without specifying the initial directory/root.
-  const appId = await openNewWindow(null, null);
+  const appId = await remoteCall.openNewWindow(null, null);
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
@@ -540,7 +541,7 @@ export async function fileDisplayWithoutVolumesThenMountDownloads() {
   await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
 
   // Downloads should appear in My files in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByLabel('My files');
   const expectedRows =
       [['Downloads', '--', 'Folder'], ['Linux files', '--', 'Folder']];
@@ -559,14 +560,14 @@ export async function fileDisplayWithoutVolumesThenMountDrive() {
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Open Files app without specifying the initial directory/root.
-  const appId = await openNewWindow(null, null);
+  const appId = await remoteCall.openNewWindow(null, null);
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Navigate to the Drive FakeItem.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectGroupRootItemByType('drive');
 
   // The fake Google Drive should be empty.
@@ -600,7 +601,7 @@ export async function fileDisplayWithoutDrive() {
   await remoteCall.waitForVolumesCount(1);
 
   // Open the files app.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.newlyAdded], []);
 
   // Wait for the loading indicator blink to finish.
@@ -608,7 +609,7 @@ export async function fileDisplayWithoutDrive() {
       appId, '#list-container .loading-indicator[hidden]');
 
   // Navigate to the fake Google Drive.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectGroupRootItemByType('drive');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Google Drive');
 
@@ -637,7 +638,7 @@ export async function fileDisplayWithoutDriveThenDisable() {
   await remoteCall.waitForVolumesCount(1);
 
   // Open Files app without specifying the initial directory/root.
-  const appId = await openNewWindow(null, null);
+  const appId = await remoteCall.openNewWindow(null, null);
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
@@ -652,7 +653,7 @@ export async function fileDisplayWithoutDriveThenDisable() {
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
   // Navigate to Drive.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectGroupRootItemByType('drive');
 
   // The fake Google Drive should be empty.
@@ -684,11 +685,11 @@ export async function fileDisplayWithoutDriveThenDisable() {
 export async function fileDisplayWithHiddenVolume() {
   const initialVolumeCount = await sendTestMessage({name: 'getVolumesCount'});
 
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Get the directory tree elements.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   const visibleLabelsBefore = await directoryTree.getVisibleItemLabels();
 
   // Mount a hidden volume.
@@ -709,14 +710,14 @@ export async function fileDisplayWithHiddenVolume() {
  */
 export async function fileDisplayMountWithFakeItemSelected() {
   // Open Files app on Drive with the given test files.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.newlyAdded], []);
 
   // Ensure Downloads has loaded.
   await remoteCall.waitForFiles(appId, [ENTRIES.newlyAdded.getExpectedRow()]);
 
   // Navigate to My files.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('My files');
 
   // Wait for the navigation to complete.
@@ -738,12 +739,12 @@ export async function fileDisplayMountWithFakeItemSelected() {
  */
 export async function fileDisplayUnmountDriveWithSharedWithMeSelected() {
   // Open Files app on Drive with the given test files.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [ENTRIES.newlyAdded],
       [ENTRIES.testSharedDocument, ENTRIES.hello]);
 
   // Navigate to Shared with me.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait for the navigation to complete.
@@ -778,15 +779,15 @@ export async function fileDisplayUnmountDriveWithSharedWithMeSelected() {
  */
 async function unmountRemovableVolume(removableDirectory: string) {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Mount a device containing two partitions.
   await sendTestMessage({name: 'mountUsbWithPartitions'});
 
   // Wait for the removable root to appear in the directory tree and navigate to
   // the removable root directory.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectGroupRootItemByType('removable');
 
   // Wait for the navigation to complete.
@@ -865,8 +866,8 @@ export async function fileDisplayDownloadsWithBlockedFileTaskRunner() {
  */
 export async function fileDisplayCheckSelectWithFakeItemSelected() {
   // Open files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Select ENTRIES.hello.
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
@@ -886,12 +887,12 @@ export async function fileDisplayCheckSelectWithFakeItemSelected() {
  */
 export async function fileDisplayCheckReadOnlyIconOnFakeDirectory() {
   // Open Files app on Drive with the given test files.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [ENTRIES.newlyAdded],
       [ENTRIES.testSharedDocument, ENTRIES.hello]);
 
   // Navigate to Shared with me.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait for the navigation to complete.
@@ -907,8 +908,8 @@ export async function fileDisplayCheckReadOnlyIconOnFakeDirectory() {
  */
 export async function fileDisplayCheckNoReadOnlyIconOnDownloads() {
   // Open files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Make sure read-only indicator on toolbar is NOT visible.
   await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
@@ -924,11 +925,11 @@ export async function fileDisplayCheckNoReadOnlyIconOnLinuxFiles() {
   await sendTestMessage({name: 'blockMounts'});
 
   // Open files app on Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Click on Linux files.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectPlaceholderItemByType('crostini');
 
   // Check: the loading indicator should be visible.
@@ -957,11 +958,11 @@ export async function fileDisplayCheckNoReadOnlyIconOnGuestOs() {
   await sendTestMessage({name: 'blockMounts'});
 
   // Open files app on Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Click on the placeholder.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectPlaceholderItemByType('bruschetta');
 
   // Check: the loading indicator should be visible.
