@@ -1534,6 +1534,9 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant, true);
   registry->RegisterBooleanPref(prefs::kDataUrlInSvgUseEnabled, false);
 
+  registry->RegisterBooleanPref(policy::policy_prefs::kMutationEventsEnabled,
+                                false);
+
   registry->RegisterBooleanPref(
       policy::policy_prefs::kBeforeunloadEventCancelByPreventDefaultEnabled,
       true);
@@ -2607,6 +2610,10 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
       if (prefs->GetBoolean(prefs::kDataUrlInSvgUseEnabled)) {
         command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
+      }
+
+      if (prefs->GetBoolean(policy::policy_prefs::kMutationEventsEnabled)) {
+        command_line->AppendSwitch(blink::switches::kMutationEventsEnabled);
       }
 
       if (prefs->GetBoolean(policy::policy_prefs::

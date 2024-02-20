@@ -148,6 +148,11 @@ const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
 const char kLocalTestPoliciesForNextStartup[] =
     "local_test_policies_for_next_startup";
 
+// A boolean pref indicating whether to fire deprecated/removed mutation events.
+// If false, mutation events might not be fired.
+const char kMutationEventsEnabled[] =
+    "policy.deprecated_mutation_events_enabled";
+
 // A boolean pref indicating whether to allow deprecation of the "unload"
 // event.
 // If false, the deprecation rollout will be ignored.

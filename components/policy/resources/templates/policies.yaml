@@ -1225,6 +1225,8 @@ policies:
   1224: DownloadManagerSaveToDriveSettings
   1225: AutomaticFullscreenAllowedForUrls
   1226: AutomaticFullscreenBlockedForUrls
+  1227: MutationEventsEnabled
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess

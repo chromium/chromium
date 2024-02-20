@@ -55,6 +55,7 @@ BLINK_COMMON_EXPORT extern const char kLegacyTechReportPolicyEnabled[];
 BLINK_COMMON_EXPORT extern const char kJavaScriptFlags[];
 BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerHeight[];
 BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerWidth[];
+BLINK_COMMON_EXPORT extern const char kMutationEventsEnabled[];
 BLINK_COMMON_EXPORT extern const char kMinHeightForGpuRasterTile[];
 BLINK_COMMON_EXPORT extern const char kNetworkQuietTimeout[];
 BLINK_COMMON_EXPORT extern const char kSharedArrayBufferAllowedOrigins[];

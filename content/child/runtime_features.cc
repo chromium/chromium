@@ -493,6 +493,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableScriptedSpeechSynthesis, switches::kDisableSpeechSynthesisAPI,
        false},
       {wrf::EnableSharedWorker, switches::kDisableSharedWorkers, false},
+      {wrf::EnableMutationEvents, blink::switches::kMutationEventsEnabled,
+       true},
       {wrf::EnableTextFragmentIdentifiers,
        switches::kDisableScrollToTextFragment, false},
       {wrf::EnableWebAuthenticationRemoteDesktopSupport,
