@@ -77,10 +77,9 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
             <TextView
-                android:id="@+id/option_text_open_instead"
+                android:id="@+id/option_text_install_explanation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pwa_uni_install_option_open_explanation"
                 android:visibility="gone"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
         </LinearLayout>

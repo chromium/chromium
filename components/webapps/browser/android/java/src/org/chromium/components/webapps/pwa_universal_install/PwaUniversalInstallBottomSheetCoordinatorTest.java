@@ -7,14 +7,12 @@ package org.chromium.components.webapps.pwa_universal_install;
 import static org.mockito.Mockito.mock;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +39,13 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetching = true;
+    }
+
+    @After
+    public void tearDown() {
+        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetching = false;
     }
 
     private void onInstallCalled() {}
@@ -49,20 +54,10 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
 
     private void onOpenAppCalled() {}
 
-    private Pair<Bitmap, Boolean> constructTestIconData() {
-        int size = 48;
-        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(Color.BLUE);
-        return Pair.create(bitmap, /* maskable= */ false);
-    }
-
     @Test
     @MediumTest
     public void testShowing() {
         final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-
-        PwaUniversalInstallBottomSheetCoordinator.setIconCallForTesting(
-                this::constructTestIconData);
 
         // Setup the coordinator with a mocked WebContents object.
         MockWebContents webContents = mock(MockWebContents.class);
@@ -87,6 +82,10 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
                             "Install",
                             ((TextView) view.findViewById(R.id.option_text_install)).getText());
                     Assert.assertEquals(
+                            "Checking if app can be installed…",
+                            ((TextView) view.findViewById(R.id.option_text_install_explanation))
+                                    .getText());
+                    Assert.assertEquals(
                             "Create shortcut",
                             ((TextView) view.findViewById(R.id.option_text_shortcut)).getText());
                     Assert.assertEquals(
@@ -95,14 +94,17 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
                                     .getText());
 
                     Assert.assertTrue(
-                            view.findViewById(R.id.app_icon_install).getVisibility()
+                            view.findViewById(R.id.spinny_install).getVisibility() == View.VISIBLE);
+                    Assert.assertTrue(
+                            view.findViewById(R.id.spinny_shortcut).getVisibility()
                                     == View.VISIBLE);
+                    Assert.assertTrue(
+                            view.findViewById(R.id.app_icon_install).getVisibility() == View.GONE);
+                    Assert.assertTrue(
+                            view.findViewById(R.id.app_icon_shortcut).getVisibility() == View.GONE);
                     Assert.assertTrue(
                             view.findViewById(R.id.install_icon_overlay).getVisibility()
                                     == View.GONE);
-                    Assert.assertTrue(
-                            view.findViewById(R.id.app_icon_shortcut).getVisibility()
-                                    == View.VISIBLE);
                     Assert.assertTrue(
                             view.findViewById(R.id.shortcut_icon_overlay).getVisibility()
                                     == View.GONE);

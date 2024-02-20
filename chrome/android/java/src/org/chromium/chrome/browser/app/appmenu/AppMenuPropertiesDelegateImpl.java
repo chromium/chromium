@@ -928,18 +928,18 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             return;
         }
 
-        AppBannerManager.InstallStringPair installStrings = getAddToHomeScreenTitle(currentTab);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
+            universalInstallItem.setVisible(true);
+        } else {
+            AppBannerManager.InstallStringPair installStrings = getAddToHomeScreenTitle(currentTab);
 
-        if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
-                universalInstallItem.setVisible(true);
-            } else {
+            if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
                 installWebAppItem.setTitle(installStrings.titleTextId);
                 installWebAppItem.setVisible(true);
+            } else if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
+                addTohomescreenItem.setTitle(installStrings.titleTextId);
+                addTohomescreenItem.setVisible(true);
             }
-        } else if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
-            addTohomescreenItem.setTitle(installStrings.titleTextId);
-            addTohomescreenItem.setVisible(true);
         }
     }
 

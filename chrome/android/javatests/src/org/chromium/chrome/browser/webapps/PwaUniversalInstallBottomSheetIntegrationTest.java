@@ -23,6 +23,7 @@ import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -42,6 +43,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.webapps.AppType;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_universal_install.PwaUniversalInstallBottomSheetCoordinator;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -62,6 +64,8 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
 
     private static final String TAG = "PwaUniInstallIntegrTest";
 
+    private PwaUniversalInstallBottomSheetCoordinator mPwaUniversalInstallBottomSheetCoordinator;
+
     private BottomSheetController mBottomSheetController;
 
     private CallbackHelper mOnInstallCallback = new CallbackHelper();
@@ -71,6 +75,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetching = true;
 
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(
@@ -79,6 +84,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
                             BottomSheetControllerProvider.from(
                                     mActivityTestRule.getActivity().getWindowAndroid());
                 });
+    }
+
+    @After
+    public void tearDown() {
+        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetching = false;
     }
 
     private void onInstallCalled() {
@@ -102,41 +112,100 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
 
     private void showPwaUniversalInstallBottomSheet(boolean webAppAlreadyInstalled)
             throws Exception {
-        PwaUniversalInstallBottomSheetCoordinator.setIconCallForTesting(
-                this::constructTestIconData);
-        PwaUniversalInstallBottomSheetCoordinator pwaUniversalInstallBottomSheetCoordinator =
-                new PwaUniversalInstallBottomSheetCoordinator(
-                        mActivityTestRule.getActivity(),
-                        mActivityTestRule.getActivity().getCurrentWebContents(),
-                        this::onInstallCalled,
-                        this::onAddShortcutCalled,
-                        this::onOpenAppCalled,
-                        webAppAlreadyInstalled,
-                        mBottomSheetController,
-                        /* arrowId= */ 0);
         Assert.assertTrue(
                 runOnUiThreadBlocking(
                         () -> {
-                            return pwaUniversalInstallBottomSheetCoordinator.show();
+                            mPwaUniversalInstallBottomSheetCoordinator =
+                                    new PwaUniversalInstallBottomSheetCoordinator(
+                                            mActivityTestRule.getActivity(),
+                                            mActivityTestRule.getActivity().getCurrentWebContents(),
+                                            this::onInstallCalled,
+                                            this::onAddShortcutCalled,
+                                            this::onOpenAppCalled,
+                                            webAppAlreadyInstalled,
+                                            mBottomSheetController,
+                                            /* arrowId= */ 0);
+                            return mPwaUniversalInstallBottomSheetCoordinator.show();
                         }));
 
         assertDialogShowing(true);
     }
 
-    private void assertInitialStateCorrectForInstall() {
+    private void simulateAppCheckComplete(@AppType int appType, Bitmap icon, boolean adaptive) {
+        runOnUiThreadBlocking(
+                () -> {
+                    mPwaUniversalInstallBottomSheetCoordinator.onAppDataFetched(
+                            appType, icon, adaptive);
+                });
+    }
+
+    private void assertDialogShowsCheckingApp() {
+        onView(withText("Install")).check(matches(isDisplayed()));
+        onView(withText("Checking if app can be installed…")).check(matches(isDisplayed()));
+        onView(withText("Create shortcut")).check(matches(isDisplayed()));
+        onView(withText("Shortcuts open in Chrome")).check(matches(isDisplayed()));
+
+        // The spinners should both be visible.
+        onView(withId(R.id.spinny_install)).check(matches(isDisplayed()));
+        onView(withId(R.id.spinny_shortcut)).check(matches(isDisplayed()));
+
+        // The arrow should be visible.
+        onView(withId(R.id.arrow_install)).check(matches(isDisplayed()));
+    }
+
+    private void assertDialogShowsNotInstallable() {
+        onView(withText("Install")).check(matches(isDisplayed()));
+        onView(withText("This app cannot be installed.")).check(matches(isDisplayed()));
+        onView(withText("Create shortcut")).check(matches(isDisplayed()));
+        onView(withText("Shortcuts open in Chrome")).check(matches(isDisplayed()));
+
+        // The spinners should not be visible (not waiting on anything).
+        onView(withId(R.id.spinny_install)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.spinny_shortcut)).check(matches(not(isDisplayed())));
+
+        // The arrow should not be visible (not possible to install).
+        onView(withId(R.id.arrow_install)).check(matches(not(isDisplayed())));
+    }
+
+    private void assertDialogShowsInstallable() {
         onView(withText("Install")).check(matches(isDisplayed()));
         onView(withText("Create shortcut")).check(matches(isDisplayed()));
         onView(withText("Shortcuts open in Chrome")).check(matches(isDisplayed()));
 
-        // Ensure this does not show alongside the Install label:
-        onView(withText("Click to open the app instead")).check(matches(not(isDisplayed())));
+        // The spinners should not be visible (not waiting on anything).
+        onView(withId(R.id.spinny_install)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.spinny_shortcut)).check(matches(not(isDisplayed())));
+
+        // The arrow should be visible.
+        onView(withId(R.id.arrow_install)).check(matches(isDisplayed()));
     }
 
-    private void assertInitialStateCorrectForOpen() {
+    private void assertDialogShowsAlreadyInstalledPreIconCheck() {
         onView(withText("This app is already installed")).check(matches(isDisplayed()));
         onView(withText("Click to open the app instead")).check(matches(isDisplayed()));
         onView(withText("Create shortcut")).check(matches(isDisplayed()));
         onView(withText("Shortcuts open in Chrome")).check(matches(isDisplayed()));
+
+        // The spinners should both be visible (still waiting on icons).
+        onView(withId(R.id.spinny_install)).check(matches(isDisplayed()));
+        onView(withId(R.id.spinny_shortcut)).check(matches(isDisplayed()));
+
+        // The arrow should be visible (it is possible to open the app instead).
+        onView(withId(R.id.arrow_install)).check(matches(isDisplayed()));
+    }
+
+    private void assertDialogShowsAlreadyInstalledPostIconCheck() {
+        onView(withText("This app is already installed")).check(matches(isDisplayed()));
+        onView(withText("Click to open the app instead")).check(matches(isDisplayed()));
+        onView(withText("Create shortcut")).check(matches(isDisplayed()));
+        onView(withText("Shortcuts open in Chrome")).check(matches(isDisplayed()));
+
+        // The spinners should not be visible (not waiting on anything).
+        onView(withId(R.id.spinny_install)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.spinny_shortcut)).check(matches(not(isDisplayed())));
+
+        // The arrow should be visible (it is possible to open the app instead).
+        onView(withId(R.id.arrow_install)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -144,7 +213,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @Feature({"PwaUniversalInstall"})
     public void testInstallWebappCallback() throws Exception {
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
-        assertInitialStateCorrectForInstall();
+        assertDialogShowsCheckingApp();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.WEBAPK, testIcon.first, testIcon.second);
+        assertDialogShowsInstallable();
 
         onView(withId(R.id.arrow_install)).perform(click());
         mOnInstallCallback.waitForNext("Install event not signaled");
@@ -158,7 +231,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     // area and not the arrow (but the outcome should be the same).
     public void testForwardedInstallWebappCallback() throws Exception {
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
-        assertInitialStateCorrectForInstall();
+        assertDialogShowsCheckingApp();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.WEBAPK, testIcon.first, testIcon.second);
+        assertDialogShowsInstallable();
 
         onView(withId(R.id.option_text_install)).perform(click());
         mOnInstallCallback.waitForNext("Install event not signaled");
@@ -170,7 +247,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @Feature({"PwaUniversalInstall"})
     public void testAddShortcutCallback() throws Exception {
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
-        assertInitialStateCorrectForInstall();
+        assertDialogShowsCheckingApp();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.SHORTCUT, testIcon.first, testIcon.second);
+        assertDialogShowsNotInstallable();
 
         onView(withId(R.id.arrow_shortcut)).perform(click());
         mOnAddShortcutCallback.waitForNext("Shortcut event not signaled");
@@ -184,7 +265,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     // area and not the arrow (but the outcome should be the same).
     public void testForwardedAddShortcutCallback() throws Exception {
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
-        assertInitialStateCorrectForInstall();
+        assertDialogShowsCheckingApp();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.SHORTCUT, testIcon.first, testIcon.second);
+        assertDialogShowsNotInstallable();
 
         onView(withId(R.id.option_text_shortcut)).perform(click());
         mOnAddShortcutCallback.waitForNext("Shortcut event not signaled");
@@ -196,7 +281,11 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @Feature({"PwaUniversalInstall"})
     public void testOpenAppCallback() throws Exception {
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ true);
-        assertInitialStateCorrectForOpen();
+        assertDialogShowsAlreadyInstalledPreIconCheck();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.WEBAPK, testIcon.first, testIcon.second);
+        assertDialogShowsAlreadyInstalledPostIconCheck();
 
         onView(withId(R.id.arrow_install)).perform(click());
         mOnOpenAppCallback.waitForNext("Open app event not signaled");
@@ -210,10 +299,35 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     // area and not the arrow (but the outcome should be the same).
     public void testForwardedOpenAppCallback() throws Exception {
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ true);
-        assertInitialStateCorrectForOpen();
+        assertDialogShowsAlreadyInstalledPreIconCheck();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.WEBAPK, testIcon.first, testIcon.second);
+        assertDialogShowsAlreadyInstalledPostIconCheck();
 
         onView(withId(R.id.option_text_install)).perform(click());
         mOnOpenAppCallback.waitForNext("Open app event not signaled");
+        assertDialogShowing(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaUniversalInstall"})
+    public void testCallbackDisabledIfInstallDisabled() throws Exception {
+        showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
+        assertDialogShowsCheckingApp();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.SHORTCUT, testIcon.first, testIcon.second);
+        assertDialogShowsNotInstallable();
+
+        // The install arrow should not be visible and clicking Install should not close the dialog.
+        onView(withId(R.id.arrow_install)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.option_text_install)).perform(click());
+        assertDialogShowing(true);
+
+        // But clicking the Shortcut option should close it.
+        onView(withId(R.id.option_text_shortcut)).perform(click());
         assertDialogShowing(false);
     }
 

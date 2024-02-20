@@ -18,13 +18,13 @@ namespace {
 
 // The length of time to allow the add to homescreen data fetcher to run before
 // timing out and generating an icon.
-const int kDataTimeoutInMilliseconds = 8000;
+const int kDataTimeoutInMilliseconds = 12000;
 
-class IconFetcher : public webapps::AddToHomescreenDataFetcher::Observer {
+class AppDataFetcher : public webapps::AddToHomescreenDataFetcher::Observer {
  public:
-  IconFetcher(content::WebContents* web_contents,
-              JNIEnv* env,
-              const JavaParamRef<jobject>& jcaller) {
+  AppDataFetcher(content::WebContents* web_contents,
+                 JNIEnv* env,
+                 const JavaParamRef<jobject>& jcaller) {
     env_ = env;
     java_watcher_.Reset(env, jcaller);
 
@@ -43,8 +43,8 @@ class IconFetcher : public webapps::AddToHomescreenDataFetcher::Observer {
       const SkBitmap& primary_icon,
       webapps::AddToHomescreenParams::AppType app_type,
       const webapps::InstallableStatusCode installable_status) override {
-    webapps::Java_PwaUniversalInstallBottomSheetCoordinator_onAppIconFetched(
-        env_, java_watcher_,
+    webapps::Java_PwaUniversalInstallBottomSheetCoordinator_onAppDataFetched(
+        env_, java_watcher_, (int)app_type,
         !primary_icon.isNull()
             ? gfx::ConvertToJavaBitmap(primary_icon,
                                        gfx::OomBehavior::kReturnNullOnOom)
@@ -65,13 +65,14 @@ class IconFetcher : public webapps::AddToHomescreenDataFetcher::Observer {
 
 namespace webapps {
 
-void JNI_PwaUniversalInstallBottomSheetCoordinator_FetchAppIcon(
+void JNI_PwaUniversalInstallBottomSheetCoordinator_FetchAppData(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& java_web_contents) {
   // This class manages its own lifetime:
-  new IconFetcher(content::WebContents::FromJavaWebContents(java_web_contents),
-                  env, jcaller);
+  new AppDataFetcher(
+      content::WebContents::FromJavaWebContents(java_web_contents), env,
+      jcaller);
 }
 
 }  // namespace webapps
