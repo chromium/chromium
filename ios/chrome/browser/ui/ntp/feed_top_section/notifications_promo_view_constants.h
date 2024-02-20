@@ -31,4 +31,6 @@ extern int const kNotificationsPromoMaxShownCount;
 extern base::TimeDelta const kNotificationsPromoDismissedCooldownTime;
 extern base::TimeDelta const kNotificationsPromoShownCooldownTime;
 
+extern int const kMaxImpressionsForDismissedThreshold;
+
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_NOTIFICATIONS_PROMO_VIEW_CONSTANTS_H_

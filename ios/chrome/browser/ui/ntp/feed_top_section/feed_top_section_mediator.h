@@ -51,6 +51,18 @@ enum class ContentNotificationTopOfFeedPromoEvent {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 
+// Enum Provisional notifications entrypoint for UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationTopOfFeedPromoEvent enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationPromoProvisionalEntrypoint {
+  kCloseButton = 0,
+  kShownThreshold = 1,
+  kMaxValue = kShownThreshold,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
+
 // Mediator for the NTP Feed top section, handling the interactions.
 @interface FeedTopSectionMediator
     : NSObject <FeedTopSectionMutator,

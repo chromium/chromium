@@ -16,6 +16,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -146,9 +147,9 @@ using base::UserMetricsAction;
   [self updateFeedTopSectionWhenClosed];
   // Update prefs that save the dismissed times if the promo conditions are not
   // being overriden.
+  int notificationsPromoTimesDismissed =
+      self.prefService->GetInteger(prefs::kNotificationsPromoTimesDismissed);
   if (!experimental_flags::ShouldForceContentNotificationsPromo()) {
-    int notificationsPromoTimesDismissed =
-        self.prefService->GetInteger(prefs::kNotificationsPromoTimesDismissed);
     self.prefService->SetTime(prefs::kNotificationsPromoLastDismissed,
                               base::Time::Now());
     self.prefService->SetInteger(prefs::kNotificationsPromoTimesDismissed,
@@ -158,8 +159,18 @@ using base::UserMetricsAction;
     case NotificationsPromoButtonTypeClose:
       [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
                                       kDismissedFromCloseButton];
+      if (notificationsPromoTimesDismissed >=
+          kNotificationsPromoMaxDismissedCount) {
+        [self enrollUserToProvisionalNotificationsFromEntrypoint:
+                  ContentNotificationPromoProvisionalEntrypoint::kCloseButton];
+      }
       break;
     case NotificationsPromoButtonTypeSecondary:
+      // If notification is dismissed from secondary button, set TimesDismissed
+      // > kNotificationsPromoMaxDismissedCount, to ensure the user doesn't see
+      // the notifications promo anymore.
+      self.prefService->SetInteger(prefs::kNotificationsPromoTimesDismissed,
+                                   kMaxImpressionsForDismissedThreshold);
       [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
                                       kDismissedFromSecondaryButton];
       break;
@@ -326,10 +337,12 @@ using base::UserMetricsAction;
   base::Time now = base::Time::Now();
   // Check if promo has been displayed `kNotificationsPromoMaxShownCount`.
   if (notificationsPromoTimesShown >= kNotificationsPromoMaxShownCount) {
+    [self enrollUserToProvisionalNotificationsFromEntrypoint:
+              ContentNotificationPromoProvisionalEntrypoint::kShownThreshold];
     return false;
   }
 
-  // Check if promo is in cooldown from dismissal.
+  // Check if promo has been dismissed more than the threshold.
   if (notificationsPromoTimesDismissed >=
       kNotificationsPromoMaxDismissedCount) {
     return false;
@@ -403,6 +416,18 @@ using base::UserMetricsAction;
   }
 }
 
+#pragma mark - Private
+
+- (void)enrollUserToProvisionalNotificationsFromEntrypoint:
+    (ContentNotificationPromoProvisionalEntrypoint)entrypoint {
+  [self logHistogramForEntrypoint:entrypoint];
+  [ProvisionalPushNotificationUtil
+      enrollUserToProvisionalNotificationsForClientIds:
+          {PushNotificationClientId::kContent}
+                                       withAuthService:
+                                           self.authenticationService];
+}
+
 #pragma mark - Metrics
 
 - (void)logHistogramForAction:(ContentNotificationTopOfFeedPromoAction)action {
@@ -412,6 +437,13 @@ using base::UserMetricsAction;
 
 - (void)logHistogramForEvent:(ContentNotificationTopOfFeedPromoEvent)event {
   UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Event", event);
+}
+
+- (void)logHistogramForEntrypoint:
+    (ContentNotificationPromoProvisionalEntrypoint)entrypoint {
+  UmaHistogramEnumeration(
+      "ContentNotifications.Promo.ProvisionalNotifications.Entrypoint",
+      entrypoint);
 }
 
 @end

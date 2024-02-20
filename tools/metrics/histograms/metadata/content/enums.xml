@@ -41,6 +41,11 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Profile"/>
 </enum>
 
+<enum name="ContentNotificationPromoProvisionalEntrypoint">
+  <int value="0" label="Promo dismissed from close button."/>
+  <int value="1" label="Promo shown threshold exceeded."/>
+</enum>
+
 <enum name="ContentNotificationPromptAction">
   <int value="0" label="Go to Settings tapped"/>
   <int value="1" label="No Thanks tapped"/>
