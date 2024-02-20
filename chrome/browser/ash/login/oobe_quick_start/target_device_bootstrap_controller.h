@@ -103,7 +103,7 @@ class TargetDeviceBootstrapController
         delete;
     virtual ~AccessibilityManagerWrapper() = default;
 
-    virtual bool IsSpokenFeedbackEnabled() const = 0;
+    virtual bool AllowQRCodeUX() const = 0;
   };
 
   class Observer : public base::CheckedObserver {

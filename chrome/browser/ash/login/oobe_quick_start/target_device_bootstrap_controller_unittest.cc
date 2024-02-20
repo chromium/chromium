@@ -100,11 +100,9 @@ Wm7DCfrPNGVwFWUQOmsPue9rZBgO
 class FakeAccessibilityManagerWrapper
     : public TargetDeviceBootstrapController::AccessibilityManagerWrapper {
  public:
-  bool IsSpokenFeedbackEnabled() const override {
-    return spoken_feedback_enabled_;
-  }
+  bool AllowQRCodeUX() const override { return allow_qr_code_ux_; }
 
-  bool spoken_feedback_enabled_ = false;
+  bool allow_qr_code_ux_ = true;
 };
 
 }  // namespace
@@ -256,7 +254,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        StartAdvertisingWithChromevoxUsesPin) {
-  fake_accessibility_manager_->spoken_feedback_enabled_ = true;
+  fake_accessibility_manager_->allow_qr_code_ux_ = false;
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::ADVERTISING_WITHOUT_QR_CODE);
@@ -323,7 +321,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_QRCode) {
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
-  fake_accessibility_manager_->spoken_feedback_enabled_ = true;
+  fake_accessibility_manager_->allow_qr_code_ux_ = false;
   fake_target_device_connection_broker_->set_use_pin_authentication(true);
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(

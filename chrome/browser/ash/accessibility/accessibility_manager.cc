@@ -1484,6 +1484,21 @@ void AccessibilityManager::UpdateBrailleImeState() {
   braille_ime_current_ = false;
 }
 
+bool AccessibilityManager::IsFullscreenMagnifierEnabled() const {
+  return ash::AccessibilityController::Get()->fullscreen_magnifier().enabled();
+}
+
+bool AccessibilityManager::IsDockedMagnifierEnabled() const {
+  return ash::AccessibilityController::Get()->docked_magnifier().enabled();
+}
+
+bool AccessibilityManager::AllowQRCodeUX() const {
+  // TODO(b/289246311): Should any other settings be included here?
+  return !(IsSpokenFeedbackEnabled() || IsSwitchAccessEnabled() ||
+           IsBrailleDisplayConnected() || IsFaceGazeEnabled() ||
+           IsFullscreenMagnifierEnabled() || IsDockedMagnifierEnabled());
+}
+
 // Overridden from InputMethodManager::Observer.
 void AccessibilityManager::InputMethodChanged(
     input_method::InputMethodManager* manager,

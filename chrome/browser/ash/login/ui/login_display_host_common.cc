@@ -198,8 +198,8 @@ class AccessibilityManagerWrapper
   AccessibilityManagerWrapper& operator=(AccessibilityManagerWrapper&) = delete;
   ~AccessibilityManagerWrapper() override = default;
 
-  bool IsSpokenFeedbackEnabled() const override {
-    return ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
+  bool AllowQRCodeUX() const override {
+    return ash::AccessibilityManager::Get()->AllowQRCodeUX();
   }
 };
 

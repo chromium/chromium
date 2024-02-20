@@ -93,7 +93,7 @@ void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
   CHECK_EQ(status_.step, Step::NONE);
 
   bool use_pin_authentication =
-      accessibility_manager_wrapper_->IsSpokenFeedbackEnabled();
+      !accessibility_manager_wrapper_->AllowQRCodeUX();
 
   if (use_pin_authentication || session_context_.is_resume_after_update()) {
     status_.step = Step::ADVERTISING_WITHOUT_QR_CODE;
