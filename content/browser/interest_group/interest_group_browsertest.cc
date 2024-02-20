@@ -33,6 +33,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1291,12 +1292,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   [[nodiscard]] content::EvalJsResult RunAuctionAndWait(
       const std::string& auction_config_json,
       const std::optional<ToRenderFrameHost> execution_target = std::nullopt) {
-    // Sanitizers tend to run a lot more slowly.
-#if defined(MEMORY_SANITIZER)
-    int default_timeout = 1500;
-#else
-    int default_timeout = 150;
-#endif
     return EvalJs(execution_target ? *execution_target : shell(),
                   base::StringPrintf(
                       R"(
@@ -1318,7 +1313,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
   let auctionConfig = %s;
   // Our test bots can get kinda slow, so bump script execution time limits
   // in tests that don't specifically configure them.
-  let defaultTimeout = %i;
+  let defaultTimeout = %s;
   if (!("perBuyerTimeouts" in auctionConfig)) {
     auctionConfig.perBuyerTimeouts = { '*': defaultTimeout };
   }
@@ -1331,7 +1326,10 @@ function provideAdditionalBids(seller, nonce, bidStringList,
     return e.toString();
   }
 })())",
-                      auction_config_json.c_str(), default_timeout));
+                      auction_config_json.c_str(),
+                      base::NumberToString(
+                          TestTimeouts::action_max_timeout().InMilliseconds())
+                          .c_str()));
   }
 
   // Wrapper around RunAuctionAndWait that assumes the result is a URN URL and
