@@ -220,7 +220,11 @@ constexpr char kExpectedHelloWorldPDFAXTreeWithoutOcrResults[] =
     "\"extract text from PDF\"'\n"
     "  region 'Page 1'\n"
     "    paragraph\n"
+#if BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled graphic'\n";
+#else   // BUILDFLAG(IS_WIN)
     "      image 'Unlabeled image'\n";
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr char kExpectedBlankPDFAXTreeWithPdfOcr[] =
     "pdfRoot 'PDF document containing 1 page'\n"
@@ -229,7 +233,11 @@ constexpr char kExpectedBlankPDFAXTreeWithPdfOcr[] =
     "      staticText 'This PDF is inaccessible. No text extracted'\n"
     "  region 'Page 1'\n"
     "    paragraph\n"
+#if BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled graphic'\n";
+#else   // BUILDFLAG(IS_WIN)
     "      image 'Unlabeled image'\n";
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr char kExpectedBlankPDFAXTreeWithoutOcrResults[] =
     "pdfRoot 'PDF document containing 1 page'\n"
@@ -240,7 +248,11 @@ constexpr char kExpectedBlankPDFAXTreeWithoutOcrResults[] =
     "\"extract text from PDF\"'\n"
     "  region 'Page 1'\n"
     "    paragraph\n"
+#if BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled graphic'\n";
+#else   // BUILDFLAG(IS_WIN)
     "      image 'Unlabeled image'\n";
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
 
