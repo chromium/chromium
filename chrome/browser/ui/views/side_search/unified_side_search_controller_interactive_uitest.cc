@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -550,9 +551,9 @@ IN_PROC_BROWSER_TEST_F(
   Browser* browser2 = CreateBrowser(browser()->profile());
   NavigateToMatchingAndNonMatchingSearchPage(browser2);
 
-  std::unique_ptr<content::WebContents> web_contents =
-      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(web_contents),
+  std::unique_ptr<tabs::TabModel> tab =
+      browser2->tab_strip_model()->DetachTabAtForInsertion(0);
+  browser()->tab_strip_model()->InsertDetachedTabAt(1, std::move(tab),
                                                     AddTabTypes::ADD_ACTIVE);
 
   ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -1164,7 +1165,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
                        UnloadExtensionAfterMovingTab) {
   OpenNewForegroundTab();
   ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
-  auto* second_tab_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  const tabs::TabModel* second_tab =
+      browser()->tab_strip_model()->GetTabHandleAt(1).Get();
+  ASSERT_TRUE(second_tab);
   int second_tab_id = GetCurrentTabId();
 
   // Load an extension and verify that its SidePanelEntry is registered.
@@ -1177,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   {
     // Register a SidePanelEntry for the extension for the second tab.
     SidePanelRegistry* second_tab_registry =
-        SidePanelRegistry::Get(second_tab_contents);
+        SidePanelRegistry::Get(second_tab->contents());
     ExtensionSidePanelRegistryWaiter waiter(second_tab_registry,
                                             extension->id());
     RunSetOptions(*extension, second_tab_id, "panel_1.html",
@@ -1190,17 +1193,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   }
 
   // Detach the second tab from `browser()`
-  std::unique_ptr<content::WebContents> detached_contents =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(
           /*index=*/1);
-  ASSERT_EQ(second_tab_contents, detached_contents.get());
+  ASSERT_EQ(second_tab, detached_tab.get());
 
-  // Open a new browser window and add `detached_contents` to a new tab.
+  // Open a new browser window and add `detached_tab`.
   Browser* second_browser = CreateBrowser(browser()->profile());
   TabStripModel* target_tab_strip =
       ExtensionTabUtil::GetEditableTabStripModel(second_browser);
-  target_tab_strip->InsertWebContentsAt(
-      /*index=*/1, std::move(detached_contents), AddTabTypes::ADD_NONE);
+  target_tab_strip->InsertDetachedTabAt(
+      /*index=*/1, std::move(detached_tab), AddTabTypes::ADD_NONE);
 
   // Switch to the newly moved tab.
   ASSERT_EQ(2, second_browser->tab_strip_model()->count());
