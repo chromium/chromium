@@ -168,6 +168,12 @@ public class HomeModulesMediator {
     @VisibleForTesting
     void addToRecyclerViewOrCache(
             @ModuleType int moduleType, @Nullable PropertyModel propertyModel) {
+        if (!mModuleTypeToRankingIndexMap.containsKey(moduleType)) {
+            // TODO(b/326081541): add an assert here to prevent a module add itself to the magic
+            // stack after sending a onDataFetchFailed() response.
+            return;
+        }
+
         int index = mModuleTypeToRankingIndexMap.get(moduleType);
         long duration = SystemClock.elapsedRealtime() - mShowModuleStartTimeMs[index];
         if (!mIsFetchingModules) {
