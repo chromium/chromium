@@ -48,7 +48,9 @@ void OpenerHeuristicService::OnTrackingProtection3pcdChanged() {
     return;
   }
 
-  if (!tpcd::experiment::kTpcdBackfillPopupHeuristicsGrants.Get()
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kTpcdHeuristicsGrants) ||
+      !tpcd::experiment::kTpcdBackfillPopupHeuristicsGrants.Get()
            .is_positive()) {
     return;
   }
