@@ -510,6 +510,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "audio-style-transfer",
+    "owners": ["cranelw@chromium.org", "chromeos-audio@google.com" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "audio-suppress-set-rtc-audio-active",
     "owners": [ "aaronyu@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 125

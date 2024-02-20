@@ -5757,6 +5757,9 @@ const char kAudioOffloadCrasDSPToSOFDescription[] =
     "While enabled, CRAS DSP modules are offloaded to Audio Firmware (SOF) "
     "if supported by device.";
 
+const char kAudioStyleTransferName[] = "Audio style transfer";
+const char kAudioStyleTransferDescription[] = "Enable audio style transfer";
+
 const char kAudioSuppressSetRTCAudioActiveName[] =
     "Suppress calling the SetRTCAudioActive D-Bus method";
 const char kAudioSuppressSetRTCAudioActiveDescription[] =
