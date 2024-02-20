@@ -420,6 +420,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     if (shouldDisplayBringAndroidTabsPrompt) {
       [strongSelf displayBringAndroidTabsPrompt];
     }
+
+    strongSelf.baseViewController.view.window.overrideUserInterfaceStyle =
+        UIUserInterfaceStyleDark;
   };
 
   ProceduralBlock transitionBlock = ^{
@@ -481,6 +484,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     base::UmaHistogramLongTimes("IOS.TabSwitcher.TimeSpent", duration);
     self.tabGridEnterTime = base::TimeTicks();
   }
+
+  self.baseViewController.view.window.overrideUserInterfaceStyle =
+      UIUserInterfaceStyleUnspecified;
 
   // If another BVC is already being presented, swap this one into the
   // container.

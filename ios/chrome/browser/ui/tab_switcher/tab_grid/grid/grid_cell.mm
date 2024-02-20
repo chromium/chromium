@@ -267,6 +267,15 @@ void PositionView(UIView* view, CGPoint point) {
   _theme = theme;
 }
 
+- (void)didMoveToWindow {
+  if (self.window) {
+    if (self.theme == GridThemeLight) {
+      self.overrideUserInterfaceStyle =
+          self.window.traitCollection.userInterfaceStyle;
+    }
+  }
+}
+
 - (void)setIcon:(UIImage*)icon {
   self.iconView.image = icon;
   _icon = icon;
