@@ -5,8 +5,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.password_manager.PasswordSettingsUpdaterMetricsRecorder.ACCOUNT_STORE_BACKEND_TYPE;
-import static org.chromium.chrome.browser.password_manager.PasswordSettingsUpdaterMetricsRecorder.LOCAL_STORE_BACKEND_TYPE;
+import static org.chromium.chrome.browser.password_manager.PasswordSettingsUpdaterMetricsRecorder.getStoreType;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
@@ -36,15 +35,15 @@ import java.util.OptionalInt;
 public class PasswordSettingsUpdaterMetricsRecorderTest {
     @Parameters
     public static Collection testCases() {
-        return Arrays.asList(ACCOUNT_STORE_BACKEND_TYPE, LOCAL_STORE_BACKEND_TYPE);
+        return Arrays.asList("test@gmail.com", null);
     }
 
     private static final String HISTOGRAM_NAME_BASE = "PasswordManager.PasswordSettings";
 
     private String mStoreType;
 
-    public PasswordSettingsUpdaterMetricsRecorderTest(String storeType) {
-        mStoreType = storeType;
+    public PasswordSettingsUpdaterMetricsRecorderTest(String account) {
+        mStoreType = getStoreType(account);
     }
 
     @Before
