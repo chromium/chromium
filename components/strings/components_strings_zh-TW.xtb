@@ -72,6 +72,7 @@
 <translation id="1131264053432022307">你複製的圖片</translation>
 <translation id="1142713751288681188">紙張類型</translation>
 <translation id="1142846828089312304">在無痕模式中封鎖第三方 Cookie</translation>
+<translation id="1144136880160289237">目前沒有任何有效主題</translation>
 <translation id="1149617035358809955">驗證你的身分，以便填入付款資訊</translation>
 <translation id="1150565364351027703">太陽眼鏡</translation>
 <translation id="1150979032973867961">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得你電腦作業系統的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
@@ -323,6 +324,7 @@
 <translation id="160851722280695521">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611101756749861742">第二卷</translation>
+<translation id="1612199629998703524">管理主題</translation>
 <translation id="1615178538289490617">撤銷 <ph name="PORT_NAME" /> 的存取權</translation>
 <translation id="1615402009686901181">當畫面上出現機密內容，系統管理員政策就會停用螢幕畫面擷取功能</translation>
 <translation id="1617276713587758852">跨界車</translation>
@@ -432,6 +434,7 @@
 <translation id="1812527064848182527">橫向</translation>
 <translation id="1812975699435941848">健康教育與醫療訓練</translation>
 <translation id="1813414402673211292">清除瀏覽資料</translation>
+<translation id="1818522458013171885">解除封鎖</translation>
 <translation id="182139138257690338">自動下載</translation>
 <translation id="1821930232296380041">要求或要求參數無效</translation>
 <translation id="1822540298136254167">你造訪的網站和瀏覽時間</translation>
@@ -489,6 +492,7 @@
 <translation id="1945968466830820669">你可能會失去貴機構帳戶的存取權，或身分遭到冒用。Chromium 建議你立即變更密碼。</translation>
 <translation id="1946849748901605102">12 x 15 吋</translation>
 <translation id="1947454675006758438">釘裝 (右上方)</translation>
+<translation id="1953729392594614704">如果封鎖「<ph name="TOPIC" />」，系統也會一併封鎖所有相關主題 (無論是否為有效主題)</translation>
 <translation id="1954847915560574887">A3 x 3</translation>
 <translation id="1956486093533522234">尋找、保護裝置或清除裝置資料</translation>
 <translation id="1958218078413065209">最高得分為 <ph name="SCORE" />。</translation>
@@ -549,6 +553,7 @@
 <translation id="2071156619270205202">這張卡片不能建立虛擬卡號。</translation>
 <translation id="2071692954027939183">系統已按照你的習慣自動封鎖通知</translation>
 <translation id="2071852865256799872">你的瀏覽器是由貴機構管理，設定檔則是由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
+<translation id="2074733626795553847">解除封鎖「<ph name="TOPIC" />」</translation>
 <translation id="2075497153347571252">系統管理員已封鎖 <ph name="ORIGIN" /> 的<ph name="PERMISSION" />權限</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2080021694978766903">這項政策最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目。</translation>
@@ -583,6 +588,7 @@
 <translation id="2137891579555018930">正在等待許可...</translation>
 <translation id="213826338245044447">行動版書籤</translation>
 <translation id="2141000681034340397">編輯輸入內容</translation>
+<translation id="2144171668675205303">沒有有效主題</translation>
 <translation id="214556005048008348">取消付款</translation>
 <translation id="2148613324460538318">新增卡片</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -802,6 +808,7 @@
 <translation id="2596415276201385844">你必須正確設定時鐘，才能建立安全連線。這是因為網站驗證身分時所使用的憑證僅於特定一段時間內有效。由於你裝置的時鐘不正確，因此 Chrome 無法驗證這些憑證。</translation>
 <translation id="2597378329261239068">此文件受到密碼保護，請輸入密碼。</translation>
 <translation id="2606760465469169465">自動驗證</translation>
+<translation id="2608019759319359258">已封鎖的主題不會用於個人化廣告</translation>
 <translation id="2610561535971892504">點選複製</translation>
 <translation id="2612993535136743634">儲存在裝置和 Google 帳戶中的所有安全碼都會刪除</translation>
 <translation id="2616412942031748191">搜尋引擎最佳化與行銷</translation>
@@ -1110,6 +1117,7 @@
 <translation id="3299720788264079132">使用<ph name="FEATURE_NAME" />功能時發生錯誤</translation>
 <translation id="3303176609391916566">30 x 42 吋</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
+<translation id="3303872874382375219">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK1" />廣告主題<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否會放送個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK3" />管理廣告隱私權<ph name="LINK_END3" />。</translation>
 <translation id="3304073249511302126">藍牙掃描</translation>
 <translation id="3304777285002411338">A2 x 3</translation>
 <translation id="33073482541490531">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。密碼管理工具建議你立即變更這組密碼。</translation>
@@ -1142,6 +1150,7 @@
 <translation id="3377144306166885718">伺服器的傳輸層安全標準 (TLS) 版本已過時。</translation>
 <translation id="3377188786107721145">政策解析錯誤</translation>
 <translation id="3377736046129930310">使用螢幕鎖定功能加快卡片驗證速度</translation>
+<translation id="3378612801784846695">Chrome 會根據你最近的瀏覽記錄推測主題，做為網站放送個人化廣告的依據，同時保護你的身分資料</translation>
 <translation id="3380365263193509176">未知的錯誤</translation>
 <translation id="3380864720620200369">用戶端 ID：</translation>
 <translation id="3381668585148405088">驗證交易</translation>
@@ -1172,6 +1181,7 @@
 <translation id="3433111389595862568">協作和會議通訊軟體</translation>
 <translation id="3433144818443565002">語音及視訊通訊</translation>
 <translation id="3434025015623587566">Google 密碼管理工具需要更多存取權</translation>
+<translation id="3434346831962601311">未封鎖任何主題</translation>
 <translation id="343474037147570563">你上傳或附加的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案，並通知系統管理員查看。</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
@@ -1294,6 +1304,7 @@
 <translation id="3659521826520353662">造訪過哪些管理員定義的網站和造訪時間：<ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3665100783276035932">大多數網站應該都能正常運作</translation>
+<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="LINK_END1" /></translation>
 <translation id="3671117652518853176">在關閉狀態下，系統基於安全考量，可能會偶爾要求你進行驗證</translation>
 <translation id="3671540257457995106">要允許調整大小嗎？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 發生錯誤：<ph name="ERROR_MESSAGE" /></translation>
@@ -1879,6 +1890,7 @@
 <translation id="4895019427244614047">刪除地址</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奧運</translation>
+<translation id="4898742041545089450">這個主題已解除封鎖。系統可能根據你的瀏覽記錄，將該主題設為有效主題</translation>
 <translation id="4900217275619098670">第九卷</translation>
 <translation id="4901052769830245369">標籤 (半光面)</translation>
 <translation id="4901162432287938633">個人衛生與盥洗用品</translation>
@@ -1953,6 +1965,7 @@
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="5043480802608081735">你複製的連結</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
+<translation id="5052517576853118371">有效主題</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用鄰近分享功能傳送這個檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用鄰近分享功能傳送這些檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">請提供要開啟的原因 (必填)</translation>
 <translation id="5060419232449737386">字幕設定</translation>
@@ -2027,6 +2040,7 @@
 <translation id="5205222826937269299">請輸入名稱</translation>
 <translation id="5206392433295093945">臥室</translation>
 <translation id="5209670883520018268">紙匣 20</translation>
+<translation id="5214542134842513912">選擇系統可根據哪些廣泛的主題類別放送個人化廣告。如果封鎖廣泛類別，系統也會一併封鎖相關主題。</translation>
 <translation id="521659676233207110">紙匣 13</translation>
 <translation id="5216942107514965959">上次造訪日期：今天</translation>
 <translation id="5217759126664161410">通訊協定格式無效。</translation>
@@ -2244,6 +2258,7 @@
 <translation id="568292603005599551">圖片 X 位置</translation>
 <translation id="5684277895745049190">清單</translation>
 <translation id="5684874026226664614">糟糕！系統無法翻譯這個網頁的內容。</translation>
+<translation id="568489534660743582">網站建議廣告功能只是網站在放送個人化廣告時的其中一項依據。即使你未開啟這項功能，網站仍可放送廣告，但廣告內容可能較不貼近你的需求。</translation>
 <translation id="5687340364605915800">網站會自行判斷是否回應這項要求</translation>
 <translation id="5688137257686092846">美容技術與相關專業服務</translation>
 <translation id="5689199277474810259">以 JSON 格式匯出</translation>
@@ -3308,6 +3323,7 @@
 <translation id="7878562273885520351">你的密碼可能已經外洩</translation>
 <translation id="7880146494886811634">儲存地址</translation>
 <translation id="7882421473871500483">棕色</translation>
+<translation id="7886897188117641322">選擇系統可根據哪些廣泛的主題類別放送個人化廣告</translation>
 <translation id="7887683347370398519">請檢查您的信用卡驗證碼，然後再試一次</translation>
 <translation id="7887885240995164102">進入子母畫面</translation>
 <translation id="7888575728750733395">列印算繪方式</translation>
@@ -3386,6 +3402,7 @@
 <translation id="8043255123207491407">查看賣家的條款及細則</translation>
 <translation id="8046360364391076336">工業原料與設備</translation>
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
+<translation id="805766869470867930">你未封鎖任何主題</translation>
 <translation id="8057711352706143257">「<ph name="SOFTWARE_NAME" />」的設定不正確。通常解除安裝「<ph name="SOFTWARE_NAME" />」即可修正這個問題。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">不需要</translation>
 <translation id="8063875539456488183">儲存並追蹤價格</translation>
@@ -3462,6 +3479,7 @@
 <translation id="8216640997712497593">14 x 18 吋</translation>
 <translation id="8217240300496046857">網站無法使用 Cookie 來追蹤你在網路上的活動。某些網站的功能可能無法正常運作。</translation>
 <translation id="8218327578424803826">指派的位置：</translation>
+<translation id="8220602974062798186">要封鎖「<ph name="TOPIC" />」和所有相關主題嗎？</translation>
 <translation id="8220833680085771143">追蹤保護功能暫時無法使用</translation>
 <translation id="8228419419708659934">雙頁檢視</translation>
 <translation id="8228477714872026922">「<ph name="ORIGIN" />」想要存取你網路上的裝置：</translation>
@@ -3593,6 +3611,7 @@
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>
 <translation id="8467494337615822642">前往設定中的 Chrome 安全檢查頁面</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
+<translation id="8472700501934242014">已封鎖的主題</translation>
 <translation id="8473626140772740486">300 x 450 公釐</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474910779563686872">顯示開發人員詳細資料</translation>
@@ -3931,6 +3950,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不支援的通訊協定。</translation>
 <translation id="918454845714257218">請確認<ph name="SIDE_OF_CARD" />的安全碼，然後再試一次</translation>
 <translation id="9186203289258525843">「將 Chrome 設為預設瀏覽器」按鈕，啟動後即可將 Chrome 設為系統預設瀏覽器</translation>
+<translation id="9190557999028587593">系統會自動刪除 4 週前的主題</translation>
 <translation id="9191834167571392248">打孔 (左下方)</translation>
 <translation id="9192361865877479444">金屬 (霧面)</translation>
 <translation id="9199905725844810519">列印功能已遭封鎖</translation>

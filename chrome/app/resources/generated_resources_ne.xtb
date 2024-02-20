@@ -1895,6 +1895,7 @@
 <translation id="2412015533711271895">तपाईंका अभिभावकले तपाईंलाई यो एक्स्टेन्सन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome वेब स्टोर<ph name="END_LINK1" />बाट एक्स्टेन्सनहरू हालेर आफ्नो ब्राउजर अझ कस्टमाइज गर्नुहोस्</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> का बारेमा ब्राउज गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="2414886740292270097">अँध्यारो</translation>
 <translation id="2415117815770324983">यसले अधिकांश साइटहरूबाट तपाईंलाई साइन आउट गर्छ। तपाईं आफ्नो Google खातामा साइन इन अवस्थामा रहिरहनु हुने छ।</translation>
@@ -6839,6 +6840,7 @@
 <translation id="6271824294945464304">पासवर्ड सेयर गरिँदै छ</translation>
 <translation id="6273677812470008672">गुण</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> मा कनेक्ट गरिँदै छ</translation>
+<translation id="6274108044476515407">तपाईंलाई देखाइने कुनै विज्ञापन पर्सनलाइज गरिन्छ कि गरिँदैन भन्ने कुरा यो सेटिङ, <ph name="BEGIN_LINK1" />साइटले सिफारिस गरेका विज्ञापन<ph name="LINK_END1" />, तपाईंले तय गरेका <ph name="BEGIN_LINK2" />कुकीसम्बन्धी सेटिङ<ph name="LINK_END2" /> र तपाईंले हेरिरहनुभएको साइटले विज्ञापन पर्सनलाइज गर्छ कि गर्दैन भन्ने कुरालगायतका सेटिङमा भर पर्न सक्छ। <ph name="BEGIN_LINK3" />विज्ञापनको गोपनीयता व्यवस्थापन गर्ने<ph name="LINK_END3" /> सम्बन्धमा थप जान्नुहोस्।</translation>
 <translation id="6274202259872570803">स्क्रिनकास्ट</translation>
 <translation id="6276210637549544171">प्रोक्सी <ph name="PROXY_SERVER" /> मा कनेक्ट गर्न युजरनेम र पासवर्ड प्रयोग गर्नु पर्ने हुन्छ।</translation>
 <translation id="6277105963844135994">नेटवर्कको समय समाप्त भयो</translation>
@@ -7824,6 +7826,7 @@
 <translation id="7044606776288350625">डेटा सिंक गर्नुहोस्</translation>
 <translation id="7047059339731138197">पृष्ठभूमि छनौट गर्नुहोस्</translation>
 <translation id="7049293980323620022">फाइल राख्ने हो?</translation>
+<translation id="7049524156282610342">ब्राउजिङ डेटा <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">हटस्पटसम्बन्धी अवैध कन्फिगुरेसन</translation>
 <translation id="7052237160939977163">प्रदर्शन ट्रेस लगत पठाउनुहोस्</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
@@ -8543,6 +8546,7 @@
 <translation id="7630426712700473382">यो डिभाइस <ph name="MANAGER" /> ले व्यवस्थापन गर्छ र यो डिभाइस प्रयोग गर्न तपाईंले हरेक पटक साइन इन गर्नु पर्ने हुन्छ।</translation>
 <translation id="7631014249255418691">Linux एप र फाइलहरू सफलतापूर्वक ब्याकअप गरिएका छन्</translation>
 <translation id="7631887513477658702">&amp;जहिले पनि यस प्रकारको</translation>
+<translation id="7632437836497571618">साइटहरू खोज्न सुरक्षित कनेक्सनहरू प्रयोग गरिऊन्</translation>
 <translation id="7632948528260659758">निम्न किअस्क एपहरू अद्यावधिकको लागि असफल भएको छ:</translation>
 <translation id="7633724038415831385">तपाईं यस पटक मात्र कुनै सफ्टवेयर अपडेट गर्न पर्खनु पर्ने छ। Chromebook मा सफ्टवेयर पृष्ठभूमिमा अपडेट हुन्छ।</translation>
 <translation id="7634337648687970851">लोकल डेटा रिकभर गर्ने सुविधा हाल उपलब्ध छैन।</translation>
@@ -8806,6 +8810,7 @@
 <translation id="7803657407897251194">आफ्नो Android डिभाइस प्रयोग गरी सेटअप गर्ने प्रक्रिया जारी राख्न आफ्नो <ph name="DEVICE_TYPE" /> कुनै नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="7804072833593604762">ट्याब बन्द गरियो</translation>
 <translation id="780446144738273886">स्क्रिन रिडरका निम्ति टेक्स्ट निकाल्न PDF स्क्यान गर्नुहोस्। Chrome ब्राउजरमा मात्र प्रयोग गर्न मिल्छ</translation>
+<translation id="7805371082115476536">हल्का</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7805906048382884326">सुझाव बन्द गर्नुहोस्</translation>
 <translation id="7806722269368320106">एउटा एप इन्स्टल गरिँदै छ</translation>

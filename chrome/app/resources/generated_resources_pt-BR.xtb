@@ -7839,6 +7839,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7044606776288350625">Sincronizar dados</translation>
 <translation id="7047059339731138197">Escolher um plano de fundo</translation>
 <translation id="7049293980323620022">Manter arquivo?</translation>
+<translation id="7049524156282610342">Dados de navegação de <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configuração de ponto de acesso inválida</translation>
 <translation id="7052237160939977163">Enviar dados de rastreamento de desempenho</translation>
 <translation id="7053983685419859001">Bloquear</translation>
@@ -8556,6 +8557,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7630426712700473382">Este dispositivo é gerenciado por <ph name="MANAGER" /> e requer que o login seja feito todas as vezes.</translation>
 <translation id="7631014249255418691">O backup dos apps e arquivos do Linux foi concluído</translation>
 <translation id="7631887513477658702">&amp;Sempre abrir arquivos deste tipo</translation>
+<translation id="7632437836497571618">Usar conexões seguras para procurar sites</translation>
 <translation id="7632948528260659758">Os seguintes aplicativos de quiosque tiveram falha na atualização:</translation>
 <translation id="7633724038415831385">Esta é a única vez em que você precisará esperar uma atualização. No Chromebook, as atualizações de software acontecem em segundo plano.</translation>
 <translation id="7634337648687970851">No momento, não é possível recuperar dados locais.</translation>
@@ -8818,6 +8820,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7803657407897251194">Para continuar a configuração com o dispositivo Android, conecte o <ph name="DEVICE_TYPE" /> a uma rede</translation>
 <translation id="7804072833593604762">Guia fechada</translation>
 <translation id="780446144738273886">Digitalize um PDF para extrair texto para o leitor de tela. Esse recurso só está disponível no navegador Chrome</translation>
+<translation id="7805371082115476536">Claro</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Fechar dica</translation>
 <translation id="7806722269368320106">Um app (instalando)</translation>

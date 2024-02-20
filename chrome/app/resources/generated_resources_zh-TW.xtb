@@ -1896,6 +1896,7 @@
 <translation id="2412015533711271895">你必須取得家長或監護人允許，才能使用這個擴充功能</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">如要進一步自訂瀏覽器，可以使用 <ph name="BEGIN_LINK1" />Chrome 線上應用程式商店<ph name="END_LINK1" />中的擴充功能</translation>
 <translation id="2414159296888870200">繼續瀏覽<ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">深色</translation>
 <translation id="2415117815770324983">刪除 Cookie 後，大多數網站都會將你登出，但 Google 帳戶會保持登入狀態。</translation>
@@ -6829,6 +6830,7 @@
 <translation id="6271824294945464304">即將分享密碼</translation>
 <translation id="6273677812470008672">品質</translation>
 <translation id="6274089201566806618">正在連線至「<ph name="HOST_DEVICE_NAME" />」</translation>
+<translation id="6274108044476515407">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK1" />網站建議廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否會放送個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK3" />管理廣告隱私權<ph name="LINK_END3" />。</translation>
 <translation id="6274202259872570803">螢幕側錄</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求你提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網路逾時</translation>

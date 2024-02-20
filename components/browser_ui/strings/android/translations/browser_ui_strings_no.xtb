@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1044891598689252897">Nettsteder kommer til å fungere som normalt</translation>
 <translation id="1073417869336441572">Hjelp oss med å forbedre Chrome ved å fortelle oss hvorfor du tillot informasjonskapsler fra tredjeparter. <ph name="BEGIN_LINK" />Send tilbakemelding<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Skjul avslagskortet</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1192844206376121885">Dette sletter alle data og informasjonskapsler som er lagret av <ph name="ORIGIN" />.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Hjelp og tilbakemelding</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
 <translation id="2546283357679194313">Informasjonskapsler og data fra nettsteder</translation>
+<translation id="2550801787432930915">Avslagskort</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 informasjonskapsel er blokkert}other{# informasjonskapsler er blokkert}}</translation>
 <translation id="2570922361219980984">Posisjonstilgang er også slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Utvidet – klikk for å minimere.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Når funksjonen er på</translation>
 <translation id="8805385115381080995">Surfing går raskere fordi det er mindre sannsynlig at nettsteder ber deg om å bekrefte at du er en ekte person</translation>
 <translation id="8816026460808729765">Blokkér nettsteder fra å få tilgang til sensorer</translation>
+<translation id="8843699287283948910">Skjul faner fra andre enheter</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Prøv å tillate informasjonskapsler fra tredjeparter midlertidig. Det innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet.</translation>
 <translation id="8889294078294184559">Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>

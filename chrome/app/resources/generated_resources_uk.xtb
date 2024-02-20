@@ -1914,6 +1914,7 @@
 <translation id="2412015533711271895">Хтось із батьків або опікун має дозволити використовувати це розширення</translation>
 <translation id="2412593942846481727">Доступне оновлення</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Персоналізуйте свій вебпереглядач за допомогою розширень із <ph name="BEGIN_LINK1" />Вебмагазину Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Відновити пошук за запитом "<ph name="MODULE_TITLE" />"</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2415117815770324983">Ви автоматично вийдете з облікових записів на більшості сайтів, але не з облікового запису Google.</translation>
@@ -6850,6 +6851,7 @@
 <translation id="6271824294945464304">Надсилання пароля</translation>
 <translation id="6273677812470008672">Якість</translation>
 <translation id="6274089201566806618">Підключення до пристрою "<ph name="HOST_DEVICE_NAME" />"</translation>
+<translation id="6274108044476515407">Персоналізація реклами залежить від різних факторів, зокрема від цього параметра, <ph name="BEGIN_LINK1" />пропонованих сайтами оголошень<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />налаштувань файлів cookie<ph name="LINK_END2" />, а також від налаштувань персоналізації, визначених сайтом, який ви переглядаєте. <ph name="BEGIN_LINK3" />Докладніше про керування конфіденційністю в рекламі.<ph name="LINK_END3" /></translation>
 <translation id="6274202259872570803">Скрінкаст</translation>
 <translation id="6276210637549544171">Щоб отримати доступ до проксі <ph name="PROXY_SERVER" />, введіть ім'я користувача та пароль.</translation>
 <translation id="6277105963844135994">Час очікування мережі минув</translation>
@@ -7841,6 +7843,7 @@
 <translation id="7044606776288350625">Дані синхронізації</translation>
 <translation id="7047059339731138197">Виберіть фон</translation>
 <translation id="7049293980323620022">Завантажити файл?</translation>
+<translation id="7049524156282610342">Дані вебперегляду користувача <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Недійсна конфігурація точки доступу</translation>
 <translation id="7052237160939977163">Надсилати дані відстеження ефективності</translation>
 <translation id="7053983685419859001">Блокувати</translation>
@@ -8557,6 +8560,7 @@
 <translation id="7630426712700473382">Цим пристроєм керує <ph name="MANAGER" />. На ньому потрібно щоразу входити в обліковий запис.</translation>
 <translation id="7631014249255418691">Створено резервну копію додатків і файлів Linux</translation>
 <translation id="7631887513477658702">&amp;Завжди відкривати файли цього типу</translation>
+<translation id="7632437836497571618">Використовувати захищені підключення для пошуку сайтів</translation>
 <translation id="7632948528260659758">Не вдалось оновити такі додатки-термінали:</translation>
 <translation id="7633724038415831385">Це перший і останній раз, коли вам доводиться чекати, поки програмне забезпечення Chromebook оновиться. Надалі це відбуватиметься у фоновому режимі.</translation>
 <translation id="7634337648687970851">Відновлення локальних даних наразі не підтримується.</translation>
@@ -8819,6 +8823,7 @@
 <translation id="7803657407897251194">Щоб продовжити налаштування пристрою Android, підключіть пристрій <ph name="DEVICE_TYPE" /> до мережі</translation>
 <translation id="7804072833593604762">Вкладку закрито</translation>
 <translation id="780446144738273886">Відскануйте файл PDF, щоб видобути текст для програми зчитування з екрана. Підтримується лише у веб-переглядачі Chrome.</translation>
+<translation id="7805371082115476536">Легко</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7805906048382884326">Закрити підказку</translation>
 <translation id="7806722269368320106">Додаток встановлюється</translation>

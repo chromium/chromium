@@ -179,6 +179,7 @@
 <translation id="3635073343384702370">Сырсөздөрүңүздү сактаганда Chrome аларды текшере алат</translation>
 <translation id="3667616615096815454">Колдонмо сервер үчүн белгисиз болгондуктан, аны орнотуу мүмкүн эмес.</translation>
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
+<translation id="3697952514309507634">Башка Chrome профилдери</translation>
 <translation id="3703994572283698466">ChromeOS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="3716540481907974026">ChromeOS Flex версиясы</translation>
 <translation id="3718181793972440140">Ушуну менен түзмөктөгү 1 нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
@@ -433,6 +434,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8019103195866286235">Бул кеңейтүүнү иштеп чыгуучусу жарыялаган жок жана ал кооптуу болушу мүмкүн. Сиз кирген сайттардагы дайын-даректериңизди, анын ичинде жеке маалыматыңызды мындан ары көрүп жана өзгөртпөшү үчүн аны Chrome'дон алып салыңыз.</translation>
 <translation id="80471789339884597">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда бардык серепчилерди өчүрүп күйгүзүңүз.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Башка Chrome профилдери</translation>
 <translation id="8086881907087796310">Компьютериңиз аппараттык камсыздоого коюлган минималдуу талаптарга жооп бербегендиктер, орнотулбай калды.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome жөнүндө</translation>
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>

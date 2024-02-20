@@ -212,6 +212,7 @@
 <translation id="20638360198452347">Auswahl des Einheitentyps</translation>
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Du kannst in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was du synchronisieren möchtest.</translation>
+<translation id="2078437078822043850">Du kannst nach rechts scrollen, um im Inkognitomodus zu surfen.</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2080409463824088391">In App öffnen…</translation>
 <translation id="2080769225927880590">Mit gültigem Konto anmelden</translation>
@@ -277,6 +278,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2421004566762153674">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2421044535038393232">Weiter bearbeiten</translation>
 <translation id="2434405374328098816">Du hast für „<ph name="USERNAME" />“ schon ein Passwort bei <ph name="WEBSITE" /> gespeichert</translation>
+<translation id="2434918313224755415">Du kannst nach links scrollen, um im Inkognitomodus zu surfen.</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2459155039684421202">Gib in die Adressleiste eine Aufgabe wie „Meinen Verlauf löschen“ oder „Passwörter bearbeiten“ ein.</translation>
 <translation id="2461070143328828326">Passworteinstellungen</translation>
@@ -310,6 +312,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="260378315836159338">Tippe oben auf dem Bildschirm auf +</translation>
 <translation id="2604176749896001318">Browser aktualisieren</translation>
 <translation id="2609008503159898744">Alle Tabs schließen?</translation>
+<translation id="261305050785128654">Gib für Websites an, welche Sprachen du sprichst. Sofern möglich, werden Inhalte in diesen Sprachen angezeigt.</translation>
 <translation id="2613747923081026172">Gruppe erstellen</translation>
 <translation id="2617210333344098964">Adresse in Konto verschieben</translation>
 <translation id="261739049332372104">Wenn du Neuigkeiten zu Inhalten erhalten möchtest, die dich interessieren, kannst du Benachrichtigungen in deinen iOS-Einstellungen aktivieren.</translation>
@@ -511,6 +514,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3603009562372709545">Link-URL kopieren</translation>
 <translation id="3607167657931203000">Autofill-Daten</translation>
 <translation id="3609785682760573515">Synchronisieren...</translation>
+<translation id="3625008969091706597">Du kannst über den Rand wischen, um zurückzugehen.</translation>
 <translation id="3630104167004786843">Keine Updates erhalten</translation>
 <translation id="3631443864840848029">Speichere dein aktuelles Passwort für diese Website.</translation>
 <translation id="3638472932233958418">Webseiten vorabladen</translation>
@@ -626,6 +630,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4267586310863245665">{COUNT,plural, =1{Du hast {COUNT} Warnung geschlossen}other{Du hast {COUNT} Warnungen geschlossen}}</translation>
 <translation id="4272631900155121838">Um einen QR-Code zu scannen, aktiviere in den Einstellungen die Kamera</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
+<translation id="4279431713294750185">Du kannst über den Rand wischen, um weiterzugehen.</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4286718549648564014">Die Adresse wurde in dein Konto <ph name="USER_EMAIL" /> verschoben</translation>
 <translation id="4293080268407233932">Suchen</translation>
@@ -1280,6 +1285,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7583004045319035904">Nutze <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um deine Inkognitotabs zu entsperren.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">Tabgruppen</translation>
 <translation id="7607521702806708809">Passwort löschen</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7640669552036055091">Tabs von Android</translation>

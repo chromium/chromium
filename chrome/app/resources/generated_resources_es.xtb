@@ -7819,6 +7819,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7044606776288350625">Sincronización de datos</translation>
 <translation id="7047059339731138197">Selecciona un fondo de pantalla</translation>
 <translation id="7049293980323620022">¿Quieres conservar el archivo?</translation>
+<translation id="7049524156282610342">Datos de navegación <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configuración de punto de acceso no válida</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
@@ -8536,6 +8537,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7630426712700473382">Este dispositivo lo gestiona <ph name="MANAGER" /> y requiere que inicies sesión siempre.</translation>
 <translation id="7631014249255418691">La copia de seguridad de las aplicaciones y archivos de Linux se ha completado correctamente</translation>
 <translation id="7631887513477658702">&amp;Abrir siempre archivos de este tipo</translation>
+<translation id="7632437836497571618">Usar conexiones seguras para buscar sitios</translation>
 <translation id="7632948528260659758">No se han podido actualizar las siguientes aplicaciones de kiosco:</translation>
 <translation id="7633724038415831385">Esta es la única vez que tendrás que esperar por una actualización. En los Chromebooks, las actualizaciones de software se realizan en segundo plano.</translation>
 <translation id="7634337648687970851">Actualmente no se admite la recuperación de datos locales.</translation>
@@ -8798,6 +8800,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7803657407897251194">Para continuar con la configuración con tu dispositivo Android, conecta tu <ph name="DEVICE_TYPE" /> a una red</translation>
 <translation id="7804072833593604762">Pestaña cerrada</translation>
 <translation id="780446144738273886">Escanea un PDF si quieres extraer el texto para el lector de pantalla. Solo se puede hacer con el navegador Chrome.</translation>
+<translation id="7805371082115476536">Suave</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7805906048382884326">Cerrar consejo</translation>
 <translation id="7806722269368320106">Instalando una aplicación</translation>

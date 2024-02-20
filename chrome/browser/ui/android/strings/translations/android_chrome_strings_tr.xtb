@@ -337,7 +337,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Sayfaları önceden yükleme</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> şu web sitesini onaylamanızı istiyor:</translation>
-<translation id="2876194821763651818"><ph name="USERNAME" /> hesabında kayıtlı şifreler.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome'un verilerinizi nasıl gizli tuttuğu<ph name="END_LINK" /> hakkında daha fazla bilg edinin</translation>
 <translation id="2888126860611144412">Chrome hakkında</translation>
 <translation id="2891154217021530873">Sayfa yüklemeyi durdur</translation>
@@ -1424,6 +1423,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="8354977102499939946">Sesinizle hızlı bir şekilde arama yapın. Bu kısayolu düzenlemek için Ayarlar'a gidin.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> indirme geri yüklendi</translation>
 <translation id="8368001212524806591">Fiyatı takip et</translation>
+<translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> hesabında yer işaretleriniz, geçmişiniz ve diğer ayarlarınız mevcut.</translation>
 <translation id="8387617938027387193">Siz olduğunuzu doğrulayın</translation>
 <translation id="8393700583063109961">İleti gönder</translation>
 <translation id="8394720698884623075">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder</translation>

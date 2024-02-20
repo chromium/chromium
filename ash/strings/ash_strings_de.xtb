@@ -100,6 +100,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1312604459020188865">Signalstärke bei <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Ablage immer einblenden</translation>
 <translation id="132346741904777634">Kamera ist an der oberen linken Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
+<translation id="132415371743256095"><ph name="DESK_NAME" /> und Fenster schließen</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> verbunden</translation>
 <translation id="1340378040547539434">Seite herauszoomen</translation>
 <translation id="1341651618736211726">Überlauf</translation>
@@ -332,6 +333,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2397416548179033562">Chrome-Menü anzeigen</translation>
 <translation id="240006516586367791">Mediensteuerelemente</translation>
 <translation id="2402411679569069051">Zum Entsperren des Chromebooks Fingerabdruck verwenden oder Smartphone entsperren</translation>
+<translation id="240545663114741956">Drücke zum Abmelden zweimal <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Nicht verbunden</translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2412593942846481727">Update verfügbar</translation>
@@ -353,7 +355,9 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2478076885740497414">App installieren</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484513351006226581">Drücke <ph name="KEYBOARD_SHORTCUT" />, um das Tastaturlayout zu ändern.</translation>
+<translation id="2486214324139475545">Vorschau für <ph name="DESK_NAME" />. Aktiver Desktop.</translation>
 <translation id="2487915095798731898">Teilnehmen</translation>
+<translation id="250047928202119308">Menü „Desktop-Profil“</translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
 <translation id="2504454902900101003">Anzeige der letzten Fotos, Medien und Benachrichtigungen auf deinem Smartphone nicht einrichten</translation>
 <translation id="2509468283778169019">Feststelltaste aktiviert</translation>
@@ -906,6 +910,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4642092649622328492">Screenshot eines Bildschirmausschnitts erstellen</translation>
 <translation id="4644727592819780893">Aufnahmebereich zu klein für Kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, App-Empfehlung</translation>
+<translation id="4654916960643280876">Kästchen für „<ph name="PROFILE_NAME" /> <ph name="EMAIL" />“ ist aktiviert.</translation>
 <translation id="4657775630156561295">Der folgende Vorschlag wird dauerhaft aus dem Verlauf der Vorschläge in deinem Konto entfernt:
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1037,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5111930673176965299">Weichgezeichneter Hintergrund</translation>
 <translation id="5117590920725113268">Nächsten Monat anzeigen</translation>
 <translation id="5121628974188116412">Zum Seitenende springen</translation>
+<translation id="5122517996953421795">Vorschau für <ph name="DESK_NAME" />. Inaktiver Desktop.</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
 <translation id="5147567197700016471">Entsperrt</translation>
 <translation id="5150070631291639005">Datenschutzeinstellungen</translation>
@@ -1433,6 +1439,7 @@ Neuinstallation</translation>
 <translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6686023075541098243">Anzeige der Benachrichtigungen auf deinem Smartphone einrichten</translation>
 <translation id="6696025732084565524">Wichtiges Update für deine abnehmbare Tastatur</translation>
+<translation id="6697913454192220372">Neuen Desktop hinzufügen</translation>
 <translation id="6700713906295497288">IME-Menüschaltfläche</translation>
 <translation id="6707693040195709527">Das Gerät wurde noch nicht auf eine frühere Version zurückgesetzt</translation>
 <translation id="6710213216561001401">Zurück</translation>
@@ -1564,6 +1571,7 @@ Neuinstallation</translation>
 <translation id="7262906531272962081">Erinnerung erstellen</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Rücktaste</translation>
 <translation id="7285232777292757180">Screenshots mit der Funktion „Bildschirmaufnahme“ in den Schnelleinstellungen aufnehmen</translation>
+<translation id="7301826272005790482">Vorschläge für Fenster schließen</translation>
 <translation id="7302889331339392448">Automatische Untertitel sind aus.</translation>
 <translation id="7303365578352795231">Antwort auf einem anderen Gerät.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1773,6 +1781,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8054466585765276473">Akku-Laufzeit wird berechnet.</translation>
 <translation id="8079538659226626406">Bildschirmfreigabe</translation>
 <translation id="8083540854303889870">Für später gespeichert</translation>
+<translation id="8088141034189573826">Verwende die Tabulatortaste, um weitere Optionen zu sehen. Verwende den Links- und Rechtspfeil, um auf alle Desktops zuzugreifen.</translation>
 <translation id="8091153018031979607">Beginnt um <ph name="START_TIME" /> Uhr <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatische Updates</translation>
 <translation id="8092380135549145188">Einstellungen für Scrollen</translation>
@@ -1970,6 +1979,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8936501819958976551">deaktiviert</translation>
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>
 <translation id="8940956008527784070">Niedriger Akkustand (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="894774083269346314">Kästchen für „<ph name="PROFILE_NAME" /> <ph name="EMAIL" />“ ist nicht aktiviert.</translation>
 <translation id="8949925099261528566">Verbunden, kein Internet</translation>
 <translation id="8951539504029375108">Nur zugelassene Thunderbolt-Geräte sind mit Chromebook kompatibel</translation>
 <translation id="8964525410783593407">1 Std.</translation>

@@ -18,6 +18,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1056898198331236512">Babala</translation>
 <translation id="1058009965971887428">Iulat ang feedback</translation>
+<translation id="1059120031266247284">Naka-share sa iyo</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1073899992769346247">Palitan o i-recharge ang baterya</translation>
@@ -627,6 +628,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="3580650856351781466">Nagda-download ng mga speech file</translation>
 <translation id="3585296979871889131">Tingnan ang mga kamakailang larawan, media, notification, at app ng iyong telepono</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Button sa Gilid</translation>
 <translation id="3593039967545720377">I-access ang history ng iyong clipboard sa pamamagitan ng pagpindot sa <ph name="SHORTCUT_KEY_NAME" /> + V para tingnan ang clipboard mo. Kumopya ng item para magsimula.</translation>
 <translation id="3593646411856133110">Mag-swipe pataas at i-hold para makita ang mga nakabukas na app</translation>
@@ -643,6 +645,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621712662352432595">Mga Setting ng Audio</translation>
 <translation id="3626281679859535460">Brightness</translation>
+<translation id="3628323833346754646">Button sa Harap</translation>
 <translation id="3630697955794050612">naka-off</translation>
 <translation id="3631369015426612114">Payagan ang mga notification mula sa mga sumusunod</translation>
 <translation id="3633097874324966332">Buksan ang mga setting ng Bluetooth para ipares ang iyong device</translation>
@@ -1284,6 +1287,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6052614013050385269">Mag-right click ng link</translation>
 <translation id="6054305421211936131">Mag-sign in gamit ang smart card</translation>
 <translation id="6059276912018042191">Mga kamakailang tab ng Chrome</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Awtomatiko kang masa-sign out sa loob ng <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Tapos nang gamitin ang file</translation>
 <translation id="6068258534237496331">Mga Kontrol ng Video Call</translation>
@@ -1345,6 +1349,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6309219492973062892">I-click o i-tap ang mga icon na shelf 1-8</translation>
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6319058840130157106">Magpalipat-lipat pabalik sa kanang sulok sa ibaba, Launcher, address bar, bookmarks bar, website na nakabukas, at mga download</translation>
+<translation id="6319503618073410818">Tingnan ang mga detalye sa browser</translation>
 <translation id="6324916366299863871">I-edit ang shortcut</translation>
 <translation id="6330012934079202188">Ipinapakita ang mga window mula sa lahat ng desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa kasalukuyang desk</translation>
 <translation id="6338485349199627913">Ang <ph name="DISPLAY_NAME" /> ay isang session na pinapamahalaan ng <ph name="MANAGER" /></translation>
@@ -1564,6 +1569,7 @@ Kaka-install lang</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> na memory | <ph name="TOTAL_MEMORY" /> sa kabuuan</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% na lang ang baterya. Isaksak ang iyong device.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kailangang i-restart ang Chromebook na ito para mailapat ang isang update. Puwede itong umabot nang hanggang 1 minuto</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Mikropono sa likod</translation>
 <translation id="7258828758145722155">Na-edit kahapon</translation>
 <translation id="726276584504105859">I-drag dito upang magamit ang split screen</translation>
@@ -1691,6 +1697,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7742327441377685481">Walang notification</translation>
 <translation id="7748275671948949022">I-highlight ang button ng Launcher sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">I-click upang tingnan ang mga detalye ng update</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Handa na ang iyong GIF sa ilang sandali</translation>
@@ -2017,6 +2024,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9098969848082897657">I-silent ang telepono</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">I-undo ang huling pagkilos</translation>
+<translation id="9129245940793250979">Button sa Likod</translation>
 <translation id="9133335900048457298">Hindi puwedeng mag-record ng protektadong content</translation>
 <translation id="9139720510312328767">I-delete ang susunod na titik</translation>
 <translation id="9151906066336345901">end</translation>

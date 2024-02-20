@@ -1216,6 +1216,7 @@ Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nac
       Wenn die Richtlinie „KerberosUseCustomPrefilledConfig“ aktiviert ist, wird der Wert der Richtlinie als vorgeschlagene Konfiguration angewendet und im Authentifizierungsdialogfeld von Kerberos unter „Advanced“ (Erweitert) angezeigt. Wenn du diese Richtlinie leer lässt oder nicht konfigurierst, wird die empfohlene <ph name="PRODUCT_OS_NAME" />-Konfiguration gelöscht.
 
       Wenn die Richtlinie „KerberosUseCustomPrefilledConfig“ deaktiviert ist, wird der Wert dieser Richtlinie nicht verwendet.</translation>
+<translation id="1967820716244187368">Verwendung von Chrome for Testing zulassen</translation>
 <translation id="1969212217917526199">Überschreibt Richtlinien auf Fehlerbehebungs-Builds des Hosts für den Remotezugriff
 
           Der Wert wird als JSON-Wörterbuch für die Verknüpfung zwischen Richtliniennamen und Richtlinienwerten geparst.</translation>
@@ -2547,6 +2548,7 @@ Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="305106159605171619">Verringerung des User-Agents ist deaktiviert und wurde nicht durch Feld- oder Ursprungstests aktiviert.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3057459316145779761">Verwendung von Chrome for Testing nicht zulassen</translation>
 <translation id="3063302084011279315">Screencast deaktivieren</translation>
 <translation id="3063307261083019730">Seiten mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ dürfen nicht im Back-Forward-Cache gespeichert werden.</translation>
 <translation id="3064530882228745118">CNAME-Suche bei der Kerberos-Authentifizierung verwenden</translation>
@@ -3058,6 +3060,7 @@ Mit dieser Richtlinie können Administratoren eine Vorschau des Verhaltens eines
 
 Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL_KEY_USAGE_INCOMPATIBLE fehl. Websites, die mit diesem Fehler fehlschlagen, nutzen wahrscheinlich ein falsch konfiguriertes Zertifikat. Bei den modernen ECDHE_RSA-Cipher Suites wird die Schlüsselverwendungsoption „digitalSignature“ genutzt, bei älteren RSA-Entschlüsselungs-Cipher Suites die Schlüsselverwendungsoption „keyEncipherment“. Administratoren, die sich nicht sicher sind, sollten beide Optionen in RSA-Zertifikate für HTTPS einbinden.</translation>
 <translation id="3459509316159669723">Drucken</translation>
+<translation id="3460485593332210712">Chrome for Testing zulassen</translation>
 <translation id="3461279434465463233">Status der Stromversorgung melden</translation>
 <translation id="3468115890799739909">Diese Richtlinie legt die Sichtbarkeit der in Seitengruppen eingeteilten Chrome-Verlaufsseite fest.
 
@@ -6276,6 +6279,11 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
 <translation id="6254498834449523938">Nicht zulassen, dass Nutzer Safe Browsing-Warnungen umgehen</translation>
 <translation id="625580680776945310">Der Modus für hohe Effizienz wird aktiviert.</translation>
 <translation id="6258314216623064461">Einstellungen für „Hilfe beim Verfassen“</translation>
+<translation id="6258502079038650092">Damit wird festgelegt, ob Nutzer Chrome for Testing verwenden dürfen.
+
+      Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, dürfen Nutzer Chrome for Testing installieren und ausführen.
+
+      Ist die Richtlinie deaktiviert, dürfen Nutzer Chrome for Testing nicht ausführen. Nutzer können Chrome for Testing dennoch installieren, aber diese Chrome-Version wird nicht mit den Profilen ausgeführt, für die diese Richtlinie deaktiviert ist.</translation>
 <translation id="6258658183356534534">Steuert die Funktion zur Aktualisierung des GREASE-Algorithmus für Client-Hinweise in „User-Agent“-Headern.</translation>
 <translation id="6261643884958898336">Gerätebezogene Daten erfassen</translation>
 <translation id="6264247808139384018">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die sich mit einem Passwort authentifizieren, den Bildschirm sperren.

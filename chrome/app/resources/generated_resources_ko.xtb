@@ -1913,6 +1913,7 @@
 <translation id="2412015533711271895">이 확장 프로그램을 사용하려면 부모 또는 보호자의 동의가 필요합니다.</translation>
 <translation id="2412593942846481727">업데이트 가능</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome 웹 스토어<ph name="END_LINK1" />의 확장 프로그램을 사용해 브라우저를 더욱 맞춤설정하세요.</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> 둘러보기 재개</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2415117815770324983">대부분의 사이트에서 로그아웃됩니다. Google 계정에 로그인된 상태가 유지됩니다.</translation>
@@ -6850,6 +6851,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6271824294945464304">비밀번호 공유</translation>
 <translation id="6273677812470008672">품질</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />에 연결 중</translation>
+<translation id="6274108044476515407">이 설정, <ph name="BEGIN_LINK1" />사이트 추천 광고<ph name="LINK_END1" />, 내 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 보고 있는 사이트의 광고 맞춤설정 여부 등 다양한 요인에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라질 수 있습니다. <ph name="BEGIN_LINK3" />광고 개인 정보 보호 관리<ph name="LINK_END3" />에 관해 자세히 알아보세요.</translation>
 <translation id="6274202259872570803">스크린캐스트</translation>
 <translation id="6276210637549544171">프록시 <ph name="PROXY_SERVER" />에 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
 <translation id="6277105963844135994">네트워크 시간 초과</translation>

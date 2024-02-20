@@ -175,6 +175,7 @@
 <translation id="3635073343384702370">మీరు పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chrome మీ వాటిని చెక్ చేయగలదు</translation>
 <translation id="3667616615096815454">ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు, అప్లికేషన్‌ను సర్వర్ గుర్తించలేదు.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />"లో మాల్‌వేర్ ఉన్నట్టుగా Chrome కనుగొన్నది</translation>
+<translation id="3697952514309507634">ఇతర Chrome ప్రొఫైల్స్</translation>
 <translation id="3703994572283698466">ChromeOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="3716540481907974026">ChromeOS Flex వెర్షన్</translation>
 <translation id="3718181793972440140">ఇది ఈ పరికరం నుండి 1 అంశాన్ని తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromeకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>
@@ -425,6 +426,7 @@
 <translation id="8019103195866286235">ఈ ఎక్స్‌టెన్షన్ పబ్లిషింగ్‌ను దాని డెవలపర్ రద్దు చేశారు, ఇది సురక్షితం కాకపోవచ్చు. Chrome నుండి దాన్ని తీసివేయండి, తద్వారా ఇది మీ వ్యక్తిగత సమాచారంతో సహా మీరు సందర్శించే సైట్‌లలోని మీ డేటాను ఇకపై చూడలేదు, మార్చలేదు.</translation>
 <translation id="80471789339884597">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించే ముందు మీరు తప్పకుండా మీ అన్ని బ్రౌజర్‌లను రీస్టార్ట్ చేయాలి.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">ఇతర Chrome ప్రొఫైల్స్</translation>
 <translation id="8086881907087796310">మీ కంప్యూటర్ కనీస హార్డ్‌వేర్ అవసరాలకు అనుగుణంగా లేనందున ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome గురించి</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>

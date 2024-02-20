@@ -274,6 +274,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="2534155362429831547">Byly smazány položky (celkem <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="2536728043171574184">Prohlížíte offline kopii stránky</translation>
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
+<translation id="254973855621628293">Helsa uložená na tomto zařízení</translation>
 <translation id="2567385386134582609">OBRÁZEK</translation>
 <translation id="2567545343356994513">Rychlejší, proaktivní ochrana před nebezpečnými weby, soubory ke stažení a rozšířeními</translation>
 <translation id="2569733278091928697">Budete moci snadno spravovat ovládání médií, anonymní relace, stahování a další funkce</translation>
@@ -337,7 +338,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="2870560284913253234">Stránky</translation>
 <translation id="2871733351037274014">Předběžně načítat stránky</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> chce, abyste schválili tento web:</translation>
-<translation id="2876194821763651818">Hesla uložená v účtu <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Další informace o tom, jak Chrome uchovává vaše data v soukromí<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">O aplikaci Chrome</translation>
 <translation id="2891154217021530873">Zastavit načítání stránky</translation>
@@ -1278,6 +1278,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7665369617277396874">Přidat účet</translation>
 <translation id="766587987807204883">Zde se zobrazují články, které si můžete číst i offline</translation>
+<translation id="7670101447063278728">Hesla uložená do účtu <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Vyzkoušejte tyto tipy: Zajistěte, aby v zařízení byl dostatek místa a zkuste export zopakovat.</translation>
 <translation id="7686086654630106285">Další informace o reklamách navrhovaných weby</translation>
 <translation id="768618399695552958">Některé stránky, které navštěvujete, se načítají předběžně. Pokud na stránky odkazuje web Google, mohou se předběžně načíst prostřednictvím serverů Google.</translation>

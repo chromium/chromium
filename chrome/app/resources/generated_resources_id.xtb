@@ -1911,6 +1911,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2412015533711271895">Harus ada izin orang tua atau wali untuk menggunakan ekstensi ini</translation>
 <translation id="2412593942846481727">Update tersedia</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Sesuaikan browser Anda lebih lanjut dengan ekstensi dari <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Lanjutkan menjelajah untuk <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2415117815770324983">Anda akan logout dari sebagian besar situs. Anda akan tetap login ke Akun Google Anda.</translation>
@@ -6850,6 +6851,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6271824294945464304">Berbagi sandi</translation>
 <translation id="6273677812470008672">Kualitas</translation>
 <translation id="6274089201566806618">Menghubungkan ke <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Iklan yang Anda lihat, baik dipersonalisasi atau tidak, dapat bergantung pada banyak hal, termasuk setelan ini, <ph name="BEGIN_LINK1" />iklan yang disarankan situs<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />setelan cookie<ph name="LINK_END2" />, dan apakah situs yang Anda lihat mempersonalisasi iklan. Pelajari lebih lanjut cara <ph name="BEGIN_LINK3" />mengelola privasi iklan<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> memerlukan nama pengguna dan sandi.</translation>
 <translation id="6277105963844135994">Waktu tunggu jaringan habis</translation>

@@ -7822,6 +7822,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7044606776288350625">Datu sinhronizēšana</translation>
 <translation id="7047059339731138197">Izvēlieties fonu</translation>
 <translation id="7049293980323620022">Vai paturēt failu?</translation>
+<translation id="7049524156282610342">Pārlūkošanas dati: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Nederīga tīklāja konfigurācija</translation>
 <translation id="7052237160939977163">Sūtīt veiktspējas izsekošanas datus</translation>
 <translation id="7053983685419859001">Bloķēt</translation>
@@ -8539,6 +8540,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7630426712700473382">Šo ierīci pārvalda <ph name="MANAGER" />, un, to izmantojot, jums ir jāpierakstās katru reizi.</translation>
 <translation id="7631014249255418691">Linux lietotnes un faili ir sekmīgi dublēti</translation>
 <translation id="7631887513477658702">Vienmēr atvērt šī veida f&amp;ailus</translation>
+<translation id="7632437836497571618">Izmantot drošus savienojumus vietņu uzmeklēšanai</translation>
 <translation id="7632948528260659758">Neizdevās atjaunināt šādas kioska lietotnes:</translation>
 <translation id="7633724038415831385">Turpmāk jums vairs nekad nebūs jāgaida atjauninājumi. Chromebook datoros programmatūras atjauninājumi notiek fonā.</translation>
 <translation id="7634337648687970851">Lokālo datu atkopšana pašlaik netiek atbalstīta.</translation>
@@ -8800,6 +8802,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7803657407897251194">Lai turpinātu iestatīšanu, izmantojot Android ierīci, savienojiet <ph name="DEVICE_TYPE" /> ar tīklu</translation>
 <translation id="7804072833593604762">Cilne ir aizvērta</translation>
 <translation id="780446144738273886">Skenējiet PDF failu, lai izgūtu ekrāna lasītājam paredzētu tekstu. Šī funkcija tiek atbalstīta tikai pārlūkā Chrome.</translation>
+<translation id="7805371082115476536">Viegli</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7805906048382884326">Aizvērt padomu</translation>
 <translation id="7806722269368320106">Lietotne, notiek instalēšana</translation>

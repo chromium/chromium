@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Je microfoon en camera gebruiken</translation>
 <translation id="1005333234656240382">ADB-foutopsporing aanzetten?</translation>
 <translation id="1005671386794704751">Roze</translation>
+<translation id="1006033052970139968">Microfoontoegang is toegestaan voor apps, websites met microfoonrechten en systeemservices</translation>
 <translation id="1006557561787696884">Toegangssleutels gebruiken op je Apple-apparaten</translation>
 <translation id="1006873397406093306">Deze extensie kan je gegevens op sites lezen en wijzigen. Je bepaalt tot welke sites de extensie toegang heeft.</translation>
 <translation id="1007057452468855774">Google Play Store aanzetten</translation>
@@ -1276,6 +1277,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1944535645109964458">Geen toegangssleutels beschikbaar</translation>
 <translation id="1944921356641260203">Update gevonden</translation>
 <translation id="1947136734041527201">Hiermee kun je inloggen bij websites met het account dat je hebt bij een identiteitsservice</translation>
+<translation id="1948528728718281125">Cameratoegang is toegestaan voor apps, websites met camerarechten en systeemservices</translation>
 <translation id="1949332606889020901">Crash-ID's</translation>
 <translation id="1949584741547056205">Snelle antwoorden</translation>
 <translation id="1949849604471335579">Achtergrond, schermbeveiliging, accentkleuren en meer personaliseren</translation>
@@ -2468,6 +2470,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2822910719211888134">Fout tijdens back-up maken van Linux</translation>
 <translation id="2823176412251649407">Wijzig je internetverbinding en kies Opnieuw proberen. Als je beperkte weergave- en bewerkingsopties wilt gebruiken, kies je Openen in offline editor.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> gebruikt proxyinstellingen van je beheerder</translation>
+<translation id="2825151610926840364">Geef toegang aan apps en websites met camerarechten. Als je de camera wilt gebruiken, moet je de app misschien opnieuw opstarten of de pagina vernieuwen.</translation>
 <translation id="2825758591930162672">Openbare sleutel van entiteit</translation>
 <translation id="2828375943530438449">Terug vanaf de inlogpagina</translation>
 <translation id="2828650939514476812">Verbinding maken met een wifi-netwerk</translation>
@@ -3981,6 +3984,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4001540981461989979">Muisaanwijzer markeren tijdens bewegen</translation>
 <translation id="4002347779798688515">Het gedownloade profiel kan misschien niet worden gebruikt als de mobiele provider is vergrendeld. Neem contact op met je provider voor support.</translation>
 <translation id="4002440992267487163">Pincode instellen</translation>
+<translation id="4003647532210142956">Huidige planning is ingesteld op <ph name="SUNRISE" /> - <ph name="SUNSET" />. Als je de planning voor zonsondergang en zonsopgang automatisch wilt updaten, <ph name="BEGIN_LINK" />zet je locatietoegang aan<ph name="END_LINK" />.</translation>
 <translation id="4005817994523282006">Detectiemethode voor tijdzone</translation>
 <translation id="4007856537951125667">Snelkoppelingen verbergen</translation>
 <translation id="4010746393007464819">Er is een upgrade beschikbaar voor Debian 12 (Bookworm)</translation>
@@ -4019,6 +4023,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4036778507053569103">Het beleid dat van de server is gedownload, is ongeldig.</translation>
 <translation id="4037084878352560732">Paard</translation>
 <translation id="403725336528835653">Eerst proberen</translation>
+<translation id="4039966970282098406">Beheer je privacy door onder andere toegang tot de microfoon en camera te beheren</translation>
 <translation id="4040041015953651705">Taal om uit te vertalen</translation>
 <translation id="4042660782729322247">Je deelt je scherm</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Pagina afsluiten}other{Pagina's afsluiten}}</translation>
@@ -4389,6 +4394,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="434198521554309404">Snel, beveiligd, makkelijk.</translation>
 <translation id="4342417854108207000">Toestemming om bestanden of mappen op je apparaat te bewerken</translation>
 <translation id="4343250402091037179">Als je een specifieke site of een deel van Chrome wilt doorzoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de gewenste sneltoets.</translation>
+<translation id="4343283008857332996">Cameratoegang is toegestaan voor apps, websites met camerarechten en systeemservices. Als je de camera wilt gebruiken, moet je de app misschien opnieuw opstarten of de pagina vernieuwen.</translation>
 <translation id="4345457680916430965">&amp;Openen in <ph name="APP" /></translation>
 <translation id="4345587454538109430">Configureren...</translation>
 <translation id="4345732373643853732">Gebruikersnaam niet bekend bij server</translation>
@@ -4694,6 +4700,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4576541033847873020">Bluetooth-apparaat koppelen</translation>
 <translation id="4576763597586015380">Bevestig dat jij het bent als je wilt doorgaan met het opslaan van wachtwoorden in je Google-account</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - Inactief tabblad</translation>
+<translation id="4577995939477504370">Apps en websites met microfoonrechten en systeemservices kunnen je microfoon gebruiken</translation>
 <translation id="4579453506923101210">Verbonden telefoon vergeten</translation>
 <translation id="4579581181964204535">Kan <ph name="HOST_NAME" /> niet casten.</translation>
 <translation id="4579876313423027742">Ga voor browsermeldingen naar <ph name="LINK_BEGIN" />Chrome-browserinstellingen<ph name="LINK_END" /></translation>
@@ -5686,6 +5693,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5385628342687007304">Dit wachtwoord wordt alleen opgeslagen op dit apparaat. Als je het op je andere apparaten wilt gebruiken, sla je het op in je Google-account.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> bewerken</translation>
 <translation id="538822246583124912">Bedrijfsbeleid gewijzigd. Knop voor experimenten toegevoegd aan de werkbalk. Klik op de knop om een dialoogvenster te openen waarmee je experimenten kunt aanzetten.</translation>
+<translation id="5388436023007579456">Apps en websites met camerarechten en systeemservices kunnen je camera gebruiken. Als je de camera wilt gebruiken, moet je de app misschien opnieuw opstarten of de pagina vernieuwen.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site met veel meldingen gevonden}other{{NUM_SITES} sites met veel meldingen gevonden}}</translation>
 <translation id="5388885445722491159">Gekoppeld</translation>
 <translation id="5389626883706033615">Sites kunnen je niet vragen om informatie te gebruiken die ze over jou hebben opgeslagen</translation>
@@ -5786,6 +5794,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notities op vergrendelscherm</translation>
 <translation id="5459864179070366255">Toch installeren</translation>
+<translation id="5460641065520325899">Beheer de typen informatie die sites kunnen gebruiken om je te volgen terwijl je browst.</translation>
 <translation id="5460861858595506978">Inspiratie</translation>
 <translation id="5461050611724244538">De verbinding met je telefoon is verbroken</translation>
 <translation id="5463275305984126951">Index van <ph name="LOCATION" /></translation>
@@ -6867,6 +6876,7 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="630292539633944562">Suggesties voor persoonlijke informatie</translation>
 <translation id="6305607932814307878">Algemeen beleid:</translation>
 <translation id="6305702903308659374">Afspelen met normaal volume, ook als ChromeVox spreekt</translation>
+<translation id="6307268917612054609">Apps en websites met camerarechten en systeemservices kunnen je camera gebruiken</translation>
 <translation id="6307990684951724544">Systeem is bezet</translation>
 <translation id="6308493641021088955">Inloggen mogelijk gemaakt door <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Lin&amp;k opslaan als...</translation>
@@ -8192,6 +8202,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7367714965999718019">Generator voor QR-codes</translation>
 <translation id="7368695150573390554">Alle offline gegevens worden verwijderd</translation>
 <translation id="736877393389250337"><ph name="URL" /> kan niet worden geopend in <ph name="ALTERNATIVE_BROWSER_NAME" />. Neem contact op met je systeembeheerder.</translation>
+<translation id="7368927539449986686">Zoekopdrachten op site bewerken</translation>
 <translation id="7370592524170198497">Ethernet-EAP:</translation>
 <translation id="7371490947952970241">Je kunt Locatie uitzetten door de primaire instelling voor Locatie op dit apparaat uit te zetten. Je kunt het gebruik van wifi, mobiele netwerken en sensoren voor locatie ook uitzetten via de locatie-instellingen.</translation>
 <translation id="7371917887111892735">Tabbladen krimpen tot de breedte van vastgezette tabbladen</translation>
@@ -8457,6 +8468,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="756583107125124860">Sommige functies kunnen de content van geopende pagina's en gerelateerde recente pagina's gebruiken om relevantere informatie of suggesties te bieden</translation>
 <translation id="7566118625369982896">Play-app-links beheren</translation>
 <translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">Toetsencombinatie maken</translation>
 <translation id="756809126120519699">Chrome-gegevens gewist</translation>
 <translation id="756876171895853918">Avatar aanpassen</translation>
 <translation id="7568790562536448087">Bijwerken</translation>
@@ -8717,6 +8729,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7757787379047923882">Tekst gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">De grenzen van je display aanpassen</translation>
+<translation id="7758884017823246335">Zoekopdracht op site toevoegen</translation>
 <translation id="7759809451544302770">Optioneel</translation>
 <translation id="7762024824096060040">Kan dit account niet gebruiken</translation>
 <translation id="7762243782113123335">Er is iets misgegaan. Dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />.</translation>
@@ -10580,6 +10593,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9153274276370926498">Lacros-systeeminformatie</translation>
 <translation id="9153367754133725216">Bekijk suggesties voor nieuwe apps en webcontent in de Launcher en zoekresultaten. Hiermee worden alleen statistieken verstuurd om suggesties te verbeteren als je ervoor hebt gekozen crashrapporten en diagnostische en gebruiksgegevens naar ChromeOS te sturen.</translation>
 <translation id="9154194610265714752">Bijgewerkt</translation>
+<translation id="915485121129452731">Pentablet</translation>
 <translation id="9155344700756733162">Kleur deselecteren</translation>
 <translation id="9157096865782046368">0,8 seconden</translation>
 <translation id="9157697743260533322">Kan automatische updates niet instellen voor alle gebruikers (lanceringsfout bij pre-flight-procedure: <ph name="ERROR_NUMBER" />)</translation>

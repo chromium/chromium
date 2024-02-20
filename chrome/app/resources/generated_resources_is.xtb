@@ -7849,6 +7849,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7044606776288350625">Samstilla gögn</translation>
 <translation id="7047059339731138197">Velja bakgrunn</translation>
 <translation id="7049293980323620022">Viltu halda skránni?</translation>
+<translation id="7049524156282610342">Vefskoðunargögn <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ógild stilling fyrir heitan reit</translation>
 <translation id="7052237160939977163">Senda rakningargögn um afköst</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
@@ -8568,6 +8569,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7630426712700473382"><ph name="MANAGER" /> hefur umsjón með þessu tæki og krefst þess að þú skráir þig inn í hvert sinn.</translation>
 <translation id="7631014249255418691">Tekið var afrit af Linux-forritum og -skrám</translation>
 <translation id="7631887513477658702">Opna &amp;alltaf skrár af þessari gerð</translation>
+<translation id="7632437836497571618">Notaðu öruggar tengingar til að leita að vefsvæðum</translation>
 <translation id="7632948528260659758">Mistókst að uppfæra eftirfarandi sjálfsalaforrit:</translation>
 <translation id="7633724038415831385">Þetta verður í eina skiptið sem þú bíður eftir uppfærslu. Í Chromebook er hugbúnaður uppfærður í bakgrunni.</translation>
 <translation id="7634337648687970851">Endurheimt staðbundinna gagna er ekki studd eins og stendur.</translation>
@@ -8831,6 +8833,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7803657407897251194">Til að halda uppsetningu áfram með Android-tækinu þínu skaltu tengja <ph name="DEVICE_TYPE" /> við netkerfi</translation>
 <translation id="7804072833593604762">Flipa lokað</translation>
 <translation id="780446144738273886">Skannaðu PDF-skjal til að draga út texta fyrir skjálesarann. Aðeins stutt í Chrome-vafra</translation>
+<translation id="7805371082115476536">Létt</translation>
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7805906048382884326">Loka ábendingu</translation>
 <translation id="7806722269368320106">Forrit, í uppsetningu</translation>

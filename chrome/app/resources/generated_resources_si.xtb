@@ -7824,6 +7824,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7044606776288350625">දත්ත සමමුහූර්තය</translation>
 <translation id="7047059339731138197">පසුබිමක් තෝරන්න</translation>
 <translation id="7049293980323620022">ගොනුව තබා ගන්නවා ද?</translation>
+<translation id="7049524156282610342">බ්‍රවුස් කිරීමේ දත්ත <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">අවලංගු හොට්ස්පොට් වින්‍යාසය</translation>
 <translation id="7052237160939977163">ක්‍රියාකාරීත්ව අනුරේඛන දත්ත යවන්න</translation>
 <translation id="7053983685419859001">අවහිර කරන්න</translation>
@@ -8541,6 +8542,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7630426712700473382">මෙම උපාංගය <ph name="MANAGER" /> විසින් කළමනාකරණය කරන අතර සෑම අවස්ථාවකදීම ඔබ පිරීම අවශ්‍ය වේ.</translation>
 <translation id="7631014249255418691">ලිනක්ස් යෙදුම් සහ ගොනු සාර්ථකව උපස්ථ කරන ලදි</translation>
 <translation id="7631887513477658702">&amp;සැමවිට මෙම වර්ගයේ ගොනු විවෘත කරන්න.</translation>
+<translation id="7632437836497571618">අඩවි සෙවීමට ආරක්ෂිත සම්බන්ධතා භාවිතා කරන්න</translation>
 <translation id="7632948528260659758">පහත කියෝස්ක් යෙදුම් යාවත් කිරීම අසාර්ථකයි:</translation>
 <translation id="7633724038415831385">යාවත්කාලීනයක් සඳහා ඔබ රැඳී සිටින එකම අවස්ථාව මෙයයි. Chromebooks හි, මෘදුකාංග යාවත්කාලීන කිරීම් පසුබිමේ සිදු වේ.</translation>
 <translation id="7634337648687970851">ස්ථානික දත්ත ප්‍රතිසාධනය දැනට සහාය නොදැක්වේ.</translation>
@@ -8802,6 +8804,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7803657407897251194">ඔබේ Android උපාංගය සැකසීම දිගටම කරගෙන යාමට, ඔබේ <ph name="DEVICE_TYPE" /> ජාලයකට සම්බන්ධ කරන්න</translation>
 <translation id="7804072833593604762">ටැබය වසන ලදි</translation>
 <translation id="780446144738273886">තිර කියවනය සඳහා පෙළ උපුටා ගැනීමට PDF ස්කෑන් කරන්න. Chrome බ්‍රව්සරයෙහි පමණක් සහාය දක්වයි</translation>
+<translation id="7805371082115476536">සැහැල්ලු</translation>
 <translation id="7805768142964895445">තත්වය</translation>
 <translation id="7805906048382884326">ඉඟිය වසන්න</translation>
 <translation id="7806722269368320106">යෙදුමක්, ස්ථාපනය වේ</translation>

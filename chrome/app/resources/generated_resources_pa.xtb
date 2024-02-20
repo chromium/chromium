@@ -31,6 +31,7 @@
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕਿਸੇ ਵੀ ਪ੍ਰੋਫਾਈਲ ਦੇ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹਨ।</translation>
+<translation id="1022719295563085177">ਨੈੱਟਵਰਕ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ</translation>
 <translation id="1026655690966755180">ਪੋਰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1026822031284433028">ਚਿੱਤਰ ਲੋਡ ਕਰੋ</translation>
 <translation id="1026959648338730078">Windows Hello ਜਾਂ ਬਾਹਰੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ</translation>
@@ -321,6 +322,7 @@
 <translation id="123578888592755962">ਡਿਸਕ ਪੂਰੀ</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{ਲਿਖਤ}one{# ਲਿਖਤ}other{# ਲਿਖਤਾਂ}}</translation>
 <translation id="1236009322878349843">ਫ਼ੋਨ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="1237950098253310325">Ctrl ਦੇ ਨਾਲ ਉੱਪਰ ਤੀਰ ਜਾਂ ਹੇਠਾਂ ਤੀਰ ਦਬਾ ਕੇ <ph name="BUTTON_NAME" /> ਨੂੰ ਮੁੜ-ਕ੍ਰਮਬੱਧ ਕਰੋ</translation>
 <translation id="1238293488628890871">ਕੀ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸਵਿੱਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1239594683407221485">Files ਐਪ ਵਿੱਚ ਡੀਵਾਈਸ ਦੀ ਸਮੱਗਰੀ ਦੀ ਪੜਚੋਲ ਕਰੋ।</translation>
 <translation id="1239841552505950173">ਐਪਲੀਕੇਸ਼ਨ ਲਾਂਚ ਕਰੋ</translation>
@@ -1912,6 +1914,7 @@
 <translation id="2412015533711271895">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੂੰ ਕਹਿਣਾ ਪਵੇਗਾ ਕਿ ਤੁਸੀਂ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
 <translation id="2412593942846481727">ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome ਵੈੱਬ ਸਟੋਰ<ph name="END_LINK1" /> ਤੋਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨਾਲ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਹੋਰ ਵੀ ਜ਼ਿਆਦਾ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> ਲਈ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2414886740292270097">ਡਾਰਕ</translation>
 <translation id="2415117815770324983">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੰਦਾ ਹੈ। ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਰਹੋਗੇ।</translation>
@@ -2836,6 +2839,7 @@
 <translation id="3101709781009526431">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ</translation>
 <translation id="310297983047869047">ਪਿਛਲੀ ਸਲਾਈਡ</translation>
 <translation id="3103451787721578293">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਡਾਟੇ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨ ਦਾ ਕਾਰਨ ਦਾਖਲ ਕਰੋ:</translation>
+<translation id="3103512663951238230">Alt+ਕਲਿੱਕ</translation>
 <translation id="3105339775057145050">ਪਿਛਲਾ ਅਸਫਲ ਅੱਪਡੇਟ</translation>
 <translation id="3105796011181310544">ਕੀ Google 'ਤੇ ਵਾਪਸ ਜਾਣਾ ਹੈ?</translation>
 <translation id="3105820656234755131">ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -3231,6 +3235,7 @@
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="3441653493275994384">ਸਕ੍ਰੀਨ</translation>
 <translation id="3441663102605358937">ਇਸ ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਦੁਬਾਰਾ <ph name="ACCOUNT" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="3441824746233675597">ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਟਰੈਫ਼ਿਕ ਤੱਕ ਪਹੁੰਚ ਰੱਖਣ ਵਾਲੇ ਲੋਕਾਂ ਲਈ ਇਹ ਦੇਖਣਾ ਮੁਸ਼ਕਲ ਬਣਾਓ ਕਿ ਤੁਸੀਂ ਕਿਹੜੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾਂਦੇ ਹੋ। <ph name="PRODUCT_NAME" /> DNS (ਡੋਮੇਨ ਨਾਮ ਪ੍ਰਣਾਲੀ) ਵਿੱਚ ਸਾਈਟ ਦਾ IP ਪਤਾ ਲੱਭਣ ਲਈ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ Google ਨੂੰ ਤੁਹਾਡੇ ਹਾਰਡਵੇਅਰ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿਓ। ਜੇ ਤੁਸੀਂ ਅਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਫਿਰ ਵੀ ਇਹ ਡਾਟਾ Google ਨੂੰ ਉਚਿਤ ਅੱਪਡੇਟ ਨਿਰਧਾਰਿਤ ਕਰਨ ਲਈ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ, ਪਰ ਨਾ ਹੀ ਇਸਨੂੰ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਨਾ ਹੀ ਕਿਸੇ ਹੋਰ ਕੰਮ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> ਦਾ ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ</translation>
 <translation id="3443754338602062261">ਤੁਹਾਡੇ ਕੋਲ ਪਹਿਲਾਂ ਹੀ ਆਪਣੇ <ph name="BRAND" /> ਵਿੱਚ ਇਨ੍ਹਾਂ ਖਾਤਿਆਂ ਲਈ ਪਾਸਵਰਡ ਹਨ। ਜੇ ਤੁਸੀਂ ਹੇਠਾਂ ਦਿੱਤੇ ਪਾਸਵਰਡਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਇੱਕ ਨੂੰ ਆਯਾਤ ਕਰਨਾ ਚੁਣਦੇ ਹੋ, ਤਾਂ ਇਸਨੂੰ ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਨਾਲ ਬਦਲਿਆ ਜਾਵੇਗਾ।</translation>
@@ -3410,6 +3415,7 @@
 <translation id="3584169441612580296">ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੋਂ ਫ਼ੋਟੋਆਂ, ਸੰਗੀਤ ਅਤੇ ਹੋਰ ਮੀਡੀਆ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="3586806079541226322">ਇਹ ਫ਼ਾਈਲ ਖੋਲ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕਦੀ</translation>
 <translation id="3586931643579894722">ਵੇਰਵੇ ਲੁਕਾਓ</translation>
+<translation id="3587279952965197737"><ph name="MAX_CHARACTER_COUNT" /> ਜਾਂ ਘੱਟ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਹੋਣੇ ਲਾਜ਼ਮੀ ਹਨ</translation>
 <translation id="3587438013689771191">ਇਸ ਬਾਰੇ ਹੋਰ ਜਾਣੋ: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">ਸਾਰੇ</translation>
 <translation id="3588790464166520201">ਭੁਗਤਾਨ ਹੈਂਡਲਰਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
@@ -4593,6 +4599,7 @@
 <translation id="4490086832405043258">ਇਸ ਪ੍ਰੋਫਾਈਲ ਲਈ ChromeOS ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="4490798467014431984">ਇਸ ਸਾਈਟ 'ਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="449126573531210296">ਸਿੰਕ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕਰੋ</translation>
+<translation id="4492265221907525667">ਇਸ ਨਵੀਂ ਪ੍ਰਯੋਗਮਈ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਵਰਤਣ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="449232563137139956">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਉਦਾਹਰਨ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਚਿੱਤਰ ਦਿਖਾਉਂਦੀਆਂ ਹਨ ਜਿਵੇਂ ਕਿ ਆਨਲਾਈਨ ਸਟੋਰਾਂ ਜਾਂ ਖਬਰ ਲੇਖਾਂ ਲਈ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="4492698018379445570">ਲੱਭੋ ਕਿ ਖਰੀਦਦਾਰੀ ਕਾਰਟਾਂ ਵਿੱਚ ਤੁਸੀਂ ਕੀ ਸ਼ਾਮਲ ਕੀਤਾ ਹੈ ਅਤੇ ਜਦੋਂ ਤੁਸੀਂ ਤਿਆਰ ਹੋਵੋ, ਤਾਂ ਚੈੱਕ-ਆਊਟ ਕਰੋ</translation>
 <translation id="4493167769966437077">ਕਦੇ ਵੀ ਅਨੁਵਾਦ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰਨ ਵਾਲੀਆਂ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚੋਂ <ph name="LANGUAGE_NAME" /> ਨੂੰ ਹਟਾਓ</translation>
@@ -5158,6 +5165,7 @@
 <translation id="4929386379796360314">ਪ੍ਰਿੰਟ ਲਈ ਨਿਯਤ ਥਾਂ</translation>
 <translation id="4930447554870711875">ਵਿਕਾਸਕਾਰ</translation>
 <translation id="4930714375720679147">ਚਾਲੂ ਕਰੋ</translation>
+<translation id="4931347390544064118">ਨੈੱਟਵਰਕ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵੇਲੇ ਸ਼ਾਇਦ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਹਮੇਸ਼ਾਂ ਉਪਲਬਧ ਨਾ ਹੋਣ। ਤੁਸੀਂ ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿਸੇ ਵੱਖਰੇ ਪ੍ਰਦਾਨਕ ਨੂੰ ਚੁਣਨ 'ਤੇ ਵਿਚਾਰ ਕਰੋ ਕਿ ਤੁਸੀਂ ਹਮੇਸ਼ਾਂ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਵਰਤ ਰਹੇ ਹੋ।</translation>
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
 <translation id="4933484234309072027"><ph name="URL" /> ਤੇ ਜੋੜਿਆ</translation>
 <translation id="4936042273057045735">ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਫ਼ੋਨਾਂ ਲਈ ਸੂਚਨਾ ਸਿੰਕ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
@@ -6852,6 +6860,7 @@
 <translation id="6271824294945464304">ਪਾਸਵਰਡ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ</translation>
 <translation id="6273677812470008672">ਕੁਆਲਿਟੀ</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="6274108044476515407">ਤੁਹਾਨੂੰ ਦਿਖਾਈ ਦੇਣ ਵਾਲਾ ਵਿਗਿਆਪਨ ਵਿਅਕਤੀਗਤ ਬਣਾਇਆ ਗਿਆ ਹੈ ਜਾਂ ਨਹੀਂ, ਇਹ ਇਸ ਸੈਟਿੰਗ, <ph name="BEGIN_LINK1" />ਸਾਈਟ ਵੱਲੋਂ ਸੁਝਾਏ ਵਿਗਿਆਪਨਾਂ<ph name="LINK_END1" />, ਤੁਹਾਡੀਆਂ <ph name="BEGIN_LINK2" />ਕੁਕੀ ਸੈਟਿੰਗਾਂ<ph name="LINK_END2" />ਸਮੇਤ ਕਈ ਚੀਜ਼ਾਂ ਤੋਂ ਇਲਾਵਾ ਇਸ ਗੱਲ 'ਤੇ ਵੀ ਨਿਰਭਰ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀ ਜਾ ਰਹੀ ਸਾਈਟ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਂਦੀ ਹੈ ਜਾਂ ਨਹੀਂ। <ph name="BEGIN_LINK3" />ਆਪਣੀ ਵਿਗਿਆਪਨ ਪਰਦੇਦਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ<ph name="LINK_END3" /> ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="6274202259872570803">ਸਕ੍ਰੀਨਕਾਸਟ</translation>
 <translation id="6276210637549544171">ਪ੍ਰੌਕਸੀ <ph name="PROXY_SERVER" /> ਲਈ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="6277105963844135994">ਨੈੱਟਵਰਕ ਸਮਾਂ ਸਮਾਪਤ</translation>
@@ -9224,6 +9233,7 @@
 <translation id="8102139037507939978">system_logs.txt ਤੋਂ ਨਿੱਜੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨੂੰ ਹਟਾਓ।</translation>
 <translation id="810362914482827094">ਪਾਸਕੀਆਂ ਖੋਜੋ</translation>
 <translation id="8104088837833760645">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
+<translation id="8105273883928376822">ਕਿਰਪਾ ਕਰਕੇ ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="8107015733319732394">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> 'ਤੇ Google Play Store ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਥੋੜ੍ਹੀ ਦੇਰ ਲੱਗ ਸਕਦੀ ਹੈ।</translation>
 <translation id="810728361871746125">ਡਿਸਪਲੇ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="8109109153262930486">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਅਵਤਾਰ</translation>
@@ -10037,6 +10047,7 @@
 <translation id="8732030010853991079">ਇਸ ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਵਰਤੋ।</translation>
 <translation id="8732212173949624846">ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਸਾਈਨ-ਇਨ ਕੀਤੀਆਂ ਡਿਵਾਈਸਾਂ ਤੇ ਆਪਣਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="8732844209475700754">ਪਰਦੇਦਾਰੀ, ਸੁਰੱਖਿਆ ਅਤੇ ਡਾਟਾ ਸੰਗ੍ਰਹਿ ਨਾਲ ਸੰਬੰਧਿਤ ਹੋਰ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="8733779588180110397">⌥+ਕਲਿੱਕ</translation>
 <translation id="8734073480934656039">ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਨ ਨਾਲ ਇਹ  ਕਿਓਸਕ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨੂੰ ਸਟਾਰਟਅਪ 'ਤੇ ਸਵੈ ਲਾਂਚ ਕਰਨ ਲਈ ਆਗਿਆ ਦਿੰਦਾ ਹੈ।</translation>
 <translation id="8734755021067981851">ਕੋਈ USB ਡੀਵਾਈਸ ਨੱਥੀ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8736288397686080465">ਇਹ ਸਾਈਟ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਅੱਪਡੇਟ ਕੀਤੀ ਗਈ ਹੈ।</translation>
@@ -10405,6 +10416,7 @@
 <translation id="9012585441087414258">ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਖਤਰਨਾਕ ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ। ਜੇ ਕੋਈ ਪੰਨਾ ਕੋਈ ਸ਼ੱਕੀ ਸਰਗਰਮੀ ਕਰਦਾ ਹੈ, ਤਾਂ URL ਅਤੇ ਪੰਨੇ ਦੀ ਥੋੜ੍ਹੀ ਸਮੱਗਰੀ ਨੂੰ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="9013037634206938463">Linux ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ <ph name="INSTALL_SIZE" /> ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਲੋੜ ਹੈ। ਖਾਲੀ ਜਗ੍ਹਾ ਨੂੰ ਵਧਾਉਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ।</translation>
 <translation id="9014206344398081366">ChromeVox ਟਿਊਟੋਰੀਅਲ</translation>
+<translation id="9014674417732091912">ਕਤਾਰ <ph name="ROW_NUMBER" /> 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="901668144954885282">Google Drive ਵਿੱਚ ਬੈਕਅੱਪ ਲਓ</translation>
 <translation id="9016827136585652292">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="90181708067259747">ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ: <ph name="CARD" /></translation>

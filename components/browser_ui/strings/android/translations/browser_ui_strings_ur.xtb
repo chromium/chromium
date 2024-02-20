@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="1073417869336441572">‏ہمیں یہ بتا کر Chrome کو بہتر بنانے میں ہماری مدد کریں کہ آپ نے فریق ثالث کوکیز کی اجازت کیوں دی۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">قیمت میں کمی کے کارڈ کو چھپائیں</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1192844206376121885">اس سے <ph name="ORIGIN" /> کے ذریعے اسٹور کردہ سبھی ڈیٹا اور کوکیز حذف ہو جائیں گی۔</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">مدد اور تاثرات</translation>
 <translation id="2501278716633472235">پیچھے جائیں</translation>
 <translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
+<translation id="2550801787432930915">قیمت میں کمی کا کارڈ</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 کوکی مسدود ہو گئی}other{# کوکیز مسدود ہو گئیں}}</translation>
 <translation id="2570922361219980984">‏مقام کی رسائی بھی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="257931822824936280">پھیلایا ہوا - سکیڑنے کیلئے کلک کریں۔</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">آن ہونے پر</translation>
 <translation id="8805385115381080995">براؤزنگ تیز تر ہے کیونکہ کسی سائٹ کے آپ سے اس بات کی تصدیق کرنے کے لیے کہنے کا امکان کم ہوتا ہے کہ آپ ایک حقیقی شخص ہیں</translation>
 <translation id="8816026460808729765">سینسرز تک رسائی حاصل کرنے سے سائٹس کو مسدود کریں</translation>
+<translation id="8843699287283948910">دوسرے آلات سے ٹیبز کو چھپائیں</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="8889294078294184559">‏چونکہ آپ براؤز کرتے رہتے ہیں، اس لیے سائٹس Chrome سے رابطہ کر کے آپ کی ملاحظہ کردہ گزشتہ سائٹ سے یہ تصدیق کر سکتی ہیں کہ آپ ممکنہ طور پر ایک حقیقی شخص ہیں</translation>

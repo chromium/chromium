@@ -339,7 +339,6 @@
 <translation id="2870560284913253234">ಸೈಟ್</translation>
 <translation id="2871733351037274014">ಪುಟಗಳನ್ನು ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ಅವರು ನೀವು ಈ ವೆಬ್‌ಸೈಟ್‌ಗೆ ಅನುಮೋದಿಸಬೇಕೆಂದು ಬಯಸುತ್ತಿದ್ದಾರೆ:</translation>
-<translation id="2876194821763651818"><ph name="USERNAME" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಪಾಸ್‌‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹೇಗೆ ಖಾಸಗಿಯಾಗಿ ಇರಿಸುತ್ತದೆ<ph name="END_LINK" /> ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="2888126860611144412">Chrome ಕುರಿತು</translation>
 <translation id="2891154217021530873">ಪುಟ ಲೋಡ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
@@ -1435,6 +1434,7 @@
 <translation id="8354977102499939946">ನಿಮ್ಮ ಧ್ವನಿಯ ಮೂಲಕ ತ್ವರಿತವಾಗಿ ಹುಡುಕಿ. ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="8368001212524806591">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
+<translation id="8378850197701296741">ನೀವು <ph name="FROM_ACCOUNT" /> ನಿಂದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ.</translation>
 <translation id="8387617938027387193">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8393700583063109961">ಸಂದೇಶ ಕಳುಹಿಸು</translation>
 <translation id="8394720698884623075">Chrome ನಲ್ಲಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ ಅಸುರಕ್ಷಿತ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಬಳಸಿ, URL ಗಳನ್ನು ಪರಿಶೀಲಿಸುತ್ತದೆ</translation>

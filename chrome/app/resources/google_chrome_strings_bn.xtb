@@ -177,6 +177,7 @@
 <translation id="3635073343384702370">আপনি পাসওয়ার্ড সেভ করলে Chrome তা চেক করতে পারবে</translation>
 <translation id="3667616615096815454">ইনস্টল করা যায়নি, অ্যাপ্লিকেশনটি সার্ভারের ক্ষেত্রে অজানা।</translation>
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />"-এ ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে</translation>
+<translation id="3697952514309507634">অন্যান্য Chrome প্রোফাইল</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="3716540481907974026">ChromeOS Flex ভার্সন</translation>
 <translation id="3718181793972440140">এটি এই ডিভাইস থেকে ১টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
@@ -429,6 +430,7 @@
 <translation id="8019103195866286235">ডেভেলপার এই এক্সটেনশনটি প্রকাশনা থেকে সরিয়ে নিয়েছেন এবং এটি নিরাপদ নাও হতে পারে। Chrome থেকে এটি সরান যাতে আপনার ভিজিট করা সাইটের ডেটা এটি আর দেখতে না পায় এবং তা পরিবর্তন না করতে পারে, এর মধ্যে আপনার ব্যক্তিগত তথ্যও রয়েছে।</translation>
 <translation id="80471789339884597">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই সমস্ত ব্রাউজার রিস্টার্ট করতে হবে।</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">অন্যান্য Chrome প্রোফাইল</translation>
 <translation id="8086881907087796310">ইনস্টলেশন করা যায়নি কারণ আপনার কম্পিউটার হার্ডওয়্যারের নূন্যতম প্রয়োজনীয় শর্ত পূরণ করে না।</translation>
 <translation id="8129812357326543296">&amp;Google Chrome সম্বন্ধে</translation>
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>

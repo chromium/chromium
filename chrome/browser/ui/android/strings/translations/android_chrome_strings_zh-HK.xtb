@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">網站</translation>
 <translation id="2871733351037274014">預先載入網頁</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />希望您核准此網站：</translation>
-<translation id="2876194821763651818"><ph name="USERNAME" /> 中所儲存的密碼。</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何確保你的資料保密<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
 <translation id="2891154217021530873">停止載入網頁</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">透過語音快速搜尋。如要編輯此捷徑，請前往「設定」。</translation>
 <translation id="835847953965672673">還原咗 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載嘅內容</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
+<translation id="8378850197701296741">你在 <ph name="FROM_ACCOUNT" /> 中有書籤、記錄和其他設定。</translation>
 <translation id="8387617938027387193">驗證您的身分</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8394720698884623075">使用儲存在 Chrome 中的不安全網站清單來檢查網址</translation>

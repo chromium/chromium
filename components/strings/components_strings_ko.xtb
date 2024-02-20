@@ -72,6 +72,7 @@
 <translation id="1131264053432022307">복사한 이미지</translation>
 <translation id="1142713751288681188">용지 종류</translation>
 <translation id="1142846828089312304">시크릿 모드에서 서드 파티 쿠키 차단</translation>
+<translation id="1144136880160289237">아직 활성 주제가 없습니다.</translation>
 <translation id="1149617035358809955">본인 인증을 해야 결제 정보를 입력할 수 있습니다.</translation>
 <translation id="1150565364351027703">선글라스</translation>
 <translation id="1150979032973867961">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 컴퓨터의 운영체제에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
@@ -324,6 +325,7 @@
 <translation id="160851722280695521">Chrome 공룡 달리기 게임 플레이</translation>
 <translation id="161042844686301425">청록색</translation>
 <translation id="1611101756749861742">2번째 롤</translation>
+<translation id="1612199629998703524">주제 관리</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" />의 액세스 권한 취소</translation>
 <translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="1617276713587758852">크로스오버</translation>
@@ -433,6 +435,7 @@
 <translation id="1812527064848182527">가로 모드</translation>
 <translation id="1812975699435941848">건강 교육 및 의료 훈련</translation>
 <translation id="1813414402673211292">인터넷 사용 기록 삭제</translation>
+<translation id="1818522458013171885">차단 해제</translation>
 <translation id="182139138257690338">자동 다운로드</translation>
 <translation id="1821930232296380041">잘못된 요청 또는 요청 매개변수</translation>
 <translation id="1822540298136254167">방문 웹사이트 및 접속 시간</translation>
@@ -490,6 +493,7 @@
 <translation id="1945968466830820669">조직의 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="1946849748901605102">12x15인치</translation>
 <translation id="1947454675006758438">오른쪽 상단 스테이플</translation>
+<translation id="1953729392594614704"><ph name="TOPIC" /> 주제를 차단하면, 관련 주제가 활성 상태일지라도 함께 차단됩니다.</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">기기 찾기, 잠그기 또는 삭제</translation>
 <translation id="1958218078413065209">최고 점수는 <ph name="SCORE" />점입니다.</translation>
@@ -550,6 +554,7 @@
 <translation id="2071156619270205202">이 카드로는 가상 카드 번호를 사용할 수 없습니다.</translation>
 <translation id="2071692954027939183">알림을 평소에 허용하지 않았기 때문에 알림이 자동으로 차단되었습니다.</translation>
 <translation id="2071852865256799872">조직에서 브라우저를 관리하고 <ph name="PROFILE_DOMAIN" />에서 프로필을 관리합니다</translation>
+<translation id="2074733626795553847"><ph name="TOPIC" /> 차단 해제</translation>
 <translation id="2075497153347571252">관리자가 <ph name="ORIGIN" />에서 <ph name="PERMISSION" /> 권한을 차단했습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2080021694978766903">정책의 항목이 <ph name="MAX_ITEMS_LIMIT" />개를 넘으면 안 됩니다.</translation>
@@ -584,6 +589,7 @@
 <translation id="2137891579555018930">권한을 기다리는 중…</translation>
 <translation id="213826338245044447">모바일 북마크</translation>
 <translation id="2141000681034340397">입력한 내용 수정</translation>
+<translation id="2144171668675205303">활성 주제 없음</translation>
 <translation id="214556005048008348">결제 취소</translation>
 <translation id="2148613324460538318">카드 추가</translation>
 <translation id="2148716181193084225">오늘</translation>
@@ -803,6 +809,7 @@
 <translation id="2596415276201385844">보안 연결을 설정하려면 시계가 올바로 설정되어 있어야 합니다. 웹사이트가 자신을 식별하는 데 사용하는 인증서는 특정 기간에만 유효하기 때문입니다. 기기의 시계가 잘못 설정되어 Chrome에서 이 인증서를 확인할 수 없습니다.</translation>
 <translation id="2597378329261239068">문서가 비밀번호로 보호되고 있습니다. 비밀번호를 입력하세요.</translation>
 <translation id="2606760465469169465">자동 인증</translation>
+<translation id="2608019759319359258">차단된 주제는 광고를 맞춤설정하는 데 사용되지 않습니다.</translation>
 <translation id="2610561535971892504">클릭하여 복사</translation>
 <translation id="2612993535136743634">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
 <translation id="2616412942031748191">검색엔진 최적화 및 마케팅</translation>
@@ -1112,6 +1119,7 @@
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> 사용 중에 문제가 발생했습니다.</translation>
 <translation id="3303176609391916566">30x42인치</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
+<translation id="3303872874382375219">이 설정, <ph name="BEGIN_LINK1" />광고 주제<ph name="LINK_END1" />, 내 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 보고 있는 사이트의 광고 맞춤설정 여부 등 다양한 요인에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라질 수 있습니다. <ph name="BEGIN_LINK3" />광고 개인 정보 보호 관리<ph name="LINK_END3" />에 관해 자세히 알아보세요.</translation>
 <translation id="3304073249511302126">블루투스 검색</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기를 바랍니다.</translation>
@@ -1144,6 +1152,7 @@
 <translation id="3377144306166885718">서버에서 지원 중단된 TLS 버전을 사용했습니다.</translation>
 <translation id="3377188786107721145">정책 파싱 오류</translation>
 <translation id="3377736046129930310">화면 잠금을 사용하여 빠르게 카드 확인</translation>
+<translation id="3378612801784846695">주제는 사용자의 최근 방문 기록을 기반으로 하며, 사이트에서 사용자의 신원을 보호하면서 개인 맞춤 광고를 표시하는 데 사용됩니다.</translation>
 <translation id="3380365263193509176">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="3380864720620200369">클라이언트 ID:</translation>
 <translation id="3381668585148405088">구매 확인</translation>
@@ -1174,6 +1183,7 @@
 <translation id="3433111389595862568">협업 및 회의용 소프트웨어</translation>
 <translation id="3433144818443565002">음성 및 영상 채팅</translation>
 <translation id="3434025015623587566">Google 비밀번호 관리자에 추가 액세스 권한 필요</translation>
+<translation id="3434346831962601311">차단된 주제 없음</translation>
 <translation id="343474037147570563">업로드 또는 첨부한 파일은 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보 또는 멀웨어를 찾기 위해 파일을 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
 <translation id="3435557549311968410">연속(짧음)</translation>
 <translation id="3435738964857648380">보안</translation>
@@ -1296,6 +1306,7 @@
 <translation id="3659521826520353662">방문한 관리자 정의 웹사이트 및 방문 시기: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">키워드:</translation>
 <translation id="3665100783276035932">대부분의 사이트가 예상대로 작동합니다.</translation>
+<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />자세히 알아보기<ph name="LINK_END1" /></translation>
 <translation id="3671117652518853176">사용 중지된 경우 보안 목적으로 확인을 요청하는 메시지가 표시될 수 있습니다.</translation>
 <translation id="3671540257457995106">크기 조절을 허용하시겠습니까?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 오류: <ph name="ERROR_MESSAGE" /></translation>
@@ -1881,6 +1892,7 @@
 <translation id="4895019427244614047">주소 삭제</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">올림픽</translation>
+<translation id="4898742041545089450">이 주제는 차단 해제되어 있으며, 방문 기록을 기반으로 활성화될 수도 있습니다.</translation>
 <translation id="4900217275619098670">9번째 롤</translation>
 <translation id="4901052769830245369">라벨(반광택)</translation>
 <translation id="4901162432287938633">위생 및 세면용품</translation>
@@ -1955,6 +1967,7 @@
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="5043480802608081735">복사한 링크</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
+<translation id="5052517576853118371">활성 주제</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
 <translation id="505757197798929356">열려는 이유 입력(필수)</translation>
 <translation id="5060419232449737386">자막 설정</translation>
@@ -2029,6 +2042,7 @@
 <translation id="5205222826937269299">이름은 필수입니다.</translation>
 <translation id="5206392433295093945">침실</translation>
 <translation id="5209670883520018268">트레이 20</translation>
+<translation id="5214542134842513912">광고 맞춤설정을 지원하는 데 사용할 수 있는 광범위한 주제 카테고리를 선택하세요. 더 광범위한 카테고리를 사용 중지하면 관련 주제도 차단됩니다.</translation>
 <translation id="521659676233207110">트레이 13</translation>
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
 <translation id="5217759126664161410">프로토콜 형식이 잘못되었습니다.</translation>
@@ -2246,6 +2260,7 @@
 <translation id="568292603005599551">이미지 X 위치</translation>
 <translation id="5684277895745049190">목록</translation>
 <translation id="5684874026226664614">죄송합니다. 이 페이지를 번역할 수 없습니다.</translation>
+<translation id="568489534660743582">사이트 추천 광고는 사이트에서 광고를 맞춤설정하는 데 사용할 수 있는 여러 항목 중 하나일 뿐입니다. 사이트 추천 광고가 없어도 사이트에서는 광고를 계속 표시할 수는 있지만, 사용자의 관심을 덜 끌 수도 있습니다.</translation>
 <translation id="5687340364605915800">사이트에서 재량에 따라 이 요청에 응답합니다.</translation>
 <translation id="5688137257686092846">뷰티 및 미용 전문가</translation>
 <translation id="5689199277474810259">JSON 형식으로 내보내기</translation>
@@ -3309,6 +3324,7 @@
 <translation id="7878562273885520351">비밀번호가 도용될 수도 있음</translation>
 <translation id="7880146494886811634">주소 저장</translation>
 <translation id="7882421473871500483">갈색</translation>
+<translation id="7886897188117641322">광고 맞춤설정을 지원하는 데 사용할 수 있는 광범위한 주제 카테고리를 선택하세요.</translation>
 <translation id="7887683347370398519">CVC를 확인한 후 다시 시도하세요.</translation>
 <translation id="7887885240995164102">PIP 모드 시작</translation>
 <translation id="7888575728750733395">인쇄 렌더링 인텐트</translation>
@@ -3387,6 +3403,7 @@
 <translation id="8043255123207491407">판매자의 이용약관 보기</translation>
 <translation id="8046360364391076336">산업자재 및 장비</translation>
 <translation id="8052898407431791827">클립보드에 복사됨</translation>
+<translation id="805766869470867930">차단한 주제가 없습니다.</translation>
 <translation id="8057711352706143257">'<ph name="SOFTWARE_NAME" />이(가) 올바르게 설정되지 않았습니다. 일반적으로 '<ph name="SOFTWARE_NAME" />'을(를) 제거하면 문제가 해결됩니다. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">필요하지 않음</translation>
 <translation id="8063875539456488183">가격 저장 및 추적</translation>
@@ -3463,6 +3480,7 @@
 <translation id="8216640997712497593">14x18인치</translation>
 <translation id="8217240300496046857">사이트에서 웹 전반에 걸쳐 사용자를 추적하는 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="8218327578424803826">지정된 위치:</translation>
+<translation id="8220602974062798186"><ph name="TOPIC" /> 및 모든 관련 주제를 차단하시겠습니까?</translation>
 <translation id="8220833680085771143">일시적으로 추적 보호 기능을 사용할 수 없음</translation>
 <translation id="8228419419708659934">두 페이지씩 보기</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" />에서 내 네트워크의 다음 기기에 액세스하려고 합니다.</translation>
@@ -3594,6 +3612,7 @@
 <translation id="8466379296835108687">{COUNT,plural, =1{신용카드 1개}other{신용카드 #개}}</translation>
 <translation id="8467494337615822642">설정의 Chrome 안전 확인 페이지로 이동</translation>
 <translation id="8468358362970107653">봉투 C3</translation>
+<translation id="8472700501934242014">차단된 주제</translation>
 <translation id="8473626140772740486">300x450mm</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8474910779563686872">개발자 세부정보 표시</translation>
@@ -3933,6 +3952,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" />에서 지원되지 않는 프로토콜을 사용합니다.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" />에서 코드를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="9186203289258525843">Chrome을 기본 브라우저로 설정 버튼, Chrome을 시스템 기본 브라우저로 설정하려면 활성화하세요.</translation>
+<translation id="9190557999028587593">4주가 지난 주제는 자동으로 삭제됩니다.</translation>
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
 <translation id="9192361865877479444">금속(매트)</translation>
 <translation id="9199905725844810519">인쇄가 차단됨</translation>

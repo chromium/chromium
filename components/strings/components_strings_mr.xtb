@@ -581,7 +581,7 @@
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2080021694978766903">या धोरणात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत.</translation>
 <translation id="2081482239432306393">घराचा क्रमांक हा पर्याय निवडला आहे</translation>
-<translation id="20817612488360358">सिस्टम प्रॉक्सी सेटिंग्ज वापरण्‍यास सेट करण्‍यात आल्या परंतु एक सुस्पष्‍ट प्रॉक्सी कॉंफिगरेशन देखील निर्दिष्‍ट करण्‍यात आले.</translation>
+<translation id="20817612488360358">सिस्टम प्रॉक्सी सेटिंग्ज वापरण्‍यास सेट करण्‍यात आल्या परंतु एक सुस्पष्‍ट प्रॉक्सी कॉन्फिगरेशन देखील निर्दिष्‍ट करण्‍यात आले.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2083256696566019397">प्रत्येक भेटीला अनुमती द्या</translation>
 <translation id="2085876078937250610">सेव्ह करा…</translation>
@@ -1074,7 +1074,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="3103188521861412364">स्टॉक आणि बाँड</translation>
 <translation id="3105172416063519923">मालमत्ता आयडी:</translation>
-<translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित DNS कॉंफिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
+<translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित DNS कॉन्फिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">मधला ट्रे</translation>
 <translation id="3109061346635850169">चेहरा आणि शरीराची निगा</translation>
 <translation id="3109728660330352905">तुम्हाला हे पेज पाहण्याची परवानगी नाही.</translation>
@@ -1766,7 +1766,7 @@
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4406896451731180161">शोध परिणाम</translation>
 <translation id="4408413947728134509">कुकीज <ph name="NUM_COOKIES" /></translation>
-<translation id="4412074349188076601">हे कॉंफिगरेशन इंस्टॉल करण्यायोग्य म्हणून मार्क केले आहे, पण या आर्किटेक्चरसाठी कोणतीही इमेज पुरवलेली नाही, म्हणून ते इंस्टॉल केली जाऊ शकत नाही.</translation>
+<translation id="4412074349188076601">हे कॉन्फिगरेशन इंस्टॉल करण्यायोग्य म्हणून मार्क केले आहे, पण या आर्किटेक्चरसाठी कोणतीही इमेज पुरवलेली नाही, म्हणून ते इंस्टॉल केली जाऊ शकत नाही.</translation>
 <translation id="4414515549596849729">कुकी आणि साइट डेटा</translation>
 <translation id="4415156962929755728">प्लॅस्टिक (हाय ग्लॉस)</translation>
 <translation id="4415426530740016218">घेण्याचा पत्ता</translation>
@@ -2725,7 +2725,7 @@
 <translation id="6360512781839314363">स्थावर मालमत्ता</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">लॉग पहा</translation>
-<translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि सुरक्षित DNS कॉंफिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
+<translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि सुरक्षित DNS कॉन्फिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ड्युअल स्टेपल लेफ्ट</translation>
 <translation id="6367196786591004737">एंट्री हटवा</translation>
 <translation id="6370022303958842211">डिव्हाइस अ‍ॅक्सेस करण्याशी संबंधित कृती, जसे की लॉग इन (लॉग इन न करता आल्याची कारणे यांच्या समावेशासह), लॉगआउट, लॉक आणि अनलॉक</translation>
@@ -3035,7 +3035,7 @@
 <translation id="6962858948849099922">हलवणे टाइम आउट झाले</translation>
 <translation id="6963520811470373926">अधिग्रहित करत आहे</translation>
 <translation id="6963693576491380224">शासकीय आणि सार्वजनिक क्षेत्रातील नोकर्‍या</translation>
-<translation id="6964255747740675745">नेटवर्क कॉंफिगरेशन पार्स करता आले नाही (चुकीची JSON).</translation>
+<translation id="6964255747740675745">नेटवर्क कॉन्फिगरेशन पार्स करता आले नाही (चुकीची JSON).</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6965978654500191972">डिव्हाइस</translation>
 <translation id="696703987787944103">पर्सेप्चुअल</translation>

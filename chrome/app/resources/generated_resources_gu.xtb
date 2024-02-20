@@ -7823,6 +7823,7 @@ USB ડિવાઇસ</translation>
 <translation id="7044606776288350625">ડેટા સિંક કરો</translation>
 <translation id="7047059339731138197">બૅકગ્રાઉન્ડ પસંદ કરો</translation>
 <translation id="7049293980323620022">ફાઇલ રાખીએ?</translation>
+<translation id="7049524156282610342">બ્રાઉઝિંગ ડેટા <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">હૉટસ્પૉટનું અમાન્ય કન્ફિગ્યુરેશન</translation>
 <translation id="7052237160939977163">પ્રદર્શન ટ્રેસ ડેટા મોકલો</translation>
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
@@ -8540,6 +8541,7 @@ USB ડિવાઇસ</translation>
 <translation id="7630426712700473382">આ ડિવાઇસ <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે અને તમારે દર વખતે સાઇન ઇન કરવું જરૂરી છે.</translation>
 <translation id="7631014249255418691">Linux ઍપ અને ફાઇલોનો સફળતાપૂર્વક બૅકઅપ લીધો</translation>
 <translation id="7631887513477658702">આ પ્રકારની ફાઇલો &amp;હંમેશાં ખોલો</translation>
+<translation id="7632437836497571618">સાઇટ જોવા માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="7632948528260659758">નીચેની કિઓસ્ક ઍપ્લિકેશનો અપડેટ માટે નિષ્ફળ થઈ છે:</translation>
 <translation id="7633724038415831385">કોઈ અપડેટ માટે રાહ જોવાનો આ છેલ્લો પ્રસંગ. Chromebooks પર, સૉફ્ટવેરના અપડેટ બૅકગ્રાઉન્ડમાં થતા રહેશે.</translation>
 <translation id="7634337648687970851">સ્થાનિક ડેટા રિકવરીને હાલમાં સપોર્ટ કરવામાં આવતો નથી.</translation>
@@ -8801,6 +8803,7 @@ USB ડિવાઇસ</translation>
 <translation id="7803657407897251194">તમારા Android ડિવાઇસ વડે સેટઅપ ચાલુ રાખવા માટે તમારા <ph name="DEVICE_TYPE" />ને નેટવર્ક સાથે કનેક્ટ કરો</translation>
 <translation id="7804072833593604762">ટૅબ બંધ કરી છે</translation>
 <translation id="780446144738273886">સ્ક્રીન રીડર માટે ટેક્સ્ટ એક્સટ્રેક્ટ કરવા PDF સ્કેન કરો. ફક્ત Chrome બ્રાઉઝર પર સપોર્ટેડ છે</translation>
+<translation id="7805371082115476536">હળવો</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7805906048382884326">ટિપ બંધ કરો</translation>
 <translation id="7806722269368320106">ઍપ, ઇન્સ્ટૉલ કરી રહ્યાં છીએ</translation>

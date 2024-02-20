@@ -3637,7 +3637,7 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
       Cada entrada da lista contém um dicionário que deve incluir a identificação de extensão no campo 'extensão-id', e o URL de atualização no campo 'update-url'.</translation>
 <translation id="3869180930654347954">Desativar o First-Party Sets para todos os usuários afetados</translation>
 <translation id="3869566220234507038">Sempre carregar o navegador <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
-<translation id="3870035799352372700">Impedir que o Google Assistente acesse o contexto da tela durante interações</translation>
+<translation id="3870035799352372700">Impedir que o Google Assistente acesse o contexto na tela durante interações</translation>
 <translation id="3870059789954671543">Ativar o recurso de acessibilidade de destaque do foco no teclado na tela de login.
 
           Esse recurso é responsável por destacar o objeto focalizado pelo teclado.
@@ -4789,7 +4789,7 @@ Quando ela é desativada, a promoção da extensão do provedor de credenciais n
       Se o tamanho da página não estiver disponível na impressora escolhida pelo usuário, esta política será ignorada.</translation>
 <translation id="4789450349513792856">Bloquear pop-ups nesses sites</translation>
 <translation id="4790391579868456557">Usa cookies essenciais e não essenciais na pesquisa.</translation>
-<translation id="4790588245699320140">Permitir que o Google Assistente acesse o contexto da tela</translation>
+<translation id="4790588245699320140">Permitir que o Google Assistente acesse o contexto na tela</translation>
 <translation id="4800438168909332958">Ativar o recurso de cancelamento de eco do áudio do sistema (AEC, na sigla em inglês). O AEC do sistema é um cancelamento de eco acústico,
 ou seja, um módulo de processamento de áudio que remove a reprodução de áudio do sistema (eco) do sinal do microfone.
 Esta política é temporária e será removida assim que o cancelamento de eco de áudio do sistema for lançado.
@@ -6401,7 +6401,7 @@ Se ela for definida como "false" ou não for definida, o protetor não vai apare
 O protetor de tela do dispositivo mostra as imagens referenciadas pela política <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IMAGES_POLICY_NAME" />. Se a <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IMAGES_POLICY_NAME" /> não for definida ou for uma lista vazia ou sem imagens válidas, o protetor não vai ser mostrado na tela de login.
 
 O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de exibição de uma imagem podem ser modificados com as políticas <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> e <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />, respectivamente. Se uma dessas políticas for deixada sem definição, os valores padrão vão ser usados.</translation>
-<translation id="6172896675583897796">Se a política for definida como ativada, o Google Assistente poderá acessar o contexto da tela e enviar esses dados a um servidor. Se a política for definida como desativada, o Google Assistente não poderá acessar o contexto da tela.
+<translation id="6172896675583897796">Se a política for definida como ativada, o Google Assistente poderá acessar o contexto na tela e enviar esses dados a um servidor. Se a política for definida como desativada, o Google Assistente não poderá acessar o contexto na tela.
 
       Se a política não for definida, o usuário poderá escolher ativar ou desativar esse recurso.</translation>
 <translation id="6173712557351728099">Permitir que os usuários ativem ou desativem o Wi-Fi</translation>

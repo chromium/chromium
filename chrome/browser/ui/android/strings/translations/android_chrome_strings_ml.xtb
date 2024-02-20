@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">സൈറ്റ്</translation>
 <translation id="2871733351037274014">പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്യുക</translation>
 <translation id="2876136027428473467">ഈ വെബ്സൈറ്റിന് അനുമതി നൽകാൻ <ph name="CHILD_NAME" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു:</translation>
-<translation id="2876194821763651818"><ph name="USERNAME" /> എന്ന അക്കൗണ്ടിൽ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ സ്വകാര്യമായി നിലനിർത്തുന്നു<ph name="END_LINK" /> എന്നതിനെക്കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="2888126860611144412">Chrome-നെ കുറിച്ച്</translation>
 <translation id="2891154217021530873">പേജ് ലോഡുചെയ്യുന്നത് നിർത്തുക</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് വേഗത്തിൽ തിരയുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ഡൗൺലോഡുകൾ പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="8368001212524806591">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
+<translation id="8378850197701296741">നിങ്ങൾക്ക് <ph name="FROM_ACCOUNT" /> എന്ന അക്കൗണ്ടിൽ നിന്നുള്ള ബുക്ക്‌മാർക്കുകളും ചരിത്രവും മറ്റ് ക്രമീകരണവുമുണ്ട്.</translation>
 <translation id="8387617938027387193">ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="8393700583063109961">സന്ദേശം അയയ്ക്കുക</translation>
 <translation id="8394720698884623075">Chrome-ൽ സംഭരിച്ചിരിക്കുന്ന സുരക്ഷിതമല്ലാത്ത സൈറ്റുകളുടെ ലിസ്റ്റ് ഉപയോഗിച്ച് URL-കൾ പരിശോധിക്കുന്നു</translation>

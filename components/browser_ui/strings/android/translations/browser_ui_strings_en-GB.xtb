@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Hide price drop card</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1192844206376121885">This will delete all data and cookies stored by <ph name="ORIGIN" />.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Help and feedback</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
+<translation id="2550801787432930915">Price drop card</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie blocked}other{# cookies blocked}}</translation>
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">When on</translation>
 <translation id="8805385115381080995">Browsing is faster because a site is less likely to ask you to verify that you're a real person</translation>
 <translation id="8816026460808729765">Block sites from accessing sensors</translation>
+<translation id="8843699287283948910">Hide tabs from other devices</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
 <translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>

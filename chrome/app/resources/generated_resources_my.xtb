@@ -1909,6 +1909,7 @@
 <translation id="2412015533711271895">ဤနောက်ဆက်တွဲသုံးရန် သင့်မိဘ (သို့) အုပ်ထိန်းသူက သဘောတူရပါမည်</translation>
 <translation id="2412593942846481727">အပ်ဒိတ် ရနိုင်သည်</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">သင့်ဘရောင်ဇာကို <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /> ရှိ နောက်ဆက်တွဲများဖြင့် ပိုမို၍ စိတ်ကြိုက်လုပ်နိုင်သည်</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> အတွက် ဘရောက်စ်လုပ်ခြင်း ဆက်လုပ်ရန်</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
 <translation id="2415117815770324983">ဝက်ဆိုက်အများစုမှ သင်ထွက်သွားပါမည်။ သင့် Google Account တွင် ဆက်၍ လက်မှတ်ထိုးဝင်ထားပါမည်။</translation>
@@ -2323,6 +2324,7 @@
 <translation id="2721695630904737430">ကြီးကြပ်ခံအသုံးပြုသူများကို သင့်စီမံခန့်ခွဲသူက ပိတ်လိုက်ပါသည်။</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> တွင် သင့်စက်အပြီးပိတ်ပါမည်။ သင့်စက်ပြန်မဖွင့်မီ USB ကိုဖြုတ်ပါ။ <ph name="DEVICE_OS" /> ကို စတင်အသုံးပြုနိုင်ပါပြီ။</translation>
 <translation id="2722547199758472013">ID- <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">ဧည့်သည်ပရိုဖိုင် ဖွင့်ရန်</translation>
 <translation id="2723819893410108315">ရှောက်ချို</translation>
 <translation id="2724841811573117416">WebRTC မှတ်တမ်းများ</translation>
 <translation id="272488616838512378">ယူနစ်ပြောင်းလဲခြင်း</translation>
@@ -6848,6 +6850,7 @@
 <translation id="6271824294945464304">စကားဝှက် မျှဝေခြင်း</translation>
 <translation id="6273677812470008672">အရည်အသွေး</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> သို့ ချိတ်ဆက်နေသည်</translation>
+<translation id="6274108044476515407">သင်မြင်ရသည့်ကြော်ငြာကို ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်ထားခြင်းရှိ၊ မရှိသည် ဤဆက်တင်၊ <ph name="BEGIN_LINK1" />ဝဘ်ဆိုက်အကြံပြုကြော်ငြာများ<ph name="LINK_END1" />၊ သင့် <ph name="BEGIN_LINK2" />ကွတ်ကီး ဆက်တင်များ<ph name="LINK_END2" /> နှင့် သင်ကြည့်နေသည့် ဝဘ်ဆိုက်က ကြော်ငြာကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း ရှိ၊ မရှိတို့အပေါ် မူတည်သည်။ <ph name="BEGIN_LINK3" />သင့်ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှုကို စီမံခြင်း<ph name="LINK_END3" /> အကြောင်း ပိုမိုလေ့လာနိုင်သည်။</translation>
 <translation id="6274202259872570803">ဖန်သားပြင် ထုတ်လွှင့်ခြင်း</translation>
 <translation id="6276210637549544171">ပရောက်စီ <ph name="PROXY_SERVER" /> သည် အသုံးပြုသူအမည်နှင့် စကားဝှက် လိုအပ်သည်။</translation>
 <translation id="6277105963844135994">ကွန်ရက် အချိန်ကုန်</translation>

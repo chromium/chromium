@@ -624,6 +624,7 @@ Se questo criterio viene attivato, il selettore di emoji supporterà le emoji in
 Se viene disattivato o se non viene configurato, il selettore di emoji non supporterà le emoji in formato GIF.
 Se non viene configurato, il selettore di emoji verrà attivato per gli utenti normali, ma sarà disattivato per gli utenti gestiti.</translation>
 <translation id="1494138678487405397">Disattiva l'alto contrasto nella schermata di accesso</translation>
+<translation id="1497797462580613666">Gestione dei download avrà un'opzione per salvare i file su <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1499129134689253257">Gestisci il nuovo comportamento di <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Applica in modo forzato gli accessi online soltanto nella schermata di accesso</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
@@ -3537,6 +3538,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
+<translation id="3842619997238271109">Non consente all'host di accesso remoto di usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate</translation>
 <translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3858658082795336534">Modalità di stampa fronte/retro predefinita</translation>
 <translation id="3859780406608282662">Consente di aggiungere un parametro al recupero del numero di inizializzazione delle varianti in <ph name="PRODUCT_OS_NAME" />.
@@ -3682,6 +3684,13 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
       Se il criterio viene impostato su Disattivato o se non viene configurato, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
 <translation id="3973371701361892765">Non nascondere mai automaticamente la barra delle app</translation>
 <translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
+<translation id="3977906634350977040">Se il criterio viene attivato, l'host di accesso remoto può usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate.
+
+Se viene disattivato, le autenticazioni con PIN o accoppiamento non sono consentite.
+
+Se non viene configurato, l'host può decidere se è possibile utilizzare le autenticazioni con PIN e/o accoppiamento.
+
+Nota: se l'impostazione non restituisce metodi di autenticazione supportati sia dall'host sia dal client, la connessione viene rifiutata.</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
 <translation id="3982322576186033243">Non consentire hash non sicuri in handshake TLS</translation>
 <translation id="3982465141749620677">Chiedi una nuova autorizzazione in una scheda</translation>
@@ -4605,6 +4614,7 @@ Questo criterio consente di mappare un ID estensione o un URL di aggiornamento s
 Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4739596156184678950">Consenti il salvataggio dei file direttamente su <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
 <translation id="4744467872051608680">A partire dalla versione M119, se questo criterio viene impostato su false o se non viene configurato, WebSQL è disattivato, ma può essere attivato tramite il flag di Chrome "web-sql-access". Se il criterio viene impostato su true, l'accesso a WebSQL viene attivato.</translation>
 <translation id="4745232963710538589">Attiva l'estensione Insights per segnalare le metriche di utilizzo</translation>
@@ -5457,6 +5467,9 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
       Se viene disattivata, gli utenti non possono usare questa funzionalità. Gli utenti non possono usare questa funzionalità anche se viene disattivato il criterio PhoneHubAllowed.
 
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
+<translation id="5488268615614906498">Questo criterio consente di stabilire se all'utente è consentito salvare file su <ph name="GOOGLE_DRIVE_NAME" /> direttamente da Gestione dei download.
+Se il criterio viene attivato o se non viene configurato, all'utente è consentito salvare file su <ph name="GOOGLE_DRIVE_NAME" /> da Gestione dei download. Se viene disattivato, gli utenti non visualizzano l'opzione in Gestione dei download.
+Questo criterio non impedisce agli utenti di salvare file su <ph name="GOOGLE_DRIVE_NAME" /> utilizzando metodi diversi da Gestione dei download.</translation>
 <translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
 
       Se viene selezionata l'opzione "Enabled" o se il criterio non viene impostato, è possibile aprire le pagine in modalità di navigazione in incognito.
@@ -5720,6 +5733,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
 
       Nota: separa i valori utilizzando le virgole.</translation>
 <translation id="5693469654327063861">Consenti migrazione dei dati</translation>
+<translation id="56936613186060503">In Gestione dei download non sarà disponibile un'opzione per salvare i file su <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5695209488612697377">Consente di attivare l'utilizzo di un provider di ricerca predefinito nel menu contestuale.
 
           Se il criterio viene disattivato, la voce del menu contestuale di ricerca che si basa sul tuo provider di ricerca predefinito non è disponibile.
@@ -9160,6 +9174,7 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
       Avviso: è sconsigliato configurare delle limitazioni della versione, poiché potrebbero impedire agli utenti di ricevere aggiornamenti software e correzioni critiche per la sicurezza. Gli aggiornamenti con limitazioni a una versione specifica potrebbero esporre gli utenti a dei rischi.</translation>
 <translation id="8519617069657262768">Attiva la sincronizzazione Google Drive</translation>
 <translation id="8520064498689833152">Viene forzato l'uso almeno del livello medio di SafeSearch nella Ricerca Google e nella Modalità con restrizioni di YouTube</translation>
+<translation id="8520950040439618600">Consenti metodi di autenticazione con PIN e accoppiamento per gli host di accesso remoto</translation>
 <translation id="8524334245528364388">URL per un file JSON con un elenco di server di stampa.</translation>
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8526745614158856826">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione di accesso a tutti i dispositivi disponibili.
@@ -9188,6 +9203,7 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
 <translation id="8544375438507658205">Renderer HTML predefinito per <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Consente la sincronizzazione di messaggi SMS dal telefono al Chromebook</translation>
 <translation id="8549906780629620346">Attiva recupero dell'account</translation>
+<translation id="8553491595730354263">Consente all'host di accesso remoto di usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate</translation>
 <translation id="8553955290407912156">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a un dispositivo HID.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.

@@ -174,6 +174,7 @@
 <translation id="3635073343384702370">Chrome จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="3667616615096815454">ติดตั้งไม่ได้เนื่องจากเซิร์ฟเวอร์ไม่รู้จักแอปพลิเคชัน</translation>
 <translation id="3673813398384385993">Chrome พบว่า "<ph name="EXTENSION_NAME" />" มีมัลแวร์</translation>
+<translation id="3697952514309507634">โปรไฟล์ Chrome อื่นๆ</translation>
 <translation id="3703994572283698466">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม ตลอดจน<ph name="BEGIN_LINK_LINUX_OSS" />สภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux<ph name="END_LINK_LINUX_OSS" /></translation>
 <translation id="3716540481907974026">เวอร์ชัน Chrome OS Flex</translation>
 <translation id="3718181793972440140">การดำเนินการนี้จะลบ 1 รายการออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chrome ด้วย <ph name="USER_EMAIL" /></translation>
@@ -424,6 +425,7 @@
 <translation id="8019103195866286235">นักพัฒนาซอฟต์แวร์เลิกเผยแพร่ส่วนขยายนี้แล้วและอาจไม่ปลอดภัย นำส่วนขยายดังกล่าวออกจาก Chrome เพื่อไม่ให้ดูและเปลี่ยนแปลงข้อมูลของคุณในเว็บไซต์ที่เข้าชม รวมถึงข้อมูลส่วนบุคคลได้อีกต่อไป</translation>
 <translation id="80471789339884597">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ทั้งหมดก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8077579734294125741">โปรไฟล์ Chrome อื่นๆ</translation>
 <translation id="8086881907087796310">การติดตั้งไม่สำเร็จเนื่องจากคอมพิวเตอร์ของคุณไม่เป็นไปตามข้อกำหนดขั้นต่ำสำหรับฮาร์ดแวร์</translation>
 <translation id="8129812357326543296">เกี่ยวกับ &amp;Google Chrome</translation>
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>

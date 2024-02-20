@@ -290,6 +290,7 @@
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">غير مختارة</translation>
 <translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
+<translation id="2480445180439820402">السجلّ</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2484459871750294497">كيف يمكنني تفعيل هذه الميزة؟</translation>
 <translation id="2496626742194544812">الانتقال إلى علامة التبويب الأولى</translation>
@@ -579,6 +580,7 @@
 <translation id="3962326069546168954">حفظ</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3968505803272650567">إدارة الاهتمامات</translation>
+<translation id="3976922811715736829">علامات التبويب الأخيرة</translation>
 <translation id="3989635538409502728">تسجيل الخروج</translation>
 <translation id="3994422733891749358">اختيار الإشعارات التي تريد تلقّيها</translation>
 <translation id="3995521777587992544">شريط تقدُّم تحميل الصفحة، تم تحميل <ph name="EMAIL" />.</translation>
@@ -635,6 +637,7 @@
 <translation id="4279431713294750185">يمكنك التمرير سريعًا من الحافة للانتقال للأمام.</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4286718549648564014">تم نقل العنوان إلى حسابك <ph name="USER_EMAIL" />.</translation>
+<translation id="428768789042547925">الميزات الجديدة</translation>
 <translation id="4293080268407233932">بحث</translation>
 <translation id="4302248187517737842">بلا اسم مستخدم ••••••••</translation>
 <translation id="4302415908542657649">مشاركة كلمة المرور</translation>
@@ -689,6 +692,7 @@
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4588014171431912783">ستتم استعادة إعدادات المزامنة استنادًا إلى آخر نسخة احتياطية. <ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">لوحة المفاتيح</translation>
+<translation id="4596899661486753028">قائمة القراءة</translation>
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4606247758155004938">تتولّى مؤسستك إدارة متصفِّحك.</translation>
 <translation id="4607887340472970274">تتبُّع الأسعار</translation>
@@ -1153,6 +1157,7 @@
 <translation id="6807889908376551050">إظهار الكل...</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
 <translation id="6822587385560699678">عند تفعيل هذا الإعداد، يتم حفظ كلمات المرور في <ph name="ACCOUNT" />. وعند إيقافه، يتم حفظ كلمات المرور على هذا الجهاز فقط.</translation>
+<translation id="6824350924364057989">الإعدادات</translation>
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>
 <translation id="6851516051005285358">طلب موقع سطح المكتب</translation>
@@ -1191,6 +1196,7 @@
 <translation id="7004499039102548441">علامات التبويب الأخيرة</translation>
 <translation id="7006788746334555276">إعدادات المحتوى</translation>
 <translation id="7016070607649558507">لديك كلمة مرور واحدة ضعيفة. عليك تغييرها الآن للحفاظ على أمانك.</translation>
+<translation id="7022197654033719543">معلومات الموقع الإلكتروني</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="704692552158601232">تطبيق المتصفِّح التلقائي</translation>
 <translation id="7062545763355031412">قبول الحسابات وتبديلها</translation>
@@ -1289,6 +1295,7 @@
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">مجموعات علامات التبويب</translation>
 <translation id="7607521702806708809">حذف كلمة المرور</translation>
+<translation id="7609559547731036746">الإشارات المرجعية</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
 <translation id="7640669552036055091">‏علامات التبويب من Android</translation>
 <translation id="7646263789464975852">القائمة ← الإعدادات ← التحقّق من الأمان</translation>
@@ -1326,8 +1333,10 @@
 <translation id="7781069478569868053">صفحة "علامة تبويب جديدة"</translation>
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{بعد يوم واحد}zero{بعد {COUNT} يوم}two{بعد يومين ({COUNT})}few{بعد {COUNT} أيام}many{بعد {COUNT} يومًا}other{بعد {COUNT} يوم}}</translation>
+<translation id="7788868432173225918">إغلاق العرض الموسَّع</translation>
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="7792549458069452436">الحصول على التطبيق</translation>
+<translation id="7800723706644914607">مدير كلمات المرور</translation>
 <translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>
 <translation id="7812377703891978671">يمكنك الوصول إلى جميع سجلّات التصفُّح من خلال اختيار <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">عمليات التنزيل</translation>
@@ -1400,6 +1409,7 @@
 <translation id="81313319706244542">‏2‏. انقر على Passwords (كلمات المرور).</translation>
 <translation id="8132598642024322408">السعر الآن <ph name="PRICE" /> بعدما كان <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">استخدِم كلمة مرور فريدة لكل موقع إلكتروني أو تطبيق. فإذا اكتشف أحدهم كلمة مرور مستخدَمة لعدة حسابات، يمكنه استخدامها للدخول إلى حساباتك الأخرى. انقر لفتح الموقع الإلكتروني وتغيير كلمة المرور الآن.</translation>
+<translation id="814463369662540460">تتبُّع السعر</translation>
 <translation id="8156478151976189188">ميزة "مزامنة كلمات المرور" لا تعمل حاليًا</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> من الحسابات</translation>
 <translation id="8159358225423560600">الآن</translation>
@@ -1506,6 +1516,7 @@
 <translation id="8703536910991780768">كلمات مرورك تبدو قوية</translation>
 <translation id="8706253136355675497">درجة الحرارة</translation>
 <translation id="8709409604518538305">تم إغلاق علامات التبويب</translation>
+<translation id="8709773186849937451">عمليات التنزيل</translation>
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="8717864919010420084">نسخ الرابط</translation>
 <translation id="8721297211384281569">قائمة الأدوات</translation>

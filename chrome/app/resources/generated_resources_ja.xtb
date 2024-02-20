@@ -1891,6 +1891,7 @@
 <translation id="2412015533711271895">この拡張機能を使用するは、保護者の同意が必要です</translation>
 <translation id="2412593942846481727">アップデートが利用可能</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome ウェブストア<ph name="END_LINK1" />の拡張機能でブラウザをさらにカスタマイズできます</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> のブラウジングを再開</translation>
 <translation id="2414886740292270097">暗</translation>
 <translation id="2415117815770324983">ほとんどのサイトからログアウトします。Google アカウントへのログイン状態は維持されます。</translation>
@@ -6824,6 +6825,7 @@
 <translation id="6271824294945464304">パスワードの共有</translation>
 <translation id="6273677812470008672">品質</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />に接続しています</translation>
+<translation id="6274108044476515407">表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK1" />サイトによる広告の提案<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定<ph name="LINK_END2" />、アクセスしたサイトが広告をパーソナライズしているかどうかなど、さまざまな要素によって決まります。<ph name="BEGIN_LINK3" />広告のプライバシー管理について<ph name="LINK_END3" /></translation>
 <translation id="6274202259872570803">スクリーンキャスト</translation>
 <translation id="6276210637549544171">プロキシ <ph name="PROXY_SERVER" /> に接続するには、ユーザー名とパスワードが必要です。</translation>
 <translation id="6277105963844135994">ネットワークがタイムアウトしました</translation>

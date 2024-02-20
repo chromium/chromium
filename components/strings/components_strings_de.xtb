@@ -160,6 +160,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1296930489679394997">Verkauf</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Prüfe die Einstellungen für sichere DNS-Abfragen</translation>
+<translation id="1302418742166945866"><ph name="URL" /> möchte deine MIDI-Geräte steuern und neu programmieren</translation>
 <translation id="1307966114820526988">Eingestellte Funktionen</translation>
 <translation id="1308113895091915999">Angebot verfügbar</translation>
 <translation id="1309375166585231290">Deine Eltern haben noch nicht zugestimmt</translation>
@@ -541,6 +542,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2056658168519009885">Websites können Informationen von Chrome anfordern, um dir personalisierte Werbung anzuzeigen.</translation>
 <translation id="2059166748188874810">Gemeinde</translation>
 <translation id="2059202684901022309">22 x 34 Zoll</translation>
+<translation id="2062723461792528824">es gelten die Nutzungsbedingungen</translation>
 <translation id="2064568741209980952">Kredite und Darlehen</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
 <translation id="2066915425250589881">Löschung beantragen</translation>
@@ -1214,6 +1216,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3515972145999192222">Deine Organisation hat <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> blockiert, da sie gegen eine Richtlinie verstößt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Handhabung mehrerer Objekte</translation>
 <translation id="3525130752944427905">10 × 14 Zoll</translation>
+<translation id="3525435918300186947">MIDI-Geräte steuern und neu programmieren?</translation>
 <translation id="3528171143076753409">Serverzertifikat ist nicht vertrauenswürdig.</translation>
 <translation id="3528485271872257980">Dunkelbraun</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Mindestens 1 Eintrag auf synchronisierten Geräten}=1{1 Eintrag (und weitere auf synchronisierten Geräten)}other{# Einträge (und weitere auf synchronisierten Geräten)}}</translation>
@@ -2258,6 +2261,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5715150588940290235">Gespeicherte Sicherheitscodes löschen?</translation>
 <translation id="5720705177508910913">Aktueller Nutzer</translation>
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
+<translation id="5723873695528696965">MIDI-Geräte steuern und neu programmieren</translation>
 <translation id="5725297205162868298">Kürzel darf nicht mit dem @-Zeichen beginnen: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="5730040223043577876">Chrome empfiehlt, dein Passwort zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="5732392974455271431">Deine Eltern können die Blockierung aufheben</translation>
@@ -2352,6 +2356,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5951495562196540101">Registrierung mit Kundenkonto nicht möglich (Paketlizenz verfügbar).</translation>
 <translation id="5953516610448771166">Die Funktion „Automatische Untertitel“ ist für diesen Inhalt nicht verfügbar. Wenn du Untertitel nutzen möchtest, blockiere <ph name="CONTENT_SETTINGS" /> für diese Website.</translation>
 <translation id="595873925609605681">Wenn die Websitefunktionen nicht funktionieren, <ph name="BEGIN_LINK" />kannst du versuchen, Drittanbieter-Cookies vorübergehend zuzulassen<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Bestätigung</translation>
 <translation id="5963413905009737549">Section-Element</translation>
 <translation id="5964247741333118902">Eingebettete Inhalte</translation>
 <translation id="5967260682280773804">36 x 48 Zoll</translation>
@@ -3252,6 +3257,7 @@ Weitere Details:
 <translation id="7755287808199759310">Deine Eltern können die Blockierung aufheben</translation>
 <translation id="7755624218968747854">Erste Rolle</translation>
 <translation id="7758069387465995638">Möglicherweise wurde die Verbindung von einer Firewall oder Antivirensoftware blockiert.</translation>
+<translation id="7759147511335618829">MIDI-Gerätesteuerung &amp; -Neuprogrammierung</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="776110834126722255">Veraltet</translation>
 <translation id="7761159795823346334">Kamera zulassen?</translation>
@@ -3412,6 +3418,7 @@ Weitere Details:
 <translation id="8103161714697287722">Zahlungsmethode</translation>
 <translation id="8103643211515685474">Trotzdem drucken</translation>
 <translation id="8105368624971345109">Deaktivieren</translation>
+<translation id="8107664017913103177">Kartenvorteile verfügbar</translation>
 <translation id="810875025413331850">Keine Geräte in der Nähe gefunden.</translation>
 <translation id="8116925261070264013">Stummgeschaltet</translation>
 <translation id="8118489163946903409">Zahlungsmethode</translation>

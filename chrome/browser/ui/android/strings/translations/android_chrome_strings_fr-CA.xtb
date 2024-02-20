@@ -337,7 +337,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Précharger les pages</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> souhaite obtenir votre approbation pour ce site Web :</translation>
-<translation id="2876194821763651818">Mots de passe enregistrés sur <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chrome préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">À propos de Google Chrome</translation>
 <translation id="2891154217021530873">Arrêter le chargement de la page</translation>
@@ -1424,6 +1423,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8354977102499939946">Effectuez une recherche rapide à l'aide de commandes vocales. Pour modifier ce raccourci, accédez à Paramètres.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
 <translation id="8368001212524806591">Suivre le prix</translation>
+<translation id="8378850197701296741">Vous avez les favoris, l'historique et d'autres paramètres de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Confirmez que c'est vous</translation>
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8394720698884623075">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome</translation>

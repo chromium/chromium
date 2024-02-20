@@ -72,6 +72,7 @@
 <translation id="1131264053432022307">您复制的图片</translation>
 <translation id="1142713751288681188">纸张类型</translation>
 <translation id="1142846828089312304">在无痕模式下阻止第三方 Cookie</translation>
+<translation id="1144136880160289237">目前您还没有任何活跃主题</translation>
 <translation id="1149617035358809955">验证您的身份，以便填充您的付款信息</translation>
 <translation id="1150565364351027703">太阳镜</translation>
 <translation id="1150979032973867961">此服务器无法证明它是<ph name="DOMAIN" />；您计算机的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
@@ -160,6 +161,7 @@
 <translation id="1296930489679394997">销售</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">请检查您的安全 DNS 设置</translation>
+<translation id="1302418742166945866"><ph name="URL" /> 想控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="1307966114820526988">已被弃用的功能</translation>
 <translation id="1308113895091915999">有优惠可用</translation>
 <translation id="1309375166585231290">你的家长尚未表示同意</translation>
@@ -323,6 +325,7 @@
 <translation id="160851722280695521">在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611101756749861742">第 2 卷</translation>
+<translation id="1612199629998703524">管理主题</translation>
 <translation id="1615178538289490617">撤消对“<ph name="PORT_NAME" />”的访问权限</translation>
 <translation id="1615402009686901181">管理员政策禁止在屏幕显示机密内容时截取屏幕</translation>
 <translation id="1617276713587758852">跨界车</translation>
@@ -432,6 +435,7 @@
 <translation id="1812527064848182527">横向</translation>
 <translation id="1812975699435941848">健康教育与医疗培训</translation>
 <translation id="1813414402673211292">清除浏览数据</translation>
+<translation id="1818522458013171885">取消屏蔽</translation>
 <translation id="182139138257690338">自动下载内容</translation>
 <translation id="1821930232296380041">请求或请求参数无效</translation>
 <translation id="1822540298136254167">您访问过的网站和您在这些网站上花费的时间</translation>
@@ -489,6 +493,7 @@
 <translation id="1945968466830820669">您可能会无法再访问所属组织的账号，或被他人盗用身份信息。Chromium 建议您立即更改密码。</translation>
 <translation id="1946849748901605102">12 x 15 英寸</translation>
 <translation id="1947454675006758438">钉装（右上角）</translation>
+<translation id="1953729392594614704">屏蔽“<ph name="TOPIC" />”会同时屏蔽所有相关的主题，即使该主题处于活跃状态也是如此</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">查找、保护或清空您的设备</translation>
 <translation id="1958218078413065209">您的最高得分是 <ph name="SCORE" />。</translation>
@@ -541,6 +546,7 @@
 <translation id="2056658168519009885">网站可请求 Chrome 提供相关信息，以便向您展示个性化广告。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2059202684901022309">22 x 34 英寸</translation>
+<translation id="2062723461792528824">须遵守相关条款</translation>
 <translation id="2064568741209980952">信贷</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 条建议}other{# 条建议}}</translation>
 <translation id="2066915425250589881">请求删除</translation>
@@ -548,6 +554,7 @@
 <translation id="2071156619270205202">这张卡的卡号无法用作虚拟卡号。</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
 <translation id="2071852865256799872">您的浏览器由贵组织管理，您的个人资料由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
+<translation id="2074733626795553847">取消屏蔽“<ph name="TOPIC" />”</translation>
 <translation id="2075497153347571252">您的管理员已禁止 <ph name="ORIGIN" /> 使用<ph name="PERMISSION" /></translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2080021694978766903">此政策最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目。</translation>
@@ -582,6 +589,7 @@
 <translation id="2137891579555018930">正在等待授权…</translation>
 <translation id="213826338245044447">移动设备书签</translation>
 <translation id="2141000681034340397">修改输入内容</translation>
+<translation id="2144171668675205303">没有活跃的主题</translation>
 <translation id="214556005048008348">取消付款</translation>
 <translation id="2148613324460538318">添加支付卡</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -801,6 +809,7 @@
 <translation id="2596415276201385844">要建立安全连接，您的时钟设置必须正确。这是因为，网站用于证明身份的证书仅在特定时间段有效。由于您设备的时钟不正确，因此 Chrome 无法验证这些证书。</translation>
 <translation id="2597378329261239068">本文档设置了密码保护，请输入密码。</translation>
 <translation id="2606760465469169465">自动验证</translation>
+<translation id="2608019759319359258">主题被屏蔽后，将不会用于展示个性化广告</translation>
 <translation id="2610561535971892504">点击复制</translation>
 <translation id="2612993535136743634">您的设备和 Google 账号中保存的所有安全码都将被删除</translation>
 <translation id="2616412942031748191">搜索引擎优化与营销</translation>
@@ -1108,6 +1117,7 @@
 <translation id="3299720788264079132">使用“<ph name="FEATURE_NAME" />”功能时出了点问题</translation>
 <translation id="3303176609391916566">30 x 42 英寸</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
+<translation id="3303872874382375219">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK1" />广告主题<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告。详细了解如何<ph name="BEGIN_LINK3" />管理广告隐私权<ph name="LINK_END3" />。</translation>
 <translation id="3304073249511302126">蓝牙扫描</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">系统检测到，您刚才使用的密码遭遇了数据泄露。密码管理工具建议您立即更改此密码。</translation>
@@ -1140,6 +1150,7 @@
 <translation id="3377144306166885718">服务器使用的 TLS 版本已过时。</translation>
 <translation id="3377188786107721145">策略解析错误</translation>
 <translation id="3377736046129930310">使用“屏幕锁定”功能更快地确认银行卡</translation>
+<translation id="3378612801784846695">主题是系统根据您近期的浏览记录推测出来的，可供网站用以向您展示个性化广告，同时保护您的身份信息</translation>
 <translation id="3380365263193509176">未知错误</translation>
 <translation id="3380864720620200369">客户端 ID：</translation>
 <translation id="3381668585148405088">验证您的购买交易</translation>
@@ -1170,6 +1181,7 @@
 <translation id="3433111389595862568">协作与会议软件</translation>
 <translation id="3433144818443565002">语音与视频聊天</translation>
 <translation id="3434025015623587566">Google 密码管理工具需要更多访问权限</translation>
+<translation id="3434346831962601311">没有被屏蔽的主题</translation>
 <translation id="343474037147570563">系统会将您上传或附加的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="3435557549311968410">连续纸（短边）</translation>
 <translation id="3435738964857648380">安全</translation>
@@ -1212,6 +1224,7 @@
 <translation id="3515972145999192222">贵组织已屏蔽 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />，因为该网址违反了相关政策。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">多对象处理</translation>
 <translation id="3525130752944427905">10 x 14 英寸</translation>
+<translation id="3525435918300186947">控制 MIDI 设备以及为其重新编程？</translation>
 <translation id="3528171143076753409">服务器的证书不受信任。</translation>
 <translation id="3528485271872257980">深棕色</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{在已同步的设备上至少有 1 项内容}=1{1 项内容（在已同步的设备上还有更多内容）}other{# 项内容（在已同步的设备上还有更多内容）}}</translation>
@@ -1289,6 +1302,7 @@
 <translation id="3659521826520353662">访问了哪些管理员定义的网站以及访问时间：<ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3665100783276035932">大多数网站应该都会按预期运行</translation>
+<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />了解详情<ph name="LINK_END1" /></translation>
 <translation id="3671117652518853176">关闭此设置后，出于安全考虑，系统可能偶尔会要求您进行验证</translation>
 <translation id="3671540257457995106">允许调整大小？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 出错了：<ph name="ERROR_MESSAGE" /></translation>
@@ -1874,6 +1888,7 @@
 <translation id="4895019427244614047">删除地址</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奥运会</translation>
+<translation id="4898742041545089450">已取消屏蔽此主题，但根据您的浏览记录，此主题可能会变为活跃主题</translation>
 <translation id="4900217275619098670">第 9 卷</translation>
 <translation id="4901052769830245369">标签（半光）</translation>
 <translation id="4901162432287938633">卫生和洗漱用具</translation>
@@ -1948,6 +1963,7 @@
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="5043480802608081735">您复制的链接</translation>
 <translation id="5045550434625856497">密码不正确</translation>
+<translation id="5052517576853118371">活跃的主题</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{若要使用“附近分享”功能发送这个文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}other{若要使用“附近分享”功能发送这些文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">请提供打开原因（必填）</translation>
 <translation id="5060419232449737386">字幕设置</translation>
@@ -2022,6 +2038,7 @@
 <translation id="5205222826937269299">需要提供名称</translation>
 <translation id="5206392433295093945">卧室</translation>
 <translation id="5209670883520018268">纸匣 20</translation>
+<translation id="5214542134842513912">选择可用于帮助展示个性化广告的大类主题。如果停用某个更宽泛的类别，系统也会屏蔽其相关主题。</translation>
 <translation id="521659676233207110">纸匣 13</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>
 <translation id="5217759126664161410">协议格式无效。</translation>
@@ -2239,6 +2256,7 @@
 <translation id="568292603005599551">图片 X 轴位置</translation>
 <translation id="5684277895745049190">列表</translation>
 <translation id="5684874026226664614">糟糕，此网页内容无法翻译。</translation>
+<translation id="568489534660743582">网站推荐广告只是网站用来实现个性化广告的众多方法之一。即使没有网站推荐广告，网站仍可以向您展示广告，但这些广告可能不符合您的兴趣。</translation>
 <translation id="5687340364605915800">网站可自行决定是否响应此请求</translation>
 <translation id="5688137257686092846">美容业与美容专家</translation>
 <translation id="5689199277474810259">导出为 JSON 格式</translation>
@@ -2256,6 +2274,7 @@
 <translation id="5715150588940290235">删除已保存的安全码？</translation>
 <translation id="5720705177508910913">当前用户</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
+<translation id="5723873695528696965">控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="5725297205162868298">快捷字词不得以 @ 字符开头：“<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="5730040223043577876">如果您在其他网站上重复使用了您的密码，Chrome 建议您重置该密码。</translation>
 <translation id="5732392974455271431">您的父母可为您取消屏蔽此网站</translation>
@@ -2350,6 +2369,7 @@
 <translation id="5951495562196540101">无法通过消费者账号注册（有封装的许可）。</translation>
 <translation id="5953516610448771166">此媒体无法使用实时字幕功能。如需获取字幕，请屏蔽该网站的<ph name="CONTENT_SETTINGS" />。</translation>
 <translation id="595873925609605681">如果网站功能无法正常运行，请<ph name="BEGIN_LINK" />尝试暂时允许使用第三方 Cookie<ph name="END_LINK" />。</translation>
+<translation id="5960795367348889467">验证</translation>
 <translation id="5963413905009737549">章节标记</translation>
 <translation id="5964247741333118902">嵌入式内容</translation>
 <translation id="5967260682280773804">36 x 48 英寸</translation>
@@ -3249,6 +3269,7 @@
 <translation id="7755287808199759310">你的家长可为你取消屏蔽此网站</translation>
 <translation id="7755624218968747854">主卷</translation>
 <translation id="7758069387465995638">防火墙或防病毒软件可能已阻止您连接到网络。</translation>
+<translation id="7759147511335618829">MIDI 设备控制和重新编程</translation>
 <translation id="7759809451544302770">可选</translation>
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7761159795823346334">允许使用摄像头？</translation>
@@ -3299,6 +3320,7 @@
 <translation id="7878562273885520351">您的密码可能会被盗用</translation>
 <translation id="7880146494886811634">保存地址</translation>
 <translation id="7882421473871500483">棕色</translation>
+<translation id="7886897188117641322">选择可用于帮助展示个性化广告的大类主题</translation>
 <translation id="7887683347370398519">请检查您的银行卡验证码 (CVC)，然后重试</translation>
 <translation id="7887885240995164102">进入“画中画”模式</translation>
 <translation id="7888575728750733395">打印操作渲染方式</translation>
@@ -3377,6 +3399,7 @@
 <translation id="8043255123207491407">查看卖家的条款及条件</translation>
 <translation id="8046360364391076336">工业材料与设备</translation>
 <translation id="8052898407431791827">已复制到剪贴板</translation>
+<translation id="805766869470867930">您尚未屏蔽任何主题</translation>
 <translation id="8057711352706143257">“<ph name="SOFTWARE_NAME" />”的配置有误。卸载“<ph name="SOFTWARE_NAME" />”通常可解决此问题。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">无需征求同意</translation>
 <translation id="8063875539456488183">保存并跟踪价格</translation>
@@ -3409,6 +3432,7 @@
 <translation id="8103161714697287722">付款方式</translation>
 <translation id="8103643211515685474">仍然打印</translation>
 <translation id="8105368624971345109">关闭</translation>
+<translation id="8107664017913103177">凭卡可享受福利</translation>
 <translation id="810875025413331850">未找到附近的设备。</translation>
 <translation id="8116925261070264013">已静音</translation>
 <translation id="8118489163946903409">付款方式</translation>
@@ -3452,6 +3476,7 @@
 <translation id="8216640997712497593">14 x 18 英寸</translation>
 <translation id="8217240300496046857">网站无法使用 Cookie 来跟踪您在网上的活动。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
+<translation id="8220602974062798186">要屏蔽“<ph name="TOPIC" />”及所有相关主题吗？</translation>
 <translation id="8220833680085771143">暂时无法使用跟踪保护功能</translation>
 <translation id="8228419419708659934">双页视图</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> 想访问您网络中的设备：</translation>
@@ -3583,6 +3608,7 @@
 <translation id="8466379296835108687">{COUNT,plural, =1{1 张信用卡}other{# 张信用卡}}</translation>
 <translation id="8467494337615822642">前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="8468358362970107653">C3 信封</translation>
+<translation id="8472700501934242014">已屏蔽的主题</translation>
 <translation id="8473626140772740486">300 x 450 毫米</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8474910779563686872">显示开发者详细信息</translation>
@@ -3922,6 +3948,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不受支持的协议。</translation>
 <translation id="918454845714257218">请查看<ph name="SIDE_OF_CARD" />的安全码，然后重试</translation>
 <translation id="9186203289258525843">“将 Chrome 设为默认浏览器”按钮，激活它即可将 Chrome 设为系统的默认浏览器</translation>
+<translation id="9190557999028587593">系统会自动删除保留时长超过 4 周的主题</translation>
 <translation id="9191834167571392248">打孔（左下角）</translation>
 <translation id="9192361865877479444">金属（哑光）</translation>
 <translation id="9199905725844810519">打印功能已被禁用</translation>

@@ -1902,6 +1902,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2412015533711271895">Vanem või eestkostja peab sulle selle laienduse kasutamiseks loa andma</translation>
 <translation id="2412593942846481727">Värskendus on saadaval</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Kohandage oma brauserit veelgi <ph name="BEGIN_LINK1" />Chrome'i veebipoest<ph name="END_LINK1" /> saadud laiendustega.</translation>
 <translation id="2414159296888870200">Mooduli <ph name="MODULE_TITLE" /> sirvimise jätkamine</translation>
 <translation id="2414886740292270097">Tume</translation>
 <translation id="2415117815770324983">Logib teid enamikult saitidelt välja. Jääte oma Google'i kontole sisselogituks.</translation>
@@ -6840,6 +6841,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6271824294945464304">Parooli jagamine</translation>
 <translation id="6273677812470008672">Kvaliteet</translation>
 <translation id="6274089201566806618">Ühendamine seadmega <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">See, kas reklaam, mida näete, on isikupärastatud, võib sõltuda paljudest asjadest, sh sellest seadest, <ph name="BEGIN_LINK1" />saidi soovitatavatest reklaamidest<ph name="LINK_END1" />, teie <ph name="BEGIN_LINK2" />küpsisefailide seadetest<ph name="LINK_END2" /> ja sellest, kas teie vaadatav sait isikupärastab reklaame. Vaadake lisateavet <ph name="BEGIN_LINK3" />oma reklaamide privaatsuse haldamise kohta<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Ekraaniülekanne</translation>
 <translation id="6276210637549544171">Puhverserver <ph name="PROXY_SERVER" /> nõuab kasutajanime ja parooli.</translation>
 <translation id="6277105963844135994">Võrgu ajalõpp</translation>
@@ -7825,6 +7827,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7044606776288350625">Andmete sünkroonimine</translation>
 <translation id="7047059339731138197">Tausta valimine</translation>
 <translation id="7049293980323620022">Kas soovite faili säilitada?</translation>
+<translation id="7049524156282610342">Sirvimisandmed: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Kuumkoha sobimatu seadistus</translation>
 <translation id="7052237160939977163">Saada toimivuse jälgimise andmeid</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
@@ -8542,6 +8545,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7630426712700473382">Seda seadet haldab <ph name="MANAGER" /> ja teil tuleb iga kord sisse logida.</translation>
 <translation id="7631014249255418691">Linuxi rakenduste ja failide varundamine õnnestus</translation>
 <translation id="7631887513477658702">Ava alati &amp;seda tüüpi failid</translation>
+<translation id="7632437836497571618">Kasutage saitide otsimiseks turvalisi ühendusi</translation>
 <translation id="7632948528260659758">Järgmiste kioskirakenduste värskendamine nurjus:</translation>
 <translation id="7633724038415831385">See on ainuke kord, kui peate värskendust ootama. Chromebookides toimuvad tarkvara värskendused taustal.</translation>
 <translation id="7634337648687970851">Kohalike andmete taastamist praegu ei toetata.</translation>
@@ -8804,6 +8808,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7803657407897251194">Android-seadmega seadistamise jätkamiseks ühendage oma seadme <ph name="DEVICE_TYPE" /> võrku</translation>
 <translation id="7804072833593604762">Vaheleht suleti</translation>
 <translation id="780446144738273886">Ekraanilugeja jaoks teksti ekstraktimiseks skannige PDF-i. Toetatakse ainult brauseris Chrome</translation>
+<translation id="7805371082115476536">Nõrk</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7805906048382884326">Sule nõuanne</translation>
 <translation id="7806722269368320106">Rakendus, installitakse</translation>

@@ -113,6 +113,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3032706164202344641">Chromium nemůže zkontrolovat hesla. Zkuste to později.</translation>
 <translation id="3032787606318309379">Přidávání do prohlížeče Chromium...</translation>
 <translation id="3038232873781883849">Čekání na instalaci…</translation>
+<translation id="3068187312562070417">Ostatní profily Chromium</translation>
 <translation id="3068515742935458733">Pomozte aplikaci Chromium zlepšovat tím, že budete společnosti Google zasílat zprávy o selhání a <ph name="UMA_LINK" />.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 zařízení USB bylo používáno jedním nebo více rozšířeními prohlížeče Chromium}=1{1 zařízení USB je používáno jedním nebo více rozšířeními prohlížeče Chromium}few{# zařízení USB jsou používána jedním nebo více rozšířeními prohlížeče Chromium}many{# zařízení USB je používáno jedním nebo více rozšířeními prohlížeče Chromium}other{# zařízení USB je používáno jedním nebo více rozšířeními prohlížeče Chromium}}</translation>
 <translation id="3101560983689755071">Vaše historie prohlížení ovlivňuje zobrazované reklamy a odhadované zájmy uvedené níže. Aby Chromium chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se mohou obnovovat, dokud je neodstraníte.</translation>
@@ -230,6 +231,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5294316920224716406">Při procházení v anonymním režimu vás Chromium před načtením webu pomocí nezabezpečeného připojení upozorní</translation>
 <translation id="5296845517486664001">Když jsou zapnuté zkušební verze a Chromium vás do nějaké náhodně umístí, vaše historie prohlížení bude mít vliv na zobrazované reklamy a zájmy, jak je odhadnuto níže. Aby Chromium chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže.</translation>
 <translation id="5352264705793813212">Prohlížeč Chromium našel několik bezpečnostních doporučení, která byste si měli projít</translation>
+<translation id="5352361688875342522">Ostatní profily Chromium</translation>
 <translation id="5358375970380395591">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem prohlížeče Chromium. Vaše údaje prohlížeče Chromium, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Extra kód: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Přečtěte si, proč Chromium některé soubory blokuje</translation>

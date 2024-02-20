@@ -177,6 +177,7 @@
 <translation id="3635073343384702370">Chrome може да проверява паролите ви, когато ги запазите</translation>
 <translation id="3667616615096815454">Приложението не може да се инсталира, тъй като е непознато за сървъра.</translation>
 <translation id="3673813398384385993">Chrome установи, че „<ph name="EXTENSION_NAME" />“ съдържа злонамерен софтуер</translation>
+<translation id="3697952514309507634">Други потребителски профили в Chrome</translation>
 <translation id="3703994572283698466">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Версия на ChromeOS Flex</translation>
 <translation id="3718181793972440140">1 елемент ще се изтрие от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
@@ -427,6 +428,7 @@
 <translation id="8019103195866286235">Публикуването на това разширение бе прекратено от програмиста му. Възможно е то да е опасно. Премахнете го от Chrome, така че повече да не може да преглежда и променя данните ви в посещаваните от вас сайтове, включително личната ви информация.</translation>
 <translation id="80471789339884597">Благодарим ви, че инсталирахте <ph name="BUNDLE_NAME" />. Трябва да рестартирате всичките си браузъри, преди да използвате това приложение.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Други потребителски профили в Chrome</translation>
 <translation id="8086881907087796310">Инсталирането не бе успешно, защото компютърът ви не отговаря на минималните изисквания за хардуера.</translation>
 <translation id="8129812357326543296">Всичко за &amp;Google Chrome</translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>

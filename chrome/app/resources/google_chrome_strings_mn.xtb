@@ -179,6 +179,7 @@
 <translation id="3635073343384702370">Таныг нууц үгнүүдээ хадгалах үед Chrome тэдгээрийг шалгах боломжтой</translation>
 <translation id="3667616615096815454">Суулгах боломжгүй. Аппликэйшнийг сервер танихгүй байна.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />" хортой программ агуулж байгааг Chrome олж мэдлээ</translation>
+<translation id="3697952514309507634">Chrome-н бусад профайл</translation>
 <translation id="3703994572283698466">ChromeOS-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-н хувилбар</translation>
 <translation id="3718181793972440140">Энэ нь төхөөрөмжөөс 1 зүйл устгах болно. Өгөгдлөө дараа сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
@@ -433,6 +434,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8019103195866286235">Энэ өргөтгөлийг хөгжүүлэгч нь нийтлэхээ больсон бөгөөд энэ нь аюултай байж магадгүй. Үүнийг Chrome-с хассанаар энэ нь цаашид таны хувийн мэдээллийг оруулаад зочилсон сайтуудын тань өгөгдлийг харах болон өөрчлөх боломжгүй болно.</translation>
 <translation id="80471789339884597">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө бүх хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Chrome-н бусад профайл</translation>
 <translation id="8086881907087796310">Таны компьютер техник хангамжийн доод шаардлагад нийцэхгүй байгаа тул суулгалт амжилтгүй болсон.</translation>
 <translation id="8129812357326543296">Google Chrome-ийн тухай</translation>
 <translation id="813913629614996137">Эхлүүлж байна…</translation>

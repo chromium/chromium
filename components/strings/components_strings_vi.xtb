@@ -757,6 +757,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="250346157641628208">Giấy (In phun)</translation>
 <translation id="2505268675989099013">Bảo vệ tài khoản</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (có áp dụng các điều khoản)</translation>
 <translation id="2512101340618156538">Không được phép (mặc định)</translation>
 <translation id="2512413427717747692">Đặt Chrome làm nút trình duyệt mặc định, nhấn Enter để đặt Chrome làm trình duyệt mặc định của hệ thống trong phần cài đặt iOS</translation>
 <translation id="2514548229949738417">Nhà cửa và vườn tược</translation>
@@ -1082,6 +1083,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3229277193950731405">Sao chép chuỗi phiên bản</translation>
 <translation id="323107829343500871">Nhập số CVC cho <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Luôn luôn phát hiện nội dung quan trọng trên trang web này</translation>
+<translation id="3236212803136366317">Lợi ích của thẻ</translation>
 <translation id="3238395604961564389">Mở đường liên kết trong cửa sổ ẩn danh</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để tuỳ chỉnh giao diện trình duyệt của bạn</translation>
 <translation id="3240791268468473923">Đã mở thông tin xác thực thanh toán an toàn không khớp với bảng thông tin xác thực</translation>
@@ -1117,6 +1119,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="33073482541490531">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Trình quản lý mật khẩu khuyên bạn nên đổi mật khẩu này ngay.</translation>
 <translation id="3307649904964670439">Nút Tuỳ chỉnh Chrome, hãy nhấn nút này để tuỳ chỉnh giao diện trình duyệt của bạn</translation>
 <translation id="3308006649705061278">Đơn vị Tổ chức (OU)</translation>
+<translation id="3310047144791481950">Xem thông tin giúp bạn chọn thẻ thanh toán. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Tìm hiểu về lợi ích của thẻ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
 <translation id="3324983252691184275">Đỏ thẫm</translation>
 <translation id="3325027355611702542">Xe cắm trại và xe dã ngoại</translation>

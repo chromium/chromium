@@ -18,6 +18,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1056775291175587022">Ingen nettverk</translation>
 <translation id="1056898198331236512">Advarsel</translation>
 <translation id="1058009965971887428">Rapporter tilbakemelding</translation>
+<translation id="1059120031266247284">Delt med deg</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1073899992769346247">Bytt eller lad batteriet</translation>
@@ -627,6 +628,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="3580650856351781466">Laster ned talefiler</translation>
 <translation id="3585296979871889131">Se bilder, medier, varsler og apper fra telefonen din</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Sideknapp</translation>
 <translation id="3593039967545720377">Åpne utklippstavleloggen ved å trykke på <ph name="SHORTCUT_KEY_NAME" /> + V for å se utklippstavlen. Kopiér et element for å komme i gang.</translation>
 <translation id="3593646411856133110">Sveip opp og hold for å se åpne apper</translation>
@@ -643,6 +645,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3621202678540785336">Inndata</translation>
 <translation id="3621712662352432595">Lydinnstillinger</translation>
 <translation id="3626281679859535460">Lysstyrke</translation>
+<translation id="3628323833346754646">Knapp på forsiden</translation>
 <translation id="3630697955794050612">av</translation>
 <translation id="3631369015426612114">Tillat varsler fra følgende</translation>
 <translation id="3633097874324966332">Åpne Bluetooth-innstillingene for å koble til enheten</translation>
@@ -1284,6 +1287,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="6052614013050385269">Høyreklikk på en link</translation>
 <translation id="6054305421211936131">Logg på med smartkort</translation>
 <translation id="6059276912018042191">Nylige Chrome-faner</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Du logges automatisk av om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Ferdig med filen</translation>
 <translation id="6068258534237496331">Kontroller for videosamtaler</translation>
@@ -1345,6 +1349,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="6309219492973062892">Klikk eller trykk på hylleikonene 1–8</translation>
 <translation id="6315170314923504164">Tale</translation>
 <translation id="6319058840130157106">Beveg deg bakover mellom nedre høyre hjørne, Appoversikt, adressefeltet, bokmerkeraden, nettstedet som er åpent, og nedlastingene</translation>
+<translation id="6319503618073410818">Se detaljer i nettleseren</translation>
 <translation id="6324916366299863871">Endre snarvei</translation>
 <translation id="6330012934079202188">Viser vinduer fra alle skrivebord. Trykk på oppoverpiltasten for å vise vinduer fra det nåværende skrivebordet</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er en administrert økt som administreres av <ph name="MANAGER" /></translation>
@@ -1565,6 +1570,7 @@ Nylig installert</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % batteri gjenstår. Koble enheten til strøm.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook må startes på nytt for å ta i bruk en oppdatering. Dette kan ta opptil ett minutt.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Mikrofon bak</translation>
 <translation id="7258828758145722155">Redigert i går</translation>
 <translation id="726276584504105859">Dra hit for å bruke delt skjerm</translation>
@@ -1692,6 +1698,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7742327441377685481">Ingen varsler</translation>
 <translation id="7748275671948949022">Fremhev Appoversikt-knappen på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Klikk for å se oppdateringsdetaljene</translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7769299611924763557">GIF-en din er snart klar</translation>
@@ -2019,6 +2026,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9098969848082897657">Demp telefonen</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Angre siste handling</translation>
+<translation id="9129245940793250979">Knapp på baksiden</translation>
 <translation id="9133335900048457298">Kan ikke ta opp beskyttet innhold</translation>
 <translation id="9139720510312328767">Slett neste bokstav</translation>
 <translation id="9151906066336345901">end</translation>

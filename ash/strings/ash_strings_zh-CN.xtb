@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">一律显示任务栏</translation>
 <translation id="132346741904777634">相机已对准左上角。与系统界面冲突。</translation>
+<translation id="132415371743256095">关闭“<ph name="DESK_NAME" />”和窗口</translation>
 <translation id="1333308631814936910">已与“<ph name="DISPLAY_NAME" />”连接</translation>
 <translation id="1340378040547539434">缩小网页</translation>
 <translation id="1341651618736211726">溢出</translation>
@@ -332,6 +333,7 @@
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
 <translation id="240006516586367791">媒体控件</translation>
 <translation id="2402411679569069051">若要解锁 Chromebook，请使用指纹或解锁您的手机</translation>
+<translation id="240545663114741956">按两次 <ph name="ACCELERATOR" /> 即可退出。</translation>
 <translation id="2405664212338326887">未连接</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
@@ -353,7 +355,9 @@
 <translation id="2478076885740497414">安装应用</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
+<translation id="2486214324139475545">“<ph name="DESK_NAME" />”预览。活动桌面。</translation>
 <translation id="2487915095798731898">加入</translation>
+<translation id="250047928202119308">桌面个人资料菜单</translation>
 <translation id="2501920221385095727">粘滞键</translation>
 <translation id="2504454902900101003">取消设置查看手机中的近期照片、媒体内容和通知</translation>
 <translation id="2509468283778169019">CAPS LOCK 已打开</translation>
@@ -905,6 +909,7 @@
 <translation id="4642092649622328492">截取局部屏幕截图</translation>
 <translation id="4644727592819780893">区域太小，无法显示相机预览画面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推荐的应用</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 复选框已选中。</translation>
 <translation id="4657775630156561295">以下建议将会从您账号的建议历史记录中永久移除：
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1036,7 @@
 <translation id="5111930673176965299">背景模糊处理</translation>
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5121628974188116412">转到网页底部</translation>
+<translation id="5122517996953421795">“<ph name="DESK_NAME" />”预览。非活动桌面。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5150070631291639005">隐私设置</translation>
@@ -1431,6 +1437,7 @@
 <translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6686023075541098243">设置查看手机中的通知</translation>
 <translation id="6696025732084565524">您的可拆卸式键盘需要安装一项重要更新</translation>
+<translation id="6697913454192220372">添加新桌面</translation>
 <translation id="6700713906295497288">IME 菜单按钮</translation>
 <translation id="6707693040195709527">将设备回滚到上一个版本的截止日期已过</translation>
 <translation id="6710213216561001401">上一项</translation>
@@ -1562,6 +1569,7 @@
 <translation id="7262906531272962081">创建提醒</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />键 + 退格键</translation>
 <translation id="7285232777292757180">使用快捷设置中的“屏幕截取”工具截屏</translation>
+<translation id="7301826272005790482">关闭窗口建议</translation>
 <translation id="7302889331339392448">“实时字幕”功能已关闭。</translation>
 <translation id="7303365578352795231">正在通过另一设备答复。</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1771,6 +1779,7 @@
 <translation id="8054466585765276473">正在计算续航时间。</translation>
 <translation id="8079538659226626406">屏幕共享</translation>
 <translation id="8083540854303889870">已保存供日后使用</translation>
+<translation id="8088141034189573826">使用 Tab 键可查看更多选项。使用向左键和向右键可访问所有桌面。</translation>
 <translation id="8091153018031979607">开始时间：<ph name="START_TIME" /><ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自动更新</translation>
 <translation id="8092380135549145188">滚动控件</translation>
@@ -1968,6 +1977,7 @@
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 复选框未选中。</translation>
 <translation id="8949925099261528566">已连接，但无法访问互联网</translation>
 <translation id="8951539504029375108">只有已获批准的 Thunderbolt 设备能与您的 Chromebook 兼容</translation>
 <translation id="8964525410783593407">1 小时</translation>

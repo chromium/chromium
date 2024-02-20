@@ -1914,6 +1914,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2412015533711271895">Vienas iš tėvų arba globėjų turi patvirtinti, kad galite naudoti šį plėtinį</translation>
 <translation id="2412593942846481727">Pasiekiamas naujinys</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Dar labiau tinkinkite naršyklę naudodami plėtinius iš <ph name="BEGIN_LINK1" />„Chrome“ internetinės parduotuvės<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Tęsti naršymą pagal „<ph name="MODULE_TITLE" />“</translation>
 <translation id="2414886740292270097">Tamsi</translation>
 <translation id="2415117815770324983">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros.</translation>
@@ -6854,6 +6855,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6271824294945464304">Bendrinamas slaptažodis</translation>
 <translation id="6273677812470008672">Kokybė</translation>
 <translation id="6274089201566806618">Jungiamasi prie „<ph name="HOST_DEVICE_NAME" />“</translation>
+<translation id="6274108044476515407">Tai, ar rodomas skelbimas yra suasmenintas, gali priklausyti nuo daugelio dalykų, įskaitant šį nustatymą, <ph name="BEGIN_LINK1" />svetainių siūlomus skelbimus<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />slapukų nustatymus<ph name="LINK_END2" /> ir tai, ar svetainė, kurioje lankotės, teikia suasmenintus skelbimus. Sužinokite daugiau apie <ph name="BEGIN_LINK3" />su skelbimais susijusio privatumo tvarkymą<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Ekrano vaizdo įrašas</translation>
 <translation id="6276210637549544171">Tarpiniame serveryje <ph name="PROXY_SERVER" /> būtina įvesti naudotojo vardą ir slaptažodį.</translation>
 <translation id="6277105963844135994">Baigėsi tinklo skirtasis laikas</translation>
@@ -7845,6 +7847,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7044606776288350625">Duomenų sinchronizavimas</translation>
 <translation id="7047059339731138197">Pasirinkite foną</translation>
 <translation id="7049293980323620022">Palikti failą?</translation>
+<translation id="7049524156282610342">Naršymo duomenys: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Netinkama viešosios interneto prieigos taško konfigūracija</translation>
 <translation id="7052237160939977163">Siųsti našumo stebėjimo duomenis</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
@@ -8562,6 +8565,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7630426712700473382">Šį įrenginį tvarko: <ph name="MANAGER" />. Prisijungti reikia kiekvieną kartą.</translation>
 <translation id="7631014249255418691">Sėkmingai sukurta „Linux“ programų ir failų atsarginė kopija</translation>
 <translation id="7631887513477658702">&amp;Visada atidaryti tokio tipo failus</translation>
+<translation id="7632437836497571618">Ieškoti svetainių naudojant saugius ryšius</translation>
 <translation id="7632948528260659758">Atnaujinant šias viešojo terminalo programas įvyko klaida:</translation>
 <translation id="7633724038415831385">Tai vienintelis kartas, kai tenka laukti, kol bus įdiegtas naujinys. „Chromebook“ įrenginiuose programinės įrangos naujiniai diegiami fone.</translation>
 <translation id="7634337648687970851">Vietinių duomenų atkūrimas šiuo metu nepalaikomas.</translation>
@@ -8824,6 +8828,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7803657407897251194">Jei norite tęsti sąranką „Android“ įrenginyje, prijunkite „<ph name="DEVICE_TYPE" />“ prie tinklo</translation>
 <translation id="7804072833593604762">Skirtukas uždarytas</translation>
 <translation id="780446144738273886">Nuskaitykite PDF failą, kad išskirtumėte ekrano skaitytuvo tekstą. Palaikoma tik „Chrome“ naršyklėje</translation>
+<translation id="7805371082115476536">Nestiprus</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7805906048382884326">Uždaryti patarimą</translation>
 <translation id="7806722269368320106">Programa, įdiegiama</translation>

@@ -175,6 +175,7 @@
 <translation id="3635073343384702370">‏ל-Chrome יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="3667616615096815454">אין אפשרות להתקין, האפליקציה לא מוכרת לשרת.</translation>
 <translation id="3673813398384385993">‏הפריט "<ph name="EXTENSION_NAME" />" שנמצא ב-Chrome מכיל תכונה זדונית</translation>
+<translation id="3697952514309507634">‏פרופילים אחרים ב-Chrome</translation>
 <translation id="3703994572283698466">‏השימוש ב-ChromeOS מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנות קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספות כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">‏הגרסה של ChromeOS Flex</translation>
 <translation id="3718181793972440140">‏פעולה זו תמחק פריט אחד מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
@@ -425,6 +426,7 @@
 <translation id="8019103195866286235">‏הפרסום של התוסף הזה בוטל על ידי המפתח שלו, ויכול להיות שהתוסף לא בטוח. צריך להסיר אותו מ-Chrome כדי לא לאפשר לו יותר להציג ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
 <translation id="80471789339884597">תודה שהתקנת. עליך להפעיל מחדש את כל הדפדפנים לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">‏פרופילים אחרים ב-Chrome</translation>
 <translation id="8086881907087796310">ההתקנה נכשלה כי המחשב לא עומד בדרישות החומרה המינימליות.</translation>
 <translation id="8129812357326543296">‏מידע על Google Chrome&amp;</translation>
 <translation id="813913629614996137">מתבצע אתחול...</translation>

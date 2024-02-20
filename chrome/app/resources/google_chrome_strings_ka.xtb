@@ -178,6 +178,7 @@
 <translation id="3635073343384702370">პაროლების შემოწმებას Chrome შეძლებს მათი შენახვის შემდეგ</translation>
 <translation id="3667616615096815454">ინსტალაცია ვერ მოხერხდა, რადგან აპლიკაცია სერვერისთვის ცნობილი არ არის.</translation>
 <translation id="3673813398384385993">Chrome-მა აღმოაჩინა, რომ „<ph name="EXTENSION_NAME" />“ შეიცავს მავნე პროგრამას</translation>
+<translation id="3697952514309507634">სხვა Chrome პროფილები</translation>
 <translation id="3703994572283698466">ChromeOS და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო <ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-ის ვერსია</translation>
 <translation id="3718181793972440140">ეს მოქმედება წაშლის 1 ერთეულს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
@@ -432,6 +433,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8019103195866286235">ამ გაფართოების გამოქვეყნება გაუქმდა მისი დეველოპერის მიერ და ის, შესაძლოა, არ იყოს უსაფრთხო. წაშალეთ ის Chrome-იდან, რომ მას აღარ შეეძლოს თქვენი მონაცემების (მათ შორის, პერსონალური ინფორმაციის) ნახვა და შეცვლა თქვენ მიერ მონახულებულ საიტებზე.</translation>
 <translation id="80471789339884597">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი ყველა ბრაუზერი უნდა გადატვირთოთ.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">სხვა Chrome პროფილები</translation>
 <translation id="8086881907087796310">ინსტალაცია ვერ მოხერხდა, რადგან თქვენი კომპიუტერი არ აკმაყოფილებს მინიმალურ მოთხოვნებს აპარატურის კუთხით.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome-ის შესახებ</translation>
 <translation id="813913629614996137">მიმდინარეობს ინიცირება…</translation>

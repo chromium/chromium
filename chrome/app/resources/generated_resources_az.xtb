@@ -1897,6 +1897,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2412015533711271895">Valideyn və ya qəyyum bu artırmadan istifadəni təsdiq etməlidir</translation>
 <translation id="2412593942846481727">Güncəlləmə əlçatandır</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Veb Marketdən<ph name="END_LINK1" /> əldə edilən artırmalar ilə brauzeri daha da fərdiləşdirin</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> üçün baxmağa davam edin</translation>
 <translation id="2414886740292270097">Qara</translation>
 <translation id="2415117815770324983">Əksər saytlardan çıxacaqsınız. Google Hesabına daxil olmuş kimi qalacaqsınız.</translation>
@@ -6838,6 +6839,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6271824294945464304">Parol paylaşılır</translation>
 <translation id="6273677812470008672">Keyfiyyət</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> cihazına qoşulur</translation>
+<translation id="6274108044476515407">Gördüyünüz reklamın fərdiləşdirilməsi bu ayar, <ph name="BEGIN_LINK1" />sayt tərəfindən təklif olunan reklamlar<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />kuki ayarları<ph name="LINK_END2" /> və baxdığınız saytın reklamları fərdiləşdirib-fərdiləşdirməməsindən asılı ola bilər. <ph name="BEGIN_LINK3" />Reklam məxfiliyinin idarə edilməsi<ph name="LINK_END3" /> haqqında ətraflı məlumat.</translation>
 <translation id="6274202259872570803">Ekran yayımı</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proksisi istifadəçi adı və parol tələb edir.</translation>
 <translation id="6277105963844135994">Şəbəkə fasiləsi</translation>
@@ -7823,6 +7825,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7044606776288350625">Datanı sinxronlaşdırın</translation>
 <translation id="7047059339731138197">Arxa fon seçin</translation>
 <translation id="7049293980323620022">Fayl saxlanılsın?</translation>
+<translation id="7049524156282610342">Baxış datası: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Yanlış hotspot konfiqurasiyası</translation>
 <translation id="7052237160939977163">Performans izləmə datasını göndərin</translation>
 <translation id="7053983685419859001">Bloklayın</translation>
@@ -8542,6 +8545,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7630426712700473382">Bu cihaz <ph name="MANAGER" /> tərəfindən idarə edilir və hər dəfə sizdən daxil olmağınızı tələb edir.</translation>
 <translation id="7631014249255418691">Linux tətbiq və faylları yedəklənib</translation>
 <translation id="7631887513477658702">Bu növ faylları həmişə açın</translation>
+<translation id="7632437836497571618">Sayt axtarmaq üçün güvənli bağlantı istifadə edin</translation>
 <translation id="7632948528260659758">Bu köşk tətbiqləri güncəlləşə bilmədi:</translation>
 <translation id="7633724038415831385">Güncəlləmə üçün yalnız bu dəfə gözləyəcəksiniz. Chromebook'larda proqram güncəlləmələri arxa fonda baş verir.</translation>
 <translation id="7634337648687970851">Lokal data bərpası hazırda dəstəklənmir.</translation>
@@ -8805,6 +8809,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7803657407897251194">Android cihazı ilə ayarlamağa davam etmək üçün <ph name="DEVICE_TYPE" /> cihazını şəbəkəyə qoşun</translation>
 <translation id="7804072833593604762">Tab bağlanıb</translation>
 <translation id="780446144738273886">PDF-i skanlayaraq ekran oxuyucusu üçün mətn çıxarın. Yalnız Chrome brauzerində dəstəklənir</translation>
+<translation id="7805371082115476536">Yüngül</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tövsiyəni bağlayın</translation>
 <translation id="7806722269368320106">Tətbiq, quraşdırılır</translation>

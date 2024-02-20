@@ -1896,6 +1896,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2412015533711271895">Guraso edo tutore batek luzapena erabiltzeko baimena eman behar dizu</translation>
 <translation id="2412593942846481727">Eguneratu egin daiteke</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Pertsonalizatu arakatzailea are gehiago <ph name="BEGIN_LINK1" />Chrome Web Store-ko<ph name="END_LINK1" /> luzapenekin</translation>
 <translation id="2414159296888870200">Berrekin <ph name="MODULE_TITLE" /> arakatzeari</translation>
 <translation id="2414886740292270097">Iluna</translation>
 <translation id="2415117815770324983">Webgune gehienetako saioa amaitzen du. Google-ko kontuko saioa ez da amaituko.</translation>
@@ -6831,6 +6832,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6271824294945464304">Pasahitza partekatzen</translation>
 <translation id="6273677812470008672">Kalitatea</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> gailura konektatzen</translation>
+<translation id="6274108044476515407">Ikusten duzun iragarki bat pertsonalizatua den edo ez gauza askoren araberakoa da; adibidez, ezarpen hau, <ph name="BEGIN_LINK1" />webguneek iradokitako iragarkiak<ph name="LINK_END1" />, zure <ph name="BEGIN_LINK2" />cookieen ezarpenak<ph name="LINK_END2" /> eta arakatzen ari zaren webguneak iragarki pertsonalizatuak erabiltzen dituen. Lortu informazio gehiago <ph name="BEGIN_LINK3" />iragarkien pribatutasuna kudeatzeari<ph name="LINK_END3" /> buruz.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proxyak erabiltzaile-izena eta pasahitza behar ditu.</translation>
 <translation id="6277105963844135994">Sarera konektatzeko denbora-muga gainditu da</translation>

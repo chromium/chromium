@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2871733351037274014">페이지 미리 로드</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />님이 다음 웹사이트의 승인을 요청했습니다.</translation>
-<translation id="2876194821763651818">비밀번호가 <ph name="USERNAME" />에 저장되었습니다</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
 <translation id="2891154217021530873">페이지 로딩 중지</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
 <translation id="8368001212524806591">가격 추적</translation>
+<translation id="8378850197701296741"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록 및 기타 설정이 있습니다.</translation>
 <translation id="8387617938027387193">본인 인증</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8394720698884623075">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>

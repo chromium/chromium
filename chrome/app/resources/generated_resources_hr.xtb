@@ -1899,6 +1899,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2412015533711271895">Tvoj roditelj ili skrbnik kaže da je u redu da koristiš to proširenje.</translation>
 <translation id="2412593942846481727">Dostupno je ažuriranje</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Dodatno prilagodite svoj preglednik pomoću proširenja iz <ph name="BEGIN_LINK1" />Chrome Web Storea<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Nastavite pregledavati za modul <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tamno</translation>
 <translation id="2415117815770324983">Odjavit ćete se s većine web-lokacija. Ostat ćete prijavljeni na Google račun.</translation>
@@ -6834,6 +6835,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6271824294945464304">Dijeljenje zaporke</translation>
 <translation id="6273677812470008672">Kvaliteta</translation>
 <translation id="6274089201566806618">Povezivanje s uređajem <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Hoće li se oglas koji vam se prikazuje personalizirati ovisi o brojnim čimbenicima, uključujući tu postavku, <ph name="BEGIN_LINK1" />značajku oglasa koje predlaže web-lokacija<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />postavke kolačića<ph name="LINK_END2" /> i to je li web-lokacija koju pregledavate postavljena tako da personalizira oglase. Saznajte više o <ph name="BEGIN_LINK3" />upravljanju zaštitom privatnosti u online oglašavanju<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Zaslonska prezentacija</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> zahtijeva korisničko ime i zaporku.</translation>
 <translation id="6277105963844135994">Privremeni prekid mreže</translation>
@@ -7823,6 +7825,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7044606776288350625">Sinkronizacija podataka</translation>
 <translation id="7047059339731138197">Odaberite pozadinu</translation>
 <translation id="7049293980323620022">Želite li zadržati datoteku?</translation>
+<translation id="7049524156282610342">Podaci o pregledavanju <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Konfiguracija žarišne točke nije važeća</translation>
 <translation id="7052237160939977163">Šalji podatke o praćenju izvedbe</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
@@ -8540,6 +8543,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7630426712700473382">Uređajem upravlja <ph name="MANAGER" /> i zahtijeva da se svaki put prijavite.</translation>
 <translation id="7631014249255418691">Uspješno su stvorene sigurnosne kopije Linux aplikacija i datoteka</translation>
 <translation id="7631887513477658702">&amp;Uvijek otvori ovu vrstu datoteka</translation>
+<translation id="7632437836497571618">Traženje web-lokacija pomoću sigurnih veza</translation>
 <translation id="7632948528260659758">Ažuriranje sljedećih kiosk aplikacija nije uspjelo:</translation>
 <translation id="7633724038415831385">Ovo je jedini put da ćete čekati na ažuriranje. Na Chromebooku se ažuriranja softvera odvijaju u pozadini.</translation>
 <translation id="7634337648687970851">Oporavak lokalnih podataka trenutačno nije podržan.</translation>
@@ -8802,6 +8806,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7803657407897251194">Da biste nastavili s postavljanjem uz pomoć Android uređaja, povežite uređaj <ph name="DEVICE_TYPE" /> s mrežom</translation>
 <translation id="7804072833593604762">Kartica je zatvorena</translation>
 <translation id="780446144738273886">Skenirajte PDF da biste izdvojili tekst za čitač zaslona. Podržano samo u pregledniku Chrome</translation>
+<translation id="7805371082115476536">Lagano</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Zatvorite savjet</translation>
 <translation id="7806722269368320106">Aplikacija, instalira se</translation>

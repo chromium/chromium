@@ -1894,6 +1894,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2412015533711271895">Anne veya babanızın ya da velinizin bu uzantıyı kullanmanıza onay vermesi gerekir</translation>
 <translation id="2412593942846481727">Güncelleme var</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Web Mağazası<ph name="END_LINK1" />'ndaki uzantıları kullanarak tarayıcınızı daha fazla özelleştirin</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> öğesine göz atmaya devam edin</translation>
 <translation id="2414886740292270097">Koyu</translation>
 <translation id="2415117815770324983">Çoğu sitedeki oturumunuz kapatılır. Google Hesabınızın oturumu açık kalır.</translation>
@@ -6833,6 +6834,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6271824294945464304">Şifre paylaşılıyor</translation>
 <translation id="6273677812470008672">Kalite</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> bağlantısı yapılıyor</translation>
+<translation id="6274108044476515407">Gördüğünüz bir reklamın kişiselleştirilmiş olup olmaması bu ayara, <ph name="BEGIN_LINK1" />site tarafından önerilen reklamlara<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />çerez ayarlarınıza<ph name="LINK_END2" /> ve görüntülediğiniz sitenin reklamları kişiselleştirip kişiselleştirmediği gibi birçok faktöre bağlı olabilir. <ph name="BEGIN_LINK3" />Reklam gizliliğinizi yönetme<ph name="LINK_END3" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="6274202259872570803">Ekran video kaydı</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proxy'si için kullanıcı adı ve şifre gerekiyor.</translation>
 <translation id="6277105963844135994">Ağ zaman aşımı</translation>
