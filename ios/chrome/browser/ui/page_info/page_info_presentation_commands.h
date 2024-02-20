@@ -13,6 +13,9 @@
 // Method invoked when the user requests more details about a page's security.
 - (void)showSecurityPage;
 
+// Method invoked when the user requests to see the security help page.
+- (void)showSecurityHelpPage;
+
 // Method invoked when the user requests more details about a page, i.e.
 // taps on AboutThisSite.
 - (void)showAboutThisSitePage:(GURL)URL;

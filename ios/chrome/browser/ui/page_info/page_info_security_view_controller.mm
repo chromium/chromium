@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
+#import "ios/chrome/browser/ui/page_info/page_info_presentation_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -121,12 +122,12 @@ enum ItemIdentifier {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  CHECK(self.pageInfoCommandsHandler);
+  CHECK(self.pageInfoPresentationHandler);
   ItemIdentifier itemType = static_cast<ItemIdentifier>(
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
   switch (itemType) {
     case ItemIdentifierLearnMoreRow:
-      [self.pageInfoCommandsHandler showSecurityHelpPage];
+      [self.pageInfoPresentationHandler showSecurityHelpPage];
       break;
     default:
       break;

@@ -45,6 +45,8 @@
 
   _viewController.pageInfoCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageInfoCommands);
+  _viewController.pageInfoPresentationHandler =
+      self.pageInfoPresentationHandler;
 
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];

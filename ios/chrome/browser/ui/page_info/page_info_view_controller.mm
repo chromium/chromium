@@ -261,7 +261,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   DCHECK(URL.gurl == GURL(kPageInfoHelpCenterURL));
-  [self.pageInfoCommandsHandler showSecurityHelpPage];
+  [self.pageInfoPresentationHandler showSecurityHelpPage];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

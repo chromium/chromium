@@ -44,6 +44,19 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
       kPageInfoMicrophoneSwitchAccessibilityIdentifier, isOn);
 }
 
+// Matcher for Security help center link in footer.
+id<GREYMatcher> SecurityHelpCenterLink() {
+  return grey_allOf(
+      // The link is within the security footer with ID
+      // `kPageInfoSecurityFooterAccessibilityIdentifier`.
+      grey_ancestor(
+          grey_accessibilityID(kPageInfoSecurityFooterAccessibilityIdentifier)),
+      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
+      // element in the label with attributed string.
+      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
+      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
+}
+
 void AddAboutThisSiteHint(GURL url) {
   [PageInfoAppInterface
       addAboutThisSiteHintForURL:
@@ -344,6 +357,15 @@ void AddAboutThisSiteHint(GURL url) {
       selectElementWithMatcher:
           grey_accessibilityID(kPageInfoSecurityFooterAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the Learn more link.
+  [[EarlGrey selectElementWithMatcher:SecurityHelpCenterLink()]
+      performAction:grey_tap()];
+
+  // Check that the help center article was opened.
+  GREYAssertEqual(std::string("support.google.com"),
+                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  @"Did not navigate to the help center article.");
 }
 
 // Tests the security section by checking that the correct connection label is

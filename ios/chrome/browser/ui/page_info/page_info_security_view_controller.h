@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 
 @protocol PageInfoCommands;
+@protocol PageInfoPresentationCommands;
 
 // View Controller for displaying the security subpage of page info.
 @interface PageInfoSecurityViewController
@@ -19,6 +20,10 @@
 // Handler for actions related to the entire Page Info UI such as showing or
 // dismissing the entire UI.
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
+
+// Handler for actions within the Page Info UI.
+@property(nonatomic, weak) id<PageInfoPresentationCommands>
+    pageInfoPresentationHandler;
 
 // Designated initializer.
 - (instancetype)initWithSiteSecurityDescription:

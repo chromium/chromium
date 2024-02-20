@@ -17,9 +17,6 @@
 // Hides the page security info.
 - (void)hidePageInfo;
 
-// Shows the security help page.
-- (void)showSecurityHelpPage;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PAGE_INFO_COMMANDS_H_

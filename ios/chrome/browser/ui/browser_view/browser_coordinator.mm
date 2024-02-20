@@ -2196,13 +2196,6 @@ enum class ToolbarKind {
   self.pageInfoCoordinator = nil;
 }
 
-- (void)showSecurityHelpPage {
-  UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kPageInfoHelpCenterURL));
-  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  _urlLoadingBrowserAgent->Load(params);
-  [self hidePageInfo];
-}
-
 #pragma mark - FormInputAccessoryCoordinatorNavigator
 
 - (void)openPasswordManager {

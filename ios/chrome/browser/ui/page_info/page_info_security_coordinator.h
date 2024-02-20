@@ -9,8 +9,14 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol PageInfoPresentationCommands;
+
 // The coordinator for page info's security subpage.
 @interface PageInfoSecurityCoordinator : ChromeCoordinator
+
+// Handler for actions within the Page Info UI.
+@property(nonatomic, weak) id<PageInfoPresentationCommands>
+    pageInfoPresentationHandler;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController

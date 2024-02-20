@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
@@ -102,7 +103,17 @@
   _securityCoordinator = [[PageInfoSecurityCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:self.browser];
+  _securityCoordinator.pageInfoPresentationHandler = self;
   [_securityCoordinator start];
+}
+
+- (void)showSecurityHelpPage {
+  UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kPageInfoHelpCenterURL));
+  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  id<PageInfoCommands> pageInfoCommandsHandler =
+      HandlerForProtocol(self.dispatcher, PageInfoCommands);
+  [pageInfoCommandsHandler hidePageInfo];
 }
 
 - (void)showAboutThisSitePage:(GURL)URL {
