@@ -95,17 +95,19 @@ suite('SpellCheck', function() {
     // </if>
 
     // <if expr="not is_macosx">
-    test('structure', function() {
-      const spellCheckCollapse =
-          spellcheckPage.shadowRoot!.querySelector('#spellCheckCollapse');
-      assertTrue(!!spellCheckCollapse);
+    test('structure', async function() {
+      function getListItems() {
+        return spellcheckPage.shadowRoot!.querySelectorAll(
+            '#spellCheckCollapse .list-item');
+      }
 
+      let listItems = getListItems();
       const triggerRow = spellcheckPage.shadowRoot!.querySelector(
           '#enableSpellcheckingToggle')!;
+      assertEquals(2, listItems.length);
 
       // Disable spellcheck for en-US.
-      const spellcheckLanguageRow =
-          spellCheckCollapse.querySelector('.list-item')!;
+      const spellcheckLanguageRow = listItems[0]!;
       const spellcheckLanguageToggle =
           spellcheckLanguageRow.querySelector('cr-toggle');
       assertTrue(!!spellcheckLanguageToggle);
@@ -117,9 +119,9 @@ suite('SpellCheck', function() {
       // Force-enable a language via policy.
       spellcheckPage.setPrefValue('spellcheck.forced_dictionaries', ['nb']);
       flush();
-      const forceEnabledNbLanguageRow =
-          spellCheckCollapse.querySelectorAll('.list-item')[2];
-      assertTrue(!!forceEnabledNbLanguageRow);
+      listItems = getListItems();
+      assertEquals(3, listItems.length);
+      const forceEnabledNbLanguageRow = listItems[2]!;
       assertTrue(forceEnabledNbLanguageRow.querySelector('cr-toggle')!.checked);
       assertTrue(!!forceEnabledNbLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
@@ -128,23 +130,23 @@ suite('SpellCheck', function() {
       spellcheckPage.setPrefValue('spellcheck.forced_dictionaries', []);
       spellcheckPage.setPrefValue('spellcheck.dictionaries', ['nb']);
       flush();
-
-      const prefEnabledNbLanguageRow =
-          spellCheckCollapse.querySelectorAll('.list-item')[2];
-      assertTrue(!!prefEnabledNbLanguageRow);
+      listItems = getListItems();
+      assertEquals(3, listItems.length);
+      const prefEnabledNbLanguageRow = listItems[2]!;
       assertTrue(prefEnabledNbLanguageRow.querySelector('cr-toggle')!.checked);
 
       // Disable the language.
       prefEnabledNbLanguageRow.querySelector('cr-toggle')!.click();
       flush();
-      assertEquals(2, spellCheckCollapse.querySelectorAll('.list-item').length);
+      assertEquals(2, getListItems().length);
 
       // Force-disable the same language via policy.
       spellcheckPage.setPrefValue('spellcheck.blocked_dictionaries', ['nb']);
       languageHelper.enableLanguage('nb');
       flush();
-      const forceDisabledNbLanguageRow =
-          spellCheckCollapse.querySelectorAll('.list-item')[2]!;
+      listItems = getListItems();
+      assertEquals(3, listItems.length);
+      const forceDisabledNbLanguageRow = listItems[2]!;
       assertFalse(
           forceDisabledNbLanguageRow.querySelector('cr-toggle')!.checked);
       assertTrue(!!forceDisabledNbLanguageRow.querySelector(
@@ -184,15 +186,12 @@ suite('SpellCheck', function() {
       flush();
       assertFalse(!!triggerRow.querySelector('cr-policy-pref-indicator'));
 
-      const spellCheckLanguagesCount =
-          spellCheckCollapse.querySelectorAll('.list-item').length;
+      const spellCheckLanguagesCount = getListItems().length;
       // Enabling a language without spellcheck support should not add it to
       // the list
       languageHelper.enableLanguage('tk');
       flush();
-      assertEquals(
-          spellCheckCollapse.querySelectorAll('.list-item').length,
-          spellCheckLanguagesCount);
+      assertEquals(getListItems().length, spellCheckLanguagesCount);
     });
 
     test('only 1 supported language', () => {

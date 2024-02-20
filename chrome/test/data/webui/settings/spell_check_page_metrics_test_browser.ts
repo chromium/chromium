@@ -153,18 +153,20 @@ suite('SpellCheckPageMetricsBrowser', function() {
   // <if expr="not is_macosx">
   suite('MetricsNotMacOS', function() {
     test('records when enabling spellCheck for a language', async () => {
-      spellCheckPage.setPrefValue('browser.enable_spellchecking', true);
-      // enable language with support for spell check
-      spellCheckPage.setPrefValue('spellcheck.dictionaries', ['en']);
-      spellCheckPage.setPrefValue('spellcheck.dictionaries', ['nb']);
+      assertTrue(spellCheckPage.getPref('browser.enable_spellchecking').value);
 
-      const spellCheckLanguagesList = spellCheckPage.shadowRoot!
-          .querySelector<HTMLElement>('#spellCheckLanguagesList');
-      assertTrue(!!spellCheckLanguagesList);
-      const spellCheckLanguageItem = spellCheckLanguagesList
-          .querySelectorAll<HTMLElement>('.list-item')[1];
-      assertTrue(!!spellCheckLanguageItem);
-      spellCheckLanguageItem.querySelector('cr-toggle')!.click();
+      // Enable spellcheck only for the 1st entry.
+      spellCheckPage.setPrefValue('spellcheck.dictionaries', ['en-US']);
+
+      const list = spellCheckPage.shadowRoot!.querySelector<HTMLElement>(
+          '#spellCheckLanguagesList');
+      assertTrue(!!list);
+      const listItems = list.querySelectorAll<HTMLElement>('.list-item');
+      assertEquals(2, listItems.length);
+
+      const toggle = listItems[1]!.querySelector('cr-toggle');
+      assertTrue(!!toggle);
+      toggle.click();
       flush();
 
       assertEquals(
@@ -173,18 +175,20 @@ suite('SpellCheckPageMetricsBrowser', function() {
     });
 
     test('records when disabling spellCheck for a language', async () => {
-      spellCheckPage.setPrefValue('browser.enable_spellchecking', true);
-      // enable language with support for spell check
-      languageHelper.enableLanguage('en');
-      languageHelper.enableLanguage('af');
+      assertTrue(spellCheckPage.getPref('browser.enable_spellchecking').value);
 
-      const spellCheckLanguagesList = spellCheckPage.shadowRoot!
-          .querySelector<HTMLElement>('#spellCheckLanguagesList');
-      assertTrue(!!spellCheckLanguagesList);
-      const spellCheckLanguageItem = spellCheckLanguagesList
-          .querySelectorAll<HTMLElement>('.list-item')[1];
-      assertTrue(!!spellCheckLanguageItem);
-      spellCheckLanguageItem.querySelector('cr-toggle')!.click();
+      // Enable spellcheck for both language entries.
+      spellCheckPage.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
+
+      const list = spellCheckPage.shadowRoot!.querySelector<HTMLElement>(
+          '#spellCheckLanguagesList');
+      assertTrue(!!list);
+      const listItems = list.querySelectorAll<HTMLElement>('.list-item');
+      assertEquals(2, listItems.length);
+
+      const toggle = listItems[1]!.querySelector('cr-toggle');
+      assertTrue(!!toggle);
+      toggle.click();
       flush();
 
       assertEquals(
