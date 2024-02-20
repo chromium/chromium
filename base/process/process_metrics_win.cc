@@ -13,6 +13,7 @@
 
 #include <algorithm>
 
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -145,14 +146,14 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   FILETIME kernel_time;
   FILETIME user_time;
 
-  if (!process_.is_valid())
+  if (!process_.is_valid()) {
     return TimeDelta();
+  }
 
   if (!GetProcessTimes(process_.get(), &creation_time, &exit_time, &kernel_time,
                        &user_time)) {
-    // This should never fail because we duplicate the handle to guarantee it
-    // will remain valid.
-    DCHECK(false);
+    // This should never fail when the handle is valid.
+    NOTREACHED(NotFatalUntil::M125);
     return TimeDelta();
   }
 
@@ -178,9 +179,14 @@ TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
     return GetCumulativeCPUUsage();
   }
 
+  if (!process_.is_valid()) {
+    return TimeDelta();
+  }
+
   ULONG64 process_cycle_time = 0;
   if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    // This should never fail when the handle is valid.
+    NOTREACHED(NotFatalUntil::M125);
     return TimeDelta();
   }
 
@@ -206,14 +212,25 @@ uint64_t ProcessMetrics::GetCumulativeDiskUsageInBytes() {
 }
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process) {
-  if (process) {
-    HANDLE duplicate_handle = INVALID_HANDLE_VALUE;
-    BOOL result = ::DuplicateHandle(::GetCurrentProcess(), process,
-                                    ::GetCurrentProcess(), &duplicate_handle,
-                                    PROCESS_QUERY_INFORMATION, FALSE, 0);
-    DPCHECK(result);
-    process_.Set(duplicate_handle);
+  if (!process) {
+    // Don't try to duplicate an invalid handle.
+    return;
   }
+  HANDLE duplicate_handle = INVALID_HANDLE_VALUE;
+  BOOL result =
+      ::DuplicateHandle(::GetCurrentProcess(), process, ::GetCurrentProcess(),
+                        &duplicate_handle, PROCESS_QUERY_INFORMATION, FALSE, 0);
+  if (!result) {
+    // Duplicating a handle can fail with an access error if the target process
+    // has a higher integrity level than the current process.
+    const DWORD last_error = ::GetLastError();
+    SCOPED_CRASH_KEY_NUMBER("ProcessMetrics", "dup_handle_error", last_error);
+    CHECK_EQ(last_error, static_cast<DWORD>(ERROR_ACCESS_DENIED),
+             NotFatalUntil::M125);
+    return;
+  }
+
+  process_.Set(duplicate_handle);
 }
 
 size_t GetSystemCommitCharge() {

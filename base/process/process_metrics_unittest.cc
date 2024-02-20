@@ -751,7 +751,10 @@ TEST_F(SystemMetricsTest, InvalidProcessCpuUsage) {
   std::unique_ptr<ProcessMetrics> metrics =
       ProcessMetrics::CreateProcessMetrics(kNullProcessHandle);
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(metrics->GetCumulativeCPUUsage(), TimeDelta());
+  EXPECT_EQ(metrics->GetPreciseCumulativeCPUUsage(), TimeDelta());
+#elif BUILDFLAG(IS_APPLE)
   EXPECT_EQ(metrics->GetCumulativeCPUUsage(), TimeDelta());
 #else
   EXPECT_LT(metrics->GetCumulativeCPUUsage(), TimeDelta());
