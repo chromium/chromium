@@ -4623,7 +4623,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Share Page...
       </message>
       <message name="IDS_IOS_SHARE_THIS_PAGE_IPH_TEXT" desc="Text for the share button's in-product help, explaining that this button can be used to share this page. [iOS only]">
-        Share this page
+        You can share this page here.
+      </message>
+      <message name="IDS_IOS_SHARE_THIS_PAGE_IPH_ANNOUNCEMENT" desc="The announcement of the share button's in-product help, explaining to the user they can share this page from the share button. The in-product help is displayed as a bubble pointing to the menu button. Read by Text To Speech. [iOS only]">
+        You can share this page here from the share button.
       </message>
       <message name="IDS_IOS_SHARE_TO_CLIPBOARD_SUCCESS" desc="Message displayed when the copy link (in Share... menu) action has succeeded. [Length: 30em] [iOS only]">
         Link copied
