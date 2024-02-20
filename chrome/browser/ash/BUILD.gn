@@ -1124,8 +1124,6 @@ source_set("ash") {
     "file_manager/app_id.h",
     "file_manager/app_service_file_tasks.cc",
     "file_manager/app_service_file_tasks.h",
-    "file_manager/arc_file_tasks.cc",
-    "file_manager/arc_file_tasks.h",
     "file_manager/cloud_upload_prefs_watcher.cc",
     "file_manager/cloud_upload_prefs_watcher.h",
     "file_manager/copy_or_move_encrypted_hook_delegate.cc",

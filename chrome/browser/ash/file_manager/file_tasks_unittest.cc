@@ -397,24 +397,6 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
   CheckConflictingPolicyAssignment();
 }
 
-// Check that legacy arc app format is parsed correctly.
-TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, LegacyArcAppFormat) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kArcFileTasksUseAppService);
-
-  resulting_tasks()->tasks.emplace_back(
-      TaskDescriptor{"com.legacy.package/intentName", TASK_TYPE_ARC_APP,
-                     "view"},
-      /*task_title=*/"Task", GURL(), false, false, false);
-  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
-                         "text/plain", false);
-
-  UpdateDefaultHandlersPrefs({{".txt", "com.legacy.package"}});
-  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
-                                                     resulting_tasks()));
-  CheckCorrectPolicyAssignment("com.legacy.package/intentName");
-}
-
 // Check that virtual tasks are handled by the policy.
 TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, VirtualTask) {
   auto virtual_task =
@@ -764,9 +746,6 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
 TEST_F(FileManagerFileTaskPreferencesTest,
        ChooseAndSetDefault_MatchesWithAlternateAppServiceTaskDescriptorForm) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      ash::features::kArcFileTasksUseAppService};
-
   std::string package = "com.example.gallery";
   std::string activity = "com.example.gallery.OpenActivity";
   std::string app_id = "zabcdefg";
@@ -809,9 +788,6 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
 TEST_F(FileManagerFileTaskPreferencesTest,
        UpdateDefaultTask_ConvertsArcAppServiceTaskDescriptorToStandardTaskId) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      ash::features::kArcFileTasksUseAppService};
-
   std::string package = "com.example.gallery";
   std::string activity = "com.example.gallery.OpenActivity";
   std::string app_id = "zabcdefg";

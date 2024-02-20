@@ -116,20 +116,6 @@ const char kImportCrostiniImageHandlerId[] =
 const char kInstallLinuxPackageHandlerId[] =
     "chrome://file-manager/?install-linux-package";
 
-bool MatchPolicyIdAgainstLegacyArcAppFormat(const TaskDescriptor& td,
-                                            std::string_view policy_id) {
-  DCHECK_EQ(td.task_type, TASK_TYPE_ARC_APP);
-  // Sometimes task descriptors for Android apps are stored in a
-  // legacy format (app id: "<package>/<activity>", action id: "view").
-  std::vector<std::string> app_id_info = base::SplitString(
-      td.app_id, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (app_id_info.size() != 2) {
-    return false;
-  }
-  const auto& package_name = app_id_info[0];
-  return package_name == policy_id;
-}
-
 }  // namespace
 
 bool FileHandlerIsEnabled(Profile* profile,
@@ -262,6 +248,7 @@ void FindAppServiceTasks(Profile* profile,
       proxy->GetAppsForFiles(std::move(intent_files));
 
   std::vector<apps::AppType> supported_app_types = {
+      apps::AppType::kArc,
       apps::AppType::kWeb,
       apps::AppType::kSystemWeb,
       apps::AppType::kChromeApp,
@@ -272,9 +259,6 @@ void FindAppServiceTasks(Profile* profile,
       apps::AppType::kCrostini,
       apps::AppType::kPluginVm,
   };
-  if (ash::features::ShouldArcFileTasksUseAppService()) {
-    supported_app_types.push_back(apps::AppType::kArc);
-  }
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
     if (!base::Contains(supported_app_types, app_type)) {
@@ -388,8 +372,7 @@ void ExecuteAppServiceTask(
          task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
          task.task_type == TASK_TYPE_CROSTINI_APP ||
          task.task_type == TASK_TYPE_PLUGIN_VM_APP ||
-         (ash::features::ShouldArcFileTasksUseAppService() &&
-          task.task_type == TASK_TYPE_ARC_APP));
+         task.task_type == TASK_TYPE_ARC_APP);
 
   apps::IntentPtr intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView, std::move(intent_files));
@@ -459,10 +442,7 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
         apps_util::GetAppIdsFromPolicyId(profile, policy_id);
     for (auto& task : resulting_tasks->tasks) {
       const auto& td = task.task_descriptor;
-      if (base::Contains(app_ids, td.app_id) ||
-          (td.task_type == TASK_TYPE_ARC_APP &&
-           !ash::features::ShouldArcFileTasksUseAppService() &&
-           MatchPolicyIdAgainstLegacyArcAppFormat(td, policy_id))) {
+      if (base::Contains(app_ids, td.app_id)) {
         filtered_tasks.push_back(&task);
       }
     }

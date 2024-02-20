@@ -3044,11 +3044,6 @@ BASE_FEATURE(kPerUserMetrics,
              "PerUserMetricsConsent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows Files App to find and execute tasks using App Service for ARC apps.
-BASE_FEATURE(kArcFileTasksUseAppService,
-             "ArcFileTasksUseAppService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable fast ink for software cursor. Fast ink provides a low-latency
 // cursor with possible tearing artifacts.
 BASE_FEATURE(kEnableFastInkForSoftwareCursor,
@@ -4504,10 +4499,6 @@ bool IsWindowSplittingEnabled() {
 
 bool IsWmModeEnabled() {
   return base::FeatureList::IsEnabled(kWmMode);
-}
-
-bool ShouldArcFileTasksUseAppService() {
-  return base::FeatureList::IsEnabled(kArcFileTasksUseAppService);
 }
 
 bool IsSearchCustomizableShortcutsInLauncherEnabled() {
