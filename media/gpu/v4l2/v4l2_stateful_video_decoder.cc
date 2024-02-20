@@ -378,6 +378,7 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
   }
+  client_->NotifyEstimatedMaxDecodeRequests(4);
 
   // Subscribe to the resolution change event. This is needed for resolution
   // changes mid stream but also to initialize the |CAPTURE_queue|.

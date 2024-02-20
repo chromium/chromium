@@ -65,6 +65,10 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     // flushed.
     virtual void PrepareChangeResolution() = 0;
 
+    // Notify of the estimated maximum possible number of DecodeRequests. This
+    // method can be called from any thread and as many times as desired.
+    virtual void NotifyEstimatedMaxDecodeRequests(int num) = 0;
+
     // Negotiates the output format and size of the decoder: if not scaling
     // (i.e., the size of |decoder_visible_rect| is equal to |output_size|), it
     // selects a renderable format out of |candidates| and initializes the main
@@ -223,6 +227,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // VideoDecoderMixin::Client implementation.
   DmabufVideoFramePool* GetVideoFramePool() const override;
   void PrepareChangeResolution() override;
+  void NotifyEstimatedMaxDecodeRequests(int num) override;
   CroStatus::Or<ImageProcessor::PixelLayoutCandidate> PickDecoderOutputFormat(
       const std::vector<ImageProcessor::PixelLayoutCandidate>& candidates,
       const gfx::Rect& decoder_visible_rect,
@@ -375,6 +380,9 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // successfully done.
   std::unique_ptr<VideoDecoderMixin> decoder_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  static constexpr int kDefaultMaxDecodeRequests = 8;
+  std::atomic_int decoder_max_decode_requests_ = kDefaultMaxDecodeRequests;
 
   // Only used after initialization on |decoder_task_runner_|.
   CreateDecoderFunctionCB create_decoder_function_cb_

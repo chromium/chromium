@@ -420,20 +420,7 @@ bool VideoDecoderPipeline::IsPlatformDecoder() const {
 
 int VideoDecoderPipeline::GetMaxDecodeRequests() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-
-  // TODO(mcasas): query |decoder_| instead. This is difficult because it can
-  // only be accessed on |decoder_sequence_checker_|: this method is supposed
-  // to be synchronous.
-
-#if BUILDFLAG(USE_V4L2_CODEC)
-  if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder) &&
-      IsV4L2DecoderStateful()) {
-    return 4;
-  }
-#endif
-  // This value comes from the (large) number of buffers in the input queue in
-  // V4L2VideoDecoder.
-  return 8;
+  return decoder_max_decode_requests_;
 }
 
 bool VideoDecoderPipeline::FramesHoldExternalResources() const {
@@ -960,6 +947,12 @@ DmabufVideoFramePool* VideoDecoderPipeline::GetVideoFramePool() const {
   if (image_processor_)
     return auxiliary_frame_pool_.get();
   return main_frame_pool_.get();
+}
+
+void VideoDecoderPipeline::NotifyEstimatedMaxDecodeRequests(int num) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DCHECK(num);
+  decoder_max_decode_requests_ = num;
 }
 
 CroStatus::Or<PixelLayoutCandidate>
