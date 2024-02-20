@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/net/ash_proxy_monitor.h"
-#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -269,24 +268,9 @@ BrowserProcessPlatformPart::GetTimezoneResolverManager() {
   return timezone_resolver_manager_.get();
 }
 
-ash::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
-  if (!timezone_resolver_.get()) {
-    timezone_resolver_ = std::make_unique<ash::TimeZoneResolver>(
-        GetTimezoneResolverManager(),
-        ash::SimpleGeolocationProvider::GetInstance(),
-        g_browser_process->shared_url_loader_factory(),
-        base::BindRepeating(&ash::system::ApplyTimeZone),
-        base::BindRepeating(&ash::DelayNetworkCall),
-        g_browser_process->local_state());
-  }
-  return timezone_resolver_.get();
-}
-
 void BrowserProcessPlatformPart::StartTearDown() {
   // Some tests check for memory leaks before this object is
-  // destroyed.  So we need to destroy |timezone_resolver_| and
-  // |timezone_resolver_manager_| here.
-  timezone_resolver_.reset();
+  // destroyed.  So we need to destroy |timezone_resolver_manager_| here.
   timezone_resolver_manager_.reset();
   profile_helper_.reset();
   browser_context_flusher_.reset();

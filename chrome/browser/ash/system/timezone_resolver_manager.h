@@ -83,6 +83,9 @@ class TimeZoneResolverManager
   // system geolocation permission.
   bool TimeZoneResolverAllowedByTimeZoneConfigData();
 
+  // Returns the instance of TimeZoneResolver.
+  ash::TimeZoneResolver* GetResolver();
+
   // Convert kResolveTimezoneByGeolocationMethod /
   // kResolveDeviceTimezoneByGeolocationMethod preference value to
   // TimeZoneResolveMethod. Defaults to DISABLED for unknown values.
@@ -132,6 +135,8 @@ class TimeZoneResolverManager
   // True if TimeZoneResolverManager may start/stop on its own.
   // Becomes true after UpdateTimezoneResolver() has been called at least once.
   bool initialized_ = false;
+
+  std::unique_ptr<ash::TimeZoneResolver> timezone_resolver_;
 
   base::WeakPtrFactory<TimeZoneResolverManager> weak_factory_{this};
 };

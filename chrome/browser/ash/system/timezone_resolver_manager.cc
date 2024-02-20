@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -272,8 +273,7 @@ int TimeZoneResolverManager::GetEffectiveAutomaticTimezoneManagementSetting() {
 
 void TimeZoneResolverManager::UpdateTimezoneResolver() {
   initialized_ = true;
-  TimeZoneResolver* resolver =
-      g_browser_process->platform_part()->GetTimezoneResolver();
+  TimeZoneResolver* resolver = GetResolver();
   // Local state becomes initialized when policy data is loaded,
   // and we need policies to decide whether resolver can be started.
   if (!local_state_initialized_) {
@@ -332,6 +332,18 @@ bool TimeZoneResolverManager::TimeZoneResolverAllowedByTimeZoneConfigData() {
     }
   }
   return result == SHOULD_START;
+}
+
+ash::TimeZoneResolver* TimeZoneResolverManager::GetResolver() {
+  if (!timezone_resolver_.get()) {
+    timezone_resolver_ = std::make_unique<ash::TimeZoneResolver>(
+        this, geolocation_provider_,
+        g_browser_process->shared_url_loader_factory(),
+        base::BindRepeating(&ash::system::ApplyTimeZone),
+        base::BindRepeating(&ash::DelayNetworkCall),
+        g_browser_process->local_state());
+  }
+  return timezone_resolver_.get();
 }
 
 void TimeZoneResolverManager::OnLocalStateInitialized(bool initialized) {

@@ -1220,7 +1220,10 @@ void ChromeUserManagerImpl::UpdateUserTimeZoneRefresher(Profile* profile) {
   // Timezone auto refresh is disabled for Guest and OffTheRecord
   // users, but enabled for Kiosk mode.
   if (IsLoggedInAsGuest() || profile->IsOffTheRecord()) {
-    g_browser_process->platform_part()->GetTimezoneResolver()->Stop();
+    g_browser_process->platform_part()
+        ->GetTimezoneResolverManager()
+        ->GetResolver()
+        ->Stop();
     return;
   }
   g_browser_process->platform_part()
