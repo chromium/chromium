@@ -257,9 +257,8 @@
   }
 
   @media (forced-colors: none) {
-    :host([show-background-image_]) .customize-icon,
-    :host([wallpaper-search-button-enabled_]) #customizeIcon,
-    :host([show-wallpaper-search_]) .customize-icon {
+    :host([show-background-image_]) #customizeIcon,
+    :host([show-background-image_]) #wallpaperSearchIcon {
       background-color: white;
     }
 
@@ -275,7 +274,7 @@
   }
 
   @media (max-width: 550px) {
-    :host-context([chrome-refresh-2023]) #customizeButton {
+    :host-context([chrome-refresh-2023]) .customize-button {
       padding-inline-start: 8px;
     }
 
