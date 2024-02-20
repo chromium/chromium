@@ -24,13 +24,13 @@ constexpr char HomeButtonHistogram[] =
     "Apps.AppList.Search.Session2.HomeButton";
 constexpr char SearchKeyHistogram[] = "Apps.AppList.Search.Session2.SearchKey";
 constexpr char QueryLengthAggregateHistogram[] =
-    "Apps.Applist.Search.Session2.QueryLength";
+    "Apps.AppList.Search.Session2.QueryLength";
 constexpr char QueryLengthAnswerCardSeenHistogram[] =
-    "Apps.Applist.Search.Session2.QueryLength.AnswerCardSeen";
+    "Apps.AppList.Search.Session2.QueryLength.AnswerCardSeen";
 constexpr char QueryLengthLaunchHistogram[] =
-    "Apps.Applist.Search.Session2.QueryLength.Launch";
+    "Apps.AppList.Search.Session2.QueryLength.Launch";
 constexpr char QueryLengthQuitHistogram[] =
-    "Apps.Applist.Search.Session2.QueryLength.Quit";
+    "Apps.AppList.Search.Session2.QueryLength.Quit";
 
 }  // namespace
 

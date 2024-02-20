@@ -43,12 +43,12 @@ void SearchSessionMetricsManager::EndSearchSession(
                                 ExtractKeywords(query).size(), 100);
 
   // Log query length.
-  base::UmaHistogramExactLinear("Apps.Applist.Search.Session2.QueryLength",
+  base::UmaHistogramExactLinear("Apps.AppList.Search.Session2.QueryLength",
                                 query.size(),
                                 kMaxLoggedQueryLengthOnSessionConclusion);
   // Log query length, split by SearchSessionConclusion.
   base::UmaHistogramExactLinear(
-      base::StrCat({"Apps.Applist.Search.Session2.QueryLength.",
+      base::StrCat({"Apps.AppList.Search.Session2.QueryLength.",
                     ash::SearchSessionConclusionToString(session_result_)}),
       query.size(), kMaxLoggedQueryLengthOnSessionConclusion);
 
