@@ -3658,12 +3658,6 @@ const char kWallpaperPerDeskName[] =
 const char kWallpaperPerDeskDescription[] =
     "Allow users to set different wallpapers on each of their active desks";
 
-const char kWebAuthnScreenReaderModeName[] =
-    "Enable screen reader mode for webauthn UI";
-const char kWebAuthnScreenReaderModeDescription[] =
-    "When displaying webauthn UI, try to detect if a screen reader is running "
-    "to tailor the experience for blind and low vision users.";
-
 const char kWebBluetoothName[] = "Web Bluetooth";
 const char kWebBluetoothDescription[] =
     "Enables the Web Bluetooth API on platforms without official support";

@@ -7,14 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
-#include "device/fido/features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -40,11 +38,6 @@ void ConfigureHeaderIllustration(T* illustration, gfx::Size header_size) {
       gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginTop, 0)));
   illustration->SetSize(header_size);
   illustration->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-}
-
-bool ScreenReaderModeEnabled() {
-  return base::FeatureList::IsEnabled(device::kWebAuthnScreenReaderMode) &&
-         accessibility_state_utils::IsScreenReaderEnabled();
 }
 
 }  // namespace
@@ -79,7 +72,7 @@ views::View* AuthenticatorRequestSheetView::GetInitiallyFocusedView() {
   if (should_focus_step_specific_content_ == AutoFocus::kYes) {
     return child_views_.step_specific_content_;
   }
-  if (ScreenReaderModeEnabled()) {
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
     // Focus the title label if a screen reader is detected to nudge it to
     // announce the title when the sheet changes.
     return child_views_.title_label_;
@@ -178,7 +171,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     if (features::IsChromeRefresh2023()) {
       title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
     }
-    if (ScreenReaderModeEnabled() &&
+    if (accessibility_state_utils::IsScreenReaderEnabled() &&
         should_focus_step_specific_content_ == AutoFocus::kNo) {
       title_label->SetFocusBehavior(FocusBehavior::ALWAYS);
     }
