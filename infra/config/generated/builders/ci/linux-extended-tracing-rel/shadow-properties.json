@@ -1,8 +1,0 @@
-{
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "jobs": 250,
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  }
-}
