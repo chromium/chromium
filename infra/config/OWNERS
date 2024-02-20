@@ -1,5 +1,5 @@
 # iOS owners for changing Xcode constants only.
-per-file lib/builders.star=file://infra/config/groups/ios/OWNERS
+per-file lib/xcode.star=file://infra/config/groups/ios/OWNERS
 
 # iOS owners for iOS builder configs.
 per-file subprojects/chromium/ci/chromium.fyi.star=file://infra/config/groups/ios/OWNERS
