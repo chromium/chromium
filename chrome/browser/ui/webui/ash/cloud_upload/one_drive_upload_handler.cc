@@ -71,7 +71,6 @@ OneDriveUploadHandler::OneDriveUploadHandler(
       notification_manager_(
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,
-              source_url.path().BaseName().value(),
               l10n_util::GetStringUTF8(IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE),
               l10n_util::GetStringUTF8(IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT),
               // TODO(b/242685536) Update when support for multi-files is added.

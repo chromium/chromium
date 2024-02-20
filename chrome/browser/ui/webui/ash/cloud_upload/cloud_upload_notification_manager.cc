@@ -42,13 +42,11 @@ void OnNotificationManagerDone(
 
 CloudUploadNotificationManager::CloudUploadNotificationManager(
     Profile* profile,
-    const std::string& file_name,
     const std::string& cloud_provider_name,
     const std::string& target_app_name,
     int num_files,
     UploadType upload_type)
     : profile_(profile),
-      file_name_(file_name),
       cloud_provider_name_(cloud_provider_name),
       target_app_name_(target_app_name),
       num_files_(num_files),

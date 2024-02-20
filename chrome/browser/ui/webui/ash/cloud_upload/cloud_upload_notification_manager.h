@@ -34,7 +34,6 @@ class CloudUploadNotificationManager
       base::OnceCallback<void(base::FilePath)>;
 
   CloudUploadNotificationManager(Profile* profile,
-                                 const std::string& file_name,
                                  const std::string& cloud_provider_name,
                                  const std::string& target_app_name,
                                  int num_files,
@@ -135,7 +134,6 @@ class CloudUploadNotificationManager
 
   const raw_ptr<Profile, LeakedDanglingUntriaged> profile_;
   CloudProvider provider_;
-  std::string file_name_;
   std::string cloud_provider_name_;
   std::string notification_id_;
   std::string target_app_name_;

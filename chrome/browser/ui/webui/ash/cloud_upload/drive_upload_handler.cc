@@ -95,7 +95,6 @@ DriveUploadHandler::DriveUploadHandler(
       notification_manager_(
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,
-              source_url.path().BaseName().value(),
               l10n_util::GetStringUTF8(IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE),
               GetTargetAppName(source_url.path()),
               // TODO(b/242685536) Update when support for multi-files is added.
