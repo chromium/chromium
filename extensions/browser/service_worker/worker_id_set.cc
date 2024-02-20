@@ -24,7 +24,6 @@ constexpr int kSmallestRenderProcessId =
     content::ChildProcessHost::kInvalidUniqueID;
 constexpr int kMaxWorkerCountToReport = 50;
 
-// Prevent check on multiple workers per extension for testing purposes.
 bool g_allow_multiple_workers_per_extension = false;
 
 static_assert(kSmallestVersionId < 0,
@@ -48,16 +47,8 @@ void WorkerIdSet::Add(const WorkerId& worker_id) {
       kMaxWorkerCountToReport);
 
   if (!g_allow_multiple_workers_per_extension) {
-    // TODO(crbug.com/1493391):Enable this CHECK and delete the
-    // DUMP_WILL_BE_CHECK() once multiple active workers is resolved.
-    // CHECK_LE(new_size, 1u) << "Extension with worker id " << worker_id
-    //                        << " added additional worker";
-
-    // Only dump when there are two workers. Two added should be enough to solve
-    // why there's N workers.
-    DUMP_WILL_BE_CHECK(new_size != 2u)
-        << "Extension with worker id " << worker_id
-        << " added additional worker";
+    DCHECK_LE(new_size, 1u) << "Extension with worker id " << worker_id
+                            << " added additional worker";
   }
 }
 
