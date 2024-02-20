@@ -2137,7 +2137,7 @@ BASE_FEATURE(kOsSettingsDeprecateSyncMetricsToggle,
 // Enables the wayfinding improvements for the ChromeOS Settings revamp
 BASE_FEATURE(kOsSettingsRevampWayfinding,
              "OsSettingsRevampWayfinding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOverviewButton,
              "OverviewButton",
