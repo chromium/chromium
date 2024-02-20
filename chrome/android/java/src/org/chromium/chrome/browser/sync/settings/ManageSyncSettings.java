@@ -204,6 +204,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         }
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)) {
+            mGoogleActivityControls.setTitle(R.string.sign_in_personalize_google_services_title);
+            mGoogleActivityControls.setSummary(
+                    R.string.sign_in_personalize_google_services_summary);
+        }
+
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
         mSyncEncryption.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));

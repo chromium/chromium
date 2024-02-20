@@ -114,6 +114,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBoardingPassDetector,
     &features::kNetworkServiceInProcess,
     &features::kElasticOverscroll,
+    &features::kLinkedServicesSetting,
     &features::kNotificationOneTapUnsubscribe,
     &features::kPrivacyGuideAndroid3,
     &features::kPrivacyGuidePreloadAndroid,

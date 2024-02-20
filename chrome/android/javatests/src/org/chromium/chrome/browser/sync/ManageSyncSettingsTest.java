@@ -905,6 +905,35 @@ public class ManageSyncSettingsTest {
     }
 
     @Test
+    @LargeTest
+    @Feature({"PersonalizedGoogleServices", "RenderTest"})
+    public void testGoogleActivityControls() throws Exception {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
+        render(fragment, "sync_settings_google_activity_controls");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PersonalizedGoogleServices", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
+    public void testLinkedServicesSetting() throws Exception {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
+        render(fragment, "sync_settings_linked_services_setting");
+    }
+
+    @Test
     @SmallTest
     @Feature({"Sync"})
     public void testAdvancedSyncFlowFromSyncConsentDoesNotEnableUKM() throws Exception {

@@ -317,6 +317,7 @@ public abstract class ChromeFeatureList {
     public static final String KID_FRIENDLY_CONTENT_FEED = "KidFriendlyContentFeed";
     public static final String LENS_CAMERA_ASSISTED_SEARCH = "LensCameraAssistedSearch";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
+    public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
