@@ -72,7 +72,7 @@ void MaximizeIfSnapped(aura::Window* window);
 // `divider_changed` is true, maybe clamp the bounds to a minimum size and shift
 // the bounds offscreen. If `account_for_hotseat` is true and we are in tablet
 // mode, inset the bounds by the hotseat size.
-gfx::Rect GetGridBoundsInScreen(aura::Window* target_root);
+ASH_EXPORT gfx::Rect GetGridBoundsInScreen(aura::Window* target_root);
 gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
     std::optional<SplitViewDragIndicators::WindowDraggingState>
