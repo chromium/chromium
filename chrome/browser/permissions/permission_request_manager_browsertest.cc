@@ -384,6 +384,47 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
 }
 
+// Ignored permission request should not trigger a blocked activity indicator on
+// a new document.
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       SameOriginCrossDocumentNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/empty.html"), 1);
+
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      GetActiveMainFrame());
+
+  ASSERT_TRUE(pscs);
+  EXPECT_FALSE(pscs->IsContentBlocked(ContentSettingsType::GEOLOCATION));
+  EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
+
+  // Request 'geolocation' permission.
+  ASSERT_TRUE(content::ExecJs(
+      GetActiveMainFrame(),
+      "navigator.geolocation.getCurrentPosition(function(){});"));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_TRUE(bubble_factory()->is_visible());
+
+  // Start a same-origin cross-document navigation. This will resolve currently
+  // visible permission prompt as `Ignored`.
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/empty.html"), 1);
+
+  EXPECT_FALSE(bubble_factory()->is_visible());
+
+  // After a new started navigation PSCS will be deleted. Get a new instance.
+  pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      GetActiveMainFrame());
+  // Geolocation content setting was not blocked nor allowed. In other words,
+  // there is no visible activity indicator after Geolocation permission prompt
+  // was resolved as `Ignored`.
+  EXPECT_FALSE(pscs->IsContentBlocked(ContentSettingsType::GEOLOCATION));
+  EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
+}
+
 // Prompts are only shown for active tabs and (on Desktop) hidden on tab
 // switching
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, MultipleTabs) {

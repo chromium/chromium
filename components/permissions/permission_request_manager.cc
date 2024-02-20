@@ -471,7 +471,20 @@ void PermissionRequestManager::DidFinishNavigation(
               back_forward_cache::DisabledReasonId::kPermissionRequestManager));
     }
   }
+
+  // `CleanUpRequests()` will update activity indicators. `DidFinishNavigation`
+  // means that a new document was recently created, it should not display
+  // blocked indicators from a previous document.
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  // `pscs` can be nullptr in tests.
+  if (pscs) {
+    pscs->OnPermissionRequestCleanupStart();
+  }
   CleanUpRequests();
+  if (pscs) {
+    pscs->OnPermissionRequestCleanupEnd();
+  }
 }
 
 void PermissionRequestManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
