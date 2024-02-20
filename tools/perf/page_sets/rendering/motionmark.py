@@ -343,7 +343,7 @@ class MotionMarkFixed2SecondsSuits(MotionMarkFixed2SecondsPage):
                 component='Internals>GPU>Internals')
 class MotionMarkRampCompositeGraphite(MotionMarkRampComposite):
   BASE_NAME = 'motionmark_ramp_composite_graphite'
-  SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC]
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC, story.expectations.ALL_WIN]
   EXTRA_BROWSER_ARGS = '--enable-features=SkiaGraphite'
 
 
@@ -351,5 +351,5 @@ class MotionMarkRampCompositeGraphite(MotionMarkRampComposite):
                 component='Internals>GPU>Internals')
 class MotionMarkRampCompositeGanesh(MotionMarkRampComposite):
   BASE_NAME = 'motionmark_ramp_composite_ganesh'
-  SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC]
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC, story.expectations.ALL_WIN]
   EXTRA_BROWSER_ARGS = '--disable-features=SkiaGraphite'
