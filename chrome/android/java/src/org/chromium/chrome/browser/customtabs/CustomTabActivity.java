@@ -422,6 +422,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)
                 && requestCode == HistoryManagerUtils.HISTORY_REQUEST_CODE
                 && resultCode == RESULT_OK) {
@@ -430,7 +431,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                             data.getData().toString(),
                             IntentHandler.getTransitionTypeFromIntent(data, PageTransition.LINK));
             mTabProvider.getTab().loadUrl(params);
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }

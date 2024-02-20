@@ -283,6 +283,7 @@ public class ShareHelper {
             // Remove the weak reference to the context and window when it is removed from the
             // attaching window.
             if (mAttachedContext.get() != null) {
+                Log.i(TAG, "Dispatch cleaning intent to close the share sheet.");
                 // Issue a cleaner intent so the share sheet is cleared. This is a workaround to
                 // close the top ChooserActivity when share isn't completed.
                 Intent cleanerIntent = createCleanupIntent();
