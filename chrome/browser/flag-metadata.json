@@ -6618,13 +6618,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "print-management-setup-assistance",
-    "owners": [
-      "//ash/webui/print_management/OWNERS"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "print-preview-cros-app",
     "owners": [
       "//ash/webui/print_management/OWNERS"

@@ -7042,11 +7042,6 @@ const char kPrintingPpdChannelDescription[] =
     "The channel from which PPD index "
     "is loaded when matching PPD files during printer setup.";
 
-const char kPrintManagementSetupAssistanceName[] =
-    "Enable improved printer setup experience for the Print Management App";
-const char kPrintManagementSetupAssistanceDescription[] =
-    "Enable improved printer setup experience for the Print Management App.";
-
 const char kPrintPreviewCrosAppName[] = "Enable ChromeOS print preview";
 const char kPrintPreviewCrosAppDescription[] =
     "Enables ChromeOS print preview app.";

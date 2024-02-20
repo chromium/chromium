@@ -117,13 +117,6 @@ export class PrintManagementElement extends PrintManagementElementBase
         value: false,
       },
 
-      showSetupAssistance: {
-        type: Boolean,
-        value: (): boolean => {
-          return loadTimeData.getBoolean('isSetupAssistanceEnabled');
-        },
-      },
-
       deletePrintJobHistoryAllowedByPolicy: {
         type: Boolean,
         value: true,
@@ -175,7 +168,6 @@ export class PrintManagementElement extends PrintManagementElementBase
   private listBlurred: boolean;
   private showClearAllButton: boolean;
   private showClearAllDialog: boolean;
-  private showSetupAssistance: boolean;
   private deletePrintJobHistoryAllowedByPolicy: boolean;
   private shouldDisableClearAllButton: boolean;
   private printJobsObserverReceiver: PrintJobsObserverReceiver;
@@ -354,22 +346,20 @@ export class PrintManagementElement extends PrintManagementElementBase
 
   /** Determine if printer setup UI should be shown. */
   private shouldShowSetupAssistance(): boolean {
-    return this.showSetupAssistance && this.printJobsLoaded &&
-        this.ongoingPrintJobs.length === 0 && this.printJobs.length === 0;
+    return this.printJobsLoaded && this.ongoingPrintJobs.length === 0 &&
+        this.printJobs.length === 0;
   }
 
   /** Determine if ongoing jobs empty messaging should be shown. */
   private shouldShowOngoingEmptyState(): boolean {
     // The ongoing empty state should only be shown when there aren't ongoing
     // print jobs and the completed prints jobs list is showing.
-    return (!this.showSetupAssistance || this.printJobs.length > 0) &&
-        this.ongoingPrintJobs.length === 0;
+    return this.printJobs.length > 0 && this.ongoingPrintJobs.length === 0;
   }
 
   /** Determine if manage printer button in header should be shown. */
   private shouldShowManagePrinterButton(): boolean {
-    return this.showSetupAssistance &&
-        (this.ongoingPrintJobs.length > 0 || this.printJobs.length > 0);
+    return this.ongoingPrintJobs.length > 0 || this.printJobs.length > 0;
   }
 
   private onManagePrintersClicked(): void {

@@ -2308,12 +2308,6 @@ BASE_FEATURE(kPrintPreviewCrosApp,
              "PrintPreviewCrosApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, improved messaging for printer setup displayed in print
-// management app.
-BASE_FEATURE(kPrintManagementSetupAssistance,
-             "PrintManagementSetupAssistance",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the new OS Printer Settings UI.
 BASE_FEATURE(kPrinterSettingsRevamp,
              "PrinterSettingsRevamp",

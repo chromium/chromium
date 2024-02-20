@@ -4044,9 +4044,6 @@ extern const char kPrintPreviewDiscoveredPrintersDescription[];
 extern const char kPrintingPpdChannelName[];
 extern const char kPrintingPpdChannelDescription[];
 
-extern const char kPrintManagementSetupAssistanceName[];
-extern const char kPrintManagementSetupAssistanceDescription[];
-
 extern const char kPrintPreviewCrosAppName[];
 extern const char kPrintPreviewCrosAppDescription[];
 
