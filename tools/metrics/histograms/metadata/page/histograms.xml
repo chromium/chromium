@@ -849,7 +849,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalLoaderCallback"
-    units="ms" expires_after="2024-03-19">
+    units="ms" expires_after="2024-05-20">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -863,7 +863,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalRequestStart"
-    units="ms" expires_after="2024-03-19">
+    units="ms" expires_after="2024-05-20">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -877,7 +877,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalResponseStart"
-    units="ms" expires_after="2024-03-19">
+    units="ms" expires_after="2024-05-20">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -891,7 +891,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFirstLoaderCallback"
-    units="ms" expires_after="2024-03-19">
+    units="ms" expires_after="2024-05-20">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -964,7 +964,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ParseTiming.NavigationToParseStart"
-    units="ms" expires_after="2024-02-09">
+    units="ms" expires_after="2024-05-20">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2001,7 +2001,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.CommitSentToFirstSubresourceLoadStart"
-    units="ms" expires_after="2024-02-09">
+    units="ms" expires_after="2024-05-20">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -2039,7 +2039,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.TotalSubresourceLoadTimeAtFirstContentfulPaint"
-    units="ms" expires_after="2024-02-09">
+    units="ms" expires_after="2024-05-20">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
