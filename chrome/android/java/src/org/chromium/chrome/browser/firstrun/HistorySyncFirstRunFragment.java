@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
 
@@ -19,15 +20,33 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator
 public class HistorySyncFirstRunFragment extends Fragment
         implements FirstRunFragment, HistorySyncCoordinator.HistorySyncDelegate {
     private HistorySyncCoordinator mHistorySyncCoordinator;
+    private FrameLayout mFragmentView;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mFragmentView = new FrameLayout(getActivity());
+
+        return mFragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         assert getPageDelegate().getProfileProviderSupplier().get() != null;
         Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
-        mHistorySyncCoordinator = new HistorySyncCoordinator(inflater, container, this, profile);
+        mHistorySyncCoordinator = new HistorySyncCoordinator(getLayoutInflater(), this, profile);
+        mFragmentView.removeAllViews();
+        mFragmentView.addView(mHistorySyncCoordinator.getView());
+    }
 
-        return mHistorySyncCoordinator.getView();
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
+        }
     }
 
     /** Implements {@link FirstRunFragment}. */
@@ -44,5 +63,7 @@ public class HistorySyncFirstRunFragment extends Fragment
     @Override
     public void dismiss() {
         getPageDelegate().advanceToNextPage();
+        mHistorySyncCoordinator.destroy();
+        mHistorySyncCoordinator = null;
     }
 }

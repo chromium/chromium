@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,12 +32,14 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -51,15 +54,23 @@ import org.chromium.ui.test.util.ViewUtils;
 public class HistorySyncTest {
     /** Stub implementation of the {@link HistorySyncDelegate} for testing */
     public class HistorySyncTestDelegate implements HistorySyncCoordinator.HistorySyncDelegate {
-        private boolean mIsDialogClosed;
+        private HistorySyncCoordinator mCoordinator;
 
         @Override
         public void dismiss() {
-            mIsDialogClosed = true;
+            if (isCoordinatorDestroyed()) {
+                return;
+            }
+            mCoordinator.destroy();
+            mCoordinator = null;
         }
 
-        public boolean isDialogClosed() {
-            return mIsDialogClosed;
+        public void setCoordinator(HistorySyncCoordinator coordinator) {
+            mCoordinator = coordinator;
+        }
+
+        public boolean isCoordinatorDestroyed() {
+            return mCoordinator == null;
         }
     }
 
@@ -85,6 +96,18 @@ public class HistorySyncTest {
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
     }
 
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mDelegate.isCoordinatorDestroyed()) {
+                        mDelegate.dismiss();
+                    }
+                });
+
+        mSigninTestRule.forceSignOut();
+    }
+
     @Test
     @MediumTest
     public void testHistorySyncLayout() {
@@ -108,7 +131,7 @@ public class HistorySyncTest {
 
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
-        Assert.assertTrue(mDelegate.isDialogClosed());
+        Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
     }
 
     @Test
@@ -118,7 +141,19 @@ public class HistorySyncTest {
 
         onView(withId(R.id.negative_button)).perform(click());
         verifyNoInteractions(mSyncServiceMock);
-        Assert.assertTrue(mDelegate.isDialogClosed());
+        Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
+    }
+
+    @Test
+    @MediumTest
+    public void testOnSignedOut() {
+        buildHistorySyncCoordinator();
+
+        mSigninTestRule.signOut();
+        CriteriaHelper.pollUiThread(
+                () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
+
+        Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
     }
 
     private void buildHistorySyncCoordinator() {
@@ -128,13 +163,13 @@ public class HistorySyncTest {
                     mHistorySyncCoordinator =
                             new HistorySyncCoordinator(
                                     LayoutInflater.from(mActivityTestRule.getActivity()),
-                                    mActivityTestRule.getActivity().findViewById(R.id.container),
                                     mDelegate,
                                     ProfileManager.getLastUsedRegularProfile());
                     mActivityTestRule
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.getView());
                 });
+        mDelegate.setCoordinator(mHistorySyncCoordinator);
         ViewUtils.waitForVisibleView(allOf(withId(R.id.sync_consent_title), isDisplayed()));
     }
 }

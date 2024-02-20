@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.signin.history_sync;
 
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -20,16 +19,25 @@ public class HistorySyncCoordinator {
 
     private final HistorySyncMediator mMediator;
     private final HistorySyncView mView;
+    private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private boolean mIsDestroyed;
 
     public HistorySyncCoordinator(
             LayoutInflater inflater,
-            ViewGroup container,
             HistorySyncDelegate delegate,
             Profile profile) {
-        mView = (HistorySyncView) inflater.inflate(R.layout.history_sync_view, container, false);
+        mView = (HistorySyncView) inflater.inflate(R.layout.history_sync_view, null, false);
         mMediator = new HistorySyncMediator(inflater.getContext(), delegate, profile);
-        PropertyModelChangeProcessor.create(
-                mMediator.getModel(), mView, HistorySyncViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mMediator.getModel(), mView, HistorySyncViewBinder::bind);
+    }
+
+    public void destroy() {
+        assert !mIsDestroyed;
+        mPropertyModelChangeProcessor.destroy();
+        mMediator.destroy();
+        mIsDestroyed = true;
     }
 
     public View getView() {
