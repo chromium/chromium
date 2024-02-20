@@ -314,9 +314,8 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/1515119): Flaky on all bots.
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
-                       DISABLED_RestoreBrowserWithMultipleTabs) {
+                       RestoreBrowserWithMultipleTabs) {
   // Open 2 more tabs in addition to the existing tab.
   for (int i = 0; i < 2; i++) {
     ui_test_utils::NavigateToURLWithDisposition(

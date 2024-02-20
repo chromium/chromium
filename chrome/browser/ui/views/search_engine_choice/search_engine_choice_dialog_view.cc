@@ -181,8 +181,6 @@ void SearchEngineChoiceDialogView::ShowNativeView() {
   web_view_->holder()->SetCornerRadii(
       gfx::RoundedCornersF(GetWebViewCornerRadius()));
 
-  constrained_window::UpdateWebContentsModalDialogPosition(
-      widget, browser_->window()->GetWebContentsModalDialogHost());
   widget->Show();
   web_view_->RequestFocus();
 }
