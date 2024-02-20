@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
-#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/leveldb/mock_level_db.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -26,6 +25,7 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
@@ -74,6 +74,8 @@ MATCHER_P(SliceEq,
 leveldb_env::Options GetLevelDBOptions() {
   leveldb_env::Options options;
   options.comparator = indexed_db::GetDefaultLevelDBComparator();
+  options.create_if_missing = true;
+  options.write_buffer_size = 4 * 1024 * 1024;
   options.paranoid_checks = true;
 
   static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env(
@@ -148,15 +150,18 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
   }
 
   void SetupRealDB() {
-    leveldb_factory_ =
-        std::make_unique<LevelDBFactory>(GetLevelDBOptions(), "indexedDB-test");
-    scoped_refptr<LevelDBState> level_db_state;
-    leveldb::Status s;
-    std::tie(level_db_state, s, std::ignore) =
-        leveldb_factory_->OpenLevelDBState(
-            base::FilePath(), indexed_db::GetDefaultLevelDBComparator(),
-            /* create_if_missing=*/true);
+    leveldb_env::Options options = GetLevelDBOptions();
+    std::unique_ptr<leveldb::Env> in_memory_env =
+        leveldb_chrome::NewMemEnv("in-memory-testing-db", options.env);
+    options.env = in_memory_env.get();
+
+    std::unique_ptr<leveldb::DB> db;
+    leveldb::Status s = leveldb_env::OpenDB(options, std::string(), &db);
     ASSERT_TRUE(s.ok());
+    scoped_refptr<LevelDBState> level_db_state =
+        LevelDBState::CreateForInMemoryDB(std::move(in_memory_env),
+                                          options.comparator, std::move(db),
+                                          "in-memory-testing-db");
     in_memory_db_ = DefaultTransactionalLevelDBFactory().CreateLevelDBDatabase(
         std::move(level_db_state), nullptr, nullptr,
         TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
@@ -251,7 +256,6 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  private:
-  std::unique_ptr<LevelDBFactory> leveldb_factory_;
   base::test::TaskEnvironment task_environment_;
 };
 

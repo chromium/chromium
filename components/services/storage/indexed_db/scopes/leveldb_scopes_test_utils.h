@@ -10,7 +10,6 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
-#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
@@ -33,6 +32,9 @@ class LevelDBScopesTestBase : public testing::Test {
   // Ensures that |leveldb_| is destroyed correctly, and all contents are
   // deleted off disk.
   void TearDown() override;
+
+  // Destroys the leveldb files.
+  leveldb::Status DestroyDB();
 
   // Ensures that |leveldb_| is destroyed correctly, but doesn't delete the
   // database on disk.
@@ -95,8 +97,7 @@ class LevelDBScopesTestBase : public testing::Test {
 
   const base::FilePath& DatabaseDirFilePath();
 
- private:
-  void CreateAndSaveLevelDBState();
+  leveldb::Status CreateAndSaveLevelDBState();
 
  protected:
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_;
@@ -112,7 +113,6 @@ class LevelDBScopesTestBase : public testing::Test {
   const std::vector<uint8_t> metadata_prefix_ = {'a'};
   const std::vector<uint8_t> db_prefix_ = {'b'};
 
-  std::unique_ptr<LevelDBFactory> leveldb_factory_;
   scoped_refptr<LevelDBState> leveldb_;
   std::string large_string_;
   LevelDBScopesUndoTask undo_task_buffer_;

@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
@@ -21,6 +20,7 @@
 
 namespace content {
 namespace {
+
 constexpr size_t kWriteBufferSize = 4 * 1024 * 1024;
 
 leveldb_env::Options GetLevelDBOptions() {
@@ -29,7 +29,9 @@ leveldb_env::Options GetLevelDBOptions() {
       leveldb::NewBloomFilterPolicy(10);
   leveldb_env::Options options;
   options.comparator = leveldb::BytewiseComparator();
+  options.create_if_missing = true;
   options.paranoid_checks = true;
+  options.write_buffer_size = 4 * 1024 * 1024;
   options.filter_policy = kFilterPolicy;
   options.compression = leveldb::kSnappyCompression;
   options.env = gTestEnv.get();
@@ -45,21 +47,22 @@ LevelDBScopesTestBase::~LevelDBScopesTestBase() = default;
 
 void LevelDBScopesTestBase::SetUp() {
   large_string_.assign(kWriteBatchSizeForTesting + 1, 'e');
-  if (!leveldb_factory_) {
-    leveldb_factory_ =
-        std::make_unique<LevelDBFactory>(GetLevelDBOptions(), "scopes-test-db");
-  }
 }
 
 void LevelDBScopesTestBase::TearDown() {
   if (leveldb_) {
     CloseScopesAndDestroyLevelDBState();
     if (temp_directory_.IsValid()) {
-      leveldb_factory_->DestroyLevelDB(temp_directory_.GetPath());
+      DestroyDB();
       task_env_.RunUntilIdle();
       ASSERT_TRUE(temp_directory_.Delete());
     }
   }
+}
+
+leveldb::Status LevelDBScopesTestBase::DestroyDB() {
+  return leveldb::DestroyDB(temp_directory_.GetPath().AsUTF8Unsafe(),
+                            GetLevelDBOptions());
 }
 
 void LevelDBScopesTestBase::CloseScopesAndDestroyLevelDBState() {
@@ -116,9 +119,8 @@ void LevelDBScopesTestBase::SetUpBreakableDB(
       FakeLevelDBFactory::CreateBreakableDB(std::move(real_db));
   ASSERT_TRUE(breakable_db);
 
-  leveldb_ =
-      LevelDBState::CreateForDiskDB(options.comparator, std::move(breakable_db),
-                                    std::move(temp_directory_.GetPath()));
+  leveldb_ = LevelDBState::CreateForDiskDB(
+      options.comparator, std::move(breakable_db), temp_directory_.GetPath());
 }
 
 void LevelDBScopesTestBase::SetUpFlakyDB(
@@ -262,12 +264,18 @@ const base::FilePath& LevelDBScopesTestBase::DatabaseDirFilePath() {
   return temp_directory_.GetPath();
 }
 
-void LevelDBScopesTestBase::CreateAndSaveLevelDBState() {
-  leveldb::Status status;
-  std::tie(leveldb_, status, std::ignore) = leveldb_factory_->OpenLevelDBState(
-      temp_directory_.GetPath(), true, kWriteBufferSize);
-  ASSERT_TRUE(status.ok()) << status.ToString();
-  ASSERT_TRUE(leveldb_);
+leveldb::Status LevelDBScopesTestBase::CreateAndSaveLevelDBState() {
+  leveldb_env::Options options = GetLevelDBOptions();
+  std::unique_ptr<leveldb::DB> db;
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, DatabaseDirFilePath().AsUTF8Unsafe(), &db);
+  if (status.ok()) {
+    leveldb_ = LevelDBState::CreateForDiskDB(options.comparator, std::move(db),
+                                             DatabaseDirFilePath());
+  } else {
+    leveldb_.reset();
+  }
+  return status;
 }
 
 }  // namespace content

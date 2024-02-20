@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
-#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
@@ -39,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace storage {
@@ -453,7 +453,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;
   std::unique_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
-  LevelDBFactory leveldb_factory_;
+  const leveldb_env::Options leveldb_options_;
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 

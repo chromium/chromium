@@ -27,7 +27,6 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
@@ -141,6 +140,8 @@ IndexedDBDatabaseError CreateDefaultError() {
       u"Internal error opening backing store for indexedDB.open.");
 }
 
+// Returns some configuration that is shared across leveldb DB instances. The
+// configuration is further tweaked in `CreateLevelDBState()`.
 // TODO(crbug.com/40279485): some shared/singleton objects may not be
 // thread-safe.
 leveldb_env::Options GetLevelDBOptions() {
@@ -165,6 +166,72 @@ leveldb_env::Options GetLevelDBOptions() {
   options.env = g_leveldb_env.get();
 
   return options;
+}
+
+std::tuple<scoped_refptr<LevelDBState>,
+           leveldb::Status,
+           /* is_disk_full= */ bool>
+CreateLevelDBState(const leveldb_env::Options& base_options,
+                   const base::FilePath& file_name,
+                   bool create_if_missing,
+                   const std::string& in_memory_name) {
+  if (file_name.empty()) {
+    if (!create_if_missing) {
+      return {nullptr, leveldb::Status::NotFound("", ""), false};
+    }
+
+    std::unique_ptr<leveldb::Env> in_memory_env =
+        leveldb_chrome::NewMemEnv(in_memory_name, base_options.env);
+    leveldb_env::Options in_memory_options = base_options;
+    in_memory_options.env = in_memory_env.get();
+    in_memory_options.paranoid_checks = false;
+    in_memory_options.create_if_missing = true;
+    in_memory_options.write_buffer_size = 4 * 1024 * 1024;
+    std::unique_ptr<leveldb::DB> db;
+    leveldb::Status status =
+        leveldb_env::OpenDB(in_memory_options, std::string(), &db);
+
+    if (UNLIKELY(!status.ok())) {
+      LOG(ERROR) << "Failed to open in-memory LevelDB database: "
+                 << status.ToString();
+      return {nullptr, status, false};
+    }
+
+    return {LevelDBState::CreateForInMemoryDB(
+                std::move(in_memory_env), base_options.comparator,
+                std::move(db), "in-memory-database"),
+            status, false};
+  }
+
+  leveldb_env::Options options = base_options;
+  options.write_buffer_size = leveldb_env::WriteBufferSize(
+      base::SysInfo::AmountOfTotalDiskSpace(file_name));
+  options.create_if_missing = create_if_missing;
+  std::unique_ptr<leveldb::DB> db;
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, file_name.AsUTF8Unsafe(), &db);
+  if (UNLIKELY(!status.ok())) {
+    if (!create_if_missing && status.IsInvalidArgument()) {
+      return {nullptr, leveldb::Status::NotFound("", ""), false};
+    }
+    constexpr int64_t kBytesInOneKilobyte = 1024;
+    int64_t free_disk_space_bytes =
+        base::SysInfo::AmountOfFreeDiskSpace(file_name);
+    bool below_100kb = free_disk_space_bytes != -1 &&
+                       free_disk_space_bytes < 100 * kBytesInOneKilobyte;
+
+    // Disks with <100k of free space almost never succeed in opening a
+    // leveldb database.
+    bool is_disk_full = below_100kb || leveldb_env::IndicatesDiskFull(status);
+
+    LOG(ERROR) << "Failed to open LevelDB database from "
+               << file_name.AsUTF8Unsafe() << "," << status.ToString();
+    return {nullptr, status, is_disk_full};
+  }
+
+  return {LevelDBState::CreateForDiskDB(base_options.comparator, std::move(db),
+                                        std::move(file_name)),
+          status, false};
 }
 
 // Creates the leveldb and blob storage directories for IndexedDB.
@@ -404,9 +471,7 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     InstanceClosure initialize_closure)
     : bucket_info_(std::move(bucket_info)),
       data_path_(data_path),
-      leveldb_factory_(GetLevelDBOptions(),
-                       base::StringPrintf("indexedDB-bucket-%" PRId64,
-                                          bucket_info_.id.GetUnsafeValue())),
+      leveldb_options_(GetLevelDBOptions()),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       file_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
@@ -1235,16 +1300,18 @@ void IndexedDBBucketContext::HandleBackingStoreCorruption(
                                      data_path_.AsUTF8Unsafe(), "...");
   IndexedDBBackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
                                               sanitized_message);
-  // Note: DestroyLevelDB only deletes LevelDB files, leaving all others,
+
+  const base::FilePath file_path =
+      data_path_.Append(indexed_db::GetLevelDBFileName(bucket_locator()));
+  ForceClose(/*doom=*/false);
+  // NB: `this` may be deleted.
+
+  // Note: DestroyDB only deletes LevelDB files, leaving all others,
   //       so our corruption info file will remain.
   //       The blob directory will be deleted when the database is recreated
   //       the next time it is opened.
-  const base::FilePath file_path =
-      data_path_.Append(indexed_db::GetLevelDBFileName(bucket_locator()));
-  ForceClose(/*will_be_deleted=*/false);
-  // `this` may be deleted.
-
-  leveldb::Status s = leveldb_factory_.DestroyLevelDB(file_path);
+  leveldb::Status s =
+      leveldb::DestroyDB(file_path.AsUTF8Unsafe(), GetLevelDBOptions());
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
 }
 
@@ -1330,7 +1397,8 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
           {"IndexedDB (database was corrupt): ", corruption_message});
       // This is a special case where we want to make sure the database is
       // deleted, so we try to delete again.
-      status = leveldb_factory_.DestroyLevelDB(database_path);
+      status =
+          leveldb::DestroyDB(database_path.AsUTF8Unsafe(), leveldb_options_);
 
       if (UNLIKELY(!status.ok())) {
         LOG(ERROR) << "Unable to delete backing store: " << status.ToString();
@@ -1345,11 +1413,10 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
   {
     TRACE_EVENT0("IndexedDB", "IndexedDBBucketContext::OpenLevelDB");
     base::TimeTicks begin_time = base::TimeTicks::Now();
-    size_t write_buffer_size = leveldb_env::WriteBufferSize(
-        base::SysInfo::AmountOfTotalDiskSpace(database_path));
-    std::tie(database_state, status, is_disk_full) =
-        leveldb_factory_.OpenLevelDBState(database_path, create_if_missing,
-                                          write_buffer_size);
+    std::tie(database_state, status, is_disk_full) = CreateLevelDBState(
+        leveldb_options_, database_path, create_if_missing,
+        base::StringPrintf("indexedDB-bucket-%" PRId64,
+                           bucket_info().id.GetUnsafeValue()));
     if (UNLIKELY(!status.ok())) {
       if (!status.IsNotFound()) {
         indexed_db::ReportLevelDBError("WebCore.IndexedDB.LevelDBOpenErrors",
