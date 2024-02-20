@@ -90,7 +90,7 @@ const CSSValue* ParseCSSValue(const ExecutionContext* context,
 
 CSSFontFace* CreateCSSFontFace(FontFace* font_face,
                                const CSSValue* unicode_range) {
-  Vector<UnicodeRange> ranges;
+  HeapVector<UnicodeRange> ranges;
   if (const auto* range_list = To<CSSValueList>(unicode_range)) {
     unsigned num_ranges = range_list->length();
     for (unsigned i = 0; i < num_ranges; i++) {
@@ -100,7 +100,7 @@ CSSFontFace* CreateCSSFontFace(FontFace* font_face,
     }
   }
 
-  return MakeGarbageCollected<CSSFontFace>(font_face, ranges);
+  return MakeGarbageCollected<CSSFontFace>(font_face, std::move(ranges));
 }
 
 const CSSValue* ConvertFontMetricOverrideValue(const CSSValue* parsed_value) {

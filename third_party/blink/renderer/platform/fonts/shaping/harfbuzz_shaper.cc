@@ -289,7 +289,7 @@ void RoundHarfBuzzBufferPositions(hb_buffer_t* buffer) {
 inline bool ShapeRange(hb_buffer_t* buffer,
                        const FontFeatures& font_features,
                        const SimpleFontData* current_font,
-                       scoped_refptr<UnicodeRangeSet> current_font_range_set,
+                       const UnicodeRangeSet* current_font_range_set,
                        UScriptCode current_run_script,
                        hb_direction_t direction,
                        hb_language_t language,
@@ -325,7 +325,7 @@ inline bool ShapeRange(hb_buffer_t* buffer,
   hb_buffer_set_direction(buffer, direction);
 
   hb_font_t* hb_font =
-      face->GetScaledFont(std::move(current_font_range_set),
+      face->GetScaledFont(current_font_range_set,
                           HB_DIRECTION_IS_VERTICAL(direction)
                               ? HarfBuzzFace::kPrepareForVerticalLayout
                               : HarfBuzzFace::kNoVerticalLayout,

@@ -66,7 +66,7 @@ class HarfBuzzFace final : public GarbageCollected<HarfBuzzFace> {
   // Passing in specified_size in order to control selecting the right value
   // from the trak table. If not set, the size of the internal FontPlatformData
   // object will be used.
-  hb_font_t* GetScaledFont(scoped_refptr<UnicodeRangeSet>,
+  hb_font_t* GetScaledFont(const UnicodeRangeSet*,
                            VerticalLayoutCallbacks,
                            float specified_size) const;
 

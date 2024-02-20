@@ -47,8 +47,8 @@ class SimpleFontData;
 
 class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
  public:
-  CSSFontFace(FontFace* font_face, Vector<UnicodeRange>& ranges)
-      : ranges_(base::AdoptRef(new UnicodeRangeSet(ranges))),
+  CSSFontFace(FontFace* font_face, HeapVector<UnicodeRange>&& ranges)
+      : ranges_(MakeGarbageCollected<UnicodeRangeSet>(std::move(ranges))),
         font_face_(font_face) {
     DCHECK(font_face_);
   }
@@ -61,7 +61,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
   }
   FontFace* GetFontFace() const { return font_face_.Get(); }
 
-  scoped_refptr<UnicodeRangeSet> Ranges() { return ranges_; }
+  const UnicodeRangeSet* Ranges() { return ranges_.Get(); }
 
   void AddSegmentedFontFace(CSSSegmentedFontFace*);
   void RemoveSegmentedFontFace(CSSSegmentedFontFace*);
@@ -98,9 +98,9 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
  private:
   void SetLoadStatus(FontFace::LoadStatusType);
 
-  scoped_refptr<UnicodeRangeSet> ranges_;
   HeapHashSet<Member<CSSSegmentedFontFace>> segmented_font_faces_;
   HeapDeque<Member<CSSFontFaceSource>> sources_;
+  Member<const UnicodeRangeSet> ranges_;
   Member<FontFace> font_face_;
 };
 

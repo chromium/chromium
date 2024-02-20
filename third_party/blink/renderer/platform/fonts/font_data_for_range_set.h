@@ -39,16 +39,18 @@ class SimpleFontData;
 class PLATFORM_EXPORT FontDataForRangeSet
     : public GarbageCollected<FontDataForRangeSet> {
  public:
-  explicit FontDataForRangeSet(
-      const SimpleFontData* font_data = nullptr,
-      scoped_refptr<UnicodeRangeSet> range_set = nullptr)
-      : font_data_(font_data), range_set_(std::move(range_set)) {}
+  explicit FontDataForRangeSet(const SimpleFontData* font_data = nullptr,
+                               const UnicodeRangeSet* range_set = nullptr)
+      : font_data_(font_data), range_set_(range_set) {}
 
   FontDataForRangeSet(const FontDataForRangeSet& other);
 
   virtual ~FontDataForRangeSet() = default;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(font_data_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(font_data_);
+    visitor->Trace(range_set_);
+  }
 
   bool Contains(UChar32 test_char) const {
     return !range_set_ || range_set_->Contains(test_char);
@@ -56,7 +58,7 @@ class PLATFORM_EXPORT FontDataForRangeSet
   bool IsEntireRange() const {
     return !range_set_ || range_set_->IsEntireRange();
   }
-  UnicodeRangeSet* Ranges() const { return range_set_.get(); }
+  const UnicodeRangeSet* Ranges() const { return range_set_.Get(); }
   bool HasFontData() const { return font_data_; }
   const SimpleFontData* FontData() const { return font_data_.Get(); }
 
@@ -72,7 +74,7 @@ class PLATFORM_EXPORT FontDataForRangeSet
 
  protected:
   Member<const SimpleFontData> font_data_;
-  scoped_refptr<UnicodeRangeSet> range_set_;
+  Member<const UnicodeRangeSet> range_set_;
 };
 
 }  // namespace blink

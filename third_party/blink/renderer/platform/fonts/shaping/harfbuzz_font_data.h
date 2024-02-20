@@ -32,7 +32,7 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
   HarfBuzzFontData(const HarfBuzzFontData&) = delete;
   HarfBuzzFontData& operator=(const HarfBuzzFontData&) = delete;
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(range_set_); }
 
   // The vertical origin and vertical advance functions in HarfBuzzFace require
   // the ascent and height metrics as fallback in case no specific vertical
@@ -98,7 +98,7 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
       SpaceGlyphInOpenTypeTables::kUnknown;
 
   scoped_refptr<OpenTypeVerticalData> vertical_data_;
-  scoped_refptr<UnicodeRangeSet> range_set_;
+  Member<const UnicodeRangeSet> range_set_;
 };
 
 }  // namespace blink

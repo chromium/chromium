@@ -292,6 +292,7 @@ bool CSSFontFace::UpdatePeriod() {
 void CSSFontFace::Trace(Visitor* visitor) const {
   visitor->Trace(segmented_font_faces_);
   visitor->Trace(sources_);
+  visitor->Trace(ranges_);
   visitor->Trace(font_face_);
 }
 

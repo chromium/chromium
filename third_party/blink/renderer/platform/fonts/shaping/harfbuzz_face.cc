@@ -508,10 +508,10 @@ const OpenTypeVerticalData& HarfBuzzFace::VerticalData() const {
   return *harfbuzz_font_data_->VerticalData();
 }
 
-hb_font_t* HarfBuzzFace::GetScaledFont(scoped_refptr<UnicodeRangeSet> range_set,
+hb_font_t* HarfBuzzFace::GetScaledFont(const UnicodeRangeSet* range_set,
                                        VerticalLayoutCallbacks vertical_layout,
                                        float specified_size) const {
-  harfbuzz_font_data_->range_set_ = std::move(range_set);
+  harfbuzz_font_data_->range_set_ = range_set;
   harfbuzz_font_data_->UpdateFallbackMetricsAndScale(*platform_data_,
                                                      vertical_layout);
 
