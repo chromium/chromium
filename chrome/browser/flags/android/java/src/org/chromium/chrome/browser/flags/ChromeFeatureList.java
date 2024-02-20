@@ -665,7 +665,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
     public static final CachedFlag sVerticalAutomotiveBackButtonToolbar =
-            newCachedFlag(VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR, false);
+            newCachedFlag(VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR, true);
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
             List.of(
