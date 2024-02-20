@@ -14,11 +14,11 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/url_and_title.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -206,8 +206,7 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
   const SignInStatus signed_in_status = GetSignInStatusParam();
   const bool folder_was_selected_by_user = GetFolderWasSelectedByUserParam();
   NSString* expected_snackbar_message = nil;
-  bookmarks::StorageType bookmark_storage_type =
-      bookmarks::StorageType::kLocalOrSyncable;
+  BookmarkModelType bookmark_storage_type = BookmarkModelType::kLocalOrSyncable;
   bool show_count = GetDisplayTheNumberOfBookmarksParam();
   switch (signed_in_status) {
     case SignInStatus::kSignedInNoBookmarkSyncing:
@@ -237,7 +236,7 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
                                               kEmail, show_count)
               : GetSavedToAccountText(bookmark_count, kEmail, show_count);
       SignInOnly();
-      bookmark_storage_type = bookmarks::StorageType::kAccount;
+      bookmark_storage_type = BookmarkModelType::kAccount;
       break;
     case SignInStatus::KSignedInAndSync:
       expected_snackbar_message =

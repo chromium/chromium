@@ -501,7 +501,7 @@ enum class PresentedState {
 
   [self stopBookmarksFolderChooserCoordinator];
 
-  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
       folder, _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
   SetLastUsedBookmarkFolder(_browserState->GetPrefs(), folder, type);
   [self.snackbarCommandsHandler

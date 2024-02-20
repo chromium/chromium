@@ -20,9 +20,9 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -361,7 +361,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (_manuallyChangedTheFolder) {
-    bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+    BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
         _parentFolder, _localOrSyncableBookmarkModel.get(),
         _accountBookmarkModel.get());
     SetLastUsedBookmarkFolder(_browserState->GetPrefs(), _parentFolder, type);
@@ -529,15 +529,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   CHECK(_parentFolderItem);
   _parentFolderItem.title =
       bookmark_utils_ios::TitleForBookmarkNode(_parentFolder);
-  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
       _parentFolder, _localOrSyncableBookmarkModel.get(),
       _accountBookmarkModel.get());
   switch (type) {
-    case bookmarks::StorageType::kLocalOrSyncable:
+    case BookmarkModelType::kLocalOrSyncable:
       _parentFolderItem.shouldDisplayCloudSlashIcon =
           bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
       break;
-    case bookmarks::StorageType::kAccount:
+    case BookmarkModelType::kAccount:
       _parentFolderItem.shouldDisplayCloudSlashIcon = NO;
       break;
   }

@@ -6,7 +6,6 @@
 #import <XCTest/XCTest.h>
 
 #import "base/ios/ios_util.h"
-#import "components/bookmarks/common/bookmark_features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"

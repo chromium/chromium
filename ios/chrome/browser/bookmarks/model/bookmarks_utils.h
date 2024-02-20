@@ -8,13 +8,13 @@
 #include <set>
 #include <vector>
 
+enum class BookmarkModelType;
 class ChromeBrowserState;
 class PrefService;
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-enum class StorageType;
 }  // namespace bookmarks
 
 // Used in the preference kIosBookmarkLastUsedFolderReceivingBookmarks.
@@ -53,7 +53,7 @@ void ResetLastUsedBookmarkFolder(PrefService* prefs);
 // or move bookmarks.
 void SetLastUsedBookmarkFolder(PrefService* prefs,
                                const bookmarks::BookmarkNode* folder,
-                               bookmarks::StorageType type);
+                               BookmarkModelType type);
 
 // It returns the first bookmark folder that exists, with the following
 // priority:

@@ -9,9 +9,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/bookmarks/common/storage_type.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -23,13 +23,13 @@ namespace {
 
 // Returns the bookmark model designed by `type`.
 bookmarks::BookmarkModel* GetBookmarkModelForType(
-    bookmarks::StorageType type,
+    BookmarkModelType type,
     bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
     bookmarks::BookmarkModel* account_bookmark_model) {
   switch (type) {
-    case bookmarks::StorageType::kAccount:
+    case BookmarkModelType::kAccount:
       return account_bookmark_model;
-    case bookmarks::StorageType::kLocalOrSyncable:
+    case BookmarkModelType::kLocalOrSyncable:
       return local_or_syncable_bookmark_model;
   }
   NOTREACHED_NORETURN();
@@ -117,7 +117,7 @@ void ResetLastUsedBookmarkFolder(PrefService* prefs) {
 
 void SetLastUsedBookmarkFolder(PrefService* prefs,
                                const bookmarks::BookmarkNode* folder,
-                               bookmarks::StorageType type) {
+                               BookmarkModelType type) {
   CHECK(folder);
   CHECK(folder->is_folder()) << "node type: " << folder->type()
                              << ", storage type: " << static_cast<int>(type);
@@ -136,9 +136,8 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
       prefs->GetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks);
 
   if (node_id != kLastUsedBookmarkFolderNone) {
-    bookmarks::StorageType type =
-        static_cast<bookmarks::StorageType>(prefs->GetInteger(
-            prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
+    BookmarkModelType type = static_cast<BookmarkModelType>(prefs->GetInteger(
+        prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
     bookmarks::BookmarkModel* bookmark_model = GetBookmarkModelForType(
         type, local_or_syncable_bookmark_model, account_bookmark_model);
     const BookmarkNode* result =
@@ -150,9 +149,9 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   }
 
   // Either preferences is not set, or refers to a non-existing folder.
-  bookmarks::StorageType type = (is_account_bookmark_model_available)
-                                    ? bookmarks::StorageType::kAccount
-                                    : bookmarks::StorageType::kLocalOrSyncable;
+  BookmarkModelType type = (is_account_bookmark_model_available)
+                               ? BookmarkModelType::kAccount
+                               : BookmarkModelType::kLocalOrSyncable;
   bookmarks::BookmarkModel* bookmark_model = GetBookmarkModelForType(
       type, local_or_syncable_bookmark_model, account_bookmark_model);
   return bookmark_model->mobile_node();

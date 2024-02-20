@@ -16,6 +16,7 @@
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
@@ -40,7 +41,7 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
           ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state),
           ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
-          bookmarks::StorageType::kAccount)));
+          BookmarkModelType::kAccount)));
   bookmark_model->LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
       browser_state->GetStatePath());
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)

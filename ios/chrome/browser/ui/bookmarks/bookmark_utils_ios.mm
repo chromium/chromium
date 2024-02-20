@@ -31,7 +31,6 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "components/query_parser/query_parser.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
@@ -40,6 +39,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/url_formatter/url_fixer.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -153,28 +153,28 @@ NSString* TitleForBookmarkNode(const BookmarkNode* node) {
 
 #pragma mark - Profile and account
 
-bookmarks::StorageType GetBookmarkModelType(
+BookmarkModelType GetBookmarkModelType(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model) {
   DCHECK(bookmark_node);
   DCHECK(profile_model);
   if (bookmark_node->HasAncestor(profile_model->root_node())) {
-    return bookmarks::StorageType::kLocalOrSyncable;
+    return BookmarkModelType::kLocalOrSyncable;
   }
   DCHECK(account_model &&
          bookmark_node->HasAncestor(account_model->root_node()));
-  return bookmarks::StorageType::kAccount;
+  return BookmarkModelType::kAccount;
 }
 
 bookmarks::BookmarkModel* GetBookmarkModelForNode(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model) {
-  bookmarks::StorageType modelType =
+  BookmarkModelType modelType =
       GetBookmarkModelType(bookmark_node, profile_model, account_model);
-  return modelType == bookmarks::StorageType::kAccount ? account_model
-                                                       : profile_model;
+  return modelType == BookmarkModelType::kAccount ? account_model
+                                                  : profile_model;
 }
 
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
@@ -273,8 +273,8 @@ bool UpdateBookmark(const BookmarkNode* node,
   return true;
 }
 
-bool bookmarkSavedIntoAccountWithStorageType(
-    bookmarks::StorageType storageType,
+bool bookmarkSavedIntoAccount(
+    BookmarkModelType bookmarkModelType,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
   // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
@@ -283,7 +283,7 @@ bool bookmarkSavedIntoAccountWithStorageType(
   BOOL hasSyncConsent =
       authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
   BOOL savedIntoAccount =
-      (storageType == bookmarks::StorageType::kAccount) ||
+      (bookmarkModelType == BookmarkModelType::kAccount) ||
       (hasSyncConsent && syncService->GetUserSettings()->GetSelectedTypes().Has(
                              syncer::UserSelectableType::kBookmarks));
   return savedIntoAccount;
@@ -292,7 +292,7 @@ bool bookmarkSavedIntoAccountWithStorageType(
 NSString* messageForAddingBookmarksInFolder(
     NSString* folderTitle,
     bool chosenByUser,
-    bookmarks::StorageType storageType,
+    BookmarkModelType bookmarkModelType,
     bool showCount,
     int count,
     base::WeakPtr<AuthenticationService> authenticationService,
@@ -300,8 +300,8 @@ NSString* messageForAddingBookmarksInFolder(
   CHECK(folderTitle);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  BOOL savedIntoAccount = bookmarkSavedIntoAccountWithStorageType(
-      storageType, authenticationService, syncService);
+  BOOL savedIntoAccount = bookmarkSavedIntoAccount(
+      bookmarkModelType, authenticationService, syncService);
   if (savedIntoAccount) {
     // Tell the user the bookmark is synced in their account.
     CHECK(identity);
@@ -643,11 +643,12 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
   // "bookmarks" in plural form.
   int count = (multiple_bookmarks_to_move) ? 2 : 1;
 
-  bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
-      destination_folder, local_model, account_model);
+  BookmarkModelType bookmarkModelType =
+      bookmark_utils_ios::GetBookmarkModelType(destination_folder, local_model,
+                                               account_model);
   NSString* text = messageForAddingBookmarksInFolder(
       TitleForBookmarkNode(destination_folder),
-      /*chosenByUser=*/true, storageType, /*showCount=*/false, count,
+      /*chosenByUser=*/true, bookmarkModelType, /*showCount=*/false, count,
       authenticationService, syncService);
   return CreateUndoToastWithWrapper(wrapper, text,
                                     "MobileBookmarkManagerMoveToFolderUndone");

@@ -80,10 +80,10 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/bookmarks/common",
     "//components/browser_sync:switches",
     "//components/sync/base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
     "//ios/chrome/browser/shared/ui/table_view:constants",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

@@ -10,11 +10,11 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/features.h"
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -128,13 +128,13 @@
 #pragma mark - BookmarksEditorMutator
 
 - (BOOL)shouldDisplayCloudSlashSymbolForParentFolder {
-  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
       self.folder, _localOrSyncableBookmarkModel.get(),
       _accountBookmarkModel.get());
   switch (type) {
-    case bookmarks::StorageType::kLocalOrSyncable:
+    case BookmarkModelType::kLocalOrSyncable:
       return bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
-    case bookmarks::StorageType::kAccount:
+    case BookmarkModelType::kAccount:
       return NO;
   }
   NOTREACHED_NORETURN();
@@ -251,7 +251,7 @@
                               _accountBookmarkModel.get(), _browserState,
                               _authenticationService, _syncService)];
   if (_manuallyChangedTheFolder) {
-    bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+    BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
         _folder, _localOrSyncableBookmarkModel.get(),
         _accountBookmarkModel.get());
     SetLastUsedBookmarkFolder(_prefs, _folder, type);

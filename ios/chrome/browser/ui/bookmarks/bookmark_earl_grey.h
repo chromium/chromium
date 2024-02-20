@@ -12,8 +12,9 @@
 
 namespace bookmarks {
 class BookmarkNode;
-enum class StorageType;
 }  // namespace bookmarks
+
+enum class BookmarkModelType;
 
 #define BookmarkEarlGrey \
   [BookmarkEarlGreyImpl invokedFromFile:@"" __FILE__ lineNumber:__LINE__]
@@ -43,12 +44,12 @@ const GURL GetFrenchUrl();
 
 // Loads a set of default bookmarks in the model for the tests to use.
 // GREYAssert is induced if test bookmarks can not be loaded.
-- (void)setupStandardBookmarksInStorage:(bookmarks::StorageType)storageType;
+- (void)setupStandardBookmarksInStorage:(BookmarkModelType)storageType;
 
 // Loads a large set of bookmarks in the model which is longer than the screen
 // height. GREYAssert is induced if test bookmarks can not be loaded.
 - (void)setupBookmarksWhichExceedsScreenHeightInStorage:
-    (bookmarks::StorageType)storageType;
+    (BookmarkModelType)storageType;
 
 // Waits for both LocalOrSyncable and Account (if available) bookmark models to
 // be loaded.
@@ -60,13 +61,13 @@ const GURL GetFrenchUrl();
 
 // Set the last used bookmark folder.
 - (void)setLastUsedBookmarkFolder:(const bookmarks::BookmarkNode*)folder
-                      storageType:(bookmarks::StorageType)storageType;
+                      storageType:(BookmarkModelType)storageType;
 
 // Get the last used bookmark folder.
 - (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder;
 
 // Get the model of the last used bookmark folder.
-- (bookmarks::StorageType)lastUsedBookmarkFolderStorageType;
+- (BookmarkModelType)lastUsedBookmarkFolderStorageType;
 
 #pragma mark - Common Helpers
 
@@ -74,46 +75,46 @@ const GURL GetFrenchUrl();
 // using the BookmarkModel. GREYAssert is induced if the count doesn't match.
 - (void)verifyBookmarksWithTitle:(NSString*)title
                    expectedCount:(NSUInteger)expectedCount
-                       inStorage:(bookmarks::StorageType)storageType;
+                       inStorage:(BookmarkModelType)storageType;
 
 // Verifies that there is `count` children on the bookmark folder with `name`.
 // GREYAssert is induced if the folder doesn't exist or the count doesn't match.
 - (void)verifyChildCount:(int)count
         inFolderWithName:(NSString*)name
-               inStorage:(bookmarks::StorageType)storageType;
+               inStorage:(BookmarkModelType)storageType;
 
 // Programmatically adds a bookmark with the given title and URL. GREYAssert is
 // induced if the bookmark cannot be added.
 - (void)addBookmarkWithTitle:(NSString*)title
                          URL:(NSString*)url
-                   inStorage:(bookmarks::StorageType)storageType;
+                   inStorage:(BookmarkModelType)storageType;
 
 // Removes programmatically the first bookmark with the given title. GREYAssert
 // is induced if the bookmark can't be removed.
 - (void)removeBookmarkWithTitle:(NSString*)title
-                      inStorage:(bookmarks::StorageType)storageType;
+                      inStorage:(BookmarkModelType)storageType;
 
 // Moves bookmark with title `bookmarkTitle` into a folder with title
 // `newFolder`. GREYAssert is induced if the bookmark can't be moved.
 - (void)moveBookmarkWithTitle:(NSString*)bookmarkTitle
             toFolderWithTitle:(NSString*)newFolder
-                    inStorage:(bookmarks::StorageType)storageType;
+                    inStorage:(BookmarkModelType)storageType;
 
 // Verifies the existence of a Bookmark with `URL` and `name`. GREYAssert is
 // induced if the bookmarks doesn't exist.
 - (void)verifyExistenceOfBookmarkWithURL:(NSString*)URL
                                     name:(NSString*)name
-                               inStorage:(bookmarks::StorageType)storageType;
+                               inStorage:(BookmarkModelType)storageType;
 
 // Verifies the absence of a Bookmark with `URL`. GREYAssert is induced if the
 // bookmarks does exist.
 - (void)verifyAbsenceOfBookmarkWithURL:(NSString*)URL
-                             inStorage:(bookmarks::StorageType)storageType;
+                             inStorage:(BookmarkModelType)storageType;
 
 // Verifies that a folder called `title` exists. GREYAssert is induced if the
 // folder doesn't exist.
 - (void)verifyExistenceOfFolderWithTitle:(NSString*)title
-                               inStorage:(bookmarks::StorageType)storageType;
+                               inStorage:(BookmarkModelType)storageType;
 
 #pragma mark - Promo
 

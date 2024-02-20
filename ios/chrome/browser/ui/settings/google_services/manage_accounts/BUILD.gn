@@ -104,9 +104,9 @@ source_set("eg2_tests") {
   sources = [ "accounts_table_egtest.mm" ]
   deps = [
     "//base/test:test_support",
-    "//components/bookmarks/common",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/shared/ui/elements:constants",
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",

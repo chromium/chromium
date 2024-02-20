@@ -11,9 +11,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/deferred_sequenced_task_runner.h"
-#include "components/bookmarks/common/storage_type.h"
 #include "components/power_bookmarks/core/bookmark_client_base.h"
 
+enum class BookmarkModelType;
 class BookmarkUndoService;
 class ChromeBrowserState;
 class GURL;
@@ -34,7 +34,7 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
       BookmarkUndoService* bookmark_undo_service,
-      bookmarks::StorageType storage_type_for_uma);
+      BookmarkModelType model_type_for_uma);
 
   BookmarkClientImpl(const BookmarkClientImpl&) = delete;
   BookmarkClientImpl& operator=(const BookmarkClientImpl&) = delete;
@@ -84,7 +84,7 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
   // Pointer to BookmarkUndoService, responsible for making operations undoable.
   const raw_ptr<BookmarkUndoService> bookmark_undo_service_;
 
-  const bookmarks::StorageType storage_type_for_uma_;
+  const BookmarkModelType model_type_for_uma_;
 
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
 };

@@ -6,8 +6,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -26,9 +26,8 @@ class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
   void SetDefaultBookmarkFolderPrefsHelper(int64_t folder_id) {
     prefs_->SetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks,
                      folder_id);
-    prefs_->SetInteger(
-        prefs::kIosBookmarkLastUsedStorageReceivingBookmarks,
-        static_cast<int>(bookmarks::StorageType::kLocalOrSyncable));
+    prefs_->SetInteger(prefs::kIosBookmarkLastUsedStorageReceivingBookmarks,
+                       static_cast<int>(BookmarkModelType::kLocalOrSyncable));
   }
   const bookmarks::BookmarkNode* GetDefaultBookmarkFolderHelper() {
     return GetDefaultBookmarkFolder(

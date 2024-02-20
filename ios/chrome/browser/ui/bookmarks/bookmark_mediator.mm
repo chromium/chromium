@@ -15,11 +15,11 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -60,7 +60,7 @@ using bookmarks::BookmarkNode;
       kLastUsedBookmarkFolderNone);
   registry->RegisterIntegerPref(
       prefs::kIosBookmarkLastUsedStorageReceivingBookmarks,
-      static_cast<int>(bookmarks::StorageType::kLocalOrSyncable));
+      static_cast<int>(BookmarkModelType::kLocalOrSyncable));
 }
 
 - (instancetype)
@@ -119,11 +119,12 @@ using bookmarks::BookmarkNode;
 
   NSString* folderTitle =
       bookmark_utils_ios::TitleForBookmarkNode(defaultFolder);
-  bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
-      defaultFolder, _localOrSyncableBookmarkModel.get(),
-      _accountBookmarkModel.get());
+  BookmarkModelType bookmarkModelType =
+      bookmark_utils_ios::GetBookmarkModelType(
+          defaultFolder, _localOrSyncableBookmarkModel.get(),
+          _accountBookmarkModel.get());
   NSString* text = bookmark_utils_ios::messageForAddingBookmarksInFolder(
-      folderTitle, !IsLastUsedBookmarkFolderSet(_prefs), storageType,
+      folderTitle, !IsLastUsedBookmarkFolderSet(_prefs), bookmarkModelType,
       /*showCount=*/false, /*count=*/1, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
@@ -184,13 +185,14 @@ using bookmarks::BookmarkNode;
   action.title =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_VIEW_BOOKMARKS);
 
-  bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
-      defaultFolder, _localOrSyncableBookmarkModel.get(),
-      _accountBookmarkModel.get());
+  BookmarkModelType bookmarkModelType =
+      bookmark_utils_ios::GetBookmarkModelType(
+          defaultFolder, _localOrSyncableBookmarkModel.get(),
+          _accountBookmarkModel.get());
   NSString* folderTitle =
       bookmark_utils_ios::TitleForBookmarkNode(defaultFolder);
   NSString* result = bookmark_utils_ios::messageForAddingBookmarksInFolder(
-      folderTitle, !IsLastUsedBookmarkFolderSet(_prefs), storageType,
+      folderTitle, !IsLastUsedBookmarkFolderSet(_prefs), bookmarkModelType,
       /*showCount=*/true, successfullyAddedBookmarks, _authenticationService,
       _syncService);
 
@@ -217,11 +219,13 @@ using bookmarks::BookmarkNode;
   }
 
   NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
-  bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
-      folder, _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
+  BookmarkModelType bookmarkModelType =
+      bookmark_utils_ios::GetBookmarkModelType(
+          folder, _localOrSyncableBookmarkModel.get(),
+          _accountBookmarkModel.get());
   NSString* text = bookmark_utils_ios::messageForAddingBookmarksInFolder(
-      folderTitle, /*choosenByUser=*/YES, storageType, /*showCount=*/false,
-      URLs.count, _authenticationService, _syncService);
+      folderTitle, /*choosenByUser=*/YES, bookmarkModelType,
+      /*showCount=*/false, URLs.count, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
@@ -231,14 +235,12 @@ using bookmarks::BookmarkNode;
 #pragma mark - Private
 
 // The localized string that appears to users for bulk adding bookmarks.
-- (NSString*)messageForBulkAddingBookmarksWithStorageType:
-                 (bookmarks::StorageType)storageType
-                               successfullyAddedBookmarks:(int)count {
+- (NSString*)messageForBulkAddingBookmarks:(BookmarkModelType)bookmarkModelType
+                successfullyAddedBookmarks:(int)count {
   std::u16string result;
 
-  BOOL savedIntoAccount =
-      bookmark_utils_ios::bookmarkSavedIntoAccountWithStorageType(
-          storageType, _authenticationService, _syncService);
+  BOOL savedIntoAccount = bookmark_utils_ios::bookmarkSavedIntoAccount(
+      bookmarkModelType, _authenticationService, _syncService);
   if (savedIntoAccount) {
     id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);

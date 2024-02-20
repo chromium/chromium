@@ -7,9 +7,9 @@
 
 #import "base/ios/ios_util.h"
 #import "components/bookmarks/common/bookmark_features.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -139,7 +139,7 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGrey signOut];
 
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
 
@@ -156,7 +156,7 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGrey signOut];
 
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Verify that signin promo is visible.
@@ -200,7 +200,7 @@ using chrome_test_util::SecondarySignInButton;
 
   // Add bookmarks to account model.
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
+      setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
 
   [BookmarkEarlGreyUI openBookmarks];
 
@@ -230,9 +230,9 @@ using chrome_test_util::SecondarySignInButton;
 
   // Add bookmarks to local and account models.
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
+      setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
 
   [BookmarkEarlGreyUI openBookmarks];
 

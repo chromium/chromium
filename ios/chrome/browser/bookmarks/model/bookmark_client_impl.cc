@@ -18,6 +18,7 @@
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 
@@ -26,12 +27,12 @@ BookmarkClientImpl::BookmarkClientImpl(
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
     sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
     BookmarkUndoService* bookmark_undo_service,
-    bookmarks::StorageType storage_type_for_uma)
+    BookmarkModelType model_type_for_uma)
     : browser_state_(browser_state),
       managed_bookmark_service_(managed_bookmark_service),
       bookmark_sync_service_(bookmark_sync_service),
       bookmark_undo_service_(bookmark_undo_service),
-      storage_type_for_uma_(storage_type_for_uma) {}
+      model_type_for_uma_(model_type_for_uma) {}
 
 BookmarkClientImpl::~BookmarkClientImpl() {}
 
@@ -88,13 +89,13 @@ BookmarkClientImpl::GetLoadManagedNodeCallback() {
 }
 
 bool BookmarkClientImpl::IsSyncFeatureEnabledIncludingBookmarksForUma() {
-  switch (storage_type_for_uma_) {
-    case bookmarks::StorageType::kAccount:
+  switch (model_type_for_uma_) {
+    case BookmarkModelType::kAccount:
       // Not reachable because AccountBookmarkModelFactory exercises
       // `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()` and in that case
       // BookmarkModel doesn't exercise this predicate.
       NOTREACHED_NORETURN();
-    case bookmarks::StorageType::kLocalOrSyncable:
+    case BookmarkModelType::kLocalOrSyncable:
       return bookmark_sync_service_->IsTrackingMetadata();
   }
   NOTREACHED_NORETURN();

@@ -18,6 +18,7 @@
 #import "base/uuid.h"
 
 class AuthenticationService;
+enum class BookmarkModelType;
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
@@ -25,7 +26,6 @@ class GURL;
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-enum class StorageType;
 }  // namespace bookmarks
 
 namespace syncer {
@@ -91,9 +91,7 @@ NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 // `account_model` is the account mode. It can be null.
 // The node must belong to one of the two models.
 // This function is linear in time in the depth of the bookmark_node.
-// TODO(crbug.com/1417992): once the bookmark nodes has access to its model,
-// rewrite the function to be constant time.
-bookmarks::StorageType GetBookmarkModelType(
+BookmarkModelType GetBookmarkModelType(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);
@@ -106,8 +104,6 @@ bookmarks::StorageType GetBookmarkModelType(
 // The node must belong to one of the two models.
 // This function is linear in time in the depth of the bookmark_node because it
 // uses `GetBookmarkModelType(...)`.
-// TODO(crbug.com/1417992): once the bookmark nodes has access to its model,
-// rewrite the function to be constant time.
 bookmarks::BookmarkModel* GetBookmarkModelForNode(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
@@ -260,13 +256,13 @@ const bookmarks::BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
 // `folderTitle`:  The name of the folder. Assumed to be non-nil.
 // `chosenByUser`: whether this is the last folder in which the user moved a
 // bookmark since last time the set of model changed.
-// `storageType`: whether it  is is on account storage, or local or syncable.
-// `showCount`: Display the number of moved bookmarks in the snackbar.
+// `bookmarkModelType`: whether it  is is on account storage, or local or
+// syncable. `showCount`: Display the number of moved bookmarks in the snackbar.
 // `count`: the number of bookmarks.
 NSString* messageForAddingBookmarksInFolder(
     NSString* folderTitle,
     bool chosenByUser,
-    bookmarks::StorageType storageType,
+    BookmarkModelType bookmarkModelType,
     bool showCount,
     int count,
     base::WeakPtr<AuthenticationService> authenticationService,
@@ -275,8 +271,8 @@ NSString* messageForAddingBookmarksInFolder(
 // The bookmark is saved in the account if either following condition is true:
 // * the saved folder is in the account model,
 // * the sync consent has been granted and the bookmark data type is enabled
-bool bookmarkSavedIntoAccountWithStorageType(
-    bookmarks::StorageType storageType,
+bool bookmarkSavedIntoAccount(
+    BookmarkModelType bookmarkModelType,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService);
 

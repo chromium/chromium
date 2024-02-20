@@ -114,11 +114,11 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
-    "//components/bookmarks/common",
     "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
+    "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/passwords:constants",
