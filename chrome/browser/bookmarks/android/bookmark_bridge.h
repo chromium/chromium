@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
+#include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
@@ -31,6 +32,9 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/reading_list/core/dual_reading_list_model.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_model_observer.h"
 #include "url/android/gurl_android.h"
 
 class BookmarkBridgeTest;
@@ -44,16 +48,16 @@ class BookmarkBridge : public ProfileObserver,
                        public bookmarks::BaseBookmarkModelObserver,
                        public PartnerBookmarksShim::Observer,
                        public ReadingListManager::Observer,
+                       public ReadingListModelObserver,
                        public base::SupportsUserData::Data {
  public:
-  BookmarkBridge(
-      Profile* profile,
-      bookmarks::BookmarkModel* model,
-      bookmarks::ManagedBookmarkService* managed_bookmark_service,
-      PartnerBookmarksShim* partner_bookmarks_shim,
-      std::unique_ptr<ReadingListManager> local_or_synable_reading_list_manager,
-      std::unique_ptr<ReadingListManager> account_reading_list_manager,
-      page_image_service::ImageService* image_service);
+  // All of the injected pointers must be non-null and must outlive `this`.
+  BookmarkBridge(Profile* profile,
+                 bookmarks::BookmarkModel* model,
+                 bookmarks::ManagedBookmarkService* managed_bookmark_service,
+                 page_image_service::ImageService* image_service,
+                 reading_list::DualReadingListModel* dual_reading_list_model,
+                 PartnerBookmarksShim* partner_bookmarks_shim);
 
   BookmarkBridge(const BookmarkBridge&) = delete;
   BookmarkBridge& operator=(const BookmarkBridge&) = delete;
@@ -271,6 +275,9 @@ class BookmarkBridge : public ProfileObserver,
   // ProfileObserver override
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  ReadingListManager* GetLocalOrSyncableReadingListManagerForTesting();
+  ReadingListManager* GetAccountReadingListManagerIfAvailableForTesting();
+
  private:
   base::android::ScopedJavaLocalRef<jobject> CreateJavaBookmark(
       const bookmarks::BookmarkNode* node);
@@ -353,12 +360,28 @@ class BookmarkBridge : public ProfileObserver,
   void ReadingListLoaded() override;
   void ReadingListChanged() override;
 
-  void DestroyJavaObject();
+  // Override ReadingListModelObserver
+  void ReadingListModelLoaded(const ReadingListModel* model) override;
+  void ReadingListModelCompletedBatchUpdates(
+      const ReadingListModel* model) override;
 
-  raw_ptr<Profile> profile_;  // weak
+  void DestroyJavaObject();
+  void CreateOrDestroyAccountReadingListManagerIfNeeded();
+
+  const raw_ptr<Profile> profile_;  // weak
   base::android::ScopedJavaGlobalRef<jobject> java_bookmark_model_;
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;                     // weak
-  raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;  // weak
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;  // weak
+  const raw_ptr<bookmarks::ManagedBookmarkService>
+      managed_bookmark_service_;  // weak
+
+  const raw_ptr<page_image_service::ImageService> image_service_;  // weak
+  const raw_ptr<reading_list::DualReadingListModel>
+      dual_reading_list_model_;  // weak
+  const ReadingListManagerImpl::IdGenerationFunction id_gen_func_;
+  // Holds reading list data as an in-memory BookmarkNode tree.
+  const std::unique_ptr<ReadingListManager>
+      local_or_syncable_reading_list_manager_;
+
   std::unique_ptr<bookmarks::ScopedGroupBookmarkActions>
       grouped_bookmark_actions_;
   PrefChangeRegistrar pref_change_registrar_;
@@ -367,14 +390,11 @@ class BookmarkBridge : public ProfileObserver,
   // This is owned by profile.
   raw_ptr<PartnerBookmarksShim> partner_bookmarks_shim_;
 
-  // Holds reading list data as an in-memory BookmarkNode tree.
-  const std::unique_ptr<ReadingListManager>
-      local_or_syncable_reading_list_manager_;
   // Holds account reading list data, similar to above. Only non-null if the
   // account reading list is available.
-  const std::unique_ptr<ReadingListManager> account_reading_list_manager_;
+  std::unique_ptr<ReadingListManager> account_reading_list_manager_;
 
-  raw_ptr<page_image_service::ImageService> image_service_;  // weak
+  raw_ptr<ReadingListModel> account_reading_list_model_;  // weak
 
   // Observes the profile destruction and creation.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
@@ -386,6 +406,9 @@ class BookmarkBridge : public ProfileObserver,
   base::ScopedMultiSourceObservation<ReadingListManager,
                                      ReadingListManager::Observer>
       reading_list_manager_observations_{this};
+  base::ScopedObservation<reading_list::DualReadingListModel,
+                          ReadingListModelObserver>
+      dual_reading_list_model_observation_{this};
 
   bool suppress_observer_notifications_ = false;
 

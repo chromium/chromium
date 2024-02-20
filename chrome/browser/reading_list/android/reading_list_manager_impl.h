@@ -27,6 +27,7 @@ class ReadingListManagerImpl : public ReadingListManager,
  public:
   using IdGenerationFunction = base::RepeatingCallback<int64_t(void)>;
 
+  // `reading_list_model` must not be null and must outlive `this`.
   ReadingListManagerImpl(ReadingListModel* reading_list_model,
                          const IdGenerationFunction& id_gen_func);
   ~ReadingListManagerImpl() override;
@@ -69,9 +70,6 @@ class ReadingListManagerImpl : public ReadingListManager,
   void SetReadStatus(const GURL& url, bool read) override;
   bool GetReadStatus(const bookmarks::BookmarkNode* node) override;
   bool IsLoaded() const override;
-
-  // Sets the loaded bit for testing.
-  void SetIsLoadedForTests(bool is_loaded);
 
  private:
   // Finds the child in the bookmark tree by URL. Returns nullptr if not found.

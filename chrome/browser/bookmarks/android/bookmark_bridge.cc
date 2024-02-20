@@ -152,27 +152,12 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
       model->GetUserData(kBookmarkBridgeUserDataKey));
 
   if (!bookmark_bridge) {
-    auto reading_list_id_generation_func =
-        base::BindRepeating([](int64_t* id) { return (*id)++; },
-                            base::Owned(std::make_unique<int64_t>(0)));
-    auto* dual_reading_list =
-        ReadingListModelFactory::GetAsDualReadingListForBrowserContext(profile);
-    std::unique_ptr<ReadingListManagerImpl> account_reading_list_manager =
-        nullptr;
-    auto* account_model = dual_reading_list->GetAccountModelIfSyncing();
-    if (account_model) {
-      account_reading_list_manager = std::make_unique<ReadingListManagerImpl>(
-          account_model, reading_list_id_generation_func);
-    }
     bookmark_bridge = new BookmarkBridge(
         profile, model, ManagedBookmarkServiceFactory::GetForProfile(profile),
+        page_image_service::ImageServiceFactory::GetForBrowserContext(profile),
+        ReadingListModelFactory::GetAsDualReadingListForBrowserContext(profile),
         PartnerBookmarksShim::BuildForBrowserContext(
-            chrome::GetBrowserContextRedirectedInIncognito(profile)),
-        std::make_unique<ReadingListManagerImpl>(
-            dual_reading_list->GetLocalOrSyncableModel(),
-            reading_list_id_generation_func),
-        std::move(account_reading_list_manager),
-        page_image_service::ImageServiceFactory::GetForBrowserContext(profile));
+            chrome::GetBrowserContextRedirectedInIncognito(profile)));
     model->SetUserData(kBookmarkBridgeUserDataKey,
                        base::WrapUnique(bookmark_bridge));
   }
@@ -180,34 +165,40 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
   return ScopedJavaLocalRef<jobject>(bookmark_bridge->GetJavaBookmarkModel());
 }
 
-// TODO(crbug.com/1510547): Support the account reading list availability
-// changing at runtime.
 BookmarkBridge::BookmarkBridge(
     Profile* profile,
     BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
-    PartnerBookmarksShim* partner_bookmarks_shim,
-    std::unique_ptr<ReadingListManager> local_or_syncable_reading_list_manager,
-    std::unique_ptr<ReadingListManager> account_reading_list_manager,
-    page_image_service::ImageService* image_service)
+    page_image_service::ImageService* image_service,
+    reading_list::DualReadingListModel* dual_reading_list_model,
+    PartnerBookmarksShim* partner_bookmarks_shim)
     : profile_(profile),
       bookmark_model_(model),
       managed_bookmark_service_(managed_bookmark_service),
-      partner_bookmarks_shim_(partner_bookmarks_shim),
-      local_or_syncable_reading_list_manager_(
-          std::move(local_or_syncable_reading_list_manager)),
-      account_reading_list_manager_(std::move(account_reading_list_manager)),
       image_service_(image_service),
+      dual_reading_list_model_(dual_reading_list_model),
+      id_gen_func_(
+          base::BindRepeating([](int64_t* id) { return (*id)++; },
+                              base::Owned(std::make_unique<int64_t>(0)))),
+      local_or_syncable_reading_list_manager_(
+          std::make_unique<ReadingListManagerImpl>(
+              dual_reading_list_model->GetLocalOrSyncableModel(),
+              id_gen_func_)),
+      partner_bookmarks_shim_(partner_bookmarks_shim),
       weak_ptr_factory_(this) {
+  CHECK(profile);
+  CHECK(model);
+  CHECK(managed_bookmark_service);
+  CHECK(partner_bookmarks_shim);
+  // TODO(crbug.com/1503231): CHECK image_service once a mock is available.
+  CHECK(dual_reading_list_model);
+
   profile_observation_.Observe(profile_);
   bookmark_model_observation_.Observe(bookmark_model_);
   partner_bookmarks_shim_observation_.Observe(partner_bookmarks_shim_);
   reading_list_manager_observations_.AddObservation(
       local_or_syncable_reading_list_manager_.get());
-  if (account_reading_list_manager_) {
-    reading_list_manager_observations_.AddObservation(
-        account_reading_list_manager_.get());
-  }
+  dual_reading_list_model_observation_.Observe(dual_reading_list_model_);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -1601,6 +1592,16 @@ void BookmarkBridge::OnProfileWillBeDestroyed(Profile* profile) {
   DestroyJavaObject();
 }
 
+ReadingListManager*
+BookmarkBridge::GetLocalOrSyncableReadingListManagerForTesting() {
+  return local_or_syncable_reading_list_manager_.get();
+}
+
+ReadingListManager*
+BookmarkBridge::GetAccountReadingListManagerIfAvailableForTesting() {
+  return account_reading_list_manager_.get();
+}
+
 ScopedJavaGlobalRef<jobject> BookmarkBridge::GetJavaBookmarkModel() {
   return java_bookmark_model_;
 }
@@ -1623,4 +1624,36 @@ ReadingListManager* BookmarkBridge::GetReadingListManagerFromParentNode(
   }
 
   NOTREACHED_NORETURN();
+}
+
+void BookmarkBridge::ReadingListModelLoaded(const ReadingListModel* model) {
+  CreateOrDestroyAccountReadingListManagerIfNeeded();
+}
+
+void BookmarkBridge::ReadingListModelCompletedBatchUpdates(
+    const ReadingListModel* model) {
+  CreateOrDestroyAccountReadingListManagerIfNeeded();
+}
+
+void BookmarkBridge::CreateOrDestroyAccountReadingListManagerIfNeeded() {
+  auto* account_reading_list_model =
+      dual_reading_list_model_->GetAccountModelIfSyncing();
+  if (account_reading_list_model_ == account_reading_list_model) {
+    return;
+  }
+
+  account_reading_list_model_ = account_reading_list_model;
+
+  if (account_reading_list_manager_) {
+    reading_list_manager_observations_.RemoveObservation(
+        account_reading_list_manager_.get());
+    account_reading_list_manager_.reset();
+  }
+
+  if (account_reading_list_model_) {
+    account_reading_list_manager_ = std::make_unique<ReadingListManagerImpl>(
+        account_reading_list_model_, id_gen_func_);
+    reading_list_manager_observations_.AddObservation(
+        account_reading_list_manager_.get());
+  }
 }
