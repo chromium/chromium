@@ -442,8 +442,8 @@ struct NetworkContextParams {
   // cases as `ip_protection_config_getter`.
   pending_receiver<IpProtectionProxyDelegate>? ip_protection_proxy_delegate;
 
-  // Whether the IP Protection feature is enabled via user prefs at the time the
-  // NetworkContext is created. This setting can change via the
+  // Whether the IP Protection feature is enabled at the time the NetworkContext
+  // is created. This setting can change via the
   // `SetIpProtectionEnabled` method of the `IpProtectionProxyDelegate`
   // interface.
   bool enable_ip_protection = false;
