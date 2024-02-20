@@ -347,7 +347,7 @@
       </message>
       <message name="IDS_ACCESSIBILITY_DIALOG_BACK_BUTTON_WITH_GROUP_NAME" desc="The accessibility text to read when the back button in the dialog is focused. When this button is tapped, the dialog will be hidden. TITLE_OF_GROUP is the title of the group. NUMBER_OF_TABS is the number of tabs within this group. Note that after collapsing with one tab, that group becomes a tab.">
         {TABS_COUNT, plural,
-          =1 {Collapse <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab.}
+          =1 {Collapse <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph> tab group with <ph name="TABS_COUNT_ONE">%2$d<ex>1</ex></ph> tab.}
           other {Collapse <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph> tab group with <ph name="TABS_COUNT_MANY">%2$d<ex>2</ex></ph> tabs.}
         }
       </message>

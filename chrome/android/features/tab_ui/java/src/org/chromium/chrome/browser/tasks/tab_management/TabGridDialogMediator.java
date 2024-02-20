@@ -450,11 +450,10 @@ public class TabGridDialogMediator
             return;
         }
         if (mTabGroupTitleEditor != null) {
-            Tab currentTab =
-                    TabModelUtils.getTabById(
-                            mCurrentTabModelFilterSupplier.get().getTabModel(), mCurrentTabId);
-            String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(getRootId(currentTab));
-            if (storedTitle != null && tabsCount > 1) {
+            TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+            Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
+            String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(currentTab.getRootId());
+            if (storedTitle != null && filter.isTabInTabGroup(currentTab)) {
                 mModel.set(
                         TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                         mContext.getResources()
@@ -508,10 +507,6 @@ public class TabGridDialogMediator
         mModel.set(
                 TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR,
                 ungroupBarHoveredTextColor);
-    }
-
-    private static int getRootId(Tab tab) {
-        return tab.getRootId();
     }
 
     private int getIdForTab(@Nullable Tab tab) {
@@ -658,8 +653,10 @@ public class TabGridDialogMediator
     }
 
     private void saveCurrentGroupModifiedTitle() {
+        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
         // When current group no longer exists, skip saving the title.
-        if (getRelatedTabs(mCurrentTabId).size() < 2) {
+        if (currentTab == null || !filter.isTabInTabGroup(currentTab)) {
             mCurrentGroupModifiedTitle = null;
         }
 
@@ -668,16 +665,12 @@ public class TabGridDialogMediator
         }
         assert mTabGroupTitleEditor != null;
 
-        Tab currentTab =
-                TabModelUtils.getTabById(
-                        mCurrentTabModelFilterSupplier.get().getTabModel(), mCurrentTabId);
         int tabsCount = getRelatedTabs(mCurrentTabId).size();
-        assert tabsCount >= 2;
         if (mCurrentGroupModifiedTitle.length() == 0
                 || mTabGroupTitleEditor.isDefaultTitle(mCurrentGroupModifiedTitle, tabsCount)) {
             // When dialog title is empty or was unchanged, delete previously stored title and
             // restore default title.
-            mTabGroupTitleEditor.deleteTabGroupTitle(getRootId(currentTab));
+            mTabGroupTitleEditor.deleteTabGroupTitle(currentTab.getRootId());
 
             String originalTitle = TabGroupTitleEditor.getDefaultTitle(mContext, tabsCount);
             mModel.set(
@@ -692,7 +685,7 @@ public class TabGridDialogMediator
             mCurrentGroupModifiedTitle = null;
             return;
         }
-        mTabGroupTitleEditor.storeTabGroupTitle(getRootId(currentTab), mCurrentGroupModifiedTitle);
+        mTabGroupTitleEditor.storeTabGroupTitle(currentTab.getRootId(), mCurrentGroupModifiedTitle);
         mTabGroupTitleEditor.updateTabGroupTitle(currentTab, mCurrentGroupModifiedTitle);
         int relatedTabsCount = getRelatedTabs(mCurrentTabId).size();
         mModel.set(
