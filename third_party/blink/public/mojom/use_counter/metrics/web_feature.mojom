@@ -4111,7 +4111,7 @@ enum WebFeature {
   kPseudoFirstLineOnRt = 4749,
   kAutoSizesLazy = 4750,
   kAutoSizesNonLazy = 4751,
-  kTrustedTypesIntrospection = 4752,
+  kOBSOLETE_TrustedTypesIntrospection = 4752,
   kTrustedTypesIsCheck = 4753,
   kMouseDragOnCancelledMouseMove = 4754,
   // The items above roughly this point are available in the M121 branch.
@@ -4225,6 +4225,9 @@ enum WebFeature {
   kCSSPageRule = 4862,
   kV8RTCRtpReceiver_JitterBufferTarget_AttributeGetter = 4863,
   kV8RTCRtpReceiver_JitterBufferTarget_AttributeSetter = 4864,
+  kTrustedTypesIntrospectionAttributeType = 4865,
+  kTrustedTypesIntrospectionPropertyType = 4866,
+  kTrustedTypesIntrospectionTypeMapping = 4867,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

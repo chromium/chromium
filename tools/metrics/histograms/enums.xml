@@ -11108,7 +11108,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4749" label="PseudoFirstLineOnRt"/>
   <int value="4750" label="AutoSizesLazy"/>
   <int value="4751" label="AutoSizesNonLazy"/>
-  <int value="4752" label="TrustedTypesIntrospection"/>
+  <int value="4752" label="OBSOLETE_TrustedTypesIntrospection"/>
   <int value="4753" label="TrustedTypesIsCheck"/>
   <int value="4754" label="MouseDragOnCancelledMouseMove"/>
   <int value="4755" label="FedCmDomainHint"/>
@@ -11244,6 +11244,9 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8RTCRtpReceiver_JitterBufferTarget_AttributeGetter"/>
   <int value="4864"
       label="V8RTCRtpReceiver_JitterBufferTarget_AttributeSetter"/>
+  <int value="4865" label="TrustedTypesIntrospectionAttributeType"/>
+  <int value="4866" label="TrustedTypesIntrospectionPropertyType"/>
+  <int value="4867" label="TrustedTypesIntrospectionTypeMapping"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
