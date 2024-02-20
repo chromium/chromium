@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcInstallAttemptCount"
-    units="attmpts" expires_after="2024-09-01">
+    units="attempts" expires_after="2024-09-01">
   <owner>amoylan@chromium.org</owner>
   <owner>dgrebenyuk@chromium.org</owner>
   <owner>nbowe@chromium.org</owner>
