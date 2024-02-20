@@ -6554,6 +6554,7 @@ crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history
 
 # The following tests should fail with third-party cookie not blocked.
 external/wpt/cookies/third-party-cookies/third-party-cookies.tentative.https.html [ Failure ]
+external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure ]
 http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js [ Failure ]
 
 # Gardener 2023-09-29

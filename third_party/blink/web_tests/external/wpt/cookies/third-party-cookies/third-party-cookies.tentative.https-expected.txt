@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+[PASS] 1P window: Cookies are accessible via HTTP
+[PASS] 1P window: Cookies are accessible via DOM
+[PASS] 1P window: Cookies are accessible via CookieStore
+[PASS] Cross-site window opened correctly
+[FAIL] 3P fetch: Cookies are not accessible via HTTP
+  assert_equals: Expected cookie 1P_http to not be available expected false but got true
+[FAIL] 3P fetch: Cross site window setting HTTP cookies
+  assert_equals: Expected cookie 3P_http to not be available expected false but got true
+[FAIL] 3P embed: Cookies are not accessible via DOM
+  assert_equals: Expected cookie 1P_http to not be available expected false but got true
+[FAIL] 3P embed: Cookies are not accessible via CookieStore
+  assert_equals: Expected cookie 1P_http to not be available expected false but got true
+[FAIL] Cross site embed setting DOM cookies
+  assert_equals: Expected cookie 3P_dom to not be available expected false but got true
+[FAIL] Cross site embed setting CookieStore cookies
+  assert_equals: Expected cookie 3P_cs to not be available expected false but got true
+Harness: the test ran to completion.
