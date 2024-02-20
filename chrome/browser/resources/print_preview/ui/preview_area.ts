@@ -39,7 +39,7 @@ import type {PluginProxy} from './plugin_proxy.js';
 import {PluginProxyImpl} from './plugin_proxy.js';
 import {getTemplate} from './preview_area.html.js';
 // <if expr="is_chromeos">
-import {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource} from './printer_setup_info_cros.js';
+import {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
 // </if>
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -133,9 +133,9 @@ export class PrintPreviewPreviewAreaElement extends
         readOnly: true,
       },
 
-      previewAreaSource_: {
+      previewAreaInitiator_: {
         type: Number,
-        value: PrinterSetupInfoMetricsSource.PREVIEW_AREA,
+        value: PrinterSetupInfoInitiator.PREVIEW_AREA,
         readOnly: true,
       },
       // </if>

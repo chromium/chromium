@@ -27,7 +27,7 @@ import {getTemplate} from './printer_setup_info_cros.html.js';
 
 const PrintPreviewPrinterSetupInfoCrosElementBase = I18nMixin(PolymerElement);
 
-export enum PrinterSetupInfoMetricsSource {
+export enum PrinterSetupInfoInitiator {
   PREVIEW_AREA,
   DESTINATION_DIALOG_CROS,
 }
@@ -77,14 +77,14 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
         value: PrinterSetupInfoMessageType.NO_PRINTERS,
       },
 
-      metricsSource: Number,
+      initiator: Number,
 
       showManagePrintersButton: Boolean,
     };
   }
 
   messageType: PrinterSetupInfoMessageType;
-  private metricsSource: PrinterSetupInfoMetricsSource;
+  private initiator: PrinterSetupInfoInitiator;
   private nativeLayer: NativeLayer;
   private metricsContext: MetricsContext;
   private showManagePrintersButton: boolean = false;
@@ -116,12 +116,12 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
 
   private onManagePrintersClicked(): void {
     this.nativeLayer.managePrinters();
-    switch (this.metricsSource) {
-      case PrinterSetupInfoMetricsSource.PREVIEW_AREA:
+    switch (this.initiator) {
+      case PrinterSetupInfoInitiator.PREVIEW_AREA:
         this.metricsContext.record(
             PrintPreviewLaunchSourceBucket.PREVIEW_AREA_CONNECTION_ERROR);
         break;
-      case PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS:
+      case PrinterSetupInfoInitiator.DESTINATION_DIALOG_CROS:
         // `<print-preview-printer-setup-info-cros>` is only displayed when
         // there are no printers.
         this.metricsContext.record(
@@ -132,8 +132,8 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
     }
   }
 
-  setMetricsSourceForTesting(source: PrinterSetupInfoMetricsSource): void {
-    this.metricsSource = source;
+  setInitiatorForTesting(initiator: PrinterSetupInfoInitiator): void {
+    this.initiator = initiator;
   }
 }
 

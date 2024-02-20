@@ -41,7 +41,7 @@ import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 import {getTemplate} from './destination_dialog_cros.html.js';
 import type {PrintPreviewDestinationListItemElement} from './destination_list_item_cros.js';
 import type {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
-import {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource} from './printer_setup_info_cros.js';
+import {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
 import type {PrintPreviewProvisionalDestinationResolverElement} from './provisional_destination_resolver.js';
 
 interface PrintServersChangedEventDetail {
@@ -159,9 +159,9 @@ export class PrintPreviewDestinationDialogCrosElement extends
         readOnly: true,
       },
 
-      destinationDialogCrosSource_: {
+      destinationDialogCrosInitiator_: {
         type: Number,
-        value: PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS,
+        value: PrinterSetupInfoInitiator.DESTINATION_DIALOG_CROS,
         readOnly: true,
       },
 

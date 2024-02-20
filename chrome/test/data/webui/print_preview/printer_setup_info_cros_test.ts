@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayerImpl, PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
+import {NativeLayerImpl, PrinterSetupInfoInitiator, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -42,8 +42,8 @@ suite('PrinterSetupInfoTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setupInfoElement =
         document.createElement(PrintPreviewPrinterSetupInfoCrosElement.is);
-    setupInfoElement.setMetricsSourceForTesting(
-        PrinterSetupInfoMetricsSource.PREVIEW_AREA);
+    setupInfoElement.setInitiatorForTesting(
+        PrinterSetupInfoInitiator.PREVIEW_AREA);
     document.body.appendChild(setupInfoElement);
     flush();
     await nativeLayerCros.whenCalled('getShowManagePrinters');
@@ -172,8 +172,8 @@ suite('PrinterSetupInfoTest', function() {
         assertEquals(0, nativeLayer.getCallCount(recordMetricsFunction));
 
         // Set metrics source to destination-dialog-cros and click.
-        setupInfoElement.setMetricsSourceForTesting(
-            PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS);
+        setupInfoElement.setInitiatorForTesting(
+            PrinterSetupInfoInitiator.DESTINATION_DIALOG_CROS);
         const managePrinters =
             getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
         managePrinters.click();
@@ -182,8 +182,8 @@ suite('PrinterSetupInfoTest', function() {
         verifyRecordInHistogramCall(/*callIndex=*/ 0, /*expectedBucket=*/ 1);
 
         // Set metrics source to destination-dialog-cros and click.
-        setupInfoElement.setMetricsSourceForTesting(
-            PrinterSetupInfoMetricsSource.PREVIEW_AREA);
+        setupInfoElement.setInitiatorForTesting(
+            PrinterSetupInfoInitiator.PREVIEW_AREA);
         managePrinters.click();
 
         // Call should use bucket `PREVIEW_AREA_CONNECTION_ERROR`.
