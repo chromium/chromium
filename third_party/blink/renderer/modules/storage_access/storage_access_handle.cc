@@ -414,7 +414,7 @@ BroadcastChannel* StorageAccessHandle::BroadcastChannel(
       PassKey(), execution_context, name, broadcast_channel_.get());
 }
 
-SharedWorker* StorageAccessHandle::SharedWorker(
+blink::SharedWorker* StorageAccessHandle::SharedWorker(
     ExecutionContext* context,
     const String& url,
     const V8UnionSharedWorkerOptionsOrString* name_or_options,

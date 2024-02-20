@@ -69,7 +69,7 @@ class MODULES_EXPORT StorageAccessHandle final
       ExecutionContext* execution_context,
       const String& name,
       ExceptionState& exception_state) const;
-  SharedWorker* SharedWorker(
+  blink::SharedWorker* SharedWorker(
       ExecutionContext* context,
       const String& url,
       const V8UnionSharedWorkerOptionsOrString* name_or_options,
