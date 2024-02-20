@@ -39,6 +39,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -229,6 +230,25 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kNone:
       return false;
   }
+}
+
+// Emits a metric that measures how long it took to show a single field form
+// filling suggestion.
+// TODO(b/324553809): Remove once we know the average time for a suggestion to
+// show.
+void LogTimeDelayForSingleFieldFormFill(
+    base::span<const Suggestion> suggestions,
+    base::TimeDelta delay) {
+  if (suggestions.empty()) {
+    return;
+  }
+  const FillingProduct filling_product =
+      GetFillingProductFromPopupItemId(suggestions[0].popup_item_id);
+  CHECK(IsSingleFieldFormFillerFillingProduct(filling_product));
+  base::UmaHistogramTimes(
+      base::StrCat({"Autofill.Popup.SingleFieldFormFillerDelay.",
+                    FillingProductToString(filling_product)}),
+      delay);
 }
 
 FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
@@ -1092,14 +1112,17 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
               field, client(),
               base::BindRepeating(
                   [](base::WeakPtr<BrowserAutofillManager> self,
-                     FieldGlobalId field_id,
+                     base::TimeTicks request_start_time, FieldGlobalId field_id,
                      const std::vector<Suggestion>& suggestions) {
                     if (self) {
+                      LogTimeDelayForSingleFieldFormFill(
+                          suggestions,
+                          base::TimeTicks::Now() - request_start_time);
                       self->external_delegate_->OnSuggestionsReturned(
                           field_id, suggestions);
                     }
                   },
-                  weak_ptr_factory_.GetWeakPtr()),
+                  weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
               context);
       if (handled_by_single_field_form_filler) {
         return false;

@@ -3660,6 +3660,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Popup.SingleFieldFormFillerDelay.{FillingProduct}"
+    units="ms" expires_after="2024-09-01">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Measures the time it took to query a single field form filler suggestion for
+    {FillingProduct}. Emitted whenever the single field form fill router returns
+    a non-empty set of suggestions.
+  </summary>
+  <token key="FillingProduct">
+    <variant name="Autocomplete"/>
+    <variant name="Iban"/>
+    <variant name="MerchantPromoCode"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.PopupHidingReason" enum="AutofillPopupHidingReason"
     expires_after="2024-07-21">
   <owner>koerber@google.com</owner>
