@@ -1,0 +1,17 @@
+{
+  "src": "refs/branch-heads/6312",
+  "src:src/clank": "refs/heads/chromium/6312",
+  "src:src/components/optimization_guide/internal": "refs/heads/chromium/6312",
+  "src:src/internal": "refs/heads/chromium/6312",
+  "src:src/ios_internal": "refs/heads/chromium/6312",
+  "src:src/third_party/angle": "refs/heads/chromium/6312",
+  "src:src/third_party/dawn": "refs/heads/chromium/6312",
+  "src:src/third_party/devtools-frontend-internal": "refs/heads/chromium/6312",
+  "src:src/third_party/devtools-frontend-internal:devtools-frontend": "refs/heads/chromium/6312",
+  "src:src/third_party/devtools-frontend/src": "refs/heads/chromium/6312",
+  "src:src/third_party/pdfium": "refs/heads/chromium/6312",
+  "src:src/third_party/skia": "refs/heads/chrome/m123",
+  "src:src/third_party/vulkan-deps": "refs/heads/chromium/6312",
+  "src:src/third_party/webrtc": "refs/branch-heads/6312",
+  "src:src/v8": "refs/heads/chromium/6312"
+}
