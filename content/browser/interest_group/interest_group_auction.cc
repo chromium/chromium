@@ -21,6 +21,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -2125,6 +2126,13 @@ class InterestGroupAuction::BuyerHelper
     // Validate `debug_loss_report_url` and `debug_win_report_url`, if present.
     if (debug_loss_report_url.has_value() &&
         !IsUrlValid(debug_loss_report_url.value())) {
+      SCOPED_CRASH_KEY_BOOL("fledge", "loss-url-valid",
+                            debug_loss_report_url->is_valid());
+      SCOPED_CRASH_KEY_BOOL("fledge", "loss-report-url-https",
+                            IsUrlValid(debug_loss_report_url.value()));
+      SCOPED_CRASH_KEY_STRING256(
+          "fledge", "loss-report-url-null",
+          debug_loss_report_url->possibly_invalid_spec());
       generate_bid_client_receiver_set_.ReportBadMessage(
           "Invalid bidder debugging loss report URL");
       return nullptr;
