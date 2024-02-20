@@ -30,6 +30,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -196,6 +197,13 @@ void EditLabel::UpdateAccessibleName() {
   }
 }
 
+void EditLabel::ChangeFocusToNextLabel() {
+  DCHECK(parent());
+  if (auto* parent_view = views::AsViewClass<EditLabels>(parent())) {
+    parent_view->FocusLabel();
+  }
+}
+
 void EditLabel::SetToDefault() {
   SetEnabledTextColorIds(IsInputUnbound() && !action_->is_new()
                              ? cros_tokens::kCrosSysError
@@ -246,6 +254,7 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
   // Don't show error when the same key is pressed.
   if (GetText() == new_bind) {
     SetNameTagState(/*is_error=*/false, u"");
+    ChangeFocusToNextLabel();
     return true;
   }
 
@@ -284,6 +293,7 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
   }
   DCHECK(input);
   controller_->OnInputBindingChange(action_, std::move(input));
+  ChangeFocusToNextLabel();
   return true;
 }
 

@@ -48,6 +48,7 @@ class EditLabel : public views::LabelButton {
   void SetTextLabel(const std::u16string& text);
   void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
   void UpdateAccessibleName();
+  void ChangeFocusToNextLabel();
 
   void SetToDefault();
   void SetToFocused();
