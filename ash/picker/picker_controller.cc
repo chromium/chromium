@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_search_results.h"
@@ -17,6 +18,7 @@
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/picker_search_controller.h"
+#include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
@@ -213,10 +215,27 @@ std::unique_ptr<AshWebView> PickerController::CreateWebView(
 
 void PickerController::GetResultsForCategory(PickerCategory category,
                                              SearchResultsCallback callback) {
-  // TODO: b/316936620 - Get actual results for the category.
+  // TODO: b/325977099 - Get actual results for each category.
+  std::vector<ash::PickerSearchResult> recent_results;
+  switch (category) {
+    case PickerCategory::kEmojis:
+    case PickerCategory::kSymbols:
+    case PickerCategory::kEmoticons:
+    case PickerCategory::kGifs:
+      break;
+    case PickerCategory::kOpenTabs:
+    case PickerCategory::kBrowsingHistory:
+    case PickerCategory::kBookmarks:
+      recent_results.push_back(PickerSearchResult::BrowsingHistory(
+          GURL("http://crbug.com"), u"Crbug",
+          GetIconForPickerCategory(category)));
+      recent_results.push_back(PickerSearchResult::BrowsingHistory(
+          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
+          GetIconForPickerCategory(category)));
+      break;
+  }
   callback.Run(PickerSearchResults({{
-      PickerSearchResults::Section(u"Recently used",
-                                   {{PickerSearchResult::Text(u"😊")}}),
+      PickerSearchResults::Section(u"Recently used", recent_results),
   }}));
 }
 
