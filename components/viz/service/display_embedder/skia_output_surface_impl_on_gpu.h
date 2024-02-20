@@ -468,6 +468,7 @@ class SkiaOutputSurfaceImplOnGpu
   // to access the NV12 planes.
   bool ImportSurfacesForNV12Planes(
       const BlitRequest& blit_request,
+      gfx::Size intermediate_dst_size,
       std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
           mailbox_access_datas,
       bool is_multiplane);

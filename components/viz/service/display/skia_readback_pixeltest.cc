@@ -228,6 +228,7 @@ void WriteTextureOnGpuMainThread(gpu::SharedImageManager* shared_image_manager,
 
   auto* surface = scoped_write->surface();
   surface->writePixels(pixmap, 0, 0);
+  representation->SetCleared();
 
   GrFlushInfo flush_info;
   flush_info.fNumSemaphores = end_semaphores.size();

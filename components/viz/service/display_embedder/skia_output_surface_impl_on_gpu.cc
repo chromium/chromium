@@ -1003,6 +1003,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     return;
   }
 
+  auto allow_unclear_access =
+      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes;
   if (request->has_blit_request()) {
     // Check if the destination will fit in the blit target:
     const gfx::Rect blit_destination_rect(
@@ -1015,6 +1017,15 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
       DLOG(ERROR) << "blit target image is not large enough to fit results";
       return;
     }
+
+    if (request->blit_request().letterboxing_behavior() ==
+            LetterboxingBehavior::kDoNotLetterbox &&
+        blit_destination_rect != blit_target_image_rect) {
+      // If the BlitRequest won't clear the entire destination texture then it
+      // must already be cleared to be usable.
+      allow_unclear_access =
+          gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo;
+    }
   }
 
   SkSurfaceProps surface_props;
@@ -1023,7 +1034,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
 
   auto scoped_write = representation->BeginScopedWriteAccess(
       /*final_msaa_count=*/1, surface_props, &begin_semaphores, &end_semaphores,
-      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+      allow_unclear_access);
+  if (!scoped_write) {
+    return;
+  }
 
   std::optional<SkVector> scaling;
   if (request->is_scaled()) {
@@ -1302,24 +1316,49 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
 
 bool SkiaOutputSurfaceImplOnGpu::ImportSurfacesForNV12Planes(
     const BlitRequest& blit_request,
+    gfx::Size intermediate_dst_size,
     std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
         mailbox_access_datas,
     bool is_multiplane) {
   size_t num_mailboxes = is_multiplane ? 1 : CopyOutputResult::kNV12MaxPlanes;
+  auto allow_unclear_access =
+      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes;
   for (size_t i = 0; i < num_mailboxes; ++i) {
-    const gpu::MailboxHolder& mailbox_holder = blit_request.mailbox(i);
+    const gpu::Mailbox& mailbox = blit_request.mailbox(i).mailbox;
 
     // Should never happen, mailboxes are validated when setting blit request on
     // a CopyOutputResult and we only access `kNV12MaxPlanes` mailboxes.
-    DCHECK(!mailbox_holder.mailbox.IsZero());
+    DCHECK(!mailbox.IsZero());
 
     MailboxAccessData& mailbox_access_data = mailbox_access_datas[i];
 
     auto representation = dependency_->GetSharedImageManager()->ProduceSkia(
-        mailbox_holder.mailbox, context_state_->memory_type_tracker(),
-        context_state_);
+        mailbox, context_state_->memory_type_tracker(), context_state_);
     if (!representation) {
       return false;
+    }
+
+    if (i == 0) {
+      // Check if the destination will fit in the blit target:
+      const gfx::Rect blit_destination_rect(
+          blit_request.destination_region_offset(), intermediate_dst_size);
+      const gfx::Rect blit_target_image_rect(representation->size());
+
+      if (!blit_target_image_rect.Contains(blit_destination_rect)) {
+        // Send empty result, the blit target image is not large enough to fit
+        // the results.
+        DLOG(ERROR) << "blit target image is not large enough to fit results";
+        return false;
+      }
+
+      if (blit_request.letterboxing_behavior() ==
+              LetterboxingBehavior::kDoNotLetterbox &&
+          blit_destination_rect != blit_target_image_rect) {
+        // If the BlitRequest won't clear the entire destination texture then it
+        // must already be cleared to be usable.
+        allow_unclear_access =
+            gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo;
+      }
     }
 
     SkSurfaceProps surface_props;
@@ -1328,8 +1367,10 @@ bool SkiaOutputSurfaceImplOnGpu::ImportSurfacesForNV12Planes(
         scoped_write = representation->BeginScopedWriteAccess(
             /*final_msaa_count=*/1, surface_props,
             &mailbox_access_data.begin_semaphores,
-            &mailbox_access_data.end_semaphores,
-            gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+            &mailbox_access_data.end_semaphores, allow_unclear_access);
+    if (!scoped_write) {
+      return false;
+    }
 
     if (gr_context()) {
       if (is_multiplane) {
@@ -1424,27 +1465,14 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   bool destination_surfaces_ready = false;
   if (request->has_blit_request()) {
     destination_surfaces_ready = ImportSurfacesForNV12Planes(
-        request->blit_request(), mailbox_access_datas, is_multiplane);
+        request->blit_request(), intermediate_dst_size, mailbox_access_datas,
+        is_multiplane);
 
     // The entire destination image size is the same as the size of the luma
     // plane of the image that was just imported:
     yuva_info = SkYUVAInfo(
         mailbox_access_datas[0].size, SkYUVAInfo::PlaneConfig::kY_UV,
         SkYUVAInfo::Subsampling::k420, kRec709_Limited_SkYUVColorSpace);
-
-    // Check if the destination will fit in the blit target:
-    const gfx::Rect blit_destination_rect(
-        request->blit_request().destination_region_offset(),
-        intermediate_dst_size);
-    const gfx::Rect blit_target_image_rect(
-        gfx::SkISizeToSize(mailbox_access_datas[0].size));
-
-    if (!blit_target_image_rect.Contains(blit_destination_rect)) {
-      // Send empty result, the blit target image is not large enough to fit the
-      // results.
-      DVLOG(1) << "blit target image is not large enough to fit results";
-      return;
-    }
   } else {
     yuva_info = SkYUVAInfo(gfx::SizeToSkISize(intermediate_dst_size),
                            SkYUVAInfo::PlaneConfig::kY_UV,
