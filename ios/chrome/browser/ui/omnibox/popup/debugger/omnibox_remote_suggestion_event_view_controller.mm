@@ -43,9 +43,17 @@
 }
 
 - (NSString*)prettifyJsonString:(NSString*)jsonString {
+  if (!jsonString) {
+    return jsonString;
+  }
+
   NSError* error;
 
   NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+  if (!jsonData) {
+    return jsonString;
+  }
+
   NSDictionary* jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
                                                              options:0
                                                                error:&error];
