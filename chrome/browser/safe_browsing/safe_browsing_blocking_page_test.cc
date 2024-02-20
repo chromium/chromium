@@ -111,7 +111,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -3567,20 +3566,9 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
   SafeBrowsingBlockingPageAsyncChecksTimingTest() = default;
 
   void SetUp() override {
-    // TODO(crbug.com/40941453): Fix SecurityStateGoBackOnPostCommitInterstitial
-    // when kBackForwardCache is disabled. Currently the test is flaky because
-    // when BFCache is disabled, going back on a post commit interstitial
-    // triggers a new navigation to the original page. It then triggers a new
-    // Safe Browsing check and calls BaseUIManager::DisplayBlockingPage. Since
-    // this happens before BaseUIManager::OnBlockingPageDone is called, the URL
-    // is not yet removed from the pending list, so it is added to the pending
-    // allowlist the second time. When BaseUIManager::OnBlockingPageDone is
-    // actually called, since AllowlistUrlSet::InsertPending is called twice,
-    // the URL is not fully removed from the pending list.
     feature_list_.InitWithFeatures(
         {kSafeBrowsingAsyncRealTimeCheck,
-         kCreateWarningShownClientSafeBrowsingReports,
-         features::kBackForwardCache},
+         kCreateWarningShownClientSafeBrowsingReports},
         {kRedWarningSurvey});
     InProcessBrowserTest::SetUp();
   }
@@ -3688,6 +3676,10 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
 
     EXPECT_TRUE(IsShowingInterstitial(
         browser()->tab_strip_model()->GetActiveWebContents()));
+
+    // Reset dangerous response so future URLs are not accidentally flagged
+    // by real-time URL check.
+    test_url_loader_factory_.ClearResponses();
     return url;
   }
 
@@ -3719,6 +3711,10 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
 
     EXPECT_TRUE(IsShowingInterstitial(
         browser()->tab_strip_model()->GetActiveWebContents()));
+
+    // Reset dangerous response so future URLs are not accidentally
+    // flagged by real-time URL check.
+    test_url_loader_factory_.ClearResponses();
     return url;
   }
 
