@@ -7,3 +7,5 @@
 NSString* const kTableViewIllustratedEmptyViewID =
     @"TableViewIllustratedEmptyView";
 NSString* const kTableViewEmptyViewID = @"TableViewEmptyView";
+
+const CGFloat kTableViewFirstHeaderHeight = 25.0;

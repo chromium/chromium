@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
@@ -71,7 +72,7 @@ enum ItemIdentifier {
   self.tableView.separatorInset =
       UIEdgeInsetsMake(0, kPageInfoTableViewSeparatorInset, 0, 0);
   self.tableView.tableHeaderView = [[UIView alloc]
-      initWithFrame:CGRectMake(0, 0, 0, kPageInfoPaddingFirstSectionHeader)];
+      initWithFrame:CGRectMake(0, 0, 0, kTableViewFirstHeaderHeight)];
 
   [self loadModel];
 }

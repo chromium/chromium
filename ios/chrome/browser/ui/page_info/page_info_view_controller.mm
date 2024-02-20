@@ -197,7 +197,19 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
-  return section == SectionIdentifierSecurityContent
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+
+  if (IsRevampPageInfoIosEnabled()) {
+    // Calculate the actual height of the header view for Permessions since it's
+    // not empty.
+    if (sectionIdentifier == SectionIdentifierPermissions) {
+      return UITableViewAutomaticDimension;
+    }
+    return ChromeTableViewHeightForHeaderInSection(sectionIdentifier);
+  }
+
+  return sectionIdentifier == SectionIdentifierSecurityContent
              ? kPageInfoPaddingFirstSectionHeader
              : UITableViewAutomaticDimension;
 }
