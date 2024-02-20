@@ -66,8 +66,8 @@ chromium-metrics-reviews@google.com.
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
-    Fraction of total CPU resources used by Chrome OS ML Service, sampled every
-    5 minutes.
+    Fraction of total CPU resources used by ChromeOS ML Service, sampled every 5
+    minutes.
   </summary>
 </histogram>
 
@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
   <owner>amoylan@chromium.org</owner>
   <summary>
     Events related to the connection and disconnection of the Mojo IPC channel
-    between Chrome and the Chrome OS ML Service.
+    between Chrome and the ChromeOS ML Service.
   </summary>
 </histogram>
 
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
-    Number of worker processes registered in ml-service. Only used in Chrome OS.
+    Number of worker processes registered in ml-service. Only used in ChromeOS.
     Sampled every 5 minutes.
   </summary>
 </histogram>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
-    Peak total (shared and non-shared) memory used by Chrome OS ML Service over
+    Peak total (shared and non-shared) memory used by ChromeOS ML Service over
     the last 24 hours. Sampled every 5 minutes, so may miss short-lived spikes.
   </summary>
 </histogram>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Process handling errors of ml-service. Emitted when there is error in
     process handling. For example, &quot;failed to spawning worker process&quot;
-    etc. Only used in Chrome OS.
+    etc. Only used in ChromeOS.
   </summary>
 </histogram>
 
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The &quot;errno&quot; of waitpid calls used by ml-service's control process
     to reap the worker processes. This is only recorded when waitpid meets error
-    and should be rare. This is a Chrome OS only metric. And we only record the
+    and should be rare. This is a ChromeOS only metric. And we only record the
     corresponding enum values of &quot;ECHILD&quot;, &quot;EINTR&quot; and
     &quot;EINVAL&quot; because according to the man page of waitpid, they are
     the only possible errno. All the other &quot;errno&quot; are treated as
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
-    Total (shared and non-shared) memory used by Chrome OS ML Service, sampled
+    Total (shared and non-shared) memory used by ChromeOS ML Service, sampled
     every 5 minutes.
   </summary>
 </histogram>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
   <owner>amoylan@chromium.org</owner>
   <summary>
     The wall time used for the worker process to accept the mojo connection to
-    control process in ml-service. Only used in Chrome OS.
+    control process in ml-service. Only used in ChromeOS.
   </summary>
 </histogram>
 
@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
   <owner>amoylan@chromium.org</owner>
   <summary>
     The wall time used by the control process to reap and cleanup the worker
-    processes in ml-service. Only used in Chrome OS.
+    processes in ml-service. Only used in ChromeOS.
   </summary>
 </histogram>
 
