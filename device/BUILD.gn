@@ -30,7 +30,6 @@ test("device_unittests") {
     "bluetooth/bluetooth_discovery_filter_unittest.cc",
     "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
     "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
-    "bluetooth/bluetooth_local_gatt_service_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_characteristic_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_descriptor_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_service_unittest.cc",
@@ -338,7 +337,6 @@ test("device_unittests") {
     sources -= [
       "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
       "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
-      "bluetooth/bluetooth_local_gatt_service_unittest.cc",
     ]
 
     sources += [

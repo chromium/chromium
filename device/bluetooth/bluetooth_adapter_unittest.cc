@@ -356,6 +356,21 @@ class TestPairingDelegate : public BluetoothDevice::PairingDelegate {
   void AuthorizePairing(BluetoothDevice* device) override {}
 };
 
+bool ServiceSetsEqual(
+    std::vector<BluetoothLocalGattService*> services,
+    std::initializer_list<BluetoothLocalGattService*> services_to_check) {
+  using ServiceSet = std::set<BluetoothLocalGattService*,
+                              bool (*)(BluetoothLocalGattService*,
+                                       BluetoothLocalGattService*)>;
+  auto comparator = [](BluetoothLocalGattService* a,
+                       BluetoothLocalGattService* b) -> bool {
+    return a->GetIdentifier() < b->GetIdentifier();
+  };
+
+  return ServiceSet(services.begin(), services.end(), comparator) ==
+         ServiceSet(services_to_check, comparator);
+}
+
 }  // namespace
 
 class BluetoothAdapterTest : public testing::Test {
@@ -1797,9 +1812,8 @@ TEST_P(BluetoothTestWinrt, SimulateAdvertisementStoppedByOS) {
 TEST_F(BluetoothTest, MAYBE_RegisterLocalGattServices) {
   InitWithFakeAdapter();
   base::WeakPtr<BluetoothLocalGattService> service =
-      BluetoothLocalGattService::Create(
-          adapter_.get(), BluetoothUUID(kTestUUIDGenericAttribute), true,
-          nullptr, nullptr);
+      adapter_->CreateLocalGattService(BluetoothUUID(kTestUUIDGenericAttribute),
+                                       true, nullptr);
   base::WeakPtr<BluetoothLocalGattCharacteristic> characteristic1 =
       BluetoothLocalGattCharacteristic::Create(
           BluetoothUUID(kTestUUIDGenericAttribute),
@@ -1826,6 +1840,101 @@ TEST_F(BluetoothTest, MAYBE_RegisterLocalGattServices) {
                       GetGattErrorCallback(Call::NOT_EXPECTED));
   service->Unregister(GetCallback(Call::NOT_EXPECTED),
                       GetGattErrorCallback(Call::EXPECTED));
+}
+
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+    !defined(USE_CAST_BLUETOOTH_ADAPTER)
+#define MAYBE_RegisterMultipleServices RegisterMultipleServices
+#else
+#define MAYBE_RegisterMultipleServices DISABLED_RegisterMultipleServices
+#endif
+TEST_F(BluetoothTest, MAYBE_RegisterMultipleServices) {
+  InitWithFakeAdapter();
+  base::WeakPtr<BluetoothLocalGattService> service2 =
+      adapter_->CreateLocalGattService(BluetoothUUID(kTestUUIDGenericAttribute),
+                                       true, nullptr);
+  base::WeakPtr<BluetoothLocalGattService> service3 =
+      adapter_->CreateLocalGattService(BluetoothUUID(kTestUUIDGenericAttribute),
+                                       true, nullptr);
+  base::WeakPtr<BluetoothLocalGattService> service4 =
+      adapter_->CreateLocalGattService(BluetoothUUID(kTestUUIDGenericAttribute),
+                                       true, nullptr);
+
+  service2->Register(GetCallback(Call::EXPECTED),
+                     GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {service2.get()}));
+
+  service3->Register(GetCallback(Call::EXPECTED),
+                     GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(),
+                               {service2.get(), service3.get()}));
+
+  service2->Unregister(GetCallback(Call::EXPECTED),
+                       GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {service3.get()}));
+
+  service4->Register(GetCallback(Call::EXPECTED),
+                     GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(),
+                               {service3.get(), service4.get()}));
+
+  service3->Register(GetCallback(Call::NOT_EXPECTED),
+                     GetGattErrorCallback(Call::EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(),
+                               {service3.get(), service4.get()}));
+
+  service3->Unregister(GetCallback(Call::EXPECTED),
+                       GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {service4.get()}));
+
+  service4->Unregister(GetCallback(Call::EXPECTED),
+                       GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {}));
+}
+
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+    !defined(USE_CAST_BLUETOOTH_ADAPTER)
+#define MAYBE_DeleteServices DeleteServices
+#else
+#define MAYBE_DeleteServices DISABLED_DeleteServices
+#endif
+TEST_F(BluetoothTest, MAYBE_DeleteServices) {
+  InitWithFakeAdapter();
+  base::WeakPtr<BluetoothLocalGattService> service2 =
+      adapter_->CreateLocalGattService(BluetoothUUID(kTestUUIDGenericAttribute),
+                                       true, nullptr);
+  base::WeakPtr<BluetoothLocalGattService> service3 =
+      adapter_->CreateLocalGattService(BluetoothUUID(kTestUUIDGenericAttribute),
+                                       true, nullptr);
+  service2->Register(GetCallback(Call::EXPECTED),
+                     GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {service2.get()}));
+
+  service3->Register(GetCallback(Call::EXPECTED),
+                     GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(),
+                               {service2.get(), service3.get()}));
+
+  service2->Unregister(GetCallback(Call::EXPECTED),
+                       GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {service3.get()}));
+
+  service2->Delete();
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {service3.get()}));
+
+  service3->Delete();
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {}));
+
+  // Create a service, register and then delete it, just to check everything
+  // still works.
+  base::WeakPtr<BluetoothLocalGattService> service4 =
+      adapter_->CreateLocalGattService(BluetoothUUID(kTestUUIDGenericAttribute),
+                                       true, nullptr);
+  service4->Register(GetCallback(Call::EXPECTED),
+                     GetGattErrorCallback(Call::NOT_EXPECTED));
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {service4.get()}));
+  service4->Delete();
+  EXPECT_TRUE(ServiceSetsEqual(RegisteredGattServices(), {}));
 }
 
 // This test should only be enabled for platforms that uses the

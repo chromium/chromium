@@ -1434,6 +1434,14 @@ device::BluetoothLocalGattService* BluetoothAdapterFloss::GetGattService(
                                                : service->second.get();
 }
 
+base::WeakPtr<device::BluetoothLocalGattService>
+BluetoothAdapterFloss::CreateLocalGattService(
+    const device::BluetoothUUID& uuid,
+    bool is_primary,
+    device::BluetoothLocalGattService::Delegate* delegate) {
+  return floss::BluetoothLocalGattServiceFloss::Create(this, uuid, is_primary);
+}
+
 void BluetoothAdapterFloss::RegisterGattService(
     BluetoothLocalGattServiceFloss* service) {
   FlossDBusManager::Get()->GetGattManagerClient()->AddService(

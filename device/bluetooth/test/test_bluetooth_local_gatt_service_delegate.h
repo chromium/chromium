@@ -6,6 +6,7 @@
 #define DEVICE_BLUETOOTH_TEST_TEST_BLUETOOTH_LOCAL_GATT_SERVICE_DELEGATE_H_
 
 #include <cstdint>
+#include <map>
 #include <vector>
 
 #include "base/functional/callback_forward.h"

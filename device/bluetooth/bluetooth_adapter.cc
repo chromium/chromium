@@ -296,6 +296,14 @@ BluetoothAdapter::GetPendingAdvertisementsForTesting() const {
   return {};
 }
 
+base::WeakPtr<BluetoothLocalGattService>
+BluetoothAdapter::CreateLocalGattService(
+    const BluetoothUUID& uuid,
+    bool is_primary,
+    BluetoothLocalGattService::Delegate* delegate) {
+  return nullptr;
+}
+
 void BluetoothAdapter::NotifyAdapterPresentChanged(bool present) {
   for (auto& observer : observers_)
     observer.AdapterPresentChanged(this, present);

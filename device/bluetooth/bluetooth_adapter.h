@@ -29,6 +29,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/bluetooth_local_gatt_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
@@ -43,7 +44,6 @@ namespace device {
 class BluetoothAdvertisement;
 class BluetoothDiscoveryFilter;
 class BluetoothDiscoverySession;
-class BluetoothLocalGattService;
 #if BUILDFLAG(IS_CHROMEOS)
 class BluetoothLowEnergyScanFilter;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -679,6 +679,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // given identifier. Returns NULL if the service doesn't exist.
   virtual BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const = 0;
+
+  // Creates a GATT services associated with this adapter with the
+  // given identifier. Currently only derived and implemented on BlueZ and
+  // Floss. All other platforms use default behavior of returning nullptr.
+  virtual base::WeakPtr<BluetoothLocalGattService> CreateLocalGattService(
+      const BluetoothUUID& uuid,
+      bool is_primary,
+      BluetoothLocalGattService::Delegate* delegate);
 
   // The following methods are used to send various events to observers.
   void NotifyAdapterPresentChanged(bool present);

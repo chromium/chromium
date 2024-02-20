@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
@@ -23,6 +22,7 @@ namespace device {
 
 class BluetoothLocalGattCharacteristic;
 class BluetoothLocalGattDescriptor;
+class BluetoothDevice;
 
 // BluetoothLocalGattService represents a local GATT service.
 //
@@ -167,19 +167,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
         const BluetoothLocalGattCharacteristic* characteristic) = 0;
   };
 
-  // Creates a local GATT service to be used with |adapter| (which will own
-  // the created service object).  A service can register or unregister itself
-  // at any time by calling its Register/Unregister methods. |delegate|
-  // receives read/write requests for characteristic/descriptor values. It
-  // needs to outlive this object.
-  // TODO(rkc): Implement included services.
-  static base::WeakPtr<BluetoothLocalGattService> Create(
-      BluetoothAdapter* adapter,
-      const BluetoothUUID& uuid,
-      bool is_primary,
-      BluetoothLocalGattService* included_service,
-      BluetoothLocalGattService::Delegate* delegate);
-
   BluetoothLocalGattService(const BluetoothLocalGattService&) = delete;
   BluetoothLocalGattService& operator=(const BluetoothLocalGattService&) =
       delete;
@@ -206,8 +193,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
       const std::string& identifier) = 0;
 
  protected:
-  BluetoothLocalGattService();
-  ~BluetoothLocalGattService() override;
+  BluetoothLocalGattService() = default;
+  ~BluetoothLocalGattService() override = default;
 };
 
 }  // namespace device

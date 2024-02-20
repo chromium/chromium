@@ -2016,11 +2016,10 @@ void ArcBluetoothBridge::AddService(mojom::BluetoothGattServiceIDPtr service_id,
     std::move(callback).Run(kInvalidGattAttributeHandle);
     return;
   }
+
   base::WeakPtr<BluetoothLocalGattService> service =
-      BluetoothLocalGattService::Create(
-          bluetooth_adapter_.get(), service_id->id->uuid,
-          service_id->is_primary, nullptr /* included_service */,
-          this /* delegate */);
+      bluetooth_adapter_->CreateLocalGattService(
+          service_id->id->uuid, service_id->is_primary, this /* delegate */);
   std::move(callback).Run(CreateGattAttributeHandle(service.get()));
 }
 
