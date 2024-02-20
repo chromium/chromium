@@ -97,8 +97,6 @@
                 "gen/third_party/blink/public/mojom/sms/webotp_service.mojom.m.js",
                 "gen/third_party/blink/public/mojom/idle/idle_manager.mojom.m.js",
                 "gen/media/capture/mojom/image_capture.mojom.m.js",
-                "gen/services/device/public/mojom/sensor_provider.mojom.m.js",
-                "gen/services/device/public/mojom/sensor.mojom.m.js",
                 "gen/skia/public/mojom/image_info.mojom.m.js",
                 "gen/skia/public/mojom/bitmap.mojom.m.js",
                 "gen/gpu/ipc/common/sync_token.mojom.m.js",
@@ -118,8 +116,7 @@
                 "gen/services/device/public/mojom/battery_monitor.mojom.m.js",
                 "gen/services/device/public/mojom/battery_status.mojom.m.js",
                 "gen/services/device/public/mojom/pressure_manager.mojom.m.js",
-                "gen/services/device/public/mojom/pressure_update.mojom.m.js",
-                "gen/third_party/blink/public/mojom/sensor/web_sensor_provider.mojom.m.js"
+                "gen/services/device/public/mojom/pressure_update.mojom.m.js"
             ],
             "file_globs": [
                 "gen/gpu/ipc/common/mailbox*.mojom.m.js",
