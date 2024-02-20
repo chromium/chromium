@@ -48,8 +48,12 @@ class BuganizerClient:
     def GetIssue(self, id):
         """Makes a request to the issue tracker to get an issue."""
         request = self._service.issues().get(issueId=id)
-        response = self._ExecuteRequest(request)
-        return response
+        try:
+            return self._ExecuteRequest(request)
+        except Exception as e:
+            logging.error('[BuganizerClient] Failed to GetIssue '
+                          'error: %s', str(e))
+            return {'error': str(e)}
 
     def GetIssueComments(self, id):
         """Makes a request to the issue tracker to get all the comments."""
@@ -57,7 +61,9 @@ class BuganizerClient:
 
         try:
             response = self._ExecuteRequest(request)
-            logging.debug('Post GetIssueComments response: %s', response)
+            logging.debug(
+                '[BuganizerClient] Post GetIssueComments response:'
+                ' %s', response)
             comments = []
             if not response:
                 return comments
@@ -74,6 +80,9 @@ class BuganizerClient:
                 comments.append(comment)
             return comments
         except Exception as e:
+            logging.error(
+                '[BuganizerClient] Failed to GetIssueComments '
+                'error: %s', str(e))
             return {'error': str(e)}
 
     def NewComment(self, id, comment):
@@ -84,6 +93,9 @@ class BuganizerClient:
         try:
             return self._ExecuteRequest(request)
         except Exception as e:
+            logging.error(
+                '[BuganizerClient] Failed to NewComment '
+                'error: %s', str(e))
             return {'error': str(e)}
 
     def _ExecuteRequest(self, request):
@@ -161,16 +173,17 @@ class BuganizerClient:
             'issueComment': new_description
         }
 
-        logging.warning('[PerfIssueService] PostIssue request: %s', new_issue)
+        logging.warning('[BuganizerClient] PostIssue request: %s', new_issue)
         request = self._service.issues().create(body=new_issue)
 
         try:
             response = self._ExecuteRequest(request)
-            logging.debug('[PerfIssueService] PostIssue response: %s',
-                          response)
+            logging.debug('[BuganizerClient] PostIssue response: %s', response)
             if response and 'issueId' in response:
                 return {'issue_id': response['issueId'], 'project_id': project}
-            logging.error('Failed to create new issue; response %s', response)
+            logging.error(
+                '[BuganizerClient] Failed to create new issue; '
+                'response %s', response)
         except Exception as e:
             return {'error': str(e)}
         return {'error': 'Unknown failure creating issue.'}
@@ -194,6 +207,6 @@ def _GetAppDefaultCredentials(scope=None):
         return credentials
     except google.auth.exceptions.DefaultCredentialsError as e:
         logging.error(
-            'Error when getting the application default credentials: %s',
-            str(e))
+            '[BuganizerClient]  Error when getting the application default'
+            ' credentials: %s', str(e))
         return None
