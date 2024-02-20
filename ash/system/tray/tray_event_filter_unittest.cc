@@ -57,7 +57,7 @@ class TestTrayBackgroundView : public TrayBackgroundView {
   ~TestTrayBackgroundView() override = default;
 
   // TrayBackgroundView:
-  void ClickedOutsideBubble() override {
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override {
     clicked_outside_bubble_called_ = true;
     CloseBubble();
   }

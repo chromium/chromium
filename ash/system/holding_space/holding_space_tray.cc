@@ -300,7 +300,7 @@ void HoldingSpaceTray::Initialize() {
     OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
 }
 
-void HoldingSpaceTray::ClickedOutsideBubble() {
+void HoldingSpaceTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 

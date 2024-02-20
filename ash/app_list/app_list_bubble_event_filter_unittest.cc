@@ -68,7 +68,8 @@ INSTANTIATE_TEST_SUITE_P(MouseOrTouch,
 
 TEST_P(AppListBubbleEventFilterTest, ClickOnStatusAreaDoesNotRunCallback) {
   int callback_count = 0;
-  auto callback = base::BindLambdaForTesting([&]() { ++callback_count; });
+  auto callback = base::BindLambdaForTesting(
+      [&](const ui::LocatedEvent& event) { ++callback_count; });
   AppListBubbleEventFilter filter(widget_.get(), view_, callback);
 
   // Click on the status area widget should not trigger the callback.

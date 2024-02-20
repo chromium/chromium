@@ -251,7 +251,7 @@ const views::Label* FocusModeTray::GetTaskTitleForTesting() const {
   return task_item_view_->GetTaskTitle();
 }
 
-void FocusModeTray::ClickedOutsideBubble() {
+void FocusModeTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 

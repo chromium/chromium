@@ -26,11 +26,14 @@ namespace ash {
 // can be used to close the bubble according to an appropriate event.
 class ASH_EXPORT BubbleEventFilter : public ui::EventHandler {
  public:
+  using OnClickedOutsideCallback =
+      base::RepeatingCallback<void(const ui::LocatedEvent&)>;
+
   // See class comment. Runs `on_click_outside` when a click or tap occurs
   // outside the bounds of `bubble_widget` and `button`.
   BubbleEventFilter(views::Widget* bubble_widget,
                     views::View* button,
-                    base::RepeatingClosure on_click_outside);
+                    OnClickedOutsideCallback on_click_outside);
   BubbleEventFilter(const BubbleEventFilter&) = delete;
   BubbleEventFilter& operator=(const BubbleEventFilter&) = delete;
   ~BubbleEventFilter() override;
@@ -53,7 +56,7 @@ class ASH_EXPORT BubbleEventFilter : public ui::EventHandler {
  private:
   const raw_ptr<views::Widget> bubble_widget_;
   raw_ptr<views::View, DanglingUntriaged> button_;  // May be null.
-  base::RepeatingClosure on_click_outside_;
+  OnClickedOutsideCallback on_click_outside_;
 };
 
 }  // namespace ash

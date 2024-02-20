@@ -24,6 +24,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -223,7 +224,10 @@ TEST_F(SelectToSpeakTrayTest,
 // Without this test, coverage of select_to_speak_tray.h is 0%.
 TEST_F(SelectToSpeakTrayTest, OverriddenFunctionsDoNothing) {
   GetTray()->HideBubbleWithView(nullptr);
-  GetTray()->ClickedOutsideBubble();
+
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  GetTray()->ClickedOutsideBubble(event);
 }
 
 }  // namespace ash

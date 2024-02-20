@@ -314,7 +314,7 @@ void PickerView::PublishCategoryResults(const PickerSearchResults& results) {
   category_view_->SetResults(results);
 }
 
-void PickerView::OnClickOutsideWidget() {
+void PickerView::OnClickOutsideWidget(const ui::LocatedEvent& event) {
   if (auto* widget = GetWidget()) {
     widget->Close();
   }

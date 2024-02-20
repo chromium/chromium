@@ -251,7 +251,7 @@ bool EcheTray::IsInitialized() const {
   return GetBubbleWidget() != nullptr;
 }
 
-void EcheTray::ClickedOutsideBubble() {
+void EcheTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   //  Do nothing
 }
 

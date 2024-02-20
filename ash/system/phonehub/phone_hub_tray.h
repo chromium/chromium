@@ -69,7 +69,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void SetPhoneHubManager(phonehub::PhoneHubManager* phone_hub_manager);
 
   // TrayBackgroundView:
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;

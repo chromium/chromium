@@ -462,7 +462,8 @@ void AppListBubblePresenter::OnShelfShuttingDown() {
     bubble_view_->SetDragAndDropHostOfCurrentAppList(nullptr);
 }
 
-void AppListBubblePresenter::OnPressOutsideBubble() {
+void AppListBubblePresenter::OnPressOutsideBubble(
+    const ui::LocatedEvent& event) {
   // Presses outside the bubble could be activating a shelf item. Record the
   // app list state prior to dismissal.
   controller_->RecordAppListState();

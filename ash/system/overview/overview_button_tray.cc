@@ -144,7 +144,7 @@ void OverviewButtonTray::OnOverviewModeEnded() {
   SetIsActive(false);
 }
 
-void OverviewButtonTray::ClickedOutsideBubble() {}
+void OverviewButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void OverviewButtonTray::UpdateTrayItemColor(bool is_active) {
   DCHECK(chromeos::features::IsJellyEnabled());

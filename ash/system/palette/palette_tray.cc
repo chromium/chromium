@@ -450,7 +450,7 @@ void PaletteTray::OnDisplayConfigurationChanged() {
   UpdateIconVisibility();
 }
 
-void PaletteTray::ClickedOutsideBubble() {
+void PaletteTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   if (num_actions_in_bubble_ == 0) {
     RecordPaletteOptionsUsage(PaletteTrayOptions::PALETTE_CLOSED_NO_ACTION,
                               PaletteInvocationMethod::MENU);

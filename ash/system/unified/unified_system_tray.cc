@@ -470,7 +470,18 @@ void UnifiedSystemTray::HideBubble(const TrayBubbleView* bubble_view) {
 
 void UnifiedSystemTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
 
-void UnifiedSystemTray::ClickedOutsideBubble() {
+void UnifiedSystemTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
+  const gfx::Point event_location =
+      event.target() ? event.target()->GetScreenLocation(event)
+                     : event.root_location();
+
+  // When Quick Settings bubble is opened and the date tray is clicked, the
+  // bubble should not be closed since it will transition to show calendar.
+  if (shelf()->GetStatusAreaWidget()->date_tray()->GetBoundsInScreen().Contains(
+          event_location)) {
+    return;
+  }
+
   CloseBubble();
 }
 

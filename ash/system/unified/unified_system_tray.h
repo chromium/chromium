@@ -170,7 +170,7 @@ class ASH_EXPORT UnifiedSystemTray
   void HandleLocaleChange() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   void UpdateLayout() override;
   void UpdateAfterLoginStatusChange() override;

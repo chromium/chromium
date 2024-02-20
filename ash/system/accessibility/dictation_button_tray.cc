@@ -138,7 +138,7 @@ void DictationButtonTray::Initialize() {
   UpdateVisibility();
 }
 
-void DictationButtonTray::ClickedOutsideBubble() {}
+void DictationButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void DictationButtonTray::UpdateTrayItemColor(bool is_active) {
   if (progress_indicator_) {

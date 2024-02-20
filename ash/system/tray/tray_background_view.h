@@ -157,7 +157,7 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
 
   // Called by the bubble wrapper when a click event occurs outside the bubble.
   // May close the bubble.
-  virtual void ClickedOutsideBubble() = 0;
+  virtual void ClickedOutsideBubble(const ui::LocatedEvent& event) = 0;
 
   // Returns true if tray bubble view is cached when hidden
   virtual bool CacheBubbleViewForHide() const;

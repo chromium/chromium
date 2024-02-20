@@ -32,6 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/button.h"
@@ -578,7 +579,9 @@ TEST_F(PhoneHubTrayTest, ShouldNotShowMiniLauncherOnCloseBubble) {
   EXPECT_TRUE(GetAppStreamLauncherDataModel()->GetShouldShowMiniLauncher());
 
   // Simulate a click outside the bubble.
-  phone_hub_tray_->ClickedOutsideBubble();
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  phone_hub_tray_->ClickedOutsideBubble(event);
 
   // Clicking outside should dismiss the bubble and should not show the app
   // stream mini launcher.

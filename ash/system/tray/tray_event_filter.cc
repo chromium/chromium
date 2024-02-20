@@ -35,8 +35,9 @@ TrayEventFilter::TrayEventFilter(views::Widget* bubble_widget,
     : BubbleEventFilter(bubble_widget,
                         tray_button,
                         base::BindRepeating(
-                            [](TrayBackgroundView* tray_button) {
-                              tray_button->ClickedOutsideBubble();
+                            [](TrayBackgroundView* tray_button,
+                               const ui::LocatedEvent& event) {
+                              tray_button->ClickedOutsideBubble(event);
                             },
                             tray_button)),
       bubble_widget_(bubble_widget),
@@ -63,7 +64,7 @@ void TrayEventFilter::OnGestureEvent(ui::GestureEvent* event) {
   if ((tray_button_->GetVisible() &&
        tray_button_->GetBoundsInScreen().Contains(event_location)) ||
       ShouldRunOnClickOutsideCallback(*event)) {
-    tray_button_->ClickedOutsideBubble();
+    tray_button_->ClickedOutsideBubble(*event);
   }
 }
 
@@ -73,29 +74,7 @@ bool TrayEventFilter::ShouldRunOnClickOutsideCallback(
     return false;
   }
 
-  if (!BubbleEventFilter::ShouldRunOnClickOutsideCallback(event)) {
-    return false;
-  }
-
-  const gfx::Point event_location =
-      event.target() ? event.target()->GetScreenLocation(event)
-                     : event.root_location();
-  int64_t display_id =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(event_location).id();
-  StatusAreaWidget* status_area =
-      Shell::GetRootWindowControllerWithDisplayId(display_id)
-          ->shelf()
-          ->GetStatusAreaWidget();
-
-  // When Quick Settings bubble is opened and the date tray is clicked, the
-  // bubble should not be closed since it will transition to show calendar.
-  if (tray_button_->catalog_name() ==
-          TrayBackgroundViewCatalogName::kUnifiedSystem &&
-      status_area->date_tray()->GetBoundsInScreen().Contains(event_location)) {
-    return false;
-  }
-
-  return true;
+  return BubbleEventFilter::ShouldRunOnClickOutsideCallback(event);
 }
 
 void TrayEventFilter::OnWindowActivated(ActivationReason reason,

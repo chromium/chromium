@@ -510,7 +510,7 @@ void ImeMenuTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   }
 }
 
-void ImeMenuTray::ClickedOutsideBubble() {
+void ImeMenuTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 

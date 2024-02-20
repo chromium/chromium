@@ -358,7 +358,7 @@ void VideoConferenceTray::HideBubble(const TrayBubbleView* bubble_view) {
   }
 }
 
-void VideoConferenceTray::ClickedOutsideBubble() {
+void VideoConferenceTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 

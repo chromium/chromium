@@ -111,7 +111,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // Displays `results` in the category view.
   void PublishCategoryResults(const PickerSearchResults& results);
 
-  void OnClickOutsideWidget();
+  void OnClickOutsideWidget(const ui::LocatedEvent& event);
 
   void AddSearchFieldView();
   void AddContentsView(PickerLayoutType layout_type);

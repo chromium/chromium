@@ -36,7 +36,7 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   ~FocusModeTray() override;
 
   // TrayBackgroundView:
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   std::u16string GetAccessibleNameForTray() override;
   std::u16string GetAccessibleNameForBubble() override;
   void HandleLocaleChange() override {}

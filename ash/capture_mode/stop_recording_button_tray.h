@@ -32,7 +32,7 @@ class StopRecordingButtonTray : public TrayBackgroundView {
 
  private:
   // TrayBackgroundView:
-  void ClickedOutsideBubble() override {}
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}
   // No need to override since this view doesn't have an active/inactive state
   // Clicking on it will stop the recording and make this view disappear.
   void UpdateTrayItemColor(bool is_active) override {}

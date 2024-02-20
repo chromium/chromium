@@ -116,7 +116,7 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
 
   // Callback for AppListBubbleEventFilter, used to notify this of presses
   // outside the bubble.
-  void OnPressOutsideBubble();
+  void OnPressOutsideBubble(const ui::LocatedEvent& event);
 
   // Gets the display id for the display `bubble_widget_` is shown on. Returns
   // kInvalidDisplayId if not shown.

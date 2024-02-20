@@ -138,7 +138,8 @@ void ProjectorAnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
   ShowBubble();
 }
 
-void ProjectorAnnotationTray::ClickedOutsideBubble() {
+void ProjectorAnnotationTray::ClickedOutsideBubble(
+    const ui::LocatedEvent& event) {
   CloseBubble();
 }
 

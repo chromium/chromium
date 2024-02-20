@@ -124,7 +124,7 @@ void VirtualKeyboardTray::HandleLocaleChange() {
 void VirtualKeyboardTray::HideBubbleWithView(
     const TrayBubbleView* bubble_view) {}
 
-void VirtualKeyboardTray::ClickedOutsideBubble() {}
+void VirtualKeyboardTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void VirtualKeyboardTray::UpdateTrayItemColor(bool is_active) {
   DCHECK(chromeos::features::IsJellyEnabled());

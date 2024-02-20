@@ -189,7 +189,7 @@ void PhoneHubTray::SetPhoneHubManager(
   }
 }
 
-void PhoneHubTray::ClickedOutsideBubble() {
+void PhoneHubTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 

@@ -164,7 +164,8 @@ void NotificationCenterTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
 }
 
-void NotificationCenterTray::ClickedOutsideBubble() {
+void NotificationCenterTray::ClickedOutsideBubble(
+    const ui::LocatedEvent& event) {
   CloseBubble();
 }
 

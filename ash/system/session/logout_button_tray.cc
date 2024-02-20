@@ -114,7 +114,7 @@ void LogoutButtonTray::UpdateAfterLoginStatusChange() {
   UpdateButtonTextAndImage();
 }
 
-void LogoutButtonTray::ClickedOutsideBubble() {}
+void LogoutButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void LogoutButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
 

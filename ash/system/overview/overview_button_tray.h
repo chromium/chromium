@@ -76,7 +76,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void UpdateAfterLoginStatusChange() override;
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;

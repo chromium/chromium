@@ -120,7 +120,8 @@ StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
 
 StatusAreaOverflowButtonTray::~StatusAreaOverflowButtonTray() {}
 
-void StatusAreaOverflowButtonTray::ClickedOutsideBubble() {}
+void StatusAreaOverflowButtonTray::ClickedOutsideBubble(
+    const ui::LocatedEvent& event) {}
 
 std::u16string StatusAreaOverflowButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(

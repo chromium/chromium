@@ -321,7 +321,7 @@ void MediaTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   }
 }
 
-void MediaTray::ClickedOutsideBubble() {
+void MediaTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 
