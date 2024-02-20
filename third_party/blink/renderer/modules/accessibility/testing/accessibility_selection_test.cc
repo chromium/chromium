@@ -60,14 +60,14 @@ class AXSelectionSerializer final {
     builder_.Append(AXObject::InternalRoleName(text_object.RoleValue()));
     builder_.Append(": ");
     const String name = text_object.ComputedName() + ">\n";
-    const AXObject& base_container = *selection_.Base().ContainerObject();
-    const AXObject& extent_container = *selection_.Extent().ContainerObject();
+    const AXObject& base_container = *selection_.Anchor().ContainerObject();
+    const AXObject& extent_container = *selection_.Focus().ContainerObject();
 
     if (base_container == text_object && extent_container == text_object) {
-      DCHECK(selection_.Base().IsTextPosition() &&
-             selection_.Extent().IsTextPosition());
-      const int base_offset = selection_.Base().TextOffset();
-      const int extent_offset = selection_.Extent().TextOffset();
+      DCHECK(selection_.Anchor().IsTextPosition() &&
+             selection_.Focus().IsTextPosition());
+      const int base_offset = selection_.Anchor().TextOffset();
+      const int extent_offset = selection_.Focus().TextOffset();
 
       if (base_offset == extent_offset) {
         builder_.Append(name.Left(base_offset));
@@ -96,8 +96,8 @@ class AXSelectionSerializer final {
     }
 
     if (base_container == text_object) {
-      DCHECK(selection_.Base().IsTextPosition());
-      const int base_offset = selection_.Base().TextOffset();
+      DCHECK(selection_.Anchor().IsTextPosition());
+      const int base_offset = selection_.Anchor().TextOffset();
 
       builder_.Append(name.Left(base_offset));
       builder_.Append('^');
@@ -106,8 +106,8 @@ class AXSelectionSerializer final {
     }
 
     if (extent_container == text_object) {
-      DCHECK(selection_.Extent().IsTextPosition());
-      const int extent_offset = selection_.Extent().TextOffset();
+      DCHECK(selection_.Focus().IsTextPosition());
+      const int extent_offset = selection_.Focus().TextOffset();
 
       builder_.Append(name.Left(extent_offset));
       builder_.Append('|');
@@ -136,13 +136,14 @@ class AXSelectionSerializer final {
     if (!position.IsValid())
       return;
 
-    if (selection_.Extent() == position) {
+    if (selection_.Focus() == position) {
       builder_.Append('|');
       return;
     }
 
-    if (selection_.Base() != position)
+    if (selection_.Anchor() != position) {
       return;
+    }
 
     builder_.Append('^');
   }
@@ -229,7 +230,7 @@ class AXSelectionDeserializer final {
       const auto ax_caret = AXPosition::FromPosition(caret);
       AXSelection::Builder builder;
       ax_selections.push_back(
-          builder.SetBase(ax_caret).SetExtent(ax_caret).Build());
+          builder.SetAnchor(ax_caret).SetFocus(ax_caret).Build());
       return ax_selections;
     }
 
@@ -243,7 +244,7 @@ class AXSelectionDeserializer final {
       const auto ax_extent = AXPosition::FromPosition(extent);
       AXSelection::Builder builder;
       ax_selections.push_back(
-          builder.SetBase(ax_base).SetExtent(ax_extent).Build());
+          builder.SetAnchor(ax_base).SetFocus(ax_extent).Build());
     }
 
     return ax_selections;

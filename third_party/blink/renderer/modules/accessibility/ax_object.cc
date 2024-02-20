@@ -2294,12 +2294,12 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       // TODO(nektar): Remove kTextSelStart and kTextSelEnd from the renderer.
       const auto ax_selection =
           AXSelection::FromCurrentSelection(ToTextControl(*element));
-      int start = ax_selection.Base().IsTextPosition()
-                      ? ax_selection.Base().TextOffset()
-                      : ax_selection.Base().ChildIndex();
-      int end = ax_selection.Extent().IsTextPosition()
-                    ? ax_selection.Extent().TextOffset()
-                    : ax_selection.Extent().ChildIndex();
+      int start = ax_selection.Anchor().IsTextPosition()
+                      ? ax_selection.Anchor().TextOffset()
+                      : ax_selection.Anchor().ChildIndex();
+      int end = ax_selection.Focus().IsTextPosition()
+                    ? ax_selection.Focus().TextOffset()
+                    : ax_selection.Focus().ChildIndex();
       node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextSelStart,
                                  start);
       node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextSelEnd,

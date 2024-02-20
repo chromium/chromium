@@ -103,9 +103,9 @@ void BlinkAXTreeSource::Selection(
   if (!ax_selection)
     return;
 
-  const AXPosition base = ax_selection.Base();
+  const AXPosition base = ax_selection.Anchor();
   *anchor_object = const_cast<AXObject*>(base.ContainerObject());
-  const AXPosition extent = ax_selection.Extent();
+  const AXPosition extent = ax_selection.Focus();
   *focus_object = const_cast<AXObject*>(extent.ContainerObject());
 
   is_selection_backward = base > extent;

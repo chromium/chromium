@@ -541,24 +541,25 @@ void WebAXObject::Selection(bool& is_selection_backward,
   if (!ax_selection)
     return;
 
-  const AXPosition base = ax_selection.Base();
-  anchor_object = WebAXObject(const_cast<AXObject*>(base.ContainerObject()));
-  const AXPosition extent = ax_selection.Extent();
-  focus_object = WebAXObject(const_cast<AXObject*>(extent.ContainerObject()));
+  const AXPosition ax_anchor = ax_selection.Anchor();
+  anchor_object =
+      WebAXObject(const_cast<AXObject*>(ax_anchor.ContainerObject()));
+  const AXPosition ax_focus = ax_selection.Focus();
+  focus_object = WebAXObject(const_cast<AXObject*>(ax_focus.ContainerObject()));
 
-  is_selection_backward = base > extent;
-  if (base.IsTextPosition()) {
-    anchor_offset = base.TextOffset();
-    anchor_affinity = ToAXAffinity(base.Affinity());
+  is_selection_backward = ax_anchor > ax_focus;
+  if (ax_anchor.IsTextPosition()) {
+    anchor_offset = ax_anchor.TextOffset();
+    anchor_affinity = ToAXAffinity(ax_anchor.Affinity());
   } else {
-    anchor_offset = base.ChildIndex();
+    anchor_offset = ax_anchor.ChildIndex();
   }
 
-  if (extent.IsTextPosition()) {
-    focus_offset = extent.TextOffset();
-    focus_affinity = ToAXAffinity(extent.Affinity());
+  if (ax_focus.IsTextPosition()) {
+    focus_offset = ax_focus.TextOffset();
+    focus_affinity = ToAXAffinity(ax_focus.Affinity());
   } else {
-    focus_offset = extent.ChildIndex();
+    focus_offset = ax_focus.ChildIndex();
   }
 }
 
@@ -572,38 +573,38 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
 
   ScopedActionAnnotator annotater(private_.Get(),
                                   ax::mojom::blink::Action::kSetSelection);
-  AXPosition ax_base, ax_extent;
+  AXPosition ax_anchor, ax_focus;
   if (static_cast<const AXObject*>(anchor_object)->IsTextObject() ||
       static_cast<const AXObject*>(anchor_object)->IsAtomicTextField()) {
-    ax_base =
+    ax_anchor =
         AXPosition::CreatePositionInTextObject(*anchor_object, anchor_offset);
   } else if (anchor_offset <= 0) {
-    ax_base = AXPosition::CreateFirstPositionInObject(*anchor_object);
+    ax_anchor = AXPosition::CreateFirstPositionInObject(*anchor_object);
   } else if (anchor_offset >= static_cast<int>(anchor_object.ChildCount())) {
-    ax_base = AXPosition::CreateLastPositionInObject(*anchor_object);
+    ax_anchor = AXPosition::CreateLastPositionInObject(*anchor_object);
   } else {
     DCHECK_GE(anchor_offset, 0);
-    ax_base = AXPosition::CreatePositionBeforeObject(
+    ax_anchor = AXPosition::CreatePositionBeforeObject(
         *anchor_object.ChildAt(static_cast<unsigned int>(anchor_offset)));
   }
 
   if (static_cast<const AXObject*>(focus_object)->IsTextObject() ||
       static_cast<const AXObject*>(focus_object)->IsAtomicTextField()) {
-    ax_extent =
+    ax_focus =
         AXPosition::CreatePositionInTextObject(*focus_object, focus_offset);
   } else if (focus_offset <= 0) {
-    ax_extent = AXPosition::CreateFirstPositionInObject(*focus_object);
+    ax_focus = AXPosition::CreateFirstPositionInObject(*focus_object);
   } else if (focus_offset >= static_cast<int>(focus_object.ChildCount())) {
-    ax_extent = AXPosition::CreateLastPositionInObject(*focus_object);
+    ax_focus = AXPosition::CreateLastPositionInObject(*focus_object);
   } else {
     DCHECK_GE(focus_offset, 0);
-    ax_extent = AXPosition::CreatePositionBeforeObject(
+    ax_focus = AXPosition::CreatePositionBeforeObject(
         *focus_object.ChildAt(static_cast<unsigned int>(focus_offset)));
   }
 
   AXSelection::Builder builder;
   AXSelection ax_selection =
-      builder.SetBase(ax_base).SetExtent(ax_extent).Build();
+      builder.SetAnchor(ax_anchor).SetFocus(ax_focus).Build();
   return ax_selection.Select();
 }
 

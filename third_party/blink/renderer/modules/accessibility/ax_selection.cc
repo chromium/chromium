@@ -45,30 +45,30 @@ DispatchEventResult DispatchSelectStart(Node* node) {
 // AXSelection::Builder
 //
 
-AXSelection::Builder& AXSelection::Builder::SetBase(const AXPosition& base) {
-  DCHECK(base.IsValid());
-  selection_.base_ = base;
+AXSelection::Builder& AXSelection::Builder::SetAnchor(
+    const AXPosition& anchor) {
+  DCHECK(anchor.IsValid());
+  selection_.anchor_ = anchor;
   return *this;
 }
 
-AXSelection::Builder& AXSelection::Builder::SetBase(const Position& base) {
-  const auto ax_base = AXPosition::FromPosition(base);
-  DCHECK(ax_base.IsValid());
-  selection_.base_ = ax_base;
+AXSelection::Builder& AXSelection::Builder::SetAnchor(const Position& anchor) {
+  const auto ax_anchor = AXPosition::FromPosition(anchor);
+  DCHECK(ax_anchor.IsValid());
+  selection_.anchor_ = ax_anchor;
   return *this;
 }
 
-AXSelection::Builder& AXSelection::Builder::SetExtent(
-    const AXPosition& extent) {
-  DCHECK(extent.IsValid());
-  selection_.extent_ = extent;
+AXSelection::Builder& AXSelection::Builder::SetFocus(const AXPosition& focus) {
+  DCHECK(focus.IsValid());
+  selection_.focus_ = focus;
   return *this;
 }
 
-AXSelection::Builder& AXSelection::Builder::SetExtent(const Position& extent) {
-  const auto ax_extent = AXPosition::FromPosition(extent);
-  DCHECK(ax_extent.IsValid());
-  selection_.extent_ = ax_extent;
+AXSelection::Builder& AXSelection::Builder::SetFocus(const Position& focus) {
+  const auto ax_focus = AXPosition::FromPosition(focus);
+  DCHECK(ax_focus.IsValid());
+  selection_.focus_ = ax_focus;
   return *this;
 }
 
@@ -77,22 +77,25 @@ AXSelection::Builder& AXSelection::Builder::SetSelection(
   if (selection.IsNone())
     return *this;
 
-  selection_.base_ = AXPosition::FromPosition(selection.Anchor());
-  selection_.extent_ = AXPosition::FromPosition(selection.Focus());
+  selection_.anchor_ = AXPosition::FromPosition(selection.Anchor());
+  selection_.focus_ = AXPosition::FromPosition(selection.Focus());
   return *this;
 }
 
 const AXSelection AXSelection::Builder::Build() {
-  if (!selection_.Base().IsValid() || !selection_.Extent().IsValid())
+  if (!selection_.Anchor().IsValid() || !selection_.Focus().IsValid()) {
     return {};
+  }
 
-  const Document* document = selection_.Base().ContainerObject()->GetDocument();
+  const Document* document =
+      selection_.Anchor().ContainerObject()->GetDocument();
   DCHECK(document);
   DCHECK(document->IsActive());
   DCHECK(!document->NeedsLayoutTreeUpdate());
   // We don't support selections that span across documents.
-  if (selection_.Extent().ContainerObject()->GetDocument() != document)
+  if (selection_.Focus().ContainerObject()->GetDocument() != document) {
     return {};
+  }
 
 #if DCHECK_IS_ON()
   selection_.dom_tree_version_ = document->DomTreeVersion();
@@ -149,29 +152,30 @@ AXSelection AXSelection::FromCurrentSelection(
   // We can't directly use "text_control.Selection()" because the selection it
   // returns is inside the shadow DOM and it's not anchored to the text field
   // itself.
-  const TextAffinity extent_affinity = text_control.Selection().Affinity();
-  const TextAffinity base_affinity =
+  const TextAffinity focus_affinity = text_control.Selection().Affinity();
+  const TextAffinity anchor_affinity =
       text_control.selectionStart() == text_control.selectionEnd()
-          ? extent_affinity
+          ? focus_affinity
           : TextAffinity::kDownstream;
 
   const bool is_backward = (text_control.selectionDirection() == "backward");
-  const auto ax_base = AXPosition::CreatePositionInTextObject(
+  const auto ax_anchor = AXPosition::CreatePositionInTextObject(
       *ax_text_control,
       static_cast<int>(is_backward ? text_control.selectionEnd()
                                    : text_control.selectionStart()),
-      base_affinity);
-  const auto ax_extent = AXPosition::CreatePositionInTextObject(
+      anchor_affinity);
+  const auto ax_focus = AXPosition::CreatePositionInTextObject(
       *ax_text_control,
       static_cast<int>(is_backward ? text_control.selectionStart()
                                    : text_control.selectionEnd()),
-      extent_affinity);
+      focus_affinity);
 
-  if (!ax_base.IsValid() || !ax_extent.IsValid())
+  if (!ax_anchor.IsValid() || !ax_focus.IsValid()) {
     return {};
+  }
 
   AXSelection::Builder selection_builder;
-  selection_builder.SetBase(ax_base).SetExtent(ax_extent);
+  selection_builder.SetAnchor(ax_anchor).SetFocus(ax_focus);
   return selection_builder.Build();
 }
 
@@ -185,13 +189,13 @@ AXSelection AXSelection::FromSelection(
 
   const Position dom_anchor = selection.Anchor();
   const Position dom_focus = selection.Focus();
-  const TextAffinity extent_affinity = selection.Affinity();
-  const TextAffinity base_affinity =
-      selection.IsCaret() ? extent_affinity : TextAffinity::kDownstream;
+  const TextAffinity focus_affinity = selection.Affinity();
+  const TextAffinity anchor_affinity =
+      selection.IsCaret() ? focus_affinity : TextAffinity::kDownstream;
 
-  AXPositionAdjustmentBehavior base_adjustment =
+  AXPositionAdjustmentBehavior anchor_adjustment =
       AXPositionAdjustmentBehavior::kMoveRight;
-  AXPositionAdjustmentBehavior extent_adjustment =
+  AXPositionAdjustmentBehavior focus_adjustment =
       AXPositionAdjustmentBehavior::kMoveRight;
   // If the selection is not collapsed, extend or shrink the DOM selection if
   // there is no equivalent selection in the accessibility tree, i.e. if the
@@ -204,39 +208,40 @@ AXSelection AXSelection::FromSelection(
     switch (selection_behavior) {
       case AXSelectionBehavior::kShrinkToValidRange:
         if (selection.IsAnchorFirst()) {
-          base_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
-          extent_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
+          anchor_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
+          focus_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
         } else {
-          base_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
-          extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
+          anchor_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
+          focus_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
         }
         break;
       case AXSelectionBehavior::kExtendToValidRange:
         if (selection.IsAnchorFirst()) {
-          base_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
-          extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
+          anchor_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
+          focus_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
         } else {
-          base_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
-          extent_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
+          anchor_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
+          focus_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
         }
         break;
     }
   }
 
-  const auto ax_base =
-      AXPosition::FromPosition(dom_anchor, base_affinity, base_adjustment);
-  const auto ax_extent =
-      AXPosition::FromPosition(dom_focus, extent_affinity, extent_adjustment);
+  const auto ax_anchor =
+      AXPosition::FromPosition(dom_anchor, anchor_affinity, anchor_adjustment);
+  const auto ax_focus =
+      AXPosition::FromPosition(dom_focus, focus_affinity, focus_adjustment);
 
-  if (!ax_base.IsValid() || !ax_extent.IsValid())
+  if (!ax_anchor.IsValid() || !ax_focus.IsValid()) {
     return {};
+  }
 
   AXSelection::Builder selection_builder;
-  selection_builder.SetBase(ax_base).SetExtent(ax_extent);
+  selection_builder.SetAnchor(ax_anchor).SetFocus(ax_focus);
   return selection_builder.Build();
 }
 
-AXSelection::AXSelection() : base_(), extent_() {
+AXSelection::AXSelection() : anchor_(), focus_() {
 #if DCHECK_IS_ON()
   dom_tree_version_ = 0;
   style_version_ = 0;
@@ -244,12 +249,13 @@ AXSelection::AXSelection() : base_(), extent_() {
 }
 
 bool AXSelection::IsValid() const {
-  if (!base_.IsValid() || !extent_.IsValid())
+  if (!anchor_.IsValid() || !focus_.IsValid()) {
     return false;
+  }
 
   // We don't support selections that span across documents.
-  if (base_.ContainerObject()->GetDocument() !=
-      extent_.ContainerObject()->GetDocument()) {
+  if (anchor_.ContainerObject()->GetDocument() !=
+      focus_.ContainerObject()->GetDocument()) {
     return false;
   }
 
@@ -264,26 +270,27 @@ bool AXSelection::IsValid() const {
   // boundaries, replaced elements, CSS user-select, etc.
   //
 
-  if (base_.IsTextPosition() && base_.ContainerObject()->IsAtomicTextField() &&
-      !(base_.ContainerObject() == extent_.ContainerObject() &&
-        extent_.IsTextPosition() &&
-        extent_.ContainerObject()->IsAtomicTextField())) {
+  if (anchor_.IsTextPosition() &&
+      anchor_.ContainerObject()->IsAtomicTextField() &&
+      !(anchor_.ContainerObject() == focus_.ContainerObject() &&
+        focus_.IsTextPosition() &&
+        focus_.ContainerObject()->IsAtomicTextField())) {
     return false;
   }
 
-  if (extent_.IsTextPosition() &&
-      extent_.ContainerObject()->IsAtomicTextField() &&
-      !(base_.ContainerObject() == extent_.ContainerObject() &&
-        base_.IsTextPosition() &&
-        base_.ContainerObject()->IsAtomicTextField())) {
+  if (focus_.IsTextPosition() &&
+      focus_.ContainerObject()->IsAtomicTextField() &&
+      !(anchor_.ContainerObject() == focus_.ContainerObject() &&
+        anchor_.IsTextPosition() &&
+        anchor_.ContainerObject()->IsAtomicTextField())) {
     return false;
   }
 
-  DCHECK(!base_.ContainerObject()->GetDocument()->NeedsLayoutTreeUpdate());
+  DCHECK(!anchor_.ContainerObject()->GetDocument()->NeedsLayoutTreeUpdate());
 #if DCHECK_IS_ON()
-  DCHECK_EQ(base_.ContainerObject()->GetDocument()->DomTreeVersion(),
+  DCHECK_EQ(anchor_.ContainerObject()->GetDocument()->DomTreeVersion(),
             dom_tree_version_);
-  DCHECK_EQ(base_.ContainerObject()->GetDocument()->StyleVersion(),
+  DCHECK_EQ(anchor_.ContainerObject()->GetDocument()->StyleVersion(),
             style_version_);
 #endif  // DCHECK_IS_ON()
   return true;
@@ -294,43 +301,44 @@ const SelectionInDOMTree AXSelection::AsSelection(
   if (!IsValid())
     return {};
 
-  AXPositionAdjustmentBehavior base_adjustment =
+  AXPositionAdjustmentBehavior anchor_adjustment =
       AXPositionAdjustmentBehavior::kMoveLeft;
-  AXPositionAdjustmentBehavior extent_adjustment =
+  AXPositionAdjustmentBehavior focus_adjustment =
       AXPositionAdjustmentBehavior::kMoveLeft;
   switch (selection_behavior) {
     case AXSelectionBehavior::kShrinkToValidRange:
-      if (base_ < extent_) {
-        base_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
-        extent_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
-      } else if (base_ > extent_) {
-        base_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
-        extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
+      if (anchor_ < focus_) {
+        anchor_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
+        focus_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
+      } else if (anchor_ > focus_) {
+        anchor_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
+        focus_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
       }
       break;
     case AXSelectionBehavior::kExtendToValidRange:
-      if (base_ < extent_) {
-        base_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
-        extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
-      } else if (base_ > extent_) {
-        base_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
-        extent_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
+      if (anchor_ < focus_) {
+        anchor_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
+        focus_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
+      } else if (anchor_ > focus_) {
+        anchor_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
+        focus_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
       }
       break;
   }
 
-  const auto dom_anchor = base_.ToPositionWithAffinity(base_adjustment);
-  const auto dom_focus = extent_.ToPositionWithAffinity(extent_adjustment);
+  const auto dom_anchor = anchor_.ToPositionWithAffinity(anchor_adjustment);
+  const auto dom_focus = focus_.ToPositionWithAffinity(focus_adjustment);
   SelectionInDOMTree::Builder selection_builder;
   selection_builder.SetBaseAndExtent(dom_anchor.GetPosition(),
                                      dom_focus.GetPosition());
-  if (extent_.IsTextPosition())
-    selection_builder.SetAffinity(extent_.Affinity());
+  if (focus_.IsTextPosition()) {
+    selection_builder.SetAffinity(focus_.Affinity());
+  }
   return selection_builder.Build();
 }
 
 void AXSelection::UpdateSelectionIfNecessary() {
-  Document* document = base_.ContainerObject()->GetDocument();
+  Document* document = anchor_.ContainerObject()->GetDocument();
   if (!document)
     return;
 
@@ -340,9 +348,9 @@ void AXSelection::UpdateSelectionIfNecessary() {
 
   document->UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
 #if DCHECK_IS_ON()
-  base_.dom_tree_version_ = extent_.dom_tree_version_ = dom_tree_version_ =
+  anchor_.dom_tree_version_ = focus_.dom_tree_version_ = dom_tree_version_ =
       document->DomTreeVersion();
-  base_.style_version_ = extent_.style_version_ = style_version_ =
+  anchor_.style_version_ = focus_.style_version_ = style_version_ =
       document->StyleVersion();
 #endif  // DCHECK_IS_ON()
 }
@@ -362,13 +370,13 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
   // to be on the atomic text field, and not on the descendant inline text
   // boxes.
   if (text_control_selection.has_value() &&
-      *base_.ContainerObject() ==
-          *base_.ContainerObject()->GetAtomicTextFieldAncestor() &&
-      *extent_.ContainerObject() ==
-          *extent_.ContainerObject()->GetAtomicTextFieldAncestor()) {
+      *anchor_.ContainerObject() ==
+          *anchor_.ContainerObject()->GetAtomicTextFieldAncestor() &&
+      *focus_.ContainerObject() ==
+          *focus_.ContainerObject()->GetAtomicTextFieldAncestor()) {
     DCHECK_LE(text_control_selection->start, text_control_selection->end);
     TextControlElement& text_control = ToTextControl(
-        *base_.ContainerObject()->GetAtomicTextFieldAncestor()->GetNode());
+        *anchor_.ContainerObject()->GetAtomicTextFieldAncestor()->GetNode());
     if (!text_control.SetSelectionRange(text_control_selection->start,
                                         text_control_selection->end,
                                         text_control_selection->direction)) {
@@ -433,35 +441,35 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
 
 String AXSelection::ToString() const {
   String prefix = IsValid() ? "" : "Invalid ";
-  return prefix + "AXSelection from " + Base().ToString() + " to " +
-         Extent().ToString();
+  return prefix + "AXSelection from " + Anchor().ToString() + " to " +
+         Focus().ToString();
 }
 
 std::optional<AXSelection::TextControlSelection>
 AXSelection::AsTextControlSelection() const {
-  if (!IsValid() || !base_.IsTextPosition() || !extent_.IsTextPosition() ||
-      base_.ContainerObject() != extent_.ContainerObject()) {
+  if (!IsValid() || !anchor_.IsTextPosition() || !focus_.IsTextPosition() ||
+      anchor_.ContainerObject() != focus_.ContainerObject()) {
     return {};
   }
 
   const AXObject* text_control =
-      base_.ContainerObject()->GetAtomicTextFieldAncestor();
+      anchor_.ContainerObject()->GetAtomicTextFieldAncestor();
   if (!text_control)
     return {};
 
   DCHECK(IsTextControl(text_control->GetNode()));
 
-  if (base_ <= extent_) {
-    return TextControlSelection(base_.TextOffset(), extent_.TextOffset(),
+  if (anchor_ <= focus_) {
+    return TextControlSelection(anchor_.TextOffset(), focus_.TextOffset(),
                                 kSelectionHasForwardDirection);
   }
-  return TextControlSelection(extent_.TextOffset(), base_.TextOffset(),
+  return TextControlSelection(focus_.TextOffset(), anchor_.TextOffset(),
                               kSelectionHasBackwardDirection);
 }
 
 bool operator==(const AXSelection& a, const AXSelection& b) {
   DCHECK(a.IsValid() && b.IsValid());
-  return a.Base() == b.Base() && a.Extent() == b.Extent();
+  return a.Anchor() == b.Anchor() && a.Focus() == b.Focus();
 }
 
 bool operator!=(const AXSelection& a, const AXSelection& b) {
