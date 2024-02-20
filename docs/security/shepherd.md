@@ -367,8 +367,18 @@ pass it along to / include someone who can direct it more precisely.
     * [Report incorrect phishing warning](https://safebrowsing.google.com/safebrowsing/report_error/?hl=en)
   * Googlers: see instructions at [go/safebrowsing-escalation](https://goto.google.com/safebrowsing-escalation)
   * Report suspected malicious file attachments to SafeBrowsing.
-* Make sure the report is properly forwarded when the vulnerability is in an
-  **upstream project**, the OS, or some other dependency.
+* If the report is in an upstream package that we pull into our tree via
+  `//third_party` or elsewhere:
+    * Ask the reporter to file a bug report upstream, if there is an active
+      upstream. If they can't / don't, or the report is from a bot
+      (clusterfuzz or similar), ask the `//third_party` package owner to file
+      it.
+    * For the downstream bug (the one on the Chromium tracker):
+        * Add the downstream bug to [the Status-External_Dependency hotlist](https://issues.chromium.org/hotlists/5438152).
+        * Assign that bug to an OWNER from the `//third_party` package.
+        * Ask that owner to ensure that the upstream bug is fixed, the
+          downstream copy in Chromium is rolled, and finally the
+          downstream bug is marked Fixed.
 * For vulnerabilities in services Chrome uses (e.g. Omaha, Chrome Web Store,
   SafeBrowsing), make sure the affected team is informed and has access to the
   necessary bugs.
@@ -376,7 +386,7 @@ pass it along to / include someone who can direct it more precisely.
     * Reproduce using an iOS device or desktop Safari.
     * Set Severity, Found In, and set Component Tags fields.
     * If the issue is in Webkit
-      * Add hotlist `Status_ExternalDependency` (hotlistID: 1067723)
+      * Add hotlist `Status_ExternalDependency` (hotlistID: [5438152](https://issues.chromium.org/hotlists/5438152))
       * If reported by an external VRP reporter, request they report the issue
       directly to Webkit and provide us the WebKit issue ID after they have done
       so.
