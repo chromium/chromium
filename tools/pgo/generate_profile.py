@@ -173,7 +173,8 @@ def main():
         run_benchmark([
             'rendering.mobile' if args.android_browser else
             'rendering.desktop', '--also-run-disabled-tests',
-            '--story-tag-filter=motionmark_fixed_2_seconds'
+            '--story-tag-filter=motionmark_fixed_2_seconds',
+            '--story-filter-exclude=motionmark_fixed_2_seconds_images'
         ])
     if not args.skip_profdata:
         subprocess.run(
