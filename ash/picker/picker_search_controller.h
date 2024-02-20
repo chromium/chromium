@@ -41,6 +41,10 @@ class ASH_EXPORT PickerSearchController {
                    PickerViewDelegate::SearchResultsCallback callback);
 
  private:
+  // Stops the current search, and resets the state to begin a new search.
+  // This is called in `StartSearch` before every new search query.
+  void StopSearch();
+
   // Whether the burn-in period has ended for the current search.
   bool IsPostBurnIn() const;
 

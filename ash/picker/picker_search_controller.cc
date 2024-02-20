@@ -58,10 +58,7 @@ void PickerSearchController::StartSearch(
     const std::u16string& query,
     std::optional<PickerCategory> category,
     PickerViewDelegate::SearchResultsCallback callback) {
-  current_callback_.Reset();
-  client_->StopCrosQuery();
-  client_->StopGifSearch();
-  ResetResults();
+  StopSearch();
   current_callback_ = std::move(callback);
   std::string utf8_query = base::UTF16ToUTF8(query);
   current_query_ = utf8_query;
@@ -80,6 +77,13 @@ void PickerSearchController::StartSearch(
 
   // Emoji search is currently synchronous.
   HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
+}
+
+void PickerSearchController::StopSearch() {
+  current_callback_.Reset();
+  client_->StopCrosQuery();
+  client_->StopGifSearch();
+  ResetResults();
 }
 
 bool PickerSearchController::IsPostBurnIn() const {
