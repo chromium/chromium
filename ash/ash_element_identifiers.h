@@ -67,6 +67,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kPickerSearchResultsEmojiItemElementId);
 
+// Identifies a list result in the search results page of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kPickerSearchResultsListItemElementId);
+
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId);

@@ -7,7 +7,9 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/shell.h"
+#include "base/time/time_override.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -140,6 +142,53 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoji) {
       PressButton(kFirstEmojiResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(kExpectedFirstEmoji)));
+}
+
+// Searches for 'today', checks the top result is the date, and inserts it
+// into a web input field.
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kDateResultName = "DateResult";
+  constexpr std::u16string_view kExpectedDate = u"Feb 19";
+  views::Textfield* picker_search_field = nullptr;
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time date;
+        bool result = base::Time::FromString("19 Feb 2024 12:00 GMT", &date);
+        CHECK(result);
+        return date;
+      },
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"today"),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
+      NameDescendantView(
+          ash::kPickerSearchResultsPageElementId, kDateResultName,
+          base::BindLambdaForTesting([kExpectedDate](const views::View* view) {
+            if (const auto* list_item_view =
+                    views::AsViewClass<ash::PickerListItemView>(view)) {
+              return list_item_view->GetPrimaryTextForTesting() ==
+                     kExpectedDate;
+            }
+            return false;
+          })),
+      PressButton(kDateResultName), WaitForHide(ash::kPickerElementId),
+      InContext(browser_context, WaitForWebInputFieldValue(kExpectedDate)));
 }
 
 }  // namespace

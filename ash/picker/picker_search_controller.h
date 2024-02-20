@@ -64,6 +64,7 @@ class ASH_EXPORT PickerSearchController {
   void HandleGifSearchResults(std::string query,
                               std::vector<PickerSearchResult> results);
   void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
+  void HandleDateSearchResults(std::optional<PickerSearchResult> result);
 
   const raw_ref<PickerClient> client_;
 
@@ -75,6 +76,7 @@ class ASH_EXPORT PickerSearchController {
   std::string current_query_;
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
+  std::vector<PickerSearchResult> suggested_results_;
   std::vector<PickerSearchResult> omnibox_results_;
   std::vector<PickerSearchResult> gif_results_;
   std::vector<PickerSearchResult> emoji_results_;

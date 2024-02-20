@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/style/style_util.h"
@@ -26,6 +27,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -63,6 +65,8 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
       main_container->AddChildView(std::make_unique<views::FlexLayoutView>());
 
   SetBorder(views::CreateEmptyBorder(kPickerListItemBorderInsets));
+  SetProperty(views::kElementIdentifierKey,
+              kPickerSearchResultsListItemElementId);
 }
 
 PickerListItemView::~PickerListItemView() = default;
@@ -101,6 +105,17 @@ void PickerListItemView::SetSecondaryText(
   secondary_container_->AddChildView(bubble_utils::CreateLabel(
       TypographyToken::kCrosAnnotation2, secondary_text,
       cros_tokens::kCrosSysOnSurfaceVariant));
+}
+
+std::u16string PickerListItemView::GetPrimaryTextForTesting() const {
+  if (primary_container_->children().empty()) {
+    return u"";
+  }
+  if (const auto* label = views::AsViewClass<views::Label>(
+          primary_container_->children().front().get())) {
+    return label->GetText();
+  }
+  return u"";
 }
 
 BEGIN_METADATA(PickerListItemView)

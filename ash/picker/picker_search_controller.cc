@@ -13,6 +13,7 @@
 
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -22,6 +23,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
@@ -77,6 +79,9 @@ void PickerSearchController::StartSearch(
 
   // Emoji search is currently synchronous.
   HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
+
+  // Date results is currently synchronous.
+  HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
 }
 
 void PickerSearchController::StopSearch() {
@@ -109,6 +114,7 @@ void PickerSearchController::ResetResults() {
   omnibox_results_.clear();
   gif_results_.clear();
   emoji_results_.clear();
+  suggested_results_.clear();
 }
 
 void PickerSearchController::PublishBurnInResults() {
@@ -117,6 +123,10 @@ void PickerSearchController::PublishBurnInResults() {
   }
 
   std::vector<PickerSearchResults::Section> sections;
+  if (!suggested_results_.empty()) {
+    sections.push_back(
+        PickerSearchResults::Section(u"Suggested", suggested_results_));
+  }
   if (!emoji_results_.empty()) {
     sections.push_back(PickerSearchResults::Section(u"Matching expressions",
                                                     std::move(emoji_results_)));
@@ -193,6 +203,13 @@ void PickerSearchController::HandleEmojiSearchResults(
        FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
     emoji_results_.push_back(
         PickerSearchResult::Emoticon(base::UTF8ToUTF16(result)));
+  }
+}
+
+void PickerSearchController::HandleDateSearchResults(
+    std::optional<PickerSearchResult> result) {
+  if (result.has_value()) {
+    suggested_results_.push_back(*result);
   }
 }
 
