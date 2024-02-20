@@ -8872,7 +8872,7 @@ domain Page
       string message
       # Dialog type.
       DialogType type
-      # True if browser is capable showing or acting on the given dialog. When browser has no
+      # True iff browser is capable showing or acting on the given dialog. When browser has no
       # dialog handler for given target, calling alert while Page domain is engaged will stall
       # the page execution. Execution can be resumed via calling Page.handleJavaScriptDialog.
       boolean hasBrowserHandler
@@ -10449,8 +10449,8 @@ domain Target
   type TargetInfo extends object
     properties
       TargetID targetId
-      string type
       # List of types: https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22
+      string type
       string title
       string url
       # Whether the target has an attached client.
@@ -11718,7 +11718,7 @@ experimental domain Preload
       optional string url
       optional Network.RequestId requestId
       # Error information
-      # `errorMessage` is null if `errorType` is null.
+      # `errorMessage` is null iff `errorType` is null.
       optional RuleSetErrorType errorType
       # TODO(https://crbug.com/1425354): Replace this property with structured error.
       deprecated optional string errorMessage
