@@ -7,6 +7,7 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
@@ -105,7 +106,16 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
     ui::GestureEvent* event) {
   aura::Window* target = static_cast<aura::Window*>(event->target());
   aura::Window* window = GetTargetWindow(target);
-  if (!window) {
+  if (!window ||
+      !Shell::Get()->shell_delegate()->AllowDefaultTouchActions(window)) {
+    return;
+  }
+
+  const ui::GestureEventDetails details = event->details();
+  // Do not handle PEN and ERASER events. PEN events can come from stylus
+  // device.
+  if (details.primary_pointer_type() == ui::EventPointerType::kPen ||
+      details.primary_pointer_type() == ui::EventPointerType::kEraser) {
     return;
   }
 
@@ -115,8 +125,6 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
   // Save the window coordinates to pass to the menu.
   gfx::PointF window_location = event->location_f();
   aura::Window::ConvertPointToTarget(target, window, &window_location);
-
-  const ui::GestureEventDetails details = event->details();
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
       if (std::fabs(details.scroll_y_hint()) <
