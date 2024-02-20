@@ -596,14 +596,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // This method is guaranteed to run after the profile has been added.
   void ResumeLaunchAfterProfileAdded();
 
-  // Wait for the primary user profile to be fully created and then
-  // executes a callback.
-  void WaitForProfileAddedAndThen(base::OnceClosure cb);
-
-  // Waits for the device owner being fetched from `UserManager` and then
-  // executes a callback. Should NOT be called if Lacros is launched at the
-  // login screen since device owner is not available until login.
-  void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb);
+  // Waits for the device owner being fetched from `UserManager` and the primary
+  // user profile being fully created and then executes a callback. Should NOT
+  // be called if Lacros is launching at the login screen since the device owner
+  // nor the profile is not available until login.
+  void WaitForDeviceOwnerFetchedAndProfileAddedAndThen(base::OnceClosure cb);
 
   // Called as soon as `LaunchParamsFromBackground` are fetched.
   void OnLaunchParamsFetched(

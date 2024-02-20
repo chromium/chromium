@@ -20,6 +20,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/barrier_closure.h"
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -75,6 +76,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
@@ -432,15 +434,6 @@ void WarnThatLacrosNotAllowedToLaunch() {
           base::RepeatingClosure()),
       gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(notification);
-}
-
-void RecordDataVerForPrimaryUser() {
-  const std::string user_id_hash =
-      ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
-          ProfileManager::GetPrimaryUserProfile());
-  crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
-                                       user_id_hash,
-                                       version_info::GetVersion());
 }
 
 void RecordLacrosEnabledForPrimaryUser(bool enabled) {
@@ -1070,14 +1063,6 @@ void BrowserManager::StartWithLogFile(
     return;
   }
 
-  // If we are not launching at the login screen, we must be inside a
-  // user session, so call `RecordDataVerForPrimaryUser` now.
-  // Otherwise, if we're pre-launching at login screen, this will be
-  // done later, once the user logs in and the session is started.
-  if (!launching_at_login_screen) {
-    WaitForProfileAddedAndThen(base::BindOnce(&RecordDataVerForPrimaryUser));
-  }
-
   // Ensures that this is the first time to initialize `crosapi_id` before
   // calling `browser_launcher_.LaunchProcess`.
   CHECK(!crosapi_id_.has_value());
@@ -1395,6 +1380,11 @@ void BrowserManager::OnUserProfileCreated(const user_manager::User& user) {
     component_policy_service->AddObserver(this);
   }
 
+  // Record data version for primary user profile.
+  crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
+                                       user.username_hash(),
+                                       version_info::GetVersion());
+
   // Check if Lacros is enabled for crash reporting. This must happen after the
   // primary user has been set as priamry user state is used in when evaluating
   // the correct value for IsLacrosEnabled().
@@ -1486,31 +1476,35 @@ void BrowserManager::ResumeLaunch() {
   // the following action will be executed.
   pending_actions_.Push(BrowserAction::GetActionForSessionStart());
 
-  WaitForDeviceOwnerFetchedAndThen(base::BindOnce(
-      &BrowserManager::WaitForProfileAddedAndThen, weak_factory_.GetWeakPtr(),
+  WaitForDeviceOwnerFetchedAndProfileAddedAndThen(
       base::BindOnce(&BrowserManager::ResumeLaunchAfterProfileAdded,
-                     weak_factory_.GetWeakPtr())));
+                     weak_factory_.GetWeakPtr()));
 }
 
-void BrowserManager::WaitForProfileAddedAndThen(base::OnceClosure cb) {
-  DCHECK(!primary_profile_creation_waiter_);
-  CHECK_EQ(state_, State::WAITING_OWNER_FETCH);
-  primary_profile_creation_waiter_ = PrimaryProfileCreationWaiter::WaitOrRun(
-      g_browser_process->profile_manager(), std::move(cb));
-}
-
-void BrowserManager::WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb) {
+void BrowserManager::WaitForDeviceOwnerFetchedAndProfileAddedAndThen(
+    base::OnceClosure cb) {
   CHECK(state_ == State::PRE_LAUNCHED || state_ == State::PREPARING_FOR_LAUNCH);
   SetState(State::WAITING_OWNER_FETCH);
+
+  // Number of the data we should wait here. The device ownership and the
+  // primary profile.
+  constexpr int kNumData = 2;
+  auto barrier_closure = base::BarrierClosure(kNumData, std::move(cb));
+
+  // Wait for the device ownership to be fetched.
   if (g_skip_device_ownership_wait_for_testing) {
     CHECK_IS_TEST();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                             std::move(cb));
-    return;
+                                                             barrier_closure);
+  } else {
+    device_ownership_waiter_called_ = true;
+    device_ownership_waiter_->WaitForOwnershipFetched(barrier_closure);
   }
 
-  device_ownership_waiter_called_ = true;
-  device_ownership_waiter_->WaitForOwnershipFetched(std::move(cb));
+  // Wait for the primary profile to be created.
+  CHECK(!primary_profile_creation_waiter_);
+  primary_profile_creation_waiter_ = PrimaryProfileCreationWaiter::WaitOrRun(
+      g_browser_process->profile_manager(), barrier_closure);
 }
 
 void BrowserManager::OnLaunchParamsFetched(
@@ -1525,7 +1519,7 @@ void BrowserManager::OnLaunchParamsFetched(
     return;
   }
 
-  WaitForDeviceOwnerFetchedAndThen(base::BindOnce(
+  WaitForDeviceOwnerFetchedAndProfileAddedAndThen(base::BindOnce(
       &BrowserManager::StartWithLogFile, weak_factory_.GetWeakPtr(),
       launching_at_login_screen, std::move(params)));
 }
@@ -1536,7 +1530,6 @@ void BrowserManager::ResumeLaunchAfterProfileAdded() {
   // because they required the user to be logged in.
   RecordLacrosLaunchMode();
   crosapi::lacros_startup_state::SetLacrosStartupState(true);
-  RecordDataVerForPrimaryUser();
 
   lacros_resume_time_ = base::TimeTicks::Now();
   browser_launcher_.ResumeLaunch();
