@@ -291,17 +291,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="OptimizationGuide.EntityAnnotatorNativeLibrary.InitiatedSuccessfully"
-    enum="BooleanSuccess" expires_after="M125">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records whether the entity annotator native library was initiated
-    successfully if an attempt to load it was made.
-  </summary>
-</histogram>
-
 <histogram name="OptimizationGuide.HintCache.HintType.Loaded"
     enum="HintCacheStoreEntryType" expires_after="2024-07-14">
   <owner>mcrouse@chromium.org</owner>
@@ -1266,32 +1255,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.PageContentAnnotationsService.ModelExecutionLatency.PageEntities"
-    units="ms" expires_after="2024-07-30">
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the model execution latency for the PageEntities model only just the
-    annotation request. This does not include any thread hop or queuing delay.
-    Recorded once per model execution attempt.
-  </summary>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.PageContentAnnotationsService.ModelThreadExecutionLatency.PageEntities"
-    units="ms" expires_after="2024-07-30">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the model execution latency for the PageEntities model. This does
-    not include any thread hop or queuing delay. Recorded once per model
-    execution attempt. This is effectively the same as
-    OptimizationGuide.PageContentAnnotationsService.ModelExecutionLatency.PageEntities
-    but uses `base::ElapsedThreadTimer` to calculate the timing.
-  </summary>
-</histogram>
-
-<histogram
     name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesCache.CacheHit"
     enum="BooleanCacheHit" expires_after="2024-07-30">
   <owner>khalidpeer@chromium.org</owner>
@@ -1323,30 +1286,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the visibility score of Google Search Result Pages when the page's
     annotation is complete.
-  </summary>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully"
-    enum="BooleanSuccess" expires_after="2024-07-30">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records whether the page entities model handler was created successfully
-    from a model file. Recorded each time it was attempted, which can be
-    multiple times a session if a model update was received during the session.
-  </summary>
-</histogram>
-
-<histogram name="OptimizationGuide.PageEntitiesModelHandler.CreationStatus"
-    enum="OptimizationGuideEntityAnnotatorCreationStatus"
-    expires_after="2024-07-30">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the status for the page entities model handler's creation. Recorded
-    each time it was attempted, which can be multiple times a session if a model
-    update was received during the session.
   </summary>
 </histogram>
 

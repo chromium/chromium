@@ -116,34 +116,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Failed with persistent error"/>
 </enum>
 
-<enum name="OptimizationGuideEntityAnnotatorCreationStatus">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Native library invalid"/>
-  <int value="3" label="Missing model metadata">
-    The entity annotator was requested to be created but no metadata for how to
-    create it was present.
-  </int>
-  <int value="4" label="Missing entities model metadata">
-    The entity annotator was requested to be created but the metadata specific
-    to this model was not present.
-  </int>
-  <int value="5" label="Missing slices in entities model metaata">
-    The entity annotator was requested to be created but no slices were
-    specified in the entities model metadata.
-  </int>
-  <int value="6" label="Missing entities model metadata file path"/>
-  <int value="7" label="Missing word embeddings file path"/>
-  <int value="8" label="Missing names filter file path"/>
-  <int value="9" label="Missing names table file path"/>
-  <int value="10" label="Missing prefix filter file path"/>
-  <int value="11" label="Missing metadata table file path"/>
-  <int value="12" label="Initialization failure">
-    All required files were present but the creation failed for a different
-    reason
-  </int>
-</enum>
-
 <enum name="OptimizationGuideExecutionStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>
