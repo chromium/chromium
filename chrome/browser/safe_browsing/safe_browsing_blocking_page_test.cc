@@ -3853,7 +3853,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   // Do some basic verification of report contents.
   EXPECT_EQ(url.spec(), report.page_url());
   EXPECT_EQ(url.spec(), report.url());
-  ASSERT_EQ(2, report.resources_size());
+  // We don't check the specific size of resources here. The size can be either
+  // 1 or 2 depending on whether DOM details have been collected when we
+  // proceed.
+  ASSERT_NE(0, report.resources_size());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
