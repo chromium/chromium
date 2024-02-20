@@ -20,8 +20,8 @@ class SelectionForUndoStep final {
   class Builder;
 
   // Returns newly constructed |SelectionForUndoStep| from |SelectionInDOMTree|
-  // with computing direction of selection by base <= extent. Thus, computation
-  // time depends O(depth of tree).
+  // with computing direction of selection by anchor_ <= focus_. Thus,
+  // computation time depends O(depth of tree).
   static SelectionForUndoStep From(const SelectionInDOMTree&);
 
   SelectionForUndoStep(const SelectionForUndoStep&);
@@ -33,9 +33,9 @@ class SelectionForUndoStep final {
   bool operator!=(const SelectionForUndoStep&) const;
 
   TextAffinity Affinity() const { return affinity_; }
-  Position Base() const { return base_; }
-  Position Extent() const { return extent_; }
-  bool IsBaseFirst() const { return is_base_first_; }
+  Position Anchor() const { return anchor_; }
+  Position Focus() const { return focus_; }
+  bool IsAnchorFirst() const { return is_anchor_first_; }
   Element* RootEditableElement() const { return root_editable_element_.Get(); }
 
   SelectionInDOMTree AsSelection() const;
@@ -45,11 +45,11 @@ class SelectionForUndoStep final {
   bool IsNone() const;
   bool IsRange() const;
 
-  // Returns |base_| if |base_ <= extent| at construction time, otherwise
-  // |extent_|.
+  // Returns |anchor_| if |anchor_ <= focus_| at construction time, otherwise
+  // |focus_|.
   Position Start() const;
-  // Returns |extent_| if |base_ <= extent| at construction time, otherwise
-  // |base_|.
+  // Returns |focus_| if |anchor_ <= focus_| at construction time, otherwise
+  // |anchor_|.
   Position End() const;
 
   bool IsValidFor(const Document&) const;
@@ -57,14 +57,14 @@ class SelectionForUndoStep final {
   void Trace(Visitor*) const;
 
  private:
-  // |base_| and |extent_| can be disconnected from document.
-  Position base_;
-  Position extent_;
+  // |anchor_| and |focus_| can be disconnected from document.
+  Position anchor_;
+  Position focus_;
   TextAffinity affinity_ = TextAffinity::kDownstream;
-  // Note: We should compute |is_base_first_| at construction otherwise we
+  // Note: We should compute |is_anchor_first_| at construction otherwise we
   // fail "backward and forward delete" case in "undo-delete-boundary.html".
-  bool is_base_first_ = true;
-  // Since |base_| and |extent_| can be disconnected from document, we have to
+  bool is_anchor_first_ = true;
+  // Since |anchor_| and |focus_| can be disconnected from document, we have to
   // calculate the root editable element at construction time
   Member<Element> root_editable_element_;
 };
@@ -81,13 +81,13 @@ class SelectionForUndoStep::Builder final {
 
   const SelectionForUndoStep& Build() const { return selection_; }
 
-  // |base| and |extent| can be disconnected.
-  Builder& SetBaseAndExtentAsBackwardSelection(const Position& base,
-                                               const Position& extent);
+  // |anchor| and |focus| can be disconnected.
+  Builder& SetAnchorAndFocusAsBackwardSelection(const Position& anchor,
+                                                const Position& focus);
 
-  // |base| and |extent| can be disconnected.
-  Builder& SetBaseAndExtentAsForwardSelection(const Position& base,
-                                              const Position& extent);
+  // |anchor| and |focus| can be disconnected.
+  Builder& SetAnchorAndFocusAsForwardSelection(const Position& anchor,
+                                               const Position& focus);
 
   void Trace(Visitor*) const;
 

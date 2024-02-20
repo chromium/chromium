@@ -153,8 +153,9 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
       visible_selection.End().IsOrphan())
     return;
 
-  if (!RootEditableElementOf(EndingSelection().Base()))
+  if (!RootEditableElementOf(EndingSelection().Anchor())) {
     return;
+  }
 
   VisiblePosition visible_end = visible_selection.VisibleEnd();
   VisiblePosition visible_start = visible_selection.VisibleStart();
@@ -175,8 +176,9 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
     if (new_end.IsNotNull())
       builder.Extend(new_end.DeepEquivalent());
     SetEndingSelection(SelectionForUndoStep::From(builder.Build()));
-    if (!RootEditableElementOf(EndingSelection().Base()))
+    if (!RootEditableElementOf(EndingSelection().Anchor())) {
       return;
+    }
   }
 
   const HTMLQualifiedName& list_tag =

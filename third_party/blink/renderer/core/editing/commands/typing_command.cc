@@ -686,7 +686,7 @@ void TypingCommand::InsertTextInternal(const String& text,
   // collapsed) being replaced by the text insert, to wherever the selection was
   // left after the final run of text was inserted.
   ContainerNode* const editable =
-      RootEditableElementOrTreeScopeRootNodeOf(EndingSelection().Base());
+      RootEditableElementOrTreeScopeRootNodeOf(EndingSelection().Anchor());
 
   const EphemeralRange new_selection_start_collapsed_range =
       PlainTextRange(selection_start_, selection_start_).CreateRange(*editable);
@@ -774,7 +774,7 @@ void TypingCommand::InsertParagraphSeparatorInQuotedContent(
 
 bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
-  Element* root = RootEditableElementOf(EndingSelection().Base());
+  Element* root = RootEditableElementOf(EndingSelection().Anchor());
   if (!root || !root->HasChildren())
     return false;
 
@@ -821,7 +821,7 @@ static SelectionForUndoStep AdjustSelectionForBackwardDelete(
       //   |selection_to_delete| is <div>@0, After:<img>
       // See "editing/deleting/delete_after_block_image.html"
       return SelectionForUndoStep::Builder()
-          .SetBaseAndExtentAsBackwardSelection(anchor, after_block)
+          .SetAnchorAndFocusAsBackwardSelection(anchor, after_block)
           .Build();
     }
     return SelectionForUndoStep::From(selection);
@@ -837,7 +837,7 @@ static SelectionForUndoStep AdjustSelectionForBackwardDelete(
   }
   const Position& end = selection.ComputeEndPosition();
   return SelectionForUndoStep::Builder()
-      .SetBaseAndExtentAsBackwardSelection(
+      .SetAnchorAndFocusAsBackwardSelection(
           end, PreviousPositionOf(end, PositionMoveType::kBackwardDeletion))
       .Build();
 }
@@ -959,7 +959,7 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
                 selection_modifier.Selection().AsSelection());
 
   if (!StartingSelection().IsRange() ||
-      selection_to_delete.Base() != StartingSelection().Start()) {
+      selection_to_delete.Anchor() != StartingSelection().Start()) {
     DeleteKeyPressedInternal(selection_to_delete, selection_to_delete,
                              kill_ring, editing_state);
     return;
@@ -968,9 +968,9 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
   // See editing/deleting/delete_list_item.html on MacOS.
   const SelectionForUndoStep selection_after_undo =
       SelectionForUndoStep::Builder()
-          .SetBaseAndExtentAsBackwardSelection(
+          .SetAnchorAndFocusAsBackwardSelection(
               StartingSelection().End(),
-              CreateVisiblePosition(selection_to_delete.Extent())
+              CreateVisiblePosition(selection_to_delete.Focus())
                   .DeepEquivalent())
           .Build();
   DeleteKeyPressedInternal(selection_to_delete, selection_after_undo, kill_ring,
@@ -1117,7 +1117,7 @@ void TypingCommand::ForwardDeleteKeyPressed(TextGranularity granularity,
   // Note: |StartingSelection().Start()| can be disconnected.
   const SelectionForUndoStep selection_after_undo =
       SelectionForUndoStep::Builder()
-          .SetBaseAndExtentAsForwardSelection(
+          .SetAnchorAndFocusAsForwardSelection(
               StartingSelection().Start(),
               ComputeExtentForForwardDeleteUndo(selection_to_delete,
                                                 StartingSelection().End()))

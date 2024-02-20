@@ -245,7 +245,7 @@ void IdleSpellCheckController::HotModeInvocation(IdleDeadline* deadline) {
     // before using it.
     if (!step->EndingSelection().IsValidFor(GetDocument()))
       continue;
-    requester.CheckSpellingAt(step->EndingSelection().Extent());
+    requester.CheckSpellingAt(step->EndingSelection().Focus());
   }
 
   needs_invocation_for_changed_selection_ = false;

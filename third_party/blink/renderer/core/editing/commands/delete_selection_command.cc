@@ -95,7 +95,7 @@ DeleteSelectionCommand::DeleteSelectionCommand(
     const SelectionForUndoStep& selection,
     const DeleteSelectionOptions& options,
     InputEvent::InputType input_type)
-    : CompositeEditCommand(*selection.Base().GetDocument()),
+    : CompositeEditCommand(*selection.Anchor().GetDocument()),
       options_(options),
       has_selection_to_delete_(true),
       merge_blocks_after_delete_(options.IsMergeBlocksAfterDelete()),
@@ -186,7 +186,7 @@ void DeleteSelectionCommand::SetStartingSelectionOnSmartDelete(
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       GetDocument().Lifecycle());
 
-  const bool is_base_first = StartingSelection().IsBaseFirst();
+  const bool is_base_first = StartingSelection().IsAnchorFirst();
   // TODO(yosin): We should not call |createVisiblePosition()| here and use
   // |start| and |end| as base/extent since |VisibleSelection| also calls
   // |createVisiblePosition()| during construction.
@@ -1176,7 +1176,7 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
 
   if (!selection_to_delete_.IsValidFor(GetDocument()) ||
       !selection_to_delete_.IsRange() ||
-      !IsEditablePosition(selection_to_delete_.Base())) {
+      !IsEditablePosition(selection_to_delete_.Anchor())) {
     // editing/execCommand/delete-non-editable-range-crash.html reaches here.
     return;
   }
