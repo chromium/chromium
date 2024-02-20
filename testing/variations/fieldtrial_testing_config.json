@@ -1247,27 +1247,6 @@
             ]
         }
     ],
-    "AutofillAlwaysParsePlaceholders": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAlwaysParsePlaceholders"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillContentEditableChangeEvents": [
         {
             "platforms": [
@@ -1329,28 +1308,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillDetectRemovedFormControls"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillDontPreserveAutofillState": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillDontPreserveAutofillState"
                     ]
                 }
             ]
@@ -1577,53 +1534,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnablePaymentsMandatoryReauth"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableSupportForParsingWithSharedLabels": [
-        {
-            "platforms": [
-                "android_webview",
-                "android_weblayer",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableSupportForParsingWithSharedLabels"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableSupportForPhoneNumberTrunkTypes": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableSupportForPhoneNumberTrunkTypes"
                     ]
                 }
             ]
@@ -12154,6 +12064,25 @@
                     "name": "Disabled_20231128",
                     "disable_features": [
                         "NoAppCompatClearInChildren"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NoPasswordSuggestionFiltering": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NoPasswordSuggestionFiltering"
                     ]
                 }
             ]
