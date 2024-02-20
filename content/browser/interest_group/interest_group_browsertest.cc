@@ -1291,6 +1291,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   [[nodiscard]] content::EvalJsResult RunAuctionAndWait(
       const std::string& auction_config_json,
       const std::optional<ToRenderFrameHost> execution_target = std::nullopt) {
+    // Sanitizers tend to run a lot more slowly.
+#if defined(MEMORY_SANITIZER)
+    int default_timeout = 1500;
+#else
+    int default_timeout = 150;
+#endif
     return EvalJs(execution_target ? *execution_target : shell(),
                   base::StringPrintf(
                       R"(
@@ -1312,11 +1318,12 @@ function provideAdditionalBids(seller, nonce, bidStringList,
   let auctionConfig = %s;
   // Our test bots can get kinda slow, so bump script execution time limits
   // in tests that don't specifically configure them.
+  let defaultTimeout = %i;
   if (!("perBuyerTimeouts" in auctionConfig)) {
-    auctionConfig.perBuyerTimeouts = { '*': 150 };
+    auctionConfig.perBuyerTimeouts = { '*': defaultTimeout };
   }
   if (!("sellerTimeout" in auctionConfig)) {
-    auctionConfig.sellerTimeout = 150;
+    auctionConfig.sellerTimeout = defaultTimeout;
   }
   try {
     return await navigator.runAdAuction(auctionConfig);
@@ -1324,7 +1331,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
     return e.toString();
   }
 })())",
-                      auction_config_json.c_str()));
+                      auction_config_json.c_str(), default_timeout));
   }
 
   // Wrapper around RunAuctionAndWait that assumes the result is a URN URL and
