@@ -21,6 +21,13 @@ if (use_goma && goma_dir == "") {
 assert(!is_win || !use_goma || is_clang,
        "cl.exe does not work on goma, use clang")
 
+# TODO(b/41489832): remove this after goma shutdown.
+assert(
+    !use_goma || target_os == "chromeos" || host_os == "win",
+    "use_goma can only be used for ChromeOS or Windows build now." +
+        " Use use_remoteexec=true instead for other build." +
+        " See build instructions from " + "https://source.chromium.org/search?q=%22Use%20Reclient%22&ss=chromium%2Fchromium%2Fsrc:docs%2F")
+
 if (use_goma && current_toolchain == default_toolchain) {
   if (host_os == "win") {
     print("The gn arg use_goma=true will be deprecated by EOY 2023. " +
