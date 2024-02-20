@@ -74,7 +74,7 @@ class WebContentsView {
   // MPArch.
   virtual void TransferDragSecurityInfo(WebContentsView* view) = 0;
 
-  // Get the bounds of the View, relative to the parent.
+  // Get the bounds of the View in the global screen position.
   virtual gfx::Rect GetViewBounds() const = 0;
 
   virtual void CreateView(gfx::NativeView context) = 0;
