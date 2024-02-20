@@ -775,8 +775,7 @@ void ShellSurface::OnPreWindowStateTypeChange(
 
   if (chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(old_type) ||
       chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(new_type)) {
-    if (!widget_)
-      return;
+    CHECK(widget_);
     // When transitioning in/out of maximized or fullscreen mode, we need to
     // make sure we have a configure callback before we allow the default
     // cross-fade animations. The configure callback provides a mechanism for
