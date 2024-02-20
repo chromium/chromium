@@ -2367,7 +2367,6 @@
       keywords: ["auto"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthOrAuto",
       logical_property_group: {
         name: "inset",
@@ -3088,7 +3087,6 @@
       keywords: ["auto", "fit-content", "min-content", "max-content"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthSizing",
       logical_property_group: {
         name: "size",
@@ -3255,7 +3253,6 @@
       keywords: ["auto"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthOrAuto",
       logical_property_group: {
         name: "inset",
@@ -3527,7 +3524,6 @@
       field_group: "box",
       field_template: "<length>",
       default_value: "Length::None()",
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthMaxSizing",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -3545,7 +3541,6 @@
       field_group: "box",
       field_template: "<length>",
       default_value: "Length::None()",
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthMaxSizing",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -3563,7 +3558,6 @@
       field_group: "box",
       field_template: "<length>",
       default_value: "Length()",
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthSizing",
       typedom_types: ["Length", "Percentage"],
       logical_property_group: {
@@ -3580,7 +3574,6 @@
       field_group: "box",
       field_template: "<length>",
       default_value: "Length()",
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthSizing",
       typedom_types: ["Length", "Percentage"],
       logical_property_group: {
@@ -4237,7 +4230,6 @@
       keywords: ["auto"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthOrAuto",
       logical_property_group: {
         name: "inset",
@@ -5276,7 +5268,6 @@
       keywords: ["auto"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthOrAuto",
       logical_property_group: {
         name: "inset",
@@ -6319,7 +6310,6 @@
       keywords: ["auto", "fit-content", "min-content", "max-content"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
-      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthSizing",
       logical_property_group: {
         name: "size",

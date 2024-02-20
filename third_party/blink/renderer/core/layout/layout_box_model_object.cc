@@ -627,13 +627,13 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
     const PhysicalSize available_size = constraints->constraining_rect.size;
     const auto& style = StyleRef();
     std::optional<LayoutUnit> left =
-        ResolveInset(style.UsedLeft(), available_size.width);
+        ResolveInset(style.Left(), available_size.width);
     std::optional<LayoutUnit> right =
-        ResolveInset(style.UsedRight(), available_size.width);
+        ResolveInset(style.Right(), available_size.width);
     std::optional<LayoutUnit> top =
-        ResolveInset(style.UsedTop(), available_size.height);
+        ResolveInset(style.Top(), available_size.height);
     std::optional<LayoutUnit> bottom =
-        ResolveInset(style.UsedBottom(), available_size.height);
+        ResolveInset(style.Bottom(), available_size.height);
 
     // Skip the end inset if there is not enough space to honor both insets.
     if (left && right) {

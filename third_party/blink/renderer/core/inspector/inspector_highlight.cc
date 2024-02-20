@@ -1221,8 +1221,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
   Length base_size = Length::Auto();
 
   const Length& flex_basis = layout_object->StyleRef().FlexBasis();
-  const Length& size = is_horizontal ? layout_object->StyleRef().UsedWidth()
-                                     : layout_object->StyleRef().UsedHeight();
+  const Length& size = is_horizontal ? layout_object->StyleRef().Width()
+                                     : layout_object->StyleRef().Height();
 
   if (flex_basis.IsFixed()) {
     base_size = flex_basis;

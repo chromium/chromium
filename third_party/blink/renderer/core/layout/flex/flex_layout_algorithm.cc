@@ -297,9 +297,8 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
       const auto& style = Style();
       const auto& child_style = child.Style();
       const PhysicalToLogical<Length> insets_in_flexbox_writing_mode(
-          Style().GetWritingDirection(), child_style.UsedTop(),
-          child_style.UsedRight(), child_style.UsedBottom(),
-          child_style.UsedLeft());
+          Style().GetWritingDirection(), child_style.Top(), child_style.Right(),
+          child_style.Bottom(), child_style.Left());
       if (is_column_) {
         const ItemPosition normalized_alignment =
             FlexibleBoxAlgorithm::AlignmentForChild(style, child_style);
@@ -442,16 +441,15 @@ bool FlexLayoutAlgorithm::DoesItemCrossSizeComputeToAuto(
     const BlockNode& child) const {
   const ComputedStyle& child_style = child.Style();
   if (is_horizontal_flow_) {
-    return child_style.UsedHeight().IsAuto();
+    return child_style.Height().IsAuto();
   }
-  return child_style.UsedWidth().IsAuto();
+  return child_style.Width().IsAuto();
 }
 
 bool FlexLayoutAlgorithm::AspectRatioProvidesMainSize(
     const BlockNode& child) const {
-  const Length& cross_axis_length = is_horizontal_flow_
-                                        ? child.Style().UsedHeight()
-                                        : child.Style().UsedWidth();
+  const Length& cross_axis_length =
+      is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
   return child.HasAspectRatio() &&
          (IsItemCrossAxisLengthDefinite(child, cross_axis_length) ||
           WillChildCrossSizeBeContainerCrossSize(child));
@@ -535,7 +533,7 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
 Length FlexLayoutAlgorithm::GetUsedFlexBasis(const BlockNode& child) const {
   const ComputedStyle& child_style = child.Style();
   const Length& specified_length_in_main_axis =
-      is_horizontal_flow_ ? child_style.UsedWidth() : child_style.UsedHeight();
+      is_horizontal_flow_ ? child_style.Width() : child_style.Height();
   const Length& specified_flex_basis = child_style.FlexBasis();
 
   if (specified_flex_basis.IsAuto()) {
@@ -723,9 +721,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         is_horizontal_flow_ ? physical_border_padding.VerticalSum()
                             : physical_border_padding.HorizontalSum();
 
-    const Length& cross_axis_length = is_horizontal_flow_
-                                          ? child.Style().UsedHeight()
-                                          : child.Style().UsedWidth();
+    const Length& cross_axis_length =
+        is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
     all_items_have_non_auto_cross_sizes &= !cross_axis_length.IsAuto();
 
     std::optional<MinMaxSizesResult> min_max_sizes;
@@ -746,9 +743,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                                                      LayoutUnit::Max()};
     MinMaxSizes min_max_sizes_in_cross_axis_direction{LayoutUnit(),
                                                       LayoutUnit::Max()};
-    const Length& max_property_in_main_axis =
-        is_horizontal_flow_ ? child.Style().UsedMaxWidth()
-                            : child.Style().UsedMaxHeight();
+    const Length& max_property_in_main_axis = is_horizontal_flow_
+                                                  ? child.Style().MaxWidth()
+                                                  : child.Style().MaxHeight();
     if (MainAxisIsInlineAxis(child)) {
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
@@ -908,8 +905,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     LayoutUnit flex_base_content_size =
         flex_base_border_box - main_axis_border_padding;
 
-    const Length& min = is_horizontal_flow_ ? child.Style().UsedMinWidth()
-                                            : child.Style().UsedMinHeight();
+    const Length& min = is_horizontal_flow_ ? child.Style().MinWidth()
+                                            : child.Style().MinHeight();
     if (algorithm_.ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
       LayoutUnit content_size_suggestion;
       if (MainAxisIsInlineAxis(child)) {
@@ -930,8 +927,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
       LayoutUnit specified_size_suggestion = LayoutUnit::Max();
       const Length& specified_length_in_main_axis =
-          is_horizontal_flow_ ? child_style.UsedWidth()
-                              : child_style.UsedHeight();
+          is_horizontal_flow_ ? child_style.Width() : child_style.Height();
       // If the item’s computed main size property is definite, then the
       // specified size suggestion is that size.
       if (MainAxisIsInlineAxis(child)) {

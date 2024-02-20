@@ -137,7 +137,7 @@ TEST_F(HitTestingTest, HitTestWithCallback) {
 
   // Ensure that occluders intersect with the target.
   const int div_height =
-      GetLayoutObjectByElementId("target")->StyleRef().UsedHeight().IntValue();
+      GetLayoutObjectByElementId("target")->StyleRef().Height().IntValue();
   occluder_1->SetInlineStyleProperty(CSSPropertyID::kMarginTop, "-10px");
   occluder_2->SetInlineStyleProperty(
       CSSPropertyID::kMarginTop,

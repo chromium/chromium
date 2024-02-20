@@ -286,13 +286,13 @@ void FragmentBuilder::PropagateFromFragment(
     const auto& child_style = child.Style();
     if (child.IsCSSBox() && child_style.GetPosition() == EPosition::kRelative) {
       if (IsHorizontalWritingMode(Style().GetWritingMode())) {
-        if (child_style.UsedTop().IsPercentOrCalc() ||
-            child_style.UsedBottom().IsPercentOrCalc()) {
+        if (child_style.Top().IsPercentOrCalc() ||
+            child_style.Bottom().IsPercentOrCalc()) {
           has_descendant_that_depends_on_percentage_block_size_ = true;
         }
       } else {
-        if (child_style.UsedLeft().IsPercentOrCalc() ||
-            child_style.UsedRight().IsPercentOrCalc()) {
+        if (child_style.Left().IsPercentOrCalc() ||
+            child_style.Right().IsPercentOrCalc()) {
           has_descendant_that_depends_on_percentage_block_size_ = true;
         }
       }

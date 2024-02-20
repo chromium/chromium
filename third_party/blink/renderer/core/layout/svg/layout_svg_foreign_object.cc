@@ -109,8 +109,8 @@ void LayoutSVGForeignObject::UpdateLayout() {
   const ComputedStyle& style = StyleRef();
   viewport_.set_origin(
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style));
-  gfx::Vector2dF size = VectorForLengthPair(
-      style.UsedWidth(), style.UsedHeight(), viewport_resolver, style);
+  gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
+                                            viewport_resolver, style);
   // gfx::SizeF() will clamp negative width/height to zero.
   viewport_.set_size(gfx::SizeF(size.x(), size.y()));
 

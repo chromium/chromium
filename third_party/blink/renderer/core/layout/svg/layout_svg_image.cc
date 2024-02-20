@@ -86,11 +86,10 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
   NOT_DESTROYED();
 
   const SVGViewportResolver viewport_resolver(*this);
-  gfx::Vector2dF style_size =
-      VectorForLengthPair(StyleRef().UsedWidth(), StyleRef().UsedHeight(),
-                          viewport_resolver, StyleRef());
-  bool width_is_auto = style_size.x() < 0 || StyleRef().UsedWidth().IsAuto();
-  bool height_is_auto = style_size.y() < 0 || StyleRef().UsedHeight().IsAuto();
+  gfx::Vector2dF style_size = VectorForLengthPair(
+      StyleRef().Width(), StyleRef().Height(), viewport_resolver, StyleRef());
+  bool width_is_auto = style_size.x() < 0 || StyleRef().Width().IsAuto();
+  bool height_is_auto = style_size.y() < 0 || StyleRef().Height().IsAuto();
   if (!width_is_auto && !height_is_auto)
     return gfx::SizeF(style_size.x(), style_size.y());
 

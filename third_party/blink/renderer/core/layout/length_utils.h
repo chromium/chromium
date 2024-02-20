@@ -779,9 +779,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
 
   const auto border_padding =
       ComputeBorders(space, child) + ComputePadding(space, style);
-  const auto& inline_size = is_parent_writing_mode_horizontal
-                                ? style.UsedWidth()
-                                : style.UsedHeight();
+  const auto& inline_size =
+      is_parent_writing_mode_horizontal ? style.Width() : style.Height();
 
   MinMaxSizesResult result;
   if (inline_size.IsAuto() || inline_size.IsPercentOrCalc() ||
@@ -806,9 +805,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     result = {{size, size}, /* depends_on_block_constraints */ false};
   }
 
-  const auto& max_inline_size = is_parent_writing_mode_horizontal
-                                    ? style.UsedMaxWidth()
-                                    : style.UsedMaxHeight();
+  const auto& max_inline_size =
+      is_parent_writing_mode_horizontal ? style.MaxWidth() : style.MaxHeight();
   result.sizes.Constrain(
       is_parallel_with_parent
           ? ResolveMaxInlineLength(space, style, border_padding,
@@ -816,9 +814,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
           : ResolveMaxBlockLength(space, style, border_padding,
                                   max_inline_size));
 
-  const auto& min_inline_size = is_parent_writing_mode_horizontal
-                                    ? style.UsedMinWidth()
-                                    : style.UsedMinHeight();
+  const auto& min_inline_size =
+      is_parent_writing_mode_horizontal ? style.MinWidth() : style.MinHeight();
   result.sizes.Encompass(
       is_parallel_with_parent
           ? ResolveMinInlineLength(space, style, border_padding,

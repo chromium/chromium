@@ -93,9 +93,12 @@ float CalculationExpressionAnchorQueryNode::Evaluate(
             input.anchor_evaluator->Evaluate(*this)) {
       return value->ToFloat();
     }
-    return FloatValueForLength(fallback_, max_value, input);
   }
-  return 0;
+  // If we did not provide an AnchorEvaluator, then this is not
+  // for an absolutely-positioned element, and we should use the fallback.
+  //
+  // https://drafts.csswg.org/css-anchor-position-1/#valid-anchor-function
+  return FloatValueForLength(fallback_, max_value, input);
 }
 
 }  // namespace blink

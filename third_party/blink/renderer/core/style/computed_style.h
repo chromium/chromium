@@ -521,9 +521,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Returns true if the Element should stick to the viewport bottom as the URL
   // bar hides.
-  bool IsFixedToBottom() const {
-    return !UsedBottom().IsAuto() && UsedTop().IsAuto();
-  }
+  bool IsFixedToBottom() const { return !Bottom().IsAuto() && Top().IsAuto(); }
 
   // Border properties.
   // border-image-slice
@@ -1159,65 +1157,23 @@ class ComputedStyle final : public ComputedStyleBase {
   CORE_EXPORT LayoutUnit ComputedLineHeightAsFixed() const;
   LayoutUnit ComputedLineHeightAsFixed(const Font& font) const;
 
-  const Length& AdjustLengthForAnchorQueries(
-      const Length& original_value,
-      const Length& fallback_value) const {
-    if (LIKELY(!original_value.HasAnchorQueries())) {
-      return original_value;
-    }
-    return HasOutOfFlowPosition() ? original_value : fallback_value;
-  }
-
-  // Inset utility functions.
-  const Length& UsedLeft() const {
-    return AdjustLengthForAnchorQueries(Left(), Length::Auto());
-  }
-  const Length& UsedRight() const {
-    return AdjustLengthForAnchorQueries(Right(), Length::Auto());
-  }
-  const Length& UsedTop() const {
-    return AdjustLengthForAnchorQueries(Top(), Length::Auto());
-  }
-  const Length& UsedBottom() const {
-    return AdjustLengthForAnchorQueries(Bottom(), Length::Auto());
-  }
-
-  // Width/height utility functions.
-  const Length& UsedWidth() const {
-    return AdjustLengthForAnchorQueries(Width(), Length::Auto());
-  }
-  const Length& UsedHeight() const {
-    return AdjustLengthForAnchorQueries(Height(), Length::Auto());
-  }
-  const Length& UsedMinWidth() const {
-    return AdjustLengthForAnchorQueries(MinWidth(), Length::Auto());
-  }
-  const Length& UsedMinHeight() const {
-    return AdjustLengthForAnchorQueries(MinHeight(), Length::Auto());
-  }
-  const Length& UsedMaxWidth() const {
-    return AdjustLengthForAnchorQueries(MaxWidth(), Length::None());
-  }
-  const Length& UsedMaxHeight() const {
-    return AdjustLengthForAnchorQueries(MaxHeight(), Length::None());
-  }
   const Length& LogicalWidth() const {
-    return IsHorizontalWritingMode() ? UsedWidth() : UsedHeight();
+    return IsHorizontalWritingMode() ? Width() : Height();
   }
   const Length& LogicalHeight() const {
-    return IsHorizontalWritingMode() ? UsedHeight() : UsedWidth();
+    return IsHorizontalWritingMode() ? Height() : Width();
   }
   const Length& LogicalMaxWidth() const {
-    return IsHorizontalWritingMode() ? UsedMaxWidth() : UsedMaxHeight();
+    return IsHorizontalWritingMode() ? MaxWidth() : MaxHeight();
   }
   const Length& LogicalMaxHeight() const {
-    return IsHorizontalWritingMode() ? UsedMaxHeight() : UsedMaxWidth();
+    return IsHorizontalWritingMode() ? MaxHeight() : MaxWidth();
   }
   const Length& LogicalMinWidth() const {
-    return IsHorizontalWritingMode() ? UsedMinWidth() : UsedMinHeight();
+    return IsHorizontalWritingMode() ? MinWidth() : MinHeight();
   }
   const Length& LogicalMinHeight() const {
-    return IsHorizontalWritingMode() ? UsedMinHeight() : UsedMinWidth();
+    return IsHorizontalWritingMode() ? MinHeight() : MinWidth();
   }
 
   // Margin utility functions.
@@ -1459,8 +1415,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool HasStickyConstrainedPosition() const {
     return GetPosition() == EPosition::kSticky &&
-           (!UsedTop().IsAuto() || !UsedLeft().IsAuto() ||
-            !UsedRight().IsAuto() || !UsedBottom().IsAuto());
+           (!Top().IsAuto() || !Left().IsAuto() || !Right().IsAuto() ||
+            !Bottom().IsAuto());
   }
   static EPosition GetPosition(EDisplay display, EPosition position_internal) {
     // Applied sticky position is static for table columns and column groups.
@@ -1516,17 +1472,17 @@ class ComputedStyle final : public ComputedStyleBase {
     return PhysicalBoundsToLogical().BlockEnd();
   }
   bool InsetsEqual(const ComputedStyle& other) const {
-    return UsedLeft() == other.UsedLeft() && UsedRight() == other.UsedRight() &&
-           UsedTop() == other.UsedTop() && UsedBottom() == other.UsedBottom();
+    return Left() == other.Left() && Right() == other.Right() &&
+           Top() == other.Top() && Bottom() == other.Bottom();
   }
 
   // Whether or not a positioned element requires normal flow x/y to be computed
   // to determine its position.
   bool HasAutoLeftAndRightIgnoringInsetArea() const {
-    return UsedLeft().IsAuto() && UsedRight().IsAuto();
+    return Left().IsAuto() && Right().IsAuto();
   }
   bool HasAutoTopAndBottomIgnoringInsetArea() const {
-    return UsedTop().IsAuto() && UsedBottom().IsAuto();
+    return Top().IsAuto() && Bottom().IsAuto();
   }
 
   // Content utility functions.
@@ -2606,9 +2562,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   PhysicalToLogical<const Length&> PhysicalBoundsToLogical() const {
-    return PhysicalToLogical<const Length&>(GetWritingDirection(), UsedTop(),
-                                            UsedRight(), UsedBottom(),
-                                            UsedLeft());
+    return PhysicalToLogical<const Length&>(GetWritingDirection(), Top(),
+                                            Right(), Bottom(), Left());
   }
 
   static Difference ComputeDifferenceIgnoringInheritedFirstLineStyle(
@@ -3037,20 +2992,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
            ComputedStyleInitialValues::InitialLineHeight();
   }
   const Length& LineHeight() const { return LineHeightInternal(); }
-
-  // Sizing properties
-  const Length& UsedWidth() const {
-    if (LIKELY(!Width().HasAnchorQueries())) {
-      return Width();
-    }
-    return HasOutOfFlowPosition() ? Width() : Length::Auto();
-  }
-  const Length& UsedHeight() const {
-    if (LIKELY(!Height().HasAnchorQueries())) {
-      return Height();
-    }
-    return HasOutOfFlowPosition() ? Height() : Length::Auto();
-  }
 
   // margin-*
   void SetMarginTop(const Length& v) {

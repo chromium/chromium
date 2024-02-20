@@ -417,7 +417,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   const PhysicalSize available_size = ToPhysicalSize(
       available_logical_size, self_writing_direction.GetWritingMode());
   std::optional<LayoutUnit> left;
-  if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
+  if (const Length& left_length = style.Left(); !left_length.IsAuto()) {
     AnchorScope scope(AnchorScope::Mode::kLeft, anchor_evaluator);
     left = MinimumValueForLength(left_length, available_size.width,
                                  {.anchor_evaluator = anchor_evaluator});
@@ -425,7 +425,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     left = LayoutUnit();
   }
   std::optional<LayoutUnit> right;
-  if (const Length& right_length = style.UsedRight(); !right_length.IsAuto()) {
+  if (const Length& right_length = style.Right(); !right_length.IsAuto()) {
     AnchorScope scope(AnchorScope::Mode::kRight, anchor_evaluator);
     right = MinimumValueForLength(right_length, available_size.width,
                                   {.anchor_evaluator = anchor_evaluator});
@@ -434,7 +434,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   }
 
   std::optional<LayoutUnit> top;
-  if (const Length& top_length = style.UsedTop(); !top_length.IsAuto()) {
+  if (const Length& top_length = style.Top(); !top_length.IsAuto()) {
     AnchorScope scope(AnchorScope::Mode::kTop, anchor_evaluator);
     top = MinimumValueForLength(top_length, available_size.height,
                                 {.anchor_evaluator = anchor_evaluator});
@@ -442,8 +442,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     top = LayoutUnit();
   }
   std::optional<LayoutUnit> bottom;
-  if (const Length& bottom_length = style.UsedBottom();
-      !bottom_length.IsAuto()) {
+  if (const Length& bottom_length = style.Bottom(); !bottom_length.IsAuto()) {
     AnchorScope scope(AnchorScope::Mode::kBottom, anchor_evaluator);
     bottom = MinimumValueForLength(bottom_length, available_size.height,
                                    {.anchor_evaluator = anchor_evaluator});

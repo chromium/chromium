@@ -123,13 +123,13 @@ int LayoutCustomScrollbarPart::ComputeWidth(int container_width) const {
     return 0;
   }
 
-  int width = ComputeSize(style.UsedWidth(), container_width);
-  int min_width = style.UsedMinWidth().IsAuto()
+  int width = ComputeSize(style.Width(), container_width);
+  int min_width = style.MinWidth().IsAuto()
                       ? 0
-                      : ComputeSize(style.UsedMinWidth(), container_width);
-  int max_width = style.UsedMaxWidth().IsNone()
+                      : ComputeSize(style.MinWidth(), container_width);
+  int max_width = style.MaxWidth().IsNone()
                       ? width
-                      : ComputeSize(style.UsedMaxWidth(), container_width);
+                      : ComputeSize(style.MaxWidth(), container_width);
   return std::max(min_width, std::min(max_width, width));
 }
 
@@ -140,13 +140,13 @@ int LayoutCustomScrollbarPart::ComputeHeight(int container_height) const {
     return 0;
   }
 
-  int height = ComputeSize(style.UsedHeight(), container_height);
-  int min_height = style.UsedMinHeight().IsAuto()
+  int height = ComputeSize(style.Height(), container_height);
+  int min_height = style.MinHeight().IsAuto()
                        ? 0
-                       : ComputeSize(style.UsedMinHeight(), container_height);
-  int max_height = style.UsedMaxHeight().IsNone()
+                       : ComputeSize(style.MinHeight(), container_height);
+  int max_height = style.MaxHeight().IsNone()
                        ? height
-                       : ComputeSize(style.UsedMaxHeight(), container_height);
+                       : ComputeSize(style.MaxHeight(), container_height);
   return std::max(min_height, std::min(max_height, height));
 }
 

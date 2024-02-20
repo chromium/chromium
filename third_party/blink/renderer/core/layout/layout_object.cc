@@ -1367,7 +1367,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   // height will allow the object to grow and shrink based on the content
   // inside. The same goes for for logical width, if this objects is inside a
   // shrink-to-fit container, for instance.
-  if (!style->UsedWidth().IsFixed() || !style->UsedHeight().IsFixed()) {
+  if (!style->Width().IsFixed() || !style->Height().IsFixed()) {
     return false;
   }
 

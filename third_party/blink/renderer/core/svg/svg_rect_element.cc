@@ -84,8 +84,8 @@ Path SVGRectElement::AsPath() const {
   const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = ComputedStyleRef();
 
-  gfx::Vector2dF size = VectorForLengthPair(
-      style.UsedWidth(), style.UsedHeight(), viewport_resolver, style);
+  gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
+                                            viewport_resolver, style);
   if (size.x() < 0 || size.y() < 0 || size.IsZero())
     return path;
 

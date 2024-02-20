@@ -342,11 +342,11 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
                        ValueForLength(style.Y(), viewport_resolver, style,
                                       SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "width",
-                       ValueForLength(style.UsedWidth(), viewport_resolver,
-                                      style, SVGLengthMode::kWidth));
+                       ValueForLength(style.Width(), viewport_resolver, style,
+                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "height",
-                       ValueForLength(style.UsedHeight(), viewport_resolver,
-                                      style, SVGLengthMode::kHeight));
+                       ValueForLength(style.Height(), viewport_resolver, style,
+                                      SVGLengthMode::kHeight));
   } else if (auto* element = DynamicTo<SVGLineElement>(*svg_element)) {
     const SVGLengthContext length_context(svg_element);
     WriteNameValuePair(ts, "x1",
