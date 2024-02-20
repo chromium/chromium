@@ -17,6 +17,8 @@ source_set("model") {
     "confirm_download_replacing_overlay.mm",
     "document_download_tab_helper.h",
     "document_download_tab_helper.mm",
+    "document_download_tab_helper_metrics.h",
+    "document_download_tab_helper_metrics.mm",
     "download_directory_util.h",
     "download_directory_util.mm",
     "download_manager_metric_names.h",
