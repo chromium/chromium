@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/borealis/borealis_hardware_checker.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "base/cpu.h"
 #include "base/feature_list.h"
@@ -65,7 +67,7 @@ std::string GetBoardName() {
 std::string GetModelName() {
   ash::system::StatisticsProvider* statistics_provider =
       ash::system::StatisticsProvider::GetInstance();
-  if (const std::optional<base::StringPiece> ret =
+  if (const std::optional<std::string_view> ret =
           statistics_provider->GetMachineStatistic(
               ash::system::kCustomizationIdKey)) {
     return std::string(ret.value());
@@ -76,7 +78,7 @@ std::string GetModelName() {
   // As a fallback when the CustomizationId is not available, we try to parse it
   // out of the hardware class. If The hardware class is unavailable, all bets
   // are off.
-  const std::optional<base::StringPiece> hardware_class_statistic =
+  const std::optional<std::string_view> hardware_class_statistic =
       statistics_provider->GetMachineStatistic(ash::system::kHardwareClassKey);
   if (!hardware_class_statistic) {
     return "";
@@ -91,7 +93,7 @@ std::string GetModelName() {
   //
   // Naively searching for the first hyphen is fine until we start caring about
   // models with hyphens in the name.
-  base::StringPiece hardware_class = hardware_class_statistic.value();
+  std::string_view hardware_class = hardware_class_statistic.value();
   size_t hyphen_pos = hardware_class.find('-');
   if (hyphen_pos != std::string::npos) {
     hardware_class = hardware_class.substr(0, hyphen_pos);
