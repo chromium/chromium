@@ -62,8 +62,12 @@ bool IsSameHost(const HTMLAnchorElement& anchor_element,
 // the second number equals the first number plus one. Examples:
 // example.com/page9/cat5, example.com/page10/cat5 => true
 // example.com/page9/cat5, example.com/page10/cat10 => false
-// Note that this may misinterpret a non-ASCII character as being an ASCII
-// digit.
+// Note that this may give an incorrect result if the strings differ at
+// percent-encoded characters. For example:
+//   "example.com/%20page", "example.com/%21page"
+//       (false positive -- these are " " and "!")
+//   "example.com/%39page", "example.com/%31%30page"
+//       (false negative -- these are "9" and "10")
 bool IsStringIncrementedByOne(const String& source, const String& target) {
   // Consecutive numbers should differ in length by at most 1.
   int length_diff = target.length() - source.length();
