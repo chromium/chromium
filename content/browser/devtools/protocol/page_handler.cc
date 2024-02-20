@@ -1535,9 +1535,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::ContainsPlugins;
     case WebSchedulerTrackedFeature::kDocumentLoaded:
       return Page::BackForwardCacheNotRestoredReasonEnum::DocumentLoaded;
-    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          DedicatedWorkerOrWorklet;
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestOthers;
@@ -1844,7 +1841,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kPictureInPicture:
     case WebSchedulerTrackedFeature::kWebLocks:
     case WebSchedulerTrackedFeature::kWebSocket:
-    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
     case WebSchedulerTrackedFeature::kSpeechSynthesis:
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;

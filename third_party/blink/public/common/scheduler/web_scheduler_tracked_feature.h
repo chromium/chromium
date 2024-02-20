@@ -47,7 +47,9 @@ enum class WebSchedulerTrackedFeature : uint32_t {
 
   kContainsPlugins = 12,
   kDocumentLoaded = 13,
-  kDedicatedWorkerOrWorklet = 14,
+
+  // Removed in https://crbug.com/1146955
+  // kDedicatedWorkerOrWorklet = 14,
 
   // There are some other values defined for specific request context types
   // (e.g., XHR). This value corresponds to a network requests not covered by

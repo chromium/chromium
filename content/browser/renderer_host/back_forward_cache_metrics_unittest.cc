@@ -246,6 +246,7 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kUnloadEventListener =*/9,
       /* WebSchedulerTrackedFeature::kFreezeEventListener =*/10,
       /* WebSchedulerTrackedFeature::kResumeEventListener =*/11,
+      /* WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet =*/14,
       /* WebSchedulerTrackedFeature::kServiceWorkerControlledPage =*/16,
       /* WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction =*/17,
       /* WebSchedulerTrackedFeature::kHasScriptableFramesInMultipleTabs =*/18,

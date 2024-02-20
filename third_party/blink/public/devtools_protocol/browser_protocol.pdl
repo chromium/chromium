@@ -8958,7 +8958,6 @@ domain Page
       SubresourceHasCacheControlNoCache
       ContainsPlugins
       DocumentLoaded
-      DedicatedWorkerOrWorklet
       OutstandingNetworkRequestOthers
       RequestedMIDIPermission
       RequestedAudioCapturePermission

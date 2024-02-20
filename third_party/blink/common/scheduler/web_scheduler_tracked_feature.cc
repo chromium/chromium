@@ -50,9 +50,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"contains-plugins", "page contains plugins"};
     case WebSchedulerTrackedFeature::kDocumentLoaded:
       return {"document-loaded", "document loaded"};
-    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
-      return {"dedicated-worker-worklet",
-              "Dedicated worker or worklet present"};
     case WebSchedulerTrackedFeature::kSharedWorker:
       return {"shared-worker", "Shared worker present"};
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:

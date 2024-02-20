@@ -246,7 +246,6 @@ WebSchedulerTrackedFeatures GetAllowedWebSchedulerTrackedFeatures() {
       WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
       // TODO(crbug.com/1357482): Figure out if this should be allowed.
       WebSchedulerTrackedFeature::kWebNfc,
-      WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
   };
 }
 
