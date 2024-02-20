@@ -1802,6 +1802,33 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.Keyboard.{FunctionKeyPressed}"
+    enum="InputKeyEventToFunctionKey" expires_after="2025-01-23">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the source input key event that is rewritten to a Function key
+    {FunctionKeyPressed}.
+  </summary>
+  <token key="FunctionKeyPressed">
+    <variant name="F1Pressed"/>
+    <variant name="F2Pressed"/>
+    <variant name="F3Pressed"/>
+    <variant name="F4Pressed"/>
+    <variant name="F5Pressed"/>
+    <variant name="F6Pressed"/>
+    <variant name="F7Pressed"/>
+    <variant name="F8Pressed"/>
+    <variant name="F9Pressed"/>
+    <variant name="F10Pressed"/>
+    <variant name="F11Pressed"/>
+    <variant name="F12Pressed"/>
+    <variant name="F13Pressed"/>
+    <variant name="F14Pressed"/>
+    <variant name="F15Pressed"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.ModifierKeyCombo.{KeyboardType}" units="hash"
     expires_after="2024-08-04">
   <owner>dpad@chromium.org</owner>

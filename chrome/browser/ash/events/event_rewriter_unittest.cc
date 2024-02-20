@@ -4225,6 +4225,118 @@ TEST_P(EventRewriterTest, RewriteNumpadExtensionCommand) {
             RunRewriter(KeyNumpadEnd::Typed(), ui::EF_CONTROL_DOWN));
 }
 
+TEST_P(EventRewriterTest, RecordRewritingToFunctionKeys) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 0);
+
+  // Search + back -> F1.
+  SetUpKeyboard(kWilco1_0Keyboard);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*SearchTopRowTranslated*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kSearchTopRowTranslated),
+      0);
+  EXPECT_EQ(KeyF1::Typed(),
+            RunRewriter(KeyBrowserBack::Typed(), ui::EF_COMMAND_DOWN));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*SearchTopRowTranslated*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kSearchTopRowTranslated),
+      1u);
+  histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 1u);
+
+  mojom::KeyboardSettings settings;
+  EXPECT_CALL(*input_device_settings_controller_mock_,
+              GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+
+  // Back + Search -> F1 + Search. Back was automatically translated to F1,
+  // with search key unaffected so it should be mapped to
+  // kTopRowAutoTranslated.
+  settings.top_row_are_fkeys = true;
+  settings.suppress_meta_fkey_rewrites = true;
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*TopRowAutoTranslated*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kTopRowAutoTranslated),
+      0);
+  EXPECT_EQ(KeyF1::Typed(ui::EF_COMMAND_DOWN),
+            RunRewriter(KeyBrowserBack::Typed(), ui::EF_COMMAND_DOWN));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*TopRowAutoTranslated*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kTopRowAutoTranslated),
+      1u);
+  histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 2u);
+
+  SetUpKeyboard(kExternalGenericKeyboard);
+
+  // F1 + search -> F1.
+  settings.top_row_are_fkeys = false;
+  settings.suppress_meta_fkey_rewrites = false;
+
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*DirectlyWithSearch*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kDirectlyWithSearch), 0);
+  // The keyboard sends F1 + search and the result is F1 only without search so
+  // it should be mapped to kDirectlyWithSearch.
+  EXPECT_EQ(KeyF1::Typed(), RunRewriter(KeyF1::Typed(), ui::EF_COMMAND_DOWN));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*DirectlyWithSearch*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kDirectlyWithSearch),
+      1u);
+  histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 3u);
+
+  // No change.
+  settings.top_row_are_fkeys = true;
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*DirectlyFromKeyboard*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kDirectlyFromKeyboard),
+      0);
+  EXPECT_EQ(KeyF1::Typed(), RunRewriter(KeyF1::Typed()));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*DirectlyFromKeyboard*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kDirectlyFromKeyboard),
+      1u);
+  histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 4u);
+
+  // Search + number.
+  SetUpKeyboard(kInternalChromeKeyboard);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*SearchDigitTranslated*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kSearchDigitTranslated),
+      0);
+  EXPECT_EQ(KeyF1::Typed(),
+            RunRewriter(KeyDigit1::Typed(), ui::EF_COMMAND_DOWN));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*SearchDigitTranslated*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kSearchDigitTranslated),
+      1u);
+  histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 5u);
+
+  // F1 + search to F1 + search
+  settings.suppress_meta_fkey_rewrites = true;
+  EXPECT_EQ(KeyF1::Typed(ui::EF_COMMAND_DOWN),
+            RunRewriter(KeyF1::Typed(), ui::EF_COMMAND_DOWN));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.F1Pressed",
+      /*DirectlyFromKeyboard*/
+      static_cast<int>(ui::InputKeyEventToFunctionKey::kDirectlyFromKeyboard),
+      2u);
+  histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 6u);
+}
+
 class ModifierPressedMetricsTest
     : public EventRewriterTestBase,
       public testing::WithParamInterface<

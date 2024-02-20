@@ -610,6 +610,130 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
   }
 }
 
+void RecordFunctionKeyFromKeyCode(ui::KeyboardCode key_code,
+                                  ui::InputKeyEventToFunctionKey event_enum) {
+  DCHECK(key_code >= VKEY_F1);
+  DCHECK(key_code <= VKEY_F15);
+
+  switch (key_code) {
+    case VKEY_F1:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F1Pressed",
+                                event_enum);
+      break;
+    case VKEY_F2:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F2Pressed",
+                                event_enum);
+      break;
+    case VKEY_F3:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F3Pressed",
+                                event_enum);
+      break;
+    case VKEY_F4:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F4Pressed",
+                                event_enum);
+      break;
+    case VKEY_F5:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F5Pressed",
+                                event_enum);
+      break;
+    case VKEY_F6:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F6Pressed",
+                                event_enum);
+      break;
+    case VKEY_F7:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F7Pressed",
+                                event_enum);
+      break;
+    case VKEY_F8:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F8Pressed",
+                                event_enum);
+      break;
+    case VKEY_F9:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F9Pressed",
+                                event_enum);
+      break;
+    case VKEY_F10:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F10Pressed",
+                                event_enum);
+      break;
+    case VKEY_F11:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F11Pressed",
+                                event_enum);
+      break;
+    case VKEY_F12:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F12Pressed",
+                                event_enum);
+      break;
+    case VKEY_F13:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F13Pressed",
+                                event_enum);
+      break;
+    case VKEY_F14:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F14Pressed",
+                                event_enum);
+      break;
+    case VKEY_F15:
+      UMA_HISTOGRAM_ENUMERATION("ChromeOS.Inputs.Keyboard.F15Pressed",
+                                event_enum);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+}
+
+void RecordRewritingToFunctionKeys(
+    const KeyEvent& key_event,
+    const EventRewriterAsh::MutableKeyState* rewritten_state) {
+  if (key_event.type() != ET_KEY_PRESSED && !key_event.is_repeat()) {
+    return;
+  }
+
+  // Only record key events rewritten to F1 - F15.
+  if (rewritten_state->key_code < VKEY_F1 ||
+      rewritten_state->key_code > VKEY_F15) {
+    return;
+  }
+
+  const bool search_is_pressed = (key_event.flags() & EF_COMMAND_DOWN) != 0;
+  const bool search_in_rewritten_event =
+      (rewritten_state->flags & EF_COMMAND_DOWN) != 0;
+  if (search_is_pressed == search_in_rewritten_event) {
+    if (key_event.key_code() >= VKEY_F1 && key_event.key_code() <= VKEY_F15) {
+      // Case 1: When the keyboard sends Function key and we do not touch it.
+      RecordFunctionKeyFromKeyCode(
+          rewritten_state->key_code,
+          InputKeyEventToFunctionKey::kDirectlyFromKeyboard);
+    } else {
+      // Case 2: When the keyboard sends Top row key and we remap it to
+      // Function key.
+      RecordFunctionKeyFromKeyCode(
+          rewritten_state->key_code,
+          InputKeyEventToFunctionKey::kTopRowAutoTranslated);
+    }
+  } else if (search_is_pressed && !search_in_rewritten_event) {
+    if (key_event.key_code() >= VKEY_F1 && key_event.key_code() <= VKEY_F15) {
+      // Case 3: When Function key + Search and get Function key with no
+      // search.
+      RecordFunctionKeyFromKeyCode(
+          rewritten_state->key_code,
+          InputKeyEventToFunctionKey::kDirectlyWithSearch);
+    } else if (key_event.key_code() >= VKEY_0 &&
+               key_event.key_code() <= VKEY_9) {
+      // Case 4: When search + digit results in Function key.
+      RecordFunctionKeyFromKeyCode(
+          rewritten_state->key_code,
+          InputKeyEventToFunctionKey::kSearchDigitTranslated);
+    } else {
+      // Case 5: When the keyboard sends Top row key + search and we remap it
+      // to Function key.
+      RecordFunctionKeyFromKeyCode(
+          rewritten_state->key_code,
+          InputKeyEventToFunctionKey::kSearchTopRowTranslated);
+    }
+  }
+}
+
 bool SkipSearchKeyRemapping(EventRewriterAsh::Delegate* delegate,
                             ui::mojom::SixPackShortcutModifier modifier) {
   return delegate && delegate->IsSearchKeyAcceleratorReserved() &&
@@ -1505,6 +1629,8 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
       RewriteExtendedFunctionKeys(delegate_, key_event,
                                   last_keyboard_device_id_, &state);
     }
+
+    RecordRewritingToFunctionKeys(key_event, &state);
   }
 
   if ((key_event.flags() == state.flags) &&

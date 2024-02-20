@@ -13564,6 +13564,14 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="pointerup"/>
 </enum>
 
+<enum name="InputKeyEventToFunctionKey">
+  <int value="0" label="DirectlyFromKeyboard"/>
+  <int value="1" label="TopRowAutoTranslated"/>
+  <int value="2" label="SearchTopRowTranslated"/>
+  <int value="3" label="DirectlyWithSearch"/>
+  <int value="4" label="SearchDigitTranslated"/>
+</enum>
+
 <enum name="InputMethodApiOperation">
   <int value="0" label="Unknown"/>
   <int value="1" label="CommitText_MoveCursorAfterText"/>
