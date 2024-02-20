@@ -439,7 +439,7 @@ def builder(
         os = args.DEFAULT,
         builderless = args.DEFAULT,
         free_space = args.DEFAULT,
-        builder_cache_name = None,
+        builder_cache_name = args.DEFAULT,
         override_builder_dimension = None,
         auto_builder_dimension = args.DEFAULT,
         fully_qualified_builder_dimension = args.DEFAULT,
