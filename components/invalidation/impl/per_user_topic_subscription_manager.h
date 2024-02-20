@@ -147,7 +147,8 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
 
   void ReportNewInstanceIdTokenState(
       const std::string& new_instance_id_token) const;
-  void DropAllSavedSubscriptionsOnTokenChange();
+  void DropAllSavedSubscriptionsOnTokenChange(
+      const std::string& new_instance_id_token);
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<IdentityProvider> identity_provider_;

@@ -218,8 +218,23 @@ PerUserTopicSubscriptionManager::Create(
 
 void PerUserTopicSubscriptionManager::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Load registration token from prefs
+  const auto& token_dict = pref_service_->GetDict(kActiveRegistrationTokens);
+  const auto* cached_token = token_dict.FindString(project_id_);
+  if (cached_token) {
+    instance_id_token_ = *cached_token;
+  }
+
+  // Load subscribed topics from prefs.
   PerProjectDictionaryPrefUpdate update(pref_service_, project_id_);
   if (update->empty()) {
+    return;
+  }
+
+  if (instance_id_token_.empty()) {
+    // Cannot be subscribed without a token.
+    update->clear();
     return;
   }
 
@@ -248,8 +263,8 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
     const std::string& new_instance_id_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ReportNewInstanceIdTokenState(new_instance_id_token);
+  DropAllSavedSubscriptionsOnTokenChange(new_instance_id_token);
   instance_id_token_ = new_instance_id_token;
-  DropAllSavedSubscriptionsOnTokenChange();
 
   for (const auto& topic : topics) {
     auto it = pending_subscriptions_.find(topic.first);
@@ -550,25 +565,15 @@ void PerUserTopicSubscriptionManager::ReportNewInstanceIdTokenState(
   }
 }
 
-void PerUserTopicSubscriptionManager::DropAllSavedSubscriptionsOnTokenChange() {
-  {
-    ScopedDictPrefUpdate token_update(pref_service_, kActiveRegistrationTokens);
-    std::string previous_token;
-    if (const std::string* str_ptr = token_update->FindString(project_id_)) {
-      previous_token = *str_ptr;
-    }
-    if (previous_token == instance_id_token_) {
-      // Note: This includes the case where the token was and still is empty.
-      return;
-    }
-
-    token_update->Set(project_id_, instance_id_token_);
-    if (previous_token.empty()) {
-      // If we didn't have a registration token before, we shouldn't have had
-      // any subscriptions either, so no need to drop them.
-      return;
-    }
+void PerUserTopicSubscriptionManager::DropAllSavedSubscriptionsOnTokenChange(
+    const std::string& new_instance_id_token) {
+  if (instance_id_token_ == new_instance_id_token) {
+    return;
   }
+
+  // Store the new token.
+  ScopedDictPrefUpdate token_update(pref_service_, kActiveRegistrationTokens);
+  token_update->Set(project_id_, new_instance_id_token);
 
   // The token has been cleared or changed. In either case, clear all existing
   // subscriptions since they won't be valid anymore. (No need to send
