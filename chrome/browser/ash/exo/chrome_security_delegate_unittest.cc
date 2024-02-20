@@ -25,23 +25,26 @@ TEST_F(ChromeSecurityDelegateTest, CanLockPointer) {
   aura::test::TestWindowDelegate delegate;
 
   // CanLockPointer should be allowed for arc and lacros, but not others.
-  aura::Window* arc_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate, 0, gfx::Rect(), &container_window);
+  std::unique_ptr<aura::Window> arc_toplevel(
+      aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
+                                               &container_window));
   arc_toplevel->SetProperty(aura::client::kAppType,
                             static_cast<int>(AppType::ARC_APP));
-  EXPECT_TRUE(security_delegate->CanLockPointer(arc_toplevel));
+  EXPECT_TRUE(security_delegate->CanLockPointer(arc_toplevel.get()));
 
-  aura::Window* lacros_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate, 0, gfx::Rect(), &container_window);
+  std::unique_ptr<aura::Window> lacros_toplevel(
+      aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
+                                               &container_window));
   lacros_toplevel->SetProperty(aura::client::kAppType,
                                static_cast<int>(AppType::LACROS));
-  EXPECT_TRUE(security_delegate->CanLockPointer(lacros_toplevel));
+  EXPECT_TRUE(security_delegate->CanLockPointer(lacros_toplevel.get()));
 
-  aura::Window* crostini_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate, 0, gfx::Rect(), &container_window);
+  std::unique_ptr<aura::Window> crostini_toplevel(
+      aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
+                                               &container_window));
   crostini_toplevel->SetProperty(aura::client::kAppType,
                                  static_cast<int>(AppType::CROSTINI_APP));
-  EXPECT_FALSE(security_delegate->CanLockPointer(crostini_toplevel));
+  EXPECT_FALSE(security_delegate->CanLockPointer(crostini_toplevel.get()));
 }
 
 }  // namespace ash
