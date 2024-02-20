@@ -36,7 +36,7 @@ import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange, recordSettingChangeForUnmappedPref} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {createPageAvailability, OsPageAvailability} from '../os_page_availability.js';
 import {Route, Router} from '../router.js';
@@ -401,10 +401,8 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     const settingMetric = convertPrefToSettingMetric(prefKey, prefValue);
 
     // New metrics for this setting pref have not yet been implemented.
-    // TODO(b/324480501) Remove this zero-arg usage once all pref-based settings
-    // are handled.
     if (!settingMetric) {
-      recordSettingChange();
+      recordSettingChangeForUnmappedPref();
       return;
     }
 
