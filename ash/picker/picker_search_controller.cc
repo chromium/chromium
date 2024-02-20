@@ -86,6 +86,10 @@ void PickerSearchController::StopSearch() {
   ResetResults();
 }
 
+bool PickerSearchController::IsSearchStopped() const {
+  return current_callback_.is_null();
+}
+
 bool PickerSearchController::IsPostBurnIn() const {
   return !burn_in_timer_.IsRunning();
 }
@@ -108,7 +112,7 @@ void PickerSearchController::ResetResults() {
 }
 
 void PickerSearchController::PublishBurnInResults() {
-  if (!current_callback_) {
+  if (IsSearchStopped()) {
     return;
   }
 
@@ -130,7 +134,7 @@ void PickerSearchController::PublishBurnInResults() {
 
 void PickerSearchController::AppendPostBurnInResults(
     PickerSearchResults::Section section) {
-  if (!current_callback_) {
+  if (IsSearchStopped()) {
     return;
   }
 

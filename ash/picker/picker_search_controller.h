@@ -45,6 +45,12 @@ class ASH_EXPORT PickerSearchController {
   // This is called in `StartSearch` before every new search query.
   void StopSearch();
 
+  // Whether there is no current search. This could be because a search was
+  // never started, or `StopSearch` was called (possibly as part of
+  // `StartSearch`).
+  // This is equivalent to whether the current callback is null.
+  bool IsSearchStopped() const;
+
   // Whether the burn-in period has ended for the current search.
   bool IsPostBurnIn() const;
 
