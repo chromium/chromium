@@ -438,6 +438,7 @@ void TargetDeviceBootstrapController::OnAuthCodeReceived(
             GaiaCredentials gaia_creds;
             gaia_creds.auth_code = res.auth_code;
             gaia_creds.email = fido_assertion_.email;
+            gaia_creds.gaia_id = res.gaia_id;
             UpdateStatus(/*step=*/Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
                          /*payload=*/gaia_creds);
             is_error = false;

@@ -34,14 +34,10 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_type.h"
-#include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/gaia_oauth_client.h"
 
 namespace ash::quick_start {
 
 namespace {
-
-constexpr int kMaxRetryAttempts = 3;
 
 using bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
 using bluetooth_config::mojom::BluetoothSystemState;
@@ -117,19 +113,9 @@ ConnectionClosedReasonFromAbortFlowReason(
   }
 }
 
-gaia::OAuthClientInfo GetClientInfo() {
-  gaia::OAuthClientInfo client_info;
-  client_info.client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
-  client_info.client_secret =
-      GaiaUrls::GetInstance()->oauth2_chrome_client_secret();
-  return client_info;
-}
-
 }  // namespace
 
 QuickStartController::QuickStartController() {
-  gaia_client_ = std::make_unique<gaia::GaiaOAuthClient>(
-      g_browser_process->shared_url_loader_factory());
   // Main feature flag
   if (!features::IsOobeQuickStartEnabled()) {
     return;
@@ -393,58 +379,13 @@ void QuickStartController::OnOAuthTokenReceived(
     TargetDeviceBootstrapController::GaiaCredentials gaia_creds) {
   gaia_creds_ = gaia_creds;
 
-  // TODO(b/319631013) - Track BootstrapConfiguration email mismatch via UMA.
-  QS_LOG(INFO) << "About to exchange authorization code for tokens.";
-  gaia_client_->GetTokensFromAuthCode(GetClientInfo(), gaia_creds_.auth_code,
-                                      kMaxRetryAttempts, this);
-}
-
-void QuickStartController::OnGetTokensResponse(const std::string& refresh_token,
-                                               const std::string& access_token,
-                                               int expires_in_seconds) {
-  QS_LOG(INFO) << "Successfully exchanged the authorization code for tokens.";
-
-  gaia_creds_.auth_code = "";
-  gaia_creds_.access_token = access_token;
-  gaia_creds_.refresh_token = refresh_token;
-
-  // Get an access token with userinfo scope for fetching the GaiaID.
-  QS_LOG(INFO) << "Requesting access token with userinfo scope.";
-  gaia_client_->RefreshToken(GetClientInfo(), gaia_creds_.refresh_token,
-                             {GaiaConstants::kGoogleUserInfoProfile},
-                             kMaxRetryAttempts, this);
-}
-
-void QuickStartController::OnRefreshTokenResponse(
-    const std::string& access_token,
-    int expires_in_seconds) {
-  QS_LOG(INFO) << "Received the access token. Requesting user information.";
-  gaia_client_->GetUserInfo(access_token, kMaxRetryAttempts, this);
-}
-
-void QuickStartController::OnGetUserInfoResponse(
-    const base::Value::Dict& user_info) {
-  QS_LOG(INFO) << "Successfully retrieved user information.";
-
-  const std::string* gaia_id_value = user_info.FindString("id");
-  if (!gaia_id_value || gaia_id_value->empty()) {
-    QS_LOG(ERROR) << "Obfuscated Gaia ID not found!";
+  if (gaia_creds_.gaia_id.empty()) {
+    QS_LOG(ERROR) << "Obfuscated Gaia ID missing!";
     AbortFlow(AbortFlowReason::ERROR);
     return;
   }
-  gaia_creds_.gaia_id = *gaia_id_value;
 
   FinishAccountCreation();
-}
-
-void QuickStartController::OnOAuthError() {
-  QS_LOG(ERROR) << "An authorization error occurred!";
-  AbortFlow(AbortFlowReason::ERROR);
-}
-
-void QuickStartController::OnNetworkError(int response_code) {
-  QS_LOG(ERROR) << "A network error occurred " << response_code;
-  AbortFlow(AbortFlowReason::ERROR);
 }
 
 void QuickStartController::StartObservingScreenTransitions() {
@@ -564,6 +505,7 @@ void QuickStartController::SavePhoneInstanceID() {
 void QuickStartController::FinishAccountCreation() {
   CHECK(!gaia_creds_.email.empty());
   CHECK(!gaia_creds_.gaia_id.empty());
+  CHECK(!gaia_creds_.auth_code.empty());
 
   UpdateUiState(UiState::CREATING_ACCOUNT);
   controller_state_ = ControllerState::SETUP_COMPLETE;
@@ -583,12 +525,6 @@ void QuickStartController::FinishAccountCreation() {
       /*sync_trusted_vault_keys=*/std::nullopt,
       /*challenge_response_key=*/std::nullopt,
       /*user_context=*/user_context.get());
-
-  // TODO(b/318664950) - Remove once the server starts sending the Gaia ID.
-  user_context->SetRefreshToken(gaia_creds_.refresh_token);
-  user_context->SetAccessToken(gaia_creds_.access_token);
-  // Since the tokens are being set, the auth code must be empty.
-  CHECK(user_context->GetAuthCode().empty());
 
   if (LoginDisplayHost::default_host()) {
     LoginDisplayHost::default_host()->CompleteLogin(*user_context);
