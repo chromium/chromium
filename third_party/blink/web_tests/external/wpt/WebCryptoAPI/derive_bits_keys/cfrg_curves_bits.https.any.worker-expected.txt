@@ -1,14 +1,14 @@
 This is a testharness.js-based test.
 [FAIL] X448 key derivation checks for all-zero value result with a key of order 0
-  assert_false: Private key should be valid. expected false got true
+  assert_true: Private key should be valid. expected true got false
 [FAIL] X448 key derivation checks for all-zero value result with a key of order 1
-  assert_false: Private key should be valid. expected false got true
+  assert_true: Private key should be valid. expected true got false
 [FAIL] X448 key derivation checks for all-zero value result with a key of order p-1 (order 2)
-  assert_false: Private key should be valid. expected false got true
+  assert_true: Private key should be valid. expected true got false
 [FAIL] X448 key derivation checks for all-zero value result with a key of order p (=0, order 4)
-  assert_false: Private key should be valid. expected false got true
+  assert_true: Private key should be valid. expected true got false
 [FAIL] X448 key derivation checks for all-zero value result with a key of order p+1 (=1, order 1)
-  assert_false: Private key should be valid. expected false got true
+  assert_true: Private key should be valid. expected true got false
 [FAIL] X25519 with null length
   assert_true: Derived correct bits expected true got false
 [FAIL] X25519 mismatched algorithms

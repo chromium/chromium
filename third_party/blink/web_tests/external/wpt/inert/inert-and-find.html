@@ -2,11 +2,11 @@
 <meta charset="utf-8">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/3460">
-<title>Basic test for the user-find property</title>
+<link rel="help" href="https://html.spec.whatwg.org/#inert-subtrees">
+<title>Basic test for inert and find</title>
 <body>
 <script>
-const t = async_test("Basic test for the user-find property");
+const t = async_test("Basic test for inert and find");
 
 function testFindable(findCount, textToFind, buildDoc, description) {
   if (typeof findCount == "boolean")
@@ -36,15 +36,11 @@ function testFindable(findCount, textToFind, buildDoc, description) {
 let runTests = t.step_func_done(function() {
   testFindable(true, "me", `
     Find me please
-  `, "sanity test");
+  `, "basic functionality test");
 
   testFindable(false, "me", `
-    <div style="user-find: none">Do not find me please</div>
+    <div inert>Do not find me please</div>
   `, "Basic use case");
-
-  testFindable(true, "me", `
-    <div style="user-find: none">Do not find me, but <span style="user-find: auto">find me please</span></div>
-  `, "nested");
 });
 
 window.onload = function() {

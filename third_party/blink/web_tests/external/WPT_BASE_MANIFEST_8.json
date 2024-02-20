@@ -292491,15 +292491,15 @@
     ],
     "derive_bits_keys": {
      "cfrg_curves_bits.https.any-expected.txt": [
-      "f0efe8e79931b6f6de9581b8ef578162c704196d",
+      "6c03fd5e1fb484950526f2265042bda292b6a48c",
       []
      ],
      "cfrg_curves_bits.https.any.worker-expected.txt": [
-      "f0efe8e79931b6f6de9581b8ef578162c704196d",
+      "6c03fd5e1fb484950526f2265042bda292b6a48c",
       []
      ],
      "cfrg_curves_bits.js": [
-      "ef6905e574c1581d0e5397ba9d5f955acec41b2c",
+      "422a230bd16675419b774a9301adb36fceab71dc",
       []
      ],
      "cfrg_curves_bits_fixtures.js": [
@@ -292875,19 +292875,19 @@
       []
      ],
      "eddsa.https.any-expected.txt": [
-      "7e328fb9910e238dca95170cd2ca0ee18d9c4ba9",
+      "06f92f8560c11a2a99e26849ba3eb7e4cefbc845",
       []
      ],
      "eddsa.https.any.worker-expected.txt": [
-      "7e328fb9910e238dca95170cd2ca0ee18d9c4ba9",
+      "06f92f8560c11a2a99e26849ba3eb7e4cefbc845",
       []
      ],
      "eddsa.js": [
-      "d77a880883117634aaba9c34ddda9b7ba60f9804",
+      "7817b78cff6293620aaf4bcc35807a0437a0c48b",
       []
      ],
      "eddsa_vectors.js": [
-      "96ec2b01af96f2fdd027c983e9d1bba53b5bc95c",
+      "ce80e0ea7e262675165db685106fe118c247bee3",
       []
      ],
      "hmac.js": [
@@ -306545,7 +306545,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "d5e0700481a03b5138762624b6beace23991c60a",
+      "0f1b4fecc8ebe37ecc1d007f1d5867eaf0738126",
       []
      ],
      "inheritance-pseudo-element-ref.html": [
@@ -324419,7 +324419,7 @@
     },
     "css-highlight-api": {
      "HighlightRegistry-maplike-tampered-Map-prototype-expected.txt": [
-      "27074ce9046812d3e785e94411e619224534de85",
+      "207fe06ef8f9b98fa00152e93b293fd9b7e8328a",
       []
      ],
      "highlight-priority-painting-ref.html": [
@@ -346331,7 +346331,7 @@
     },
     "cssom": {
      "CSSKeyframesRule-expected.txt": [
-      "6b30c4b2419c81c3244dbc65ef8ed57dd9996502",
+      "e86302f50f838a96441640c0f9a090d03ae6e900",
       []
      ],
      "CSSStyleSheet-constructable-baseURL.tentative-expected.txt": [
@@ -372646,7 +372646,7 @@
      ],
      "invokers": {
       "invoketarget-button-event-dispatch.tentative-expected.txt": [
-       "918e24055e3cb7c9333873e83f2ec62165b5b121",
+       "4ca08dd932d980dda572d14e8ca23f6fd7946032",
        []
       ],
       "resources": {
@@ -372833,6 +372833,10 @@
       ],
       "popover-stacking-context-ref.html": [
        "4d4ca6973f89680d64b766b24909da7cf6832b67",
+       []
+      ],
+      "popovertarget-reflection-expected.txt": [
+       "d5a79af3fde1dd4966b168aa93a1a20d20c1cea9",
        []
       ],
       "resources": {
@@ -377459,6 +377463,10 @@
     ]
    },
    "inert": {
+    "inert-and-find-expected.txt": [
+     "fb44460e22c36819e5c470eed740b24764e47a14",
+     []
+    ],
     "inert-inlines-around-selection-range-in-contenteditable-expected.txt": [
      "2c7bbc5e2e5d724d9906a002e2db7d4b19f7550d",
      []
@@ -379455,7 +379463,7 @@
     ]
    },
    "lint.ignore": [
-    "b5f6b2e4a3cf809e38b7c43050d1961a403af7f8",
+    "9d9b20741d2b4e4e3750af8365200690414bb50d",
     []
    ],
    "loading": {
@@ -411171,6 +411179,24 @@
      [
       null,
       {}
+     ]
+    ],
+    "worker-termination-aborts-upgrade.window.js": [
+     "e84ca2c2a644abe87f16aaa789eab40bb2c6fd64",
+     [
+      "IndexedDB/worker-termination-aborts-upgrade.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Worker Termination Aborts a Pending Upgrade"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
      ]
     ],
     "writer-starvation.htm": [
@@ -444444,8 +444470,8 @@
      }
     },
     "css-borders": {
-     "border-image-width-interpolation-math-functions-tentative.html": [
-      "70539beb263c5fbe4a26d687a2a32337b946e1a4",
+     "border-image-width-interpolation-math-functions.html": [
+      "4286a11c69751835826d5cba46c314775fa8a3dc",
       [
        null,
        {}
@@ -450787,8 +450813,8 @@
        {}
       ]
      ],
-     "font-size-adjust-interpolation-math-functions.tentative.html": [
-      "d173fb03bbb6b67569e1fc09a023832309747a5d",
+     "font-size-adjust-interpolation-math-functions.html": [
+      "493b690f636fc90dd9f66ff25731f739a943d129",
       [
        null,
        {}
@@ -450801,8 +450827,8 @@
        {}
       ]
      ],
-     "font-stretch-interpolation-math-functions.tentative.html": [
-      "9029eefcb44169ac870d0545a47dae0d11ac18e9",
+     "font-stretch-interpolation-math-functions.html": [
+      "74c42587f5ef9586a443ebbcce72ac5ec97a3523",
       [
        null,
        {}
@@ -455382,7 +455408,7 @@
       ]
      ],
      "HighlightRegistry-maplike-tampered-Map-prototype.html": [
-      "3b38bd8f162ed108853abd1752c1e9f93841bcf2",
+      "367ebfa8e0ed4d285898252cc51a38d01dfe40a2",
       [
        null,
        {}
@@ -455423,6 +455449,13 @@
        {}
       ]
      ],
+     "historical.window.js": [
+      "9b735f855dc5b1704d10a5b4916c42b13eec0ed3",
+      [
+       "css/css-highlight-api/historical.window.html",
+       {}
+      ]
+     ],
      "idlharness.window.js": [
       "7e9f3c44047cc533a4a0d9af1f7839b7e75741c9",
       [
@@ -455446,6 +455479,13 @@
      "animation": {
       "image-no-interpolation.html": [
        "1f7f68ade2646ca746739e23412f5d8a3c127fd8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "image-slice-interpolation-math-functions-tentative.html": [
+       "6d1e2a3bc93722d4e73a738e144ddc8363d72ec0",
        [
         null,
         {}
@@ -471737,7 +471777,7 @@
       ]
      },
      "inheritance.html": [
-      "1eaa901aa0a16a4d8fc7ff53d35315e90b71ea0e",
+      "9a2efdd049ee9316da318b69079f11a8071d8b84",
       [
        null,
        {}
@@ -472003,27 +472043,6 @@
         {}
        ]
       ],
-      "user-find-computed.tentative.html": [
-       "91c0d3f739795eb52636df84fecbffe9504e3240",
-       [
-        null,
-        {}
-       ]
-      ],
-      "user-find-invalid.tentative.html": [
-       "1d85f2849561cef09c4d6f9bf81a788c87859728",
-       [
-        null,
-        {}
-       ]
-      ],
-      "user-find-valid.tentative.html": [
-       "ab963c296a6990b71ba3a0988ab0b1439236a20e",
-       [
-        null,
-        {}
-       ]
-      ],
       "user-select-computed.html": [
        "ef8691a076741e4d50d8f03cc92694dca7872f6d",
        [
@@ -472085,13 +472104,6 @@
      ],
      "text-overflow-ellipsis-width-001.html": [
       "2042111588254242c202527589507b40ef0c3538",
-      [
-       null,
-       {}
-      ]
-     ],
-     "user-find.tentative.html": [
-      "b15d813d11d8f74bce4d4578c5c8b2816895d90e",
       [
        null,
        {}
@@ -473317,8 +473329,8 @@
        {}
       ]
      ],
-     "variables-animation-math-functions-tentative.html": [
-      "7c33d6cfa364efcad60ab224a926686ba6279b47",
+     "variables-animation-math-functions.html": [
+      "13bcf5a14ccbcb4d491e808ffc9330e5e279ec9b",
       [
        null,
        {}
@@ -473566,7 +473578,7 @@
       ]
      ],
      "pseudo-get-computed-style.html": [
-      "2481a713133b7e1bf47cedf0b4966a51dd777d78",
+      "3e971885c398eab3d3a95b6ae16d4704b02ff23f",
       [
        null,
        {}
@@ -477247,8 +477259,8 @@
         {}
        ]
       ],
-      "offset-rotate-interpolation-math-functions-tentative.html": [
-       "34e0abf2b0debc151c85d439c649de60b47ab5d2",
+      "offset-rotate-interpolation-math-functions.html": [
+       "c6be0a55d713c91eae9f9c6b20dd0f23dbc28ab3",
        [
         null,
         {}
@@ -577050,7 +577062,7 @@
        ]
       ],
       "invoketarget-button-event-dispatch.tentative.html": [
-       "b19c1d3adcb277ff5c3af5ae640461fe27552f39",
+       "5150499bcf0cc090be7af43e77a8648b1477c9d0",
        [
         null,
         {
@@ -577769,7 +577781,7 @@
        ]
       ],
       "popovertarget-reflection.html": [
-       "7f265ae4eb51ff2eb3e121515c2cafc7d61fa4b4",
+       "d0750fdd4c099d28edded4a966ec5d7925e317d9",
        [
         null,
         {}
@@ -588722,6 +588734,13 @@
     ],
     "inert-and-contenteditable.html": [
      "01091d1736e87b294c3ddf118227d93f129808fe",
+     [
+      null,
+      {}
+     ]
+    ],
+    "inert-and-find.html": [
+     "87555b0097e9ac98e2edaec0f0a07dd253e2a6e3",
      [
       null,
       {}
@@ -673031,6 +673050,15 @@
      ],
      "candidate-exchange.https.html": [
       "c54f26e6d80dd9056e8ebc11df929b51f69f88eb",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "codecs-filtered-by-direction.https.html": [
+      "ed1d65e4b00f8615046e16cd38b0345836863729",
       [
        null,
        {
