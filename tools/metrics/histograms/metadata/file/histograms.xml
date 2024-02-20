@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FileBrowser.GoogleDrive.BulkPinning.StateWhenCacheVolumeRemoved"
-    enum="BooleanEnabled" expires_after="2024-06-01">
+    enum="BooleanEnabled" expires_after="2024-08-18">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

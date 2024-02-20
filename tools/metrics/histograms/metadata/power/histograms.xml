@@ -889,7 +889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryPercentageAtHibernateSuspend" units="%"
-    expires_after="2024-06-14">
+    expires_after="2024-08-18">
   <owner>mka@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1138,7 +1138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DisplayAfterResumeDurationMs{PowerSource}" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-08-18">
   <owner>mhiramat@google.com</owner>
   <owner>cros-suspend-resume@google.com</owner>
   <summary>

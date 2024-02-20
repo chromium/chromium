@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Browser.MainThreadsCongestion.ExtensionContentScripts.{NumExtensions}"
-    units="janks" expires_after="2024-06-02">
+    units="janks" expires_after="2024-08-18">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

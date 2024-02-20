@@ -1192,7 +1192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.CandidatePairType{IPProtocolType}"
-    enum="IceCandidatePairTypes" expires_after="2024-06-15">
+    enum="IceCandidatePairTypes" expires_after="2024-08-18">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>

@@ -3657,7 +3657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PreFilledFieldClassifications.{FormType}"
-    enum="AutofillPreFilledFieldClassifications" expires_after="2024-06-11">
+    enum="AutofillPreFilledFieldClassifications" expires_after="2024-08-18">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -4047,7 +4047,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileTokenQuality.StoredObservationTypes.{Type}"
-    enum="AutofillProfileTokenQualityObservationType" expires_after="M125">
+    enum="AutofillProfileTokenQualityObservationType"
+    expires_after="2024-08-18">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
