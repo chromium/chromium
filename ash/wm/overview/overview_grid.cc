@@ -1584,7 +1584,7 @@ gfx::Insets OverviewGrid::GetGridEffectiveBoundsPaddings() const {
   // state.
   const DeskBarViewBase::State state =
       desks_bar_view_ ? desks_bar_view_->state()
-                      : LegacyDeskBarView::GetPerferredState(
+                      : LegacyDeskBarView::GetPreferredState(
                             LegacyDeskBarView::Type::kOverview);
   paddings.set_top(state == DeskBarViewBase::State::kZero
                        ? 0
@@ -2921,7 +2921,7 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
 int OverviewGrid::GetDesksBarHeight() const {
   DeskBarViewBase::State state = desks_bar_view_
                                      ? desks_bar_view_->state()
-                                     : LegacyDeskBarView::GetPerferredState(
+                                     : LegacyDeskBarView::GetPreferredState(
                                            LegacyDeskBarView::Type::kOverview);
   return LegacyDeskBarView::GetPreferredBarHeight(
       root_window_, LegacyDeskBarView::Type::kOverview, state);

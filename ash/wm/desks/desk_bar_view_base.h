@@ -64,7 +64,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   static int GetPreferredBarHeight(aura::Window* root, Type type, State state);
 
   // Return the preferred state for the desk bar given `type`.
-  static State GetPerferredState(Type type);
+  static State GetPreferredState(Type type);
 
   // Create and returns the widget that contains the desk bar view of `type`.
   // The returned widget has no contents view yet, and hasn't been shown yet.
@@ -177,7 +177,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // and the `zero_state_default_desk_button_`.
   void UpdateButtonsForSavedDeskGrid();
 
-  // Udate the visibility of the `default_desk_button_` on the desk bar's
+  // Update the visibility of the `default_desk_button_` on the desk bar's
   // state.
   void UpdateDeskButtonsVisibility();
 
