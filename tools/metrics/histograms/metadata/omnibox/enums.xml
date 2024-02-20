@@ -142,12 +142,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Blurred"/>
 </enum>
 
-<enum name="OmniboxFocusType">
-  <int value="0" label="INTERACTION_DEFAULT"/>
-  <int value="1" label="INTERACTION_FOCUS"/>
-  <int value="2" label="INTERACTION_CLOBBER"/>
-</enum>
-
 <enum name="OmniboxInputType">
   <int value="0" label="empty"/>
   <int value="1" label="unknown"/>

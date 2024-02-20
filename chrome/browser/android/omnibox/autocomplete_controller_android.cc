@@ -282,11 +282,6 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
                             ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
                             : metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
-  base::UmaHistogramEnumeration("Omnibox.ZeroPrefixFocusType",
-                                input_.focus_type(),
-                                static_cast<metrics::OmniboxFocusType>(
-                                    metrics::OmniboxFocusType_MAX + 1));
-
   autocomplete_controller_->Start(input_);
 }
 
