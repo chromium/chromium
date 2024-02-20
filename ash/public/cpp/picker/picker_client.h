@@ -45,6 +45,10 @@ class ASH_PUBLIC_EXPORT PickerClient {
   virtual void FetchGifSearch(const std::string& query,
                               FetchGifsCallback callback) = 0;
 
+  // Stops the current `FetchGifSearch` network request. Any callbacks will not
+  // be called.
+  virtual void StopGifSearch() = 0;
+
   // Starts a search using the CrOS Search API
   // (`app_list::SearchEngine::StartSearch`).
   virtual void StartCrosSearch(const std::u16string& query,

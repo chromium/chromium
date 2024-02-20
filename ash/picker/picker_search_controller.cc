@@ -60,6 +60,7 @@ void PickerSearchController::StartSearch(
     PickerViewDelegate::SearchResultsCallback callback) {
   current_callback_.Reset();
   client_->StopCrosQuery();
+  client_->StopGifSearch();
   ResetResults();
   current_callback_ = std::move(callback);
   std::string utf8_query = base::UTF16ToUTF8(query);
@@ -86,6 +87,11 @@ bool PickerSearchController::IsPostBurnIn() const {
 }
 
 void PickerSearchController::StartGifSearch(const std::string& query) {
+  if (current_query_ != query) {
+    LOG(DFATAL) << "Current query " << current_query_
+                << " does not match debounced query " << query;
+    return;
+  }
   client_->FetchGifSearch(
       query, base::BindOnce(&PickerSearchController::HandleGifSearchResults,
                             weak_ptr_factory_.GetWeakPtr(), query));
@@ -142,17 +148,17 @@ void PickerSearchController::HandleCrosSearchResults(
 void PickerSearchController::HandleGifSearchResults(
     std::string query,
     std::vector<PickerSearchResult> results) {
-  // As we cannot stop GIF search result callbacks, check whether the query for
-  // this request is the current query to prevent showing results from an
-  // outdated query.
-  // TODO: b/324992789 - Allow stopping GIF search results.
-  if (query == current_query_) {
-    gif_results_ = std::move(results);
+  if (current_query_ != query) {
+    LOG(DFATAL) << "Current query " << current_query_
+                << " does not match query of returned responses " << query;
+    return;
+  }
 
-    if (IsPostBurnIn()) {
-      AppendPostBurnInResults(PickerSearchResults::Section(
-          u"Other expressions", std::move(gif_results_)));
-    }
+  gif_results_ = std::move(results);
+
+  if (IsPostBurnIn()) {
+    AppendPostBurnInResults(PickerSearchResults::Section(
+        u"Other expressions", std::move(gif_results_)));
   }
 }
 

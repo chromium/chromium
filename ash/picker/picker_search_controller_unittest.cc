@@ -81,6 +81,7 @@ class MockPickerClient : public PickerClient {
               FetchGifSearch,
               (const std::string& query, FetchGifsCallback callback),
               (override));
+  MOCK_METHOD(void, StopGifSearch, (), (override));
   MOCK_METHOD(void,
               StartCrosSearch,
               (const std::u16string& query, CrosSearchResultsCallback callback),
@@ -352,10 +353,11 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
                                    PickerSearchController::kGifDebouncingDelay);
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
+TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
+  PickerClient::FetchGifsCallback old_gif_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
@@ -379,25 +381,22 @@ TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
                               &PickerSearchResult::GifData::content_description,
                               u"cat blink")))))))))))
       .Times(0);
+  ON_CALL(client, StopGifSearch)
+      .WillByDefault(
+          Invoke(&old_gif_callback, &PickerClient::FetchGifsCallback::Reset));
 
   controller.StartSearch(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
-  PickerClient::FetchGifsCallback first_callback =
-      std::move(*client.gif_search_callback());
+  old_gif_callback = std::move(*client.gif_search_callback());
+  EXPECT_FALSE(old_gif_callback.is_null());
   controller.StartSearch(
       u"dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  std::move(first_callback)
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
-  task_environment().FastForwardBy(kBurnInPeriod -
-                                   PickerSearchController::kGifDebouncingDelay);
+  EXPECT_TRUE(old_gif_callback.is_null());
 }
 
 TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {

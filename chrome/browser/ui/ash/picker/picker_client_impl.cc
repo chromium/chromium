@@ -123,6 +123,10 @@ void PickerClientImpl::FetchGifSearch(const std::string& query,
       std::nullopt, kMaxGifsToSearch);
 }
 
+void PickerClientImpl::StopGifSearch() {
+  current_gif_fetcher_.reset();
+}
+
 void PickerClientImpl::StartCrosSearch(const std::u16string& query,
                                        CrosSearchResultsCallback callback) {
   CHECK(search_engine_);
