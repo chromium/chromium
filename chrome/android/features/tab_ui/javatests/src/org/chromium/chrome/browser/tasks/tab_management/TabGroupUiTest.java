@@ -55,6 +55,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -249,6 +250,7 @@ public class TabGroupUiTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/326049916")
     @CommandLineFlags.Add({
         "enable-features=IPH_TabGroupsTapToSeeAnotherTab<TabGroupsTapToSeeAnotherTab",
         "force-fieldtrials=TabGroupsTapToSeeAnotherTab/Enabled/",
