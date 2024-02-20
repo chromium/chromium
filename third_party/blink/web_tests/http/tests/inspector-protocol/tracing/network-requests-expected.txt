@@ -152,6 +152,13 @@ Object: {
 		data: {
 			fetchPriorityHint: auto
 			frame: string
+			initiator: {
+				columnNumber: number
+				fetchType: script
+				lineNumber: number
+				type: string
+				url: string
+			}
 			isLinkPreload: false
 			priority: string
 			renderBlocking: string
@@ -257,6 +264,13 @@ Object: {
 		data: {
 			fetchPriorityHint: high
 			frame: string
+			initiator: {
+				columnNumber: number
+				fetchType: img
+				lineNumber: number
+				type: string
+				url: string
+			}
 			isLinkPreload: false
 			priority: string
 			requestId: string
@@ -378,6 +392,13 @@ Object: {
 		data: {
 			fetchPriorityHint: auto
 			frame: string
+			initiator: {
+				columnNumber: number
+				fetchType: link
+				lineNumber: number
+				type: string
+				url: string
+			}
 			isLinkPreload: true
 			priority: string
 			renderBlocking: string

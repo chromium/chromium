@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -835,6 +836,26 @@ String GetRenderBlockingStringFromBehavior(
 
 }  // namespace
 
+void SetInitiator(Document* document,
+                  FetchInitiatorInfo initiator_info,
+                  perfetto::TracedDictionary& dict) {
+  auto initiator =
+      InspectorNetworkAgent::BuildInitiatorObject(document, initiator_info, 0);
+  auto initiatorDict = dict.AddDictionary("initiator");
+
+  initiatorDict.Add("fetchType", initiator_info.name);
+  initiatorDict.Add("type", initiator->getType());
+  if (initiator->hasColumnNumber()) {
+    initiatorDict.Add("columnNumber", initiator->getColumnNumber(-1));
+  }
+  if (initiator->hasLineNumber()) {
+    initiatorDict.Add("lineNumber", initiator->getLineNumber(-1));
+  }
+  if (initiator->hasUrl()) {
+    initiatorDict.Add("url", initiator->getUrl(""));
+  }
+}
+
 void inspector_send_request_event::Data(
     perfetto::TracedValue context,
     ExecutionContext* execution_context,
@@ -866,6 +887,8 @@ void inspector_send_request_event::Data(
   dict.Add("fetchPriorityHint",
            FetchPriorityString(request.GetFetchPriorityHint()));
   SetCallStack(execution_context->GetIsolate(), dict);
+  SetInitiator(frame ? frame->GetDocument() : nullptr,
+               resource_loader_options.initiator_info, dict);
 }
 
 void inspector_change_render_blocking_behavior_event::Data(

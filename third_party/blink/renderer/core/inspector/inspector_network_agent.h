@@ -272,6 +272,11 @@ class CORE_EXPORT InspectorNetworkAgent final
                             bool* loadingFailed);
   String NavigationInitiatorInfo(LocalFrame*);
 
+  static std::unique_ptr<protocol::Network::Initiator> BuildInitiatorObject(
+      Document*,
+      const FetchInitiatorInfo&,
+      int max_async_depth);
+
  private:
   String RequestId(DocumentLoader*, uint64_t identifier);
   void Enable();
@@ -288,10 +293,6 @@ class CORE_EXPORT InspectorNetworkAgent final
                            std::unique_ptr<GetResponseBodyCallback>);
   ExecutionContext* GetTargetExecutionContext() const;
 
-  static std::unique_ptr<protocol::Network::Initiator> BuildInitiatorObject(
-      Document*,
-      const FetchInitiatorInfo&,
-      int max_async_depth);
   static bool IsNavigation(DocumentLoader*, uint64_t identifier);
 
   // This is null while inspecting workers.
