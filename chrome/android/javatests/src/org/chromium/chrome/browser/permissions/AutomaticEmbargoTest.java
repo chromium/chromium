@@ -92,6 +92,7 @@ public class AutomaticEmbargoTest {
     @Test
     @LargeTest
     @Feature({"Location"})
+    @DisabledTest(message = "Flaky test b/325324593")
     public void testGeolocationEmbargo() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
