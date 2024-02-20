@@ -270,6 +270,8 @@ class TestBrowserWindow : public BrowserWindow {
   void set_is_active(bool active) { is_active_ = active; }
   void set_is_minimized(bool minimized) { is_minimized_ = minimized; }
 
+  bool IsClosed() const { return is_closed_; }
+
   void set_element_context(ui::ElementContext element_context) {
     element_context_ = element_context;
   }
@@ -310,6 +312,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool visible_on_all_workspaces_ = false;
   bool is_minimized_ = false;
   bool is_active_ = false;
+  bool is_closed_ = false;
   bool is_tab_strip_editable_ = true;
 
   std::unique_ptr<user_education::FeaturePromoController>
