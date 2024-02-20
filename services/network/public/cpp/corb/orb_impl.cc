@@ -13,6 +13,8 @@
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/corb/corb_impl.h"
+#include "services/network/public/cpp/corb/orb_mimetypes.h"
+#include "services/network/public/cpp/corb/orb_sniffers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -113,8 +115,9 @@ bool IsOpaqueSafelistedMimeType(std::string_view mime_type) {
 bool IsOpaqueSafelistedMimeTypeThatWeSniffAnyway(std::string_view mime_type) {
   // Based on the spec, but handled in HandleEndOfSniffableResponseBody:
   // Is it a JavaScript MIME type?
-  if (CrossOriginReadBlocking::IsJavascriptMimeType(mime_type))
+  if (IsJavascriptMimeType(mime_type)) {
     return true;
+  }
 
   return false;
 }
@@ -294,30 +297,30 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
     // Step iii. is missing - this is departure from how full ORB handles 206
     // responses labeled as html/json/xml.  This seems okay given that we
     // tighten our implementation of step 4 below (handling of range requests).
-    switch (CrossOriginReadBlocking::GetCanonicalMimeType(mime_type_)) {
-      case CrossOriginReadBlocking::MimeType::kNeverSniffed:
+    switch (GetCanonicalMimeType(mime_type_)) {
+      case MimeType::kNeverSniffed:
         blocking_decision_reason_ =
             BlockingDecisionReason::kNeverSniffedMimeType;
         return Decision::kBlock;  // Step ii.
 
-      case CrossOriginReadBlocking::MimeType::kHtml:
-      case CrossOriginReadBlocking::MimeType::kJson:
-      case CrossOriginReadBlocking::MimeType::kPlain:
-      case CrossOriginReadBlocking::MimeType::kXml:
+      case MimeType::kHtml:
+      case MimeType::kJson:
+      case MimeType::kPlain:
+      case MimeType::kXml:
         if (is_no_sniff_header_present_) {
           blocking_decision_reason_ = BlockingDecisionReason::kNoSniffHeader;
           return Decision::kBlock;  // Step iv.
         }
         break;
 
-      case CrossOriginReadBlocking::MimeType::kOthers:
+      case MimeType::kOthers:
         // TODO(vogelheim/lukasza): Departure from the spec: We currently
         // handle audio/video MIME types as "opaque safelisted", to prevent
         // sniffing on them and on XML-based media types in particular.
         CHECK(!IsAudioOrVideoMimeType(mime_type_));
         break;
 
-      case CrossOriginReadBlocking::MimeType::kInvalidMimeType:
+      case MimeType::kInvalidMimeType:
         break;
     }
   }
@@ -405,21 +408,18 @@ Decision OpaqueResponseBlockingAnalyzer::Sniff(std::string_view data) {
   // https://docs.google.com/document/d/1qUbE2ySi6av3arUEw5DNdFJIKKBbWGRGsXz_ew3S7HQ/edit?usp=sharing
   // Diff: This is a new sniffing step for the 1st 1024 bytes.
   // Diff: This doesn't sniff for JavaScript, but for non-Html/Xml/Json.
-  if (CrossOriginReadBlocking::SniffForHTML(data) ==
-      CrossOriginReadBlocking::SniffingResult::kYes) {
+  if (SniffForHTML(data) == SniffingResult::kYes) {
     blocking_decision_reason_ = BlockingDecisionReason::kSniffedAsHtml;
     return Decision::kBlock;
   }
 
-  if (CrossOriginReadBlocking::SniffForXML(data) ==
-      CrossOriginReadBlocking::SniffingResult::kYes) {
+  if (SniffForXML(data) == SniffingResult::kYes) {
     blocking_decision_reason_ = BlockingDecisionReason::kSniffedAsXml;
     return Decision::kBlock;
   }
 
   // Check for JSON and JS parser breakers.
-  if (CrossOriginReadBlocking::SniffForFetchOnlyResource(data) ==
-      CrossOriginReadBlocking::SniffingResult::kYes) {
+  if (SniffForFetchOnlyResource(data) == SniffingResult::kYes) {
     blocking_decision_reason_ = BlockingDecisionReason::kSniffedAsJson;
     return Decision::kBlock;
   }

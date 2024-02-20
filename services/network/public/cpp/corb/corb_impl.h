@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "services/network/public/cpp/corb/corb_api.h"
+#include "services/network/public/cpp/corb/orb_mimetypes.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
@@ -36,38 +37,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
  public:
   // Not instantiable - only static methods.
   CrossOriginReadBlocking() = delete;
-
-  // This enum describes how CORB should decide whether to block a given
-  // no-cors, cross-origin response.
-  //
-  // Note that these values are used in histograms, and must not change.
-  enum class MimeType {
-    // Blocked if served with `X-Content-Type-Options: nosniff` or if this is a
-    // 206 range response or if sniffing confirms that the body matches
-    // `Content-Type`.
-    kHtml = 0,
-    kXml = 1,
-    kJson = 2,
-
-    // Blocked if served with `X-Content-Type-Options: nosniff` or
-    // sniffing detects that this is HTML, JSON or XML.  For example, this
-    // behavior is used for `Content-Type: text/plain`.
-    kPlain = 3,
-
-    // Blocked if sniffing finds a JSON security prefix.  Used for an otherwise
-    // unrecognized type (i.e. type that isn't explicitly recognized as
-    // belonging to one of the other categories).
-    kOthers = 4,
-
-    // Always blocked.  Used for content types that are unlikely to be
-    // incorrectly applied to images, scripts and other legacy no-cors
-    // resources.  For example, `Content-Type: application/zip` is blocked
-    // without any confirmation sniffing.
-    kNeverSniffed = 5,
-
-    kInvalidMimeType,              // For DCHECKs.
-    kMaxValue = kInvalidMimeType,  // For UMA histograms.
-  };
 
   // An instance for tracking the state of analyzing a single response
   // and deciding whether CORB should block the response.
@@ -266,46 +235,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
     kMaxValue = kAllowedAfterSniffing
   };
-
-  // Three conclusions are possible from sniffing a byte sequence:
-  //  - No: meaning that the data definitively doesn't match the indicated type.
-  //  - Yes: meaning that the data definitive does match the indicated type.
-  //  - Maybe: meaning that if more bytes are appended to the stream, it's
-  //    possible to get a Yes result. For example, if we are sniffing for a tag
-  //    like "<html", a kMaybe result would occur if the data contains just
-  //    "<ht".
-  enum SniffingResult {
-    kNo,
-    kMaybe,
-    kYes,
-  };
-
-  // Returns whether `mime_type` is a Javascript MIME type based on
-  // https://mimesniff.spec.whatwg.org/#javascript-mime-type
-  static bool IsJavascriptMimeType(std::string_view mime_type);
-
-  // Returns the representative mime type enum value of the mime type of
-  // response. For example, this returns the same value for all text/xml mime
-  // type families such as application/xml, application/rss+xml.
-  static MimeType GetCanonicalMimeType(std::string_view mime_type);
-
-  static SniffingResult SniffForHTML(std::string_view data);
-  static SniffingResult SniffForXML(std::string_view data);
-  static SniffingResult SniffForJSON(std::string_view data);
-
-  // Sniff for patterns that indicate |data| only ought to be consumed by XHR()
-  // or fetch(). This detects Javascript parser-breaker and particular JS
-  // infinite-loop patterns, which are used conventionally as a defense against
-  // JSON data exfiltration by means of a <script> tag.
-  static SniffingResult SniffForFetchOnlyResource(std::string_view data);
 };
-
-inline std::ostream& operator<<(
-    std::ostream& out,
-    const CrossOriginReadBlocking::MimeType& value) {
-  out << static_cast<int>(value);
-  return out;
-}
 
 }  // namespace corb
 }  // namespace network
