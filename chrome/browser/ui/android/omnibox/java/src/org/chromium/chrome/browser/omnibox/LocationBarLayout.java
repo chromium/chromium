@@ -258,8 +258,10 @@ public class LocationBarLayout extends FrameLayout {
                                 mIsUrlFocusChangeInProgress);
                     }
 
-                    MarginLayoutParamsCompat.setMarginStart(childLayoutParams, startMargin);
-                    childView.setLayoutParams(childLayoutParams);
+                    if (MarginLayoutParamsCompat.getMarginStart(childLayoutParams) != startMargin) {
+                        MarginLayoutParamsCompat.setMarginStart(childLayoutParams, startMargin);
+                        childView.setLayoutParams(childLayoutParams);
+                    }
                     break;
                 }
                 if (MarginLayoutParamsCompat.getMarginStart(childLayoutParams) != startMargin) {
