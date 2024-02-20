@@ -1438,7 +1438,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="8533670235862049797">Güvenli Tarama açık</translation>
 <translation id="8534481786647257214">Google+ yayını tamamlandı.</translation>
 <translation id="8548878600947630424">Sayfada bul...</translation>
-<translation id="854938212724803178">Güvenliği ihlal edilmiş 1 şifreniz var. Güvenlik için sorunu giderin.</translation>
+<translation id="854938212724803178">Sızdırılmış 1 şifreniz var. Güvenlik için sorunu giderin.</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} uyarıyı kapattınız}other{{count} uyarıyı kapattınız}}</translation>
 <translation id="8558480467877843976">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="8560253818350321773">Sık kullanılan öğeleri üstte gösterir.</translation>

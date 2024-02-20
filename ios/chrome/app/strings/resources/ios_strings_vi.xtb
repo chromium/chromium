@@ -98,7 +98,7 @@
 <translation id="143681031165817424">Địa chỉ chỉ được lưu trên thiết bị này</translation>
 <translation id="1443958768615272145">Tiếp tục duyệt web</translation>
 <translation id="1449835205994625556">Ẩn mật khẩu</translation>
-<translation id="1450170672351507823">Tính năng Bảo vệ thông thường đang bật. Để tăng cường khả năng bảo mật, hãy sử dụng chế độ Bảo vệ nâng cao.</translation>
+<translation id="1450170672351507823">Chế độ Bảo vệ thông thường đang bật. Để tăng cường khả năng bảo mật, hãy sử dụng chế độ Bảo vệ nâng cao.</translation>
 <translation id="1469381646033328562">Tài khoản của bạn thuộc quyền quản lý của cha mẹ.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="149095475893949513">Trang web này đang cố gắng tải một hồ sơ cấu hình xuống.</translation>
@@ -875,13 +875,13 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="5669617676038747374">Tạo mã QR</translation>
 <translation id="567881659373499783">Phiên bản <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Để sử dụng và lưu mật khẩu trong Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
-<translation id="5684761169742812828">Mật khẩu này đã bị lộ trong một sự cố rò rỉ dữ liệu trên Internet. Nếu không có thời gian đổi mật khẩu ngay bây giờ, bạn nên giữ lại cảnh báo này để ghi nhớ về sau.</translation>
+<translation id="5684761169742812828">Mật khẩu này đã bị lộ trong một sự cố rò rỉ dữ liệu trên Internet. Nếu không có thời gian đổi mật khẩu ngay bây giờ, bạn nên giữ lại cảnh báo này để tự nhắc mình sau.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Đang hiển thị 1 cửa sổ Chrome}other{Đang hiển thị {count} cửa sổ Chrome}}</translation>
 <translation id="5701270923492462699">Đã cho phép truy cập máy ảnh</translation>
 <translation id="5702108177581350218">Khi bạn chia sẻ bản sao tên người dùng và mật khẩu của mình, thành viên gia đình bạn có thể điền các thông tin này bằng Trình quản lý mật khẩu của Google.</translation>
 <translation id="5704908597376970822">Không đăng nhập được.</translation>
 <translation id="5706552126692816153">Hoạt động 1 ngày trước</translation>
-<translation id="5718049162805123412">Bạn nên thay đổi các mật khẩu này ngay bây giờ</translation>
+<translation id="5718049162805123412">Bạn nên đổi mật khẩu ngay</translation>
 <translation id="5724941645893276623">Để duyệt web ở chế độ riêng tư, hãy thêm một thẻ mới</translation>
 <translation id="5728700505257787410">Rất tiếc, đã xảy ra sự cố khi đăng nhập tài khoản của bạn.</translation>
 <translation id="5733084997078800044">Mẹo khi dùng Chrome</translation>
