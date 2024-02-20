@@ -11240,6 +11240,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4859" label="V8PointerEvent_GetCoalescedEvents_Method"/>
   <int value="4861" label="CSSFunctions"/>
   <int value="4862" label="CSSPageRule"/>
+  <int value="4863"
+      label="V8RTCRtpReceiver_JitterBufferTarget_AttributeGetter"/>
+  <int value="4864"
+      label="V8RTCRtpReceiver_JitterBufferTarget_AttributeSetter"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

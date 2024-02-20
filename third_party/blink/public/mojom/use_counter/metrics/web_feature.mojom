@@ -4223,6 +4223,8 @@ enum WebFeature {
   kV8PointerEvent_GetCoalescedEvents_Method = 4859,
   kCSSFunctions = 4861,
   kCSSPageRule = 4862,
+  kV8RTCRtpReceiver_JitterBufferTarget_AttributeGetter = 4863,
+  kV8RTCRtpReceiver_JitterBufferTarget_AttributeSetter = 4864,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

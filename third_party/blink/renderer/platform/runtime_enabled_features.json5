@@ -3152,6 +3152,12 @@
       name: "RTCEncodedVideoFrameAdditionalMetadata",
       status: "experimental",
     },
+    // Enables the use of jitterBufferTarget attribute in WebRTC.
+    // Spec: https://w3c.github.io/webrtc-extensions/#dom-rtcrtpreceiver-jitterbuffertarget
+    {
+      name: "RTCJitterBufferTarget",
+      status: "stable",
+    },
     // Legacy callback-based getStats() has limited availability unless this
     // Deprecation Trial is enabled.
     // TODO(https://crbug.com/822696): Remove when origin trial ends.

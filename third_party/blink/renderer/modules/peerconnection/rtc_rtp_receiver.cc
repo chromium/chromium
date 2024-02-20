@@ -124,6 +124,29 @@ void RTCRtpReceiver::setPlayoutDelayHint(std::optional<double> hint,
   receiver_->SetJitterBufferMinimumDelay(playout_delay_hint_);
 }
 
+std::optional<double> RTCRtpReceiver::jitterBufferTarget() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return jitter_buffer_target_;
+}
+
+void RTCRtpReceiver::setJitterBufferTarget(std::optional<double> target,
+                                           ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (target.has_value() && (target.value() < 0.0 || target.value() > 4000.0)) {
+    exception_state.ThrowRangeError(
+        "jitterBufferTarget is out of expected range 0 to 4000 ms");
+    return;
+  }
+
+  jitter_buffer_target_ = target;
+  if (jitter_buffer_target_.has_value()) {
+    receiver_->SetJitterBufferMinimumDelay(jitter_buffer_target_.value() /
+                                           1000.0);
+  } else {
+    receiver_->SetJitterBufferMinimumDelay(std::nullopt);
+  }
+}
+
 HeapVector<Member<RTCRtpSynchronizationSource>>
 RTCRtpReceiver::getSynchronizationSources(ScriptState* script_state,
                                           ExceptionState& exception_state) {

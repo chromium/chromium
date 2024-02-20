@@ -70,6 +70,8 @@ class RTCRtpReceiver final : public ScriptWrappable,
   RTCDtlsTransport* rtcpTransport();
   std::optional<double> playoutDelayHint() const;
   void setPlayoutDelayHint(std::optional<double>, ExceptionState&);
+  std::optional<double> jitterBufferTarget() const;
+  void setJitterBufferTarget(std::optional<double>, ExceptionState&);
   RTCRtpReceiveParameters* getParameters();
   HeapVector<Member<RTCRtpSynchronizationSource>> getSynchronizationSources(
       ScriptState*,
@@ -141,6 +143,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
   // observed delay may differ depending on the congestion control. |nullopt|
   // means default value must be used.
   std::optional<double> playout_delay_hint_;
+  std::optional<double> jitter_buffer_target_;
 
   THREAD_CHECKER(thread_checker_);
 
