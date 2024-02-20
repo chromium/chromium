@@ -425,3 +425,26 @@ turn results in an error as follows
 
 Uncaught TypeError: Failed to execute 'createPolicy' on
 'TrustedTypePolicyFactory': Policy with name "lit-html" already exists."
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Mediapipe Tasks Vision
+Short Name: @mediapipe/tasks-vision
+URL: https://www.npmjs.com/package/@mediapipe/tasks-vision
+Version: 0.10.9
+Revision: N/A
+License: Apache 2.0
+License File: LICENSE
+Security Critical: no
+Shipped: yes
+License Android Compatible: Yes
+
+Description:
+This package contains the vision tasks files for Mediapipe on the web. We pull
+in the following files to run the Face Landmarker API within an accessibility
+component extension, which is only run on ChromeOS:
+
+- vision_wasm_internal.js, used to wrap vision_wasm_internal.wasm (downloaded
+separately via DLC)
+- vision_bundle.mjs, used to run the Face Landmarker API and supporting code
+- vision.d.ts, used during TypeScript compilation

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
   "dependencies": {
+    "@mediapipe/tasks-vision" : "0.10.9",
     "@types/chai": "4.2.22",
     "@types/d3": "7.4.0",
     "@types/dom-mediacapture-transform": "0.1.7",

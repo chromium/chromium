@@ -33,3 +33,13 @@ lit/*
 lit-element/*
 lit-html/*
 @lit-labs/*
+
+# Exclude all mediapipe tasks vision files, except the ones in npm_include.txt
+@mediapipe/tasks-vision/wasm/vision_wasm_internal.wasm
+@mediapipe/tasks-vision/wasm/vision_wasm_nosimd_internal.js
+@mediapipe/tasks-vision/wasm/vision_wasm_nosimd_internal.wasm
+@mediapipe/tasks-vision/README.md
+@mediapipe/tasks-vision/package.json
+@mediapipe/tasks-vision/vision_bundle.cjs
+@mediapipe/tasks-vision/vision_bundle.cjs.map
+@mediapipe/tasks-vision/vision_bundle.mjs.map
