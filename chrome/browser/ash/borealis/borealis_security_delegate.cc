@@ -19,10 +19,11 @@ namespace borealis {
 
 void BorealisSecurityDelegate::Build(
     Profile* profile,
+    std::string vm_name,
     base::OnceCallback<void(std::unique_ptr<guest_os::GuestOsSecurityDelegate>)>
         callback) {
   BorealisService::GetForProfile(profile)->Features().IsAllowed(base::BindOnce(
-      [](Profile* profile,
+      [](Profile* profile, std::string vm_name,
          base::OnceCallback<void(
              std::unique_ptr<guest_os::GuestOsSecurityDelegate>)> callback,
          BorealisFeatures::AllowStatus allow_status) {
@@ -32,11 +33,11 @@ void BorealisSecurityDelegate::Build(
           return;
         }
         BorealisSecurityDelegate* delegate =
-            new BorealisSecurityDelegate(profile);
+            new BorealisSecurityDelegate(profile, std::move(vm_name));
         // Use WrapUnique due to private constructor.
         std::move(callback).Run(base::WrapUnique(delegate));
       },
-      profile, std::move(callback)));
+      profile, std::move(vm_name), std::move(callback)));
 }
 
 BorealisSecurityDelegate::~BorealisSecurityDelegate() = default;
@@ -59,12 +60,15 @@ exo::SecurityDelegate::SetBoundsPolicy BorealisSecurityDelegate::CanSetBounds(
 // static
 std::unique_ptr<BorealisSecurityDelegate>
 BorealisSecurityDelegate::MakeForTesting(Profile* profile) {
-  BorealisSecurityDelegate* delegate = new BorealisSecurityDelegate(profile);
+  BorealisSecurityDelegate* delegate =
+      new BorealisSecurityDelegate(profile, std::string());
   // Use WrapUnique due to private constructor.
   return base::WrapUnique(delegate);
 }
 
-BorealisSecurityDelegate::BorealisSecurityDelegate(Profile* profile)
-    : profile_(profile) {}
+BorealisSecurityDelegate::BorealisSecurityDelegate(Profile* profile,
+                                                   std::string vm_name)
+    : guest_os::GuestOsSecurityDelegate(std::move(vm_name)),
+      profile_(profile) {}
 
 }  // namespace borealis

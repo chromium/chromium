@@ -20,6 +20,8 @@ class ChromeSecurityDelegate : public exo::SecurityDelegate {
   bool CanSelfActivate(aura::Window* window) const override;
   bool CanLockPointer(aura::Window* window) const override;
   SetBoundsPolicy CanSetBounds(aura::Window* window) const override;
+
+  virtual std::string GetVmName() const;
 };
 
 }  // namespace ash

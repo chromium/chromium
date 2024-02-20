@@ -41,4 +41,8 @@ ChromeSecurityDelegate::SetBoundsPolicy ChromeSecurityDelegate::CanSetBounds(
   }
 }
 
+std::string ChromeSecurityDelegate::GetVmName() const {
+  return std::string();
+}
+
 }  // namespace ash

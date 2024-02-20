@@ -22,7 +22,7 @@ namespace guest_os {
 // This is a safer wrapper
 class GuestOsSecurityDelegate : public ash::ChromeSecurityDelegate {
  public:
-  GuestOsSecurityDelegate();
+  explicit GuestOsSecurityDelegate(std::string vm_name);
 
   ~GuestOsSecurityDelegate() override;
 
@@ -36,7 +36,11 @@ class GuestOsSecurityDelegate : public ash::ChromeSecurityDelegate {
                               std::unique_ptr<exo::WaylandServerHandle>)>
           callback);
 
+  std::string GetVmName() const override;
+
  private:
+  std::string vm_name_;
+
   base::WeakPtrFactory<GuestOsSecurityDelegate> weak_factory_;
 };
 

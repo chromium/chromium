@@ -105,22 +105,23 @@ void GuestOsWaylandServer::Listen(base::ScopedFD fd,
   switch (type) {
     case vm_tools::apps::TERMINA:
       crostini::CrostiniSecurityDelegate::Build(
-          profile_,
+          profile_, name,
           base::BindOnce(&GuestOsWaylandServer::OnSecurityDelegateCreated,
                          weak_factory_.GetWeakPtr(), std::move(fd), type, name,
                          std::move(callback)));
       return;
     case vm_tools::apps::BOREALIS:
       borealis::BorealisSecurityDelegate::Build(
-          profile_,
+          profile_, name,
           base::BindOnce(&GuestOsWaylandServer::OnSecurityDelegateCreated,
                          weak_factory_.GetWeakPtr(), std::move(fd), type, name,
                          std::move(callback)));
       return;
     default:
       // For all other VMs, provide the minimal capability-set.
-      OnSecurityDelegateCreated(std::move(fd), type, name, std::move(callback),
-                                std::make_unique<GuestOsSecurityDelegate>());
+      OnSecurityDelegateCreated(
+          std::move(fd), type, name, std::move(callback),
+          std::make_unique<GuestOsSecurityDelegate>(name));
       return;
   }
 }
