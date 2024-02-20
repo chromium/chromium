@@ -80,7 +80,7 @@ crbug.com/895777 external/wpt/infrastructure/assumptions/blank.html [ Timeout ]
 crbug.com/895777 external/wpt/css/css-transforms/text-perspective-001.html [ Timeout ]
 crbug.com/895777 external/wpt/css/css-transforms/transform-flattening-001.html [ Timeout ]
 crbug.com/895777 external/wpt/mathml/relations/html5-tree/dynamic-mozilla-162063.xhtml [ Timeout ]
-crbug.com/895777 crbug.com/1090628 external/wpt/css/css-break/ink-overflow-001-print.html [ Timeout ]
+crbug.com/895777 external/wpt/css/css-break/ink-overflow-001-print.html [ Skip Timeout ]
 
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
