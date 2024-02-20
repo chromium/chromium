@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_WEB_APP_SETTINGS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_WEB_APP_SETTINGS_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -37,6 +38,7 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
   // app_management::mojom::PageHandler:
   void SetPinned(const std::string& app_id, bool pinned) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;
+  void Uninstall(const std::string& app_id) override;
   void SetPreferredApp(const std::string& app_id,
                        bool is_preferred_app) override;
   void GetOverlappingPreferredApps(
@@ -63,6 +65,8 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
   app_management::mojom::AppPtr CreateApp(const std::string& app_id) override;
 
  private:
+  const raw_ref<Delegate> delegate_;
+
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::WebAppRegistrarObserver>
       registrar_observation_{this};

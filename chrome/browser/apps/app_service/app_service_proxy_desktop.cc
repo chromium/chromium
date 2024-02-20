@@ -27,21 +27,6 @@ void AppServiceProxy::Initialize() {
   publisher_host_ = std::make_unique<PublisherHost>(this);
 }
 
-void AppServiceProxy::Uninstall(const std::string& app_id,
-                                UninstallSource uninstall_source,
-                                gfx::NativeWindow parent_window) {
-  // On non-ChromeOS, publishers run the remove dialog.
-  auto app_type = app_registry_cache_.GetAppType(app_id);
-  if (app_type == apps::AppType::kWeb) {
-    web_app::UninstallImpl(web_app::WebAppProvider::GetForWebApps(profile_),
-                           app_id, uninstall_source, parent_window);
-  }
-}
-
-base::WeakPtr<AppServiceProxy> AppServiceProxy::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 bool AppServiceProxy::MaybeShowLaunchPreventionDialog(
     const apps::AppUpdate& update) {
   return false;

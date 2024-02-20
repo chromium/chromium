@@ -103,8 +103,8 @@ WebAppSettingsPageHandler::WebAppSettingsPageHandler(
     AppManagementPageHandlerBase::Delegate& delegate)
     : AppManagementPageHandlerBase(std::move(receiver),
                                    std::move(page),
-                                   profile,
-                                   delegate) {
+                                   profile),
+      delegate_(delegate) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   registrar_observation_.Observe(&provider->registrar_unsafe());
 }
@@ -119,6 +119,18 @@ void WebAppSettingsPageHandler::SetPinned(const std::string& app_id,
 void WebAppSettingsPageHandler::SetResizeLocked(const std::string& app_id,
                                                 bool locked) {
   NOTIMPLEMENTED();
+}
+
+void WebAppSettingsPageHandler::Uninstall(const std::string& app_id) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
+
+  if (!provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
+    return;
+  }
+
+  provider->ui_manager().PresentUserUninstallDialog(
+      app_id, webapps::WebappUninstallSource::kAppManagement,
+      delegate_->GetUninstallAnchorWindow(), base::DoNothing());
 }
 
 void WebAppSettingsPageHandler::SetPreferredApp(const std::string& app_id,

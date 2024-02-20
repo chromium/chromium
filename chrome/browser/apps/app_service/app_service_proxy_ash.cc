@@ -282,12 +282,6 @@ void AppServiceProxyAsh::SetPublisherUnavailable(AppType app_type) {
   OnApps(std::vector<AppPtr>{}, app_type, /*should_notify_initialized=*/true);
 }
 
-void AppServiceProxyAsh::Uninstall(const std::string& app_id,
-                                   UninstallSource uninstall_source,
-                                   gfx::NativeWindow parent_window) {
-  UninstallImpl(app_id, uninstall_source, parent_window, base::DoNothing());
-}
-
 void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
                                 AppType app_type,
                                 bool should_notify_initialized) {
@@ -368,6 +362,12 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
   if (should_notify_initialized) {
     LaunchFromPendingRequests(app_type);
   }
+}
+
+void AppServiceProxyAsh::Uninstall(const std::string& app_id,
+                                   UninstallSource uninstall_source,
+                                   gfx::NativeWindow parent_window) {
+  UninstallImpl(app_id, uninstall_source, parent_window, base::DoNothing());
 }
 
 void AppServiceProxyAsh::PauseApps(

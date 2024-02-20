@@ -101,9 +101,9 @@ AppManagementPageHandlerChromeOs::AppManagementPageHandlerChromeOs(
     AppManagementPageHandlerBase::Delegate& delegate)
     : AppManagementPageHandlerBase(std::move(receiver),
                                    std::move(page),
-                                   profile,
-                                   delegate),
-      shelf_delegate_(this, profile) {
+                                   profile),
+      shelf_delegate_(this, profile),
+      delegate_(delegate) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
@@ -127,6 +127,12 @@ void AppManagementPageHandlerChromeOs::SetResizeLocked(
     bool locked) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->SetResizeLocked(
       app_id, locked);
+}
+
+void AppManagementPageHandlerChromeOs::Uninstall(const std::string& app_id) {
+  apps::AppServiceProxyFactory::GetForProfile(profile())->Uninstall(
+      app_id, apps::UninstallSource::kAppManagement,
+      delegate_->GetUninstallAnchorWindow());
 }
 
 void AppManagementPageHandlerChromeOs::SetPreferredApp(

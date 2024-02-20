@@ -240,12 +240,6 @@ void AppManagementPageHandlerBase::SetPermission(
       app_id, std::move(permission));
 }
 
-void AppManagementPageHandlerBase::Uninstall(const std::string& app_id) {
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
-      app_id, apps::UninstallSource::kAppManagement,
-      delegate_->GetUninstallAnchorWindow());
-}
-
 void AppManagementPageHandlerBase::OpenNativeSettings(
     const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->OpenNativeSettings(
@@ -270,12 +264,10 @@ void AppManagementPageHandlerBase::SetFileHandlingEnabled(
 AppManagementPageHandlerBase::AppManagementPageHandlerBase(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
     mojo::PendingRemote<app_management::mojom::Page> page,
-    Profile* profile,
-    Delegate& delegate)
+    Profile* profile)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      profile_(profile),
-      delegate_(delegate) {
+      profile_(profile) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());

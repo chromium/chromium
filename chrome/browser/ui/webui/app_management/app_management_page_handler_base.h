@@ -54,7 +54,6 @@ class AppManagementPageHandlerBase : public app_management::mojom::PageHandler,
       GetExtensionAppPermissionMessagesCallback callback) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;
-  void Uninstall(const std::string& app_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void UpdateAppSize(const std::string& app_id) override;
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
@@ -63,8 +62,7 @@ class AppManagementPageHandlerBase : public app_management::mojom::PageHandler,
   AppManagementPageHandlerBase(
       mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
       mojo::PendingRemote<app_management::mojom::Page> page,
-      Profile* profile,
-      Delegate& delegate);
+      Profile* profile);
 
   // Creates an AppPtr for the given `app_id`. Can be overridden to add
   // additional platform-specific data to the App. Returns nullptr if the given
@@ -91,8 +89,6 @@ class AppManagementPageHandlerBase : public app_management::mojom::PageHandler,
   mojo::Remote<app_management::mojom::Page> page_;
 
   raw_ptr<Profile> profile_;
-
-  const raw_ref<Delegate> delegate_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
