@@ -1570,10 +1570,73 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.CreditCardUpload.ConfirmationResult.{IsCardUploaded}"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason for closing the save card confirmation bubble which is
+    shown after the credit card upload is completed. IsCardUploaded
+    ({IsCardUploaded}) indicates whether the bubble shown was for a successful
+    credit card upload or not. Recorded when the confirmation bubble is closed.
+  </summary>
+  <token key="IsCardUploaded">
+    <variant name="CardNotUploaded"
+        summary="Credit card failed to be uploaded to the server."/>
+    <variant name="CardUploaded"
+        summary="Credit card was successfully uploaded to the server."/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.CreditCardUpload.ConfirmationShown.{IsCardUploaded}"
+    enum="Boolean" expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records if the save card confirmation bubble is shown after credit card
+    upload is completed. IsCardUploaded ({IsCardUploaded}) indicates whether the
+    confirmation bubble is for a successfull credit card upload or not. Recorded
+    after the confirmation bubble is shown or after the decision to not show the
+    confirmation bubble.
+  </summary>
+  <token key="IsCardUploaded">
+    <variant name="CardNotUploaded"
+        summary="Credit card failed to be uploaded to the server."/>
+    <variant name="CardUploaded"
+        summary="Credit card was successfully uploaded to the server."/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.CreditCardUpload.LoadingResult"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason for closing the save card loading bubble which is shown
+    during the credit card upload. Recorded when the loading bubble is closed.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CreditCardUpload.LoadingShown" enum="Boolean"
+    expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records if the save card loading bubble is shown during credit card upload.
+    Recorded after the loading bubble is shown or after the decision to not show
+    the loading bubble.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CreditCardUpload.RanLocalSaveFallback" enum="Boolean"
     expires_after="2024-08-01">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records if a new card is locally added during a local card save fallback on
     credit card upload failures. This is true when the card being saved is a new

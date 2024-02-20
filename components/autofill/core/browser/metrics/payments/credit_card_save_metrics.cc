@@ -215,6 +215,42 @@ void LogCreditCardUploadRanLocalSaveFallbackMetric(bool new_local_card_added) {
                             new_local_card_added);
 }
 
+void LogCreditCardUploadLoadingViewShownMetric(bool is_shown) {
+  base::UmaHistogramBoolean("Autofill.CreditCardUpload.LoadingShown", is_shown);
+}
+
+void LogCreditCardUploadConfirmationViewShownMetric(bool is_shown,
+                                                    bool is_card_uploaded) {
+  std::string_view base_histogram_name =
+      "Autofill.CreditCardUpload.ConfirmationShown.";
+  std::string_view is_card_uploaded_name =
+      is_card_uploaded ? "CardUploaded" : "CardNotUploaded";
+
+  base::UmaHistogramBoolean(
+      base::StrCat({base_histogram_name, is_card_uploaded_name}), is_shown);
+}
+
+void LogCreditCardUploadLoadingViewResultMetric(SaveCardPromptResult metric) {
+  CHECK_LE(metric, SaveCardPromptResult::kMaxValue);
+
+  base::UmaHistogramEnumeration("Autofill.CreditCardUpload.LoadingResult",
+                                metric);
+}
+
+void LogCreditCardUploadConfirmationViewResultMetric(
+    SaveCardPromptResult metric,
+    bool is_card_uploaded) {
+  CHECK_LE(metric, SaveCardPromptResult::kMaxValue);
+
+  std::string_view base_histogram_name =
+      "Autofill.CreditCardUpload.ConfirmationResult.";
+  std::string_view is_card_uploaded_name =
+      is_card_uploaded ? "CardUploaded" : "CardNotUploaded";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({base_histogram_name, is_card_uploaded_name}), metric);
+}
+
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,

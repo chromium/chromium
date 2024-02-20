@@ -233,6 +233,17 @@ void LogSaveCardRequestExpirationDateReasonMetric(
 
 void LogCreditCardUploadRanLocalSaveFallbackMetric(bool new_local_card_added);
 
+void LogCreditCardUploadLoadingViewShownMetric(bool is_shown);
+
+void LogCreditCardUploadConfirmationViewShownMetric(bool is_shown,
+                                                    bool is_card_uploaded);
+
+void LogCreditCardUploadLoadingViewResultMetric(SaveCardPromptResult metric);
+
+void LogCreditCardUploadConfirmationViewResultMetric(
+    SaveCardPromptResult metric,
+    bool is_card_uploaded);
+
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,
