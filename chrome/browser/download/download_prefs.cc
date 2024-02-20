@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
@@ -565,6 +566,12 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
     return SanitizeDownloadTargetPath(migrated_drive_path);
   }
 
+  base::FilePath onedrive_path;
+  if (download_dir_util::ExpandOneDrivePolicyVariable(profile_, path,
+                                                      &onedrive_path)) {
+    return SanitizeDownloadTargetPath(onedrive_path);
+  }
+
   const base::FilePath default_downloads_path =
       GetDefaultDownloadDirectoryForProfile();
   // Relative paths might be unsafe, so use the default path.
@@ -588,6 +595,9 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   bool drivefs_mounted = chrome::GetDriveFsMountPointPath(&drivefs);
   if (drivefs_mounted && drivefs.IsParent(path))
     return path;
+
+  // TODO(b/325897784): Allow paths under OneDrive mount point if the feature
+  // flag is enabled.
 
   // Allow paths for removable media devices.
   base::FilePath removable_media_path;
@@ -630,6 +640,12 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
     return SanitizeDownloadTargetPath(migrated_drive_path);
   }
 
+  base::FilePath onedrive_path;
+  if (download_dir_util::ExpandOneDrivePolicyVariable(profile_, path,
+                                                      &onedrive_path)) {
+    return SanitizeDownloadTargetPath(onedrive_path);
+  }
+
   // If |path| isn't absolute, fall back to the default directory.
   base::FilePath profile_myfiles_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
@@ -646,6 +662,14 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (integration_service && integration_service->is_enabled() &&
       integration_service->GetMountPointPath().IsParent(path)) {
+    return path;
+  }
+
+  // Allow paths under one drive mount point if the feature flag is enabled.
+  auto odfs_path = ash::cloud_upload::GetODFSFuseboxMount(profile_);
+  if (base::FeatureList::IsEnabled(features::kSkyVault) &&
+      ash::cloud_upload::IsODFSMounted(profile_) &&
+      ((odfs_path == path) || odfs_path.IsParent(path))) {
     return path;
   }
 

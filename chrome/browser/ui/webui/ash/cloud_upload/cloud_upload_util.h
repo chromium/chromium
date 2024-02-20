@@ -332,6 +332,9 @@ std::optional<file_system_provider::ProvidedFileSystemInfo> GetODFSInfo(
 // Get currently provided ODFS, or null if not mounted.
 file_system_provider::ProvidedFileSystemInterface* GetODFS(Profile* profile);
 
+// Get Fusebox path of ODFS mount, or empty if not mounted.
+base::FilePath GetODFSFuseboxMount(Profile* profile);
+
 bool IsODFSMounted(Profile* profile);
 bool IsODFSInstalled(Profile* profile);
 bool IsOfficeWebAppInstalled(Profile* profile);

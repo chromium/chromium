@@ -8,10 +8,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_path_parser.h"
+#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
 #include "components/drive/file_system_core_util.h"
@@ -21,6 +25,7 @@ namespace download_dir_util {
 
 #if BUILDFLAG(IS_CHROMEOS)
 const char kDriveNamePolicyVariableName[] = "${google_drive}";
+const char kOneDriveNamePolicyVariableName[] = "${microsoft_onedrive}";
 
 bool DownloadToDrive(const base::FilePath::StringType& string_value,
                      const policy::PolicyHandlerParameters& parameters) {
@@ -55,6 +60,37 @@ bool ExpandDrivePolicyVariable(Profile* profile,
   *new_path = base::FilePath(expanded_value.replace(
       position, strlen(kDriveNamePolicyVariableName), google_drive_root));
   return true;
+}
+
+bool ExpandOneDrivePolicyVariable(Profile* profile,
+                                  const base::FilePath& old_path,
+                                  base::FilePath* new_path) {
+  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+    return false;
+  }
+
+  size_t position = old_path.value().find(kOneDriveNamePolicyVariableName);
+  if (position == base::FilePath::StringType::npos) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::FilePath onedrive_path =
+      ash::cloud_upload::GetODFSFuseboxMount(profile);
+  if (onedrive_path.empty()) {  // failed to get OneDrive path.
+    return false;
+  }
+
+  std::string expanded_value = old_path.value();
+  *new_path = base::FilePath(
+      expanded_value.replace(position, strlen(kOneDriveNamePolicyVariableName),
+                             onedrive_path.value()));
+  return true;
+
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/325897784): Get OneDrive Fusebox path.
+  return false;
+#endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

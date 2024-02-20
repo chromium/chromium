@@ -24,11 +24,17 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/bind.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
@@ -725,5 +731,87 @@ TEST(DownloadPrefsTest, AutoOpenPdfEnabled) {
   EXPECT_TRUE(prefs.IsAutoOpenPdfEnabled());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class DownloadDirOneDrive : public testing::Test {
+ protected:
+  void SetUp() override {
+    testing::Test::SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("testing_profile");
+
+    file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
+        profile_,
+        base::BindLambdaForTesting([this](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<file_manager::VolumeManager>(
+                  Profile::FromBrowserContext(context), nullptr, nullptr,
+                  &disk_mount_manager_, nullptr,
+                  file_manager::VolumeManager::GetMtpStorageInfoCallback()));
+        }));
+  }
+
+  void AddOneDriveFuseboxVolume() {
+    auto* fake_provided_fs =
+        file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile_);
+
+    file_manager::VolumeManager* const volume_manager =
+        file_manager::VolumeManager::Get(profile_);
+    ASSERT_TRUE(volume_manager);
+
+    std::unique_ptr<file_manager::Volume> volume =
+        file_manager::Volume::CreateForProvidedFileSystem(
+            fake_provided_fs->GetFileSystemInfo(),
+            file_manager::MountContext::MOUNT_CONTEXT_USER,
+            base::FilePath(file_manager::util::kFuseBoxMediaPath));
+
+    volume_manager->AddVolumeForTesting(std::move(volume));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  // Externally owned raw pointers. Owned by TestingProfileManager.
+  raw_ptr<TestingProfile> profile_;
+};
+
+// Verifies that the download path is set to OneDrive when OneDrive is mounted
+// and the feature flag is enabled.
+TEST_F(DownloadDirOneDrive, OneDriveMounted) {
+  scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+  DownloadPrefs download_prefs(profile_);
+
+  AddOneDriveFuseboxVolume();
+
+  ExpectValidDownloadDir(profile_, &download_prefs,
+                         base::FilePath(file_manager::util::kFuseBoxMediaPath));
+}
+
+// Verifies that the download path is set to Default Downloads directory when
+// the feature flag is not enabled.
+TEST_F(DownloadDirOneDrive, SkyVaultDisabled) {
+  DownloadPrefs download_prefs(profile_);
+  const base::FilePath default_dir =
+      download_prefs.GetDefaultDownloadDirectoryForProfile();
+
+  AddOneDriveFuseboxVolume();
+
+  ExpectValidDownloadDir(profile_, &download_prefs, default_dir);
+}
+
+// Verifies that the download path is set to Default Downloads directory when
+// OneDrive is not mounted.
+TEST_F(DownloadDirOneDrive, OneDriveNotMounted) {
+  scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+  DownloadPrefs download_prefs(profile_);
+  const base::FilePath default_dir =
+      download_prefs.GetDefaultDownloadDirectoryForProfile();
+
+  ExpectValidDownloadDir(profile_, &download_prefs, default_dir);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

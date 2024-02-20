@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -205,6 +206,27 @@ ProvidedFileSystemInterface* GetODFS(Profile* profile) {
   }
   return service->GetProvidedFileSystem(provider_id,
                                         odfs_info->file_system_id());
+}
+
+base::FilePath GetODFSFuseboxMount(Profile* profile) {
+  const auto odfs_info = GetODFSInfo(profile);
+  if (!odfs_info) {
+    return base::FilePath();
+  }
+
+  file_manager::VolumeManager* volume_manager =
+      file_manager::VolumeManager::Get(profile);
+  if (!volume_manager) {
+    return base::FilePath();
+  }
+
+  for (const auto& volume : volume_manager->GetVolumeList()) {
+    if (volume->volume_label() == odfs_info->display_name() &&
+        volume->file_system_type() == file_manager::util::kFuseBox) {
+      return volume->mount_path();
+    }
+  }
+  return base::FilePath();
 }
 
 bool IsODFSInstalled(Profile* profile) {
