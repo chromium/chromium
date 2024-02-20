@@ -100,7 +100,7 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
 
   Vector<ClipCacheEntry> clip_cache_;
   // The nearest ancestor that has non-null PixelMovingFilter().
-  raw_ptr<const ClipPaintPropertyNode, ExperimentalRenderer>
+  raw_ptr<const ClipPaintPropertyNode, DanglingUntriaged>
       nearest_pixel_moving_filter_clip_ = nullptr;
 
   unsigned cache_generation_ = s_global_generation_ - 1;

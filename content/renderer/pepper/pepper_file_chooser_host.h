@@ -64,7 +64,7 @@ class CONTENT_EXPORT PepperFileChooserHost final
   raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext reply_context_;
-  raw_ptr<CompletionHandler, ExperimentalRenderer> handler_;
+  raw_ptr<CompletionHandler, DanglingUntriaged> handler_;
 
   base::WeakPtrFactory<PepperFileChooserHost> weak_factory_{this};
 };

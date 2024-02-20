@@ -694,7 +694,7 @@ class PictureInPictureControllerChromeClient
   MOCK_METHOD(void, SetWindowRect, (const gfx::Rect&, LocalFrame&));
 
  private:
-  raw_ptr<DummyPageHolder, ExperimentalRenderer> dummy_page_holder_ = nullptr;
+  raw_ptr<DummyPageHolder, DanglingUntriaged> dummy_page_holder_ = nullptr;
 };
 
 // Tests for Picture in Picture with a mockable chrome client.  This makes it

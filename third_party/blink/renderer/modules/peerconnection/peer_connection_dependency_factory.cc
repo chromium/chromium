@@ -173,7 +173,7 @@ class ProxyAsyncDnsResolverFactory final
   }
 
  private:
-  raw_ptr<IpcPacketSocketFactory, ExperimentalRenderer> ipc_psf_;
+  raw_ptr<IpcPacketSocketFactory, DanglingUntriaged> ipc_psf_;
 };
 
 std::string WorkerThreadName() {

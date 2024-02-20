@@ -1104,7 +1104,7 @@ constexpr inline auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // this annotation.
 //
 // DO NOT ADD new occurrences of this.
-constexpr inline auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
+constexpr inline auto ExperimentalRenderer = base::RawPtrTraits::kEmpty;
 
 // Temporary introduced alias in the context of rewriting std::vector<T*> into
 // std::vector<raw_ptr<T>> and in order to temporarily bypass the dangling ptr

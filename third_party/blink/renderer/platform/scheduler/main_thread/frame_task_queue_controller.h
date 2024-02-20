@@ -111,7 +111,7 @@ class PLATFORM_EXPORT FrameTaskQueueController {
   static MainThreadTaskQueue::QueueType QueueTypeFromQueueTraits(
       MainThreadTaskQueue::QueueTraits);
 
-  const raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
+  const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_impl_;
   const raw_ptr<FrameSchedulerImpl, ExperimentalRenderer> frame_scheduler_impl_;
   const raw_ptr<Delegate, ExperimentalRenderer> delegate_;

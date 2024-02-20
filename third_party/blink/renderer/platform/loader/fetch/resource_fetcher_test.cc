@@ -755,7 +755,7 @@ class ServeRequestsOnCompleteClient final
   String DebugName() const override { return "ServeRequestsOnCompleteClient"; }
 
  private:
-  raw_ptr<URLLoaderMockFactory, ExperimentalRenderer> mock_factory_;
+  raw_ptr<URLLoaderMockFactory, DanglingUntriaged> mock_factory_;
 };
 
 // Regression test for http://crbug.com/594072.

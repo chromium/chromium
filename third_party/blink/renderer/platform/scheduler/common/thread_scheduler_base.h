@@ -115,7 +115,7 @@ class PLATFORM_EXPORT ThreadSchedulerBase : public VirtualTimeController,
   void OnBeginNestedRunLoop() override;
   void OnExitNestedRunLoop() override;
 
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
+  raw_ptr<v8::Isolate, DanglingUntriaged> isolate_ = nullptr;
 
   // Note |virtual_time_domain_| is only present iff virtual time is enabled.
   std::unique_ptr<AutoAdvancingVirtualTimeDomain> virtual_time_domain_;

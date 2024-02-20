@@ -148,18 +148,18 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
  private:
   cc::StubDecodeCache stub_image_decode_cache_;
   scoped_refptr<viz::TestSharedImageInterface> test_shared_image_interface_;
-  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_ = nullptr;
+  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_ = nullptr;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
-  raw_ptr<gpu::raster::RasterInterface, ExperimentalRenderer>
+  raw_ptr<gpu::raster::RasterInterface, DanglingUntriaged>
       external_raster_interface_ = nullptr;
   std::unique_ptr<gpu::webgpu::WebGPUInterfaceStub> webgpu_interface_;
   sk_sp<GrDirectContext> gr_context_;
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   WebglPreferences webgl_preferences_;
-  raw_ptr<cc::ImageDecodeCache, ExperimentalRenderer> image_decode_cache_ =
+  raw_ptr<cc::ImageDecodeCache, DanglingUntriaged> image_decode_cache_ =
       nullptr;
-  raw_ptr<viz::TestContextProvider, ExperimentalRenderer>
+  raw_ptr<viz::TestContextProvider, DanglingUntriaged>
       raster_context_provider_ = nullptr;
 };
 

@@ -248,7 +248,7 @@ class WatchTimeReporterTest
     }
 
    private:
-    raw_ptr<WatchTimeReporterTest, ExperimentalRenderer> parent_;
+    raw_ptr<WatchTimeReporterTest, DanglingUntriaged> parent_;
   };
 
   class FakeMediaMetricsProvider : public media::mojom::MediaMetricsProvider {

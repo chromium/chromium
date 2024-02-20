@@ -328,7 +328,7 @@ class WebTransportTest : public ::testing::Test {
         mojom::blink::WebTransportConnector::Name_, {});
   }
 
-  raw_ptr<const BrowserInterfaceBrokerProxy, ExperimentalRenderer>
+  raw_ptr<const BrowserInterfaceBrokerProxy, DanglingUntriaged>
       interface_broker_ = nullptr;
   WTF::Deque<AcceptUnidirectionalStreamCallback>
       pending_unidirectional_accept_callbacks_;

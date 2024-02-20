@@ -76,12 +76,12 @@ class UserScriptInjector : public ScriptInjector,
 
   // The associated user script. Owned by the UserScriptSet that created this
   // object.
-  raw_ptr<const UserScript, ExperimentalRenderer> script_;
+  raw_ptr<const UserScript, DanglingUntriaged> script_;
 
   // The UserScriptSet that eventually owns the UserScript this
   // UserScriptInjector points to. Outlives `this` unless the UserScriptSet may
   // be destroyed first, and `this` will be destroyed immediately after.
-  const raw_ptr<UserScriptSet, ExperimentalRenderer> user_script_set_;
+  const raw_ptr<UserScriptSet, DanglingUntriaged> user_script_set_;
 
   // The id of the associated user script. We cache this because when we update
   // the |script_| associated with this injection, the old reference may be

@@ -339,7 +339,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   TraceableVariableController tracing_controller_;
   std::unique_ptr<FrameTaskQueueController> frame_task_queue_controller_;
 
-  const raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
+  const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_;  // NOT OWNED
   raw_ptr<PageSchedulerImpl, ExperimentalRenderer>
       parent_page_scheduler_;  // NOT OWNED

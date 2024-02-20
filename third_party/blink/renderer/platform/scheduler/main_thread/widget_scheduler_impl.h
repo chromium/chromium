@@ -55,10 +55,9 @@ class PLATFORM_EXPORT WidgetSchedulerImpl : public WidgetScheduler {
   std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>
       input_task_queue_enabled_voter_;
 
-  const raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
+  const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_;
-  const raw_ptr<RenderWidgetSignals, ExperimentalRenderer>
-      render_widget_signals_;
+  const raw_ptr<RenderWidgetSignals, DanglingUntriaged> render_widget_signals_;
   bool hidden_ = false;
   bool has_touch_handler_ = false;
 };

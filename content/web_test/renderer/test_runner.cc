@@ -418,9 +418,9 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   // Observer for the |frame_| the TestRunningBindings is bound to.
   TestRunnerBindingsRenderFrameObserver frame_observer_;
 
-  raw_ptr<TestRunner, ExperimentalRenderer> runner_;
-  raw_ptr<WebFrameTestProxy, ExperimentalRenderer> frame_;
-  const raw_ptr<SpellCheckClient, ExperimentalRenderer> spell_check_;
+  raw_ptr<TestRunner, DanglingUntriaged> runner_;
+  raw_ptr<WebFrameTestProxy, DanglingUntriaged> frame_;
+  const raw_ptr<SpellCheckClient, DanglingUntriaged> spell_check_;
   TestPreferences prefs_;
   std::unique_ptr<AppBannerService> app_banner_service_;
 

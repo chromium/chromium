@@ -235,7 +235,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   TraceableVariableController tracing_controller_;
   HashSet<FrameSchedulerImpl*> frame_schedulers_;
-  raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer> main_thread_scheduler_;
+  raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged> main_thread_scheduler_;
   Persistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
   PageVisibilityState page_visibility_;

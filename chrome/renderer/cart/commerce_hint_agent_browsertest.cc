@@ -442,7 +442,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<CartService, ExperimentalRenderer> service_;
+  raw_ptr<CartService, DanglingUntriaged> service_;
 #endif
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;

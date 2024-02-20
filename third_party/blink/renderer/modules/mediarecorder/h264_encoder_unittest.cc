@@ -153,7 +153,7 @@ class H264EncoderFixture : public ::testing::Test {
   const std::optional<media::VideoCodecProfile> profile_;
   const std::optional<uint8_t> level_;
   const uint32_t bitrate_;
-  raw_ptr<media::MockVideoEncoderMetricsProvider, ExperimentalRenderer>
+  raw_ptr<media::MockVideoEncoderMetricsProvider, DanglingUntriaged>
       mock_metrics_provider_;
   H264Encoder encoder_;
   bool on_error_called_ = false;

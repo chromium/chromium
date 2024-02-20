@@ -98,7 +98,7 @@ class NavigationClient : mojom::NavigationClient {
       this};
   mojo::Remote<mojom::NavigationRendererCancellationListener>
       renderer_cancellation_listener_remote_;
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrameImpl, DanglingUntriaged> render_frame_;
   // See NavigationState::was_initiated_in_this_frame for details.
   bool was_initiated_in_this_frame_ = false;
 

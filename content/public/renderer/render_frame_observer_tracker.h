@@ -56,7 +56,7 @@ class RenderFrameObserverTracker {
   }
 
  private:
-  raw_ptr<const RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<const RenderFrame, DanglingUntriaged> render_frame_;
 
   static typename base::LazyInstance<
       std::map<const RenderFrame*, RenderFrameObserverTracker<T>*>>::

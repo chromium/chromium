@@ -105,7 +105,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
 
   void OnMojoDisconnect();
 
-  raw_ptr<mojom::SafeBrowsing, ExperimentalRenderer> safe_browsing_;
+  raw_ptr<mojom::SafeBrowsing, DanglingUntriaged> safe_browsing_;
   const std::optional<blink::LocalFrameToken> frame_token_;
 
   // These fields hold the connection to this instance's private connection to
@@ -145,7 +145,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   // originated from an extension and destination is HTTP/HTTPS scheme only.
   void MaybeSendExtensionWebRequestData(network::ResourceRequest* request);
 
-  raw_ptr<mojom::ExtensionWebRequestReporter, ExperimentalRenderer>
+  raw_ptr<mojom::ExtensionWebRequestReporter, DanglingUntriaged>
       extension_web_request_reporter_;
   mojo::PendingRemote<mojom::ExtensionWebRequestReporter>
       extension_web_request_reporter_pending_remote_;

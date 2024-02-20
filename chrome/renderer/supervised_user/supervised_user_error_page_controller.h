@@ -55,7 +55,7 @@ class SupervisedUserErrorPageController
 
   base::WeakPtr<SupervisedUserErrorPageControllerDelegate> const delegate_;
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<content::RenderFrame, DanglingUntriaged> render_frame_;
 
   // This weak factory is used to generate weak pointers to the controller that
   // are used for the request permission callback, so messages to no longer

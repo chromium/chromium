@@ -886,7 +886,7 @@ class MHTMLHandleWriterDelegate {
   }
 
  private:
-  raw_ptr<MHTMLHandleWriter, ExperimentalRenderer> handle_;
+  raw_ptr<MHTMLHandleWriter, DanglingUntriaged> handle_;
 };
 
 mojo::PendingRemote<blink::mojom::BlobURLToken> CloneBlobURLToken(

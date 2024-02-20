@@ -82,7 +82,7 @@ class SQLiteStatement {
  private:
   const raw_ref<SQLiteDatabase, ExperimentalRenderer> database_;
   String query_;
-  raw_ptr<sqlite3_stmt, ExperimentalRenderer> statement_;
+  raw_ptr<sqlite3_stmt, DanglingUntriaged> statement_;
 #if DCHECK_IS_ON()
   bool is_prepared_ = false;
 #endif

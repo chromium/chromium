@@ -43,7 +43,7 @@ class PLATFORM_EXPORT WebMediaSourceImpl : public WebMediaSource {
   void UnmarkEndOfStream() override;
 
  private:
-  raw_ptr<media::ChunkDemuxer, ExperimentalRenderer>
+  raw_ptr<media::ChunkDemuxer, DanglingUntriaged>
       demuxer_;  // Owned by WebMediaPlayerImpl.
 };
 

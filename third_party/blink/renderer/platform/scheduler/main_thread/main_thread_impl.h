@@ -36,8 +36,7 @@ class PLATFORM_EXPORT MainThreadImpl : public MainThread {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
-      scheduler_;  // Not owned.
+  raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged> scheduler_;  // Not owned.
 };
 
 }  // namespace scheduler

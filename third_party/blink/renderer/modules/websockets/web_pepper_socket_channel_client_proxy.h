@@ -64,7 +64,7 @@ class WebPepperSocketChannelClientProxy final
   }
 
  private:
-  raw_ptr<WebPepperSocketImpl, ExperimentalRenderer> impl_;
+  raw_ptr<WebPepperSocketImpl, DanglingUntriaged> impl_;
 };
 
 }  // namespace blink

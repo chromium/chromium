@@ -93,7 +93,7 @@ class ServiceWorkerData
   blink::WebServiceWorkerContextProxy* proxy_;
   const int64_t service_worker_version_id_;
   const std::optional<base::UnguessableToken> activation_sequence_;
-  const raw_ptr<ScriptContext, ExperimentalRenderer> context_ = nullptr;
+  const raw_ptr<ScriptContext, DanglingUntriaged> context_ = nullptr;
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;

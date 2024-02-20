@@ -172,12 +172,12 @@ class MediaFactory {
   // Handy pointer to RenderFrame's browser interface broker. Null until
   // SetupMojo(). Lifetime matches that of the owning |render_frame_|. Will
   // always be valid once assigned.
-  raw_ptr<blink::BrowserInterfaceBrokerProxy, ExperimentalRenderer>
+  raw_ptr<blink::BrowserInterfaceBrokerProxy, DanglingUntriaged>
       interface_broker_ = nullptr;
 
   // Manages play, pause notifications for WebMediaPlayer implementations; its
   // lifetime is tied to the RenderFrame via the RenderFrameObserver interface.
-  raw_ptr<media::RendererWebMediaPlayerDelegate, ExperimentalRenderer>
+  raw_ptr<media::RendererWebMediaPlayerDelegate, DanglingUntriaged>
       media_player_delegate_ = nullptr;
 
   // The CDM and decoder factory attached to this frame, lazily initialized.

@@ -130,7 +130,7 @@ class MODULES_EXPORT PresentationAvailabilityState final
   HeapVector<Member<AvailabilityListener>> availability_listeners_;
 
   // A pointer to PresentationService owned by PresentationController.
-  const raw_ptr<mojom::blink::PresentationService, ExperimentalRenderer>
+  const raw_ptr<mojom::blink::PresentationService, DanglingUntriaged>
       presentation_service_;
 };
 
