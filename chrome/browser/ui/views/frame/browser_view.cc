@@ -574,6 +574,12 @@ class OverlayWidget : public ThemeCopyingWidget {
     DCHECK(parent());
     return parent()->GetAccelerator(cmd_id, accelerator);
   }
+
+  // Instances of OverlayWidget do not activate directly but their views style
+  // should follow the parent (browser frame) activation state. In other words,
+  // when the browser frame is not activate the overlay widget views will
+  // appear disabled.
+  bool ShouldViewsStyleFollowWidgetActivation() const override { return true; }
 };
 
 // TabContainerOverlayView is a view that hosts the TabStripRegionView during
@@ -3909,6 +3915,7 @@ views::View* BrowserView::CreateMacOverlayView() {
     params.child = true;
     params.parent = parent->GetNativeView();
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+    params.activatable = views::Widget::InitParams::Activatable::kNo;
     OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
 
     // When the overlay is used some Views are moved to the overlay_widget. When

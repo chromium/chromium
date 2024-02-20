@@ -763,6 +763,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns whether the Widget is the currently active window.
   virtual bool IsActive() const;
 
+  // Returns true if views style follows the widget activation state. The
+  // default implementation simply calls CanActivate().
+  virtual bool ShouldViewsStyleFollowWidgetActivation() const;
+
   // Sets the z-order of the widget. This only applies to top-level widgets.
   void SetZOrderLevel(ui::ZOrderLevel order);
 
