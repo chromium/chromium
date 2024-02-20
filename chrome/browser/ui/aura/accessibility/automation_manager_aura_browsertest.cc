@@ -12,14 +12,15 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/views/accessibility_checker.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
@@ -195,7 +196,7 @@ typedef InProcessBrowserTest AutomationManagerAuraBrowserTest;
 // This test makes sure that we don't hook up both simultaneously, leading
 // to the same web page appearing in the overall tree twice.
 IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   manager->Enable();

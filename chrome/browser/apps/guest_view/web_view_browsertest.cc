@@ -69,7 +69,6 @@
 #include "components/version_info/version_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/ax_event_notification_details.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -95,6 +94,7 @@
 #include "content/public/test/find_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -132,6 +132,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/gfx/geometry/point.h"
@@ -4791,7 +4792,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTestNoDomAutomationController,
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, LoadWebViewAccessibility) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
   content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
@@ -4799,7 +4800,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, LoadWebViewAccessibility) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, FocusAccessibility) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
 
@@ -4834,7 +4835,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, FocusAccessibility) {
 // The test was disabled. See crbug.com/1141313.
 IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest,
                        DISABLED_FocusAccessibilityNestedFrame) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
 
@@ -4916,7 +4917,7 @@ class WebContentsAccessibilityEventWatcher
 };
 
 IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, DISABLED_TouchAccessibility) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/touch_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
   content::WebContents* guest_web_contents = GetGuestWebContents();

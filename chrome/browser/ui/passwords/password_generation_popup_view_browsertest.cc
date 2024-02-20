@@ -20,11 +20,12 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/child_iterator_base.h"
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PasswordGenerationPopupViewViews");

@@ -10,9 +10,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace ash {
 namespace {
@@ -34,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(StartupSettingsCacheTest, RendererLocale) {
   EXPECT_EQ(kSpanishLocale, browser()->profile()->GetPrefs()->GetString(
                                 language::prefs::kApplicationLocale));
 
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   // Load a page with a "Choose File" form button.
   const char kHTML[] =

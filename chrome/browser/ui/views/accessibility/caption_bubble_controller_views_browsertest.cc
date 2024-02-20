@@ -26,11 +26,12 @@
 #include "components/live_caption/views/caption_bubble_controller_views.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1146,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   // When screen reader mode turns on on Windows, the label is focusable. It
   // remains unfocusable on other OS's.
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 #if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GetLabel()->IsFocusable());
 #else

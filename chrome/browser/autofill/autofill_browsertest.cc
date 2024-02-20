@@ -48,7 +48,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -57,6 +56,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -67,6 +67,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using base::ASCIIToUTF16;
@@ -625,7 +626,7 @@ class AutofillAccessibilityTest : public AutofillTest {
 // Test is flaky: https://crbug.com/1239099
 IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
                        DISABLED_TestAutofillSuggestionAvailability) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   // Navigate to url and wait for accessibility notification.
   GURL url =
@@ -697,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
 // Test is flaky: http://crbug.com/1239099
 IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
                        DISABLED_TestAutocompleteState) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   // Navigate to url and wait for accessibility notification
   GURL url =
       embedded_test_server()->GetURL("/autofill/duplicate_profiles_test.html");
