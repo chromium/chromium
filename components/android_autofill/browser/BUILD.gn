@@ -65,7 +65,6 @@ android_library("features_java") {
   ]
 
   deps = [
-    ":features",
     "//base:base_java",
     "//build/android:build_java",
     "//third_party/jni_zero:jni_zero_java",

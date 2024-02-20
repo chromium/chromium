@@ -228,7 +228,6 @@ generate_jni("main_autofill_jni_headers") {
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
-  deps = [ "//third_party/jni_zero:jni_zero_java" ]
 }
 
 # A minimal library used to expose autofill features to webview.
@@ -277,7 +276,6 @@ generate_jni("payments_jni_headers") {
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
   ]
-  deps = [ "//third_party/jni_zero:jni_zero_java" ]
 }
 
 static_library("payments_autofill_cc") {

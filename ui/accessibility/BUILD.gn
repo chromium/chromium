@@ -477,7 +477,6 @@ if (is_android) {
 
   generate_jni("ax_base_jni_headers") {
     sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
-    deps = [ "//third_party/jni_zero:jni_zero_java" ]
   }
 
   generate_jni("ax_jni_headers") {
@@ -486,7 +485,6 @@ if (is_android) {
       "android/java/src/org/chromium/ui/accessibility/AccessibilityState.java",
       "android/java/src/org/chromium/ui/accessibility/UiAccessibilityFeatureMap.java",
     ]
-    deps = [ "//third_party/jni_zero:jni_zero_java" ]
   }
 
   source_set("ax_base_android") {
@@ -521,7 +519,6 @@ if (is_android) {
       "android/java/src/org/chromium/ui/accessibility/UiAccessibilityFeatureMap.java",
     ]
     deps = [
-      ":ax_base_android",
       ":ui_accessibility_features_java",
       "//base:base_java",
       "//build/android:build_java",
