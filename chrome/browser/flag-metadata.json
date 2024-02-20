@@ -1600,7 +1600,7 @@
   {
     "name": "cups-ipp-printing-backend",
     "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 134
   },
   {
     "name": "customize-chrome-color-extraction",
@@ -7032,7 +7032,7 @@
   {
     "name": "read-printer-capabilities-with-xps",
     "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 134
   },
   {
     "name": "reader-mode-heuristics",
@@ -8274,12 +8274,12 @@
   {
     "name": "use-xps-for-printing",
     "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 134
   },
   {
     "name": "use-xps-for-printing-from-pdf",
     "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 134
   },
   {
     "name": "user-bypass-ui",
