@@ -220,7 +220,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void CanShowSurvey(DispatchCallback callback,
                      const std::string& trigger) override;
   void DoAidaConversation(DispatchCallback callback,
-                          const std::string& request) override;
+                          const std::string& request,
+                          int stream_id) override;
 
   void EnableRemoteDeviceCounter(bool enable);
 
@@ -273,14 +274,28 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            DevToolsInfoBarDelegate::Callback callback);
   bool MaybeStartLogging();
   base::TimeDelta GetTimeSinceSessionStart();
+  void OnAidaConversationRequest(
+      DispatchCallback callback,
+      int stream_id,
+      const std::string& request,
+      base::TimeDelta delay,
+      const absl::variant<network::ResourceRequest, std::string>&
+          resource_request_or_error);
+  void OnAidaConversationResponse(
+      DispatchCallback callback,
+      int stream_id,
+      const std::string& request,
+      base::TimeDelta delay,
+      const absl::variant<network::ResourceRequest, std::string>&
+          resource_request_or_error,
+      base::TimeTicks start_time,
+      const base::Value* response);
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
 
   static DevToolsUIBindingsList& GetDevToolsUIBindings();
 
-  void OnAidaConversationResponse(DispatchCallback callback,
-                                  const std::string& response);
   class FrontendWebContentsObserver;
   std::unique_ptr<FrontendWebContentsObserver> frontend_contents_observer_;
 

@@ -128,7 +128,8 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void CanShowSurvey(DispatchCallback callback,
                                const std::string& trigger) = 0;
     virtual void DoAidaConversation(DispatchCallback callback,
-                                    const std::string& request) = 0;
+                                    const std::string& request,
+                                    int stream_id) = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

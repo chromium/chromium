@@ -90,6 +90,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -436,11 +437,13 @@ class DevToolsUIBindings::NetworkResourceLoader
                      const net::NetworkTrafficAnnotationTag& traffic_annotation,
                      URLLoaderFactoryHolder url_loader_factory,
                      DevToolsUIBindings::DispatchCallback callback,
-                     base::TimeDelta retry_delay = base::TimeDelta()) {
+                     base::TimeDelta retry_delay = base::TimeDelta(),
+                     std::string post_body = "") {
     auto resource_loader =
         std::make_unique<DevToolsUIBindings::NetworkResourceLoader>(
             stream_id, bindings, resource_request, traffic_annotation,
-            std::move(url_loader_factory), std::move(callback), retry_delay);
+            std::move(url_loader_factory), std::move(callback), retry_delay,
+            post_body);
     bindings->loaders_.insert(std::move(resource_loader));
   }
 
@@ -451,7 +454,8 @@ class DevToolsUIBindings::NetworkResourceLoader
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       URLLoaderFactoryHolder url_loader_factory,
       DispatchCallback callback,
-      base::TimeDelta delay)
+      base::TimeDelta delay,
+      std::string post_body)
       : stream_id_(stream_id),
         bindings_(bindings),
         resource_request_(resource_request),
@@ -462,6 +466,9 @@ class DevToolsUIBindings::NetworkResourceLoader
         url_loader_factory_(std::move(url_loader_factory)),
         callback_(std::move(callback)),
         retry_delay_(delay) {
+    if (!post_body.empty()) {
+      loader_->AttachStringForUpload(std::move(post_body));
+    }
     loader_->SetOnResponseStartedCallback(base::BindOnce(
         &NetworkResourceLoader::OnResponseStarted, base::Unretained(this)));
     timer_.Start(FROM_HERE, delay,
@@ -472,17 +479,18 @@ class DevToolsUIBindings::NetworkResourceLoader
   NetworkResourceLoader(const NetworkResourceLoader&) = delete;
   NetworkResourceLoader& operator=(const NetworkResourceLoader&) = delete;
 
- private:
-  void DownloadAsStream() {
-    loader_->DownloadAsStream(url_loader_factory_.get(), this);
-  }
-
-  base::TimeDelta GetNextExponentialBackoffDelay(const base::TimeDelta& delta) {
+  static base::TimeDelta GetNextExponentialBackoffDelay(
+      const base::TimeDelta& delta) {
     if (delta.is_zero()) {
       return kInitialBackoffDelay;
     } else {
       return delta * 1.3;
     }
+  }
+
+ private:
+  void DownloadAsStream() {
+    loader_->DownloadAsStream(url_loader_factory_.get(), this);
   }
 
   void OnResponseStarted(const GURL& final_url,
@@ -829,13 +837,107 @@ void DevToolsUIBindings::SetIsDocked(DispatchCallback callback,
   std::move(callback).Run(nullptr);
 }
 
+void DevToolsUIBindings::OnAidaConversationRequest(
+    DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
+    int stream_id,
+    const std::string& request,
+    base::TimeDelta delay,
+    const absl::variant<network::ResourceRequest, std::string>&
+        resource_request_or_error) {
+  if (absl::holds_alternative<std::string>(resource_request_or_error)) {
+    base::Value::Dict response_dict;
+    response_dict.Set("response",
+                      absl::get<std::string>(resource_request_or_error));
+    auto response_value = base::Value(std::move(response_dict));
+    std::move(callback).Run(&response_value);
+    return;
+  }
+  DevToolsUIBindings::NetworkResourceLoader::URLLoaderFactoryHolder
+      url_loader_factory;
+  url_loader_factory = DevToolsWindow::AsDevToolsWindow(web_contents_)
+                           ->GetInspectedWebContents()
+                           ->GetPrimaryMainFrame()
+                           ->GetStoragePartition()
+                           ->GetURLLoaderFactoryForBrowserProcess();
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("devtools_cdp_console_insights", R"(
+        semantics {
+          sender: "Developer Tools via CDP"
+          description:
+            "In Chrome DevTools, the user can ask for additional insights "
+            "regarding an error message. A prompt message for AIDA containing "
+            "the error message and sometimes more context such as stack trace, "
+            "surrounding code, or network headers is sent to the Chrome "
+            "backend via DevTools UI bindings, which in turn queries an AIDA "
+            "endpoint."
+          trigger: "User asks for more insights on a DevTools error message."
+          data: "Prompt for AIDA endpoint, containing instructions, error and "
+            "sometimes some additional context information."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-devtools@google.com"
+            }
+          }
+          user_data {
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2023-11-09"
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+            "It's not possible to disable this feature from settings."
+          chrome_policy {
+            DeveloperToolsAvailability {
+              policy_options {mode: MANDATORY}
+              DeveloperToolsAvailability: 2
+            }
+          }
+        })");
+  NetworkResourceLoader::Create(
+      stream_id, this,
+      absl::get<network::ResourceRequest>(resource_request_or_error),
+      traffic_annotation, std::move(url_loader_factory),
+      base::BindOnce(&DevToolsUIBindings::OnAidaConversationResponse,
+                     base::Unretained(this), std::move(callback), stream_id,
+                     std::move(request), delay, resource_request_or_error,
+                     base::TimeTicks::Now()),
+      delay, std::move(request));
+}
+
 void DevToolsUIBindings::OnAidaConversationResponse(
-    DispatchCallback callback,
-    const std::string& response) {
-  base::Value::Dict response_dict;
-  response_dict.Set("response", response);
-  auto response_value = base::Value(std::move(response_dict));
-  std::move(callback).Run(&response_value);
+    DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
+    int stream_id,
+    const std::string& request,
+    base::TimeDelta delay,
+    const absl::variant<network::ResourceRequest, std::string>&
+        resource_request_or_error,
+    base::TimeTicks start_time,
+    const base::Value* response) {
+  int response_code =
+      response->is_dict()
+          ? response->GetDict().FindInt("statusCode").value_or(0)
+          : 0;
+
+  if (response_code == net::HTTP_UNAUTHORIZED) {
+    aida_client_->DoConversation(
+        /*refetch_auth_token=*/true,
+        base::BindOnce(&DevToolsUIBindings::OnAidaConversationRequest,
+                       base::Unretained(this), std::move(callback), stream_id,
+                       request, base::TimeDelta()));
+  } else if (response_code >= 500 ||
+             response_code == net::HTTP_TOO_MANY_REQUESTS) {
+    OnAidaConversationRequest(
+        std::move(callback), stream_id, request,
+        NetworkResourceLoader::GetNextExponentialBackoffDelay(delay),
+        resource_request_or_error);
+  } else {
+    base::UmaHistogramTimes("DevTools.AidaResponseTime",
+                            base::TimeTicks::Now() - start_time);
+    std::move(callback).Run(response);
+  }
 }
 
 void DevToolsUIBindings::InspectElementCompleted() {
@@ -885,6 +987,15 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
           trigger: "User opens Developer Tools to debug a web page."
           data: "Any resources requested by Developer Tools."
           destination: WEBSITE
+          internal {
+            contacts {
+              email: "chrome-devtools@google.com"
+            }
+          }
+          user_data {
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2024-02-09"
         }
         policy {
           cookies_allowed: YES
@@ -1808,21 +1919,19 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
 }
 
 void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
-                                            const std::string& request) {
+                                            const std::string& request,
+                                            int stream_id) {
   if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
     return;
   }
   if (!aida_client_) {
-    aida_client_ = std::make_unique<AidaClient>(
-        profile_, DevToolsWindow::AsDevToolsWindow(web_contents_)
-                      ->GetInspectedWebContents()
-                      ->GetPrimaryMainFrame()
-                      ->GetStoragePartition()
-                      ->GetURLLoaderFactoryForBrowserProcess());
+    aida_client_ = std::make_unique<AidaClient>(profile_);
   }
   aida_client_->DoConversation(
-      request, base::BindOnce(&DevToolsUIBindings::OnAidaConversationResponse,
-                              base::Unretained(this), std::move(callback)));
+      /*refetch_auth_token=*/false,
+      base::BindOnce(&DevToolsUIBindings::OnAidaConversationRequest,
+                     base::Unretained(this), std::move(callback), stream_id,
+                     request, base::TimeDelta()));
 }
 
 void DevToolsUIBindings::SetDelegate(Delegate* delegate) {

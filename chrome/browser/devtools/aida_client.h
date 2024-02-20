@@ -17,40 +17,30 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-// class Profile;
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 class AidaClient {
  public:
-  AidaClient(Profile* profile,
-             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  explicit AidaClient(Profile* profile);
   ~AidaClient();
 
-  void DoConversation(std::string request,
-                      base::OnceCallback<void(const std::string&)> callback);
+  void DoConversation(
+      bool refetch_auth_token,
+      base::OnceCallback<void(const absl::variant<network::ResourceRequest,
+                                                  std::string>&)> callback);
 
   void OverrideAidaEndpointAndScopeForTesting(const std::string& aida_endpoint,
                                               const std::string& aida_scope);
 
  private:
-  void SendAidaRequest(std::string request,
-                       base::OnceCallback<void(const std::string&)> callback);
+  void PrepareAidaRequest(
+      base::OnceCallback<void(const absl::variant<network::ResourceRequest,
+                                                  std::string>&)> callback);
   void AccessTokenFetchFinished(
-      std::string request,
-      base::OnceCallback<void(const std::string&)> callback,
+      base::OnceCallback<void(const absl::variant<network::ResourceRequest,
+                                                  std::string>&)> callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
-  void OnSimpleLoaderComplete(
-      std::string request,
-      base::OnceCallback<void(const std::string&)> callback,
-      std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-      base::TimeTicks start_time,
-      std::unique_ptr<std::string> response_body);
 
   const raw_ref<Profile> profile_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   std::string aida_endpoint_;
   std::string aida_scope_;
