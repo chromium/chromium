@@ -9,7 +9,6 @@
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/prefs.mojom-test-utils.h"
@@ -90,16 +89,10 @@ IN_PROC_BROWSER_TEST_F(MultitaskMenuNudgeDelegateLacrosBrowserTest,
 
   // Wait for the window to be created.
   Browser* browser1 = browser();
-  aura::Window* window1 = browser1->window()->GetNativeWindow();
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(
-      lacros_window_utility::GetRootWindowUniqueId(window1->GetRootWindow())));
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(browser1));
 
   Browser* browser2 = CreateBrowser(browser()->profile());
-  aura::Window* window2 = BrowserView::GetBrowserViewForBrowser(browser2)
-                              ->frame()
-                              ->GetNativeWindow();
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(
-      lacros_window_utility::GetRootWindowUniqueId(window2->GetRootWindow())));
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(browser2));
   views::test::WidgetActivationWaiter(
       BrowserView::GetBrowserViewForBrowser(browser2)->frame(), /*active=*/true)
       .Wait();
