@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 dictionary GetHTMLOptions {
-  boolean includeShadowRoots;
-  sequence<ShadowRoot> shadowRoots;
+  boolean serializableShadowRoots = false;
+  sequence<ShadowRoot> shadowRoots = [];
 };

@@ -1730,22 +1730,16 @@ String ContainerNode::getInnerHTML(const GetInnerHTMLOptions* options) const {
 String ContainerNode::getHTML(const GetHTMLOptions* options,
                               ExceptionState& exception_state) const {
   CHECK(RuntimeEnabledFeatures::ElementGetHTMLEnabled());
+  DCHECK(options && options->hasSerializableShadowRoots())
+      << "Should have IDL default";
+  DCHECK(options->hasShadowRoots()) << "Should have IDL default";
   DCHECK(IsShadowRoot() || IsElementNode());
-  if (options->hasIncludeShadowRoots() && !options->includeShadowRoots() &&
-      options->hasShadowRoots() && !options->shadowRoots().empty()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "If includeShadowRoots is false, then shadowRoots must be empty.");
-    return "";
-  }
   ShadowRootInclusion shadow_root_inclusion{
-      options->hasIncludeShadowRoots() && options->includeShadowRoots()
+      options->serializableShadowRoots()
           ? ShadowRootInclusion::Behavior::kIncludeAllSerializableShadowRoots
           : ShadowRootInclusion::Behavior::kOnlyProvidedShadowRoots};
-  if (options->hasShadowRoots()) {
-    for (auto& shadow_root : options->shadowRoots()) {
-      shadow_root_inclusion.include_shadow_roots.insert(shadow_root);
-    }
+  for (auto& shadow_root : options->shadowRoots()) {
+    shadow_root_inclusion.include_shadow_roots.insert(shadow_root);
   }
   return CreateMarkup(this, kChildrenOnly, kDoNotResolveURLs,
                       shadow_root_inclusion);
