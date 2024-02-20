@@ -274,11 +274,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
   // Wait for the IWA to be installed.
   WebAppTestInstallObserver observer(profile);
   const webapps::AppId id = observer.BeginListeningAndWait();
-  ASSERT_EQ(id,
+  EXPECT_EQ(id,
             IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
                 .app_id());
   const WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-  ASSERT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
@@ -304,19 +304,19 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
                 .app_id());
   const WebAppProvider* provider =
       WebAppProvider::GetForTest(GetProfileForTest());
-  ASSERT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
 
   // Set the policy with 2 IWAs and wait for the IWA to be installed.
   WebAppTestInstallObserver observer2(GetProfileForTest());
   SetPolicyWithTwoApps();
   const webapps::AppId id2 = observer2.BeginListeningAndWait();
-  ASSERT_EQ(id2,
+  EXPECT_EQ(id2,
             IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_2_.id)
                 .app_id());
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       PolicyDelete) {
+                       PolicyDeleteAndReinstall) {
   SetupServer();
 
   AddManagedGuestSessionToDevicePolicy();
@@ -324,49 +324,69 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
   UploadAndInstallDeviceLocalAccountPolicy();
   WaitForPolicy();
 
-  // Log in in the managed guest session.
-  // There no IWA policy set at the moment of login.
+  // Log in to the managed guest session. There is no IWA policy set at the
+  // moment of login.
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
 
-  // Set the policy with 2 IWA and wait for the IWAs to be installed.
   const webapps::AppId id1 =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_2_.id)
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
           .app_id();
   const webapps::AppId id2 =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_2_.id)
           .app_id();
-  WebAppTestInstallObserver install_observer(GetProfileForTest());
-  install_observer.BeginListening({id1, id2});
-
-  SetPolicyWithTwoApps();
-  install_observer.Wait();
 
   const WebAppProvider* provider =
       WebAppProvider::GetForTest(GetProfileForTest());
-  ASSERT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
-  ASSERT_TRUE(provider->registrar_unsafe().IsInstalled(id2));
 
-  // Prepare testing environment for uninstalling.
-  base::RunLoop run_loop;
-  auto* browsing_data_remover = GetProfileForTest()->GetBrowsingDataRemover();
-  browsing_data_remover->SetWouldCompleteCallbackForTesting(
-      base::BindLambdaForTesting([&](base::OnceClosure callback) {
-        if (browsing_data_remover->GetPendingTaskCountForTesting() == 1) {
-          run_loop.Quit();
-        }
-        std::move(callback).Run();
-      }));
+  // Set the policy with 2 IWAs and wait for the IWAs to be installed.
+  {
+    WebAppTestInstallObserver install_observer(GetProfileForTest());
+    install_observer.BeginListening({id1, id2});
+
+    SetPolicyWithTwoApps();
+    install_observer.Wait();
+
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id2));
+  }
 
   // Set the policy with 1 IWA and wait for the unnecessary IWA to be
   // uninstalled.
-  WebAppTestUninstallObserver uninstall_observer(GetProfileForTest());
-  uninstall_observer.BeginListening({id2});
-  SetPolicyWithOneApp();
+  {
+    // Prepare testing environment for uninstalling.
+    base::test::TestFuture<void> uninstall_browsing_data_future;
+    auto* browsing_data_remover = GetProfileForTest()->GetBrowsingDataRemover();
+    browsing_data_remover->SetWouldCompleteCallbackForTesting(
+        base::BindLambdaForTesting([&](base::OnceClosure callback) {
+          if (browsing_data_remover->GetPendingTaskCountForTesting() == 1u) {
+            uninstall_browsing_data_future.SetValue();
+          }
+          std::move(callback).Run();
+        }));
 
-  run_loop.Run();
+    WebAppTestUninstallObserver uninstall_observer(GetProfileForTest());
+    uninstall_observer.BeginListening({id2});
+    SetPolicyWithOneApp();
 
-  ASSERT_EQ(uninstall_observer.Wait(), id2);
+    ASSERT_TRUE(uninstall_browsing_data_future.Wait());
+    ASSERT_EQ(uninstall_observer.Wait(), id2);
+
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
+    EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(id2));
+  }
+
+  // Set the policy with 2 IWAs and wait for the second IWA to be re-installed.
+  {
+    WebAppTestInstallObserver install_observer(GetProfileForTest());
+    install_observer.BeginListening({id2});
+
+    SetPolicyWithTwoApps();
+    install_observer.Wait();
+
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id2));
+  }
 }
 
 }  // namespace web_app
