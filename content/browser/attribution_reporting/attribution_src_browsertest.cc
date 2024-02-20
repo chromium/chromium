@@ -1482,18 +1482,12 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
         CreateAttributionTestHttpsServer();
 
     base::RunLoop run_loop;
-    const auto on_registration = base::BarrierClosure(
-        test_case.expected_os_registrations.size(), run_loop.QuitClosure());
-    // TODO(https://crbug.com/1444525): Update to expect a single call.
-    for (const auto& item : test_case.expected_os_registrations) {
-      EXPECT_CALL(
-          mock_attribution_manager(),
-          HandleOsRegistration(Field(
-              &OsRegistration::registration_items,
-              std::vector<attribution_reporting::OsRegistrationItem>({item}))))
-          .Times(1)
-          .WillOnce([&on_registration]() { on_registration.Run(); });
-    }
+    EXPECT_CALL(
+        mock_attribution_manager(),
+        HandleOsRegistration(Field(&OsRegistration::registration_items,
+                                   test_case.expected_os_registrations)))
+        .Times(1)
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
 
     auto register_response =
         std::make_unique<net::test_server::ControllableHttpResponse>(

@@ -837,7 +837,8 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
   }
 
  private:
-  static constexpr size_t kMaxBufferSize = 80u;
+  // TODO(https://crbug.com/1444525): update to 80 when supported by the OS.
+  static constexpr size_t kMaxBufferSize = 20u;
 
   int64_t navigation_id_;
 
@@ -1500,7 +1501,7 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     std::vector<attribution_reporting::OsRegistrationItem> registration_items) {
   const RegistrationContext* context =
       GetReceiverRegistrationContextForSource();
-  if (!context) {
+  if (!context || registration_items.empty()) {
     return;
   }
   if (context->navigation().has_value()) {
@@ -1517,7 +1518,7 @@ void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
     std::vector<attribution_reporting::OsRegistrationItem> registration_items) {
   const RegistrationContext* context =
       GetReceiverRegistrationContextForTrigger();
-  if (!context) {
+  if (!context || registration_items.empty()) {
     return;
   }
 
@@ -1981,16 +1982,11 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
     std::vector<attribution_reporting::OsRegistrationItem> items,
     const RegistrationContext& registration_context,
     std::optional<AttributionInputEvent> input_event) {
-  // TODO(https://crbug.com/1444525): Register all urls with a single call.
-  for (attribution_reporting::OsRegistrationItem& item : items) {
-    std::vector<attribution_reporting::OsRegistrationItem> registration_items;
-    registration_items.emplace_back(std::move(item));
-    attribution_manager_->HandleOsRegistration(OsRegistration(
-        std::move(registration_items),
-        /*top_level_origin=*/registration_context.context_origin(), input_event,
-        registration_context.is_within_fenced_frame(),
-        registration_context.render_frame_id()));
-  }
+  attribution_manager_->HandleOsRegistration(OsRegistration(
+      std::move(items),
+      /*top_level_origin=*/registration_context.context_origin(),
+      std::move(input_event), registration_context.is_within_fenced_frame(),
+      registration_context.render_frame_id()));
 }
 
 }  // namespace content

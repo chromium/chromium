@@ -101,6 +101,7 @@ using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::Property;
+using ::testing::SizeIs;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
@@ -1230,13 +1231,8 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
   EXPECT_CALL(mock_manager_,
               HandleOsRegistration(OsRegistration(
                   {OsRegistrationItem(GURL("https://r.test/x"),
-                                      /*debug_reporting=*/false)},
-                  *source_site, AttributionInputEvent(),
-                  /*is_within_fenced_frame=*/false, kFrameId)))
-      .Times(1);
-  EXPECT_CALL(mock_manager_,
-              HandleOsRegistration(OsRegistration(
-                  {OsRegistrationItem(GURL("https://r.test/y"),
+                                      /*debug_reporting=*/false),
+                   OsRegistrationItem(GURL("https://r.test/y"),
                                       /*debug_reporting=*/false)},
                   *source_site, AttributionInputEvent(),
                   /*is_within_fenced_frame=*/false, kFrameId)))
@@ -1350,7 +1346,11 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
     EXPECT_CALL(checkpoint, Call(2));
 
-    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(3);
+    // third and final registration received - all registrations in one call
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    Field(&OsRegistration::registration_items, SizeIs(3))))
+        .Times(1);
   }
 
   // The navigation starts, register data and completes.
@@ -1419,8 +1419,11 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
 
-    // third and final source received
-    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(3);
+    // third and final registration received - all registrations in one call
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    Field(&OsRegistration::registration_items, SizeIs(3))))
+        .Times(1);
   }
 
   data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
@@ -1498,7 +1501,10 @@ TEST_F(
     EXPECT_CALL(checkpoint, Call(1));
 
     // no final response is received after the timeout
-    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(2);
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    Field(&OsRegistration::registration_items, SizeIs(2))))
+        .Times(1);
     EXPECT_CALL(checkpoint, Call(2));
 
     // after the timeout, a final source is received
@@ -2903,7 +2909,10 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
     EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
     EXPECT_CALL(checkpoint, Call(2));
 
-    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(3);
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    Field(&OsRegistration::registration_items, SizeIs(3))))
+        .Times(1);
   }
 
   // A background registration starts and completes without registering data.
@@ -3015,16 +3024,29 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
     EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
     EXPECT_CALL(checkpoint, Call(0));
 
-    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(80);
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    Field(&OsRegistration::registration_items, SizeIs(20))))
+        .Times(1);
+
     EXPECT_CALL(checkpoint, Call(1));
 
-    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(160);
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    Field(&OsRegistration::registration_items, SizeIs(20))))
+        .Times(2);
     EXPECT_CALL(checkpoint, Call(2));
 
-    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(80);
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    Field(&OsRegistration::registration_items, SizeIs(20))))
+        .Times(1);
     EXPECT_CALL(checkpoint, Call(3));
 
-    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(2);
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(
+                    Field(&OsRegistration::registration_items, SizeIs(2))))
+        .Times(1);
   }
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
@@ -3050,18 +3072,18 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   // Buffer not full yet, no registrations should have been received.
   checkpoint.Call(0);
 
-  register_n_os_registrations(80);
+  register_n_os_registrations(20);
   // First buffer is full, it should have processed a first batch of 80.
   checkpoint.Call(1);
   // kBufferFull = 1
   histograms.ExpectBucketCount("Conversions.OsRegistrationsBufferFlushReason",
                                /*sample=*/1, /*expected_count=*/1);
 
-  register_n_os_registrations(159);
+  register_n_os_registrations(39);
   // It should have filled the buffer twice and have processed two more batch.
   checkpoint.Call(2);
 
-  register_n_os_registrations(79);
+  register_n_os_registrations(19);
   // It should have filled a buffer exactly and flushed it.
   checkpoint.Call(3);
 
