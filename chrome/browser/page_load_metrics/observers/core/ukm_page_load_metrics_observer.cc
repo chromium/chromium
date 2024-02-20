@@ -77,6 +77,9 @@ const char kOfflinePreviewsMimeType[] = "multipart/related";
 
 static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 14878427190820;
 
+const char kHistogramSoftNavigationCount[] =
+    "PageLoad.Expermental.SoftNavigations.Count";
+
 template <size_t N>
 uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
   static_assert(N <= 8u,
@@ -993,6 +996,10 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
                                 GetDelegate().GetSoftNavigationMetrics());
   }
+
+  // Record soft navigation count histogram to UMA.
+  base::UmaHistogramCounts100(kHistogramSoftNavigationCount,
+                              GetDelegate().GetSoftNavigationMetrics().count);
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
