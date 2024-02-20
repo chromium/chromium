@@ -870,6 +870,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
         // || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+  { key::kAutomaticFullscreenAllowedForUrls,
+    prefs::kManagedAutomaticFullscreenAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kAutomaticFullscreenBlockedForUrls,
+    prefs::kManagedAutomaticFullscreenBlockedForUrls,
+    base::Value::Type::LIST },
   { key::kAuthSchemes,
     prefs::kAuthSchemes,
     base::Value::Type::STRING },

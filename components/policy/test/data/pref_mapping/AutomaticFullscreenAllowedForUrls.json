@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.managed_automatic_fullscreen_allowed_for_urls": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "AutomaticFullscreenAllowedForUrls": [
+            "isolated-app://*",
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_automatic_fullscreen_allowed_for_urls": {
+            "value": [
+              "isolated-app://*",
+              "[*.]google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

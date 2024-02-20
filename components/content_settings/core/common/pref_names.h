@@ -80,6 +80,10 @@ inline constexpr char kManagedDefaultWebPrintingSetting[] =
 
 // Preferences that are exclusively used to store managed content settings
 // patterns.
+inline constexpr char kManagedAutomaticFullscreenAllowedForUrls[] =
+    "profile.managed_automatic_fullscreen_allowed_for_urls";
+inline constexpr char kManagedAutomaticFullscreenBlockedForUrls[] =
+    "profile.managed_automatic_fullscreen_blocked_for_urls";
 inline constexpr char kManagedAutoSelectCertificateForUrls[] =
     "profile.managed_auto_select_certificate_for_urls";
 inline constexpr char kManagedClipboardAllowedForUrls[] =

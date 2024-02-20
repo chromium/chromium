@@ -187,6 +187,7 @@ source_set("policy_specific_browser_tests") {
   sources = [
     "policy_network_browsertest.cc",
     "site_isolation_policy_browsertest.cc",
+    "test/automatic_fullscreen_policy_browsertest.cc",
     "test/back_forward_cache_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
     "test/force_permission_policy_unload_default_enabled_policy_browsertest.cc",

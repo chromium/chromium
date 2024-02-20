@@ -1223,6 +1223,8 @@ policies:
   1222: DocumentScanAPITrustedExtensions
   1223: RemoteAccessHostAllowPinAuthentication
   1224: DownloadManagerSaveToDriveSettings
+  1225: AutomaticFullscreenAllowedForUrls
+  1226: AutomaticFullscreenBlockedForUrls
 atomic_groups:
   1: Homepage
   2: RemoteAccess

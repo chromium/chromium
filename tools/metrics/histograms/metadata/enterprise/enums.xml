@@ -2038,6 +2038,8 @@ chromium-metrics-reviews@google.com.
   <int value="1222" label="DocumentScanAPITrustedExtensions"/>
   <int value="1223" label="RemoteAccessHostAllowPinAuthentication"/>
   <int value="1224" label="DownloadManagerSaveToDriveSettings"/>
+  <int value="1225" label="AutomaticFullscreenAllowedForUrls"/>
+  <int value="1226" label="AutomaticFullscreenBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
