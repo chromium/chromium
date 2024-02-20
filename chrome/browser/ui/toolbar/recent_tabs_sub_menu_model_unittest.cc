@@ -229,6 +229,26 @@ TEST_P(RecentTabsSubMenuModelTest, LogMenuMetricsForShowHistory) {
   EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
 }
 
+TEST_P(RecentTabsSubMenuModelTest, LogMenuMetricsForShowGroupedHistory) {
+  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    GTEST_SKIP() << "Grouped history item only exists when side panel pinning "
+                    "is enabled.";
+  }
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->profile(),
+                                                 &fake_delegate);
+  TestLogMetricsAppMenuModel app_menu_model(nullptr, browser(),
+                                            &app_menu_icon_controller);
+  app_menu_model.Init();
+  RecentTabsSubMenuModel recent_tab_sub_menu_model(nullptr, browser());
+  recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
+      base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
+                          base::Unretained(&app_menu_model)));
+  recent_tab_sub_menu_model.ExecuteCommand(IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                                           0);
+  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+}
+
 TEST_P(RecentTabsSubMenuModelTest,
        LogMenuMetricsForRecentTabsLoginForDeviceTabs) {
   FakeIconDelegate fake_delegate;

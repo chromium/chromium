@@ -229,6 +229,9 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     return;
   }
   if (command_id == IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL) {
+    if (log_menu_metrics_callback_) {
+      log_menu_metrics_callback_.Run(command_id);
+    }
     chrome::ExecuteCommandWithDisposition(
         browser_, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
         ui::DispositionFromEventFlags(event_flags));
