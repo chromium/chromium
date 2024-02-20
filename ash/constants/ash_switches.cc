@@ -653,6 +653,9 @@ const char kFingerprintSensorLocation[] = "fingerprint-sensor-location";
 // Not passed on restart after sign out.
 const char kFirstExecAfterBoot[] = "first-exec-after-boot";
 
+// Forces a fetch of Birch data whenever a Pine session starts.
+const char kForceBirchFetch[] = "force-birch-fetch";
+
 // Forces fetching tokens for Cryptohome Recovery.
 const char kForceCryptohomeRecoveryForTesting[] =
     "force-cryptohome-recovery-for-testing";

@@ -4,12 +4,15 @@
 
 #include "ash/wm/window_restore/pine_controller.h"
 
+#include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_service.h"
@@ -120,6 +123,11 @@ void PineController::OnPineImageDecoded(const gfx::ImageSkia& pine_image) {
 }
 
 void PineController::StartPineOverviewSession() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceBirchFetch)) {
+    LOG(WARNING) << "Forcing Birch data fetch";
+    Shell::Get()->birch_model()->RequestBirchDataFetch(base::DoNothing());
+  }
   // TODO(sammiequon): Add a new start action for this type of overview session.
   OverviewController::Get()->StartOverview(OverviewStartAction::kAccelerator,
                                            OverviewEnterExitType::kPine);
