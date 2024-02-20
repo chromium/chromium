@@ -1472,13 +1472,14 @@ void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
 void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
   // If a child tree has explicitly been stitched at this object via the
   // `ax::mojom::blink::Action::kStitchChildTree`, then override any child trees
-  // coming from HTML. If this is an HTMLFrameOwnerElement (such as an iframe),
+  // coming from HTML.
   if (child_tree_id_) {
     node_data->AddChildTreeId(*child_tree_id_);
     return;
   }
 
-  // we may need to embed the ID of the child frame.
+  // If this is an HTMLFrameOwnerElement (such as an iframe), we may need to
+  // embed the ID of the child frame.
   if (!IsEmbeddingElement()) {
     // TODO(crbug.com/1342603) Determine why these are firing in the wild and,
     // once fixed, turn into a DCHECK.

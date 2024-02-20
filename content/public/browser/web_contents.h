@@ -49,6 +49,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/display/types/display_constants.h"
@@ -597,6 +598,10 @@ class WebContents : public PageNavigator,
   // Forces a reset of accessibility state in the instance's renderers.
   // Observers will receive a new accessibility tree.
   virtual void ResetAccessibility() = 0;
+
+  // Returns a pointer to the root node of the live accessibility tree for the
+  // main frame, if accessibility is turned on. Otherwise, returns nullptr.
+  virtual ui::AXNode* GetAccessibilityRootNode() = 0;
 
   virtual std::string DumpAccessibilityTree(
       bool internal,

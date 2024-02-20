@@ -9,8 +9,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
@@ -26,7 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -34,8 +32,17 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <vector>
 
+#include "base/strings/escape.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/services/screen_ai/public/test/fake_screen_ai_annotator.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
+#include "url/gurl.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace ash::test {
@@ -162,8 +169,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
     ASSERT_NE(nullptr, page->ax_tree());
   }
 
-  // Remove the tree data, because its tree ID would change every time the test
-  // is run, and because it is unimportant for our test purposes.
+  // Remove the tree data, because its tree ID would change every time the
+  // test is run, and because it is unimportant for our test purposes.
   ui::AXTreeData tree_data;
   for (auto const& [_, page] : pages) {
     page->ax_tree()->UpdateDataForTesting(tree_data);
@@ -307,6 +314,80 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageRotation) {
       "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, 25)-"
       "(3, 8) restriction=readonly  is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
+  const char* html = R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <canvas width="200" height="200">
+          <p>Text that is replaced by child tree.</p>
+        </canvas>
+      </body>
+      </html>
+      )HTML";
+
+  content::AccessibilityNotificationWaiter load_waiter(
+      browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
+      ax::mojom::Event::kLoadComplete);
+  GURL html_data_url("data:text/html," +
+                     base::EscapeQueryParamValue(html, /*use_plus=*/false));
+  ASSERT_NE(nullptr, ui_test_utils::NavigateToURL(browser(), html_data_url));
+  ASSERT_TRUE(load_waiter.WaitForNotification());
+  EXPECT_EQ(
+      "rootWebArea htmlTag='#document'\n"
+      "++genericContainer htmlTag='html'\n"
+      "++++genericContainer htmlTag='body'\n"
+      "++++++canvas htmlTag='canvas'\n"
+      "++++++++staticText name='<newline>          '\n"
+      "++++++++staticText name='Text that is replaced by child tree.'\n"
+      "++++++++staticText name='<newline>        '\n",
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->DumpAccessibilityTree(
+              /*internal=*/true,
+              /*property_filters=*/{
+                  ui::AXPropertyFilter("htmlTag", ui::AXPropertyFilter::ALLOW),
+                  ui::AXPropertyFilter("name", ui::AXPropertyFilter::ALLOW)}));
+
+  content::AccessibilityNotificationWaiter child_tree_added_waiter(
+      browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+  const size_t kTestNumPages = 1u;
+  auto fake_metadata = CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+  ASSERT_TRUE(child_tree_added_waiter.WaitForNotification());
+  ASSERT_EQ(
+      "rootWebArea htmlTag='#document'\n"
+      "++genericContainer htmlTag='html'\n"
+      "++++genericContainer htmlTag='body'\n"
+      "++++++canvas htmlTag='canvas'\n",
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->DumpAccessibilityTree(
+              /*internal=*/true,
+              /*property_filters=*/{
+                  ui::AXPropertyFilter("htmlTag", ui::AXPropertyFilter::ALLOW),
+                  ui::AXPropertyFilter("name", ui::AXPropertyFilter::ALLOW)}));
+
+  const ui::AXNode* canvas = browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetAccessibilityRootNode()
+                                 ->GetFirstChild()
+                                 ->GetFirstChild()
+                                 ->GetFirstChild();
+  ASSERT_NE(nullptr, canvas);
+  EXPECT_NE(
+      "", canvas->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
+  const ui::AXNode* pdf_root =
+      canvas->GetFirstUnignoredChildCrossingTreeBoundary();
+  ASSERT_NE(nullptr, pdf_root);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, pdf_root->GetRole());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

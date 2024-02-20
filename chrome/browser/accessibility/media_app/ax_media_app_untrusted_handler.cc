@@ -4,42 +4,48 @@
 
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
 
+#include <algorithm>
+#include <numeric>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
-#include "content/public/browser/browser_context.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
 
 namespace {
 
 // The ID used for the AX document root.
-const uint64_t kDocumentRootNodeId = 1;
+constexpr ui::AXNodeID kDocumentRootNodeId = 1;
 
 // The first ID at which pages start. 0 is a special ID number reserved only for
 // invalid nodes, and 1 is for the AX document root. So all pages begin at ID 2.
-const size_t kStartPageAXNodeId = 2;
+constexpr ui::AXNodeID kStartPageAXNodeId = 2;
 
 // The maximum number of pages supported by the OCR service. This maximum is
 // used both to validate the number of pages (untrusted data) coming from the
 // MediaApp and manage resources (caps the number of pages stored at a time).
-const size_t kMaxPages = 10000;
+constexpr size_t kMaxPages = 10000;
 
 bool ReportIfNonExistentPageId(
     const std::string& context,
@@ -68,7 +74,6 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
           screen_ai::ScreenAIServiceRouter::Service::kOCR,
           base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
                          weak_ptr_factory_.GetWeakPtr()));
-
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
 }
 
@@ -82,10 +87,8 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
   if (!successful) {
     return;
   }
-
   // This is expected to be called only once.
   CHECK(!screen_ai_annotator_.is_bound());
-
   screen_ai::ScreenAIServiceRouter* service_router =
       screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
           std::to_address(browser_context_));
@@ -160,16 +163,18 @@ void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
         accessibility_state_utils::IsScreenReaderEnabled());
   }
 }
+
 void AXMediaAppUntrustedHandler::PageMetadataUpdated(
     const std::vector<ash::media_app_ui::mojom::PageMetadataPtr>
         page_metadata) {
   if (page_metadata.empty()) {
-    mojo::ReportBadMessage("SetPageMetadata() called with no page metadata");
+    mojo::ReportBadMessage(
+        "`PageMetadataUpdated()` called with no page metadata");
     return;
   }
 
   const size_t num_pages = std::min(page_metadata.size(), kMaxPages);
-  // If page_metadata_ is empty, this is the first load of the PDF.
+  // If `page_metadata_` is empty, this is the first load of the PDF.
   const bool is_first_load = page_metadata_.empty();
 
   if (is_first_load) {
@@ -180,7 +185,8 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
       data.id = page_metadata[i]->id;
       if (page_metadata_.contains(data.id)) {
         mojo::ReportBadMessage(
-            "SetPageMetadata() called with pages with duplicate page IDs");
+            "`PageMetadataUpdated()` called with pages with duplicate page "
+            "IDs");
         return;
       }
       page_metadata_[data.id] = data;
@@ -194,7 +200,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
   std::set<const std::string> page_id_updated;
   for (size_t i = 0; i < page_metadata.size(); ++i) {
     const std::string& page_id = page_metadata[i]->id;
-    if (ReportIfNonExistentPageId("SetPageMetadata()", page_id,
+    if (ReportIfNonExistentPageId("PageMetadataUpdated()", page_id,
                                   page_metadata_)) {
       return;
     }
@@ -214,6 +220,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
   if (is_first_load) {
     return;
   }
+
   // If a page was missing from `page_metadata` (its location was not updated),
   // then that means it got deleted. Set its page number to 0.
   for (auto const& [page_id, _] : page_metadata_) {
@@ -230,15 +237,51 @@ void AXMediaAppUntrustedHandler::PageContentsUpdated(
     const std::string& dirty_page_id) {
   if (!page_metadata_.contains(dirty_page_id)) {
     mojo::ReportBadMessage(
-        "SetPageMetadata() called with a non-existent page ID");
+        "`PageContentsUpdated()` called with a non-existent page ID");
     return;
   }
   PushDirtyPage(dirty_page_id);
   OcrNextDirtyPageIfAny();
 }
 
-void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
-                                                 float scale_factor) {}
+void AXMediaAppUntrustedHandler::ViewportUpdated(
+    const ::gfx::RectF& viewport_box,
+    float scale_factor) {}
+
+content::WebContents* AXMediaAppUntrustedHandler::GetMediaAppWebContents()
+    const {
+  Profile* profile =
+      Profile::FromBrowserContext(std::to_address(browser_context_));
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  if (!browser) {
+    return nullptr;
+  }
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  CHECK(web_contents);
+  return web_contents;
+}
+
+content::RenderFrameHost*
+AXMediaAppUntrustedHandler::GetMediaAppRenderFrameHost() const {
+  content::WebContents* web_contents = GetMediaAppWebContents();
+  return web_contents ? web_contents->GetPrimaryMainFrame() : nullptr;
+}
+
+ui::AXNodeID AXMediaAppUntrustedHandler::GetMediaAppRootNodeID() const {
+  content::WebContents* web_contents = GetMediaAppWebContents();
+  if (!web_contents) {
+    return ui::kInvalidAXNodeID;
+  }
+  // Search for the first <canvas> element.
+  for (ui::AXNode* node = web_contents->GetAccessibilityRootNode(); node;
+       node = node->GetNextUnignoredInTreeOrder()) {
+    if (node->GetRole() == ax::mojom::Role::kCanvas) {
+      return node->id();
+    }
+  }
+  return ui::kInvalidAXNodeID;
+}
 
 void AXMediaAppUntrustedHandler::UpdatePageLocation(
     const std::string& page_id,
@@ -307,7 +350,7 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
   document_update.root_id = document_root_data.id;
   std::vector<ui::AXNodeData> document_pages;
   document_pages.push_back(document_root_data);
-  for (size_t page_index = 0; auto const& [page_id, pageTreeManager] : pages_) {
+  for (size_t page_index = 0; const auto& [page_id, _] : pages_) {
     ui::AXNodeData page_data;
     page_data.role = ax::mojom::Role::kRegion;
     base::CheckedNumeric<ui::AXNodeID> ax_page_id =
@@ -345,11 +388,34 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
     }
   } else {
     document_update.has_tree_data = true;
+    if (auto* render_frame_host = GetMediaAppRenderFrameHost()) {
+      document_update.tree_data.parent_tree_id =
+          render_frame_host->GetAXTreeID();
+    }
     document_update.tree_data.tree_id = document_tree_id_;
     // TODO(b/319543924): Add a localized version of an accessible name.
     document_update.tree_data.title = "PDF document";
     document_.SetTree(std::make_unique<ui::AXTree>(document_update));
+    StitchDocumentTree();
   }
+}
+
+void AXMediaAppUntrustedHandler::StitchDocumentTree() {
+  content::RenderFrameHost* render_frame_host = GetMediaAppRenderFrameHost();
+  if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
+    return;
+  }
+  ui::AXNodeID media_app_root_node_id = GetMediaAppRootNodeID();
+  if (media_app_root_node_id == ui::kInvalidAXNodeID) {
+    return;
+  }
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kStitchChildTree;
+  CHECK(document_.ax_tree());
+  action_data.target_tree_id = document_.GetParentTreeID();
+  action_data.target_node_id = media_app_root_node_id;
+  action_data.child_tree_id = document_.GetTreeID();
+  render_frame_host->AccessibilityPerformAction(action_data);
 }
 
 void AXMediaAppUntrustedHandler::PushDirtyPage(
@@ -367,7 +433,7 @@ void AXMediaAppUntrustedHandler::PushDirtyPage(
 
 std::string AXMediaAppUntrustedHandler::PopDirtyPage() {
   if (dirty_page_ids_.empty()) {
-    mojo::ReportBadMessage("PopDirtyPage() found no more dirty pages.");
+    mojo::ReportBadMessage("`PopDirtyPage()` found no more dirty pages.");
   }
 
   auto dirty_page_id = dirty_page_ids_.front();

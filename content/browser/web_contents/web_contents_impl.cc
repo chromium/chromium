@@ -5028,6 +5028,14 @@ void WebContentsImpl::AccessibilityLocationChangesReceived(
       &WebContentsObserver::AccessibilityLocationChangesReceived, details);
 }
 
+ui::AXNode* WebContentsImpl::GetAccessibilityRootNode() {
+  BrowserAccessibilityManager* manager = GetRootBrowserAccessibilityManager();
+  if (!manager || !manager->ax_tree()) {
+    return nullptr;
+  }
+  return manager->ax_tree()->root();
+}
+
 std::string WebContentsImpl::DumpAccessibilityTree(
     bool internal,
     std::vector<ui::AXPropertyFilter> property_filters) {

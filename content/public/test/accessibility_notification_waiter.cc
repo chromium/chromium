@@ -207,6 +207,7 @@ void AccessibilityNotificationWaiter::OnGeneratedEvent(
     ui::AXNodeID event_target_id) {
   DCHECK(render_frame_host);
   DCHECK_NE(event_target_id, ui::kInvalidAXNodeID);
+  VLOG(1) << "OnGeneratedEvent " << event;
 
   if (IsAboutBlank())
     return;
