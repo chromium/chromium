@@ -1185,6 +1185,14 @@ The FlexibleArrayBufferView extended attribute always requires the AllowShared e
 
 Usage: Applies to arguments of methods. See modules/webgl/WebGLRenderingContextBase.idl for an example.
 
+### [HasAsyncIteratorReturnAlgorithm]
+
+Summary: `[HasAsyncIteratorReturnAlgorithm]` indicates whether an [asynchronously iterable declaration](https://webidl.spec.whatwg.org/#dfn-async-iterable-declaration) has an [asynchronous iterator return algorithm](https://webidl.spec.whatwg.org/#asynchronous-iterator-return).
+
+This tells the code generator to add a `return()` method to the async iterator. The Blink implementation must then provide the return algorithm by overriding `AsyncIterationSourceBase::AsyncIteratorReturn()`.
+
+Usage: Applies only to `async iterable` declarations. See core/streams/readable_stream.idl for an example.
+
 ### [IsolatedContext]
 
 Summary: Interfaces and interface members with a `IsolatedContext` extended attribute are exposed only inside isolated contexts.
@@ -1282,6 +1290,12 @@ These extended attributes are _discouraged_ - they are not deprecated, but they 
 Summary: The byte length of buffer source types is currently restricted to be under 2 GB (exactly speaking, it must be less than the max size of a direct mapped memory of PartitionAlloc, which is a little less than 2 GB).  This extended attribute removes this limitation.
 
 Consult with the bindings team before you use this extended attribute.
+
+### [IDLTypeImplementedAsV8Promise]
+
+Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Local<v8::Promise>` rather than the default `ScriptPromise` type.
+
+This is currently only used for the return types of `AsyncIteratorBase` methods. Consult with the bindings team before you use this extended attribute.
 
 ### [TargetOfExposed]
 

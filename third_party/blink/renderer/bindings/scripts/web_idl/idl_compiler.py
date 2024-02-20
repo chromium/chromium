@@ -12,6 +12,7 @@ import typing
 from blinkbuild.name_style_converter import NameStyleConverter
 
 from .async_iterator import AsyncIterator
+from .argument import Argument
 from .attribute import Attribute
 from .callback_function import CallbackFunction
 from .callback_interface import CallbackInterface
@@ -173,16 +174,54 @@ class IdlCompiler(object):
                     # https://webidl.spec.whatwg.org/#iterator-result
                     return_type=self._idl_type_factory.promise_type(
                         result_type=self._idl_type_factory.simple_type(
-                            'object')),
+                            'object'),
+                        extended_attributes=ExtendedAttributesMutable([
+                            ExtendedAttribute(
+                                key='IDLTypeImplementedAsV8Promise'),
+                        ])),
                     extended_attributes=ExtendedAttributesMutable([
                         ExtendedAttribute(key="CallWith",
                                           values="ScriptState"),
                         ExtendedAttribute(key="RaisesException"),
                     ]),
                     component=component))
-            # TODO(yukishiino): Define the 'return' property if and only if
-            # an asynchronous iterator return algorithm is defined for the
-            # interface.
+            # Define the 'return' property if and only if an asynchronous
+            # iterator return algorithm is defined for the interface.
+            if ("HasAsyncIteratorReturnAlgorithm"
+                    in iterable.extended_attributes):
+                operations.append(
+                    Operation.IR(
+                        identifier=Identifier('return'),
+                        # Can be called without arguments (e.g.
+                        # AsyncIteratorClose()) or with one argument (e.g.
+                        # yield*).
+                        # https://tc39.es/ecma262/#sec-asynciteratorclose
+                        # https://tc39.es/ecma262/#sec-generator-function-definitions-runtime-semantics-evaluation
+                        arguments=[
+                            Argument.IR(
+                                identifier=Identifier('value'),
+                                index=0,
+                                idl_type=self._idl_type_factory.simple_type(
+                                    'any', is_optional=True))
+                        ],
+                        # The return type is a promise type resolving to an
+                        # iterator result.
+                        # https://webidl.spec.whatwg.org/#iterator-result
+                        return_type=self._idl_type_factory.promise_type(
+                            result_type=self._idl_type_factory.simple_type(
+                                'object'),
+                            extended_attributes=ExtendedAttributesMutable([
+                                ExtendedAttribute(
+                                    key='IDLTypeImplementedAsV8Promise'),
+                            ])),
+                        extended_attributes=ExtendedAttributesMutable([
+                            ExtendedAttribute(key="CallWith",
+                                              values="ScriptState"),
+                            ExtendedAttribute(key="RaisesException"),
+                            ExtendedAttribute(key="ImplementedAs",
+                                              values="returnForBinding"),
+                        ]),
+                        component=component))
 
             iterator_ir = AsyncIterator.IR(
                 interface=self._ref_to_idl_def_factory.create(

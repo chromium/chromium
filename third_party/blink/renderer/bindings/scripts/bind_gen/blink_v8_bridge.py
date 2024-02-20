@@ -379,7 +379,11 @@ def blink_type_info(idl_type):
                             clear_member_var_fmt="{}.clear()")
 
     if real_type.is_promise:
-        return TypeInfo("ScriptPromise",
+        if "IDLTypeImplementedAsV8Promise" in real_type.extended_attributes:
+            type_name = "v8::Local<v8::Promise>"
+        else:
+            type_name = "ScriptPromise"
+        return TypeInfo(type_name,
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         is_traceable=True)

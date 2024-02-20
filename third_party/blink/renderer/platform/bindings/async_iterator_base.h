@@ -57,6 +57,8 @@ class PLATFORM_EXPORT AsyncIteratorBase : public ScriptWrappable {
                               ExceptionState& exception_state);
 
   v8::Local<v8::Promise> returnForBinding(ScriptState* script_state,
+                                          ExceptionState& exception_state);
+  v8::Local<v8::Promise> returnForBinding(ScriptState* script_state,
                                           v8::Local<v8::Value> value,
                                           ExceptionState& exception_state);
 

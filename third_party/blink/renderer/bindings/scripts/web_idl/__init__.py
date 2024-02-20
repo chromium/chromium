@@ -58,6 +58,7 @@ from .extended_attribute import ExtendedAttributes
 from .function_like import FunctionLike
 from .function_like import OverloadGroup
 from .idl_type import IdlType
+from .interface import AsyncIterable
 from .interface import IndexedAndNamedProperties
 from .interface import Interface
 from .interface import Iterable
