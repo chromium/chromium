@@ -16248,21 +16248,6 @@
             ]
         }
     ],
-    "SafeBrowsingSkipSubResources2": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingSkipSubResources2"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafetyCheckNotificationPermissions": [
         {
             "platforms": [
