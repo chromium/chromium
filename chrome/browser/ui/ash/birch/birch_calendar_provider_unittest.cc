@@ -1,0 +1,138 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/ash/birch/birch_calendar_provider.h"
+
+#include <vector>
+
+#include "ash/birch/birch_model.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
+#include "ash/system/time/calendar_unittest_utils.h"
+#include "base/check.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/ash/birch/birch_calendar_fetcher.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
+#include "google_apis/common/api_error_codes.h"
+
+namespace ash {
+namespace {
+
+using google_apis::ApiErrorCode;
+
+base::Time TimeFromString(const char* time_string) {
+  base::Time time;
+  CHECK(base::Time::FromString(time_string, &time));
+  return time;
+}
+
+// A fake fetcher that provides arbitrary error codes and events.
+class TestCalendarFetcher : public BirchCalendarFetcher {
+ public:
+  explicit TestCalendarFetcher(Profile* profile)
+      : BirchCalendarFetcher(profile) {}
+  ~TestCalendarFetcher() override = default;
+
+  // BirchCalendarFetcher:
+  void GetCalendarEvents(
+      base::Time start_time,
+      base::Time end_time,
+      google_apis::calendar::CalendarEventListCallback callback) override {
+    std::move(callback).Run(error_code_, std::move(events_));
+  }
+
+  ApiErrorCode error_code_ = ApiErrorCode::HTTP_SUCCESS;
+  std::unique_ptr<google_apis::calendar::EventList> events_;
+};
+
+// BrowserWithTestWindowTest provides a Profile and ash::Shell (which provides
+// a BirchModel) needed by the test.
+class BirchCalendarProviderTest : public BrowserWithTestWindowTest {
+ public:
+  BirchCalendarProviderTest() {
+    switches::SetIgnoreForestSecretKeyForTest(true);
+    feature_list_.InitAndEnableFeature(features::kForestFeature);
+  }
+  ~BirchCalendarProviderTest() override {
+    switches::SetIgnoreForestSecretKeyForTest(false);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BirchCalendarProviderTest, GetCalendarEvents) {
+  BirchCalendarProvider provider(profile());
+
+  // Set up a custom fetcher with known events.
+  auto fetcher = std::make_unique<TestCalendarFetcher>(profile());
+  auto events = std::make_unique<google_apis::calendar::EventList>();
+  events->set_time_zone("Greenwich Mean Time");
+  events->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_0", "title_0", "10 Jan 2010 10:00 GMT", "10 Jan 2010 11:00 GMT"));
+  events->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_1", "title_1", "11 Jan 2010 10:00 GMT", "11 Jan 2010 11:00 GMT"));
+  fetcher->events_ = std::move(events);
+  provider.SetFetcherForTest(std::move(fetcher));
+
+  // Get the calendar events.
+  provider.GetCalendarEvents();
+
+  // Verify the events were inserted into the birch model.
+  const auto& items = Shell::Get()->birch_model()->GetCalendarItemsForTest();
+  ASSERT_EQ(2u, items.size());
+  EXPECT_EQ(items[0].title, u"title_0");
+  EXPECT_EQ(items[0].start_time, TimeFromString("10 Jan 2010 10:00 GMT"));
+  EXPECT_EQ(items[0].end_time, TimeFromString("10 Jan 2010 11:00 GMT"));
+  EXPECT_EQ(items[1].title, u"title_1");
+  EXPECT_EQ(items[1].start_time, TimeFromString("11 Jan 2010 10:00 GMT"));
+  EXPECT_EQ(items[1].end_time, TimeFromString("11 Jan 2010 11:00 GMT"));
+}
+
+TEST_F(BirchCalendarProviderTest, GetCalendarEvents_HttpError) {
+  BirchCalendarProvider provider(profile());
+
+  // Populate the birch model with an event so the test can sense when the
+  // model is cleared later.
+  std::vector<BirchCalendarItem> items;
+  items.emplace_back(u"Event 1", GURL(), base::Time(), base::Time());
+  Shell::Get()->birch_model()->SetCalendarItems(std::move(items));
+
+  // Set up a customer fetcher that returns an error.
+  auto fetcher = std::make_unique<TestCalendarFetcher>(profile());
+  fetcher->error_code_ = ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
+  provider.SetFetcherForTest(std::move(fetcher));
+
+  // Get the calendar events.
+  provider.GetCalendarEvents();
+
+  // Verify the birch model is empty.
+  EXPECT_TRUE(Shell::Get()->birch_model()->GetCalendarItemsForTest().empty());
+}
+
+TEST_F(BirchCalendarProviderTest, GetCalendarEvents_NullEventList) {
+  BirchCalendarProvider provider(profile());
+
+  // Populate the birch model with an event so the test can sense when the
+  // model is cleared later.
+  std::vector<BirchCalendarItem> items;
+  items.emplace_back(u"Event 1", GURL(), base::Time(), base::Time());
+  Shell::Get()->birch_model()->SetCalendarItems(std::move(items));
+
+  // Set up a customer fetcher that returns a null event list.
+  auto fetcher = std::make_unique<TestCalendarFetcher>(profile());
+  fetcher->events_ = nullptr;
+  provider.SetFetcherForTest(std::move(fetcher));
+
+  // Get the calendar events.
+  provider.GetCalendarEvents();
+
+  // Verify the birch model is empty.
+  EXPECT_TRUE(Shell::Get()->birch_model()->GetCalendarItemsForTest().empty());
+}
+
+}  // namespace
+}  // namespace ash

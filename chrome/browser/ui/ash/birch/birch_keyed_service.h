@@ -16,6 +16,7 @@ class Profile;
 namespace ash {
 
 class Shell;
+class BirchCalendarProvider;
 class BirchClientImpl;
 class BirchFileSuggestProvider;
 class BirchRecentTabsProvider;
@@ -43,6 +44,8 @@ class BirchKeyedService : public ShellObserver, public KeyedService {
 
   // Whether shutdown of BirchKeyedService has already begun.
   bool is_shutdown_ = false;
+
+  std::unique_ptr<BirchCalendarProvider> calendar_provider_;
 
   std::unique_ptr<BirchFileSuggestProvider> file_suggest_provider_;
 

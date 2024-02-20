@@ -294,6 +294,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
                                               /*id=*/"1"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetCalendarItems({});
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 

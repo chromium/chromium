@@ -119,8 +119,8 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() const {
 }
 
 bool BirchModel::IsDataFresh() {
-  // TODO(jamescook): Include calendar freshness.
-  return (!birch_client_ || (is_files_data_fresh_ && is_tabs_data_fresh_)) &&
+  return (!birch_client_ || (is_calendar_data_fresh_ && is_files_data_fresh_ &&
+                             is_tabs_data_fresh_)) &&
          (!weather_provider_ || is_weather_data_fresh_);
 }
 
