@@ -1430,13 +1430,17 @@ ruby, rt {
     text-indent: 0; /* blocks used for ruby rendering should not trigger this */
 }
 
+ruby {
+    display: ruby;
+}
+
 rt {
     line-height: normal;
     text-emphasis: none;
 }
 
 ruby > rt {
-    display: block;
+    display: ruby-text;
     font-size: 50%;
     text-align: start;
 }

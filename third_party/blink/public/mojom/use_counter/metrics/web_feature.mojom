@@ -2590,7 +2590,7 @@ enum WebFeature {
   kTrustedTypesPolicyCreated = 3279,
   kV8HTMLVideoElement_RequestVideoFrameCallback_Method = 3280,
   kV8HTMLVideoElement_CancelVideoFrameCallback_Method = 3281,
-  kRubyElementWithDisplayBlock = 3282,
+  kOBSOLETE_RubyElementWithDisplayBlock = 3282,
   kOBSOLETE_LocationFragmentDirectiveAccessed = 3283,
   kCanvasRenderingContext = 3284,
   kSchemefulSameSiteContextDowngrade = 3285,
@@ -4065,7 +4065,7 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use = 4705,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks = 4706,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use = 4707,
-  kRubyElementWithDisplayBlockAndRt = 4708,
+  kOBSOLETE_RubyElementWithDisplayBlockAndRt = 4708,
   kCSSDeclarationAfterNestedRule = 4709,
   kThirdPartyCookieAdAccessBlockByExperiment = 4710,
   // The items above roughly this point are available in the M120 branch.

@@ -1504,8 +1504,9 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsA<HTMLLegendElement>(*GetNode()))
     return ax::mojom::blink::Role::kLegend;
 
-  if (IsA<HTMLRubyElement>(*GetNode()))
+  if (GetNode()->HasTagName(html_names::kRubyTag)) {
     return ax::mojom::blink::Role::kRuby;
+  }
 
   if (IsA<HTMLDListElement>(*GetNode()))
     return ax::mojom::blink::Role::kDescriptionList;
@@ -6103,7 +6104,8 @@ String AXNodeObject::Description(
     AXObject* ruby_annotation_ax_object = nullptr;
     for (const auto& child : children_) {
       if (child->RoleValue() == ax::mojom::blink::Role::kRubyAnnotation &&
-          child->GetNode() && IsA<HTMLRTElement>(child->GetNode())) {
+          child->GetNode() &&
+          child->GetNode()->HasTagName(html_names::kRtTag)) {
         ruby_annotation_ax_object = child;
         break;
       }

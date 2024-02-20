@@ -828,12 +828,6 @@
       status: "stable",
     },
     {
-      // crbug.com/880802
-      name: "CssDisplayRuby",
-      depends_on: ["RubySimplePairing"],
-      status: "stable",
-    },
-    {
       name: "CSSDynamicRangeLimit",
       status: "experimental",
     },
@@ -3195,7 +3189,6 @@
       // crbug.com/1493273
       name: "RubyInlinify",
       status: "stable",
-      depends_on: ["CssDisplayRuby"],
     },
     {
       // crbug.com/324111880

@@ -2819,8 +2819,7 @@ static bool IsDisplayOutside(CSSValueID id) {
 static bool IsDisplayInside(CSSValueID id) {
   return (id >= CSSValueID::kFlowRoot && id <= CSSValueID::kGrid) ||
          id == CSSValueID::kMath || id == CSSValueID::kFlow ||
-         (RuntimeEnabledFeatures::CssDisplayRubyEnabled() &&
-          id == CSSValueID::kRuby);
+         id == CSSValueID::kRuby;
 }
 
 static bool IsDisplayBox(CSSValueID id) {
@@ -2831,8 +2830,7 @@ static bool IsDisplayBox(CSSValueID id) {
 static bool IsDisplayInternal(CSSValueID id) {
   return (id >= CSSValueID::kTableRowGroup &&
           id <= CSSValueID::kTableCaption) ||
-         (RuntimeEnabledFeatures::CssDisplayRubyEnabled() &&
-          id == CSSValueID::kRubyText);
+         id == CSSValueID::kRubyText;
 }
 
 static bool IsDisplayLegacy(CSSValueID id) {

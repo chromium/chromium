@@ -419,16 +419,13 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kBlockMath:
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
     case EDisplay::kRuby:
-      DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
       if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
         return MakeGarbageCollected<LayoutInline>(element);
       }
       return MakeGarbageCollected<LayoutRuby>(element);
     case EDisplay::kBlockRuby:
-      DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
       return MakeGarbageCollected<LayoutRubyAsBlock>(element);
     case EDisplay::kRubyText:
-      DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
       if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
         return MakeGarbageCollected<LayoutInline>(element);
       }
@@ -4201,7 +4198,8 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
                     kPseudoIdFirstLine)) {
           // TODO(crbug.com/1501719): See
           // LayoutObject::BehavesLikeBlockContainer().
-          if (IsRubyText() && IsA<HTMLRTElement>(GetNode())) {
+          if (IsRubyText() && GetNode() &&
+              GetNode()->HasTagName(html_names::kRtTag)) {
             UseCounter::Count(GetDocument(), WebFeature::kPseudoFirstLineOnRt);
           }
           return cached;

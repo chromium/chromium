@@ -292,13 +292,10 @@ static bool IsAtMediaUAShadowBoundary(const Element* element) {
 // to manually stop text-decorations to apply to text inside media controls.
 static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
                                          const Element* element) {
-  const bool is_ruby_text = RuntimeEnabledFeatures::CssDisplayRubyEnabled()
-                                ? (builder.Display() == EDisplay::kRubyText)
-                                : IsA<HTMLRTElement>(element);
   return builder.IsDisplayReplacedType() ||
          IsAtMediaUAShadowBoundary(element) || builder.IsFloating() ||
          builder.HasOutOfFlowPosition() || IsOutermostSVGElement(element) ||
-         is_ruby_text;
+         builder.Display() == EDisplay::kRubyText;
 }
 
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
@@ -467,15 +464,6 @@ static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
     // comes from user intervention. crbug.com/1285327
     builder.SetEffectiveZoom(
         element.GetDocument().GetStyleResolver().InitialZoom());
-  }
-
-  if (IsA<HTMLRTElement>(element) &&
-      !RuntimeEnabledFeatures::CssDisplayRubyEnabled()) {
-    // Ruby text does not support float or position. This might change with
-    // evolution of the specification.
-    builder.SetPosition(EPosition::kStatic);
-    builder.SetFloating(EFloat::kNone);
-    return;
   }
 
   if (IsA<HTMLLegendElement>(element) &&

@@ -263,10 +263,12 @@ LayoutText* FirstLetterTextLayoutObjectLegacy(const Element& element) {
     return nullptr;
 
   // TODO(crbug.com/1501719): See LayoutObject::BehavesLikeBlockContainer().
-  if (parent_layout_object->IsRubyText() &&
-      IsA<HTMLRTElement>(parent_layout_object->GetNode())) {
-    UseCounter::Count(element.GetDocument(),
-                      WebFeature::kPseudoFirstLetterOnRt);
+  if (parent_layout_object->IsRubyText()) {
+    const Node* parent_node = parent_layout_object->GetNode();
+    if (parent_node && parent_node->HasTagName(html_names::kRtTag)) {
+      UseCounter::Count(element.GetDocument(),
+                        WebFeature::kPseudoFirstLetterOnRt);
+    }
   }
   return To<LayoutText>(first_letter_text_layout_object);
 }
@@ -473,10 +475,12 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
           } else {
             // TODO(crbug.com/1501719): See
             // LayoutObject::BehavesLikeBlockContainer().
-            if (parent_layout_object->IsRubyText() &&
-                IsA<HTMLRTElement>(parent_layout_object->GetNode())) {
-              UseCounter::Count(element.GetDocument(),
-                                WebFeature::kPseudoFirstLetterOnRt);
+            if (parent_layout_object->IsRubyText()) {
+              const Node* parent_node = parent_layout_object->GetNode();
+              if (parent_node && parent_node->HasTagName(html_names::kRtTag)) {
+                UseCounter::Count(element.GetDocument(),
+                                  WebFeature::kPseudoFirstLetterOnRt);
+              }
             }
             // We have found valid ::first-letter text. When the ::first-letter
             // text spans multiple elements, the UA is free to style only one of

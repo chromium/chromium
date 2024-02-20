@@ -9549,7 +9549,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3280"
       label="V8HTMLVideoElement_RequestVideoFrameCallback_Method"/>
   <int value="3281" label="V8HTMLVideoElement_CancelVideoFrameCallback_Method"/>
-  <int value="3282" label="RubyElementWithDisplayBlock"/>
+  <int value="3282" label="OBSOLETE_RubyElementWithDisplayBlock"/>
   <int value="3283" label="OBSOLETE_LocationFragmentDirectiveAccessed"/>
   <int value="3284" label="CanvasRenderingContext"/>
   <int value="3285" label="SchemefulSameSiteContextDowngrade"/>
@@ -11051,7 +11051,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_locks"/>
   <int value="4707"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use"/>
-  <int value="4708" label="RubyElementWithDisplayBlockAndRt"/>
+  <int value="4708" label="OBSOLETE_RubyElementWithDisplayBlockAndRt"/>
   <int value="4709" label="CSSDeclarationAfterNestedRule"/>
   <int value="4710" label="ThirdPartyCookieAdAccessBlockByExperiment"/>
   <int value="4711" label="ServiceWorkerStaticRouter_AddRoutes"/>

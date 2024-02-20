@@ -286,9 +286,6 @@ void LayoutTheme::AdjustStyle(const Element* element,
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
-  if (RuntimeEnabledFeatures::CssDisplayRubyEnabled()) {
-    return "ruby { display: ruby; }\nruby > rt { display: ruby-text; }\n";
-  }
   return g_empty_string;
 }
 

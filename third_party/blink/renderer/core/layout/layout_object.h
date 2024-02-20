@@ -1794,7 +1794,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // <rt> had display:block, and :first-letter worked accidentally.
     // Test: fast/ruby/ruby-first-letter.html.
     // TODO(crbug.com/1501719): Remove rt:first-letter support.
-    if (IsRubyText() && IsA<HTMLRTElement>(GetNode())) {
+    if (IsRubyText() && GetNode() &&
+        GetNode()->HasTagName(html_names::kRtTag)) {
       return true;
     }
     return (IsLayoutBlockFlow() && StyleRef().IsDisplayBlockContainer()) ||

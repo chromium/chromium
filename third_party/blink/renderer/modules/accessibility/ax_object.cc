@@ -3823,7 +3823,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
       return true;
     }
     // Necessary to calculate the accessible description of a ruby node.
-    if (IsA<HTMLRTElement>(parent_node)) {
+    if (parent_node->HasTagName(html_names::kRtTag)) {
       return true;
     }
   }
@@ -3988,8 +3988,9 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // browsers that do not support ruby. Hence, their contents should not be
   // included in the accessible description, unless another condition in this
   // method decides to keep them in the tree for some reason.
-  if (IsA<HTMLRTElement>(element))
+  if (element->HasTagName(html_names::kRtTag)) {
     return true;
+  }
 
   // Preserve SVG grouping elements.
   if (IsA<SVGGElement>(element))

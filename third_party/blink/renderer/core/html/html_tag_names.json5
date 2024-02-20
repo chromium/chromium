@@ -410,8 +410,7 @@
     },
     {
       name: "rt",
-      JSInterfaceName: "HTMLElement",
-      interfaceName: "HTMLRTElement",
+      interfaceName: "HTMLElement",
     },
     {
       name: "rtc",
@@ -419,8 +418,7 @@
     },
     {
       name: "ruby",
-      JSInterfaceName: "HTMLElement",
-      interfaceName: "HTMLRubyElement",
+      interfaceName: "HTMLElement",
     },
     {
       name: "s",
