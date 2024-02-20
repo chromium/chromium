@@ -1,10 +1,12 @@
-<svg viewBox="-10 -10 280 220" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg viewBox="-10 -10 280 220" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     xmlns:h="http://www.w3.org/1999/xhtml">
+  <h:link rel="match" href="paint-order-002-ref.svg"/>
   <defs>
     <marker id="m" refX="5" refY="5" viewBox="0 0 10 10" overflow="visible">
       <circle cx="5" cy="5" r="3" fill="black" stroke="black" fill-opacity="0.5"/>
     </marker>
     <svg id="poly" viewBox="-10 -10 420 420">
-      <text y="300" font-family="sans-serif" font-size="200" fill="blue" stroke="lime" stroke-width="10" stroke-opacity="0.5" style="marker: url(#m); text-decoration: underline">test</text>
+      <polygon points="50 50 50 350 350 350 250 200" fill="blue" stroke="lime" stroke-width="50" style="marker: url(#m)" stroke-opacity="0.5"/>
     </svg>
   </defs>
 

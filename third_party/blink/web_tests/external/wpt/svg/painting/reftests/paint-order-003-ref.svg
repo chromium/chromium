@@ -1,9 +1,4 @@
 <svg viewBox="-10 -10 280 220" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <style>
-    text {
-      text-decoration: underline;
-    }
-  </style>
   <defs>
     <marker id="m" refX="5" refY="5" viewBox="0 0 10 10" overflow="visible">
       <circle cx="5" cy="5" r="3" fill="black" stroke="black" fill-opacity="0.5"/>
@@ -12,7 +7,7 @@
       <text y="300" font-family="sans-serif" font-size="200" fill="blue" stroke="lime" stroke-width="10" stroke-opacity="0.5" style="marker: url(#m)">test</text>
     </svg>
     <svg id="poly-f-m-s" viewBox="-10 -10 420 420">
-      <text y="300" font-family="sans-serif" font-size="200" fill="blue" stroke-width="10" stroke-opacity="0.5" style="marker: url(#m); text-decoration: underline">test</text>
+      <text y="300" font-family="sans-serif" font-size="200" fill="blue" stroke-width="10" stroke-opacity="0.5" style="marker: url(#m)">test</text>
       <text y="300" font-family="sans-serif" font-size="200" fill="none" stroke="lime" stroke-width="10" stroke-opacity="0.5">test</text>
     </svg>
     <svg id="poly-m-f-s" viewBox="-10 -10 420 420">
