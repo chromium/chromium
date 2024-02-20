@@ -761,6 +761,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="127" label="Toggle Emulate Focused Page from Styles tab off"/>
   <int value="128" label="Toggle Emulate Focused Page from Rendering tab"/>
   <int value="129" label="Toggle Emulate Focused Page from Command Menu"/>
+  <int value="130" label="Console insight generated successfully"/>
+  <int value="131"
+      label="Console insight generation errored due to a server issue"/>
+  <int value="132"
+      label="Console insight generation errored while rendering Markdown"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
