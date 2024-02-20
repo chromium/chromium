@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -189,6 +190,23 @@ class OutsideSettingsCSPDelegate final
   THREAD_CHECKER(worker_thread_checker_);
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WorkerOrWorkletInterfaceNameType {
+  kOther = 0,
+  kDedicatedWorkerGlobalScope = 1,
+  kSharedWorkerGlobalScope = 2,
+  kServiceWorkerGlobalScope = 3,
+  kAnimationWorkletGlobalScope = 4,
+  kAudioWorkletGlobalScope = 5,
+  kLayoutWorkletGlobalScope = 6,
+  kPaintWorkletGlobalScope = 7,
+  kShadowRealmGlobalScope = 8,
+  kSharedStorageWorkletGlobalScope = 9,
+
+  kMaxValue = kSharedStorageWorkletGlobalScope,
+};
+
 }  // namespace
 
 WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
@@ -266,6 +284,35 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   if (used_features_[static_cast<size_t>(feature)])
     return;
   used_features_.set(static_cast<size_t>(feature));
+
+  // Record CountUse users for investigating crbug.com/40918057.
+  {
+    WorkerOrWorkletInterfaceNameType type =
+        WorkerOrWorkletInterfaceNameType::kOther;
+    if (IsDedicatedWorkerGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kDedicatedWorkerGlobalScope;
+    } else if (IsSharedWorkerGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kSharedWorkerGlobalScope;
+    } else if (IsServiceWorkerGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kServiceWorkerGlobalScope;
+    } else if (IsAnimationWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kAnimationWorkletGlobalScope;
+    } else if (IsAudioWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kAudioWorkletGlobalScope;
+    } else if (IsLayoutWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kLayoutWorkletGlobalScope;
+    } else if (IsPaintWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kPaintWorkletGlobalScope;
+    } else if (IsShadowRealmGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kShadowRealmGlobalScope;
+    } else if (IsSharedStorageWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kSharedStorageWorkletGlobalScope;
+    }
+
+    base::UmaHistogramEnumeration("ServiceWorker.CountUse.CallerInterface",
+                                  type);
+  }
+
   ReportingProxy().CountFeature(feature);
 }
 
