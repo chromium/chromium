@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/public/metrics/histogram_functions_bridge.h"
 #import "ios/chrome/browser/shared/public/metrics/user_metrics_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"

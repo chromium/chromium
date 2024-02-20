@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import UIKit
+import ios_chrome_browser_shared_ui_util_util_swift
 
 /// View Controller displaying the TabStrip.
 @objcMembers
@@ -55,6 +56,11 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   /// `true` if a drop animation is in progress.
   private var dropAnimationInProgress: Bool = false
 
+  /// Targeted scroll offset, used on iOS 16 only.
+  /// On iOS 16, the scroll animation after opening a new tab is delayed.
+  /// This variable ensures that the most recent scroll event is processed.
+  private var targetedScrollOffsetiOS16: CGFloat = 0
+
   // Handles model updates.
   public weak var mutator: TabStripMutator?
   // Tab strip  delegate.
@@ -62,10 +68,12 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // Handles drag and drop interactions.
   public weak var dragDropHandler: TabCollectionDragDropHandler?
 
-  /// Targeted scroll offset, used on iOS 16 only.
-  /// On iOS 16, the scroll animation after opening a new tab is delayed.
-  /// This variable ensures that the most recent scroll event is processed.
-  private var targetedScrollOffsetiOS16: CGFloat = 0
+  /// The LayoutGuideCenter.
+  @objc public var layoutGuideCenter: LayoutGuideCenter? {
+    didSet {
+      layoutGuideCenter?.reference(view: newTabButton, under: kNewTabButtonGuide)
+    }
+  }
 
   init() {
     layout = TabStripLayout()

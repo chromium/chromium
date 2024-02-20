@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -43,6 +44,8 @@
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   CHECK(browserState);
   self.tabStripViewController = [[TabStripViewController alloc] init];
+  self.tabStripViewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
   self.tabStripViewController.delegate = self;
   self.tabStripViewController.overrideUserInterfaceStyle =
       browserState->IsOffTheRecord() ? UIUserInterfaceStyleDark
