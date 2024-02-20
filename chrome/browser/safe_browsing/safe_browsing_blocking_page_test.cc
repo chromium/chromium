@@ -3995,9 +3995,9 @@ IN_PROC_BROWSER_TEST_P(
     PostCommitInterstitialProceedAfterPreCommitInterstitial) {
   EnableAsyncCheck();
   // Trigger a pre commit interstitial and go back.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(kChromeUISafeBrowsingMatchMalwareUrl)));
-  EXPECT_TRUE(WaitForReady(browser()));
+  GURL start_url = embedded_test_server()->GetURL(kEmptyPage);
+  SetURLThreatType(start_url, SB_THREAT_TYPE_URL_PHISHING);
+  NavigateToURLAndWaitForAsyncChecks(start_url);
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
   AssertNoInterstitial(browser(), false);
 
