@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -9421,6 +9422,12 @@ void RenderFrameHostImpl::HandleAXEvents(
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.HandleAXEvents2");
 
+  if (!render_accessibility_) {
+    // `ui::AXMode::kWebContents` was removed from the delegate's accessibility
+    // mode, so any received updates and events are stale and should be ignored.
+    return;
+  }
+
   if (tree_id != GetAXTreeID()) {
     // The message has arrived after the frame has navigated which means its
     // events are no longer relevant and can be discarded.
@@ -9442,10 +9449,9 @@ void RenderFrameHostImpl::HandleAXEvents(
   }
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
+  // TODO: crbug.com/40069097 - switch to CHECK.
+  DUMP_WILL_BE_CHECK(accessibility_mode.has_mode(ui::AXMode::kWebContents));
 
-  if (accessibility_mode.is_mode_off()) {
-    return;
-  }
   if (base::FeatureList::IsEnabled(features::kEvictOnAXEvents)) {
     // If the flag is on, evict the bfcache entry now that AX events are
     // received.
