@@ -186,8 +186,9 @@ void UpdateAXNodeDataPosition(
   // Update list item AXNodeData position for assistive tool.
   const int number_shortcut_items = shortcut_items.size();
   for (int i = 0; i < number_shortcut_items; ++i) {
-    shortcut_items.at(i)->GetViewAccessibility().OverridePosInSet(
-        i + 1, number_shortcut_items);
+    shortcut_items.at(i)->GetViewAccessibility().SetPosInSet(i + 1);
+    shortcut_items.at(i)->GetViewAccessibility().SetSetSize(
+        number_shortcut_items);
   }
 }
 

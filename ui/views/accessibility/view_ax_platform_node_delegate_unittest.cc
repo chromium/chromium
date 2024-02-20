@@ -210,11 +210,15 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
     //  v[1] p3 s4   v[2] p2 s4   v[3] p- s-   v[4] p1 s4
     ASSERT_GE(views.size(), 5u);
 
-    views[0]->GetViewAccessibility().OverridePosInSet(4, 4);
-    views[1]->GetViewAccessibility().OverridePosInSet(3, 4);
-    views[2]->GetViewAccessibility().OverridePosInSet(2, 4);
+    views[0]->GetViewAccessibility().SetPosInSet(4);
+    views[0]->GetViewAccessibility().SetSetSize(4);
+    views[1]->GetViewAccessibility().SetPosInSet(3);
+    views[1]->GetViewAccessibility().SetSetSize(4);
+    views[2]->GetViewAccessibility().SetPosInSet(2);
+    views[2]->GetViewAccessibility().SetSetSize(4);
     // Skip views[3] - no override.
-    views[4]->GetViewAccessibility().OverridePosInSet(1, 4);
+    views[4]->GetViewAccessibility().SetPosInSet(1);
+    views[4]->GetViewAccessibility().SetSetSize(4);
   }
 
  protected:

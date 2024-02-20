@@ -536,13 +536,14 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
   // So do not expose it to users.
   view_accessibility.OverrideIsEnabled(true);
 
-  // Specify `item_view_to_delete`'s position in the set. Without calling
-  // `OverridePosInSet()`, the menu's size after deletion may be announced.
+  // Specify `item_view_to_delete`'s position in the set. Without updating the
+  // position in set and set size, the menu's size after deletion may be
+  // announced.
   const int pos_in_set = std::distance(item_views_by_command_id_.begin(),
                                        item_view_to_delete_iter) +
                          1;
-  view_accessibility.OverridePosInSet(pos_in_set,
-                                      item_views_by_command_id_.size());
+  view_accessibility.SetPosInSet(pos_in_set);
+  view_accessibility.SetSetSize(item_views_by_command_id_.size());
 
   // Disable views to be removed in order to prevent them from handling
   // events.

@@ -1685,8 +1685,8 @@ void TabContainerImpl::SetDropArrow(
 void TabContainerImpl::UpdateAccessibleTabIndices() {
   const int num_tabs = GetTabCount();
   for (int i = 0; i < num_tabs; ++i) {
-    GetTabAtModelIndex(i)->GetViewAccessibility().OverridePosInSet(i + 1,
-                                                                   num_tabs);
+    GetTabAtModelIndex(i)->GetViewAccessibility().SetPosInSet(i + 1);
+    GetTabAtModelIndex(i)->GetViewAccessibility().SetSetSize(num_tabs);
   }
 }
 

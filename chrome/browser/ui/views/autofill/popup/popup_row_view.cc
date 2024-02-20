@@ -249,7 +249,8 @@ PopupRowView::PopupRowView(
       suggestion,
       /*add_call_to_action_if_expandable=*/suggestion.is_acceptable));
   auto [position, set_size] = ComputePositionInSet(controller_, line_number);
-  content_view_->GetViewAccessibility().OverridePosInSet(position, set_size);
+  content_view_->GetViewAccessibility().SetPosInSet(position);
+  content_view_->GetViewAccessibility().SetSetSize(set_size);
   content_view_->GetViewAccessibility().OverrideIsSelected(false);
   content_event_handler_ =
       set_exit_enter_callbacks(CellType::kContent, *content_view_);

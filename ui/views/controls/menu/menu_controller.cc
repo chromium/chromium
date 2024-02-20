@@ -2834,8 +2834,10 @@ void MenuController::SetSelectionIndices(MenuItemView* parent) {
   if (parent->GetProperty(kOrderedMenuChildren)) {
     // Clear any old AX index assignments.
     for (ViewTracker& item : *(parent->GetProperty(kOrderedMenuChildren))) {
-      if (item.view())
-        item.view()->GetViewAccessibility().ClearPosInSetOverride();
+      if (item.view()) {
+        item.view()->GetViewAccessibility().ClearPosInSet();
+        item.view()->GetViewAccessibility().ClearSetSize();
+      }
     }
   }
 
@@ -2867,8 +2869,8 @@ void MenuController::SetSelectionIndices(MenuItemView* parent) {
 
   const size_t set_size = ordering.size();
   for (size_t i = 0; i < set_size; ++i) {
-    ordering[i]->GetViewAccessibility().OverridePosInSet(
-        static_cast<int>(i + 1), static_cast<int>(set_size));
+    ordering[i]->GetViewAccessibility().SetPosInSet(static_cast<int>(i + 1));
+    ordering[i]->GetViewAccessibility().SetSetSize(static_cast<int>(set_size));
   }
 }
 

@@ -200,7 +200,8 @@ TEST_F(ViewFactoryTest, TestViewBuilderCustomConfigure) {
       views::Builder<internal::TestView>()
           .CustomConfigure(base::BindOnce([](internal::TestView* view) {
             view->SetEnabled(false);
-            view->GetViewAccessibility().OverridePosInSet(5, 10);
+            view->GetViewAccessibility().SetPosInSet(5);
+            view->GetViewAccessibility().SetSetSize(10);
           }))
           .Build());
   EXPECT_FALSE(view->GetEnabled());
