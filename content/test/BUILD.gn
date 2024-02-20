@@ -247,6 +247,8 @@ static_library("test_support") {
     "../public/test/mock_render_process_host.h",
     "../public/test/mock_render_thread.cc",
     "../public/test/mock_render_thread.h",
+    "../public/test/mock_video_picture_in_picture_window_controller_impl.cc",
+    "../public/test/mock_video_picture_in_picture_window_controller_impl.h",
     "../public/test/mock_web_contents_observer.cc",
     "../public/test/mock_web_contents_observer.h",
     "../public/test/mojo_capability_control_test_util.cc",

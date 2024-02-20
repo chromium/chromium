@@ -146,7 +146,7 @@ void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
   // pre-existing PictureInPictureWindowController's window (if any).
   EnterPictureInPictureWithController(controller);
 
-  NotifyObservers(&Observer::OnEnterPictureInPicture);
+  NotifyObserversOnEnterPictureInPicture();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -166,7 +166,6 @@ PictureInPictureWindowManager::EnterVideoPictureInPicture(
     CreateWindowInternal(web_contents);
   }
 
-  NotifyObservers(&Observer::OnEnterPictureInPicture);
   return content::PictureInPictureResult::kSuccess;
 }
 
@@ -401,8 +400,15 @@ void PictureInPictureWindowManager::CreateWindowInternal(
     content::WebContents* web_contents) {
   video_web_contents_observer_ =
       std::make_unique<VideoWebContentsObserver>(this, web_contents);
-  pip_window_controller_ = content::PictureInPictureWindowController::
-      GetOrCreateVideoPictureInPictureController(web_contents);
+  auto* video_pip_window_controller =
+      content::PictureInPictureWindowController::
+          GetOrCreateVideoPictureInPictureController(web_contents);
+
+  video_pip_window_controller->SetOnWindowCreatedNotifyObserversCallback(
+      base::BindOnce(&PictureInPictureWindowManager::
+                         NotifyObserversOnEnterPictureInPicture,
+                     base::Unretained(this)));
+  pip_window_controller_ = video_pip_window_controller;
 }
 
 void PictureInPictureWindowManager::CloseWindowInternal() {
@@ -496,6 +502,12 @@ void PictureInPictureWindowManager::CreateOcclusionTrackerIfNecessary() {
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void PictureInPictureWindowManager::NotifyObserversOnEnterPictureInPicture() {
+  for (Observer& observer : observers_) {
+    observer.OnEnterPictureInPicture();
+  }
+}
 
 PictureInPictureWindowManager::PictureInPictureWindowManager() = default;
 

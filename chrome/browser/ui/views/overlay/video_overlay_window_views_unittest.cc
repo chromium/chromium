@@ -116,6 +116,7 @@ class TestVideoPictureInPictureWindowController
   const gfx::Rect& GetSourceBounds() const override { return source_bounds_; }
   std::optional<gfx::Rect> GetWindowBounds() override { return std::nullopt; }
   std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
+  void SetOnWindowCreatedNotifyObserversCallback(base::OnceClosure) override {}
 
  private:
   raw_ptr<content::WebContents> web_contents_;

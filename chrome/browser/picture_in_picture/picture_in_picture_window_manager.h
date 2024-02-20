@@ -175,6 +175,9 @@ class PictureInPictureWindowManager {
     observers_.RemoveObserver(observer);
   }
 
+  // Notify observers that picture-in-picture window is created.
+  void NotifyObserversOnEnterPictureInPicture();
+
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutoPipSettingOverlayView> GetOverlayView(
       const gfx::Rect& browser_view_overridden_bounds,
@@ -215,13 +218,6 @@ class PictureInPictureWindowManager {
   // There MUST be a window open.
   // This is suffixed with "Internal" to keep consistency with the method above.
   void CloseWindowInternal();
-
-  template <typename Functor>
-  void NotifyObservers(const Functor& functor) {
-    for (Observer& observer : observers_) {
-      std::invoke(functor, observer);
-    }
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // Called when the document PiP parent web contents is being destroyed.

@@ -47,6 +47,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -1054,10 +1055,10 @@ TEST_F(AutofillPopupControllerImplTest,
 TEST_F(AutofillPopupControllerImplTest,
        CheckBoundsOverlapWithPictureInPicture) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
-  EXPECT_CALL(client().popup_view(), OverlapsWithPictureInPictureWindow);
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
-  picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());
+  EXPECT_CALL(client().popup_view(), OverlapsWithPictureInPictureWindow);
+  picture_in_picture_window_manager->NotifyObserversOnEnterPictureInPicture();
 }
 
 TEST_F(AutofillPopupControllerImplTest,

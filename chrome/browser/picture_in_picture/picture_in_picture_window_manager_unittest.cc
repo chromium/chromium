@@ -10,6 +10,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_video_picture_in_picture_window_controller_impl.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,9 +63,18 @@ class PictureInPictureWindowManagerTest
 
     SetContents(CreateTestWebContents());
     child_web_contents_ = CreateTestWebContents();
+
+    auto mock_video_picture_in_picture_controller = std::make_unique<
+        content::MockVideoPictureInPictureWindowControllerImpl>(web_contents());
+    mock_video_picture_in_picture_controller_ =
+        mock_video_picture_in_picture_controller.get();
+    web_contents()->SetUserData(
+        mock_video_picture_in_picture_controller->UserDataKey(),
+        std::move(mock_video_picture_in_picture_controller));
   }
 
   void TearDown() override {
+    mock_video_picture_in_picture_controller_ = nullptr;
     DeleteContents();
     child_web_contents_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -74,8 +84,15 @@ class PictureInPictureWindowManagerTest
     return child_web_contents_.get();
   }
 
+  content::MockVideoPictureInPictureWindowControllerImpl*
+  mock_video_picture_in_picture_controller() const {
+    return mock_video_picture_in_picture_controller_.get();
+  }
+
  private:
   std::unique_ptr<content::WebContents> child_web_contents_;
+  raw_ptr<content::MockVideoPictureInPictureWindowControllerImpl>
+      mock_video_picture_in_picture_controller_;
 };
 
 }  // namespace
@@ -145,11 +162,9 @@ TEST_F(PictureInPictureWindowManagerTest,
 TEST_F(PictureInPictureWindowManagerTest, OnEnterVideoPictureInPicture) {
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
-  MockPictureInPictureWindowManagerObserver observer;
-  PictureInPictureWindowManagerdObservation observation{&observer};
-  observation.Observe(picture_in_picture_window_manager);
-  EXPECT_CALL(observer, OnEnterPictureInPicture).Times(1);
 
+  EXPECT_CALL(*mock_video_picture_in_picture_controller(),
+              SetOnWindowCreatedNotifyObserversCallback);
   picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());
 }
 

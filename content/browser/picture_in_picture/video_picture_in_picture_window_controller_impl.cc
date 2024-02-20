@@ -270,6 +270,10 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
   SetShowPlayPauseButton(show_play_pause_button);
   Show();
 
+  if (on_window_created_notify_observers_callback_) {
+    std::move(on_window_created_notify_observers_callback_).Run();
+  }
+
   // TODO(crbug.com/1331248): Rather than set this synchronously, we should call
   // back with the bounds once the window provides them.
   *window_size = GetSize();
@@ -500,6 +504,13 @@ void VideoPictureInPictureWindowControllerImpl::
   window_->SetPlayPauseButtonVisibility((media_session_action_pause_handled_ &&
                                          media_session_action_play_handled_) ||
                                         always_show_play_pause_button_);
+}
+
+void VideoPictureInPictureWindowControllerImpl::
+    SetOnWindowCreatedNotifyObserversCallback(
+        base::OnceClosure on_window_created_notify_observers_callback) {
+  on_window_created_notify_observers_callback_ =
+      std::move(on_window_created_notify_observers_callback);
 }
 
 WebContentsImpl*
