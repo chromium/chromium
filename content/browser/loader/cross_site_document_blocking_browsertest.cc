@@ -51,7 +51,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/corb/orb_impl.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -64,8 +63,6 @@ namespace content {
 
 using testing::Not;
 using testing::HasSubstr;
-using Action = network::corb::CrossOriginReadBlocking::Action;
-using CorbMimeType = network::corb::CrossOriginReadBlocking::MimeType;
 
 namespace {
 

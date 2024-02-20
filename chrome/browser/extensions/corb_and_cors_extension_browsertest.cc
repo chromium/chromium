@@ -68,7 +68,6 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
-#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom-shared.h"
@@ -115,7 +114,6 @@ std::string PopString(content::DOMMessageQueue* message_queue) {
 
 }  // namespace
 
-using CORBAction = network::corb::CrossOriginReadBlocking::Action;
 using ::testing::HasSubstr;
 
 class CorbAndCorsExtensionTestBase : public ExtensionBrowserTest {
