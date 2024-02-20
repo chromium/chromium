@@ -55,7 +55,7 @@ class GCTaskObserver final : public Thread::TaskObserver {
   }
 
  private:
-  int nesting_;
+  int nesting_ = 0;
 };
 
 class GCTaskRunner final {
