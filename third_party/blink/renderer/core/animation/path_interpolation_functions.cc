@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/svg_path_seg_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/svg_path.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
@@ -206,8 +207,9 @@ void PathInterpolationFunctions::Composite(
     const InterpolationType& type,
     const InterpolationValue& value) {
   const auto& list = To<InterpolableList>(*value.interpolable_value);
-  double neutral_component =
-      To<InterpolableNumber>(list.Get(kPathNeutralIndex))->Value();
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
+  double neutral_component = To<InterpolableNumber>(list.Get(kPathNeutralIndex))
+                                 ->Value(CSSToLengthConversionData());
 
   if (neutral_component == 0) {
     underlying_value_owner.Set(type, value);
