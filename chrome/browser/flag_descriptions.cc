@@ -7984,6 +7984,12 @@ const char kUnoDesktopDescription[] =
     "Enables the UNO model on Desktop. This is currently an experiment in a "
     "prototype stage in order to validate the model.";
 
+const char kExplicitBrowserSigninUIOnDesktopName[] =
+    "Explicit Browser Signin UI On Desktop";
+const char kExplicitBrowserSigninUIOnDesktopDescription[] =
+    "Enables the UNO model on Desktop. Used for the launch of the UNO model on "
+    "Desktop, as well as for the later phases of the experiment.";
+
 const char kDesktopPWAsUserLinkCapturingName[] = "Desktop PWA Link Capturing";
 const char kDesktopPWAsUserLinkCapturingDescription[] =
     "Enables opening links from Chrome in an installed PWA";

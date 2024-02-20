@@ -15993,6 +15993,7 @@ from previous Chrome versions.
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
   <int value="-2138128164" label="FeedbackOnContinueSectionRemove:enabled"/>
   <int value="-2136173537" label="QuickAnswers:enabled"/>
+  <int value="-2135698467" label="ExplicitBrowserSigninUIOnDesktop:enabled"/>
   <int value="-2135375480" label="LocalPrinterObserving:enabled"/>
   <int value="-2135013329" label="StylusRichGestures:disabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
@@ -17499,6 +17500,7 @@ from previous Chrome versions.
   <int value="-1465138299" label="GifRecording:disabled"/>
   <int value="-1464860971" label="BluetoothCoredump:enabled"/>
   <int value="-1464832541" label="EnableFuzzyAppSearch:disabled"/>
+  <int value="-1463913269" label="ExplicitBrowserSigninUIOnDesktop:disabled"/>
   <int value="-1463489219" label="OfflinePagesCTSuppressNotifications:enabled"/>
   <int value="-1463410070" label="IPH_DemoMode:enabled"/>
   <int value="-1463286459" label="LogUrlScoringSignals:enabled"/>

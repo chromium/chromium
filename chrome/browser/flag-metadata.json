@@ -4069,6 +4069,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "explicit-browser-signin-ui-on-desktop",
+    "owners": [ "droger@chromium.org", "gabolvr@google.com", "uno-desktop@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "expose-out-of-process-video-decoding-to-lacros",
     "owners": [ "pmolinalopez@chromium.org", "andrescj@chromium.org" ],
     "expiry_milestone": 128

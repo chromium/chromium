@@ -4618,6 +4618,9 @@ extern const char kThirdPartyProfileManagementDescription[];
 extern const char kUnoDesktopName[];
 extern const char kUnoDesktopDescription[];
 
+extern const char kExplicitBrowserSigninUIOnDesktopName[];
+extern const char kExplicitBrowserSigninUIOnDesktopDescription[];
+
 extern const char kDesktopPWAsUserLinkCapturingName[];
 extern const char kDesktopPWAsUserLinkCapturingDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

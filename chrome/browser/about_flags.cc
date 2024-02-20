@@ -10476,6 +10476,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUnoDesktopDescription, kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(switches::kUnoDesktop)},
 
+    {"explicit-browser-signin-ui-on-desktop",
+     flag_descriptions::kExplicitBrowserSigninUIOnDesktopName,
+     flag_descriptions::kExplicitBrowserSigninUIOnDesktopDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(switches::kExplicitBrowserSigninUIOnDesktop)},
+
     {"enable-user-link-capturing-pwa",
      flag_descriptions::kDesktopPWAsUserLinkCapturingName,
      flag_descriptions::kDesktopPWAsUserLinkCapturingDescription,
