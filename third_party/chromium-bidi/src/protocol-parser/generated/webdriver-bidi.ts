@@ -1165,6 +1165,10 @@ export namespace Network {
   export const AddInterceptParametersSchema = z.lazy(() =>
     z.object({
       phases: z.array(Network.InterceptPhaseSchema).min(1),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
       urlPatterns: z.array(Network.UrlPatternSchema).optional(),
     })
   );

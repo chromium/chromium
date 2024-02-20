@@ -954,6 +954,10 @@ export namespace Network {
 export namespace Network {
   export type AddInterceptParameters = {
     phases: [Network.InterceptPhase, ...Network.InterceptPhase[]];
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
     urlPatterns?: [...Network.UrlPattern[]];
   };
 }
