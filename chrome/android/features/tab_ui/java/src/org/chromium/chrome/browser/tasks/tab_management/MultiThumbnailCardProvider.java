@@ -19,6 +19,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -26,6 +27,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -443,21 +445,39 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             boolean writeToCache,
             boolean isSelected) {
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
-        Tab tab = TabModelUtils.getTabById(filter, tabId);
-        PseudoTab pseudoTab = (tab != null) ? PseudoTab.fromTab(tab) : PseudoTab.fromTabId(tabId);
-        if (pseudoTab == null
-                || PseudoTab.getRelatedTabs(mContext, pseudoTab, filter).size() == 1) {
-            mTabContentManager.getTabThumbnailWithCallback(
-                    tabId, thumbnailSize, finalCallback, forceUpdate, writeToCache);
+        PseudoTab pseudoTab = null;
+        boolean useMultiThumbnail = false;
+        if (filter.isTabModelRestored()) {
+            Tab tab = TabModelUtils.getTabById(filter.getTabModel(), tabId);
+            useMultiThumbnail = tab != null && filter.isTabInTabGroup(tab);
+            pseudoTab = PseudoTab.fromTab(tab);
+        } else {
+            pseudoTab = PseudoTab.fromTabId(tabId);
+            useMultiThumbnail = isPseudoTabInTabGroup(filter, pseudoTab);
+        }
+        if (useMultiThumbnail) {
+            assert pseudoTab != null;
+            new MultiThumbnailFetcher(
+                            pseudoTab,
+                            thumbnailSize,
+                            finalCallback,
+                            forceUpdate,
+                            writeToCache,
+                            isSelected)
+                    .fetch();
             return;
         }
-        new MultiThumbnailFetcher(
-                        pseudoTab,
-                        thumbnailSize,
-                        finalCallback,
-                        forceUpdate,
-                        writeToCache,
-                        isSelected)
-                .fetch();
+        mTabContentManager.getTabThumbnailWithCallback(
+                tabId, thumbnailSize, finalCallback, forceUpdate, writeToCache);
+    }
+
+    private boolean isPseudoTabInTabGroup(
+            @NonNull TabModelFilter filter, @Nullable PseudoTab pseudoTab) {
+        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+            return pseudoTab != null && pseudoTab.getTabGroupId() != null;
+        } else {
+            return pseudoTab != null
+                    && PseudoTab.getRelatedTabs(mContext, pseudoTab, filter).size() > 1;
+        }
     }
 }

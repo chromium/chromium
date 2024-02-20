@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -207,6 +208,19 @@ public class PseudoTab {
         }
         assert mTabId != null;
         return TabAttributeCache.getRootId(mTabId);
+    }
+
+    /**
+     * Get the tab group ID of the {@link PseudoTab}.
+     *
+     * @return The tab group ID
+     */
+    public @Nullable Token getTabGroupId() {
+        if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
+            return mTab.get().getTabGroupId();
+        }
+        assert mTabId != null;
+        return TabAttributeCache.getTabGroupId(mTabId);
     }
 
     /**
