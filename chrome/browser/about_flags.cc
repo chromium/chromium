@@ -10315,7 +10315,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"camera-mic-preview", flag_descriptions::kCameraMicPreviewName,
      flag_descriptions::kCameraMicPreviewDescription,
      static_cast<unsigned short>(kOsMac | kOsWin | kOsLinux),
-     FEATURE_VALUE_TYPE(features::kCameraMicPreview)},
+     FEATURE_VALUE_TYPE(blink::features::kCameraMicPreview)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
