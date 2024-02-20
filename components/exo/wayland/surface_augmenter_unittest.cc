@@ -135,7 +135,6 @@ class ShellClientData : public ClientData {
   std::unique_ptr<test::TestBuffer> parent_buffer;
   std::unique_ptr<test::TestBuffer> child_buffer;
 
-  std::unique_ptr<test::TestBuffer> child2_buffer;
   std::unique_ptr<wl_surface> child2_wl_surface;
   std::unique_ptr<wl_subsurface> child2_wl_subsurface;
 
@@ -145,16 +144,8 @@ class ShellClientData : public ClientData {
   std::unique_ptr<zaura_toplevel> aura_toplevel_;
 };
 
-// Flaky on Linux & ChromeOS MSan: https://crbug.com/1491391.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(MEMORY_SANITIZER)
-#define MAYBE_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree \
-  DISABLED_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree
-#else
-#define MAYBE_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree \
-  SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree
-#endif
 TEST_F(SurfaceAugmenterTest,
-       MAYBE_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree) {
+       SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree) {
   //----------------------------------------------------------------
   //  Create a surface (top level).
   //----------------------------------------------------------------
@@ -252,12 +243,8 @@ TEST_F(SurfaceAugmenterTest,
   test::ResourceKey child2_surface_key;
   PostToClientAndWait([&](test::TestClient* client) {
     auto* data = client->GetDataAs<ShellClientData>();
-
-    data->child2_buffer =
-        client->shm_buffer_factory()->CreateBuffer(0, 256, 256);
     data->child2_wl_surface.reset(
         wl_compositor_create_surface(client->compositor()));
-
     child2_surface_key =
         test::client_util::GetResourceKey(data->child2_wl_surface.get());
   });
