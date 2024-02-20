@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/linux/window_frame_provider.h"
 
@@ -15,6 +16,7 @@ class BrowserFrameViewLayoutLinuxNative;
 // A specialization of BrowserFrameViewLinux that is also able to
 // render frame buttons using the native toolkit.
 class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
+  METADATA_HEADER(BrowserFrameViewLinuxNative, BrowserFrameViewLinux)
  public:
   BrowserFrameViewLinuxNative(
       BrowserFrame* frame,

@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/linux/linux_ui.h"
@@ -119,3 +120,6 @@ float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
 int BrowserFrameViewLinux::GetTranslucentTopAreaHeight() const {
   return 0;
 }
+
+BEGIN_METADATA(BrowserFrameViewLinux)
+END_METADATA
