@@ -177,7 +177,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
     `avd.py` disables the emulator log by default. When this option is used,
     emulator log will be enabled. It is useful when the emulator cannot be
     launched correctly. See `emulator -help-debug-tags` for a full list of tags.
-    Use `--debug-tags="*"` if you want to output all logs (warning: it is quite
+    Use `--debug-tags=all` if you want to output all logs (warning: it is quite
     verbose).
 
     ```
