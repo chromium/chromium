@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -91,25 +90,10 @@ bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
     return false;
   }
 
-  // Do not show if the prompt period has yet to pass since the user previously
-  // dismissed the infobar.
+  // Do not show if the user has previously declined the prompt.
   int64_t last_dismissed_value =
       profile->GetPrefs()->GetInt64(prefs::kDefaultBrowserLastDeclined);
-  if (last_dismissed_value) {
-    int period_days = 0;
-    base::StringToInt(base::GetFieldTrialParamValue("DefaultBrowserInfobar",
-                                                    "RefreshPeriodDays"),
-                      &period_days);
-    if (period_days <= 0 || period_days == std::numeric_limits<int>::max())
-      return false;  // Failed to parse a reasonable period.
-    base::Time show_on_or_after =
-        base::Time::FromInternalValue(last_dismissed_value) +
-        base::Days(period_days);
-    if (base::Time::Now() < show_on_or_after)
-      return false;
-  }
-
-  return true;
+  return last_dismissed_value >= 0;
 }
 
 void OnCheckIsDefaultBrowserFinished(
