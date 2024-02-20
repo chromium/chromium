@@ -193,8 +193,6 @@ void TabContainerImpl::SetTabPinned(int model_index, TabPinned pinned) {
 
   if (GetWidget() && GetWidget()->IsVisible()) {
     ExitTabClosingMode();
-
-    AnimateToIdealBounds();
   } else {
     CompleteAnimationAndLayout();
   }
@@ -699,6 +697,7 @@ void TabContainerImpl::EnterTabClosingMode(std::optional<int> override_width,
 void TabContainerImpl::ExitTabClosingMode() {
   in_tab_close_ = false;
   override_available_width_for_tabs_.reset();
+  AnimateToIdealBounds();
 }
 
 void TabContainerImpl::SetTabSlotVisibility() {
@@ -1386,17 +1385,6 @@ void TabContainerImpl::ResizeLayoutTabs() {
   RemoveMessageLoopObserver();
 
   ExitTabClosingMode();
-  int pinned_tab_count = layout_helper_->GetPinnedTabCount();
-  if (pinned_tab_count == GetTabCount()) {
-    // Only pinned tabs, we know the tab widths won't have changed (all
-    // pinned tabs have the same width), so there is nothing to do.
-    return;
-  }
-  // Don't try and avoid layout based on tab sizes. If tabs are small enough
-  // then the width of the active tab may not change, but other widths may
-  // have. This is particularly important if we've overflowed (all tabs are at
-  // the min).
-  AnimateToIdealBounds();
 }
 
 void TabContainerImpl::ResizeLayoutTabsFromTouch() {
