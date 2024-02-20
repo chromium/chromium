@@ -115,11 +115,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
                                int extended_reason_code,
                                base::StringPiece custom_reason);
 
-  // Sets the forwarding client to receive all subsequent notifications.
-  void set_forwarding_client(network::mojom::URLLoaderClient* client) {
-    forwarding_client_ = client;
-  }
-
   bool response_intercepted() const { return response_intercepted_; }
 
   // Indicates a restart did occur due to a Critical-CH HTTP Header.
@@ -232,7 +227,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // NOTE: This may point to a native implementation (instead of a Mojo proxy
   // object). And it is possible that the implementation of |forwarding_client_|
   // destroys this object synchronously when this object is calling into it.
-  raw_ptr<network::mojom::URLLoaderClient, DanglingUntriaged>
+  const raw_ptr<network::mojom::URLLoaderClient, DanglingUntriaged>
       forwarding_client_;
   mojo::Remote<network::mojom::URLLoader> url_loader_;
 
