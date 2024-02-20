@@ -549,9 +549,16 @@ bool MixedContentChecker::ShouldBlockFetch(
           network::features::kPrivateNetworkAccessPermissionPrompt) &&
       RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled(
           frame->DomWindow())) {
-    if (target_address_space ==
-            network::mojom::blink::IPAddressSpace::kPrivate ||
-        target_address_space == network::mojom::blink::IPAddressSpace::kLocal) {
+    // TODO(crbug.com/323583084): Re-enable PNA permission prompt for documents
+    // fetched via service worker.
+    if (!frame->Loader()
+             .GetDocumentLoader()
+             ->GetResponse()
+             .WasFetchedViaServiceWorker() &&
+        (target_address_space ==
+             network::mojom::blink::IPAddressSpace::kPrivate ||
+         target_address_space ==
+             network::mojom::blink::IPAddressSpace::kLocal)) {
       UseCounter::Count(frame->GetDocument(),
                         WebFeature::kPrivateNetworkAccessPermissionPrompt);
       allowed = true;
