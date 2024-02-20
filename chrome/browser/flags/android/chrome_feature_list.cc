@@ -837,7 +837,7 @@ BASE_FEATURE(kTabletToolbarReordering,
 
 BASE_FEATURE(kTabStripStartupRefactoring,
              "TabStripStartupRefactoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled, but often disabled in tests to reduce animation flakes and test
 // low-end device behavior where this animation is disabled.

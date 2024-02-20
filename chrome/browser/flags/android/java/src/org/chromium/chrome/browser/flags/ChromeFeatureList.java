@@ -639,7 +639,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_RESUMPTION_MODULE_ANDROID, false);
     public static final CachedFlag sTabStateFlatBuffer = newCachedFlag(TAB_STATE_FLATBUFFER, false);
     public static final CachedFlag sTabStripStartupRefactoring =
-            newCachedFlag(TAB_STRIP_STARTUP_REFACTORING, false);
+            newCachedFlag(TAB_STRIP_STARTUP_REFACTORING, true);
     public static final CachedFlag sTabletToolbarIncognitoStatus =
             newCachedFlag(TABLET_TOOLBAR_INCOGNITO_STATUS, true);
     public static final CachedFlag sTabletToolbarReordering =
