@@ -59,7 +59,6 @@ generate_grd("build_oobe_conditional_grd") {
 preprocess_if_expr("preprocess_conditional") {
   deps = [
     "components/oobe_vars:css_wrapper_files",
-    "debug:copy_js",
     "debug:web_components",
     "test_api:copy_js",
   ]
