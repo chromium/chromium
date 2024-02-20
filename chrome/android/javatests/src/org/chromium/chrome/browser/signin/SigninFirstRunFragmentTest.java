@@ -38,6 +38,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ProgressBar;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
@@ -844,17 +845,7 @@ public class SigninFirstRunFragmentTest {
         clickContinueButton(continueAsText);
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
-        onView(withId(R.id.fre_signin_progress_spinner)).check(matches(isDisplayed()));
-        onView(withText(R.string.fre_signing_in)).check(matches(isDisplayed()));
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_subtitle)).check(matches(isDisplayed()));
-        onView(withText(TEST_EMAIL1)).check(matches(not(isDisplayed())));
-        onView(withText(FULL_NAME1)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.signin_fre_selected_account_expand_icon))
-                .check(matches(not(isDisplayed())));
-        onView(withText(continueAsText)).check(matches(not(isDisplayed())));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
+        checkFragmentWithSignInSpinner(TEST_EMAIL1, FULL_NAME1, continueAsText);
     }
 
     @Test
@@ -969,7 +960,8 @@ public class SigninFirstRunFragmentTest {
         clickContinueButton(continueAsText);
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
-        verify(mFirstRunPageDelegateMock, timeout(2000)).advanceToNextPage();
+        verify(mFirstRunPageDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .advanceToNextPage();
     }
 
     @Test
@@ -999,6 +991,35 @@ public class SigninFirstRunFragmentTest {
         checkFragmentWithSelectedAccount(TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
         verify(mFirstRunPageDelegateMock)
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentSigninWhenAddedAccountIsNotYetAvailable() {
+        // This will freeze AccountManagerFacade with the currently available list of accounts.
+        // The added account from add account flow later on will not be available.
+        mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ true);
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, TEST_EMAIL1);
+        launchActivityWithFragment();
+        onView(withText(R.string.signin_add_account_to_device)).perform(click());
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
+
+        final String continueAsText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.sync_promo_continue_as, TEST_EMAIL1);
+        clickContinueButton(continueAsText);
+
+        // The click on continue button should be a no-op.
+        verify(mFirstRunPageDelegateMock, never()).advanceToNextPage();
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
+
+        // Allow account list update and the continue button starts sign-in.
+        mSigninTestRule.unblockGetCoreAccountInfos();
+        clickContinueButton(continueAsText);
+        verify(mFirstRunPageDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .advanceToNextPage();
+        checkFragmentWithSignInSpinner(TEST_EMAIL1, /* fullName= */ null, continueAsText);
     }
 
     @Test
@@ -1321,6 +1342,23 @@ public class SigninFirstRunFragmentTest {
         verify(mSigninManagerMock, never()).signin(any(CoreAccountInfo.class), anyInt(), any());
         verify(mSigninManagerMock, never())
                 .signinAndEnableSync(any(CoreAccountInfo.class), anyInt(), any());
+    }
+
+    private void checkFragmentWithSignInSpinner(
+            String email, @Nullable String fullName, String continueAsText) {
+        onView(withId(R.id.fre_signin_progress_spinner)).check(matches(isDisplayed()));
+        onView(withText(R.string.fre_signing_in)).check(matches(isDisplayed()));
+        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_subtitle)).check(matches(isDisplayed()));
+        onView(withText(email)).check(matches(not(isDisplayed())));
+        if (fullName != null) {
+            onView(withText(fullName)).check(matches(not(isDisplayed())));
+        }
+        onView(withId(R.id.signin_fre_selected_account_expand_icon))
+                .check(matches(not(isDisplayed())));
+        onView(withText(continueAsText)).check(matches(not(isDisplayed())));
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
     }
 
     private void checkFragmentWhenSigninIsDisabledByPolicy() {
