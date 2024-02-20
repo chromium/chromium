@@ -1763,15 +1763,24 @@
       status: "stable",
     },
     {
+      name: "FledgeCustomMaxAuctionAdComponents",
+    },
+    {
+      // Enables using a 'deprecatedRenderURLReplacements' field within the a
+      // Protected Audience ad auction config.
+      name: "FledgeDeprecatedRenderURLReplacements"
+    },
+    {
       name: "FledgeDirectFromSellerSignalsHeaderAdSlot",
       status: "stable",
     },
     {
       name: "FledgeFeatureDetection",
-      // This will likely have to be enabled based on an OR of many
-      // base::Features.
+      // FledgeFeatureDetection should be on if any of the features it aims
+      // to help detect is on.
+      implied_by: ["FledgeCustomMaxAuctionAdComponents",
+                   "FledgeDeprecatedRenderURLReplacements"],
       base_feature: "none",
-      public: true,
     },
     {
       name: "FledgeMultiBid",

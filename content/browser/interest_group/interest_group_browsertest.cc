@@ -9010,12 +9010,26 @@ class DeprecatedRenderURLReplacementsDisabledTest
  public:
   DeprecatedRenderURLReplacementsDisabledTest() {
     feature_list_.InitAndDisableFeature(
-        {blink::features::kEnableDeprecatedRenderURLReplacements});
+        {blink::features::kFledgeDeprecatedRenderURLReplacements});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsDisabledTest,
+                       FeatureDetection) {
+  const char kTestExpression[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'deprecatedRenderURLReplacements');
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(false, EvalJs(shell(), kTestExpression));
+}
 
 // Run a single ad auction and pass deprecatedRenderURLReplacements, and make
 // sure they do not have an effect since it is disabled.
@@ -9069,12 +9083,26 @@ class DeprecatedRenderURLReplacementsEnabledTest
  public:
   DeprecatedRenderURLReplacementsEnabledTest() {
     feature_list_.InitAndEnableFeature(
-        {blink::features::kEnableDeprecatedRenderURLReplacements});
+        {blink::features::kFledgeDeprecatedRenderURLReplacements});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
+                       FeatureDetection) {
+  const char kTestExpression[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'deprecatedRenderURLReplacements');
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(true, EvalJs(shell(), kTestExpression));
+}
 
 // Run a single ad auction with a winner and ensure the render url replacements
 // occur even if only one of the specified replacements is a match.
@@ -21988,6 +22016,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
 }
+
 class InterestGroupBFCacheBrowserTest : public InterestGroupBrowserTest {
  public:
   InterestGroupBFCacheBrowserTest() {
@@ -22067,13 +22096,16 @@ class InterestGroupAdComponentLimitBrowserTest
 
 IN_PROC_BROWSER_TEST_F(InterestGroupAdComponentLimitBrowserTest,
                        FeatureDetection) {
+  const char kTestExpression[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'adComponentsLimit');
+  )";
+
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/simple_page.html");
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  EXPECT_EQ(45, EvalJs(shell(),
-                       "navigator.protectedAudience.queryFeatureSupport('"
-                       "adComponentsLimit')"));
+  EXPECT_EQ(45, EvalJs(shell(), kTestExpression));
 }
 
 }  // namespace

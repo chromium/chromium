@@ -1648,9 +1648,7 @@ void CopyDeprecatedRenderURLReplacementsFromIdlToMojo(
     const mojom::blink::AuctionAdConfigAuctionId* auction_id,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnableDeprecatedRenderURLReplacements) ||
-      !input.hasDeprecatedRenderURLReplacements()) {
+  if (!input.hasDeprecatedRenderURLReplacements()) {
     // If the page passed no ad replacements, do nothing and pass an empty map.
     output.deprecated_render_url_replacements = mojom::blink::
         AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements::NewValue(
