@@ -75,8 +75,6 @@ class CheckForCancelledOrPausedDelegate
 
   void Resume() override {}
 
-  void PauseReadingBodyFromNet() override { cancelled_or_paused_ = true; }
-
   void RestartWithFlags(int additional_load_flags) override {
     cancelled_or_paused_ = true;
   }

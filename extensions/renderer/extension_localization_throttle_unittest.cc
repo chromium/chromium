@@ -79,8 +79,6 @@ class FakeDelegate : public blink::URLLoaderThrottle::Delegate {
       mojo::ScopedDataPipeConsumerHandle body) override {
     NOTREACHED();
   }
-  void PauseReadingBodyFromNet() override { NOTREACHED(); }
-  void ResumeReadingBodyFromNet() override { NOTREACHED(); }
   void InterceptResponse(
       mojo::PendingRemote<network::mojom::URLLoader> new_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>

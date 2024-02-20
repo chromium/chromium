@@ -16,8 +16,6 @@ void URLLoaderThrottle::Delegate::UpdateDeferredRequestHeaders(
 void URLLoaderThrottle::Delegate::UpdateDeferredResponseHead(
     network::mojom::URLResponseHeadPtr new_response_head,
     mojo::ScopedDataPipeConsumerHandle body) {}
-void URLLoaderThrottle::Delegate::PauseReadingBodyFromNet() {}
-void URLLoaderThrottle::Delegate::ResumeReadingBodyFromNet() {}
 
 void URLLoaderThrottle::Delegate::InterceptResponse(
     mojo::PendingRemote<network::mojom::URLLoader> new_loader,

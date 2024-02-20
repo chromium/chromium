@@ -192,8 +192,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,
       mojo::ScopedDataPipeConsumerHandle body);
-  void PauseReadingBodyFromNet(URLLoaderThrottle* throttle);
-  void ResumeReadingBodyFromNet(URLLoaderThrottle* throttle);
   void InterceptResponse(
       mojo::PendingRemote<network::mojom::URLLoader> new_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>
@@ -233,10 +231,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   std::vector<ThrottleEntry> throttles_;
   std::map<URLLoaderThrottle*, /*start=*/base::Time> deferring_throttles_;
-  // nullptr is used when this loader is directly requested to pause reading
-  // body from net by calling PauseReadingBodyFromNet().
-  std::set<raw_ptr<URLLoaderThrottle, SetExperimental>>
-      pausing_reading_body_from_net_throttles_;
 
   // NOTE: This may point to a native implementation (instead of a Mojo proxy
   // object). And it is possible that the implementation of |forwarding_client_|

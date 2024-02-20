@@ -214,21 +214,6 @@ class KeepAliveURLLoader::ThrottleDelegate final
                          loader_->GetWeakPtr()));
     }
   }
-  void PauseReadingBodyFromNet() override {
-    if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-      GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&KeepAliveURLLoader::PauseReadingBodyFromNet,
-                         loader_weak_ptr_factory_->GetWeakPtr()));
-      return;
-    }
-    if (IsLoaderAliveOnUI()) {
-      GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&KeepAliveURLLoader::PauseReadingBodyFromNet,
-                         loader_->GetWeakPtr()));
-    }
-  }
   void RestartWithFlags(int additional_load_flags) override { NOTREACHED(); }
   void RestartWithURLResetAndFlags(int additional_load_flags) override {
     NOTREACHED();

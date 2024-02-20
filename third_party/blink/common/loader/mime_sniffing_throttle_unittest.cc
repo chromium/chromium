@@ -97,8 +97,6 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
     updated_response_head_ = std::move(new_response_head);
     body_ = std::move(body);
   }
-  void PauseReadingBodyFromNet() override { NOTIMPLEMENTED(); }
-  void ResumeReadingBodyFromNet() override { NOTIMPLEMENTED(); }
   void InterceptResponse(
       mojo::PendingRemote<network::mojom::URLLoader> new_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>

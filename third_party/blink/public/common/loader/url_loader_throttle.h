@@ -83,11 +83,6 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
         network::mojom::URLResponseHeadPtr new_response_head,
         mojo::ScopedDataPipeConsumerHandle body);
 
-    // Pauses/resumes reading response body if the resource is fetched from
-    // network.
-    virtual void PauseReadingBodyFromNet();
-    virtual void ResumeReadingBodyFromNet();
-
     // Replaces the URLLoader and URLLoaderClient endpoints held by the
     // ThrottlingURLLoader instance.
     virtual void InterceptResponse(

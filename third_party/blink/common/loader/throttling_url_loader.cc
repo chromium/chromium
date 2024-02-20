@@ -186,22 +186,6 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
                                         std::move(body));
   }
 
-  void PauseReadingBodyFromNet() override {
-    if (!loader_)
-      return;
-
-    ScopedDelegateCall scoped_delegate_call(this);
-    loader_->PauseReadingBodyFromNet(throttle_);
-  }
-
-  void ResumeReadingBodyFromNet() override {
-    if (!loader_)
-      return;
-
-    ScopedDelegateCall scoped_delegate_call(this);
-    loader_->ResumeReadingBodyFromNet(throttle_);
-  }
-
   void InterceptResponse(
       mojo::PendingRemote<network::mojom::URLLoader> new_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>
@@ -441,14 +425,6 @@ void ThrottlingURLLoader::SetPriority(net::RequestPriority priority,
   url_loader_->SetPriority(priority, intra_priority_value);
 }
 
-void ThrottlingURLLoader::PauseReadingBodyFromNet() {
-  PauseReadingBodyFromNet(/*throttle=*/nullptr);
-}
-
-void ThrottlingURLLoader::ResumeReadingBodyFromNet() {
-  ResumeReadingBodyFromNet(/*throttle=*/nullptr);
-}
-
 network::mojom::URLLoaderClientEndpointsPtr ThrottlingURLLoader::Unbind() {
   return network::mojom::URLLoaderClientEndpoints::New(
       url_loader_.Unbind(), client_receiver_.Unbind());
@@ -608,9 +584,6 @@ void ThrottlingURLLoader::StartNow() {
 
   client_receiver_.set_disconnect_handler(base::BindOnce(
       &ThrottlingURLLoader::OnClientConnectionError, base::Unretained(this)));
-
-  if (!pausing_reading_body_from_net_throttles_.empty())
-    url_loader_->PauseReadingBodyFromNet();
 
   if (priority_info_) {
     auto priority_info = std::move(priority_info_);
@@ -1064,22 +1037,16 @@ void ThrottlingURLLoader::UpdateDeferredResponseHead(
   body_ = std::move(body);
 }
 
-void ThrottlingURLLoader::PauseReadingBodyFromNet(URLLoaderThrottle* throttle) {
-  if (pausing_reading_body_from_net_throttles_.empty() && url_loader_)
+void ThrottlingURLLoader::PauseReadingBodyFromNet() {
+  if (url_loader_) {
     url_loader_->PauseReadingBodyFromNet();
-
-  pausing_reading_body_from_net_throttles_.insert(throttle);
+  }
 }
 
-void ThrottlingURLLoader::ResumeReadingBodyFromNet(
-    URLLoaderThrottle* throttle) {
-  auto iter = pausing_reading_body_from_net_throttles_.find(throttle);
-  if (iter == pausing_reading_body_from_net_throttles_.end())
-    return;
-
-  pausing_reading_body_from_net_throttles_.erase(iter);
-  if (pausing_reading_body_from_net_throttles_.empty() && url_loader_)
+void ThrottlingURLLoader::ResumeReadingBodyFromNet() {
+  if (url_loader_) {
     url_loader_->ResumeReadingBodyFromNet();
+  }
 }
 
 void ThrottlingURLLoader::InterceptResponse(
