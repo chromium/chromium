@@ -390,6 +390,21 @@ void WarnIfSandboxIneffective(LocalDOMWindow* window) {
   // "allow-top-navigation" is set.
 }
 
+bool ShouldEmitNewNavigationHistogram(WebNavigationType navigation_type) {
+  switch (navigation_type) {
+    case kWebNavigationTypeBackForward:
+    case kWebNavigationTypeReload:
+    case kWebNavigationTypeRestore:
+    case kWebNavigationTypeFormResubmittedBackForward:
+    case kWebNavigationTypeFormResubmittedReload:
+      return false;
+    case kWebNavigationTypeLinkClicked:
+    case kWebNavigationTypeFormSubmitted:
+    case kWebNavigationTypeOther:
+      return true;
+  }
+}
+
 }  // namespace
 
 // Base class for body data received by the loader. This allows abstracting away
@@ -1874,6 +1889,7 @@ void DocumentLoader::StartLoadingInternal() {
 }
 
 void DocumentLoader::StartLoadingResponse() {
+  TRACE_EVENT0("loading", "DocumentLoader::StartLoadingResponse");
   // TODO(dcheng): Clean up the null checks in this helper.
   if (!frame_)
     return;
@@ -2569,6 +2585,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 }
 
 void DocumentLoader::CommitNavigation() {
+  TRACE_EVENT0("loading", "DocumentLoader::CommitNavigation");
+  base::ElapsedTimer timer;
   DCHECK_LT(state_, kCommitted);
   DCHECK(frame_->GetPage());
   DCHECK(!frame_->GetDocument() || !frame_->GetDocument()->IsActive());
@@ -2879,11 +2897,21 @@ void DocumentLoader::CommitNavigation() {
   // is available by tracking the execution context's lifetime.
   ProfilerGroup::InitializeIfEnabled(frame_->DomWindow());
 
+  if (Url().ProtocolIsInHTTPFamily() && frame_->IsOutermostMainFrame() &&
+      ShouldEmitNewNavigationHistogram(navigation_type_)) {
+    base::UmaHistogramTimes(
+        "Blink.DocumentLoader.CommitNavigationToStartLoadingResponse.Time"
+        ".OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS",
+        timer.Elapsed());
+  }
+
   // Load the document if needed.
   StartLoadingResponse();
 }
 
 void DocumentLoader::CreateParserPostCommit() {
+  TRACE_EVENT0("loading", "DocumentLoader::CreateParserPostCommit");
+  base::ElapsedTimer timer;
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       response_, *frame_->DomWindow());
 
@@ -2996,6 +3024,14 @@ void DocumentLoader::CreateParserPostCommit() {
 
   // The parser may have collected preloads in the background, flush them now.
   parser_->FlushPendingPreloads();
+
+  if (Url().ProtocolIsInHTTPFamily() && frame_->IsOutermostMainFrame() &&
+      ShouldEmitNewNavigationHistogram(navigation_type_)) {
+    base::UmaHistogramTimes(
+        "Blink.DocumentLoader.CreateParserPostCommit.Time"
+        ".OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS",
+        timer.Elapsed());
+  }
 }
 
 const AtomicString& DocumentLoader::MimeType() const {

@@ -1095,6 +1095,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Blink.DocumentLoader.CommitNavigationToStartLoadingResponse.Time.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
+    units="ms" expires_after="2024-05-20">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time between CommitNavigation to StartLoadingResponse in the renderer
+    process. This is recorded on each new navigation for http or https URLs in
+    OutermostMainFrame.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.DocumentLoader.CreateParserPostCommit.Time.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
+    units="ms" expires_after="2024-05-20">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent processing DocumentLoader::CreateParserPostCommit() in the
+    renderer process. This is recorded on each new navigation for http or https
+    URLs in OutermostMainFrame.
+  </summary>
+</histogram>
+
 <histogram name="Blink.EffectiveZoom" units="%" expires_after="2024-08-04">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>

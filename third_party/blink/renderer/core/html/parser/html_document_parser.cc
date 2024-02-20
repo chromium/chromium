@@ -1050,6 +1050,7 @@ void HTMLDocumentParser::Append(const String& input_source) {
 }
 
 void HTMLDocumentParser::FinishAppend() {
+  TRACE_EVENT0("blink", "HTMLDocumentParser::FinishAppend");
   if (ShouldPumpTokenizerNowForFinishAppend())
     PumpTokenizerIfPossible();
   else
@@ -1057,6 +1058,7 @@ void HTMLDocumentParser::FinishAppend() {
 }
 
 void HTMLDocumentParser::CommitPreloadedData() {
+  TRACE_EVENT0("blink", "HTMLDocumentParser::CommitPreloadedData");
   if (!IsPreloading())
     return;
 
