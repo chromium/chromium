@@ -123,8 +123,8 @@ void VolumeToVolumeMetadata(
 // FilePath. |render_frame_host| and |profile| are needed to obtain the
 // FileSystemContext currently in use.
 //
-// Local paths will look like "/home/chronos/user/Downloads/foo/bar.txt" or
-// "/special/drive/foo/bar.txt".
+// Local paths will look like "/home/chronos/user/MyFiles/Downloads/foo/bar.txt"
+// or "/special/drive/foo/bar.txt".
 base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
                                    Profile* profile,
                                    const GURL& url);
