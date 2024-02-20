@@ -140,6 +140,12 @@ that, our goal is to pass them actionable reports with little ambiguity.
     tracker.
   * If there are two open reports of the same issue, please merge as a duplicate
     in the direction of the oldest report.
+  * Use the `Mark as Duplicate` button at the upper right of the report pane.
+    This will provide a pop-up to input the bug number of the canonical report
+    that you are merging this report into as a duplicate of.
+    * Using `Mark as Duplicate` is the best practice for merging issues as
+      duplicates.
+
 * **Convert functional bugs to Type=Bug** For example, many reports are for
   crashes of a functional nature, rather than an exploitable security condition,
   such as most null pointer dereferences. Convert such reports from
