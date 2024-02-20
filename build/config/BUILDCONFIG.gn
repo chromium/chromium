@@ -674,6 +674,7 @@ set_defaults("component") {
 
 # Variables needed by rbe.gni aren't available at the top of this file.
 import("//build/toolchain/rbe.gni")
+import("//build/toolchain/siso.gni")
 
 # TODO(b/253987456): Add action_foreach support.
 foreach(_target_type, [ "action" ]) {
@@ -708,8 +709,10 @@ foreach(_target_type, [ "action" ]) {
 
       # If remote execution is desired, only run remotely when use_remoteexec
       # is enabled, and the environment is not nacl.
+      # Siso doesn't use action_remote.py wrapper because it sends requests to
+      # Reproxy directly without actions_remote.py/rewrapper.
       # TODO(b/259381924): Investigate enabling in nacl config.
-      if (allow_remote && use_remoteexec && !is_nacl) {
+      if (allow_remote && use_remoteexec && !is_nacl && !use_siso) {
         pool = "//build/toolchain:remote_action_pool($default_toolchain)"
         script = "//build/util/action_remote.py"
         inputs = [ invoker.script ]

@@ -182,52 +182,10 @@ def __strip_rewrapper(ctx, cmd):
             return
     ctx.actions.fix(args = args)
 
-def __rewrite_action_remote_py(ctx, cmd):
-    # Example command:
-    #   python3
-    #     ../../build/util/action_remote.py
-    #     ../../buildtools/reclient/rewrapper
-    #     --custom_processor=mojom_parser
-    #     --cfg=../../buildtools/reclient_cfgs/python/rewrapper_linux.cfg
-    #     --exec_root=/path/to/your/chromium/src/
-    #     --input_list_paths=gen/gpu/ipc/common/surface_handle__parser__remote_inputs.rsp
-    #     --output_list_paths=gen/gpu/ipc/common/surface_handle__parser__remote_outputs.rsp
-    #     python3
-    #     ../../mojo/public/tools/mojom/mojom_parser.py
-    #     [rest of mojo args]
-    # We don't need to care about:
-    #   --exec_root: Siso already knows this.
-    #   --custom_processor: Used by action_remote.py to apply mojo handling.
-    #   --[input,output]_list_paths: We should always use mojo.star for Siso.
-    wrapped_command_pos = -1
-    cfg_file = None
-    for i, arg in enumerate(cmd.args):
-        if i < 3:
-            continue
-
-        # TODO: b/300046750 - Fix GN args and/or implement input processor.
-        if arg == "--custom_processor=mojom_parser":
-            print("--custom_processor=mojom_parser is not supported. " +
-                  "Running locally. cmd=%s" % " ".join(cmd.args))
-            return
-        if arg.startswith("--cfg="):
-            cfg_file = ctx.fs.canonpath(arg.removeprefix("--cfg="))
-            continue
-        if not arg.startswith("-"):
-            wrapped_command_pos = i
-            break
-    if wrapped_command_pos < 1:
-        fail("couldn't find action command in %s" % str(cmd.args))
-    ctx.actions.fix(
-        args = cmd.args[wrapped_command_pos:],
-        reproxy_config = json.encode(rewrapper_cfg.parse(ctx, cfg_file)),
-    )
-
 __handlers = {
     "rewrite_rewrapper": __rewrite_rewrapper,
     "rewrite_rewrapper_large": __rewrite_rewrapper_large,
     "strip_rewrapper": __strip_rewrapper,
-    "rewrite_action_remote_py": __rewrite_action_remote_py,
 }
 
 def __use_remoteexec(ctx):
@@ -253,13 +211,6 @@ def __step_config(ctx, step_config):
             ],
             "remote": False,
             "handler": "strip_rewrapper",
-        },
-        # Handle generic action_remote calls.
-        {
-            "name": "action_remote",
-            "command_prefix": platform.python_bin + " ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper",
-            "handler": "rewrite_action_remote_py",
-            "remote_command": "python3",
         },
     ]
 
