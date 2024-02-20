@@ -124,7 +124,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // it calls this function and passes the response.
   void OnUpdateListResponse(const std::string& device_id,
                             FwupdUpdateList* updates) override;
-  void OnInstallResponse(bool success) override;
   // TODO(jimmyxgong): Implement this function to send property updates via
   // mojo.
   void OnPropertiesChangedResponse(FwupdProperties* properties) override;
@@ -172,6 +171,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
                      FirmwareInstallOptions options,
                      base::OnceCallback<void()> callback,
                      base::File patch_file);
+
+  void OnInstallResponse(bool success);
 
   void CreateLocalPatchFile(const base::FilePath& cache_path,
                             const std::string& device_id,

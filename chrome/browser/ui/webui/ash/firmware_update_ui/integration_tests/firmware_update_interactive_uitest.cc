@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 
 namespace ash {
@@ -38,14 +38,9 @@ class FirmwareUpdateInteractiveUiTest : public InteractiveAshTest {
     // Ensure the OS Settings system web app (SWA) is installed.
     InstallSystemApps();
 
-    fwupd_client_ = FwupdClient::Get();
-    CHECK(fwupd_client_);
-  }
-
-  void TearDownOnMainThread() override {
-    fwupd_client_ = nullptr;
-
-    InteractiveAshTest::TearDownOnMainThread();
+    // Ensure that the Fake FwupdClient is running.
+    CHECK(FwupdClient::GetFake());
+    FwupdClient::GetFake()->set_defer_install_update_callback(true);
   }
 
   auto TriggerFwupdPropertiesChange(uint32_t percentage, FwupdStatus status) {
@@ -72,14 +67,11 @@ class FirmwareUpdateInteractiveUiTest : public InteractiveAshTest {
     }));
   }
 
-  FwupdClient* fwupd_client() const { return fwupd_client_; }
+  FakeFwupdClient* fwupd_client() const { return FwupdClient::GetFake(); }
 
  protected:
   ui::ElementIdentifier webcontents_id_;
   base::test::ScopedFeatureList feature_list_;
-
- private:
-  raw_ptr<FwupdClient> fwupd_client_ = nullptr;
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
@@ -140,9 +132,7 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTest,
           ClickElement(webcontents_id_, kConfirmationDialogNextButtonQuery),
           Log("Waiting for FwupdClient to register the update..."),
           PollState(kFwupdClientUpdateState,
-                    [this]() {
-                      return fwupd_client()->HasUpdateStartedForTesting();
-                    }),
+                    [this]() { return fwupd_client()->has_update_started(); }),
           WaitForState(kFwupdClientUpdateState, true),
           Log("Triggering Fwupd properties change."),
           TriggerFwupdPropertiesChange(/*percentage=*/50,

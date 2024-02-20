@@ -35,6 +35,8 @@ namespace ash {
 using FirmwareInstallOptions = std::map<std::string, bool>;
 using FwupdStringToRequestIdMap = std::map<std::string, DeviceRequestId>;
 
+class FakeFwupdClient;
+
 // FwupdClient is used for handling signals from the fwupd daemon.
 class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
     : public chromeos::DBusClient {
@@ -45,7 +47,6 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
     virtual void OnDeviceListResponse(FwupdDeviceList* devices) = 0;
     virtual void OnUpdateListResponse(const std::string& device_id,
                                       FwupdUpdateList* updates) = 0;
-    virtual void OnInstallResponse(bool success) = 0;
     virtual void OnPropertiesChangedResponse(FwupdProperties* properties) = 0;
     virtual void OnDeviceRequestResponse(FwupdRequest request) = 0;
   };
@@ -58,6 +59,9 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
 
   // Returns the global instance if initialized. May return null.
   static FwupdClient* Get();
+
+  // Returns the global fake instance if initialized. May return null.
+  static FakeFwupdClient* GetFake();
 
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
@@ -79,17 +83,12 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
   // Query fwupd for devices that are currently connected.
   virtual void RequestDevices() = 0;
 
+  // Install an update for |device_id|. Invokes |callback| when the operation
+  // completes.
   virtual void InstallUpdate(const std::string& device_id,
                              base::ScopedFD file_descriptor,
-                             FirmwareInstallOptions options) = 0;
-
-  // The following three member functions are used in FakeFwupdClient, and are
-  // functionally no-ops outside of a testing environment.
-  virtual void TriggerPropertiesChangeForTesting(uint32_t percentage,
-                                                 uint32_t status) = 0;
-  virtual void TriggerSuccessfulUpdateForTesting() = 0;
-  virtual bool HasUpdateStartedForTesting() = 0;
-  virtual void EmitDeviceRequestForTesting(uint32_t device_request_id) = 0;
+                             FirmwareInstallOptions options,
+                             base::OnceCallback<void(bool)> callback) = 0;
 
  protected:
   friend class FwupdClientTest;

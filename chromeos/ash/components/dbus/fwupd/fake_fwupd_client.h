@@ -25,19 +25,31 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
   void RequestDevices() override;
   void InstallUpdate(const std::string& device_id,
                      base::ScopedFD file_descriptor,
-                     FirmwareInstallOptions options) override;
+                     FirmwareInstallOptions options,
+                     base::OnceCallback<void(bool)> callback) override;
 
-  void TriggerPropertiesChangeForTesting(uint32_t percentage,
-                                         uint32_t status) override;
-  void TriggerSuccessfulUpdateForTesting() override;
-  bool HasUpdateStartedForTesting() override;
-  void EmitDeviceRequestForTesting(uint32_t device_request_id) override;
+  void TriggerPropertiesChangeForTesting(uint32_t percentage, uint32_t status);
+  void TriggerSuccessfulUpdateForTesting();
+  void EmitDeviceRequestForTesting(uint32_t device_request_id);
+
+  bool has_update_started() const { return has_update_started_; }
+
+  void set_defer_install_update_callback(bool new_value) {
+    defer_install_update_callback_ = new_value;
+  }
 
  private:
   void SetFwupdFeatureFlags() override;
 
+  // True if install update callbacks should be deferred. Call
+  // TriggerSuccessfulUpdateForTesting to invoke the callback.
+  bool defer_install_update_callback_ = false;
+
   // True if InstallUpdate has been called.
   bool has_update_started_ = false;
+
+  // Callback to run when InstallUpdate completes.
+  base::OnceCallback<void(bool)> install_update_callback_;
 
   // The temporary directory where fake update files are created.
   base::ScopedTempDir temp_directory_;

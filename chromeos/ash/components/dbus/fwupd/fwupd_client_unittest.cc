@@ -6,10 +6,12 @@
 
 #include <cstdint>
 #include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
@@ -62,7 +64,6 @@ class MockObserver : public ash::FwupdClient::Observer {
               OnUpdateListResponse,
               (const std::string& device_id, ash::FwupdUpdateList* updates),
               (override));
-  MOCK_METHOD(void, OnInstallResponse, (bool success), (override));
   MOCK_METHOD(void,
               OnPropertiesChangedResponse,
               (ash::FwupdProperties * properties),
@@ -632,14 +633,6 @@ TEST_F(FwupdClientTest, BadFormatChecksumOnlyComma) {
 }
 
 TEST_F(FwupdClientTest, Install) {
-  // The observer will check that the update description is parsed and passed
-  // correctly.
-  MockObserver observer;
-  EXPECT_CALL(observer, OnInstallResponse(_))
-      .Times(1)
-      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckInstallState));
-  fwupd_client_->AddObserver(&observer);
-
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
@@ -655,10 +648,14 @@ TEST_F(FwupdClientTest, Install) {
 
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
+  base::RunLoop run_loop;
   fwupd_client_->InstallUpdate(kFakeDeviceIdForTesting, base::ScopedFD(0),
-                               std::map<std::string, bool>());
-
-  base::RunLoop().RunUntilIdle();
+                               std::map<std::string, bool>(),
+                               base::BindLambdaForTesting([&](bool success) {
+                                 EXPECT_TRUE(success);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
 }
 
 TEST_F(FwupdClientTest, PropertiesChanged) {

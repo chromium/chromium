@@ -592,7 +592,9 @@ void FirmwareUpdateManager::InstallUpdate(const std::string& device_id,
   }
 
   FwupdClient::Get()->InstallUpdate(
-      device_id, base::ScopedFD(patch_file.TakePlatformFile()), options);
+      device_id, base::ScopedFD(patch_file.TakePlatformFile()), options,
+      base::BindOnce(&FirmwareUpdateManager::OnInstallResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   std::move(callback).Run();
 }

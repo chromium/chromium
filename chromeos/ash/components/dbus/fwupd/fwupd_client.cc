@@ -34,7 +34,12 @@ namespace {
 // ash/webui/firmware_update_ui/mojom/firmware_update.mojom
 enum UpdatePriority { kLow, kMedium, kHigh, kCritical };
 
+// Global singleton instance. Always set.
 FwupdClient* g_instance = nullptr;
+
+// Global singleton for fake instance. Only set when a InitializeFake is used.
+// If not null, matches g_instance.
+FakeFwupdClient* g_fake_instance = nullptr;
 
 const char kCabFileExtension[] = ".cab";
 const int kSha256Length = 64;
@@ -198,7 +203,8 @@ class FwupdClientImpl : public FwupdClient {
 
   void InstallUpdate(const std::string& device_id,
                      base::ScopedFD file_descriptor,
-                     FirmwareInstallOptions options) override {
+                     FirmwareInstallOptions options,
+                     base::OnceCallback<void(bool)> callback) override {
     FIRMWARE_LOG(USER) << "fwupd: InstallUpdate called for id: " << device_id;
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdInstallMethodName);
@@ -224,22 +230,7 @@ class FwupdClientImpl : public FwupdClient {
     proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
         base::BindOnce(&FwupdClientImpl::InstallUpdateCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void TriggerPropertiesChangeForTesting(uint32_t percentage,
-                                         uint32_t status) override {
-    // No-op, this only has an effect when called with FakeFwupdClient.
-  }
-  void TriggerSuccessfulUpdateForTesting() override {
-    // No-op, this only has an effect when called with FakeFwupdClient.
-  }
-  bool HasUpdateStartedForTesting() override {
-    // This only returns a real value when called with FakeFwupdClient.
-    return false;
-  }
-  void EmitDeviceRequestForTesting(uint32_t device_request_id) override {
-    // No-op, this only has an effect when called with FakeFwupdClient.
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
  private:
@@ -463,7 +454,8 @@ class FwupdClientImpl : public FwupdClient {
     }
   }
 
-  void InstallUpdateCallback(dbus::Response* response,
+  void InstallUpdateCallback(base::OnceCallback<void(bool)> callback,
+                             dbus::Response* response,
                              dbus::ErrorResponse* error_response) {
     bool success = true;
     if (error_response) {
@@ -473,9 +465,7 @@ class FwupdClientImpl : public FwupdClient {
     }
 
     FIRMWARE_LOG(USER) << "fwupd: InstallUpdate returned with: " << success;
-    for (auto& observer : observers_) {
-      observer.OnInstallResponse(success);
-    }
+    std::move(callback).Run(success);
   }
 
   void OnSignalConnected(const std::string& interface_name,
@@ -600,6 +590,11 @@ FwupdClient* FwupdClient::Get() {
 }
 
 // static
+FakeFwupdClient* FwupdClient::GetFake() {
+  return g_fake_instance;
+}
+
+// static
 void FwupdClient::Initialize(dbus::Bus* bus) {
   CHECK(bus);
   (new FwupdClientImpl())->Init(bus);
@@ -607,7 +602,8 @@ void FwupdClient::Initialize(dbus::Bus* bus) {
 
 // static
 void FwupdClient::InitializeFake() {
-  (new FakeFwupdClient())->Init(nullptr);
+  g_fake_instance = new FakeFwupdClient();
+  g_fake_instance->Init(nullptr);
 }
 
 // static
