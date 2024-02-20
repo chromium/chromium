@@ -559,15 +559,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // snapped windows.
   void FinishWindowResizing(aura::Window* window);
 
-  // Starts performant resize for tablet mode.
-  void StartTabletResize();
-
-  // Ends performant resize for tablet mode.
-  void EndTabletResize();
-
-  // Finalizes and cleans up performant resize for tablet mode.
-  void EndTabletResizeImpl();
-
   // Finalizes and cleans up divider dragging/animating. Called when the divider
   // snapping animation completes or is interrupted or totally skipped.
   void EndResizeWithDividerImpl();
