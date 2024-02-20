@@ -6793,3 +6793,12 @@ crbug.com/325634737 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/40263840 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-opener-set.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/325602826 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-metadata.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326065719 [ Win11-arm64 ] http/tests/xmlhttprequest/simple-cross-origin-progress-events.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326065568 [ Win11-arm64 ] external/wpt/credential-management/fedcm-disconnect-iframe.sub.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326065727 [ Win11-arm64 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission-worker.https.window.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326065972 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326066997 [ Win11-arm64 ] external/wpt/webrtc-extensions/RTCRtpReceiver-jitterBufferTarget-stats.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326067001 [ Win11-arm64 ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-userinfo-after-resolve.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326067598 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/set-automatic-beacon.https.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326067978 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326066872 [ Win11-arm64 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?prefetch=true [ Failure Pass Timeout ] # Flaky
