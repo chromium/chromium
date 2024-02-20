@@ -119,7 +119,6 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
 
  private:
   struct SubscriptionEntry;
-  enum class TokenStateOnSubscriptionRequest;
 
   void StartPendingSubscriptions();
 
@@ -146,8 +145,9 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   void OnAccessTokenRequestSucceeded(const std::string& access_token);
   void OnAccessTokenRequestFailed(GoogleServiceAuthError error);
 
+  void ReportNewInstanceIdTokenState(
+      const std::string& new_instance_id_token) const;
   void DropAllSavedSubscriptionsOnTokenChange();
-  TokenStateOnSubscriptionRequest DropAllSavedSubscriptionsOnTokenChangeImpl();
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<IdentityProvider> identity_provider_;
