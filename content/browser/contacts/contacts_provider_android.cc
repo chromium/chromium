@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -107,9 +108,10 @@ void ContactsProviderAndroid::AddContact(
     for (const base::android::JavaRef<jbyteArray>& j_address :
          addresses_java.ReadElements<jbyteArray>()) {
       payments::mojom::PaymentAddressPtr address;
+      base::span<const uint8_t> address_bytes =
+          base::android::JavaByteBufferToSpan(env, j_address.obj());
       if (!payments::mojom::PaymentAddress::Deserialize(
-              static_cast<jbyte*>(env->GetDirectBufferAddress(j_address.obj())),
-              env->GetDirectBufferCapacity(j_address.obj()), &address)) {
+              address_bytes.data(), address_bytes.size(), &address)) {
         continue;
       }
       addresses_vector.push_back(std::move(address));
@@ -125,9 +127,10 @@ void ContactsProviderAndroid::AddContact(
     for (const base::android::JavaRef<jbyteArray>& j_icon :
          icons_java.ReadElements<jbyteArray>()) {
       blink::mojom::ContactIconBlobPtr icon;
+      base::span<const uint8_t> icon_bytes =
+          base::android::JavaByteBufferToSpan(env, j_icon.obj());
       if (!blink::mojom::ContactIconBlob::Deserialize(
-              static_cast<jbyte*>(env->GetDirectBufferAddress(j_icon.obj())),
-              env->GetDirectBufferCapacity(j_icon.obj()), &icon)) {
+              icon_bytes.data(), icon_bytes.size(), &icon)) {
         continue;
       }
       icons_vector.push_back(std::move(icon));
