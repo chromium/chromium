@@ -174,7 +174,8 @@ void CookieSettings::set_content_settings(
       if (base::FeatureList::IsEnabled(
               content_settings::features::kHostIndexedMetadataGrants)) {
         auto& index =
-            absl::get<EntryIndex>(content_settings_)[type].emplace_back();
+            absl::get<EntryIndex>(content_settings_)[type].emplace_back(
+                "default", false);
         index.SetValue(ContentSettingsPattern::Wildcard(),
                        ContentSettingsPattern::Wildcard(),
                        base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});

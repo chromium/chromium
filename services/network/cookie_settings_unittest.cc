@@ -703,7 +703,19 @@ TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateSessionOnly) {
       ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)});
   EXPECT_TRUE(settings.CreateDeleteCookieOnExitPredicate().Run(
-      kURL, net::CookieSourceScheme::kNonSecure));
+      "foo.com", net::CookieSourceScheme::kNonSecure));
+}
+
+TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateExceptionOnly) {
+  CookieSettings settings;
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting("https://foo.com", "*", CONTENT_SETTING_SESSION_ONLY)});
+
+  EXPECT_TRUE(settings.CreateDeleteCookieOnExitPredicate().Run(
+      "foo.com", net::CookieSourceScheme::kSecure));
+  EXPECT_FALSE(settings.CreateDeleteCookieOnExitPredicate().Run(
+      "other.com", net::CookieSourceScheme::kSecure));
 }
 
 TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateAllow) {

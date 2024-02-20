@@ -2668,15 +2668,22 @@ TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomain) {
   EXPECT_EQ(0u, service_wrapper()->GetAllCookies().size());
 }
 
-TEST_F(SessionCleanupCookieManagerTest, FirstSettingTakesPrecedence) {
+TEST_F(SessionCleanupCookieManagerTest, MorePreciseSettingTakesPrecedence) {
   EXPECT_TRUE(SetCanonicalCookie(CreateCookie(), "https", true));
 
   EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
 
   // If a rule with ALLOW is before a SESSION_ONLY rule, the cookie should not
   // be deleted.
-  SetContentSettings({CreateSetting(CONTENT_SETTING_ALLOW, kCookieURL),
-                      CreateSetting(CONTENT_SETTING_SESSION_ONLY, kCookieURL)});
+  SetContentSettings(
+      {ContentSettingPatternSource(
+           ContentSettingsPattern::FromURLNoWildcard(GURL(kCookieURL)),
+           ContentSettingsPattern::Wildcard(),
+           base::Value(CONTENT_SETTING_SESSION_ONLY), std::string(), false),
+       ContentSettingPatternSource(
+           ContentSettingsPattern::FromURL(GURL(kCookieURL)),
+           ContentSettingsPattern::Wildcard(),
+           base::Value(CONTENT_SETTING_ALLOW), std::string(), false)});
 
   auto store = CreateCookieStore();
   InitializeCookieService(store, store);
