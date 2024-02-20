@@ -632,7 +632,7 @@ void DrmDisplayHostManager::GpuTookDisplayControl(bool status) {
   DCHECK(display_control_change_pending_);
 
   if (status) {
-    input_controller_->SetInputDevicesEnabled(true);
+    scoped_input_devices_disabler_.reset();
     display_externally_controlled_ = false;
   }
 
@@ -653,7 +653,7 @@ void DrmDisplayHostManager::GpuRelinquishedDisplayControl(bool status) {
   DCHECK(display_control_change_pending_);
 
   if (status) {
-    input_controller_->SetInputDevicesEnabled(false);
+    scoped_input_devices_disabler_ = input_controller_->DisableInputDevices();
     display_externally_controlled_ = true;
   }
 

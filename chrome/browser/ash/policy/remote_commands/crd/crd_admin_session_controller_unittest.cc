@@ -103,13 +103,6 @@ auto ReplyWithSessionId(std::optional<SessionId> id) {
   return [id](auto callback) { std::move(callback).Run(id); };
 }
 
-ui::KeyEvent EventWithSource(int source_device_id) {
-  ui::KeyEvent result{ui::EventType::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_C,
-                      /*flags=*/0};
-  result.set_source_device_id(source_device_id);
-  return result;
-}
-
 class RemotingServiceMock
     : public CrdAdminSessionController::RemotingServiceProxy {
  public:
@@ -1174,21 +1167,14 @@ TEST_F(CrdAdminSessionControllerReconnectTest,
 }
 
 TEST_F(CrdAdminSessionControllerReconnectTest,
-       CurtainedSessionShouldFilterNonRemoteEvents) {
+       CurtainedSessionShouldDisableInputDevices) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
   InitWithNoReconnectableSession(session_controller());
 
   StartCrdHost(/*is_curtained=*/true);
   SimulateCrdClientConnects();
 
-  ash::curtain::EventFilter event_filter =
-      curtain_controller().last_init_params().event_filter;
-
-  EXPECT_THAT(event_filter.Run(EventWithSource(ui::ED_REMOTE_INPUT_DEVICE)),
-              Eq(ash::curtain::FilterResult::kKeepEvent));
-
-  EXPECT_THAT(event_filter.Run(EventWithSource(5)),
-              Eq(ash::curtain::FilterResult::kSuppressEvent));
+  EXPECT_TRUE(curtain_controller().last_init_params().disable_input_devices);
 }
 
 class CrdAdminSessionControllerNotificationTest

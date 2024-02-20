@@ -107,6 +107,12 @@ class MockInputController : public ui::InputController {
               (std::vector<int> device_ids),
               (override));
 
+  MOCK_METHOD(std::unique_ptr<ui::ScopedDisableInputDevices>,
+              DisableInputDevices,
+              (),
+              (override));
+  MOCK_METHOD(bool, AreInputDevicesEnabled, (), (const override));
+
  private:
   bool HasMouse() override { return false; }
   bool HasPointingStick() override { return false; }

@@ -227,6 +227,15 @@ bool HapticsTrackingTestInputController::AreAnyKeysPressed() {
 void HapticsTrackingTestInputController::BlockModifiersOnDevices(
     std::vector<int> device_ids) {}
 
+std::unique_ptr<ui::ScopedDisableInputDevices>
+HapticsTrackingTestInputController::DisableInputDevices() {
+  return nullptr;
+}
+
+bool HapticsTrackingTestInputController::AreInputDevicesEnabled() const {
+  return true;
+}
+
 int HapticsTrackingTestInputController::GetSentHapticCount(
     ui::HapticTouchpadEffect effect,
     ui::HapticTouchpadEffectStrength strength) const {

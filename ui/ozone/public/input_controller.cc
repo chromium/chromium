@@ -24,6 +24,21 @@ class StubInputController : public InputController {
 
   ~StubInputController() override = default;
 
+  class ScopedDisableInputDevicesImpl : public ScopedDisableInputDevices {
+   public:
+    explicit ScopedDisableInputDevicesImpl(StubInputController& parent)
+        : parent_(parent) {
+      parent_->num_scoped_input_devices_disablers_++;
+    }
+
+    ~ScopedDisableInputDevicesImpl() override {
+      parent_->num_scoped_input_devices_disablers_--;
+    }
+
+   private:
+    raw_ref<StubInputController> parent_;
+  };
+
   // InputController:
   bool HasMouse() override { return false; }
   bool HasPointingStick() override { return false; }
@@ -125,6 +140,16 @@ class StubInputController : public InputController {
       HapticTouchpadEffectStrength strength) override {}
   bool AreAnyKeysPressed() override { return false; }
   void BlockModifiersOnDevices(std::vector<int> device_ids) override {}
+
+  bool AreInputDevicesEnabled() const override {
+    return num_scoped_input_devices_disablers_ == 0;
+  }
+  std::unique_ptr<ScopedDisableInputDevices> DisableInputDevices() override {
+    return std::make_unique<ScopedDisableInputDevicesImpl>(*this);
+  }
+
+ private:
+  int num_scoped_input_devices_disablers_ = 0;
 };
 
 }  // namespace

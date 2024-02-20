@@ -31,6 +31,17 @@ namespace ui {
 
 enum class DomCode : uint32_t;
 
+// Disables all input devices until it is destroyed.
+// You should not create this yourself but instead get it from
+// `InputController::DisableInputDevices()`.
+class ScopedDisableInputDevices {
+ public:
+  virtual ~ScopedDisableInputDevices() = default;
+
+ protected:
+  ScopedDisableInputDevices() = default;
+};
+
 // Platform-specific interface for controlling input devices.
 //
 // The object provides methods for the preference page to configure input
@@ -46,12 +57,12 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   using GetStylusSwitchStateReply = base::OnceCallback<void(ui::StylusState)>;
   using DescribeForLogReply = base::OnceCallback<void(const std::string&)>;
 
-  InputController() {}
+  InputController() = default;
 
   InputController(const InputController&) = delete;
   InputController& operator=(const InputController&) = delete;
 
-  virtual ~InputController() {}
+  virtual ~InputController() = default;
 
   // Functions for checking devices existence.
   virtual bool HasMouse() = 0;
@@ -190,6 +201,14 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   // Blocks all modifiers from being emitted on devices with the given device
   // ids.
   virtual void BlockModifiersOnDevices(std::vector<int> device_ids) = 0;
+
+  // Disable all input devices until the returned object is destroyed.
+  // When called multiple times the input devices remain disabled until all
+  // scoped return values are destroyed.
+  [[nodiscard]] virtual std::unique_ptr<ScopedDisableInputDevices>
+  DisableInputDevices() = 0;
+
+  virtual bool AreInputDevicesEnabled() const = 0;
 };
 
 // Create an input controller that does nothing.

@@ -150,6 +150,9 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   // established.
   std::unique_ptr<DrmWrapper> primary_drm_device_;
 
+  // Used to disable input devices when the display is externally controlled.
+  std::unique_ptr<ScopedDisableInputDevices> scoped_input_devices_disabler_;
+
   base::WeakPtrFactory<DrmDisplayHostManager> weak_ptr_factory_{this};
 };
 

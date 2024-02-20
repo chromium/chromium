@@ -15,24 +15,14 @@
 #include "base/time/time.h"
 #include "remoting/host/chromeos/ash_proxy.h"
 #include "remoting/host/chromeos/features.h"
-#include "ui/events/event.h"
-#include "ui/events/event_constants.h"
 #include "ui/views/view.h"
 
 namespace remoting {
 
 namespace {
 
-using ash::curtain::FilterResult;
 using ash::curtain::SecurityCurtainController;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
-
-FilterResult OnlyEventsFromSource(ui::EventDeviceId source_device_id,
-                                  const ui::Event& event) {
-  return event.source_device_id() == source_device_id
-             ? FilterResult::kKeepEvent
-             : FilterResult::kSuppressEvent;
-}
 
 std::unique_ptr<views::View> CreateCurtainOverlay() {
   return std::make_unique<ash::curtain::RemoteMaintenanceCurtainView>();
@@ -65,8 +55,6 @@ std::unique_ptr<CurtainMode> CurtainMode::Create(
 // static
 SecurityCurtainController::InitParams CurtainModeChromeOs::CreateInitParams() {
   SecurityCurtainController::InitParams params{
-      /*event_filter=*/base::BindRepeating(OnlyEventsFromSource,
-                                           ui::ED_REMOTE_INPUT_DEVICE),
       /*curtain_factory=*/base::BindRepeating(CreateCurtainOverlay),
   };
   params.mute_audio_output_after = MuteAudioOutputDelay();

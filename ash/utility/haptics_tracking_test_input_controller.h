@@ -108,6 +108,8 @@ class HapticsTrackingTestInputController : public ui::InputController {
           receiver) override;
   bool AreAnyKeysPressed() override;
   void BlockModifiersOnDevices(std::vector<int> device_ids) override;
+  bool AreInputDevicesEnabled() const override;
+  std::unique_ptr<ui::ScopedDisableInputDevices> DisableInputDevices() override;
 
   // Returns haptic count for effect/strength combination for testing.
   int GetSentHapticCount(ui::HapticTouchpadEffect effect,

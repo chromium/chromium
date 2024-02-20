@@ -482,8 +482,6 @@ component("ash") {
     "controls/rounded_scroll_bar.h",
     "controls/scroll_view_gradient_helper.cc",
     "controls/scroll_view_gradient_helper.h",
-    "curtain/input_event_filter.cc",
-    "curtain/input_event_filter.h",
     "curtain/remote_maintenance_curtain_view.cc",
     "curtain/remote_maintenance_curtain_view.h",
     "curtain/security_curtain_controller.cc",

@@ -47,8 +47,6 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void set_has_haptic_touchpad(bool has_haptic_touchpad);
   void set_any_keys_pressed(bool any);
 
-  void SetInputDevicesEnabled(bool enabled);
-
   // InputController:
   bool HasMouse() override;
   bool HasPointingStick() override;
@@ -130,12 +128,21 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
       HapticTouchpadEffectStrength strength) override;
   bool AreAnyKeysPressed() override;
   void BlockModifiersOnDevices(std::vector<int> device_ids) override;
+  bool AreInputDevicesEnabled() const override;
+  std::unique_ptr<ScopedDisableInputDevices> DisableInputDevices() override;
 
   // Notifies the controller to delete any data for the given `device_id`.
   void OnInputDeviceRemoved(int device_id);
 
+  // Configuration that needs to be passed on to InputDeviceFactory.
+  InputDeviceSettingsEvdev GetInputDeviceSettings() const;
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(InputControllerEvdevTest, AccelerationSuspension);
+  class ScopedDisableInputDevicesImpl;
+
+  // Called by `ScopedDisableInputDevicesImpl` when they are created/destroyed.
+  void OnScopedDisableInputDevicesCreated();
+  void OnScopedDisableInputDevicesDestroyed();
 
   // Post task to update settings.
   void ScheduleUpdateDeviceSettings();
@@ -148,6 +155,9 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
 
   // Configuration that needs to be passed on to InputDeviceFactory.
   InputDeviceSettingsEvdev input_device_settings_;
+
+  // Amount of `ScopedDisableInputDevicesImpl` currently alive.
+  int num_scoped_input_devices_disablers_ = 0;
 
   // Task to update config from input_device_settings_ is pending.
   bool settings_update_pending_ = false;

@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/stylus_state.h"
@@ -50,6 +51,25 @@ PointingStickSettingsEvdev& GetPointingStickSettings(
 
 }  // namespace
 
+class InputControllerEvdev::ScopedDisableInputDevicesImpl
+    : public ScopedDisableInputDevices {
+ public:
+  explicit ScopedDisableInputDevicesImpl(
+      base::WeakPtr<InputControllerEvdev> parent)
+      : parent_(parent) {
+    parent_->OnScopedDisableInputDevicesCreated();
+  }
+
+  ~ScopedDisableInputDevicesImpl() override {
+    if (parent_) {
+      parent_->OnScopedDisableInputDevicesDestroyed();
+    }
+  }
+
+ private:
+  base::WeakPtr<InputControllerEvdev> parent_;
+};
+
 InputControllerEvdev::InputControllerEvdev(
     KeyboardEvdev* keyboard,
     MouseButtonMapEvdev* mouse_button_map,
@@ -58,8 +78,7 @@ InputControllerEvdev::InputControllerEvdev(
       mouse_button_map_(mouse_button_map),
       pointing_stick_button_map_(pointing_stick_button_map) {}
 
-InputControllerEvdev::~InputControllerEvdev() {
-}
+InputControllerEvdev::~InputControllerEvdev() = default;
 
 void InputControllerEvdev::SetInputDeviceFactory(
     InputDeviceFactoryEvdevProxy* input_device_factory) {
@@ -88,9 +107,34 @@ void InputControllerEvdev::set_has_haptic_touchpad(bool has_haptic_touchpad) {
   has_haptic_touchpad_ = has_haptic_touchpad;
 }
 
-void InputControllerEvdev::SetInputDevicesEnabled(bool enabled) {
-  input_device_settings_.enable_devices = enabled;
-  ScheduleUpdateDeviceSettings();
+void InputControllerEvdev::OnScopedDisableInputDevicesCreated() {
+  num_scoped_input_devices_disablers_++;
+  if (num_scoped_input_devices_disablers_ == 1) {
+    input_device_settings_.enable_devices = false;
+    ScheduleUpdateDeviceSettings();
+  }
+}
+
+void InputControllerEvdev::OnScopedDisableInputDevicesDestroyed() {
+  num_scoped_input_devices_disablers_--;
+  if (num_scoped_input_devices_disablers_ == 0) {
+    input_device_settings_.enable_devices = true;
+    ScheduleUpdateDeviceSettings();
+  }
+}
+
+bool InputControllerEvdev::AreInputDevicesEnabled() const {
+  return input_device_settings_.enable_devices;
+}
+
+std::unique_ptr<ScopedDisableInputDevices>
+InputControllerEvdev::DisableInputDevices() {
+  return std::make_unique<ScopedDisableInputDevicesImpl>(
+      weak_ptr_factory_.GetWeakPtr());
+}
+
+InputDeviceSettingsEvdev InputControllerEvdev::GetInputDeviceSettings() const {
+  return input_device_settings_;
 }
 
 bool InputControllerEvdev::HasMouse() {

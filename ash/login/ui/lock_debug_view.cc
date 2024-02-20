@@ -1098,9 +1098,6 @@ void LockDebugView::ShowSecurityCurtainScreenButtonPressed() {
   // We don't support toggling this on and off, since once you are in the
   // curtain screen there is no way to leave it (by design).
   ash::curtain::SecurityCurtainController::InitParams params{
-      /*event_filter=*/base::BindRepeating([](const ui::Event& event) {
-        return curtain::FilterResult::kKeepEvent;
-      }),
       /*curtain_factory=*/base::BindRepeating(CreateCurtainOverlay)};
   controller.Enable(params);
 }
