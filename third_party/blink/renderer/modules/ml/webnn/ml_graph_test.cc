@@ -21,7 +21,7 @@
 // TODO(https://crbug.com/1273291): Remove all uses of this macro.
 #define SKIP_TEST_ON_UNSUPPORTED_BACKEND(backend_type)       \
   do {                                                       \
-    if (GetBackendType() == backend_type)                    \
+    if (GetParam() == backend_type)                          \
       GTEST_SKIP() << #backend_type << " is not supported."; \
   } while (0)
 
@@ -31,13 +31,13 @@ namespace {
 
 // kWebNNService is a valid parameter type, but ml_graph_test doesn't run
 // against it.
-const TestVariety kGraphTestVariety[] = {
+const BackendType kGraphBackendType[] = {
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
-    {BackendType::kXnnpack},
+    BackendType::kXnnpack,
 #endif
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
-    {BackendType::kModelLoader},
+    BackendType::kModelLoader,
 #endif
 };
 
@@ -2325,7 +2325,7 @@ TEST_P(MLGraphTest, BuildAndComputeGraphWithOnlyConstants) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          MLGraphTest,
-                         testing::ValuesIn(kGraphTestVariety),
-                         TestVarietyToString);
+                         testing::ValuesIn(kGraphBackendType),
+                         TestParamInfoToString);
 
 }  // namespace blink

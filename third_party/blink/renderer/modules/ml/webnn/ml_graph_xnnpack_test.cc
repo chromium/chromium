@@ -1241,13 +1241,9 @@ TEST_P(MLGraphXnnpackTest, ThreadPoolTest) {
   { ThreadPoolTester{.num_threads = 4}.Test(*this, scope); }
 }
 
-const TestVariety kXnnpackGraphTestVariety[] = {
-    {BackendType::kXnnpack},
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          MLGraphXnnpackTest,
-                         testing::ValuesIn(kXnnpackGraphTestVariety),
-                         TestVarietyToString);
+                         testing::Values(BackendType::kXnnpack),
+                         TestParamInfoToString);
 
 }  // namespace blink

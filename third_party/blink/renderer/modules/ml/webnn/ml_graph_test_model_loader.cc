@@ -595,13 +595,9 @@ TEST_P(MLGraphTestTfLite, Conv2dTest) {
   }
 }
 
-const TestVariety kGraphTestModelLoaderVariety[] = {
-    {BackendType::kModelLoader},
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          MLGraphTestTfLite,
-                         testing::ValuesIn(kGraphTestModelLoaderVariety),
-                         TestVarietyToString);
+                         testing::Values(BackendType::kModelLoader),
+                         TestParamInfoToString);
 
 }  // namespace blink

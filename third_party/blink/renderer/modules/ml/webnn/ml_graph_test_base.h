@@ -32,16 +32,11 @@ class V8TestingScope;
 // The backends share the unit tests in the MLGraphTest.
 enum class BackendType { kFake, kXnnpack, kModelLoader, kWebNNService };
 
-// TODO: crbug.com/40283536 - Consider removing this.
-struct TestVariety {
-  BackendType backend_type;
-};
-
-std::string TestVarietyToString(
-    const ::testing::TestParamInfo<TestVariety>& info);
+std::string TestParamInfoToString(
+    const ::testing::TestParamInfo<BackendType>& backend_type);
 
 class MLGraphTestBase : public ::testing::Test,
-                        public ::testing::WithParamInterface<TestVariety> {
+                        public ::testing::WithParamInterface<BackendType> {
  public:
   // BuildResult is returned by Build() method. Only one member of BuildResult
   // is valid. If the graph building is successful, graph points to the MLGraph
@@ -76,9 +71,6 @@ class MLGraphTestBase : public ::testing::Test,
   static ScriptPromise CreateContext(
       V8TestingScope& scope,
       MLContextOptions* options = MLContextOptions::Create());
-
-  // The backend type for testing MLGraphTest (e.g. Xnnpack, ModelLoader).
-  BackendType GetBackendType();
 
  private:
   test::TaskEnvironment task_environment_;

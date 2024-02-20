@@ -6021,13 +6021,9 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   }
 }
 
-const TestVariety kGraphMojoTestVariety[] = {
-    {BackendType::kWebNNService},
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          MLGraphTestMojo,
-                         testing::ValuesIn(kGraphMojoTestVariety),
-                         TestVarietyToString);
+                         testing::Values(BackendType::kWebNNService),
+                         TestParamInfoToString);
 
 }  // namespace blink

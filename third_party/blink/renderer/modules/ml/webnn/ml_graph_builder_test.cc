@@ -7762,11 +7762,9 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
   }
 }
 
-const TestVariety kFakeGraphTestVariety[] = {{BackendType::kFake}};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          FakeMLGraphTest,
-                         testing::ValuesIn(kFakeGraphTestVariety),
-                         TestVarietyToString);
+                         testing::Values(BackendType::kFake),
+                         TestParamInfoToString);
 
 }  // namespace blink
