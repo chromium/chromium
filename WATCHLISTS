@@ -748,6 +748,7 @@
                   '|image_service'\
                   '|ios/chrome/browser/text_selection'\
                   '|manta'\
+                  '|model_execution'\
                   '|optimization_guide'\
                   '|optimization_hints'\
                   '|services/on_device_model'\
@@ -763,7 +764,8 @@
                   '|third_party/tensorflow-text'\
                   '|third_party/tflite'\
                   '|third_party/tflite_support'\
-                  '|third_party/utf',
+                  '|third_party/utf'\
+                  '|third_party/xnnpack'
     },
     'chrome_performance_manager': {
       'filepath': 'chrome/browser/performance_manager/'\
