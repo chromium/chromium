@@ -5978,6 +5978,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Win.Device.MappingAcquireMutexDelayMs"
+    units="ms" expires_after="2024-07-31">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Counts how long texture mutex acquisition took in ms during mapping process.
+    Recorded after each AcquireSync API call in the mapping subroutine.
+    Temporary metric, for debug purposes only.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.Device.RequestedPixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2025-03-19">
   <owner>ilnik@google.com</owner>
