@@ -29,6 +29,13 @@ bool IsSupportedFormat(gfx::BufferFormat format) {
          format == gfx::BufferFormat::BGRA_8888;
 }
 
+// This flag allows Exo::SharedMemory to create Exo::Buffer using GMBHandle
+// instead of GMB. This is required for MappableSI which aims to remove all
+// usages of GMB directly by clients.
+BASE_FEATURE(kAlwaysUseGMBHandleForSHMExoBuffer,
+             "AlwaysUseGMBHandleForSHMExoBuffer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,28 +72,38 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
   handle.offset = offset;
   handle.stride = stride;
 
+  const gfx::BufferUsage buffer_usage = gfx::BufferUsage::GPU_READ;
+  const unsigned texture_target = GL_TEXTURE_2D;
+
+  // COMMANDS_ISSUED queries are sufficient for shared memory
+  // buffers as binding to texture is implemented using a call to
+  // glTexImage2D and the buffer can be reused as soon as that
+  // command has been issued.
+  const unsigned query_type = GL_COMMANDS_ISSUED_CHROMIUM;
+
+  // Zero-copy doesn't provide a benefit in the case of shared memory as an
+  // implicit copy is required when trying to use these buffers as zero-copy
+  // buffers. Making the copy explicit allows the buffer to be reused earlier.
+  const bool use_zero_copy = false;
+  const bool is_overlay_candidate = false;
+  const bool y_invert = false;
+
+  if (base::FeatureList::IsEnabled(kAlwaysUseGMBHandleForSHMExoBuffer)) {
+    return Buffer::CreateBufferFromGMBHandle(
+        std::move(handle), size, format, buffer_usage, texture_target,
+        query_type, use_zero_copy, is_overlay_candidate, y_invert);
+  }
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferImplSharedMemory::CreateFromHandle(
-          std::move(handle), size, format, gfx::BufferUsage::GPU_READ,
+          std::move(handle), size, format, buffer_usage,
           gpu::GpuMemoryBufferImpl::DestructionCallback());
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle";
     return nullptr;
   }
-
-  // Zero-copy doesn't provide a benefit in the case of shared memory as an
-  // implicit copy is required when trying to use these buffers as zero-copy
-  // buffers. Making the copy explicit allows the buffer to be reused earlier.
-  bool use_zero_copy = false;
-
-  return std::make_unique<Buffer>(
-      std::move(gpu_memory_buffer), GL_TEXTURE_2D,
-      // COMMANDS_ISSUED queries are sufficient for shared memory
-      // buffers as binding to texture is implemented using a call to
-      // glTexImage2D and the buffer can be reused as soon as that
-      // command has been issued.
-      GL_COMMANDS_ISSUED_CHROMIUM, use_zero_copy,
-      false /* is_overlay_candidate */, false /* y_invert */);
+  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), texture_target,
+                                  query_type, use_zero_copy,
+                                  is_overlay_candidate, y_invert);
 }
 
 size_t SharedMemory::GetSize() const {
