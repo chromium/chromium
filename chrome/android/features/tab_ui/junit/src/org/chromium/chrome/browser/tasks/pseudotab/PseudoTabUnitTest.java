@@ -452,4 +452,13 @@ public class PseudoTabUnitTest {
         // UnsupportedOperationException
         Assert.assertEquals(Tab.INVALID_TIMESTAMP, pseudoTab.getTimestampMillis());
     }
+
+    @Test
+    public void testTabIsClosingOrDestroyed_Destroyed() {
+        Tab tab = new MockTab(TAB4_ID, mProfile);
+        PseudoTab pseudoTab = PseudoTab.fromTab(tab);
+        Assert.assertFalse(pseudoTab.isClosingOrDestroyed());
+        tab.destroy();
+        Assert.assertTrue(pseudoTab.isClosingOrDestroyed());
+    }
 }

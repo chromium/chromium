@@ -187,6 +187,16 @@ public class PseudoTab {
         return TabAttributeCache.getUrl(mTabId);
     }
 
+    /** Whether the tab is closing or destroyed. */
+    public boolean isClosingOrDestroyed() {
+        // The tab is not backed by a real tab, assume it is alive.
+        if (mTab == null) return false;
+
+        // The tab is backed by a real tab check if it still exists and its state.
+        Tab tab = mTab.get();
+        return tab == null || tab.isClosing() || tab.isDestroyed();
+    }
+
     /**
      * Get the root ID of the {@link PseudoTab}.
      * @return The root ID

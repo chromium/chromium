@@ -223,23 +223,25 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
             // Fetch and draw all.
             for (int i = 0; i < 4; i++) {
-                if (mTabs.get(i) != null) {
+                PseudoTab pseudoTab = mTabs.get(i);
+                RectF thumbnailRect = mThumbnailRects.get(i);
+                if (pseudoTab != null) {
                     final int index = i;
-                    final GURL url = mTabs.get(i).getUrl();
-                    final boolean isIncognito = mTabs.get(i).isIncognito();
+                    final GURL url = pseudoTab.getUrl();
+                    final boolean isIncognito = pseudoTab.isIncognito();
                     final Size tabThumbnailSize =
-                            new Size(
-                                    (int) mThumbnailRects.get(i).width(),
-                                    (int) mThumbnailRects.get(i).height());
+                            new Size((int) thumbnailRect.width(), (int) thumbnailRect.height());
                     // getTabThumbnailWithCallback() might call the callback up to twice,
                     // so use |lastFavicon| to avoid fetching the favicon the second time.
                     // Fetching the favicon after getting the live thumbnail would lead to
                     // visible flicker.
                     final AtomicReference<Drawable> lastFavicon = new AtomicReference<>();
                     mTabContentManager.getTabThumbnailWithCallback(
-                            mTabs.get(i).getId(),
+                            pseudoTab.getId(),
                             tabThumbnailSize,
                             thumbnail -> {
+                                if (pseudoTab.isClosingOrDestroyed()) return;
+
                                 drawThumbnailBitmapOnCanvasWithFrame(thumbnail, index);
                                 if (lastFavicon.get() != null) {
                                     drawFaviconThenMaybeSendBack(lastFavicon.get(), index);
@@ -248,6 +250,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                                             url,
                                             isIncognito,
                                             (Drawable favicon) -> {
+                                                if (pseudoTab.isClosingOrDestroyed()) return;
+
                                                 lastFavicon.set(favicon);
                                                 drawFaviconThenMaybeSendBack(favicon, index);
                                             });
@@ -262,8 +266,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                         Paint textPaint = mIsTabSelected ? mSelectedTextPaint : mTextPaint;
                         mCanvas.drawText(
                                 mText,
-                                (mThumbnailRects.get(i).left + mThumbnailRects.get(i).right) / 2,
-                                (mThumbnailRects.get(i).top + mThumbnailRects.get(i).bottom) / 2
+                                (thumbnailRect.left + thumbnailRect.right) / 2,
+                                (thumbnailRect.top + thumbnailRect.bottom) / 2
                                         - ((mTextPaint.descent() + mTextPaint.ascent()) / 2),
                                 textPaint);
                     }
