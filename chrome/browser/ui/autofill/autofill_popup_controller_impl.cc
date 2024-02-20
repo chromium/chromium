@@ -359,8 +359,21 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
   }
   CHECK(!event_time.is_null());
   const base::TimeDelta time_elapsed = event_time - time_view_shown_.value();
-  if ((time_elapsed < kIgnoreEarlyClicksOnPopupDuration) &&
-      !disable_threshold_for_testing_) {
+  // If `kAutofillPopupImprovedTimingChecksV2` is enabled, then
+  // `time_view_shown_` will remain null for at least
+  // `kIgnoreEarlyClicksOnPopupDuration`. Therefore we do not have to check any
+  // times here.
+  // TODO(crbug.com/1475902): Once `kAutofillPopupImprovedTimingChecksV2` is
+  // launched, clean up most of the timing checks. That is:
+  // - Remove paint checks inside views.
+  // - Remove `event_time` parameters.
+  // - Rename `NextIdleTimeTicks` to `IdleDelayBarrier` or something similar
+  //   that indicates that just contains a boolean signaling whether a certain
+  //   delay has (safely) passed.
+  if (time_elapsed < kIgnoreEarlyClicksOnPopupDuration &&
+      !disable_threshold_for_testing_ &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillPopupImprovedTimingChecksV2)) {
     base::UmaHistogramCustomTimes(
         "Autofill.Popup.AcceptanceDelayThresholdNotMet", time_elapsed,
         base::Milliseconds(0), kIgnoreEarlyClicksOnPopupDuration,
