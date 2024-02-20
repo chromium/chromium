@@ -116,6 +116,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Views.LayoutCallDepth" units="count"
+    expires_after="2024-12-31">
+  <owner>dpranke@chromium.org</owner>
+  <owner>elainechien@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <summary>
+    The maximum reentrant call depth seen during a view's layout. Normally this
+    value will be one (Layout() was not reentered). But, we know Layout() is
+    reentered sometimes in some views (where the value will be two), and want to
+    measure how often that is. We also want to know if Layout() is ever
+    reentered more than two deep.
+  </summary>
+</histogram>
+
 <histogram name="Views.UnnecessaryLayouts" units="count"
     expires_after="2024-12-31">
   <owner>elainechien@chromium.org</owner>
