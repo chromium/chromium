@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "cvc_header_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/card_unmask_header_item.h"
 
 #import "base/apple/foundation_util.h"
 #import "build/branding_buildflags.h"
@@ -29,7 +29,7 @@ BOOL VirtualCardFeatureEnabled() {
 
 }  // namespace
 
-@implementation CVCHeaderItem {
+@implementation CardUnmaskHeaderItem {
 }
 
 - (instancetype)initWithType:(NSInteger)type
@@ -37,7 +37,7 @@ BOOL VirtualCardFeatureEnabled() {
             instructionsText:(NSString*)instructionsText {
   self = [super initWithType:type];
   if (self) {
-    self.cellClass = [CVCHeaderView class];
+    self.cellClass = [CardUnmaskHeaderView class];
     _titleText = titleText;
     _instructionsText = instructionsText;
   }
@@ -50,16 +50,16 @@ BOOL VirtualCardFeatureEnabled() {
 
 #pragma mark - TableViewHeaderFooterItem
 
-- (void)configureHeaderFooterView:(CVCHeaderView*)cvcHeaderView
+- (void)configureHeaderFooterView:(CardUnmaskHeaderView*)cardUnmaskHeaderView
                        withStyler:(ChromeTableViewStyler*)styler {
-  [super configureHeaderFooterView:cvcHeaderView withStyler:styler];
-  cvcHeaderView.titleLabel.text = _titleText;
-  cvcHeaderView.instructionsLabel.text = _instructionsText;
+  [super configureHeaderFooterView:cardUnmaskHeaderView withStyler:styler];
+  cardUnmaskHeaderView.titleLabel.text = _titleText;
+  cardUnmaskHeaderView.instructionsLabel.text = _instructionsText;
 }
 
 @end
 
-@implementation CVCHeaderView {
+@implementation CardUnmaskHeaderView {
   // View holding the google pay badge.
   UIImageView* _googlePayBadgeImageView;
 }

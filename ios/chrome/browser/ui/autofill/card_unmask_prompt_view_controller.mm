@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
-#import "ios/chrome/browser/ui/autofill/cells/cvc_header_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/card_unmask_header_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -90,7 +90,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   // Model of the footer.
   TableViewLinkHeaderFooterItem* _footerItem;
   // Model of the header.
-  CVCHeaderItem* _headerItem;
+  CardUnmaskHeaderItem* _headerItem;
   // Model of the expiration date input cell.
   ExpirationDateEditItem* _expirationDateInputItem;
   // Whether we should set the focus on the CVC or
@@ -351,12 +351,12 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 }
 
 // Returns a newly created item for the header of the section.
-- (CVCHeaderItem*)createHeaderItem {
+- (CardUnmaskHeaderItem*)createHeaderItem {
   if (_bridge == nullptr) {
     return nil;
   }
   autofill::CardUnmaskPromptController* controller = _bridge->GetController();
-  CVCHeaderItem* header = [[CVCHeaderItem alloc]
+  CardUnmaskHeaderItem* header = [[CardUnmaskHeaderItem alloc]
           initWithType:ItemTypeHeader
              titleText:base::SysUTF16ToNSString(controller->GetWindowTitle())
       instructionsText:base::SysUTF16ToNSString(

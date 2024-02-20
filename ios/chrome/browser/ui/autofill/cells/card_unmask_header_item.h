@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_CVC_HEADER_ITEM_H_
-#define IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_CVC_HEADER_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_CARD_UNMASK_HEADER_ITEM_H_
+#define IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_CARD_UNMASK_HEADER_ITEM_H_
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 
-// Item to represent and configure a CVCHeaderCell.
-@interface CVCHeaderItem : TableViewHeaderFooterItem
+// Item to represent and configure a CardUnmaskHeaderCell.
+@interface CardUnmaskHeaderItem : TableViewHeaderFooterItem
 
 // The title text to display.
 @property(nonatomic, copy) NSString* titleText;
@@ -22,13 +22,13 @@
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
 
-// Returns the accessibility labels of the CVCHeaderItem.
+// Returns the accessibility labels of the CardUnmaskHeaderItem.
 - (NSString*)accessibilityLabels;
 
 @end
 
-// Header view of the CVC Prompt.
-@interface CVCHeaderView : UITableViewHeaderFooterView
+// Header view of a card unmask prompt.
+@interface CardUnmaskHeaderView : UITableViewHeaderFooterView
 
 // The label displaying the title.
 @property(nonatomic, readonly, strong) UILabel* titleLabel;
@@ -37,4 +37,4 @@
 @property(nonatomic, readonly, strong) UILabel* instructionsLabel;
 
 @end
-#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_CVC_HEADER_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_CARD_UNMASK_HEADER_ITEM_H_

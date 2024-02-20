@@ -6,10 +6,10 @@ source_set("cells") {
   sources = [
     "autofill_edit_item.h",
     "autofill_edit_item.mm",
+    "card_unmask_header_item.h",
+    "card_unmask_header_item.mm",
     "country_item.h",
     "country_item.mm",
-    "cvc_header_item.h",
-    "cvc_header_item.mm",
     "expiration_date_edit_item+Testing.h",
     "expiration_date_edit_item.h",
     "expiration_date_edit_item.mm",
@@ -38,7 +38,7 @@ source_set("cells") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "cvc_header_item_unittest.mm",
+    "card_unmask_header_item_unittest.mm",
     "expiration_date_edit_item_unittest.mm",
     "target_account_item_unittest.mm",
   ]

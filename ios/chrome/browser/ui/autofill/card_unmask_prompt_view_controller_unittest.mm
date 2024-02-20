@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
-#import "ios/chrome/browser/ui/autofill/cells/cvc_header_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/card_unmask_header_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item+Testing.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -146,8 +146,8 @@ class CardUnmaskPromptViewControllerTest
   }
 
   // Fetches the model for the header from the tableViewModel.
-  CVCHeaderItem* HeaderITem() {
-    return static_cast<CVCHeaderItem*>(
+  CardUnmaskHeaderItem* HeaderITem() {
+    return static_cast<CardUnmaskHeaderItem*>(
         [controller().tableViewModel headerForSectionIndex:0]);
   }
 
@@ -223,7 +223,7 @@ class CardUnmaskPromptViewControllerTest
   // Validates that the header is in the tableViewModel and the instructions
   // match those in card_unmask_prompt_controller_.
   void CheckHeaderAndInstructions() {
-    CVCHeaderItem* header_item = HeaderITem();
+    CardUnmaskHeaderItem* header_item = HeaderITem();
     EXPECT_TRUE(header_item);
 
     NSString* expected_title = base::SysUTF16ToNSString(

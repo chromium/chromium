@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "cvc_header_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/card_unmask_header_item.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -14,16 +14,16 @@
 
 namespace {
 
-class CVCHeaderItemTest : public PlatformTest {
+class CardUnmaskHeaderItemTest : public PlatformTest {
  public:
-  CVCHeaderItemTest() {
+  CardUnmaskHeaderItemTest() {
     scoped_feature_list_.InitAndEnableFeature(
         autofill::features::kAutofillEnableVirtualCards);
   }
 
-  CVCHeaderItemTest(const CVCHeaderItemTest&) = delete;
-  CVCHeaderItemTest& operator=(const CVCHeaderItemTest&) = delete;
-  ~CVCHeaderItemTest() override = default;
+  CardUnmaskHeaderItemTest(const CardUnmaskHeaderItemTest&) = delete;
+  CardUnmaskHeaderItemTest& operator=(const CardUnmaskHeaderItemTest&) = delete;
+  ~CardUnmaskHeaderItemTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -31,19 +31,20 @@ class CVCHeaderItemTest : public PlatformTest {
 
 // Tests that the header subviews are set properly after a call to
 // `ConfigureHeaderFooterView:`.
-TEST_F(CVCHeaderItemTest, ConfigureHeaderFooterView) {
+TEST_F(CardUnmaskHeaderItemTest, ConfigureHeaderFooterView) {
   NSString* title_text = @"Title Test Text";
   NSString* instructions_text = @"Instructions Test Text";
 
-  CVCHeaderItem* header_item =
-      [[CVCHeaderItem alloc] initWithType:0
+  CardUnmaskHeaderItem* header_item =
+      [[CardUnmaskHeaderItem alloc] initWithType:0
                                 titleText:title_text
                          instructionsText:instructions_text];
 
   id view = [[[header_item cellClass] alloc] init];
-  ASSERT_TRUE([view isMemberOfClass:[CVCHeaderView class]]);
+  ASSERT_TRUE([view isMemberOfClass:[CardUnmaskHeaderView class]]);
 
-  CVCHeaderView* header_view = base::apple::ObjCCastStrict<CVCHeaderView>(view);
+  CardUnmaskHeaderView* header_view =
+      base::apple::ObjCCastStrict<CardUnmaskHeaderView>(view);
   EXPECT_EQ(0U, header_view.titleLabel.text.length);
   EXPECT_EQ(0U, header_view.instructionsLabel.text.length);
 
