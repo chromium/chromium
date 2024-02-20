@@ -341,6 +341,13 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   // sure further OnVisibilityChanged() don't trigger opening the bubble because
   // we don't want to re-show it every time the web contents become visible.
   bubble_state_ = BubbleState::kShowingIcon;
+
+  // Metrics for showing virtual card enroll bubble are logged once when
+  // enrollment is offered, do not log the same metrics again while showing
+  // confirmation bubble.
+  if (enrollment_status_ == EnrollmentStatus::kCompleted) {
+    return;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // If the dialog is to be shown again because user clicked on links, do not
