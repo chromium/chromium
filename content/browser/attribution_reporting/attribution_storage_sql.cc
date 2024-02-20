@@ -933,7 +933,6 @@ bool HasAggregatableData(
 
 }  // namespace
 
-
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReportM2M(
     const AttributionTrigger& trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1117,7 +1116,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReportM2M(
   return assemble_report_result(store_aggregatable_status);
 }
 
-
 bool AttributionStorageSql::FindMatchingSourceForTriggerM2M(
     const AttributionTrigger& trigger,
     std::vector<StoredSource::Id>& source_ids_to_attribute) {
@@ -1128,28 +1126,31 @@ bool AttributionStorageSql::FindMatchingSourceForTriggerM2M(
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
-  const attribution_reporting::AttributionWindow attribution_window = trigger_registration.attribution_window;
+  const attribution_reporting::AttributionWindow attribution_window = 
+      trigger_registration.attribution_window;
 
-  // Stringify source_id_candidates
-  std::string source_id_candidates = "";
-  for (size_t i=0; i < trigger_registration.source_id_candidates.size(); ++i) {
-      source_id_candidates += base::NumberToString(trigger_registration.source_id_candidates[i]);
-      if (i < trigger_registration.source_id_candidates.size()-1) {
-        source_id_candidates += ", ";
-      }
-  }
-  // Get all sources that match this trigger data.
-  std::string kGetMatchingSourcesSqlFromIndices =
+  std::ostringstream oss;
+  oss << \
     "SELECT I.source_id "
-    "FROM sources I "
-    "JOIN source_destinations D "
-    "ON D.source_id=I.source_id AND D.destination_site='" + net::SchemefulSite(querying_origin).Serialize() +
-    "' WHERE I.source_epoch>= " + base::NumberToString(attribution_window.epoch_start()) + 
-    " AND I.source_epoch<= " + base::NumberToString(attribution_window.epoch_end())  +
-    " AND I.source_event_id IN (" + source_id_candidates + ");";
+      "FROM sources I "
+      "JOIN source_destinations D "
+      "ON D.source_id=I.source_id AND D.destination_site=? "
+      "WHERE I.source_epoch>=? "
+      "AND I.source_epoch<=? "
+      "AND I.source_event_id IN (";
 
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kGetMatchingSourcesSqlFromIndices.c_str()));
+  auto items = trigger_registration.source_id_candidates;
+  if (!items.empty()) {
+    std::copy(items.begin(), items.end() - 1, std::ostream_iterator<uint64_t>(oss, ", "));
+    oss << items.back();
+  }
+  oss << ")";
   
+  sql::Statement statement(db_.GetUniqueStatement(oss.str().c_str()));
+  statement.BindString(0, net::SchemefulSite(querying_origin).Serialize());
+  statement.BindInt64(1, SerializeUint64(attribution_window.epoch_start()));
+  statement.BindInt64(2, SerializeUint64(attribution_window.epoch_end()));
+
   LOG(INFO) << "Running sql";
   
   while (statement.Step()) {
