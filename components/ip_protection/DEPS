@@ -1,0 +1,7 @@
+include_rules = [
+  "+net",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+google_apis",
+  "+services/network/test",
+]

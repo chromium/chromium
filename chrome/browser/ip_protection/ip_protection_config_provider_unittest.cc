@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/base64.h"
@@ -13,7 +14,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -116,31 +116,24 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   std::vector<quiche::BlindSignToken> tokens_;
 };
 
-// Mock for `IpProtectionConfigHttp`. This is used only for testing methods that
-// are called directly from `IpProtectionConfigProvider`, not those called
-// indirectly via BSA.
-class MockIpProtectionConfigHttp : public IpProtectionConfigHttp {
+class MockIpProtectionProxyConfigRetriever
+    : public IpProtectionProxyConfigRetriever {
  public:
-  explicit MockIpProtectionConfigHttp(
+  explicit MockIpProtectionProxyConfigRetriever(
       std::optional<ip_protection::GetProxyConfigResponse>
           proxy_config_response)
-      : IpProtectionConfigHttp(
-            base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+      : IpProtectionProxyConfigRetriever(
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
+            "test_service_type",
+            "test_api_key"),
         proxy_config_response_(proxy_config_response) {}
 
-  void DoRequest(quiche::BlindSignHttpRequestType request_type,
-                 const std::string& authorization_header,
-                 const std::string& body,
-                 quiche::BlindSignHttpCallback callback) override {
-    // DoRequest is not supported in this mock.
-    NOTREACHED();
-  }
-
-  void GetProxyConfig(std::optional<std::string> oauth_token,
-                      IpProtectionConfigHttp::GetProxyConfigCallback callback,
-                      bool for_testing = false) override {
+  void GetProxyConfig(
+      std::optional<std::string> oauth_token,
+      IpProtectionProxyConfigRetriever::GetProxyConfigCallback callback,
+      bool for_testing = false) override {
     if (!proxy_config_response_.has_value()) {
-      std::move(callback).Run(base::unexpected<std::string>("uhoh"));
+      std::move(callback).Run(base::unexpected("uhoh"));
       return;
     }
     std::move(callback).Run(*proxy_config_response_);
@@ -190,7 +183,10 @@ class IpProtectionConfigProviderTest : public testing::Test {
         /*profile=*/nullptr);
     bsa_ = std::make_unique<MockBlindSignAuth>();
     getter_->SetUpForTesting(
-        std::make_unique<MockIpProtectionConfigHttp>(std::nullopt), bsa_.get());
+        std::make_unique<MockIpProtectionProxyConfigRetriever>(std::nullopt),
+        std::make_unique<IpProtectionConfigHttp>(
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+        bsa_.get());
   }
 
   void TearDown() override { getter_->Shutdown(); }
@@ -712,7 +708,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
   chain->set_proxy_b("proxy2b");
   chain->set_chain_id(2);
   getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
+      std::make_unique<IpProtectionConfigHttp>(
+          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+      bsa_.get());
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
@@ -738,7 +737,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
   chain->set_proxy_b("proxy4:443");
   chain->set_chain_id(3);
   getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
+      std::make_unique<IpProtectionConfigHttp>(
+          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+      bsa_.get());
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
@@ -771,7 +773,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
   chain->set_proxy_a("valid");
   chain->set_proxy_b("valid");
   getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
+      std::make_unique<IpProtectionConfigHttp>(
+          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+      bsa_.get());
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
@@ -790,7 +795,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalidChainId) {
   chain->set_proxy_b("proxyb");
   chain->set_chain_id(999);
   getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
+      std::make_unique<IpProtectionConfigHttp>(
+          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+      bsa_.get());
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
@@ -825,8 +833,10 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   chain->set_proxy_a("proxyA2");
   chain->set_proxy_b("proxyB2");
   getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
-
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
+      std::make_unique<IpProtectionConfigHttp>(
+          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+      bsa_.get());
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
   EXPECT_THAT(
@@ -850,7 +860,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
   chain->set_proxy_b("proxy1b");
   chain->set_chain_id(1);
   getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
+      std::make_unique<IpProtectionConfigHttp>(
+          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+      bsa_.get());
 
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
 

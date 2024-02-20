@@ -12,10 +12,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -33,6 +33,17 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
+
+namespace {
+// TODO(https://crbug.com/1299886): Once `google_apis::GetAPIKey()` handles this
+// logic we can remove this helper.
+std::string GetAPIKey() {
+  return chrome::GetChannel() == version_info::Channel::STABLE
+             ? google_apis::GetAPIKey()
+             : google_apis::GetNonStableAPIKey();
+}
+constexpr char kChromeIpBlinding[] = "chromeipblinding";
+}  // namespace
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
@@ -59,6 +70,11 @@ void IpProtectionConfigProvider::SetUp() {
     ip_protection_config_http_ =
         std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get());
   }
+  if (!ip_protection_proxy_config_retriever_) {
+    ip_protection_proxy_config_retriever_ =
+        std::make_unique<IpProtectionProxyConfigRetriever>(
+            url_loader_factory_.get(), kChromeIpBlinding, GetAPIKey());
+  }
   if (!bsa_) {
     if (!blind_sign_auth_) {
       privacy::ppn::BlindSignAuthOptions bsa_options{};
@@ -72,11 +88,16 @@ void IpProtectionConfigProvider::SetUp() {
 }
 
 void IpProtectionConfigProvider::SetUpForTesting(
+    std::unique_ptr<IpProtectionProxyConfigRetriever>
+        ip_protection_proxy_config_retriever,
     std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
     quiche::BlindSignAuthInterface* bsa) {
   // Carefully destroy any existing values in the correct order.
+  ip_protection_proxy_config_retriever_ = nullptr;
   ip_protection_config_http_ = nullptr;
   url_loader_factory_ = nullptr;
+  ip_protection_proxy_config_retriever_ =
+      std::move(ip_protection_proxy_config_retriever);
   ip_protection_config_http_ = std::move(ip_protection_config_http);
 
   bsa_ = nullptr;
@@ -265,7 +286,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
 void IpProtectionConfigProvider::CallGetProxyConfig(
     GetProxyListCallback callback,
     std::optional<std::string> oauth_token) {
-  ip_protection_config_http_->GetProxyConfig(
+  ip_protection_proxy_config_retriever_->GetProxyConfig(
       oauth_token,
       base::BindOnce(&IpProtectionConfigProvider::OnGetProxyConfigCompleted,
                      base::Unretained(this), std::move(callback)));

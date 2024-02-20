@@ -19,13 +19,8 @@ namespace network {
 class SimpleURLLoader;
 }  // namespace network
 
-namespace ip_protection {
-class GetProxyConfigResponse;
-}
-
 // HTTP Fetching for IP Protection. This implements the `BlindSignHttpInterface`
-// for use by the BSA library, and also provides methods used directly by
-// `IpProtectionConfigProvider`.
+// for use by the BSA library.
 class IpProtectionConfigHttp : public quiche::BlindSignHttpInterface {
  public:
   explicit IpProtectionConfigHttp(
@@ -38,27 +33,16 @@ class IpProtectionConfigHttp : public quiche::BlindSignHttpInterface {
                  const std::string& body,
                  quiche::BlindSignHttpCallback callback) override;
 
-  using GetProxyConfigCallback = base::OnceCallback<void(
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>)>;
-  virtual void GetProxyConfig(std::optional<std::string> oauth_token,
-                              GetProxyConfigCallback callback,
-                              bool for_testing = false);
-
  private:
   void OnDoRequestCompleted(
       std::unique_ptr<network::SimpleURLLoader> url_loader,
       quiche::BlindSignHttpCallback callback,
-      std::unique_ptr<std::string> response);
-  void OnGetProxyConfigCompleted(
-      std::unique_ptr<network::SimpleURLLoader> url_loader,
-      GetProxyConfigCallback callback,
       std::unique_ptr<std::string> response);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const GURL ip_protection_server_url_;
   const std::string ip_protection_server_get_initial_data_path_;
   const std::string ip_protection_server_get_tokens_path_;
-  const std::string ip_protection_server_get_proxy_config_path_;
 
   base::WeakPtrFactory<IpProtectionConfigHttp> weak_ptr_factory_{this};
 };
