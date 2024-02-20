@@ -2492,7 +2492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PromosManager.Promo.DisplayFailure"
-    enum="IOSPromosManagerPromo" expires_after="2024-02-28">
+    enum="IOSPromosManagerPromo" expires_after="2024-06-30">
   <owner>bwwilliams@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>huitingyu@google.com</owner>
@@ -2505,7 +2505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PromosManager.Promo.ForcedDisplayFailure"
-    enum="IOSPromosManagerPromo" expires_after="2024-02-28">
+    enum="IOSPromosManagerPromo" expires_after="2024-06-30">
   <owner>bwwilliams@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>huitingyu@google.com</owner>
@@ -2519,7 +2519,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.PromosManager.Promo.ImpressionLimitEvaluation"
     enum="IOSPromosManagerPromoImpressionLimitEvaluationType"
-    expires_after="2024-02-28">
+    expires_after="2024-06-30">
   <owner>bwwilliams@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>huitingyu@google.com</owner>
