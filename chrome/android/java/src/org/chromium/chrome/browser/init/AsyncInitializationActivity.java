@@ -623,6 +623,13 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mLifecycleDispatcher.dispatchOnStopWithNative();
     }
 
+    @CallSuper
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        mLifecycleDispatcher.dispatchOnUserLeaveHint();
+    }
+
     @Override
     public boolean isActivityFinishingOrDestroyed() {
         return mDestroyed || isFinishing();

@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/lifecycle/InflationObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/LifecycleObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/NativeInitObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/OnUserLeaveHintObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/PauseResumeWithNativeObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/RecreateObserver.java",
     "java/src/org/chromium/chrome/browser/lifecycle/SaveInstanceStateObserver.java",

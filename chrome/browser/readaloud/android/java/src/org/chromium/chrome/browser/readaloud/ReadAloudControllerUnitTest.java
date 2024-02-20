@@ -55,6 +55,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -90,6 +92,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -100,7 +103,9 @@ import java.util.List;
 
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowDeviceConditions.class})
 @EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 @DisableFeatures({ChromeFeatureList.READALOUD_IN_MULTI_WINDOW})
 public class ReadAloudControllerUnitTest {
@@ -1472,7 +1477,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void testPlaybackStopsAndStateSavedWhenAppBackgrounded() {
+    public void testPlaybackStopsAndStateSavedWhenAppBackgrounded_screenOn() {
         // Play tab.
         requestAndStartPlayback();
         // set progress
@@ -1483,6 +1488,7 @@ public class ReadAloudControllerUnitTest {
         mController.onPlaybackDataChanged(data);
 
         // App is backgrounded. Make sure playback stops.
+        setIsScreenOnAndUnlocked(true);
         mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
         verify(mPlayback).release();
         reset(mPlayback);
@@ -1505,6 +1511,63 @@ public class ReadAloudControllerUnitTest {
         mController.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
         verify(mPlaybackHooks, never()).createPlayback(any(), mPlaybackCallbackCaptor.capture());
         verify(mPlayback, never()).release();
+    }
+
+    @Test
+    public void testPlaybackWhenAppStops_screenOff() {
+        // Play tab.
+        requestAndStartPlayback();
+        // set progress
+        var data = Mockito.mock(PlaybackData.class);
+
+        doReturn(2).when(data).paragraphIndex();
+        doReturn(1000000L).when(data).positionInParagraphNanos();
+        mController.onPlaybackDataChanged(data);
+
+        // App is backgrounded when the screen is off. Playback should keep playing.
+        setIsScreenOnAndUnlocked(false);
+        mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+        verify(mPlayback, never()).release();
+    }
+
+    @Test
+    public void testPlaybackWhenAppStops_userHint() {
+        // Play tab.
+        requestAndStartPlayback();
+        // set progress
+        var data = Mockito.mock(PlaybackData.class);
+
+        doReturn(2).when(data).paragraphIndex();
+        doReturn(1000000L).when(data).positionInParagraphNanos();
+        mController.onPlaybackDataChanged(data);
+
+        // App is backgrounded. Screen is off but there is user hint present - stop playback
+        mController.onUserLeaveHint();
+        setIsScreenOnAndUnlocked(false);
+        mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+
+        verify(mPlayback).release();
+        reset(mPlayback);
+        when(mPlayback.getMetadata()).thenReturn(mMetadata);
+
+        // App goes back in foreground. Restore progress.
+        mController.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        verify(mPlaybackHooks, times(2)).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayback).seekToParagraph(2, 1000000L);
+        verify(mPlayback, never()).play();
+    }
+
+    private void setIsScreenOnAndUnlocked(boolean isScreenOnAndUnlocked) {
+        DeviceConditions deviceConditions =
+                new DeviceConditions(
+                        /* powerConnected= */ false,
+                        /* batteryPercentage= */ 75,
+                        ConnectionType.CONNECTION_UNKNOWN,
+                        /* powerSaveOn= */ false,
+                        /* activeNetworkMetered= */ false,
+                        isScreenOnAndUnlocked);
+        ShadowDeviceConditions.setCurrentConditions(deviceConditions);
     }
 
     @Test
