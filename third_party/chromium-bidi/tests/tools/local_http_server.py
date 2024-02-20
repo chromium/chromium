@@ -44,17 +44,20 @@ class LocalHttpServer:
 
         self.__start_time = datetime.now()
 
+        def html_doc(content):
+            return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
+
         self.__http_server \
             .expect_request(self.__path_base) \
             .respond_with_data(
-                "<html><body>I prevent CORS</body></html>",
+                html_doc("I prevent CORS"),
                 headers={"Content-Type": "text/html"})
 
         # Set up 200 page.
         self.__http_server \
             .expect_request(self.__path_200) \
             .respond_with_data(
-                f"<html><body>{self.default_200_page_content}</body></html>",
+                html_doc(self.default_200_page_content),
                 headers={"Content-Type": "text/html"})
 
         # Set up permanent redirect.
@@ -95,7 +98,7 @@ class LocalHttpServer:
             .respond_with_handler(hang_forever)
 
         def cache(request: Request):
-            content = f"<html><body>{self.default_200_page_content}</body></html>"
+            content = html_doc(self.default_200_page_content)
             if_modified_since = request.headers.get("If-Modified-Since")
 
             if if_modified_since is not None:
