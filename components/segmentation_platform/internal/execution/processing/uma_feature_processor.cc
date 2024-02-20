@@ -100,7 +100,7 @@ void UmaFeatureProcessor::ProcessNextFeature() {
 
   // Process the feature list.
   const auto& it = uma_features_.begin();
-  proto::UMAFeature feature = *GetAsUMA(it->second);
+  proto::UMAFeature feature = std::move(*GetAsUMA(it->second));
   FeatureIndex index = it->first;
   uma_features_.erase(it);
 
