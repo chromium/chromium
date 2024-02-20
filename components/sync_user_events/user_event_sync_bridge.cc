@@ -11,7 +11,6 @@
 
 #include "base/big_endian.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -109,12 +108,12 @@ std::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
   // Because we receive ApplyIncrementalSyncChanges with deletions when our
   // commits are confirmed, this is the perfect time to cleanup our in flight
   // objects which are no longer in flight.
-  std::erase_if(in_flight_nav_linked_events_,
-                [&deleted_event_times](
-                    const std::pair<int64_t, sync_pb::UserEventSpecifics> kv) {
-                  return base::Contains(deleted_event_times,
-                                        kv.second.event_time_usec());
-                });
+  std::erase_if(
+      in_flight_nav_linked_events_,
+      [&deleted_event_times](
+          const std::pair<int64_t, sync_pb::UserEventSpecifics> kv) {
+        return deleted_event_times.contains(kv.second.event_time_usec());
+      });
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(std::move(batch),

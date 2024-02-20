@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -547,7 +546,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
   // removed once account become non-primary if it was ever removed from cookie
   // jar.
   if (primary_account_.has_value() &&
-      !base::Contains(gaia_ids_in_cookie_jar, primary_account_->gaia)) {
+      !gaia_ids_in_cookie_jar.contains(primary_account_->gaia)) {
     trusted_vault_pb::LocalTrustedVaultPerUser* primary_account_data_ =
         FindUserVault(primary_account_->gaia);
     primary_account_data_->set_should_delete_keys_when_non_primary(true);
@@ -562,7 +561,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
           return false;
         }
         // Delete data if account isn't in cookie jar.
-        return !base::Contains(gaia_ids_in_cookie_jar, gaia_id);
+        return !gaia_ids_in_cookie_jar.contains(gaia_id);
       };
 
   data_.mutable_user()->erase(

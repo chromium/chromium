@@ -12,7 +12,6 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -569,7 +568,7 @@ void AutofillWalletMetadataSyncBridge::GetDataImpl(
   for (const auto& [storage_key, metadata] : cache_) {
     TypeAndMetadataId parsed_storage_key =
         ParseWalletMetadataStorageKey(storage_key);
-    if (!storage_keys_set || base::Contains(*storage_keys_set, storage_key)) {
+    if (!storage_keys_set || storage_keys_set->contains(storage_key)) {
       batch->Put(storage_key, CreateEntityDataFromAutofillMetadata(
                                   parsed_storage_key.type, metadata));
     }

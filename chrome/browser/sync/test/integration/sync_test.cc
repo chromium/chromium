@@ -618,7 +618,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
     // Make sure that an instance of GCMProfileService has been created. This is
     // required for some tests which only call SetupClients().
     gcm::GCMProfileServiceFactory::GetForProfile(profile);
-    DCHECK(base::Contains(profile_to_fake_gcm_driver_, profile));
+    DCHECK(profile_to_fake_gcm_driver_.contains(profile));
     fake_server_sync_invalidation_sender_->AddFakeGCMDriver(
         profile_to_fake_gcm_driver_[profile]);
   }
@@ -831,7 +831,7 @@ void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
     CheckForDataTypeFailures(/*client_index=*/index);
 
     // |profile_to_fake_gcm_driver_| may be empty when using an external server.
-    if (base::Contains(profile_to_fake_gcm_driver_, profile)) {
+    if (profile_to_fake_gcm_driver_.contains(profile)) {
       fake_server_sync_invalidation_sender_->RemoveFakeGCMDriver(
           profile_to_fake_gcm_driver_[profile]);
       profile_to_fake_gcm_driver_.erase(profile);

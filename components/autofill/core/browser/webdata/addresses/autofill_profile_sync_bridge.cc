@@ -8,7 +8,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -178,7 +177,7 @@ void AutofillProfileSyncBridge::GetData(StorageKeyList storage_keys,
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::unique_ptr<AutofillProfile>& entry : entries) {
     std::string key = GetStorageKeyFromAutofillProfile(*entry);
-    if (base::Contains(keys_set, key)) {
+    if (keys_set.contains(key)) {
       batch->Put(key, CreateEntityDataFromAutofillProfile(*entry));
     }
   }

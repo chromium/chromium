@@ -341,7 +341,7 @@ void TestSyncService::GetAllNodesForDebugging(
 
 SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
     ModelType type) const {
-  if (base::Contains(download_statuses_, type)) {
+  if (download_statuses_.contains(type)) {
     return download_statuses_.at(type);
   }
   return ModelTypeDownloadStatus::kUpToDate;

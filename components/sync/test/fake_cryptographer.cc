@@ -6,7 +6,6 @@
 
 #include <iterator>
 
-#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -39,7 +38,7 @@ void FakeCryptographer::AddEncryptionKey(const std::string& key_name) {
 
 void FakeCryptographer::SelectDefaultEncryptionKey(
     const std::string& key_name) {
-  DCHECK(base::Contains(known_key_names_, key_name));
+  DCHECK(known_key_names_.contains(key_name));
   default_key_name_ = key_name;
 }
 
@@ -53,7 +52,7 @@ bool FakeCryptographer::CanEncrypt() const {
 
 bool FakeCryptographer::CanDecrypt(
     const sync_pb::EncryptedData& encrypted) const {
-  return base::Contains(known_key_names_, encrypted.key_name());
+  return known_key_names_.contains(encrypted.key_name());
 }
 
 std::string FakeCryptographer::GetDefaultEncryptionKeyName() const {

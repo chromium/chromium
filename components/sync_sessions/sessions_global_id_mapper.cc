@@ -7,8 +7,6 @@
 #include <map>
 #include <utility>
 
-#include "base/containers/contains.h"
-
 namespace sync_sessions {
 namespace {
 
@@ -96,7 +94,7 @@ void SessionsGlobalIdMapper::CleanupNavigationTracking() {
     // orphaned from |global_to_unique_|.
     std::erase_if(unique_to_current_global_,
                   [this](const std::pair<int, int64_t> kv) {
-                    return !base::Contains(global_to_unique_, kv.second);
+                    return !global_to_unique_.contains(kv.second);
                   });
   }
 }

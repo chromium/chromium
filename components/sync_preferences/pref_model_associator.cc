@@ -394,7 +394,7 @@ bool PrefModelAssociator::IsPrefSyncedForTesting(
 }
 
 void PrefModelAssociator::RegisterPref(const std::string& name) {
-  DCHECK(!base::Contains(registered_preferences_, name));
+  DCHECK(!registered_preferences_.contains(name));
   DCHECK(
       !client_ ||
       (client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name) &&

@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -550,7 +549,7 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
           // |server_id|, don't clear it: outdated data is better than nothing.
           // Such entry should be encrypted with another key, since |key_name|'s
           // queued updates would've have been dropped by now.
-          DCHECK(!base::Contains(entries_pending_decryption_, server_id) ||
+          DCHECK(!entries_pending_decryption_.contains(server_id) ||
                  GetEncryptionKeyName(entries_pending_decryption_[server_id]) !=
                      key_name);
           SyncRecordModelTypeUpdateDropReason(
@@ -1121,7 +1120,7 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
 
 bool ModelTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
     const std::string& key_name) {
-  if (!base::Contains(unknown_encryption_keys_by_name_, key_name)) {
+  if (!unknown_encryption_keys_by_name_.contains(key_name)) {
     return false;
   }
   if (unknown_encryption_keys_by_name_.at(key_name)
@@ -1166,15 +1165,15 @@ ModelTypeWorker::RemoveKeysNoLongerUnknown() {
   }
 
   std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo> removed_keys;
-  std::erase_if(
-      unknown_encryption_keys_by_name_, [&](const auto& key_and_info) {
-        if (base::Contains(keys_blocking_updates, key_and_info.first)) {
-          return false;
-        }
-        removed_keys.push_back(key_and_info.second);
-        return true;
-      });
-
+  for (const auto& [key_name, info] : unknown_encryption_keys_by_name_) {
+    if (!keys_blocking_updates.contains(key_name)) {
+      removed_keys.push_back(info);
+    }
+  }
+  std::erase_if(unknown_encryption_keys_by_name_,
+                [&](const auto& key_and_info) {
+                  return !keys_blocking_updates.contains(key_and_info.first);
+                });
   return removed_keys;
 }
 

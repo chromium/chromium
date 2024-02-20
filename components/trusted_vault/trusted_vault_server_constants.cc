@@ -5,7 +5,6 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
 #include "net/base/url_util.h"
@@ -97,7 +96,7 @@ std::optional<SecurityDomainId> GetSecurityDomainByName(
           {kSyncSecurityDomainName, SecurityDomainId::kChromeSync},
           {kPasskeysSecurityDomainName, SecurityDomainId::kPasskeys},
       });
-  return base::Contains(kSecurityDomainNames, name)
+  return kSecurityDomainNames.contains(name)
              ? std::make_optional(kSecurityDomainNames.at(name))
              : std::nullopt;
 }
