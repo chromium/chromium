@@ -61,7 +61,7 @@ constexpr char kSupportedImages[] = FILE_PATH_LITERAL("*.jpg");
 constexpr unsigned int k3M = 3 * 1024 * 1024;
 
 // Max number of images kept as camera background.
-constexpr unsigned int kMaxNumberOfImageKeptOnDisk = 30;
+constexpr unsigned int kMaxNumberOfImageKeptOnDisk = 12;
 
 // Directory that can be accessed by the camera module.
 constexpr char kImageDirForCameraModule[] = "/run/camera/";
