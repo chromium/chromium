@@ -548,11 +548,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // DidCommitProvisionalLoad() but only for non-same-document-navigations.
   bool recorded_first_filling_result_ = false;
 
-  // Contains renderer id of last updated input element.
-  FieldRendererId last_updated_field_renderer_id_;
-  // Contains renderer id of the form of the last updated input element.
-  FormRendererId last_updated_form_renderer_id_;
-
   // Contains render id of the field where a form submission should be
   // triggered.
   FieldRendererId field_renderer_id_to_submit_;

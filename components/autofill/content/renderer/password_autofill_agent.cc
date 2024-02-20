@@ -1730,8 +1730,6 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   forms_structure_cache_.clear();
   autofilled_elements_cache_.clear();
   all_autofilled_elements_.clear();
-  last_updated_field_renderer_id_ = FieldRendererId();
-  last_updated_form_renderer_id_ = FormRendererId();
   field_renderer_id_to_submit_ = FieldRendererId();
 #if BUILDFLAG(IS_ANDROID)
   keyboard_replacing_surface_state_ =
@@ -1765,7 +1763,6 @@ void PasswordAutofillAgent::InformBrowserAboutUserInput(
   DCHECK(!form.IsNull() || !element.IsNull());
   if (!FrameCanAccessPasswordManager())
     return;
-  SetLastUpdatedFormAndField(form, element);
   std::unique_ptr<FormData> form_data =
       form.IsNull() ? GetFormDataFromUnownedInputElements()
                     : GetFormDataFromWebForm(form);
@@ -2191,14 +2188,6 @@ void PasswordAutofillAgent::AutofillField(const std::u16string& value,
       field_id, value, FieldPropertiesFlags::kAutofilledOnPageLoad);
   autofilled_elements_cache_.emplace(field_id, WebString::FromUTF16(value));
   all_autofilled_elements_.insert(field_id);
-}
-
-void PasswordAutofillAgent::SetLastUpdatedFormAndField(
-    const WebFormElement& form,
-    const WebFormControlElement& input) {
-  last_updated_form_renderer_id_ = GetFormRendererId(form);
-  last_updated_field_renderer_id_ =
-      input.IsNull() ? FieldRendererId() : GetFieldRendererId(input);
 }
 
 bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
