@@ -1336,19 +1336,6 @@ enum HeaderBehaviour {
   }
 }
 
-// Called by NSNotificationCenter when the view's window becomes key to account
-// for topLayoutGuide length updates.
-- (void)updateToolbarHeightForKeyWindow {
-  // Update the toolbar height to account for `topLayoutGuide` changes.
-  self.primaryToolbarHeightConstraint.constant =
-      [self primaryToolbarHeightWithInset];
-  // Stop listening for the key window notification.
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:UIWindowDidBecomeKeyNotification
-              object:self.view.window];
-}
-
 // The height of the primary toolbar with the top safe area inset included.
 - (CGFloat)primaryToolbarHeightWithInset {
   CGFloat height = self.toolbarCoordinator.expandedPrimaryToolbarHeight;
