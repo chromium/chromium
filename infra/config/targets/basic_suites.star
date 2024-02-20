@@ -4957,6 +4957,22 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "updater_gtests_mac_dedicated_pool",
+    tests = {
+        "updater_tests": targets.legacy_test_config(
+            mixins = [
+                "updater-mac-pool",
+            ],
+        ),
+        "updater_tests_system": targets.legacy_test_config(
+            mixins = [
+                "updater-mac-pool",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "updater_gtests_win",
     tests = {
         "updater_tests": targets.legacy_test_config(

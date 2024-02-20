@@ -5789,7 +5789,7 @@
           'mac_12_arm64',
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
+          'gtest_tests': 'updater_gtests_mac_dedicated_pool',
         },
       },
       'mac12-x64-updater-tester-asan-dbg': {

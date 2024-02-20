@@ -5416,6 +5416,19 @@
       },
     },
 
+    'updater_gtests_mac_dedicated_pool': {
+      'updater_tests': {
+        'mixins': [
+          'updater-mac-pool',
+        ],
+      },
+      'updater_tests_system': {
+        'mixins': [
+          'updater-mac-pool',
+        ],
+      },
+    },
+
     'updater_gtests_win': {
       'updater_tests': {
         'mixins': [
