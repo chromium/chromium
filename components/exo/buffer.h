@@ -43,6 +43,20 @@ class Buffer {
   Buffer& operator=(const Buffer&) = delete;
   virtual ~Buffer();
 
+  // Clients can use this method to create Buffer using GMBHandles. This is
+  // required to move away clients from using GMB directly as a part of
+  // MappableSI work.
+  static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
+      gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
+      const gfx::Size& buffer_size,
+      gfx::BufferFormat buffer_format,
+      gfx::BufferUsage buffer_usage,
+      unsigned texture_target,
+      unsigned query_type,
+      bool use_zero_copy,
+      bool is_overlay_candidate,
+      bool y_invert);
+
   const gfx::GpuMemoryBuffer* gfx_buffer() const {
     return gpu_memory_buffer_.get();
   }

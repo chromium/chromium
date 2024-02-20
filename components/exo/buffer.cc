@@ -35,6 +35,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/media_switches.h"
 #include "ui/aura/env.h"
 #include "ui/color/color_id.h"
@@ -525,6 +526,39 @@ Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)) {}
 
 Buffer::~Buffer() {}
+
+// static
+std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
+    const gfx::Size& buffer_size,
+    gfx::BufferFormat buffer_format,
+    gfx::BufferUsage buffer_usage,
+    unsigned texture_target,
+    unsigned query_type,
+    bool use_zero_copy,
+    bool is_overlay_candidate,
+    bool y_invert) {
+  // Note that tests usually creates fake GMBs. Once tests are converted to
+  // create Buffer from GMBHandles, we will likely need a way to use
+  // TestGPuMemoryBufferSupport here. One way to do that could be to have a
+  // similar function like this only for tests OR some factory function.
+  gpu::GpuMemoryBufferSupport gpu_memory_buffer_support;
+  auto gpu_memory_buffer =
+      gpu_memory_buffer_support.CreateGpuMemoryBufferImplFromHandle(
+          std::move(gpu_memory_buffer_handle), buffer_size, buffer_format,
+          buffer_usage, base::DoNothing());
+  if (!gpu_memory_buffer) {
+    LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle";
+    return nullptr;
+  }
+
+  // Note that for now we are always creating a GMB from GMBHandle here. This
+  // will help clients to move away from using GMB to create Exo::Buffer while
+  // still keep the code inside here intact.
+  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), texture_target,
+                                  query_type, use_zero_copy,
+                                  is_overlay_candidate, y_invert);
+}
 
 bool Buffer::ProduceTransferableResource(
     FrameSinkResourceManager* resource_manager,
