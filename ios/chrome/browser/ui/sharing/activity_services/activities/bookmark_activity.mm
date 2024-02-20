@@ -25,8 +25,12 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 @interface BookmarkActivity ()
 // Whether or not the page is bookmarked.
 @property(nonatomic, assign) BOOL bookmarked;
-// The bookmark model used to validate if a page was bookmarked.
-@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
+// The local or syncable bookmark model used to validate if a page was
+// bookmarked.
+@property(nonatomic, assign)
+    bookmarks::BookmarkModel* localOrSyncableBookmarkModel;
+// The account bookmark model used to validate if a page was bookmarked.
+@property(nonatomic, assign) bookmarks::BookmarkModel* accountBookmarkModel;
 // The URL of the page to be bookmarked.
 @property(nonatomic, assign) GURL URL;
 // The title of the page to be bookmarked.
@@ -40,20 +44,26 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 @implementation BookmarkActivity
 
 - (instancetype)initWithURL:(const GURL&)URL
-                      title:(NSString*)title
-              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                    handler:(id<BookmarksCommands>)handler
-                prefService:(PrefService*)prefService {
+                           title:(NSString*)title
+    localOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+                         handler:(id<BookmarksCommands>)handler
+                     prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _URL = URL;
     _title = title;
-    _bookmarkModel = bookmarkModel;
+    _accountBookmarkModel = accountBookmarkModel;
+    _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel;
     _handler = handler;
     _prefService = prefService;
 
-    _bookmarked = _bookmarkModel && _bookmarkModel->loaded() &&
-                  _bookmarkModel->IsBookmarked(_URL);
+    _bookmarked = (_localOrSyncableBookmarkModel &&
+                   _localOrSyncableBookmarkModel->loaded() &&
+                   _localOrSyncableBookmarkModel->IsBookmarked(_URL)) ||
+                  (_accountBookmarkModel && _accountBookmarkModel->loaded() &&
+                   _accountBookmarkModel->IsBookmarked(_URL));
   }
   return self;
 }
@@ -79,8 +89,11 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
   // Don't show the add/remove bookmark activity if we have an invalid
-  // bookmarkModel, or if editing bookmarks is disabled in the prefs.
-  return self.bookmarkModel && [self isEditBookmarksEnabledInPrefs];
+  // local or syncable bookmarkModel, or if editing bookmarks is disabled in the
+  // prefs. The account model may be nullptr when sync-the-feature is enabled,
+  // so it is not checked.
+  return self.localOrSyncableBookmarkModel &&
+         [self isEditBookmarksEnabledInPrefs];
 }
 
 - (void)prepareWithActivityItems:(NSArray*)activityItems {

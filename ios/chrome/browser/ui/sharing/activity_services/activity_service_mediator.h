@@ -41,14 +41,16 @@ class WebNavigationBrowserAgent;
 // `baseViewController` can be passed to activities which need to present VCs.
 - (instancetype)initWithHandler:
                     (id<BrowserCoordinatorCommands, FindInPageCommands>)handler
-               bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
-            qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
-                    prefService:(PrefService*)prefService
-                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-             baseViewController:(UIViewController*)baseViewController
-                navigationAgent:(WebNavigationBrowserAgent*)agent
-        readingListBrowserAgent:
-            (ReadingListBrowserAgent*)readingListBrowserAgent
+                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
+             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
+                     prefService:(PrefService*)prefService
+    localOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+              baseViewController:(UIViewController*)baseViewController
+                 navigationAgent:(WebNavigationBrowserAgent*)agent
+         readingListBrowserAgent:
+             (ReadingListBrowserAgent*)readingListBrowserAgent
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -50,7 +50,10 @@
 
 @property(nonatomic, assign) PrefService* prefService;
 
-@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
+@property(nonatomic, assign) bookmarks::BookmarkModel* accountBookmarkModel;
+
+@property(nonatomic, assign)
+    bookmarks::BookmarkModel* localOrSyncableBookmarkModel;
 
 @property(nonatomic, weak) UIViewController* baseViewController;
 
@@ -67,20 +70,25 @@
 
 - (instancetype)initWithHandler:
                     (id<BrowserCoordinatorCommands, FindInPageCommands>)handler
-               bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
-            qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
-                    prefService:(PrefService*)prefService
-                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-             baseViewController:(UIViewController*)baseViewController
-                navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
-        readingListBrowserAgent:
-            (ReadingListBrowserAgent*)readingListBrowserAgent {
+                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
+             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
+                     prefService:(PrefService*)prefService
+    localOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+              baseViewController:(UIViewController*)baseViewController
+                 navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
+         readingListBrowserAgent:
+             (ReadingListBrowserAgent*)readingListBrowserAgent {
   if (self = [super init]) {
     _handler = handler;
     _bookmarksHandler = bookmarksHandler;
     _qrGenerationHandler = qrGenerationHandler;
     _prefService = prefService;
-    _bookmarkModel = bookmarkModel;
+    _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel;
+    _accountBookmarkModel = accountBookmarkModel;
+    _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel;
+    _accountBookmarkModel = accountBookmarkModel;
     _baseViewController = baseViewController;
     _navigationAgent = navigationAgent;
     _readingListBrowserAgent = readingListBrowserAgent;
@@ -140,7 +148,8 @@
     BookmarkActivity* bookmarkActivity =
         [[BookmarkActivity alloc] initWithURL:data.visibleURL
                                         title:data.title
-                                bookmarkModel:self.bookmarkModel
+                 localOrSyncableBookmarkModel:self.localOrSyncableBookmarkModel
+                         accountBookmarkModel:self.accountBookmarkModel
                                       handler:self.bookmarksHandler
                                   prefService:self.prefService];
     [applicationActivities addObject:bookmarkActivity];
