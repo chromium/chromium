@@ -657,7 +657,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)omniboxPopupRow {
-  if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements)) {
+  if (base::FeatureList::IsEnabled(kOmniboxPopupRowContentConfiguration)) {
+    return grey_kindOfClassName(@"UITableViewCell");
+  } else if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements)) {
     return grey_kindOfClassName(@"OmniboxPopupRowCellExperimental");
   } else {
     return grey_kindOfClassName(@"OmniboxPopupRowCell");
