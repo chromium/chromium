@@ -1654,7 +1654,7 @@
   },
   'chrome_sizes': {
     'modifications': {
-      'lacros-amd64-generic-chrome-skylab': {
+      'lacros-amd64-generic-chrome': {
         'swarming': {
           'dimensions': {
             'cpu': 'x86-64',
@@ -1662,7 +1662,7 @@
           },
         },
       },
-      'lacros-arm-generic-chrome-skylab': {
+      'lacros-arm-generic-chrome': {
         'swarming': {
           'dimensions': {
             'cpu': 'x86-64',
@@ -1670,7 +1670,7 @@
           },
         },
       },
-      'lacros-arm64-generic-chrome-skylab': {
+      'lacros-arm64-generic-chrome': {
         'swarming': {
           'dimensions': {
             'cpu': 'x86-64',

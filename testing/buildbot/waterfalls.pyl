@@ -159,7 +159,7 @@
         },
         'os_type': 'chromeos',
       },
-      'lacros-amd64-generic-chrome-skylab': {
+      'lacros-amd64-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
           'linux_symbols',
@@ -175,7 +175,7 @@
         },
         'os_type': 'chromeos',
       },
-      'lacros-arm-generic-chrome-skylab': {
+      'lacros-arm-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
           'linux_symbols',
@@ -190,7 +190,7 @@
         },
         'os_type': 'chromeos',
       },
-      'lacros-arm64-generic-chrome-skylab': {
+      'lacros-arm64-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
           'linux_symbols',
