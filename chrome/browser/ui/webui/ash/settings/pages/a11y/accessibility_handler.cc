@@ -167,8 +167,9 @@ void AccessibilityHandler::HandleGetStartupSoundEnabled(
 
 void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
   const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
-          extension_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile_)
+          ->enabled_extensions()
+          .GetByID(extension_id);
   if (!extension) {
     return;
   }
