@@ -46,7 +46,7 @@ std::optional<std::string> BleV2GattClient::ReadCharacteristic(
 
 bool BleV2GattClient::WriteCharacteristic(
     const api::ble_v2::GattCharacteristic& characteristic,
-    absl::string_view value,
+    std::string_view value,
     WriteType type) {
   // TODO(b/311430390): Implement this function.
   NOTIMPLEMENTED();
@@ -56,7 +56,7 @@ bool BleV2GattClient::WriteCharacteristic(
 bool BleV2GattClient::SetCharacteristicSubscription(
     const api::ble_v2::GattCharacteristic& characteristic,
     bool enable,
-    absl::AnyInvocable<void(absl::string_view value)>
+    absl::AnyInvocable<void(std::string_view value)>
         on_characteristic_changed_cb) {
   // TODO(b/311430390): Implement this function.
   NOTIMPLEMENTED();

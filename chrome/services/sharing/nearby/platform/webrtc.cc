@@ -215,7 +215,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   }
 
   // api::WebRtcSignalingMessenger:
-  bool SendMessage(absl::string_view peer_id,
+  bool SendMessage(std::string_view peer_id,
                    const ByteArray& message) override {
     bool success = false;
     if (!messenger_->SendMessage(self_id_, std::string(peer_id),
@@ -562,7 +562,7 @@ void WebRtcMedium::OnIceServersFetched(
 
 std::unique_ptr<api::WebRtcSignalingMessenger>
 WebRtcMedium::GetSignalingMessenger(
-    absl::string_view self_id,
+    std::string_view self_id,
     const location::nearby::connections::LocationHint& location_hint) {
   return std::make_unique<WebRtcSignalingMessengerImpl>(
       std::string(self_id), location_hint, webrtc_signaling_messenger_);

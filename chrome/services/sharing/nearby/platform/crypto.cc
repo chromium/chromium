@@ -16,7 +16,7 @@ namespace nearby {
 
 void Crypto::Init() {}
 
-ByteArray Crypto::Md5(absl::string_view input) {
+ByteArray Crypto::Md5(std::string_view input) {
   if (input.empty())
     return ByteArray();
 
@@ -25,7 +25,7 @@ ByteArray Crypto::Md5(absl::string_view input) {
   return ByteArray(std::string(std::begin(digest.a), std::end(digest.a)));
 }
 
-ByteArray Crypto::Sha256(absl::string_view input) {
+ByteArray Crypto::Sha256(std::string_view input) {
   if (input.empty())
     return ByteArray();
 

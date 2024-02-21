@@ -32,12 +32,12 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
       const api::ble_v2::GattCharacteristic& characteristic) override;
   bool WriteCharacteristic(
       const api::ble_v2::GattCharacteristic& characteristic,
-      absl::string_view value,
+      std::string_view value,
       WriteType type) override;
   bool SetCharacteristicSubscription(
       const api::ble_v2::GattCharacteristic& characteristic,
       bool enable,
-      absl::AnyInvocable<void(absl::string_view value)>
+      absl::AnyInvocable<void(std::string_view value)>
           on_characteristic_changed_cb) override;
   void Disconnect() override;
 

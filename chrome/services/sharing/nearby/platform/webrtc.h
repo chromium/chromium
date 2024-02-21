@@ -51,7 +51,7 @@ class WebRtcMedium : public api::WebRtcMedium {
   void CreatePeerConnection(webrtc::PeerConnectionObserver* observer,
                             PeerConnectionCallback callback) override;
   std::unique_ptr<api::WebRtcSignalingMessenger> GetSignalingMessenger(
-      absl::string_view self_id,
+      std::string_view self_id,
       const location::nearby::connections::LocationHint& location_hint) override;
 
  private:

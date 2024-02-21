@@ -30,14 +30,14 @@ class CredentialStorage : public nearby::api::CredentialStorage {
   ~CredentialStorage() override;
 
   // nearby::api::CredentialStorage:
-  void SaveCredentials(absl::string_view manager_app_id,
-                       absl::string_view account_name,
+  void SaveCredentials(std::string_view manager_app_id,
+                       std::string_view account_name,
                        const std::vector<LocalCredential>& private_credentials,
                        const std::vector<SharedCredential>& public_credentials,
                        PublicCredentialType public_credential_type,
                        SaveCredentialsResultCallback callback) override;
-  void UpdateLocalCredential(absl::string_view manager_app_id,
-                             absl::string_view account_name,
+  void UpdateLocalCredential(std::string_view manager_app_id,
+                             std::string_view account_name,
                              nearby::internal::LocalCredential credential,
                              SaveCredentialsResultCallback callback) override;
   void GetLocalCredentials(const CredentialSelector& credential_selector,
