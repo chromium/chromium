@@ -459,6 +459,8 @@ static_library("browser") {
     "payments/wait_for_signal_or_timeout.cc",
     "payments/wait_for_signal_or_timeout.h",
     "payments/webauthn_callback_types.h",
+    "payments_data_manager.cc",
+    "payments_data_manager.h",
     "personal_data_manager.cc",
     "personal_data_manager.h",
     "personal_data_manager_observer.h",

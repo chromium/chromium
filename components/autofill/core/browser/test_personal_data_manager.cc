@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
@@ -20,6 +21,8 @@ TestPersonalDataManager::TestPersonalDataManager()
   address_data_manager_ = std::make_unique<TestAddressDataManager>(
       base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
                           base::Unretained(this)));
+  payments_data_manager_ = std::make_unique<PaymentsDataManager>(
+      /*profile_database=*/nullptr, /*account_database=*/nullptr, this);
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
@@ -49,7 +52,9 @@ void TestPersonalDataManager::RecordUseOf(
 void TestPersonalDataManager::RecordUseOfIban(Iban& iban) {
   std::unique_ptr<Iban> updated_iban = std::make_unique<Iban>(iban);
   std::vector<std::unique_ptr<Iban>>& container =
-      iban.record_type() == Iban::kLocalIban ? local_ibans_ : server_ibans_;
+      iban.record_type() == Iban::kLocalIban
+          ? payments_data_manager_->local_ibans_
+          : payments_data_manager_->server_ibans_;
   auto it =
       base::ranges::find(container,
                          iban.record_type() == Iban::kLocalIban
@@ -83,13 +88,15 @@ void TestPersonalDataManager::RemoveByGUID(const std::string& guid) {
 void TestPersonalDataManager::RemoveByGuidWithoutNotifications(
     const std::string& guid) {
   if (CreditCard* credit_card = GetCreditCardByGUID(guid)) {
-    local_credit_cards_.erase(base::ranges::find(
-        local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
+    payments_data_manager_->local_credit_cards_.erase(
+        base::ranges::find(payments_data_manager_->local_credit_cards_,
+                           credit_card, &std::unique_ptr<CreditCard>::get));
   } else if (GetProfileByGUID(guid)) {
     address_data_manager_->RemoveProfile(guid);
   } else if (const Iban* iban = GetIbanByGUID(guid)) {
-    local_ibans_.erase(
-        base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
+    payments_data_manager_->local_ibans_.erase(
+        base::ranges::find(payments_data_manager_->local_ibans_, iban,
+                           &std::unique_ptr<Iban>::get));
   }
 }
 
@@ -102,7 +109,8 @@ bool TestPersonalDataManager::IsEligibleForAddressAccountStorage() const {
 void TestPersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   std::unique_ptr<CreditCard> local_credit_card =
       std::make_unique<CreditCard>(credit_card);
-  local_credit_cards_.push_back(std::move(local_credit_card));
+  payments_data_manager_->local_credit_cards_.push_back(
+      std::move(local_credit_card));
   NotifyPersonalDataObserver();
 }
 
@@ -112,7 +120,7 @@ std::string TestPersonalDataManager::AddAsLocalIban(Iban iban) {
   iban.set_identifier(
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   std::unique_ptr<Iban> local_iban = std::make_unique<Iban>(iban);
-  local_ibans_.push_back(std::move(local_iban));
+  payments_data_manager_->local_ibans_.push_back(std::move(local_iban));
   NotifyPersonalDataObserver();
   return iban.guid();
 }
@@ -120,7 +128,7 @@ std::string TestPersonalDataManager::AddAsLocalIban(Iban iban) {
 std::string TestPersonalDataManager::UpdateIban(const Iban& iban) {
   const Iban* old_iban = GetIbanByGUID(iban.guid());
   CHECK(old_iban);
-  local_ibans_.push_back(std::make_unique<Iban>(iban));
+  payments_data_manager_->local_ibans_.push_back(std::make_unique<Iban>(iban));
   RemoveByGUID(old_iban->guid());
   return iban.guid();
 }
@@ -156,58 +164,66 @@ const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
 
 void TestPersonalDataManager::LoadCreditCards() {
   // Overridden to avoid a trip to the database.
-  pending_creditcards_query_ = 125;
-  pending_server_creditcards_query_ = 126;
+  payments_data_manager_->pending_creditcards_query_ = 125;
+  payments_data_manager_->pending_server_creditcards_query_ = 126;
   {
     std::vector<std::unique_ptr<CreditCard>> credit_cards;
-    local_credit_cards_.swap(credit_cards);
+    payments_data_manager_->local_credit_cards_.swap(credit_cards);
     std::unique_ptr<WDTypedResult> result =
         std::make_unique<WDResult<std::vector<std::unique_ptr<CreditCard>>>>(
             AUTOFILL_CREDITCARDS_RESULT, std::move(credit_cards));
-    OnWebDataServiceRequestDone(pending_creditcards_query_, std::move(result));
+    payments_data_manager_->OnWebDataServiceRequestDone(
+        payments_data_manager_->pending_creditcards_query_, std::move(result));
   }
   {
     std::vector<std::unique_ptr<CreditCard>> credit_cards;
-    server_credit_cards_.swap(credit_cards);
+    payments_data_manager_->server_credit_cards_.swap(credit_cards);
     std::unique_ptr<WDTypedResult> result =
         std::make_unique<WDResult<std::vector<std::unique_ptr<CreditCard>>>>(
             AUTOFILL_CREDITCARDS_RESULT, std::move(credit_cards));
-    OnWebDataServiceRequestDone(pending_server_creditcards_query_,
-                                std::move(result));
+    payments_data_manager_->OnWebDataServiceRequestDone(
+        payments_data_manager_->pending_server_creditcards_query_,
+        std::move(result));
   }
 }
 
 void TestPersonalDataManager::LoadCreditCardCloudTokenData() {
-  pending_server_creditcard_cloud_token_data_query_ = 127;
+  payments_data_manager_->pending_server_creditcard_cloud_token_data_query_ =
+      127;
   {
     std::vector<std::unique_ptr<CreditCardCloudTokenData>> cloud_token_data;
-    server_credit_card_cloud_token_data_.swap(cloud_token_data);
+    payments_data_manager_->server_credit_card_cloud_token_data_.swap(
+        cloud_token_data);
     std::unique_ptr<WDTypedResult> result = std::make_unique<
         WDResult<std::vector<std::unique_ptr<CreditCardCloudTokenData>>>>(
         AUTOFILL_CLOUDTOKEN_RESULT, std::move(cloud_token_data));
-    OnWebDataServiceRequestDone(
-        pending_server_creditcard_cloud_token_data_query_, std::move(result));
+    payments_data_manager_->OnWebDataServiceRequestDone(
+        payments_data_manager_
+            ->pending_server_creditcard_cloud_token_data_query_,
+        std::move(result));
   }
 }
 
 void TestPersonalDataManager::LoadIbans() {
-  pending_local_ibans_query_ = 128;
-  pending_server_ibans_query_ = 129;
+  payments_data_manager_->pending_local_ibans_query_ = 128;
+  payments_data_manager_->pending_server_ibans_query_ = 129;
   {
     std::vector<std::unique_ptr<Iban>> ibans;
-    local_ibans_.swap(ibans);
+    payments_data_manager_->local_ibans_.swap(ibans);
     std::unique_ptr<WDTypedResult> result =
         std::make_unique<WDResult<std::vector<std::unique_ptr<Iban>>>>(
             AUTOFILL_IBANS_RESULT, std::move(ibans));
-    OnWebDataServiceRequestDone(pending_local_ibans_query_, std::move(result));
+    payments_data_manager_->OnWebDataServiceRequestDone(
+        payments_data_manager_->pending_local_ibans_query_, std::move(result));
   }
   {
     std::vector<std::unique_ptr<Iban>> server_ibans;
-    server_ibans_.swap(server_ibans);
+    payments_data_manager_->server_ibans_.swap(server_ibans);
     std::unique_ptr<WDTypedResult> result =
         std::make_unique<WDResult<std::vector<std::unique_ptr<Iban>>>>(
             AUTOFILL_IBANS_RESULT, std::move(server_ibans));
-    OnWebDataServiceRequestDone(pending_server_ibans_query_, std::move(result));
+    payments_data_manager_->OnWebDataServiceRequestDone(
+        payments_data_manager_->pending_server_ibans_query_, std::move(result));
   }
 }
 
@@ -242,7 +258,7 @@ bool TestPersonalDataManager::ShouldSuggestServerPaymentMethods() const {
 
 void TestPersonalDataManager::ClearAllLocalData() {
   ClearProfiles();
-  local_credit_cards_.clear();
+  payments_data_manager_->local_credit_cards_.clear();
 }
 
 bool TestPersonalDataManager::IsDataLoaded() const {
@@ -297,12 +313,13 @@ bool TestPersonalDataManager::IsPaymentCvcStorageEnabled() {
 void TestPersonalDataManager::AddServerCvc(int64_t instrument_id,
                                            const std::u16string& cvc) {
   auto card_iterator =
-      std::find_if(server_credit_cards_.begin(), server_credit_cards_.end(),
+      std::find_if(payments_data_manager_->server_credit_cards_.begin(),
+                   payments_data_manager_->server_credit_cards_.end(),
                    [instrument_id](auto& card) {
                      return card->instrument_id() == instrument_id;
                    });
 
-  if (card_iterator != server_credit_cards_.end()) {
+  if (card_iterator != payments_data_manager_->server_credit_cards_.end()) {
     card_iterator->get()->set_cvc(cvc);
   }
 }
@@ -329,23 +346,24 @@ void TestPersonalDataManager::ClearProfiles() {
 }
 
 void TestPersonalDataManager::ClearCreditCards() {
-  local_credit_cards_.clear();
-  server_credit_cards_.clear();
+  payments_data_manager_->local_credit_cards_.clear();
+  payments_data_manager_->server_credit_cards_.clear();
 }
 
 void TestPersonalDataManager::ClearCloudTokenData() {
-  server_credit_card_cloud_token_data_.clear();
+  payments_data_manager_->server_credit_card_cloud_token_data_.clear();
 }
 
 void TestPersonalDataManager::ClearCreditCardOfferData() {
-  autofill_offer_data_.clear();
+  payments_data_manager_->autofill_offer_data_.clear();
 }
 
 void TestPersonalDataManager::AddServerCreditCard(
     const CreditCard& credit_card) {
   std::unique_ptr<CreditCard> server_credit_card =
       std::make_unique<CreditCard>(credit_card);
-  server_credit_cards_.push_back(std::move(server_credit_card));
+  payments_data_manager_->server_credit_cards_.push_back(
+      std::move(server_credit_card));
   NotifyPersonalDataObserver();
 }
 
@@ -353,7 +371,8 @@ void TestPersonalDataManager::AddCloudTokenData(
     const CreditCardCloudTokenData& cloud_token_data) {
   std::unique_ptr<CreditCardCloudTokenData> data =
       std::make_unique<CreditCardCloudTokenData>(cloud_token_data);
-  server_credit_card_cloud_token_data_.push_back(std::move(data));
+  payments_data_manager_->server_credit_card_cloud_token_data_.push_back(
+      std::move(data));
   NotifyPersonalDataObserver();
 }
 
@@ -361,13 +380,13 @@ void TestPersonalDataManager::AddAutofillOfferData(
     const AutofillOfferData& offer_data) {
   std::unique_ptr<AutofillOfferData> data =
       std::make_unique<AutofillOfferData>(offer_data);
-  autofill_offer_data_.emplace_back(std::move(data));
+  payments_data_manager_->autofill_offer_data_.emplace_back(std::move(data));
   NotifyPersonalDataObserver();
 }
 
 void TestPersonalDataManager::AddServerIban(const Iban& iban) {
   CHECK(iban.value().empty());
-  server_ibans_.push_back(std::make_unique<Iban>(iban));
+  payments_data_manager_->server_ibans_.push_back(std::make_unique<Iban>(iban));
   NotifyPersonalDataObserver();
 }
 
@@ -379,7 +398,7 @@ void TestPersonalDataManager::AddCardArtImage(const GURL& url,
 
 void TestPersonalDataManager::AddVirtualCardUsageData(
     const VirtualCardUsageData& usage_data) {
-  autofill_virtual_card_usage_data_.push_back(
+  payments_data_manager_->autofill_virtual_card_usage_data_.push_back(
       std::make_unique<VirtualCardUsageData>(usage_data));
   NotifyPersonalDataObserver();
 }
@@ -387,12 +406,12 @@ void TestPersonalDataManager::AddVirtualCardUsageData(
 void TestPersonalDataManager::SetNicknameForCardWithGUID(
     std::string_view guid,
     std::string_view nickname) {
-  for (auto& card : local_credit_cards_) {
+  for (auto& card : payments_data_manager_->local_credit_cards_) {
     if (card->guid() == guid) {
       card->SetNickname(base::ASCIIToUTF16(nickname));
     }
   }
-  for (auto& card : server_credit_cards_) {
+  for (auto& card : payments_data_manager_->server_credit_cards_) {
     if (card->guid() == guid) {
       card->SetNickname(base::ASCIIToUTF16(nickname));
     }

@@ -146,7 +146,7 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   void SetPaymentsCustomerData(
       std::unique_ptr<PaymentsCustomerData> customer_data) {
-    payments_customer_data_ = std::move(customer_data);
+    payments_data_manager_->payments_customer_data_ = std::move(customer_data);
   }
 
   void SetIsPaymentsWalletSyncTransportEnabled(bool enabled) {
