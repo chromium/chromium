@@ -22,7 +22,8 @@ constexpr uint32_t kWeightsFlags =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE;
 #else
 constexpr uint32_t kWeightsFlags =
-    base::File::FLAG_OPEN | base::File::FLAG_READ;
+    base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC |
+    base::File::FLAG_WIN_SEQUENTIAL_SCAN;
 #endif
 
 }  // namespace
