@@ -246,22 +246,21 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
 
   profile_ = config.output_profile;
   level_ = config.h264_output_level.value_or(H264SPS::kLevelIDC4p0);
-  uint32_t initial_framerate = config.initial_framerate.value_or(
-      VideoEncodeAccelerator::kDefaultFramerate);
+  uint32_t framerate = config.framerate;
 
   // Checks if |level_| is valid. If it is invalid, set |level_| to a minimum
   // level that comforts Table A-1 in H.264 spec with specified bitrate,
   // framerate and dimension.
   if (!CheckH264LevelLimits(profile_, level_, config.bitrate.target_bps(),
-                            initial_framerate, mb_width_ * mb_height_)) {
+                            framerate, mb_width_ * mb_height_)) {
     std::optional<uint8_t> valid_level =
-        FindValidH264Level(profile_, config.bitrate.target_bps(),
-                           initial_framerate, mb_width_ * mb_height_);
+        FindValidH264Level(profile_, config.bitrate.target_bps(), framerate,
+                           mb_width_ * mb_height_);
     if (!valid_level) {
       VLOGF(1) << "Could not find a valid h264 level for"
                << " profile=" << profile_
                << " bitrate=" << config.bitrate.target_bps()
-               << " framerate=" << initial_framerate
+               << " framerate=" << framerate
                << " size=" << config.input_visible_size.ToString();
       return false;
     }
@@ -315,8 +314,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   // not the default (constant bitrate).
   curr_params_.bitrate_allocation =
       VideoBitrateAllocation(config.bitrate.mode());
-  return UpdateRates(AllocateBitrateForDefaultEncoding(config),
-                     initial_framerate);
+  return UpdateRates(AllocateBitrateForDefaultEncoding(config), framerate);
 }
 
 gfx::Size H264VaapiVideoEncoderDelegate::GetCodedSize() const {

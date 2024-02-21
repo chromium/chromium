@@ -52,9 +52,10 @@ constexpr int kSpatialLayersResolutionDenom[][3] = {
 VideoEncodeAccelerator::Config DefaultVideoEncodeAcceleratorConfig() {
   VideoEncodeAccelerator::Config vea_config(
       PIXEL_FORMAT_I420, kDefaultEncodeSize, VP9PROFILE_PROFILE0,
-      kDefaultBitrate);
+      kDefaultBitrate, kDefaultFramerate,
+      VideoEncodeAccelerator::Config::StorageType::kShmem,
+      VideoEncodeAccelerator::Config::ContentType::kCamera);
 
-  vea_config.initial_framerate = kDefaultFramerate;
   return vea_config;
 }
 

@@ -380,8 +380,7 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
                 base::bits::AlignUpDeprecatedDoNotUse(
                     visible_size_.height(), kAV1AlignmentSize.height()));
 
-  current_params_.framerate = config.initial_framerate.value_or(
-      VideoEncodeAccelerator::kDefaultFramerate);
+  current_params_.framerate = config.framerate;
   current_params_.drop_frame_thresh = config.drop_frame_thresh_percentage;
   current_params_.bitrate_allocation.SetBitrate(0, 0,
                                                 config.bitrate.target_bps());

@@ -166,16 +166,14 @@ struct VideoEncodeAcceleratorConfig {
   gfx.mojom.Size input_visible_size;
   VideoCodecProfile output_profile;
   Bitrate bitrate;
-  uint32 initial_framerate;
-  bool has_initial_framerate;  // Whether or not config has initial framerate
+  uint32 framerate;
+  StorageType storage_type;
+  ContentType content_type;
   uint32 gop_length;
   bool has_gop_length;  // Whether or not config has group of picture length
   uint8 h264_output_level;
   bool has_h264_output_level;  // Whether or not config has H264 output level
   bool is_constrained_h264;
-  StorageType storage_type;
-  bool has_storage_type;  // Whether or not config has storage type config
-  ContentType content_type;
   // See VideoEncodeAccelerator::Config for detail. Since this is a percentage
   // between 0 and 100, the type is uint8.
   uint8 drop_frame_thresh_percentage;

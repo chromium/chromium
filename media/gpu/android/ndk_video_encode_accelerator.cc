@@ -193,13 +193,11 @@ std::optional<std::string> FindMediaCodecFor(
     // always specify the bitrate mode. Per code inspection, VBR
     // support is announced if a codec doesn't specify anything.
 
-    if (config.initial_framerate) {
-      double max_supported_framerate =
-          static_cast<double>(profile.max_framerate_numerator) /
-          profile.max_framerate_denominator;
-      if (config.initial_framerate.value() > max_supported_framerate) {
-        continue;
-      }
+    double max_supported_framerate =
+        static_cast<double>(profile.max_framerate_numerator) /
+        profile.max_framerate_denominator;
+    if (config.framerate > max_supported_framerate) {
+      continue;
     }
 
     if (profile.is_software_codec) {
@@ -293,7 +291,7 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  effective_framerate_ = config.initial_framerate.value_or(kDefaultFramerate);
+  effective_framerate_ = config.framerate;
   if (!ResetMediaCodec()) {
     return false;
   }

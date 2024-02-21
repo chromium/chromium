@@ -283,8 +283,7 @@ MATCHER_P3(CheckConfig,
            storage_type,
            drop_frame,
            "Check pixel format, storage type and drop frame in VEAConfig") {
-  return arg.input_format == pixel_format &&
-         *arg.storage_type == storage_type &&
+  return arg.input_format == pixel_format && arg.storage_type == storage_type &&
          (arg.drop_frame_thresh_percentage > 0) == drop_frame;
 }
 

@@ -135,7 +135,7 @@ bool StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
     return false;
 
   std::optional<uint32_t> initial_framerate;
-  if (input.has_initial_framerate()) {
+  if (input.has_initial_framerate_deprecated()) {
     initial_framerate = input.initial_framerate();
   }
 
@@ -162,10 +162,13 @@ bool StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
   }
 
   *output = media::VideoEncodeAccelerator::Config(
-      input_format, input_visible_size, output_profile, *bitrate);
-  output->initial_framerate = initial_framerate;
+      input_format, input_visible_size, output_profile, *bitrate,
+      initial_framerate.value_or(
+          media::VideoEncodeAccelerator::kDefaultFramerate),
+      storage_type,
+      media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   output->h264_output_level = h264_output_level;
-  output->storage_type = storage_type;
+
   return true;
 }
 

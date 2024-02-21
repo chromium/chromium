@@ -90,15 +90,13 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoFrame::StorageType storage_type,
     VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes,
     VideoEncodeAccelerator::Config::EncoderType required_encoder_type) {
-  std::optional<uint32_t> initial_framerate;
-  if (opts.framerate.has_value())
-    initial_framerate = static_cast<uint32_t>(opts.framerate.value());
-
   Bitrate bitrate =
       CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
-  auto config =
-      VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate);
-  config.initial_framerate = initial_framerate;
+  auto config = VideoEncodeAccelerator::Config(
+      format, opts.frame_size, profile, bitrate,
+      opts.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate),
+      VideoEncodeAccelerator::Config::StorageType::kShmem,
+      VideoEncodeAccelerator::Config::ContentType::kCamera);
   config.gop_length = opts.keyframe_interval;
 
   if (opts.content_hint) {
@@ -141,8 +139,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     layer.width = opts.frame_size.width();
     layer.height = opts.frame_size.height();
     layer.bitrate_bps = config.bitrate.target_bps();
-    if (initial_framerate.has_value())
-      layer.framerate = initial_framerate.value();
+    layer.framerate = config.framerate;
     layer.num_of_temporal_layers = num_temporal_layers;
     config.spatial_layers.push_back(layer);
   }

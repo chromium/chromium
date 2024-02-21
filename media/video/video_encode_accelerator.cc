@@ -55,32 +55,59 @@ VideoEncodeAccelerator::Config::Config()
     : Config(PIXEL_FORMAT_UNKNOWN,
              gfx::Size(),
              VIDEO_CODEC_PROFILE_UNKNOWN,
-             Bitrate::ConstantBitrate(0u)) {}
+             Bitrate::ConstantBitrate(0u),
+             kDefaultFramerate,
+             StorageType::kShmem,
+             ContentType::kCamera) {}
 
 VideoEncodeAccelerator::Config::Config(const Config& config) = default;
 
 VideoEncodeAccelerator::Config::Config(VideoPixelFormat input_format,
                                        const gfx::Size& input_visible_size,
                                        VideoCodecProfile output_profile,
-                                       const Bitrate& bitrate)
+                                       const Bitrate& bitrate,
+                                       uint32_t framerate,
+                                       StorageType storage_type,
+                                       ContentType content_type)
     : input_format(input_format),
       input_visible_size(input_visible_size),
       output_profile(output_profile),
-      bitrate(bitrate) {}
+      bitrate(bitrate),
+      framerate(framerate),
+      storage_type(storage_type),
+      content_type(content_type) {}
 
 VideoEncodeAccelerator::Config::~Config() = default;
 
 std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
   std::string str = base::StringPrintf(
       "input_format: %s, input_visible_size: %s, output_profile: %s, "
-      "bitrate: %s",
+      "bitrate: %s, framerate: %u",
       VideoPixelFormatToString(input_format).c_str(),
       input_visible_size.ToString().c_str(),
-      GetProfileName(output_profile).c_str(), bitrate.ToString().c_str());
-  if (initial_framerate) {
-    str += base::StringPrintf(", initial_framerate: %u",
-                              initial_framerate.value());
+      GetProfileName(output_profile).c_str(), bitrate.ToString().c_str(),
+      framerate);
+
+  str += ", storage_type: ";
+  switch (storage_type) {
+    case StorageType::kShmem:
+      str += "SharedMemory";
+      break;
+    case StorageType::kGpuMemoryBuffer:
+      str += "GpuMemoryBuffer";
+      break;
   }
+
+  str += ", content_type: ";
+  switch (content_type) {
+    case ContentType::kCamera:
+      str += "camera";
+      break;
+    case ContentType::kDisplay:
+      str += "display";
+      break;
+  }
+
   if (gop_length)
     str += base::StringPrintf(", gop_length: %u", gop_length.value());
 
@@ -103,16 +130,6 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
       break;
     case EncoderType::kNoPreference:
       str += "no-preference";
-      break;
-  }
-
-  str += ", content_type: ";
-  switch (content_type) {
-    case ContentType::kCamera:
-      str += "camera";
-      break;
-    case ContentType::kDisplay:
-      str += "display";
       break;
   }
 
@@ -280,8 +297,7 @@ bool operator==(const VideoEncodeAccelerator::Config& l,
   return l.input_format == r.input_format &&
          l.input_visible_size == r.input_visible_size &&
          l.output_profile == r.output_profile && l.bitrate == r.bitrate &&
-         l.initial_framerate == r.initial_framerate &&
-         l.gop_length == r.gop_length &&
+         l.framerate == r.framerate && l.gop_length == r.gop_length &&
          l.h264_output_level == r.h264_output_level &&
          l.storage_type == r.storage_type && l.content_type == r.content_type &&
          l.spatial_layers == r.spatial_layers &&

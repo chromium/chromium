@@ -74,12 +74,9 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
 
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
-      kBitrate);
-  input_config.initial_framerate = kBaseFramerate;
-  input_config.storage_type =
-      ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
-  input_config.content_type =
-      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera;
+      kBitrate, kBaseFramerate,
+      ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   input_config.spatial_layers = input_spatial_layers;
   input_config.inter_layer_pred = ::media::SVCInterLayerPredMode::kOnKeyPic;
 
@@ -99,7 +96,7 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
   EXPECT_EQ(input_config.input_format, output_config.input_format);
   EXPECT_EQ(input_config.input_visible_size, output_config.input_visible_size);
   EXPECT_EQ(input_config.output_profile, output_config.output_profile);
-  EXPECT_EQ(input_config.initial_framerate, output_config.initial_framerate);
+  EXPECT_EQ(input_config.framerate, output_config.framerate);
   EXPECT_EQ(input_config.h264_output_level, output_config.h264_output_level);
   EXPECT_EQ(input_config.storage_type, output_config.storage_type);
   EXPECT_EQ(input_config.bitrate, output_config.bitrate);
@@ -113,7 +110,9 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
       ::media::Bitrate::VariableBitrate(kBaseBitrateBps, kMaximumBitrate);
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
-      kBitrate);
+      kBitrate, media::VideoEncodeAccelerator::kDefaultFramerate,
+      ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera);
 
   ::media::VideoEncodeAccelerator::Config output_config{};
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<

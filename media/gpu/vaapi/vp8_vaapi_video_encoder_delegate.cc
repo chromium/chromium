@@ -344,9 +344,7 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
       return false;
   }
 
-  return UpdateRates(initial_bitrate_allocation,
-                     config.initial_framerate.value_or(
-                         VideoEncodeAccelerator::kDefaultFramerate));
+  return UpdateRates(initial_bitrate_allocation, config.framerate);
 }
 
 gfx::Size VP8VaapiVideoEncoderDelegate::GetCodedSize() const {

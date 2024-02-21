@@ -463,14 +463,9 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     return input.bitrate;
   }
 
-  static uint32_t initial_framerate(
+  static uint32_t framerate(
       const media::VideoEncodeAccelerator::Config& input) {
-    return input.initial_framerate.value_or(0);
-  }
-
-  static bool has_initial_framerate(
-      const media::VideoEncodeAccelerator::Config& input) {
-    return input.initial_framerate.has_value();
+    return input.framerate;
   }
 
   static uint32_t gop_length(
@@ -500,13 +495,7 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
 
   static media::VideoEncodeAccelerator::Config::StorageType storage_type(
       const media::VideoEncodeAccelerator::Config& input) {
-    return input.storage_type.value_or(
-        media::VideoEncodeAccelerator::Config::StorageType::kShmem);
-  }
-
-  static bool has_storage_type(
-      const media::VideoEncodeAccelerator::Config& input) {
-    return input.storage_type.has_value();
+    return input.storage_type;
   }
 
   static media::VideoEncodeAccelerator::Config::ContentType content_type(

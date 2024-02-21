@@ -381,9 +381,7 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
 
   DCHECK(!pending_update_rates_);
   pending_update_rates_ =
-      std::make_pair(initial_bitrate_allocation,
-                     config.initial_framerate.value_or(
-                         VideoEncodeAccelerator::kDefaultFramerate));
+      std::make_pair(initial_bitrate_allocation, config.framerate);
 
   return ApplyPendingUpdateRates();
 }

@@ -237,7 +237,10 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     Config(VideoPixelFormat input_format,
            const gfx::Size& input_visible_size,
            VideoCodecProfile output_profile,
-           const Bitrate& bitrate);
+           const Bitrate& bitrate,
+           uint32_t framerate,
+           StorageType storage_type,
+           ContentType content_type);
 
     ~Config();
 
@@ -261,10 +264,20 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // variable or constant) and target bitrate.
     Bitrate bitrate;
 
-    // Initial encoding framerate in frames per second. This is optional and
-    // VideoEncodeAccelerator should use |kDefaultFramerate| if not given.
-    std::optional<uint32_t> initial_framerate =
-        VideoEncodeAccelerator::kDefaultFramerate;
+    // The encoder frame rate in frames per second.
+    uint32_t framerate;
+
+    // The storage type of video frame provided on Encode().
+    // This is kShmem iff a video frame is mapped in user space.
+    // This is kDmabuf iff a video frame has dmabuf.
+    StorageType storage_type;
+
+    // Indicates captured video (from a camera) or generated (screen grabber).
+    // Screen content has a number of special properties such as lack of noise,
+    // burstiness of motion and requirements for readability of small text in
+    // bright colors. With this content hint the encoder may choose to optimize
+    // for the given use case.
+    ContentType content_type;
 
     // Group of picture length for encoded output stream, indicates the
     // distance between two key frames, i.e. IPPPIPPP would be represent as 4.
@@ -273,25 +286,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Codec level of encoded output stream for H264 only. This value should
     // be aligned to the H264 standard definition of SPS.level_idc.
     // If this is not given, VideoEncodeAccelerator selects one of proper H.264
-    // levels for |input_visible_size| and |initial_framerate|.
+    // levels for |input_visible_size| and |framerate|.
     std::optional<uint8_t> h264_output_level;
 
     // Indicates baseline profile or constrained baseline profile for H264 only.
     bool is_constrained_h264 = false;
-
-    // The storage type of video frame provided on Encode().
-    // If no value is set, VEA doesn't check the storage type of video frame on
-    // Encode().
-    // This is kShmem iff a video frame is mapped in user space.
-    // This is kDmabuf iff a video frame has dmabuf.
-    std::optional<StorageType> storage_type;
-
-    // Indicates captured video (from a camera) or generated (screen grabber).
-    // Screen content has a number of special properties such as lack of noise,
-    // burstiness of motion and requirements for readability of small text in
-    // bright colors. With this content hint the encoder may choose to optimize
-    // for the given use case.
-    ContentType content_type = ContentType::kCamera;
 
     // |drop_frame_thresh_percentage| is described as a percentage of the target
     // data buffer. When the data buffer falls below this percentage of

@@ -125,7 +125,10 @@ class MojoVideoEncodeAcceleratorServiceTest : public ::testing::Test {
     constexpr media::Bitrate kInitialBitrate =
         media::Bitrate::ConstantBitrate(100000u);
     const media::VideoEncodeAccelerator::Config config(
-        PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate);
+        PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate,
+        media::VideoEncodeAccelerator::kDefaultFramerate,
+        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+        VideoEncodeAccelerator::Config::ContentType::kCamera);
 
     mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
     auto media_log_pending_remote =
@@ -305,7 +308,10 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest,
   constexpr media::Bitrate kInitialBitrate =
       media::Bitrate::ConstantBitrate(100000u);
   const media::VideoEncodeAccelerator::Config config(
-      PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate);
+      PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate,
+      media::VideoEncodeAccelerator::kDefaultFramerate,
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+      VideoEncodeAccelerator::Config::ContentType::kCamera);
   mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
   auto media_log_pending_remote =
       media_log_pending_receiver.InitWithNewPipeAndPassRemote();
@@ -332,7 +338,10 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, InitializeFailure) {
   constexpr media::Bitrate kInitialBitrate =
       media::Bitrate::ConstantBitrate(100000u);
   const media::VideoEncodeAccelerator::Config config(
-      PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate);
+      PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate,
+      media::VideoEncodeAccelerator::kDefaultFramerate,
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+      VideoEncodeAccelerator::Config::ContentType::kCamera);
   mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
   auto media_log_pending_remote =
       media_log_pending_receiver.InitWithNewPipeAndPassRemote();

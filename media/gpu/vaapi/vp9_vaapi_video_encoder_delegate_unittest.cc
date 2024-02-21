@@ -54,9 +54,10 @@ VaapiVideoEncoderDelegate::Config kDefaultVaapiVideoEncoderDelegateConfig{
 VideoEncodeAccelerator::Config DefaultVideoEncodeAcceleratorConfig() {
   VideoEncodeAccelerator::Config vea_config(
       PIXEL_FORMAT_I420, gfx::Size(1280, 720), VP9PROFILE_PROFILE0,
-      Bitrate::ConstantBitrate(14000000u));
-  vea_config.initial_framerate = VideoEncodeAccelerator::kDefaultFramerate;
-  vea_config.storage_type = VideoEncodeAccelerator::Config::StorageType::kShmem;
+      Bitrate::ConstantBitrate(14000000u),
+      VideoEncodeAccelerator::kDefaultFramerate,
+      VideoEncodeAccelerator::Config::StorageType::kShmem,
+      VideoEncodeAccelerator::Config::ContentType::kCamera);
   return vea_config;
 }
 
@@ -372,7 +373,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
       spatial_layer.width = svc_layer_size[sid].width();
       spatial_layer.height = svc_layer_size[sid].height();
       spatial_layer.bitrate_bps = sl_bitrate;
-      spatial_layer.framerate = *config.initial_framerate;
+      spatial_layer.framerate = config.framerate;
       spatial_layer.num_of_temporal_layers = num_temporal_layers;
       spatial_layer.max_qp = 30u;
       config.spatial_layers.push_back(spatial_layer);
@@ -567,8 +568,7 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
 
   const uint32_t kBitrate =
       DefaultVideoEncodeAcceleratorConfig().bitrate.target_bps();
-  const uint32_t kFramerate =
-      *DefaultVideoEncodeAcceleratorConfig().initial_framerate;
+  const uint32_t kFramerate = DefaultVideoEncodeAcceleratorConfig().framerate;
   const uint8_t* expected_temporal_ids =
       kTemporalLayerPattern[num_temporal_layers - 1];
   // Call UpdateRates before Encode.
@@ -788,8 +788,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
           DefaultVideoEncodeAcceleratorConfig().bitrate);
   const std::vector<gfx::Size> kDefaultSpatialLayers =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);
-  const uint32_t kFramerate =
-      *DefaultVideoEncodeAcceleratorConfig().initial_framerate;
+  const uint32_t kFramerate = DefaultVideoEncodeAcceleratorConfig().framerate;
 
   for (const auto& query : kQueries[num_spatial_layers - 2]) {
     const auto& active_layers = query.active_layers;
@@ -852,8 +851,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, FailsWithInvalidSpatialLayers) {
     invalid_bitrate_allocations.push_back(bitrate_allocation);
   }
 
-  const uint32_t kFramerate =
-      *DefaultVideoEncodeAcceleratorConfig().initial_framerate;
+  const uint32_t kFramerate = DefaultVideoEncodeAcceleratorConfig().framerate;
   for (const auto& invalid_allocation : invalid_bitrate_allocations) {
     InitializeVP9VaapiVideoEncoderDelegate(inter_layer_pred, num_spatial_layers,
                                            num_temporal_layers,

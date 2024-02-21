@@ -180,12 +180,9 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
 
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
-      kBitrate);
-  input_config.initial_framerate = kBaseFramerate;
-  input_config.storage_type =
-      ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
-  input_config.content_type =
-      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera;
+      kBitrate, kBaseFramerate,
+      ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   input_config.drop_frame_thresh_percentage = 30;
   input_config.spatial_layers = input_spatial_layers;
   input_config.inter_layer_pred = ::media::SVCInterLayerPredMode::kOnKeyPic;
@@ -205,7 +202,9 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
       ::media::Bitrate::VariableBitrate(kBaseBitrateBps, kMaximumBitrate);
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
-      kBitrate);
+      kBitrate, 30,
+      ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera);
 
   ::media::VideoEncodeAccelerator::Config output_config{};
   ASSERT_TRUE(

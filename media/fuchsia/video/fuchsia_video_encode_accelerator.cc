@@ -711,11 +711,10 @@ FuchsiaVideoEncodeAccelerator::CreateFormatDetails(
   if (config.bitrate.target_bps() != 0) {
     h264_settings.set_bit_rate(config.bitrate.target_bps());
   }
-  if (config.initial_framerate.has_value()) {
-    h264_settings.set_frame_rate(config.initial_framerate.value());
-    format_details.set_timebase(base::Time::kNanosecondsPerSecond /
-                                config.initial_framerate.value());
-  }
+  h264_settings.set_frame_rate(config.framerate);
+  format_details.set_timebase(base::Time::kNanosecondsPerSecond /
+                              config.framerate);
+
   if (config.gop_length.has_value()) {
     h264_settings.set_gop_size(config.gop_length.value());
   }

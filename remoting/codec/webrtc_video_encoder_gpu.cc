@@ -369,7 +369,10 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
       static_cast<uint32_t>(kTargetFrameRate * 1024 * 1024 * 8));
 
   const media::VideoEncodeAccelerator::Config config(
-      input_format, input_visible_size_, codec_profile_, initial_bitrate);
+      input_format, input_visible_size_, codec_profile_, initial_bitrate,
+      kTargetFrameRate,
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem,
+      media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
   video_encode_accelerator_ =
       media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
           config, this, gpu::GpuPreferences(), CreateGpuWorkarounds(),

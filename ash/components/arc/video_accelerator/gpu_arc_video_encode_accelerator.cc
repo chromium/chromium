@@ -116,10 +116,6 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
     const media::VideoEncodeAccelerator::Config& config,
     mojo::PendingRemote<mojom::VideoEncodeClient> client) {
   DVLOGF(2) << config.AsHumanReadableString();
-  if (!config.storage_type.has_value()) {
-    DLOG(ERROR) << "storage type must be specified";
-    return mojom::VideoEncodeAccelerator::Result::kInvalidArgumentError;
-  }
 
   if (config.input_format != media::PIXEL_FORMAT_NV12) {
     VLOGF(1) << "Unsupported pixel format: " << config.input_format;

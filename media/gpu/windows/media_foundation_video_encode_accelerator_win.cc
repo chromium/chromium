@@ -786,9 +786,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
         << " is not supported by profile " << profile_;
   }
   input_visible_size_ = config.input_visible_size;
-  if (config.initial_framerate.has_value() &&
-      config.initial_framerate.value()) {
-    frame_rate_ = config.initial_framerate.value();
+  if (config.framerate > 0) {
+    frame_rate_ = config.framerate;
   } else {
     frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
   }

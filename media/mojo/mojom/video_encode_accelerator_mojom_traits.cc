@@ -480,9 +480,7 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadBitrate(&bitrate))
     return false;
 
-  std::optional<uint32_t> initial_framerate;
-  if (input.has_initial_framerate())
-    initial_framerate = input.initial_framerate();
+  uint32_t framerate = input.framerate();
 
   std::optional<uint32_t> gop_length;
   if (input.has_gop_length())
@@ -494,11 +492,9 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
 
   bool is_constrained_h264 = input.is_constrained_h264();
 
-  std::optional<media::VideoEncodeAccelerator::Config::StorageType>
-      storage_type;
-  if (input.has_storage_type()) {
-    if (!input.ReadStorageType(&storage_type))
-      return false;
+  media::VideoEncodeAccelerator::Config::StorageType storage_type;
+  if (!input.ReadStorageType(&storage_type)) {
+    return false;
   }
 
   media::VideoEncodeAccelerator::Config::ContentType content_type;
@@ -529,18 +525,17 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     gfx::Size input_visible_size;
     media::VideoCodecProfile output_profile;
     media::Bitrate bitrate;
-    std::optional<uint32_t> initial_framerate;
+    uint32_t framerate;
+    media::VideoEncodeAccelerator::Config::StorageType storage_type;
+    media::VideoEncodeAccelerator::Config::ContentType content_type;
     std::optional<uint32_t> gop_length;
     std::optional<uint8_t> h264_output_level;
     bool is_constrained_h264;
-    std::optional<media::VideoEncodeAccelerator::Config::StorageType>
-        storage_type;
-    media::VideoEncodeAccelerator::Config::ContentType content_type;
     uint8_t drop_frame_thresh_percentage;
     std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
         spatial_layers;
     media::SVCInterLayerPredMode inter_layer_pred;
-    bool require_low_delay = true;
+    bool require_low_delay;
     media::VideoEncodeAccelerator::Config::EncoderType required_encoder_type;
   };
   static_assert(
@@ -549,13 +544,12 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
       "to the following copy and then remove/add the values in CheckVEAConfig");
 
   *output = media::VideoEncodeAccelerator::Config(
-      input_format, input_visible_size, output_profile, bitrate);
-  output->initial_framerate = initial_framerate;
+      input_format, input_visible_size, output_profile, bitrate, framerate,
+      storage_type, content_type);
+
   output->gop_length = gop_length;
   output->h264_output_level = h264_output_level;
   output->is_constrained_h264 = is_constrained_h264;
-  output->storage_type = storage_type;
-  output->content_type = content_type;
   output->drop_frame_thresh_percentage = drop_frame_thresh_percentage;
   output->spatial_layers = spatial_layers;
   output->inter_layer_pred = inter_layer_pred;

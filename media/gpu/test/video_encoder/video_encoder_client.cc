@@ -501,14 +501,13 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
   VideoEncodeAccelerator::Config config(
       video_->PixelFormat(), encoder_client_config_.output_resolution,
       encoder_client_config_.output_profile,
-      encoder_client_config_.bitrate_allocation.GetSumBitrate());
+      encoder_client_config_.bitrate_allocation.GetSumBitrate(),
+      encoder_client_config_.framerate,
+      encoder_client_config_.input_storage_type,
+      encoder_client_config_.content_type);
 
-  config.initial_framerate = encoder_client_config_.framerate;
-  config.storage_type = encoder_client_config_.input_storage_type;
-  config.content_type = encoder_client_config_.content_type;
   config.drop_frame_thresh_percentage =
       encoder_client_config_.drop_frame_thresh;
-
   config.spatial_layers = encoder_client_config_.spatial_layers;
   config.inter_layer_pred = encoder_client_config_.inter_layer_pred_mode;
 

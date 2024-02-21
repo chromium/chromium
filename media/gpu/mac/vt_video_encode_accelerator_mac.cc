@@ -40,8 +40,6 @@ namespace media {
 
 namespace {
 
-constexpr size_t kDefaultFrameRateNumerator = 30;
-constexpr size_t kDefaultFrameRateDenominator = 1;
 constexpr size_t kMaxFrameRateNumerator = 120;
 constexpr size_t kMaxFrameRateDenominator = 1;
 constexpr size_t kNumInputBuffers = 3;
@@ -360,10 +358,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
   client_ = client;
   input_visible_size_ = config.input_visible_size;
-  if (config.initial_framerate.has_value())
-    frame_rate_ = config.initial_framerate.value();
-  else
-    frame_rate_ = kDefaultFrameRateNumerator / kDefaultFrameRateDenominator;
+  frame_rate_ = config.framerate;
   bitrate_ = config.bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
