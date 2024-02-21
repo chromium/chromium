@@ -17,6 +17,7 @@ android_library("java") {
     "//components/embedder_support/android:simple_factory_key_java",
     "//components/profile_metrics:browser_profile_type_enum_java",
     "//content/public/android:content_full_java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]

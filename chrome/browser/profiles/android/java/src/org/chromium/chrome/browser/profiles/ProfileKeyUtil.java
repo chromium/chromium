@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.profiles;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.content_public.browser.BrowserStartupController;
+
 /** Utilities for interacting with ProfileKeys. */
 public class ProfileKeyUtil {
     private ProfileKeyUtil() {}
@@ -17,8 +19,7 @@ public class ProfileKeyUtil {
      * profile_manager.cc which supports multiple regular profiles.
      */
     public static ProfileKey getLastUsedRegularProfileKey() {
-        // TODO(mheikal): Assert at least reduced mode is started when https://crbug.com/973241 is
-        // fixed.
+        assert BrowserStartupController.getInstance().isNativeStarted();
         return ProfileKeyUtilJni.get().getLastUsedRegularProfileKey();
     }
 
