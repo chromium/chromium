@@ -143,6 +143,7 @@ class MockInputMethodBase : public InputMethodBase {
   }
   void OnInputLocaleChanged() override {}
   bool IsInputLocaleCJK() const override { return false; }
+  void OnUrlChanged() override {}
 #endif
 
   // InputMethodBase:

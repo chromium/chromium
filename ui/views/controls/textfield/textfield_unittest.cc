@@ -183,6 +183,7 @@ class MockInputMethod : public ui::InputMethodBase {
   }
   void OnInputLocaleChanged() override {}
   bool IsInputLocaleCJK() const override { return false; }
+  void OnUrlChanged() override {}
 #endif
 
   bool untranslated_ime_message_called() const {

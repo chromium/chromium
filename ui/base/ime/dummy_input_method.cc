@@ -34,6 +34,8 @@ void DummyInputMethod::OnInputLocaleChanged() {}
 bool DummyInputMethod::IsInputLocaleCJK() const {
   return false;
 }
+
+void DummyInputMethod::OnUrlChanged() {}
 #endif
 
 void DummyInputMethod::SetFocusedTextInputClient(TextInputClient* client) {
@@ -79,5 +81,8 @@ void DummyInputMethod::RemoveObserver(InputMethodObserver* observer) {
 VirtualKeyboardController* DummyInputMethod::GetVirtualKeyboardController() {
   return nullptr;
 }
+
+void DummyInputMethod::SetVirtualKeyboardControllerForTesting(
+    std::unique_ptr<VirtualKeyboardController> controller) {}
 
 }  // namespace ui
