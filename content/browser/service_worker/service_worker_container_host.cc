@@ -1863,8 +1863,9 @@ void ServiceWorkerContainerHost::InheritControllerFrom(
     const GURL& blob_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForClient());
-  DCHECK_EQ(blink::mojom::ServiceWorkerClientType::kDedicatedWorker,
-            GetClientType());
+  DCHECK(base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix) ||
+         blink::mojom::ServiceWorkerClientType::kDedicatedWorker ==
+             GetClientType());
   DCHECK(blob_url.SchemeIsBlob());
 
   UpdateUrls(blob_url, creator_host.top_frame_origin(), creator_host.key());
@@ -1960,5 +1961,11 @@ ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
 
   return params;
 }
+
+// If a blob URL is used for a SharedWorker script's URL, a controller will be
+// inherited.
+BASE_FEATURE(kSharedWorkerBlobURLFix,
+             "SharedWorkerBlobURLFix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace content

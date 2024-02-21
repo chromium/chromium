@@ -802,6 +802,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   base::WeakPtrFactory<ServiceWorkerContainerHost> weak_factory_{this};
 };
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedWorkerBlobURLFix);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_CONTAINER_HOST_H_

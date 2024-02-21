@@ -184,9 +184,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
           std::move(host_receiver), process_id_, std::move(client_remote),
           client_info);
 
-      // TODO(crbug.com/324939068): Make SharedWorker inherit a controller for
-      // a blob URL.
-      if (request_destination_ == network::mojom::RequestDestination::kWorker) {
+      if (base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix) ||
+          request_destination_ == network::mojom::RequestDestination::kWorker) {
         // For the blob worker case, inherit the controller from the worker's
         // parent. See
         // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
@@ -194,7 +193,6 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
             handle_->parent_container_host();
         if (parent_container_host &&
             tentative_resource_request.url.SchemeIsBlob()) {
-          // TODO(crbug.com/1509923): add a test to check this path.
           container_host->InheritControllerFrom(
               *parent_container_host,
               net::SimplifyUrlForRequest(tentative_resource_request.url));
