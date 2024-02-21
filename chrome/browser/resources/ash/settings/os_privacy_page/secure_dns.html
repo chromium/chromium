@@ -61,7 +61,8 @@
         <select id="resolverSelect"
             class="md-select"
             aria-labelledby="resolverLabel"
-            on-change="onDropdownSelectionChanged_">
+            on-change="onDropdownSelectionChanged_"
+            aria-describedby$="[[networkDefaultAriaDescribedBy_]]">
           <option value="[[resolverTypeEnum_.AUTOMATIC]]">
             $i18n{secureDnsAutomaticModeDescription}
           </option>
