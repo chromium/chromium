@@ -39,6 +39,8 @@ source_set("mixers") {
     "new_tab_page_color_mixer.h",
     "omnibox_color_mixer.cc",
     "omnibox_color_mixer.h",
+    "product_specifications_color_mixer.cc",
+    "product_specifications_color_mixer.h",
     "tab_strip_color_mixer.cc",
     "tab_strip_color_mixer.h",
   ]

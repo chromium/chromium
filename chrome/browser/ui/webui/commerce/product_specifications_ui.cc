@@ -17,11 +17,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace commerce {
 
 ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui) {
   Profile* const profile = Profile::FromWebUI(web_ui);
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
@@ -40,10 +41,19 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       source, base::make_span(kCommerceResources, kCommerceResourcesSize),
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_HTML);
 
-  // As a demonstration of passing a variable for JS to use we pass in some
-  // a simple message.
-  source->AddString("message", "WebUI working!");
+  source->AddString("message", "Some example content...");
+  source->AddString("pageTitle", "Compare");
+  source->AddString("summaryTitle", "Summary");
 }
+
+void ProductSpecificationsUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ProductSpecificationsUI)
 
 ProductSpecificationsUI::~ProductSpecificationsUI() = default;
 

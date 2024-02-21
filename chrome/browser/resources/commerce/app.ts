@@ -4,6 +4,7 @@
 
 import './strings.m.js';
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,6 +26,11 @@ export class ProductSpecificationsElement extends PolymerElement {
         value: () => loadTimeData.getString('message'),
       },
     };
+  }
+
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
   }
 }
 
