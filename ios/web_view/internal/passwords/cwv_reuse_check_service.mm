@@ -15,8 +15,8 @@
 #import "components/password_manager/core/browser/ui/reuse_check_utility.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
+#import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
-#import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/web_view_global_state_util.h"
 
 @implementation CWVReuseCheckService {

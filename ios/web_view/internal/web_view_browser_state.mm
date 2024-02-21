@@ -35,6 +35,7 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
@@ -182,6 +183,7 @@ void WebViewBrowserState::RegisterPrefs(
   unified_consent::UnifiedConsentService::RegisterPrefs(pref_registry);
 
   // Instantiate all factories to setup dependency graph for pref registration.
+  WebViewAffiliationServiceFactory::GetInstance();
   WebViewLanguageModelManagerFactory::GetInstance();
   WebViewTranslateRankerFactory::GetInstance();
   WebViewUrlLanguageHistogramFactory::GetInstance();

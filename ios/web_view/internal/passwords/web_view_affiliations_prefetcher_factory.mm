@@ -9,7 +9,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #import "ios/web/public/browser_state.h"
-#import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
+#import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 
 WebViewAffiliationsPrefetcherFactory*
 WebViewAffiliationsPrefetcherFactory::GetInstance() {

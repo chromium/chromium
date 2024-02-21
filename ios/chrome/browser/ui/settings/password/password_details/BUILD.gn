@@ -146,6 +146,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/sync/base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/credential_provider_promo/model:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:store_factory",

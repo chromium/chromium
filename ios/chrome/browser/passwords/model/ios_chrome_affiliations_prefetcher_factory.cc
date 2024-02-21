@@ -7,7 +7,7 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
-#include "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
+#include "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #include "ios/web/public/browser_state.h"
 
 IOSChromeAffiliationsPrefetcherFactory*

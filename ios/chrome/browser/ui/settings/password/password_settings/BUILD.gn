@@ -25,6 +25,7 @@ source_set("password_settings") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

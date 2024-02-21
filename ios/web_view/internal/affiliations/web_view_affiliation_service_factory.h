@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_AFFILIATION_SERVICE_FACTORY_H_
-#define IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_AFFILIATION_SERVICE_FACTORY_H_
+#ifndef IOS_WEB_VIEW_INTERNAL_AFFILIATIONS_WEB_VIEW_AFFILIATION_SERVICE_FACTORY_H_
+#define IOS_WEB_VIEW_INTERNAL_AFFILIATIONS_WEB_VIEW_AFFILIATION_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
@@ -14,8 +14,6 @@ class AffiliationService;
 
 namespace ios_web_view {
 
-// TODO(b/324553078): Move this factory into an
-// ios/webview/internal/affiliations subdirectory.
 class WebViewAffiliationServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
@@ -34,4 +32,4 @@ class WebViewAffiliationServiceFactory
 };
 }  // namespace ios_web_view
 
-#endif  // IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_AFFILIATION_SERVICE_FACTORY_H_
+#endif  // IOS_WEB_VIEW_INTERNAL_AFFILIATIONS_WEB_VIEW_AFFILIATION_SERVICE_FACTORY_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_AFFILIATIONS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_AFFILIATIONS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
@@ -13,8 +13,6 @@ namespace affiliations {
 class AffiliationService;
 }
 
-// TODO(b/324553078): Move this factory into an ios/chrome/browser/affiliations
-// subdirectory.
 class IOSChromeAffiliationServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
@@ -32,4 +30,4 @@ class IOSChromeAffiliationServiceFactory
       web::BrowserState* context) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_AFFILIATIONS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_

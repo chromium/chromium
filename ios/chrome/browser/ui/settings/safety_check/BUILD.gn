@@ -126,6 +126,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

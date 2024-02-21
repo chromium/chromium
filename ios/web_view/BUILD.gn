@@ -53,8 +53,8 @@ ios_web_view_public_headers = [
   "public/cwv_credit_card.h",
   "public/cwv_credit_card_saver.h",
   "public/cwv_credit_card_verifier.h",
-  "public/cwv_download_task.h",
   "public/cwv_defines.h",
+  "public/cwv_download_task.h",
   "public/cwv_export.h",
   "public/cwv_favicon.h",
   "public/cwv_find_in_page_controller.h",
@@ -98,6 +98,8 @@ ios_web_view_public_headers = [
 ]
 
 ios_web_view_sources = [
+  "internal/affiliations/web_view_affiliation_service_factory.h",
+  "internal/affiliations/web_view_affiliation_service_factory.mm",
   "internal/app/application_context.h",
   "internal/app/application_context.mm",
   "internal/app/web_view_io_thread.h",
@@ -198,8 +200,6 @@ ios_web_view_sources = [
   "internal/passwords/cwv_weak_check_utils_internal.h",
   "internal/passwords/web_view_account_password_store_factory.h",
   "internal/passwords/web_view_account_password_store_factory.mm",
-  "internal/passwords/web_view_affiliation_service_factory.h",
-  "internal/passwords/web_view_affiliation_service_factory.mm",
   "internal/passwords/web_view_affiliations_prefetcher_factory.h",
   "internal/passwords/web_view_affiliations_prefetcher_factory.mm",
   "internal/passwords/web_view_bulk_leak_check_service_factory.h",

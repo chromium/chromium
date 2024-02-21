@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/favicon/model",
