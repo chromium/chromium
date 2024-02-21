@@ -609,8 +609,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OptimizationGuideUserFeedback">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Thumbs Up"/>
-  <int value="2" label="Thumbs Down"/>
+  <int value="1" label="Thumbs Down"/>
+  <int value="2" label="Thumbs Up"/>
 </enum>
 
 <enum name="OptimizationType">

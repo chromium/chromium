@@ -193,12 +193,12 @@ enum class ModelDeliveryEvent {
 // The various model quality user feedback.
 enum class ModelQualityUserFeedback {
   kUnknown = 0,
-  kThumbsUp = 1,
-  kThumbsDown = 2,
+  kThumbsDown = 1,
+  kThumbsUp = 2,
 
   // Keep in sync with OptimizationGuideUserFeedback in
   // tools/metrics/histograms/metadata/optimization/enums.xml.
-  kMaxValue = kThumbsDown,
+  kMaxValue = kThumbsUp,
 };
 
 // The various results of an access token request.
