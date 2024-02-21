@@ -1692,7 +1692,13 @@ BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
       case TemplateURLStarterPackData::kTabs:
         return KEYWORD_MODE_STARTER_PACK_TABS;
       default:
-        NOTREACHED();
+        // In theory, this code path should never be reached.  However, it's
+        // possible that when expanding the starter pack, a new entry may
+        // persist in the database that does not yet exist in this version of
+        // chrome. (e.g. a user runs a newer version with the new starter pack
+        // entry, has sync on, which syncs to another login instance running an
+        // older version that hasn't received the new starter pack update yet).
+        // Realistically, this is not catastrophic.
         return KEYWORD_MODE_NON_BUILT_IN;
     }
   } else {

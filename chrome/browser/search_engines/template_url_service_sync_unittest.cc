@@ -2678,6 +2678,51 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineIgnoresId0) {
   MergeAndExpectNotify(initial_data, 1);
 }
 
+TEST_F(TemplateURLServiceSyncTest, MergeStarterPackEngine) {
+  // Create a starter pack engine to ensure it is merged correctly.
+  TemplateURLData data;
+  data.SetShortName(u"Bookmarks");
+  data.SetKeyword(u"@bookmarks");
+  data.SetURL("chrome://bookmarks/?q={searchTerms}");
+  data.starter_pack_id = TemplateURLStarterPackData::kBookmarks;
+  data.date_created = Time::FromTimeT(100);
+  data.last_modified = Time::FromTimeT(100);
+  data.sync_guid = "bookmarks_guid";
+
+  // Create another starter pack engine with an invalid starter pack id. This
+  // should not be merged into the model.
+  TemplateURLData invalid_data;
+  invalid_data.SetShortName(u"Invalid starter pack");
+  invalid_data.SetKeyword(u"@invalid");
+  invalid_data.SetURL("chrome://bookmarks/?q={searchTerms}");
+  invalid_data.starter_pack_id = TemplateURLStarterPackData::kMaxStarterPackID;
+  invalid_data.date_created = Time::FromTimeT(100);
+  invalid_data.last_modified = Time::FromTimeT(100);
+  invalid_data.sync_guid = "invalid_guid";
+
+  syncer::SyncDataList list{
+      TemplateURLService::CreateSyncDataFromTemplateURL(TemplateURL(data)),
+      TemplateURLService::CreateSyncDataFromTemplateURL(
+          TemplateURL(invalid_data))};
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, list,
+                                    PassProcessor());
+
+  // Ensure that the @bookmarks engine gets merged correctly.
+  const TemplateURL* result_turl =
+      model()->GetTemplateURLForGUID("bookmarks_guid");
+  EXPECT_TRUE(result_turl);
+  EXPECT_EQ(data.keyword(), result_turl->keyword());
+  EXPECT_EQ(data.short_name(), result_turl->short_name());
+  EXPECT_EQ(data.url(), result_turl->url());
+  EXPECT_EQ(data.starter_pack_id, result_turl->starter_pack_id());
+
+  // The @invalid entry has an invalid starter pack ID, ensure that it gets
+  // thrown out when received from sync.
+  const TemplateURL* invalid_result_turl =
+      model()->GetTemplateURLForGUID("invalid_guid");
+  EXPECT_FALSE(invalid_result_turl);
+}
+
 TEST_F(TemplateURLServiceSyncTest, GUIDUpdatedOnDefaultSearchChange) {
   const char kGUID[] = "initdefault";
   model()->Add(CreateTestTemplateURL(

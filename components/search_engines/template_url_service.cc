@@ -1807,6 +1807,14 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
     return nullptr;
   }
 
+  // Throw out anything from sync that has an invalid starter pack ID.  This
+  // might happen occasionally when the starter pack gets new entries that are
+  // not yet supported in this version of Chrome.
+  if (specifics.starter_pack_id() >=
+      TemplateURLStarterPackData::kMaxStarterPackID) {
+    return nullptr;
+  }
+
   TemplateURLData data(existing_turl ?
       existing_turl->data() : TemplateURLData());
   data.SetShortName(base::UTF8ToUTF16(specifics.short_name()));
