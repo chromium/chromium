@@ -197,7 +197,13 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
   base::HistogramTester histogram_tester;
   ShowBubble();
   EXPECT_NE(GetBubbleViews(), nullptr);
-  controller()->OnAcceptButton();
+  controller()->OnAcceptButton(/*did_switch_to_loading_state=*/false);
+
+  // Metric should not be recorded from the accept button.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow", 0);
+
+  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
   controller()->HideIconAndBubble();
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow",
@@ -214,7 +220,8 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
   ShowBubble();
   EXPECT_NE(GetBubbleViews(), nullptr);
   controller()->OnAcceptButton(/*did_switch_to_loading_state=*/true);
-  controller()->HideIconAndBubble();
+
+  // Metric should be recorded from the accept button.
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow",
       VirtualCardEnrollmentBubbleResult::

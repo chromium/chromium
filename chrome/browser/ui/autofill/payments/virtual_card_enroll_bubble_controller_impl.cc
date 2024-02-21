@@ -136,18 +136,28 @@ void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton(
     // When user clicks "Accept", the bubble closing is delayed since we wait
     // for the enrollment to finish on the server.
     enrollment_status_ = EnrollmentStatus::kPaymentsServerRequestInFlight;
+
+    // Log metrics here instead of when the bubble is closed. When
+    // "did_switch_to_loading_state == true" we don't immediately close the
+    // bubble, so this ensures we don't have to wait for a future closure to log
+    // the user's acceptance.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
+      VirtualCardEnrollMetricsLogger::OnDismissed(
+          VirtualCardEnrollmentBubbleResult::
+              VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
+          ui_model_.enrollment_fields.virtual_card_enrollment_source,
+          is_user_gesture_, ui_model_.enrollment_fields.previously_declined);
+    } else {
+      LogVirtualCardEnrollmentBubbleResultMetric(
+          VirtualCardEnrollmentBubbleResult::
+              VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
+          GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
+          ui_model_.enrollment_fields.previously_declined);
+    }
   } else {
     bubble_state_ = BubbleState::kHidden;
   }
-  // Log metrics here instead of when the bubble is closed. When
-  // "did_switch_to_loading_state == true" we don't immediately close the
-  // bubble, so this ensures we don't have to wait for a future closure to log
-  // the user's acceptance.
-  LogVirtualCardEnrollmentBubbleResultMetric(
-      VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
-      GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
-      ui_model_.enrollment_fields.previously_declined);
 #endif
 }
 
@@ -188,60 +198,64 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
 
-#if !BUILDFLAG(IS_ANDROID)
-  // If `closed_reason == PaymentsBubbleClosedReason::kAccepted`, the metrics
-  // have been logged by `OnAcceptButton()`.
-  if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
-    return;
-  }
-  // TODO(crbug.com/40287758) Record metrics for closing the loading and
-  // confirmation view.
-  if (enrollment_status_ == EnrollmentStatus::kCompleted ||
-      enrollment_status_ == EnrollmentStatus::kPaymentsServerRequestInFlight) {
-    return;
-  }
-#endif
-
-  VirtualCardEnrollmentBubbleResult result;
-  switch (closed_reason) {
-    case PaymentsBubbleClosedReason::kAccepted:
-      result = VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED;
-      break;
-    case PaymentsBubbleClosedReason::kClosed:
-      result = VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED;
-      break;
-    case PaymentsBubbleClosedReason::kNotInteracted:
-      result = VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED;
-      break;
-    case PaymentsBubbleClosedReason::kLostFocus:
-      result = VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS;
-      break;
-    case PaymentsBubbleClosedReason::kCancelled:
-      result = VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED;
-      break;
-    case PaymentsBubbleClosedReason::kUnknown:
-      NOTREACHED();
-      result = VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN;
-  }
-
   // If the dialog is to be shown again because user clicked on links, do not
   // log metrics.
-  if (!reprompt_required_) {
+  if (reprompt_required_) {
+    return;
+  }
+
+  auto get_metric = [](PaymentsBubbleClosedReason reason) {
+    switch (reason) {
+      case PaymentsBubbleClosedReason::kAccepted:
+        return VirtualCardEnrollmentBubbleResult::
+            VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED;
+      case PaymentsBubbleClosedReason::kCancelled:
+        return VirtualCardEnrollmentBubbleResult::
+            VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED;
+      case PaymentsBubbleClosedReason::kClosed:
+        return VirtualCardEnrollmentBubbleResult::
+            VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED;
+      case PaymentsBubbleClosedReason::kNotInteracted:
+        return VirtualCardEnrollmentBubbleResult::
+            VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED;
+      case PaymentsBubbleClosedReason::kLostFocus:
+        return VirtualCardEnrollmentBubbleResult::
+            VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS;
+      case PaymentsBubbleClosedReason::kUnknown:
+        return VirtualCardEnrollmentBubbleResult::
+            VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN;
+    }
+  };
+
+  const bool result_metric_already_recorded = [&] {
+#if BUILDFLAG(IS_ANDROID)
+    return false;
+#else
+    switch (enrollment_status_) {
+        // TODO(crbug.com/40287758) Record metrics for closing the loading and
+        // confirmation view.
+      case EnrollmentStatus::kPaymentsServerRequestInFlight:
+      case EnrollmentStatus::kCompleted:
+        return true;
+      case EnrollmentStatus::kNone:
+        return false;
+    }
+    NOTREACHED_NORETURN();
+#endif
+  }();
+
+  // If the result metric wasn't already recorded, record it here.
+  if (!result_metric_already_recorded) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
       VirtualCardEnrollMetricsLogger::OnDismissed(
-          result, ui_model_.enrollment_fields.virtual_card_enrollment_source,
+          get_metric(closed_reason),
+          ui_model_.enrollment_fields.virtual_card_enrollment_source,
           is_user_gesture_, ui_model_.enrollment_fields.previously_declined);
     } else {
       LogVirtualCardEnrollmentBubbleResultMetric(
-          result, GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
-          ui_model_.enrollment_fields.previously_declined);
+          get_metric(closed_reason), GetVirtualCardEnrollmentBubbleSource(),
+          is_user_gesture_, ui_model_.enrollment_fields.previously_declined);
     }
   }
 }
