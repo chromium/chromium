@@ -337,6 +337,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="6" label="Rejected Due to Decode Error"/>
   <int value="7" label="Rejected Due to Buyer Not Allowed"/>
   <int value="8" label="Rejected Due to Currency Mismatch"/>
+  <int value="9" label="Rejected Due to Decoder Shutdown"/>
 </enum>
 
 <enum name="AdsHeuristicCookieOverride">
@@ -841,6 +842,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="15" label="Winning group missing bidding URL"/>
   <int value="16" label="Couldn't construct Bid"/>
   <int value="17" label="Currency mismatch"/>
+  <int value="18" label="Decoder shut down"/>
 </enum>
 
 <enum name="AuctionResult">

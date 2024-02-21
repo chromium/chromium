@@ -134,7 +134,8 @@ enum class InvalidServerResponseReason {
   kMissingWinningGroupBidURL = 15,
   kConstructBidFailure = 16,
   kBadCurrency = 17,
-  kMaxValue = kBadCurrency,
+  kDecoderShutdown = 18,
+  kMaxValue = kDecoderShutdown,
 };
 
 std::string DirectFromSellerSignalsHeaderAdSlotNoMatchError(
@@ -2220,7 +2221,7 @@ InterestGroupAuction::InterestGroupAuction(
     AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
     AuctionMetricsRecorder* auction_metrics_recorder,
-    AdAuctionPageData* ad_auction_page_data,
+    GetDataDecoderCallback get_data_decoder_callback,
     base::Time auction_start_time,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     base::RepeatingCallback<
@@ -2244,11 +2245,15 @@ InterestGroupAuction::InterestGroupAuction(
       maybe_log_private_aggregation_web_features_callback_(
           std::move(maybe_log_private_aggregation_web_features_callback)),
       is_server_auction_(config->server_response.has_value()),
-      data_decoder_(ad_auction_page_data->GetDecoderFor(config->seller)) {
+      get_data_decoder_callback_(std::move(get_data_decoder_callback)) {
   DCHECK(is_interest_group_api_allowed_callback_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", *trace_id_,
                                     "decision_logic_url",
                                     config_->decision_logic_url);
+
+  // Warm up decoder.
+  get_data_decoder_callback_.Run(config->seller);
+
   int frame_tree_node_id = auction_worklet_manager_->GetFrameTreeNodeID();
   if (devtools_instrumentation::NeedInterestGroupAuctionEvents(
           frame_tree_node_id)) {
@@ -2273,7 +2278,7 @@ InterestGroupAuction::InterestGroupAuction(
                        kanon_mode_, &component_auction_config, /*parent=*/this,
                        auction_worklet_manager, auction_nonce_manager,
                        interest_group_manager, auction_metrics_recorder_,
-                       ad_auction_page_data, auction_start_time_,
+                       get_data_decoder_callback_, auction_start_time_,
                        is_interest_group_api_allowed_callback_,
                        maybe_log_private_aggregation_web_features_callback_));
     ++child_pos;
@@ -2540,7 +2545,7 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 void InterestGroupAuction::HandleComponentServerResponse(
     uint32_t pos,
     mojo_base::BigBuffer response,
-    AdAuctionPageData* ad_auction_page_data) {
+    AdAuctionPageData& ad_auction_page_data) {
   CHECK(!parent_);  // Should not be called on a component.
   auto it = component_auctions_.find(pos);
 
@@ -2557,7 +2562,7 @@ void InterestGroupAuction::HandleComponentServerResponse(
 
 void InterestGroupAuction::HandleServerResponse(
     mojo_base::BigBuffer response,
-    AdAuctionPageData* ad_auction_page_data) {
+    AdAuctionPageData& ad_auction_page_data) {
   if (!HandleServerResponseImpl(std::move(response), ad_auction_page_data)) {
     DCHECK(saved_response_);
     if (bidding_and_scoring_phase_state_ == PhaseState::kDuring) {
@@ -2568,11 +2573,11 @@ void InterestGroupAuction::HandleServerResponse(
 
 bool InterestGroupAuction::HandleServerResponseImpl(
     mojo_base::BigBuffer response,
-    AdAuctionPageData* ad_auction_page_data) {
+    AdAuctionPageData& ad_auction_page_data) {
   // Check that response was witnessed by seller origin.
   std::array<uint8_t, crypto::kSHA256Length> hash =
       crypto::SHA256Hash(response.byte_span());
-  if (!ad_auction_page_data->WitnessedAuctionResultForOrigin(
+  if (!ad_auction_page_data.WitnessedAuctionResultForOrigin(
           config_->seller,
           std::string(reinterpret_cast<char*>(hash.data()), hash.size()))) {
     // If it wasn't witnessed then we don't know that it came from the server.
@@ -2586,7 +2591,7 @@ bool InterestGroupAuction::HandleServerResponseImpl(
   }
 
   AdAuctionRequestContext* request_context =
-      ad_auction_page_data->GetContextForAdAuctionRequest(
+      ad_auction_page_data.GetContextForAdAuctionRequest(
           config_->server_response->request_id);
   if (!request_context) {
     // The corresponding context for the requested blob couldn't be found.
@@ -2640,7 +2645,19 @@ bool InterestGroupAuction::HandleServerResponseImpl(
     errors_.push_back("runAdAuction(): Could not parse response framing");
     return false;
   }
-  data_decoder_->GzipUncompress(
+
+  data_decoder::DataDecoder* data_decoder =
+      get_data_decoder_callback_.Run(config_->seller);
+  if (!data_decoder) {
+    saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kDecoderShutdown);
+    errors_.push_back("runAdAuction(): Page in shutdown");
+    return false;
+  }
+
+  data_decoder->GzipUncompress(
       std::move(compressed_response).value(),
       base::BindOnce(
           &InterestGroupAuction::OnDecompressedServerResponse,
@@ -2931,7 +2948,7 @@ void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
 }
 
 void InterestGroupAuction::NotifyAdditionalBidsConfig(
-    AdAuctionPageData* auction_page_data) {
+    AdAuctionPageData& auction_page_data) {
   // An auction with additional bids can't have child auctions.
   DCHECK_EQ(config_->non_shared_params.component_auctions.size(), 0u);
 
@@ -2939,23 +2956,19 @@ void InterestGroupAuction::NotifyAdditionalBidsConfig(
   CHECK(config_->non_shared_params.auction_nonce.has_value());
   CHECK(config_->non_shared_params.interest_group_buyers.has_value());
 
-  if (!auction_page_data) {
-    return;
-  }
-
   interest_group_buyers_ = base::flat_set<url::Origin>(
       config_->non_shared_params.interest_group_buyers->begin(),
       config_->non_shared_params.interest_group_buyers->end());
 
   encoded_signed_additional_bids_ =
-      auction_page_data->TakeAuctionAdditionalBidsForOriginAndNonce(
+      auction_page_data.TakeAuctionAdditionalBidsForOriginAndNonce(
           config_->seller,
           config_->non_shared_params.auction_nonce->AsLowercaseString());
 }
 
 void InterestGroupAuction::NotifyComponentAdditionalBidsConfig(
     uint32_t pos,
-    AdAuctionPageData* auction_page_data) {
+    AdAuctionPageData& auction_page_data) {
   DCHECK(!parent_);  // Should not be called on a component.
   // And should have component auctions configured if we got thus far
   // (though none may have ended up passing the permissions check).
@@ -2972,7 +2985,7 @@ void InterestGroupAuction::NotifyComponentAdditionalBidsConfig(
 }
 
 void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
-    AdAuctionPageData* auction_page_data,
+    AdAuctionPageData& auction_page_data,
     const std::optional<std::string>&
         direct_from_seller_signals_header_ad_slot) {
   CHECK(!direct_from_seller_signals_header_ad_slot_pending_);
@@ -2984,12 +2997,7 @@ void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
     ++num_scoring_dependencies_;
   }
   direct_from_seller_signals_header_ad_slot_pending_ = true;
-  if (!auction_page_data) {
-    OnDirectFromSellerSignalHeaderAdSlotResolved(
-        *direct_from_seller_signals_header_ad_slot, nullptr);
-    return;
-  }
-  auction_page_data->ParseAndFindAdAuctionSignals(
+  auction_page_data.ParseAndFindAdAuctionSignals(
       config_->seller, *direct_from_seller_signals_header_ad_slot,
       base::BindOnce(
           &InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved,
@@ -3000,7 +3008,7 @@ void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
 void InterestGroupAuction::
     NotifyComponentDirectFromSellerSignalsHeaderAdSlotConfig(
         uint32_t pos,
-        AdAuctionPageData* auction_page_data,
+        AdAuctionPageData& auction_page_data,
         const std::optional<std::string>&
             direct_from_seller_signals_header_ad_slot) {
   CHECK(!parent_);  // Should not be called on a component.
@@ -4108,6 +4116,9 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
   }
   decode_additional_bids_start_time_ = base::TimeTicks::Now();
 
+  data_decoder::DataDecoder* data_decoder =
+      get_data_decoder_callback_.Run(config_->seller);
+
   num_scoring_dependencies_ += encoded_signed_additional_bids_.size();
   for (const auto& encoded_signed_bid : encoded_signed_additional_bids_) {
     std::string signed_additional_bid_data;
@@ -4118,7 +4129,12 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
           "Unable to base64-decode a signed additional bid.");
       continue;
     }
-    data_decoder_->ParseJson(
+    if (!data_decoder) {
+      HandleAdditionalBidError(AdditionalBidResult::kRejectedDecoderShutDown,
+                               "Page in shutdown.");
+      continue;
+    }
+    data_decoder->ParseJson(
         signed_additional_bid_data,
         base::BindOnce(&InterestGroupAuction::HandleDecodedSignedAdditionalBid,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -4149,7 +4165,15 @@ void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
 
   auto valid_signatures = maybe_signed_additional_bid->VerifySignatures();
 
-  data_decoder_->ParseJson(
+  data_decoder::DataDecoder* data_decoder =
+      get_data_decoder_callback_.Run(config_->seller);
+  if (!data_decoder) {
+    HandleAdditionalBidError(AdditionalBidResult::kRejectedDecoderShutDown,
+                             "Page in shutdown");
+    return;
+  }
+
+  data_decoder->ParseJson(
       maybe_signed_additional_bid->additional_bid_json,
       base::BindOnce(&InterestGroupAuction::HandleDecodedAdditionalBid,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -4898,11 +4922,15 @@ const std::string& InterestGroupAuction::GetTrustedBiddingSignalsSlotSizeParam(
 void InterestGroupAuction::OnDecompressedServerResponse(
     AdAuctionRequestContext* request_context,
     base::expected<mojo_base::BigBuffer, std::string> result) {
-  if (!result.has_value()) {
+  data_decoder::DataDecoder* data_decoder =
+      get_data_decoder_callback_.Run(config_->seller);
+
+  if (!result.has_value() || !data_decoder) {
     saved_response_.emplace();
     base::UmaHistogramEnumeration(
         kInvalidServerResponseReasonUMAName,
-        InvalidServerResponseReason::kDecompressFailure);
+        data_decoder ? InvalidServerResponseReason::kDecompressFailure
+                     : InvalidServerResponseReason::kDecoderShutdown);
     errors_.push_back("runAdAuction(): Could not decompress server response");
     if (bidding_and_scoring_phase_state_ == PhaseState::kDuring) {
       MaybeCompleteBiddingAndScoringPhase();
@@ -4910,7 +4938,7 @@ void InterestGroupAuction::OnDecompressedServerResponse(
     return;
   }
   base::span<const uint8_t> result_span = result.value().byte_span();
-  data_decoder_->ParseCbor(
+  data_decoder->ParseCbor(
       result_span,
       base::BindOnce(
           &InterestGroupAuction::OnParsedServerResponse,
@@ -5193,15 +5221,6 @@ void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
     OnScoringDependencyDone();
     ScoreQueuedBidsIfReady();
   }
-}
-
-// static
-data_decoder::DataDecoder* InterestGroupAuction::GetDataDecoder(
-    base::WeakPtr<InterestGroupAuction> instance) {
-  if (!instance) {
-    return nullptr;
-  }
-  return instance->data_decoder_.get();
 }
 
 }  // namespace content

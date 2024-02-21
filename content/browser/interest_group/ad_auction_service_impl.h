@@ -195,6 +195,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   url::Origin GetTopWindowOrigin() const;
 
+  AdAuctionPageData* GetAdAuctionPageData();
+
   // To avoid race conditions associated with top frame navigations (mentioned
   // in document_service.h), we need to save the values of the main frame
   // URL and origin in the constructor.

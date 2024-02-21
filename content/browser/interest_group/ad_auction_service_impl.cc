@@ -439,14 +439,15 @@ void AdAuctionServiceImpl::RunAdAuction(
     return;
   }
 
-  AdAuctionPageData* ad_auction_page_data =
-      PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-          render_frame_host().GetPage());
+  // Using Unretained here since `this` owns the AuctionRunner.
+  AuctionRunner::AdAuctionPageDataCallback ad_auction_page_data_callback =
+      base::BindRepeating(&AdAuctionServiceImpl::GetAdAuctionPageData,
+                          base::Unretained(this));
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, &auction_nonce_manager_,
       &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
-      private_aggregation_manager_, ad_auction_page_data,
+      private_aggregation_manager_, std::move(ad_auction_page_data_callback),
       // Unlike other callbacks, this needs to be safe to call after destruction
       // of the AdAuctionServiceImpl, so that the reporter can outlive it.
       base::BindRepeating(
@@ -1109,9 +1110,12 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
               .GetIsolationInfoForSubresources()
               .network_anonymization_key());
 
-  AdAuctionPageData* ad_auction_page_data =
-      PageUserData<AdAuctionPageData>::GetOrCreateForPage(
-          render_frame_host().GetPage());
+  AdAuctionPageData* ad_auction_page_data = GetAdAuctionPageData();
+  if (!ad_auction_page_data) {
+    ReturnEmptyGetInterestGroupAdAuctionDataCallback(
+        "Page destruction in progress");
+    return;
+  }
 
   AdAuctionRequestContext context(
       state.seller, std::move(state.data->group_names),
@@ -1165,6 +1169,22 @@ url::Origin AdAuctionServiceImpl::GetTopWindowOrigin() const {
     return origin();
   }
   return render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
+}
+
+AdAuctionPageData* AdAuctionServiceImpl::GetAdAuctionPageData() {
+  // The `PageImpl` recorded at the construction of the AdAuctionServiceImpl has
+  // been invalidated or the current frame's `PageImpl` has changed to a
+  // different one, signal that state is no longer available.
+  // See crbug.com/1422301.
+  if (base::FeatureList::IsEnabled(features::kDetectInconsistentPageImpl) &&
+      (!GetFrame()->auction_initiator_page() ||
+       GetFrame()->auction_initiator_page().get() !=
+           &(GetFrame()->GetPage()))) {
+    return nullptr;
+  }
+
+  return PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+      render_frame_host().GetPage());
 }
 
 }  // namespace content

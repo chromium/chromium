@@ -1927,7 +1927,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), auction_nonce_manager_.get(),
         interest_group_manager_.get(), /*browser_context=*/browser_context(),
-        &private_aggregation_manager_, ad_auction_page_data_.get(),
+        &private_aggregation_manager_,
+        base::BindRepeating(&AuctionRunnerTest::GetAdAuctionPageData,
+                            base::Unretained(this)),
         private_aggregation_manager_.GetLogPrivateAggregationRequestsCallback(),
         std::move(auction_config), top_frame_origin_, frame_origin_, source_id_,
         GetClientSecurityState(), dummy_report_shared_url_loader_factory_,
@@ -2996,6 +2998,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     DCHECK_EQ(ContentBrowserClient::InterestGroupApiOperation::kBuy,
               interest_group_api_operation);
     return disallowed_buyers_.find(origin) == disallowed_buyers_.end();
+  }
+
+  AdAuctionPageData* GetAdAuctionPageData() {
+    return ad_auction_page_data_.get();
   }
 
   // Creates an auction with 1-2 component sellers and 2 bidders, and sets up

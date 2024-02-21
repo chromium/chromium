@@ -101,6 +101,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   using AreReportingOriginsAttestedCallback =
       base::RepeatingCallback<bool(const std::vector<url::Origin>&)>;
 
+  using AdAuctionPageDataCallback =
+      base::RepeatingCallback<AdAuctionPageData*()>;
+
   // Creates an entire FLEDGE auction. Single-use object.
   //
   // Arguments: `auction_worklet_manager`, `interest_group_manager`,
@@ -109,6 +112,12 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //  `log_private_aggregation_requests_callback` must be safe to call until the
   //  AuctionRunner and any InterestGroupAuctionReporter it returns are
   //  destroyed.
+  //
+  //  `ad_auction_page_data_callback` must remain safe to call for lifetime of
+  //   AuctionRunner. It is permitted to return nullptr, in circumstances where
+  //   the auction is not expected to be able to proceed. The value it returns
+  //   may become invalid upon return to the event loop and therefore should not
+  //   be stored long-term.
   //
   //  `auction_config` is the configuration provided by client JavaScript in the
   //   renderer in order to initiate the auction.
@@ -143,7 +152,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       InterestGroupManagerImpl* interest_group_manager,
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
-      AdAuctionPageData* ad_auction_page_data,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
       const blink::AuctionConfig& auction_config,
@@ -222,7 +231,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       InterestGroupManagerImpl* interest_group_manager,
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
-      AdAuctionPageData* ad_auction_page_data,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
@@ -278,6 +287,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       const blink::mojom::AuctionAdConfigAuctionId* auction_id,
       blink::AuctionConfig* config);
 
+  // Looks up the decoder from AdAuctionPageData, if that's available.
+  data_decoder::DataDecoder* GetDataDecoder(const url::Origin& origin);
+
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   // Needed to create `FencedFrameReporter`.
@@ -299,8 +311,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // etc. are allowed or not.
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
 
-  // Owned by the Page.
-  raw_ptr<AdAuctionPageData> ad_auction_page_data_;
+  AdAuctionPageDataCallback ad_auction_page_data_callback_;
 
   AreReportingOriginsAttestedCallback attestation_callback_;
 
