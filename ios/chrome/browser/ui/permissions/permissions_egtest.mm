@@ -9,7 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -120,13 +119,6 @@ void TapDoneButtonOnInfobarModal() {
 @end
 
 @implementation PermissionsTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-  return config;
-}
 
 #pragma mark - Helper functions
 
