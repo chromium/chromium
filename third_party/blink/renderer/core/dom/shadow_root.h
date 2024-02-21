@@ -78,15 +78,12 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   ShadowRootMode GetMode() const { return static_cast<ShadowRootMode>(mode_); }
   String mode() const {
     switch (GetMode()) {
-      case ShadowRootMode::kUserAgent:
-        // UA ShadowRoot should not be exposed to the Web.
-        DUMP_WILL_BE_NOTREACHED_NORETURN();
-        return "";
       case ShadowRootMode::kOpen:
         return "open";
       case ShadowRootMode::kClosed:
         return "closed";
-      default:
+      case ShadowRootMode::kUserAgent:
+        // UA ShadowRoot should not be exposed to the Web.
         NOTREACHED();
         return "";
     }
