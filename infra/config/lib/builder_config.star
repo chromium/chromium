@@ -828,6 +828,11 @@ def _set_builder_config_property(ctx):
             # mega CQ.
             if not mirrors:
                 continue
+            allowed_trybot_recipes = [
+                "chromium_trybot",
+                "chromium_trybot_internal",
+                "chromium/orchestrator",
+            ]
             is_excluded = False
             all_mirror_rotations = []
             for m in mirrors:
@@ -836,7 +841,7 @@ def _set_builder_config_property(ctx):
                 all_mirror_rotations += mirror_rotations
                 if not mirror_rotations:
                     is_excluded = True
-                if json.decode(builder.properties)["recipe"] not in ["chromium_trybot", "chromium/orchestrator"]:
+                if json.decode(builder.properties)["recipe"] not in allowed_trybot_recipes:
                     is_excluded = True
                 if mirror_id["builder"] in excluded_builders:
                     is_excluded = True
