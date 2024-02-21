@@ -1436,6 +1436,18 @@
       "features": [
         "accelerated_2d_canvas"
       ]
+    },
+    {
+      "id": 180,
+      "cr_bugs": [325123735],
+      "description": "QC GPUs have driver bugs preventing WebNN from working correctly",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x4d4f4351",
+      "features": [
+        "webnn"
+      ]
     }
   ]
 }

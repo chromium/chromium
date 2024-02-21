@@ -334,6 +334,14 @@ GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
   return kGpuFeatureStatusDisabled;
 }
 
+GpuFeatureStatus GetWebNNFeatureStatus(
+    const std::set<int>& blocklisted_features) {
+  if (blocklisted_features.count(GPU_FEATURE_TYPE_WEBNN)) {
+    return kGpuFeatureStatusBlocklisted;
+  }
+  return kGpuFeatureStatusEnabled;
+}
+
 void SetProcessGlWorkaroundsFromGpuFeatures(
     const GpuFeatureInfo& gpu_feature_info) {
   const auto is_enabled =
@@ -471,6 +479,8 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithHardwareAccelerationDisabled() {
       kGpuFeatureStatusSoftware;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
       kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -505,6 +515,8 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
       kGpuFeatureStatusSoftware;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
       kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -538,6 +550,8 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] =
       kGpuFeatureStatusSoftware;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+      kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
       kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
@@ -647,6 +661,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       GetVulkanFeatureStatus(blocklisted_features, gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
       GetSkiaGraphiteFeatureStatus(blocklisted_features, gpu_preferences);
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
+      GetWebNNFeatureStatus(blocklisted_features);
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);

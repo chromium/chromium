@@ -920,7 +920,10 @@ void GpuServiceImpl::BindClientGmbInterface(
 void GpuServiceImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> pending_receiver,
     int client_id) {
-  webnn::WebNNContextProviderImpl::Create(std::move(pending_receiver));
+  webnn::WebNNContextProviderImpl::Create(
+      std::move(pending_receiver),
+      gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] ==
+          gpu::kGpuFeatureStatusEnabled);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

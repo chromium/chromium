@@ -66,12 +66,28 @@ TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
                                       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
-  const auto& create_context_error = result->get_error();
+  const mojom::ErrorPtr& create_context_error = result->get_error();
   EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
   EXPECT_EQ(create_context_error->message,
             "WebNN Service is not supported on this platform.");
 }
 
 #endif
+
+TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
+  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+
+  WebNNContextProviderImpl::Create(provider_remote.BindNewPipeAndPassReceiver(),
+                                   /*is_gpu_supported=*/false);
+
+  base::test::TestFuture<mojom::CreateContextResultPtr> future;
+  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
+                                      future.GetCallback());
+  mojom::CreateContextResultPtr result = future.Take();
+  ASSERT_TRUE(result->is_error());
+  const mojom::ErrorPtr& create_context_error = result->get_error();
+  EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
+  EXPECT_EQ(create_context_error->message, "WebNN is not compatible with GPU.");
+}
 
 }  // namespace webnn

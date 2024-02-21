@@ -32,15 +32,18 @@ using webnn::mojom::WebNNContextProvider;
 
 }  // namespace
 
-WebNNContextProviderImpl::WebNNContextProviderImpl() = default;
+WebNNContextProviderImpl::WebNNContextProviderImpl(bool is_gpu_supported)
+    : is_gpu_supported_(is_gpu_supported) {}
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() = default;
 
 // static
 void WebNNContextProviderImpl::Create(
-    mojo::PendingReceiver<WebNNContextProvider> receiver) {
+    mojo::PendingReceiver<WebNNContextProvider> receiver,
+    bool is_gpu_supported) {
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
-      std::make_unique<WebNNContextProviderImpl>(), std::move(receiver));
+      std::make_unique<WebNNContextProviderImpl>(is_gpu_supported),
+      std::move(receiver));
 }
 
 void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
@@ -64,7 +67,13 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                                               std::move(callback));
     return;
   }
-
+  if (!is_gpu_supported_) {
+    std::move(callback).Run(ToError<mojom::CreateContextResult>(
+        mojom::Error::Code::kNotSupportedError,
+        "WebNN is not compatible with GPU."));
+    DLOG(ERROR) << "WebNN is not compatible with GPU.";
+    return;
+  }
 #if BUILDFLAG(IS_WIN)
   // Get the default `Adapter` instance which is created for the adapter queried
   // from ANGLE. At the current stage, all `ContextImpl` share this instance.

@@ -22,7 +22,7 @@ class WebNNContextImpl;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     : public mojom::WebNNContextProvider {
  public:
-  WebNNContextProviderImpl();
+  explicit WebNNContextProviderImpl(bool is_gpu_supported);
 
   WebNNContextProviderImpl(const WebNNContextProviderImpl&) = delete;
   WebNNContextProviderImpl& operator=(const WebNNContextProviderImpl&) = delete;
@@ -30,7 +30,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   ~WebNNContextProviderImpl() override;
 
   static void Create(
-      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver);
+      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
+      bool is_gpu_supported = true);
 
   // Called when a WebNNContextImpl has a connection error. After this call, it
   // is no longer safe to access |impl|.
@@ -55,6 +56,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
                           CreateWebNNContextCallback callback) override;
 
   std::vector<std::unique_ptr<WebNNContextImpl>> impls_;
+
+  const bool is_gpu_supported_;
 };
 
 }  // namespace webnn
