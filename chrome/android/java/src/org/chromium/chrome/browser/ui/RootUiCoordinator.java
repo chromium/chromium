@@ -913,7 +913,6 @@ public class RootUiCoordinator
                             controller.maybeShowPlayer();
                         }
                     };
-            mToolbarManager.setReadAloudReadabilitySupplier(controller.getReadabilitySupplier());
             if (mContextualSearchManagerSupplier.get() != null) {
                 mContextualSearchManagerSupplier
                         .get()
@@ -1438,7 +1437,8 @@ public class RootUiCoordinator
                             mInitializeUiWithIncognitoColors,
                             mBackPressManager,
                             openHistoryClustersDelegate,
-                            mOverviewIncognitoSupplier);
+                            mOverviewIncognitoSupplier,
+                            mReadAloudControllerSupplier);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
