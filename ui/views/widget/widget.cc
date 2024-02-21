@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/base/cursor/cursor.h"
@@ -1986,6 +1987,7 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
 
 void Widget::LayoutRootViewIfNecessary() {
   if (root_view_ && root_view_->needs_layout()) {
+    // Widget name is only collected in local traces.
     TRACE_EVENT1("ui", "Widget::LayoutRootViewIfNecessary", "widget name",
                  GetName());
     root_view_->LayoutImmediately();

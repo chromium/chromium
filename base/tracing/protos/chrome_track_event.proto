@@ -1545,6 +1545,13 @@ message TouchDispositionGestureFilter {
   optional int32 gesture_count = 1;
 }
 
+message ViewClassName {
+  // The name associated with a View class in browser UI. The class name is set
+  // by the view class itself through metadata macros and contains no data that
+  // can be modified by a user.
+  optional string name = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
   // Next ID: 1061
@@ -1676,5 +1683,7 @@ message ChromeTrackEvent {
 
     optional TouchDispositionGestureFilter touch_disposition_gesture_filter =
         1060;
+
+    optional ViewClassName view_class_name = 1061;
   }
 }

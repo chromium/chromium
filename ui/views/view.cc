@@ -28,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -3442,7 +3443,11 @@ bool View::HasLayoutManager() const {
 }
 
 void View::LayoutImmediately() {
-  TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
+  TRACE_EVENT("ui", "View::LayoutImmediately", [&](perfetto::EventContext ctx) {
+    auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+    auto* data = event->set_view_class_name();
+    data->set_name(GetClassName());
+  });
   invalidates_during_layout_ = 0;
   ++layouts_since_last_paint_;
   base::AutoReset allow_layout(&layout_allowed_, true);
