@@ -9,8 +9,9 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
-#include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -33,6 +35,8 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -78,6 +82,7 @@ using ::chromeos::FakePowerManagerClient;
 constexpr char kTestAppId[] = "aaaabbbbaaaabbbbaaaabbbbaaaabbbb";
 constexpr char kTestWebAppName1[] = "test_web_app_name1";
 constexpr char kTestWebAppName2[] = "test_web_app_name2";
+constexpr char kTestUrl[] = "www.test.com";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kTestWebAppUrl[] = "https://install.url";
@@ -92,6 +97,64 @@ constexpr char kPepperPluginFilePath2[] = "/path/to/pepper_plugin2";
 constexpr char kBrowserPluginFilePath[] = "/path/to/browser_plugin";
 constexpr char kUnregisteredPluginFilePath[] = "/path/to/unregistered_plugin";
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+// This class constructs and owns the `Browser` object. It assumes that the
+// `Browser` uses a `TestBrowserWindow`. The class adds a default tab to the
+// newly constructed browser and handles the closing lifecycle by registering a
+// close callback on the `TestBrowserWindow`.
+class FakeBrowser {
+ public:
+  explicit FakeBrowser(Browser::CreateParams(params))
+      : FakeBrowser(Browser::Create(params)) {}
+
+  explicit FakeBrowser(Browser* browser) : browser_(browser) {
+    if (!browser->is_type_picture_in_picture()) {
+      // Add a tab to the browser to ensure that `CloseAllTabs()` works.
+      // Note that tabs are not supported with PICTURE_IN_PICTURE windows.
+      TabActivitySimulator().AddWebContentsAndNavigate(
+          browser_->tab_strip_model(), GURL(kTestUrl));
+    }
+    static_cast<TestBrowserWindow*>(browser_->window())
+        ->SetCloseCallback(base::BindOnce(&FakeBrowser::OnBrowserWindowClosed,
+                                          weak_ptr_.GetWeakPtr()));
+  }
+
+  ~FakeBrowser() {
+    if (browser_ && !browser_->tab_strip_model()->empty()) {
+      // This is required to prevent a DCHECK crash in the destructor of
+      // `Browser` if tabs remain open.
+      browser_->tab_strip_model()->CloseAllTabs();
+    }
+  }
+
+  [[nodiscard]] bool WaitForBrowserClose() { return closed_future_.Wait(); }
+  bool IsClosed() { return closed_future_.IsReady(); }
+
+  bool IsFullscreen() {
+    return browser_->exclusive_access_manager()
+        ->fullscreen_controller()
+        ->IsFullscreenForBrowser();
+  }
+
+ private:
+  void OnBrowserWindowClosed() {
+    closed_future_.SetValue();
+    // `TestBrowserWindow` does not destroy `Browser` when `Close()` is called,
+    // but real browser window does. Call `RemoveBrowser` here to fake this
+    // behavior.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeBrowser::RemoveBrowser, weak_ptr_.GetWeakPtr()));
+  }
+
+  void RemoveBrowser() {
+    BrowserList::GetInstance()->RemoveBrowser(browser_.get());
+  }
+
+  base::test::TestFuture<void> closed_future_;
+  std::unique_ptr<Browser> browser_;
+  base::WeakPtrFactory<FakeBrowser> weak_ptr_{this};
+};
 
 // A test browser window that can toggle fullscreen state.
 class FullscreenTestBrowserWindow : public TestBrowserWindow,
@@ -142,13 +205,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   raw_ptr<TestingProfile> profile_;
 };
 
-bool IsBrowserFullscreen(Browser& browser) {
-  return browser.exclusive_access_manager()
-      ->fullscreen_controller()
-      ->IsFullscreenForBrowser();
-}
-
-std::unique_ptr<Browser> CreateBrowserWithFullscreenTestWindowForParams(
+std::unique_ptr<FakeBrowser> CreateBrowserWithFullscreenTestWindowForParams(
     Browser::CreateParams params,
     TestingProfile* profile,
     bool is_main_browser = false) {
@@ -158,7 +215,7 @@ std::unique_ptr<Browser> CreateBrowserWithFullscreenTestWindowForParams(
       new FullscreenTestBrowserWindow(profile, /*fullscreen=*/is_main_browser);
   new TestBrowserWindowOwner(window);
   params.window = window;
-  return base::WrapUnique<Browser>(Browser::Create(params));
+  return std::make_unique<FakeBrowser>(params);
 }
 
 void EmulateDeviceReboot() {
@@ -280,12 +337,12 @@ class KioskBrowserSessionBaseTest
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
-  std::unique_ptr<Browser> CreateBrowserWithTestWindow() {
+  std::unique_ptr<FakeBrowser> CreateBrowserWithTestWindow() {
     return CreateBrowserWithFullscreenTestWindowForParams(
         Browser::CreateParams(profile(), true), profile());
   }
 
-  std::unique_ptr<Browser> CreateBrowserForWebApp(
+  std::unique_ptr<FakeBrowser> CreateBrowserForWebApp(
       const std::string& web_app_name,
       absl::optional<Browser::Type> browser_type = absl::nullopt) {
     Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
@@ -328,14 +385,17 @@ class KioskBrowserSessionBaseTest
   // `new_browser_window` and returns whether `new_browser_window` was asked to
   // close. In this case we will also ensure that `new_browser_window` was
   // automatically closed.
-  bool DidSessionCloseNewWindow(const Browser& new_browser) {
+  bool DidSessionCloseNewWindow(FakeBrowser& new_browser) {
     // Wait until the new window is handled by `kiosk_browser_session_`.
     base::test::TestFuture<bool> is_handled;
     kiosk_browser_session_->SetOnHandleBrowserCallbackForTesting(
         is_handled.GetRepeatingCallback());
     bool is_closed_by_kiosk_session = is_handled.Get();
 
-    EXPECT_EQ(IsClosed(new_browser), is_closed_by_kiosk_session);
+    if (is_closed_by_kiosk_session) {
+      EXPECT_TRUE(new_browser.WaitForBrowserClose());
+    }
+
     return is_closed_by_kiosk_session;
   }
 
@@ -346,19 +406,11 @@ class KioskBrowserSessionBaseTest
 
   bool IsMainBrowserClosed() {
     return web_kiosk_main_browser_ == nullptr ||
-           IsClosed(*web_kiosk_main_browser_);
-  }
-
-  bool IsClosed(const Browser& browser) const {
-    return browser.tab_strip_model()->closing_all();
-  }
-
-  bool IsClosed(const BrowserWindow& browser_window) const {
-    return static_cast<const TestBrowserWindow&>(browser_window).IsClosed();
+           web_kiosk_main_browser_->IsClosed();
   }
 
   bool IsMainBrowserFullscreen() {
-    return IsBrowserFullscreen(*web_kiosk_main_browser_);
+    return web_kiosk_main_browser_->IsFullscreen();
   }
 
   bool IsSessionShuttingDown() const {
@@ -383,11 +435,14 @@ class KioskBrowserSessionBaseTest
   ash::AshTestHelper ash_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // `RenderViewHostTestEnabled` is required to make the navigation work that
+  // happens in the tab added to `TestBrowserWindow` in `FakeBrowser`.
+  content::RenderViewHostTestEnabler enabler_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;
   // Main browser window created when launching a web kiosk app.
   // Could be nullptr if `StartWebKioskSession` function was not called.
-  std::unique_ptr<Browser> web_kiosk_main_browser_;
+  std::unique_ptr<FakeBrowser> web_kiosk_main_browser_;
   base::HistogramTester histogram_;
   std::unique_ptr<KioskBrowserSession> kiosk_browser_session_;
 };
@@ -468,23 +523,21 @@ TEST_F(KioskBrowserSessionTest, ChromeAppKioskTracksBrowserCreation) {
 }
 
 TEST_F(KioskBrowserSessionTest, ChromeAppKioskShouldClosePreexistingBrowsers) {
-  std::unique_ptr<Browser> preexisting_browser = CreateBrowserWithTestWindow();
-  base::test::TestFuture<void> closed_future;
-
-  static_cast<TestBrowserWindow*>(preexisting_browser->window())
-      ->SetCloseCallback(closed_future.GetCallback());
+  std::unique_ptr<FakeBrowser> preexisting_browser =
+      CreateBrowserWithTestWindow();
 
   StartChromeAppKioskSession();
 
-  ASSERT_TRUE(IsClosed(*preexisting_browser));
+  ASSERT_TRUE(preexisting_browser->WaitForBrowserClose());
 }
 
 TEST_F(KioskBrowserSessionTest, WebKioskShouldClosePreexistingBrowsers) {
-  std::unique_ptr<Browser> preexisting_browser = CreateBrowserWithTestWindow();
+  std::unique_ptr<FakeBrowser> preexisting_browser =
+      CreateBrowserWithTestWindow();
 
   StartWebKioskSession();
 
-  EXPECT_TRUE(IsClosed(*preexisting_browser));
+  ASSERT_TRUE(preexisting_browser->WaitForBrowserClose());
   EXPECT_FALSE(IsMainBrowserClosed());
 }
 
@@ -576,23 +629,24 @@ TEST_F(KioskBrowserSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
   StartWebKioskSession(kTestWebAppName1);
   EXPECT_TRUE(IsMainBrowserFullscreen());
 
-  auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
+  std::unique_ptr<FakeBrowser> second_browser =
+      CreateBrowserForWebApp(kTestWebAppName1);
   DidSessionCloseNewWindow(*second_browser);
 
-  EXPECT_TRUE(IsBrowserFullscreen(*second_browser));
+  EXPECT_TRUE(second_browser->IsFullscreen());
 }
 
 TEST_F(KioskBrowserSessionTest,
        DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
   const std::vector<Browser::Type> not_app_popup_browser_types = {
-      Browser::Type::TYPE_NORMAL,
-      Browser::Type::TYPE_POPUP,
-      Browser::Type::TYPE_APP,
-      Browser::Type::TYPE_DEVTOOLS,
+      Browser::Type::TYPE_NORMAL,     Browser::Type::TYPE_POPUP,
+      Browser::Type::TYPE_APP,        Browser::Type::TYPE_DEVTOOLS,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       Browser::Type::TYPE_CUSTOM_TAB,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      Browser::Type::TYPE_PICTURE_IN_PICTURE,
+
+      // TODO(b/325453088): Bring back PICTURE_IN_PICTURE once we invoke
+      // browser.window.Close() again.
   };
 
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
@@ -860,25 +914,26 @@ class KioskBrowserSessionTroubleshootingTest
     GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, enable);
   }
 
-  std::unique_ptr<Browser> CreateDevToolsBrowserWithTestWindow() {
+  std::unique_ptr<FakeBrowser> CreateDevToolsBrowserWithTestWindow() {
     auto params = Browser::CreateParams::CreateForDevTools(profile());
 
     TestBrowserWindow* test_window_ = new TestBrowserWindow;
     new TestBrowserWindowOwner(test_window_);
     params.window = test_window_;
 
-    return base::WrapUnique<Browser>(Browser::Create(params));
+    return std::make_unique<FakeBrowser>(params);
   }
 
-  std::unique_ptr<Browser> CreateRegularBrowserWithTestWindow() {
+  std::unique_ptr<FakeBrowser> CreateRegularBrowserWithTestWindow() {
     return CreateBrowserWithTestWindowAndType(Browser::TYPE_NORMAL);
   }
 
-  std::unique_ptr<Browser> CreateBrowserWithTestWindowAndType(
+  std::unique_ptr<FakeBrowser> CreateBrowserWithTestWindowAndType(
       Browser::Type type) {
     Browser::CreateParams params(profile(), /*user_gesture=*/true);
     params.type = type;
-    return CreateBrowserWithTestWindowForParams(params);
+    return std::make_unique<FakeBrowser>(
+        CreateBrowserWithTestWindowForParams(params).release());
   }
 
  private:
@@ -980,7 +1035,7 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  std::unique_ptr<Browser> normal_browser =
+  std::unique_ptr<FakeBrowser> normal_browser =
       CreateRegularBrowserWithTestWindow();
   EXPECT_FALSE(DidSessionCloseNewWindow(*normal_browser));
 
@@ -1006,13 +1061,14 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
 TEST_P(KioskBrowserSessionTroubleshootingTest,
        OnlyAllowRegularBrowserAndDevToolsAsTroubleshootingBrowsers) {
   const std::vector<Browser::Type> should_be_closed_browser_types = {
-      Browser::Type::TYPE_POPUP,
-      Browser::Type::TYPE_APP,
+      Browser::Type::TYPE_POPUP, Browser::Type::TYPE_APP,
       Browser::Type::TYPE_APP_POPUP,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       Browser::Type::TYPE_CUSTOM_TAB,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      Browser::Type::TYPE_PICTURE_IN_PICTURE,
+
+      // TODO(b/325453088): Bring back PICTURE_IN_PICTURE once we invoke
+      // browser.window.Close() again.
   };
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
@@ -1274,7 +1330,7 @@ class KioskBrowserSessionSwaTest : public KioskBrowserSessionBaseTest<bool> {
     waiter.Wait();
   }
 
-  std::unique_ptr<Browser> CreateSwaTestWindow() {
+  std::unique_ptr<FakeBrowser> CreateSwaTestWindow() {
     auto app_id = system_web_app_manager()->GetAppIdForSystemApp(
         ash::SystemWebAppType::SETTINGS);
     CHECK(app_id.has_value());
@@ -1289,7 +1345,7 @@ class KioskBrowserSessionSwaTest : public KioskBrowserSessionBaseTest<bool> {
     new TestBrowserWindowOwner(test_window);
     params.window = test_window;
 
-    return base::WrapUnique<Browser>(Browser::Create(params));
+    return std::make_unique<FakeBrowser>(params);
   }
 
   ash::TestSystemWebAppManager* system_web_app_manager() {
@@ -1429,6 +1485,8 @@ class KioskBrowserSessionAshWithLacrosEnabledTest
     KioskBrowserSessionTest::SetUp();
     LoginKioskUser(CreateKioskAppId());
   }
+
+  void TearDown() override { CloseMainBrowser(); }
 
  private:
   ash::KioskAppId CreateKioskAppId() {
