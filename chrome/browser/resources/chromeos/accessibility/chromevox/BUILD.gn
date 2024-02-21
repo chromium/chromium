@@ -204,6 +204,7 @@ ts_library("ts_build") {
   ]
 
   definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/windows.d.ts",

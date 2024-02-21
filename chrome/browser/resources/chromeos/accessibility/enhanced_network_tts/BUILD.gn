@@ -56,6 +56,7 @@ ts_library("ts_build") {
     "../definitions/tabs.d.ts",
     "../definitions/tts.d.ts",
     "../definitions/tts_engine.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]
 

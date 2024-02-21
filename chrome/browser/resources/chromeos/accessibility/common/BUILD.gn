@@ -89,6 +89,7 @@ ts_definitions = [
   "../definitions/storage_mv2.d.ts",
   "../definitions/tabs.d.ts",
   "../definitions/tts.d.ts",
+  "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/windows.d.ts",
 ]
 

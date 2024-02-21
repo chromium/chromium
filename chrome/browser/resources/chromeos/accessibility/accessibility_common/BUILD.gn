@@ -99,6 +99,7 @@ ts_definitions = [
   "../definitions/tabs.d.ts",
   "../definitions/settings_private_mv2.d.ts",
   "../definitions/windows.d.ts",
+  "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/i18n.d.ts",
 ]
 

@@ -68,6 +68,7 @@ ts_library("ts_build") {
     "../definitions/storage_mv2.d.ts",
     "../definitions/clipboard_mv2.d.ts",
     "../definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]
 
