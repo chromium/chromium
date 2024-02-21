@@ -1337,13 +1337,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   if (std::optional<Suggestion> test_addresses_suggestion =
           GetSuggestionForTestAddresses(personal_data_->test_addresses(),
                                         app_locale)) {
-    std::vector<Suggestion> suggestions_with_test_address;
-    suggestions_with_test_address.push_back(
-        std::move(*test_addresses_suggestion));
-    suggestions_with_test_address.insert(suggestions_with_test_address.end(),
-                                         suggestions.begin(),
-                                         suggestions.end());
-    return suggestions_with_test_address;
+    suggestions.insert(suggestions.begin(),
+                       std::move(*test_addresses_suggestion));
   }
 
   return suggestions;
