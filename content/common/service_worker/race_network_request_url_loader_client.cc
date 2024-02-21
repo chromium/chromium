@@ -16,6 +16,7 @@
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "mojo/public/cpp/system/handle_signals_state.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
@@ -392,6 +393,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
 
   body_consumer_watcher_.Watch(
       body_.get(), MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_WATCH_CONDITION_SATISFIED,
       base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
   body_consumer_watcher_.ArmOrNotify();
   write_buffer_manager_for_race_network_request_.Watch(
@@ -401,7 +403,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
-    MojoResult result) {
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
   std::optional<base::span<const char>> read_buffer = StartReadData(result);
   if (!read_buffer.has_value()) {
     return;
@@ -521,7 +524,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
-    MojoResult result) {
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
   std::optional<base::span<const char>> read_buffer = StartReadData(result);
   if (!read_buffer.has_value()) {
     return;

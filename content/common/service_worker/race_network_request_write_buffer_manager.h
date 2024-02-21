@@ -29,7 +29,7 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
   mojo::ScopedDataPipeConsumerHandle ReleaseConsumerHandle();
   void Abort();
   void ResetProducer();
-  void Watch(mojo::SimpleWatcher::ReadyCallback callback);
+  void Watch(mojo::SimpleWatcher::ReadyCallbackWithState callback);
   bool IsWatching() const { return watcher_.IsWatching(); }
   void CancelWatching();
   MojoResult BeginWriteData();

@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "mojo/public/cpp/system/handle_signals_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -37,11 +38,12 @@ TEST(RaceNetworkRequestWriteBufferManagerTest, WatchDataPipe) {
   run_loop.RunUntilIdle();
   EXPECT_TRUE(buffer_manager.is_data_pipe_created());
 
-  buffer_manager.Watch(base::BindLambdaForTesting([&](MojoResult result) {
-    EXPECT_EQ(result, MOJO_RESULT_OK);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-  }));
+  buffer_manager.Watch(base::BindLambdaForTesting(
+      [&](MojoResult result, const mojo::HandleSignalsState& state) {
+        EXPECT_EQ(result, MOJO_RESULT_OK);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, run_loop.QuitClosure());
+      }));
 
   buffer_manager.ArmOrNotify();
   run_loop.Run();

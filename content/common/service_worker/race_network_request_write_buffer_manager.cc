@@ -68,10 +68,10 @@ void RaceNetworkRequestWriteBufferManager::ResetProducer() {
 }
 
 void RaceNetworkRequestWriteBufferManager::Watch(
-    mojo::SimpleWatcher::ReadyCallback callback) {
+    mojo::SimpleWatcher::ReadyCallbackWithState callback) {
   watcher_.Watch(producer_.get(),
                  MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-                 std::move(callback));
+                 MOJO_WATCH_CONDITION_SATISFIED, std::move(callback));
 }
 
 void RaceNetworkRequestWriteBufferManager::CancelWatching() {
