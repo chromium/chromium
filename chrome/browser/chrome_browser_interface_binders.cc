@@ -1569,15 +1569,13 @@ void PopulateChromeWebUIFrameBinders(
       ash::shimless_rma::mojom::ShimlessRmaService, ash::ShimlessRMADialogUI>(
       map);
 
-  if (base::FeatureList::IsEnabled(features::kShortcutCustomizationApp)) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::shortcut_customization::mojom::AcceleratorConfigurationProvider,
-        ash::ShortcutCustomizationAppUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      ash::shortcut_customization::mojom::AcceleratorConfigurationProvider,
+      ash::ShortcutCustomizationAppUI>(map);
 
-    RegisterWebUIControllerInterfaceBinder<
-        ash::shortcut_customization::mojom::SearchHandler,
-        ash::ShortcutCustomizationAppUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::shortcut_customization::mojom::SearchHandler,
+      ash::ShortcutCustomizationAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       emoji_picker::mojom::PageHandlerFactory, ash::EmojiUI>(map);

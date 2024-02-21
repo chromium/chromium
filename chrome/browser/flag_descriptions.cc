@@ -1242,12 +1242,6 @@ const char kEnableControlledFrameDescription[] =
     "https://github.com/WICG/controlled-frame/blob/main/EXPLAINER.md "
     "for more information.";
 
-const char kEnableShortcutCustomizationAppName[] =
-    "Enable shortcut customization app";
-const char kEnableShortcutCustomizationAppDescription[] =
-    "Enable the shortcut customization SWA, allowing users to customize system "
-    "shortcuts.";
-
 const char kEnableShortcutCustomizationName[] =
     "Enable customization in new shortcuts app";
 const char kEnableShortcutCustomizationDescription[] =

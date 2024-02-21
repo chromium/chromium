@@ -84,14 +84,6 @@ bool IsNotificationsIgnoreRequireInteractionEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsIgnoreRequireInteraction);
 }
 
-BASE_FEATURE(kShortcutCustomizationApp,
-             "ShortcutCustomizationApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsShortcutCustomizationAppEnabled() {
-  return base::FeatureList::IsEnabled(kShortcutCustomizationApp);
-}
-
 BASE_FEATURE(kShortcutCustomization,
              "ShortcutCustomization",
              base::FEATURE_DISABLED_BY_DEFAULT);

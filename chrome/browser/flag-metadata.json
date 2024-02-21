@@ -3558,11 +3558,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-shortcut-customization-app",
-    "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-shortcut-customization-logging",
     "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
     "expiry_milestone": 130

@@ -2385,18 +2385,12 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
 
 class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  public:
-  ShortcutsAppSpokenFeedbackTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kShortcutCustomizationApp}, {});
-  }
+  ShortcutsAppSpokenFeedbackTest() = default;
   ShortcutsAppSpokenFeedbackTest(const ShortcutsAppSpokenFeedbackTest&) =
       delete;
   ShortcutsAppSpokenFeedbackTest& operator=(
       const ShortcutsAppSpokenFeedbackTest&) = delete;
   ~ShortcutsAppSpokenFeedbackTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(b/288602247): The test is flaky.

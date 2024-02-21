@@ -16,9 +16,7 @@ ShortcutCustomizationInteractiveUiTestBase::
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShortcutAppWebContentsId);
   webcontents_id_ = kShortcutAppWebContentsId;
 
-  feature_list_.InitWithFeatures({::features::kShortcutCustomization,
-                                  ::features::kShortcutCustomizationApp},
-                                 {});
+  feature_list_.InitWithFeatures({::features::kShortcutCustomization}, {});
 }
 
 ShortcutCustomizationInteractiveUiTestBase::
