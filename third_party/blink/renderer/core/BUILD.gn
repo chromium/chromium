@@ -359,7 +359,6 @@ component("core") {
     "//gpu/config",
     "//mojo/public/cpp/bindings:bindings",
     "//mojo/public/cpp/system",
-    "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
