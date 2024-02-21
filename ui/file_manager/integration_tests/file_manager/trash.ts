@@ -51,26 +51,6 @@ async function clickDeleteButtonAndConfirmDeletion(appId: string) {
 }
 
 /**
- * Shows hidden files to facilitate tests again the .Trash directory.
- */
-async function showHiddenFiles(appId: string) {
-  // Open the gear menu by clicking the gear button.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['#gear-button']));
-
-  // Wait for menu to not be hidden.
-  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
-
-  // Wait for menu item to appear.
-  await remoteCall.waitForElement(
-      appId, '#gear-menu-toggle-hidden-files:not([disabled]):not([checked])');
-
-  // Click the menu item.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['#gear-menu-toggle-hidden-files']);
-}
-
-/**
  * Delete files in MyFiles and ensure they are moved to /.Trash.
  * Then delete items from /.Trash/files and /.Trash/info, then delete /.Trash.
  */
@@ -88,7 +68,7 @@ export async function trashMoveToTrash() {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Enable hidden files to be shown.
-  await showHiddenFiles(appId);
+  await remoteCall.showHiddenFiles(appId);
 
   // Navigate to /My files/Downloads/.Trash/files.
   const directoryTree = await DirectoryTreePageObject.create(appId);
@@ -1244,7 +1224,7 @@ export async function trashStaleTrashInfoFilesAreRemovedAfterOneHour() {
   await remoteCall.waitForElementLost(appId, fileSelector);
 
   // Enable hidden files to be shown.
-  await showHiddenFiles(appId);
+  await remoteCall.showHiddenFiles(appId);
 
   // Navigate to /My files/Downloads/.Trash/files.
   const directoryTree = await DirectoryTreePageObject.create(appId);
@@ -1280,4 +1260,53 @@ export async function trashStaleTrashInfoFilesAreRemovedAfterOneHour() {
   // has been removed.
   await directoryTree.navigateToPath('/My files/Downloads/.Trash/info');
   await remoteCall.waitForElementLost(appId, trashInfoSelector);
+}
+
+/**
+ * If the current directory is .Trash or sub folders of .Trash (e.g.
+ * files/info), after disable "show hidden files" menu, the current directory
+ * should navigate back to MyFiles.
+ */
+export async function trashTogglingHiddenFilesNavigatesAwayFromTrash() {
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Select hello.txt.
+  const helloFileSelector = '#file-list [file-name="hello.txt"]';
+  await remoteCall.waitAndClickElement(appId, helloFileSelector);
+
+  // Delete item and wait for it to be removed (no dialog).
+  await remoteCall.clickTrashButton(appId);
+  await remoteCall.waitForElementLost(appId, helloFileSelector);
+
+  // Enable hidden files to be shown.
+  await remoteCall.showHiddenFiles(appId);
+
+  // Navigate to /My files/Downloads/.Trash.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  await directoryTree.navigateToPath('/My files/Downloads/.Trash');
+
+  // Uncheck "show hidden files".
+  await remoteCall.showHiddenFiles(appId, /* check= */ false);
+
+  // Expect current directory goes back to MyFiles.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
+  if (directoryTree.isNewTree) {
+    await directoryTree.waitForItemLostByLabel('.Trash');
+  }
+
+  // Show hidden files again.
+  await remoteCall.showHiddenFiles(appId);
+
+  // Navigate to /My files/Downloads/.Trash/files this time.
+  await directoryTree.navigateToPath('/My files/Downloads/.Trash/files');
+
+  // Uncheck "show hidden files".
+  await remoteCall.showHiddenFiles(appId, /* check= */ false);
+
+  // Expect current directory goes back to MyFiles.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
+  if (directoryTree.isNewTree) {
+    await directoryTree.waitForItemLostByLabel('.Trash');
+  }
 }

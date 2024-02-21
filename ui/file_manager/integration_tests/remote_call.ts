@@ -1385,4 +1385,26 @@ export class RemoteCallFilesApp extends RemoteCall {
     const flag = dialog.attributes['single-partition-format'] || '';
     return !!flag;
   }
+
+  /**
+   * Shows hidden files to facilitate tests again the .Trash directory.
+   */
+  async showHiddenFiles(appId: string, check: boolean = true) {
+    // Open the gear menu by clicking the gear button.
+    chrome.test.assertTrue(await this.callRemoteTestUtil(
+        'fakeMouseClick', appId, ['#gear-button']));
+
+    // Wait for menu to not be hidden.
+    await this.waitForElement(appId, '#gear-menu:not([hidden])');
+
+    // Wait for menu item to appear.
+    await this.waitForElement(
+        appId,
+        `#gear-menu-toggle-hidden-files:not([disabled])${
+            check ? ':not([checked])' : '[checked]'}`);
+
+    // Click the menu item.
+    await this.callRemoteTestUtil(
+        'fakeMouseClick', appId, ['#gear-menu-toggle-hidden-files']);
+  }
 }

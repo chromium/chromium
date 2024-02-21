@@ -912,6 +912,11 @@ export async function searchTrashedFiles() {
 
   // Search for all files with "hello" in their name.
   await remoteCall.typeSearchText(appId, 'hello');
+  // Confirm that we cannot find it because these files are under .Trash which
+  // won't be shown unless "Show hidden files" is on.
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([]));
+  // Turn on "Show hidden files" in the menu.
+  await remoteCall.showHiddenFiles(appId);
   // Confirm that we can find it. We also expect trashinfo file to appear.
   const helloTrashinfo = ENTRIES.hello.cloneWith({
     nameText: 'hello.txt.trashinfo',

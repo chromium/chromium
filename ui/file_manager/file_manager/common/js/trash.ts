@@ -36,7 +36,7 @@ import {RootType, VolumeType} from './volume_manager_types.js';
  */
 export class TrashConfig {
   /**
-   * The id represetngin this specific TrashConfig.
+   * The id representing this specific TrashConfig.
    */
   readonly id: string;
 
@@ -51,7 +51,7 @@ export class TrashConfig {
  * Volumes supported for Trash, and location of Trash dir. Items will be
  * searched in order.
  */
-const TRASH_CONFIG = [
+export const TRASH_CONFIG = [
   // MyFiles/Downloads is a separate volume on a physical device, and doing a
   // move from MyFiles/Downloads/<path> to MyFiles/.Trash actually does a
   // copy across volumes, so we have a dedicated MyFiles/Downloads/.Trash.

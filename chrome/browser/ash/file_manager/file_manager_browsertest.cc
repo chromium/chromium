@@ -2238,6 +2238,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .NewDirectoryTree(),
         TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour")
             .NewDirectoryTree(),
+        TestCase("trashTogglingHiddenFilesNavigatesAwayFromTrash")
+            .NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("trashMoveToTrash")
             .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
@@ -2287,7 +2289,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot"),
         TestCase("trashExtractAllForZipHiddenAndDisabledInTrashRoot"),
         TestCase("trashAllActionsDisabledForBlankSpaceInTrashRoot"),
-        TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour")));
+        TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour"),
+        TestCase("trashTogglingHiddenFilesNavigatesAwayFromTrash")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */
