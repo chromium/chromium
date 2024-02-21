@@ -92,9 +92,9 @@ notes = 'Grepped for `\bunsafe\b` - there were no hits'
 
 [[audits.base64]]
 who = "Adam Langley <agl@chromium.org>"
-criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"],
+criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "0.13.1"
-notes = 'Skimmed the uses of `std` to ensure that nothing untoward is happening. Code uses `forbid(unsafe_code)` and, indeed, there are no uses of `unsafe`'
+notes = "Skimmed the uses of `std` to ensure that nothing untoward is happening. Code uses `forbid(unsafe_code)` and, indeed, there are no uses of `unsafe`"
 
 [[audits.bitflags]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
