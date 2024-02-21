@@ -123,6 +123,9 @@ public class UrlConstants {
     public static final String MANAGEMENT_HOST = "management";
     public static final String MANAGEMENT_URL = "chrome://management/";
 
+    /* Host used for PDF native pages. */
+    public static final String PDF_HOST = "pdf";
+
     private static class Holder {
         private static final String SERIALIZED_NTP_URL =
                 "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
