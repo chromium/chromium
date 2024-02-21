@@ -88,6 +88,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Video Conference Tray"/>
 </enum>
 
+<enum name="CalibrationResult">
+  <int value="0" label="CalibFailedUsePreviousValue">
+    Use the previous calibration value due to boot time calibration failed.
+  </int>
+  <int value="1" label="NewCalibrationValue">
+    Use the new calibration value.
+  </int>
+  <int value="2" label="LargeCalibrationDiff">
+    Calibration value is not within the speaker acceptance range and use the
+    previous calibration value
+  </int>
+  <int value="3" label="UsePreviousValue">
+    Use the previous calibration value as the diff is small
+  </int>
+</enum>
+
 <enum name="CrasA2dpExitCode">
   <summary>
     List of codes to indicate why Bluetooth A2DP audio session exits the
@@ -1031,6 +1047,25 @@ chromium-metrics-reviews@google.com.
 <enum name="InternalSoundcardStatus">
   <int value="0" label="Not detected"/>
   <int value="1" label="Detected"/>
+</enum>
+
+<enum name="SoundCardInitResult">
+  <int value="0" label="OK">amp.boot_time_calibration() returns ok.</int>
+  <int value="1" label="AlsaCardError"/>
+  <int value="2" label="AlsaControlError"/>
+  <int value="3" label="AlsaControlTLVError"/>
+  <int value="4" label="Cs35l41Error"/>
+  <int value="5" label="DSMError"/>
+  <int value="6" label="Max98373Error"/>
+  <int value="7" label="Max98390Error"/>
+  <int value="8" label="SerdeJsonError"/>
+  <int value="9" label="SerdeYamlError"/>
+  <int value="10" label="UnsupportedAmp"/>
+</enum>
+
+<enum name="SoundCardInitWaitForSpeaker">
+  <int value="0" label="OK">OK.</int>
+  <int value="1" label="Error">Error.</int>
 </enum>
 
 <enum name="StreamEffectState">
