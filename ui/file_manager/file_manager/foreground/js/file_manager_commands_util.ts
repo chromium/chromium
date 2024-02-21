@@ -19,7 +19,7 @@ import type {CommandHandlerDeps} from './command_handler.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {FileSelection} from './file_selection.js';
 import type {MetadataKey} from './metadata/metadata_item.js';
-import type {Command} from './ui/command.js';
+import type {CanExecuteEvent, Command, CommandEvent} from './ui/command.js';
 import type {DirectoryItem} from './ui/directory_tree.js';
 import {List} from './ui/list.js';
 import type {Menu} from './ui/menu.js';
@@ -72,10 +72,6 @@ function isTreeItem(element: XfTree|Tree|XfTreeItem|DirectoryItem|TreeItem|
   return true;
 }
 
-interface CommandEvent extends Event {
-  canExecute: boolean;
-  command: Command;
-}
 
 /**
  * Helper function that for the given event returns the launch source of the
@@ -223,7 +219,7 @@ export function getElementVolumeInfo(
  * on any visible volume.
  */
 export function canExecuteVisibleOnDriveInNormalAppModeOnly(
-    event: CommandEvent, fileManager: CommandHandlerDeps) {
+    event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
   const enabled = fileManager.directoryModel.isOnDrive() &&
       !isModal(fileManager.dialogType);
   event.canExecute = enabled;
@@ -236,7 +232,7 @@ export function canExecuteVisibleOnDriveInNormalAppModeOnly(
  * of original keyboard event and the command. WebKit would handle it
  * differently in some cases.
  */
-export function forceDefaultHandler(node: Node, commandId: string) {
+export function forceDefaultHandler(node: HTMLElement, commandId: string) {
   const doc = node.ownerDocument!;
   const command =
       doc.body.querySelector<Command>('command[id="' + commandId + '"]')!;
@@ -245,16 +241,16 @@ export function forceDefaultHandler(node: Node, commandId: string) {
       e.stopPropagation();
     }
   });
-  node.addEventListener('command', ((event: CommandEvent) => {
-                                     if (event.command.id !== commandId) {
-                                       return;
-                                     }
-                                     document.execCommand(event.command.id);
-                                     event.cancelBubble = true;
-                                   }) as EventListener);
+  node.addEventListener('command', (event: CommandEvent) => {
+    if (event.detail.command.id !== commandId) {
+      return;
+    }
+    document.execCommand(event.detail.command.id);
+    event.cancelBubble = true;
+  });
   node.addEventListener(
       'canExecute',
-      ((event: CommandEvent) => {
+      ((event: CanExecuteEvent) => {
         if (event.command.id !== commandId || event.target !== node) {
           return;
         }
