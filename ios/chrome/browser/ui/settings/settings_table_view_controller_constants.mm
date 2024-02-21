@@ -73,3 +73,4 @@ NSString* const kSettingsTabPickupCellId = @"kSettingsTabPickupCellId";
 NSString* const kSettingsPrivacyGuideCellId = @"kSettingsPrivacyGuideCellId";
 NSString* const kSettingsDetectUnitsCellId = @"kSettingsDetectUnitsCellId";
 NSString* const kSettingsSafetyCheckCellId = @"SettingsSafetyCheckCellId";
+NSString* const kSettingsPlusAddressesId = @"kSettingsPlusAddressesId";

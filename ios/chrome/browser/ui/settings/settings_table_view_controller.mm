@@ -24,6 +24,7 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/plus_addresses/features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
@@ -65,7 +66,9 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -271,6 +274,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   TableViewDetailIconItem* _autoFillProfileDetailItem;
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
+  TableViewDetailIconItem* _plusAddressesItem;
   TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
@@ -511,6 +515,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+
+  if (base::FeatureList::IsEnabled(plus_addresses::features::kFeature)) {
+    _plusAddressesItem = [self plusAddressesItem];
+    [model addItem:_plusAddressesItem
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  }
 
   // Feed is disabled in safe mode.
   SceneState* sceneState = _browser->GetSceneState();
@@ -954,6 +964,18 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                            symbol:DefaultSettingsRootSymbol(kBellSymbol)
             symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
           accessibilityIdentifier:kSettingsNotificationsId];
+}
+
+- (TableViewDetailIconItem*)plusAddressesItem {
+  NSString* title = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
+  // TODO(crbug.com/1467623): Add icon and finalize display as requirements
+  // solidify.
+  return [self detailItemWithType:SettingsItemTypePlusAddresses
+                             text:title
+                       detailText:nil
+                           symbol:nil
+            symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
+          accessibilityIdentifier:kSettingsPlusAddressesId];
 }
 
 - (TableViewItem*)privacyDetailItem {
@@ -1439,6 +1461,15 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           pushViewController:[[TableCellCatalogViewController alloc] init]
                     animated:YES];
       break;
+    case SettingsItemTypePlusAddresses: {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:
+              GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
+      id<ApplicationCommands> handler = HandlerForProtocol(
+          _browser->GetCommandDispatcher(), ApplicationCommands);
+      [handler closeSettingsUIAndOpenURL:command];
+      break;
+    }
     default:
       break;
   }

@@ -51,6 +51,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeDefaultBrowser,
   SettingsItemTypeSigninDisabled,
   SettingsItemTypeTabs,
+  SettingsItemTypePlusAddresses,
 };
 
 // The accessibility identifier of the settings TableView.
@@ -201,5 +202,8 @@ extern NSString* const kSettingsPrivacyGuideCellId;
 
 // The accessibility identifier of the Detect Units cell.
 extern NSString* const kSettingsDetectUnitsCellId;
+
+// The accessibility identifier of the plus addresses setting.
+extern NSString* const kSettingsPlusAddressesId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_
