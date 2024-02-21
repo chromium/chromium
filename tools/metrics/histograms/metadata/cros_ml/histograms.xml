@@ -157,8 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcBeginInstallDlcServiceError"
-    enum="MachineLearningServiceDlcBeginInstallResult"
-    expires_after="2024-09-01">
+    enum="MachineLearningServiceDlcErrorCode" expires_after="2024-09-01">
   <owner>amoylan@chromium.org</owner>
   <owner>dgrebenyuk@chromium.org</owner>
   <owner>nbowe@chromium.org</owner>
@@ -182,8 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcFinalInstallDlcServiceError"
-    enum="MachineLearningServiceDlcFinalInstallResult"
-    expires_after="2024-09-01">
+    enum="MachineLearningServiceDlcErrorCode" expires_after="2024-09-01">
   <owner>amoylan@chromium.org</owner>
   <owner>dgrebenyuk@chromium.org</owner>
   <owner>nbowe@chromium.org</owner>
