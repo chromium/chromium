@@ -6415,24 +6415,6 @@
             ]
         }
     ],
-    "EnableOOPVDDisableVAAPILock": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "OOPVDAndVaapiLockDisabled_20230420",
-                    "enable_features": [
-                        "UseOutOfProcessVideoDecoding"
-                    ],
-                    "disable_features": [
-                        "GlobalVaapiLock"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableOneTapForMaps": [
         {
             "platforms": [
