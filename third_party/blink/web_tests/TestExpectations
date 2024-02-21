@@ -6583,10 +6583,6 @@ crbug.com/1471020 http/tests/devtools/network/request-name-path.js [ Failure Pas
 # Gardner 2023-08-10
 crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging.js [ Failure Pass ]
 
-
-
-crbug.com/1367789 [ Win10.20h2 ] external/wpt/orientation-event/motion/page-visibility.https.html [ Timeout ]
-
 # Gardener 2023-08-24
 crbug.com/1475824 [ Mac10.15 ] external/wpt/fetch/api/basic/scheme-blob.sub.any.html [ Failure Pass ]
 crbug.com/1475824 [ Mac10.15 ] external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html [ Failure Pass ]

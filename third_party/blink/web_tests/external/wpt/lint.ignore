@@ -388,7 +388,6 @@ SET TIMEOUT: html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.ht
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/crbug-583445-regression.window.js
 SET TIMEOUT: html/webappapis/timers/*
-SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js
 SET TIMEOUT: portals/history/resources/portal-harness.js
 SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
 SET TIMEOUT: resources/*

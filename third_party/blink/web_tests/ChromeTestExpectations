@@ -885,7 +885,6 @@ crbug.com/1485918 external/wpt/layout-instability/pointerdown-becomes-scroll.htm
 crbug.com/1485918 external/wpt/layout-instability/pointerdown-becomes-tap.html [ Failure ]
 crbug.com/1485918 external/wpt/mathml/relations/css-styling/display-2.html [ Failure ]
 crbug.com/1485918 external/wpt/navigation-api/navigate-event/navigation-traverseTo-in-iframe-same-document-preventDefault.html [ Crash Failure ]
-crbug.com/1485918 external/wpt/orientation-event/device-orientation-events-unavailable-on-insecure-origins.html [ Failure ]
 crbug.com/1485918 external/wpt/orientation-sensor/AbsoluteOrientationSensor.https.html [ Skip Timeout ]
 crbug.com/1485918 external/wpt/orientation-sensor/RelativeOrientationSensor.https.html [ Skip Timeout ]
 crbug.com/1485918 external/wpt/payment-handler/can-make-payment-event.https.html [ Failure ]
