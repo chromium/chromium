@@ -197,7 +197,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
 
     // Using a raw pointer is safe since the OC instance will outlive this
     // object.
-    WebRtcAudioRenderer* const renderer_;
+    const raw_ptr<WebRtcAudioRenderer> renderer_;
 
     // Stores when the timer starts. Used to calculate the stream duration.
     const base::TimeTicks start_time_;

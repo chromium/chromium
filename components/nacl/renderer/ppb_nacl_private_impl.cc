@@ -24,6 +24,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1660,8 +1661,8 @@ class PexeDownloader : public blink::WebAssociatedURLLoaderClient {
   std::string pexe_url_;
   int32_t pexe_opt_level_;
   bool use_subzero_;
-  const PPP_PexeStreamHandler* stream_handler_;
-  void* stream_handler_user_data_;
+  raw_ptr<const PPP_PexeStreamHandler> stream_handler_;
+  raw_ptr<void> stream_handler_user_data_;
   bool success_;
   int64_t expected_content_length_;
   base::WeakPtrFactory<PexeDownloader> weak_factory_{this};

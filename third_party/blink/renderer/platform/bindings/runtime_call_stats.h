@@ -109,11 +109,11 @@ class PLATFORM_EXPORT RuntimeCallTimer {
 
   bool IsRunning() { return start_ticks_ != base::TimeTicks(); }
 
-  RuntimeCallCounter* counter_;
-  RuntimeCallTimer* parent_;
+  raw_ptr<RuntimeCallCounter> counter_;
+  raw_ptr<RuntimeCallTimer> parent_;
   base::TimeTicks start_ticks_;
   base::TimeDelta elapsed_time_;
-  const base::TickClock* clock_ = nullptr;
+  raw_ptr<const base::TickClock> clock_ = nullptr;
 };
 
 // Macros that take RuntimeCallStats as a parameter; used only in

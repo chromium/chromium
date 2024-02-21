@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -163,7 +164,7 @@ class NexeLoadManager {
   int64_t nexe_size_;
 
   // Non-owning.
-  content::PepperPluginInstance* plugin_instance_;
+  raw_ptr<content::PepperPluginInstance> plugin_instance_;
 
   // The URL for the document corresponding to this plugin instance.
   GURL plugin_base_url_;

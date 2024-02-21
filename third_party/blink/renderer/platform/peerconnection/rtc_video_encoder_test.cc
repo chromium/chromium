@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1283,12 +1284,12 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
         const webrtc::CodecSpecificInfo* codec_specific_info) override {
       if (encoded_image._frameType == webrtc::VideoFrameType::kVideoFrameKey) {
         EXPECT_TRUE(codec_specific_info->codecSpecific.VP9.ss_data_available);
-        const size_t num_spatial_layers = codec_.VP9().numberOfSpatialLayers;
+        const size_t num_spatial_layers = codec_->VP9().numberOfSpatialLayers;
         const auto& vp9_specific = codec_specific_info->codecSpecific.VP9;
         EXPECT_EQ(vp9_specific.num_spatial_layers, num_spatial_layers);
         for (size_t i = 0; i < num_spatial_layers; ++i) {
-          EXPECT_EQ(vp9_specific.width[i], codec_.spatialLayers[i].width);
-          EXPECT_EQ(vp9_specific.height[i], codec_.spatialLayers[i].height);
+          EXPECT_EQ(vp9_specific.width[i], codec_->spatialLayers[i].width);
+          EXPECT_EQ(vp9_specific.height[i], codec_->spatialLayers[i].height);
         }
       }
 
@@ -1308,7 +1309,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
     void Wait() { waiter_.Wait(); }
 
    private:
-    const webrtc::VideoCodec& codec_;
+    const raw_ref<const webrtc::VideoCodec> codec_;
     base::WaitableEvent waiter_;
   };
   CodecSpecificVerifier sl_verifier(sl_codec);

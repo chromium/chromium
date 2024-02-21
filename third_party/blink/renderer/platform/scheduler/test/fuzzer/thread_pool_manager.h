@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
@@ -92,7 +93,7 @@ class PLATFORM_EXPORT ThreadPoolManager {
   void AdvanceThreadClock(ThreadManager* thread_manager);
 
   // Owner of this class.
-  SequenceManagerFuzzerProcessor* const processor_;
+  const raw_ptr<SequenceManagerFuzzerProcessor> processor_;
 
   // Used to protect all the members below.
   Lock lock_;

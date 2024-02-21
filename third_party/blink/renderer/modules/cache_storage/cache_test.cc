@@ -107,7 +107,7 @@ class ScopedFetcherForTests final
 
  private:
   uint32_t fetch_count_ = 0;
-  const String* expected_url_ = nullptr;
+  raw_ptr<const String> expected_url_ = nullptr;
   Member<Response> response_;
 };
 

@@ -53,15 +53,15 @@ void GeometryMapperTransformCache::Update(
       node.IsBackfaceHiddenInternal(parent.is_backface_hidden_);
 
   nearest_scroll_translation_ =
-      node.ScrollNode() ? &node : parent.nearest_scroll_translation_;
+      node.ScrollNode() ? &node : parent.nearest_scroll_translation_.get();
   scroll_translation_state_ = node.ScrollTranslationForFixed()
                                   ? node.ScrollTranslationForFixed()
-                                  : nearest_scroll_translation_;
+                                  : nearest_scroll_translation_.get();
 
   nearest_directly_composited_ancestor_ =
       node.HasDirectCompositingReasons()
           ? &node
-          : parent.nearest_directly_composited_ancestor_;
+          : parent.nearest_directly_composited_ancestor_.get();
 
   if (node.IsIdentityOr2dTranslation() && !node.HasActiveTransformAnimation()) {
     root_of_2d_translation_ = parent.root_of_2d_translation_;

@@ -33,9 +33,8 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
     DISALLOW_NEW();
 
    public:
-    // RAW_PTR_EXCLUSION: found prominently in profiled stack samples
-    // on Windows Dev.
-    //
+    // RAW_PTR_EXCLUSION: Performance reasons: based on this sampling profiler
+    // result on Windows Dev.
     // TODO(crbug.com/1489080): `ancestor_clip` was marked
     // `DanglingUntriaged` before being unrewritten.
     RAW_PTR_EXCLUSION const ClipPaintPropertyNode* ancestor_clip;

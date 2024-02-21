@@ -38,6 +38,7 @@
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -178,7 +179,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
     void operator()(char* p) const;
 
    private:
-    v8::Isolate* isolate_;
+    raw_ptr<v8::Isolate> isolate_;
     size_t size_;
   };
 

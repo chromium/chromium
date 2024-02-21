@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_FRAME_OR_WORKER_SCHEDULER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/strong_alias.h"
@@ -134,9 +135,9 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
         FrameOrWorkerScheduler::BFCacheBlockingFeatureAndLocations;
 
     struct BlockingDetails {
-      const BFCacheBlockingFeatureAndLocations&
+      const raw_ref<const BFCacheBlockingFeatureAndLocations>
           non_sticky_features_and_js_locations;
-      const BFCacheBlockingFeatureAndLocations&
+      const raw_ref<const BFCacheBlockingFeatureAndLocations>
           sticky_features_and_js_locations;
       BlockingDetails(BFCacheBlockingFeatureAndLocations& non_sticky,
                       BFCacheBlockingFeatureAndLocations& sticky)

@@ -237,8 +237,8 @@ class ConversionContext {
 
     // These fields are never nullptr.
     //
-    // Excluded from being `raw_ptr` for visible regressions in
-    // MotionMark (crbug.com/1495275#c116).
+    // RAW_PTR_EXCLUSION: Performance reasons: regressions in MotionMark
+    // (crbug.com/1495275#c116).
     RAW_PTR_EXCLUSION const TransformPaintPropertyNode* transform;
     RAW_PTR_EXCLUSION const ClipPaintPropertyNode* clip;
     RAW_PTR_EXCLUSION const EffectPaintPropertyNode* effect;

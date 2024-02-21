@@ -5,6 +5,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 
 #include "base/memory/raw_ptr.h"
@@ -407,7 +408,7 @@ TEST_F(FormCacheBrowserTest, ExtractFormsAfterModification) {
 }
 
 struct FillElementData {
-  blink::WebFormControlElement& element;
+  const raw_ref<blink::WebFormControlElement> element;
   std::u16string value;
 };
 
@@ -432,7 +433,7 @@ void FillAndCheckState(
   FormData values_to_fill = form_data;
   for (const FillElementData& field_to_fill : form_to_fill) {
     FormFieldData* value_to_fill = FindFieldByName(
-        values_to_fill, field_to_fill.element.NameForAutofill());
+        values_to_fill, field_to_fill.element->NameForAutofill());
     ASSERT_TRUE(value_to_fill != nullptr);
     value_to_fill->value = field_to_fill.value;
     value_to_fill->is_autofilled = true;
@@ -456,7 +457,7 @@ void FillAndCheckState(
       mojom::ActionPersistence::kFill, field_data_manager);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
-    EXPECT_EQ(field_to_fill.value, field_to_fill.element.Value().Utf16());
+    EXPECT_EQ(field_to_fill.value, field_to_fill.element->Value().Utf16());
   }
 
   if (checkbox_element) {
@@ -492,9 +493,9 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   auto selectlist_element = GetFormControlElementById(doc, "selectlist");
 
   FillAndCheckState(forms.updated_forms[0], GetFieldDataManager(), text,
-                    {{text, u"test"},
-                     {select_element, u"first"},
-                     {selectlist_element, u"uno"}});
+                    {{raw_ref(text), u"test"},
+                     {raw_ref(select_element), u"first"},
+                     {raw_ref(selectlist_element), u"uno"}});
 
   // Validate that clearing works, in particular that the previous values
   // were saved correctly.

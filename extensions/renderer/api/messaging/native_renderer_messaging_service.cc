@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -238,7 +239,7 @@ class NativeRendererMessagingService::RenderFrameMessagePorts
 
  private:
   // Safe raw ptr since this object is UserData owned by RenderFrame itself.
-  content::RenderFrame* render_frame_;
+  raw_ptr<content::RenderFrame> render_frame_;
 };
 
 NativeRendererMessagingService::NativeRendererMessagingService(

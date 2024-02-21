@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -550,8 +551,8 @@ class BackgroundURLLoader::Context
   Deque<CrossThreadOnceFunction<void(void)>> tasks_ GUARDED_BY(tasks_lock_);
   base::Lock tasks_lock_;
 
-  URLLoaderClient* client_ GUARDED_BY_CONTEXT(main_thread_sequence_checker_) =
-      nullptr;
+  raw_ptr<URLLoaderClient> client_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = nullptr;
   KURL url_ GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
   bool has_devtools_request_id_
       GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = false;

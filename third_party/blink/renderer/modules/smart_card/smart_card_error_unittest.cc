@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_error.h"
+#include "base/memory/raw_ref.h"
 #include "services/device/public/mojom/smart_card.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -21,12 +22,12 @@ class PromiseRejectedFunction : public ScriptFunction::Callable {
   explicit PromiseRejectedFunction(bool& result) : result_(result) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    result_ = true;
+    *result_ = true;
     return ScriptValue();
   }
 
  private:
-  bool& result_;
+  const raw_ref<bool> result_;
 };
 
 TEST(SmartCardError, RejectWithoutScriptStateScope) {

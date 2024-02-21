@@ -103,14 +103,14 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
     }
 
    private:
-    PageScheduler* page_scheduler_ = nullptr;
+    raw_ptr<PageScheduler> page_scheduler_ = nullptr;
     bool is_page_visible_ = false;
     bool is_frame_visible_ = false;
     FrameScheduler::FrameType frame_type_ =
         FrameScheduler::FrameType::kMainFrame;
     bool is_cross_origin_to_nearest_main_frame_ = false;
     bool is_exempt_from_throttling_ = false;
-    FrameScheduler::Delegate* delegate_ = nullptr;
+    raw_ptr<FrameScheduler::Delegate> delegate_ = nullptr;
   };
 
   // FrameScheduler implementation:

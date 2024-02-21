@@ -752,8 +752,8 @@ class HeaderAndFooterContext {
 
   HeaderAndFooterClient frame_client_;
   blink::WebNonCompositedWidgetClient widget_client_;
-  blink::WebView* const web_view_;
-  blink::WebLocalFrame* const frame_;
+  const raw_ptr<blink::WebView, DanglingUntriaged> web_view_;
+  const raw_ptr<blink::WebLocalFrame> frame_;
 };
 
 }  // namespace

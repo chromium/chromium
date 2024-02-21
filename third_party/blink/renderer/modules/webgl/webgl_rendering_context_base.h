@@ -1079,9 +1079,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
    private:
-    // `extension_field_` is not a `raw_ref` because `Member<T>` denotes
-    // a type managed by Oilpan, i.e. memory that is not managed by
+    // RAW_PTR_EXCLUSION: `Member<T>` denotes a type managed by Oilpan, and is
+    // contained in a type managed by Oilpan, i.e. not managed by
     // PartitionAlloc.
+    // TODO(crbug/325359457): Make it non-reference.
     RAW_PTR_EXCLUSION Member<T>& extension_field_;
     // ExtensionTracker holds it's own reference to the extension to ensure
     // that it is not deleted before this object's destructor is called

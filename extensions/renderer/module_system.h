@@ -69,7 +69,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
     ~NativesEnabledScope();
 
    private:
-    ModuleSystem* module_system_;
+    raw_ptr<ModuleSystem> module_system_;
   };
 
   // |source_map| is a weak pointer.

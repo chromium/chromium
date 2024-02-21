@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -83,7 +84,7 @@ class RTCEncodedVideoStreamTransformerTest
             new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
         metronome_(GetParam() ? new NiceMock<MockMetronome>() : nullptr),
         encoded_video_stream_transformer_(main_task_runner_,
-                                          absl::WrapUnique(metronome_)) {}
+                                          absl::WrapUnique(metronome_.get())) {}
 
   void SetUp() override {
     EXPECT_FALSE(
@@ -119,7 +120,7 @@ class RTCEncodedVideoStreamTransformerTest
   scoped_refptr<base::SingleThreadTaskRunner> webrtc_task_runner_;
   rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
   MockTransformerCallbackHolder mock_transformer_callback_holder_;
-  MockMetronome* metronome_;
+  raw_ptr<MockMetronome, DanglingUntriaged> metronome_;
   RTCEncodedVideoStreamTransformer encoded_video_stream_transformer_;
 };
 

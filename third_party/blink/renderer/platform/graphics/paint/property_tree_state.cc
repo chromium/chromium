@@ -133,7 +133,8 @@ std::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
 }
 
 String PropertyTreeStateOrAlias::ToString() const {
-  return String::Format("t:%p c:%p e:%p", transform_, clip_, effect_);
+  return String::Format("t:%p c:%p e:%p", transform_.get(), clip_.get(),
+                        effect_.get());
 }
 
 #if DCHECK_IS_ON()

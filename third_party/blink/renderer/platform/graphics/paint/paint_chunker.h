@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -125,7 +126,7 @@ class PLATFORM_EXPORT PaintChunker final {
 
   void FinalizeLastChunkProperties();
 
-  Vector<PaintChunk>* chunks_ = nullptr;
+  raw_ptr<Vector<PaintChunk>> chunks_ = nullptr;
   WeakPersistent<HeapVector<Member<const DisplayItemClient>>>
       clients_to_validate_ = nullptr;
   // The id specified by UpdateCurrentPaintChunkProperties(). If it is not

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_PIPELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_PIPELINE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_stage.h"
@@ -27,7 +28,7 @@ struct OwnedVertexState : OwnedProgrammableStage {
 
   // Points to OwnedRenderPipelineDescriptor::dawn_desc::vertex as it's a
   // non-pointer member of WGPURenderPipelineDescriptor
-  WGPUVertexState* dawn_desc = nullptr;
+  raw_ptr<WGPUVertexState> dawn_desc = nullptr;
   std::unique_ptr<WGPUVertexBufferLayout[]> buffers;
   std::unique_ptr<std::unique_ptr<WGPUVertexAttribute[]>[]> attributes;
 };

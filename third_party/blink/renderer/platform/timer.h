@@ -150,7 +150,7 @@ class TaskRunnerTimer : public TimerBase {
   void Fired() override { (object_->*function_)(this); }
 
  private:
-  TimerFiredClass* object_;
+  raw_ptr<TimerFiredClass> object_;
   TimerFiredFunction function_;
 };
 
