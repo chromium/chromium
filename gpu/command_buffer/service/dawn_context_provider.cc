@@ -26,6 +26,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
+#include "gpu/config/gpu_util.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
@@ -304,6 +305,12 @@ bool DawnContextProvider::Initialize(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
         gl::QueryD3D11DeviceObjectFromANGLE();
     CHECK(d3d11_device) << "Query d3d11 device from ANGLE failed.";
+
+    static crash_reporter::CrashKeyString<16> feature_level_key(
+        "d3d11-feature-level");
+    std::string feature_level =
+        D3DFeatureLevelToString(d3d11_device->GetFeatureLevel());
+    feature_level_key.Set(feature_level.c_str());
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
     d3d11_device->GetImmediateContext(&d3d11_device_context);
