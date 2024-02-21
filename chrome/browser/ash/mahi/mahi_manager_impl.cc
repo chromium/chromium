@@ -7,12 +7,16 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <vector>
 
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
@@ -34,6 +38,14 @@ void MahiManagerImpl::OpenMahiPanel(int64_t display_id) {
   mahi_panel_widget_->Show();
 }
 
+std::u16string MahiManagerImpl::GetContentTitle() {
+  return u"test content title";
+}
+
+gfx::ImageSkia MahiManagerImpl::GetContentIcon() {
+  return gfx::ImageSkia();
+}
+
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
   auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
                                         ->crosapi_ash()
@@ -43,6 +55,27 @@ void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
       current_page_info_->client_id, current_page_info_->page_id,
       base::BindOnce(&MahiManagerImpl::OnGetPageContent,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MahiManagerImpl::GetOutlines(MahiOutlinesCallback callback) {
+  std::vector<chromeos::MahiOutline> outlines;
+  for (int i = 0; i < 5; i++) {
+    outlines.emplace_back(
+        chromeos::MahiOutline(i, u"Outline " + base::NumberToString16(i)));
+  }
+  std::move(callback).Run(outlines);
+}
+
+void MahiManagerImpl::GoToOutlineContent(int outline_id) {}
+
+void MahiManagerImpl::AnswerQuestion(const std::string& question,
+                                     MahiAnswerQuestionCallback callback) {
+  std::move(callback).Run(u"test answer");
+}
+
+void MahiManagerImpl::GetSuggestedQuestion(
+    MahiGetSuggestedQuestionCallback callback) {
+  std::move(callback).Run(u"test suggested question");
 }
 
 void MahiManagerImpl::SetCurrentFocusedPageInfo(
@@ -66,6 +99,13 @@ void MahiManagerImpl::OnContextMenuClicked(
       return;
     case MahiContextMenuActionType::kNone:
       return;
+  }
+}
+
+void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
+  auto* mahi_widget = static_cast<MahiPanelWidget*>(mahi_panel_widget_.get());
+  if (mahi_widget) {
+    mahi_widget->SetRefreshViewVisible(/*visible=*/available);
   }
 }
 

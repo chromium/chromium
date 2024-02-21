@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace chromeos {
 
@@ -21,8 +22,16 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) FakeMahiManager : public MahiManager {
   ~FakeMahiManager() override = default;
 
   // MahiManager:
+  std::u16string GetContentTitle() override;
+  gfx::ImageSkia GetContentIcon() override;
   void GetSummary(MahiSummaryCallback callback) override;
   void OpenMahiPanel(int64_t display_id) override {}
+  void GetOutlines(MahiOutlinesCallback callback) override {}
+  void GoToOutlineContent(int outline_id) override {}
+  void AnswerQuestion(const std::string& question,
+                      MahiAnswerQuestionCallback callback) override {}
+  void GetSuggestedQuestion(
+      MahiGetSuggestedQuestionCallback callback) override {}
   void SetCurrentFocusedPageInfo(
       crosapi::mojom::MahiPageInfoPtr info) override {}
   void OnContextMenuClicked(

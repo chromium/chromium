@@ -6,11 +6,8 @@
 #define ASH_SYSTEM_MAHI_MAHI_PANEL_WIDGET_H_
 
 #include "ash/ash_export.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
-
-namespace views {
-class UniqueWidgetPtr;
-}  // namespace views
 
 namespace ash {
 
@@ -19,8 +16,18 @@ namespace ash {
 // closing capability is added.
 class ASH_EXPORT MahiPanelWidget : public views::Widget {
  public:
+  explicit MahiPanelWidget(InitParams params);
+
+  MahiPanelWidget(const MahiPanelWidget&) = delete;
+  MahiPanelWidget& operator=(const MahiPanelWidget&) = delete;
+
+  ~MahiPanelWidget() override;
+
   // Creates the Mahi panel widget within the display with `display_id`.
   static views::UniqueWidgetPtr CreatePanelWidget(int64_t display_id);
+
+  // Shows/hides the refresh UI in the panel.
+  void SetRefreshViewVisible(bool visible);
 };
 
 }  // namespace ash

@@ -39,6 +39,11 @@ gfx::Rect CalculateWidgetBounds(aura::Window* root_window) {
 
 }  // namespace
 
+MahiPanelWidget::MahiPanelWidget(InitParams params)
+    : views::Widget(std::move(params)) {}
+
+MahiPanelWidget::~MahiPanelWidget() = default;
+
 // static
 views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
   auto* root_window = Shell::GetRootWindowForDisplayId(display_id);
@@ -54,11 +59,15 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
   params.layer_type = ui::LAYER_NOT_DRAWN;
 
   views::UniqueWidgetPtr widget =
-      std::make_unique<views::Widget>(std::move(params));
+      std::make_unique<MahiPanelWidget>(std::move(params));
 
   widget->SetContentsView(std::make_unique<MahiPanelView>());
   widget->SetBounds(CalculateWidgetBounds(root_window));
   return widget;
+}
+
+void MahiPanelWidget::SetRefreshViewVisible(bool visible) {
+  // TODO(b/319731624): Finish this function.
 }
 
 }  // namespace ash

@@ -7,8 +7,17 @@
 #include <algorithm>
 
 #include "base/functional/callback.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace chromeos {
+
+std::u16string FakeMahiManager::GetContentTitle() {
+  return u"fake content title";
+}
+
+gfx::ImageSkia FakeMahiManager::GetContentIcon() {
+  return gfx::ImageSkia();
+}
 
 void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
   std::move(callback).Run(summary_text_);
