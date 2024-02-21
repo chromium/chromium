@@ -83,6 +83,7 @@ source_set("connections_types") {
   ]
   public_deps = [
     ":connections_enums_proto",
+    ":interop_authentication_status",
     ":platform_base",
     ":platform_public_comm",
     ":platform_public_logging",
@@ -188,6 +189,8 @@ source_set("connections_implementation") {
     ":connections_implementation_mediums",
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
+    ":interop_authentication_status",
+    ":interop_authentication_transport_interface",
     ":interop_device",
     ":offline_wire_formats_proto",
     ":platform_base",
@@ -493,7 +496,7 @@ source_set("flags") {
 }
 
 # src/internal/interop
-source_set("authentication_transport_interface") {
+source_set("interop_authentication_transport_interface") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
@@ -514,10 +517,21 @@ source_set("interop_device") {
     "src/internal/interop/device_provider.h",
   ]
   public_deps = [
-    ":authentication_transport_interface",
+    ":interop_authentication_status",
+    ":interop_authentication_transport_interface",
     ":platform_base_connection_info",
     "//third_party/abseil-cpp:absl",
   ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+source_set("interop_authentication_status") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [ "src/internal/interop/authentication_status.h" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -614,11 +628,10 @@ source_set("platform_base") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
+
   # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
   # absl::HexStringToBytes have been removed.
-  cflags = [
-    "-Wno-deprecated-declarations",
-  ]
+  cflags = [ "-Wno-deprecated-declarations" ]
   sources = [
     "src/internal/platform/base64_utils.cc",
     "src/internal/platform/bluetooth_utils.cc",
@@ -903,10 +916,12 @@ source_set("presence") {
     "src/presence/presence_service_impl.h",
   ]
   public_deps = [
-    ":authentication_transport_interface",
     ":connections_local_credential_proto",
     ":connections_metadata_proto",
+    ":interop_authentication_status",
+    ":interop_authentication_transport_interface",
     ":interop_device",
+    ":platform_api_comm",
     ":platform_api_types",
     ":platform_base",
     ":platform_base_logging",
@@ -989,7 +1004,7 @@ source_set("presence_internal") {
     "src/presence/implementation/advertisement_factory.cc",
     "src/presence/implementation/base_broadcast_request.cc",
     "src/presence/implementation/broadcast_manager.cc",
-    "src/presence/implementation/connection_authenticator.cc",
+    "src/presence/implementation/connection_authenticator_impl.cc",
     "src/presence/implementation/credential_manager_impl.cc",
     "src/presence/implementation/ldt.cc",
     "src/presence/implementation/scan_manager.cc",
@@ -1002,6 +1017,7 @@ source_set("presence_internal") {
     "src/presence/implementation/base_broadcast_request.h",
     "src/presence/implementation/broadcast_manager.h",
     "src/presence/implementation/connection_authenticator.h",
+    "src/presence/implementation/connection_authenticator_impl.h",
     "src/presence/implementation/credential_manager.h",
     "src/presence/implementation/credential_manager_impl.h",
     "src/presence/implementation/ldt.h",
