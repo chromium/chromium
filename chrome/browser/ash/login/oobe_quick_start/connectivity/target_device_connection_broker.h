@@ -230,6 +230,11 @@ class TargetDeviceConnectionBroker {
   std::vector<FeatureSupportStatusCallback> feature_status_callbacks_;
 };
 
+std::ostream& operator<<(
+    std::ostream& stream,
+    const TargetDeviceConnectionBroker::ConnectionClosedReason&
+        connection_closed_reason);
+
 }  // namespace ash::quick_start
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
