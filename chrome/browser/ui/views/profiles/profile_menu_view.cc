@@ -498,7 +498,9 @@ void ProfileMenuView::BuildIdentity() {
 // Profile names are not supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   profile_name = profile_attributes->GetLocalProfileName();
-  if (!web_app::AppBrowserController::IsWebApp(browser())) {
+  if (!web_app::AppBrowserController::IsWebApp(browser()) &&
+      !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
     edit_button_params = EditButtonParams(
         features::IsChromeRefresh2023() ? &kEditChromeRefreshIcon
                                         : &vector_icons::kEditIcon,
@@ -707,6 +709,15 @@ void ProfileMenuView::BuildSyncInfo() {
 }
 
 void ProfileMenuView::BuildFeatureButtons() {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
+    AddFeatureButton(
+        l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
+        base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
+                            base::Unretained(this)),
+        vector_icons::kEditChromeRefreshIcon);
+  }
+
   Profile* profile = browser()->profile();
   bool has_unconsented_account = HasUnconstentedProfile(profile);
   if (has_unconsented_account && !IsSyncPaused(profile)) {
