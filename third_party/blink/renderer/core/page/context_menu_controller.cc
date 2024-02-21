@@ -43,7 +43,6 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -90,6 +89,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 
 namespace blink {
@@ -118,12 +118,15 @@ void SetPasswordManagerData(Element* element, ContextMenuData& data) {
     const AtomicString& id = input->GetIdAttribute();
     const AtomicString& name = input->GetNameAttribute();
 
-    // TODO(crbug.com/1504626): This should be generic V8PerIsolateData.
-    DEFINE_STATIC_LOCAL(Persistent<ScriptRegexp>, passwordRegexp,
-                        (MakeGarbageCollected<ScriptRegexp>(
-                            element->GetDocument().GetAgent().isolate(),
-                            kPasswordRe, kTextCaseUnicodeInsensitive)));
+    auto* isolate = element->GetDocument().GetAgent().isolate();
+    auto* per_isolate_data = V8PerIsolateData::From(isolate);
+    if (!per_isolate_data->GetPasswordRegexp()) {
+      per_isolate_data->SetPasswordRegexp(MakeGarbageCollected<ScriptRegexp>(
+          element->GetDocument().GetAgent().isolate(), kPasswordRe,
+          kTextCaseUnicodeInsensitive));
+    }
 
+    auto* password_regexp = per_isolate_data->GetPasswordRegexp();
     data.is_password_type_by_heuristics =
         (data.form_control_type == mojom::blink::FormControlType::kInputText ||
          data.form_control_type == mojom::blink::FormControlType::kInputEmail ||
@@ -131,8 +134,8 @@ void SetPasswordManagerData(Element* element, ContextMenuData& data) {
              mojom::blink::FormControlType::kInputSearch ||
          data.form_control_type == mojom::blink::FormControlType::kInputUrl ||
          data.form_control_type == mojom::blink::FormControlType::kTextArea) &&
-        (passwordRegexp->Match(id.GetString()) >= 0 ||
-         passwordRegexp->Match(name.GetString()) >= 0 ||
+        (password_regexp->Match(id.GetString()) >= 0 ||
+         password_regexp->Match(name.GetString()) >= 0 ||
          input->HasBeenPasswordField());
   }
 }

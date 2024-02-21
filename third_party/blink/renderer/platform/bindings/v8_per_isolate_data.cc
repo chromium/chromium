@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -395,6 +396,14 @@ void V8PerIsolateData::SetCanvasResourceTracker(
 V8PerIsolateData::GarbageCollectedData*
 V8PerIsolateData::CanvasResourceTracker() {
   return canvas_resource_tracker_;
+}
+
+void V8PerIsolateData::SetPasswordRegexp(ScriptRegexp* password_regexp) {
+  password_regexp_ = password_regexp;
+}
+
+ScriptRegexp* V8PerIsolateData::GetPasswordRegexp() {
+  return password_regexp_;
 }
 
 void* CreateHistogram(const char* name, int min, int max, size_t buckets) {

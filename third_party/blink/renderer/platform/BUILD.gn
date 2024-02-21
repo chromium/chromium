@@ -475,6 +475,8 @@ component("platform") {
     "bindings/scoped_persistent.h",
     "bindings/script_forbidden_scope.cc",
     "bindings/script_forbidden_scope.h",
+    "bindings/script_regexp.cc",
+    "bindings/script_regexp.h",
     "bindings/script_state.cc",
     "bindings/script_state.h",
     "bindings/script_wrappable.cc",

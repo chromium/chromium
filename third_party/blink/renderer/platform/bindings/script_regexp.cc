@@ -26,12 +26,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
 namespace blink {
@@ -86,15 +85,18 @@ int ScriptRegexp::Match(StringView string,
                         int start_from,
                         int* match_length,
                         WTF::Vector<String>* group_list) const {
-  if (match_length)
+  if (match_length) {
     *match_length = 0;
+  }
 
-  if (regex_.IsEmpty() || string.IsNull())
+  if (regex_.IsEmpty() || string.IsNull()) {
     return -1;
+  }
 
   // v8 strings are limited to int.
-  if (string.length() > INT_MAX)
+  if (string.length() > INT_MAX) {
     return -1;
+  }
 
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
@@ -107,8 +109,9 @@ int ScriptRegexp::Match(StringView string,
   v8::Local<v8::String> subject =
       V8String(isolate, StringView(string, start_from));
   v8::Local<v8::Value> return_value;
-  if (!regex->Exec(context, subject).ToLocal(&return_value))
+  if (!regex->Exec(context, subject).ToLocal(&return_value)) {
     return -1;
+  }
 
   // RegExp#exec returns null if there's no match, otherwise it returns an
   // Array of strings with the first being the whole match string and others
@@ -118,8 +121,9 @@ int ScriptRegexp::Match(StringView string,
   // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/RegExp/exec
 
   DCHECK(!return_value.IsEmpty());
-  if (!return_value->IsArray())
+  if (!return_value->IsArray()) {
     return -1;
+  }
 
   v8::Local<v8::Array> result = return_value.As<v8::Array>();
   v8::Local<v8::Value> match_offset;
@@ -129,8 +133,9 @@ int ScriptRegexp::Match(StringView string,
   }
   if (match_length) {
     v8::Local<v8::Value> match;
-    if (!result->Get(context, 0).ToLocal(&match))
+    if (!result->Get(context, 0).ToLocal(&match)) {
       return -1;
+    }
     *match_length = match.As<v8::String>()->Length();
   }
 
@@ -138,8 +143,9 @@ int ScriptRegexp::Match(StringView string,
     DCHECK(group_list->empty());
     for (uint32_t i = 1; i < result->Length(); ++i) {
       v8::Local<v8::Value> group;
-      if (!result->Get(context, i).ToLocal(&group))
+      if (!result->Get(context, i).ToLocal(&group)) {
         return -1;
+      }
       String group_string;
       if (group->IsString()) {
         group_string = ToBlinkString<String>(isolate, group.As<v8::String>(),

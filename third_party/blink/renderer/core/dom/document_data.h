@@ -7,7 +7,7 @@
 
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 

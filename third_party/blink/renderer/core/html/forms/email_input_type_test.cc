@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {

@@ -84,6 +84,7 @@
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
@@ -150,8 +151,10 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -266,6 +269,10 @@ class WebViewTest : public testing::Test {
   void TearDown() override {
     EventTiming::SetTickClockForTesting(nullptr);
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+    web_view_helper_.Reset();
+    MemoryCache::Get()->EvictResources();
+    // Clear lazily loaded style sheets.
+    CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
   }
 
  protected:
@@ -330,6 +337,7 @@ class WebViewTest : public testing::Test {
   }
 
   std::string base_url_{"http://www.test.com/"};
+  test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 };

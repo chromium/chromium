@@ -97,8 +97,6 @@ blink_core_sources_bindings =
                     "core/v8/script_promise_resolver.cc",
                     "core/v8/script_promise_resolver.h",
                     "core/v8/script_promise_resolver_with_tracker.h",
-                    "core/v8/script_regexp.cc",
-                    "core/v8/script_regexp.h",
                     "core/v8/script_source_location_type.h",
                     "core/v8/script_state_impl.cc",
                     "core/v8/script_state_impl.h",

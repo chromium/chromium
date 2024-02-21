@@ -28,7 +28,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
@@ -77,6 +76,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"

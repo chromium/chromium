@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -47,6 +48,7 @@ class WebDocumentTest : public testing::Test {
   Document* TopDocument() const;
   WebDocument TopWebDocument() const;
 
+  test::TaskEnvironment task_environment_;
   WebViewHelper web_view_helper_;
 };
 

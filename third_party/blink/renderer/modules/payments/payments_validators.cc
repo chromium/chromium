@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/modules/payments/payments_validators.h"
 
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payer_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/bindings/to_blink_string.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"

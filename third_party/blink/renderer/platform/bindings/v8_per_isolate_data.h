@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -57,6 +58,7 @@ class StringCache;
 class ThreadDebugger;
 class V8PrivateProperty;
 struct WrapperTypeInfo;
+class ScriptRegexp;
 
 // Used to hold data that is associated with a single v8::Isolate object, and
 // has a 1:1 relationship with v8::Isolate.
@@ -196,6 +198,9 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   void SetCanvasResourceTracker(V8PerIsolateData::GarbageCollectedData*);
   V8PerIsolateData::GarbageCollectedData* CanvasResourceTracker();
 
+  void SetPasswordRegexp(ScriptRegexp*);
+  ScriptRegexp* GetPasswordRegexp();
+
   ActiveScriptWrappableManager* GetActiveScriptWrappableManager() const {
     return active_script_wrappable_manager_;
   }
@@ -276,6 +281,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   std::unique_ptr<ThreadDebugger> thread_debugger_;
   Persistent<GarbageCollectedData> profiler_group_;
   Persistent<GarbageCollectedData> canvas_resource_tracker_;
+  Persistent<ScriptRegexp> password_regexp_;
 
   Persistent<ActiveScriptWrappableManager> active_script_wrappable_manager_;
 

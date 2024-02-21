@@ -24,10 +24,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_REGEXP_H_
-#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_REGEXP_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_REGEXP_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_REGEXP_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -40,7 +40,7 @@ enum class MultilineMode { kMultilineDisabled, kMultilineEnabled };
 // Map to, respectively: neither u nor v flags, u flag, v flag.
 enum class UnicodeMode { kBmpOnly, kUnicode, kUnicodeSets };
 
-class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
+class PLATFORM_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
  public:
   // For TextCaseSensitivity argument, TextCaseASCIIInsensitive and
   // TextCaseUnicodeInsensitive has identical behavior. They just add "i" flag.
@@ -79,4 +79,4 @@ class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_REGEXP_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_REGEXP_H_
