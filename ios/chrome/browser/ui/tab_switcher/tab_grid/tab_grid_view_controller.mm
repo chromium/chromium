@@ -1841,6 +1841,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                        focusOmnibox:NO];
 }
 
+// TODO(crbug.com/1457146): Remove once inactive tabs do not depends on it
+// anymore.
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+        didCloseItemWithID:(web::WebStateID)itemID {
+  // No-op
+}
+
 - (void)gridViewController:(BaseGridViewController*)gridViewController
          didMoveItemWithID:(web::WebStateID)itemID
                    toIndex:(NSUInteger)destinationIndex {

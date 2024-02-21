@@ -7,16 +7,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_view_controller.h"
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
-
-@protocol InactiveTabsCoordinatorDelegate;
-
 // A view controller that contains a grid of inactive items.
 @interface InactiveGridViewController : RegularGridViewController
-
-// Delegate for notify inactive tabs coordinator.
-@property(nonatomic, weak) id<InactiveTabsCoordinatorDelegate>
-    inactiveTabsDelegate;
 
 @end
 

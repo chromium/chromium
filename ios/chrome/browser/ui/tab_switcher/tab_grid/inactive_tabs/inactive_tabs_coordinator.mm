@@ -219,8 +219,6 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   self.mediator.consumer = self.viewController.gridViewController;
 
   self.viewController.gridViewController.menuProvider = _contextMenuProvider;
-  self.viewController.gridViewController.mutator = self.mediator;
-  self.viewController.gridViewController.inactiveTabsDelegate = _delegate;
 
   // Add the Inactive Tabs view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;
@@ -299,6 +297,29 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   base::RecordAction(base::UserMetricsAction("MobileTabGridOpenInactiveTab"));
   [_delegate inactiveTabsCoordinator:self didSelectItemWithID:itemID];
   [self didFinish];
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+        didCloseItemWithID:(web::WebStateID)itemID {
+  __weak __typeof(self) weakSelf = self;
+  auto closeItem = ^{
+    [weakSelf.mediator closeItemWithID:itemID];
+  };
+
+  NSInteger numberOfTabs = [self.mediator numberOfItems];
+  // If it is the latest item, pop the view (UI change), and defer the model
+  // change after the UI is no longer visible.
+  if (numberOfTabs <= 1) {
+    // Pop the view controller.
+    [self didFinish];
+    // To prevent the Inactive Tabs grid from being immediately emptied, defer
+    // the closing to after the view is popped.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(closeItem), kPopUIDelay);
+  } else {
+    // Otherwise, close the item immediately.
+    closeItem();
+  }
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
