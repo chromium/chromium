@@ -13,7 +13,10 @@ build_webui_tests("build") {
     "voice_selection_menu_test.ts",
     "read_aloud_flag_test.ts",
     "font_size_test.ts",
+    "play_pause_test.ts",
+    "rate_selection_test.ts",
     "fake_reading_mode.ts",
+    "test_color_updater_browser_proxy.ts",
   ]
 
   ts_definitions = [
@@ -26,6 +29,7 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/side_panel/read_anything:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
 }

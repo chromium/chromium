@@ -159,6 +159,7 @@ export interface ReadAnythingElement {
   $: {
     toolbar: ReadAnythingToolbarElement,
     flexParent: HTMLElement,
+    container: HTMLElement,
   };
 }
 
@@ -467,11 +468,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Each time we rebuild the subtree, we should clear the node id of the
     // first text node.
     this.firstTextNodeSetForReadAloud = -1;
-
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const container = shadowRoot.getElementById('container');
-    assert(container);
+    const container = this.$.container;
 
     // Remove all children from container. Use `replaceChildren` rather than
     // setting `innerHTML = ''` in order to remove all listeners, too.
@@ -747,10 +744,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   playSpeech() {
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const container = shadowRoot.getElementById('container');
-    assert(container);
+    const container = this.$.container;
     if (this.speechStarted && this.paused) {
       if (this.pausedFromPlayClickButton) {
         this.synth.resume();
