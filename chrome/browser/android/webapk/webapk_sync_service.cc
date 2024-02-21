@@ -48,6 +48,14 @@ void WebApkSyncService::MergeSyncDataForTesting(
       std::move(app_vector), std::move(last_used_days_vector));  // IN-TEST
 }
 
+void WebApkSyncService::SetClockForTesting(std::unique_ptr<base::Clock> clock) {
+  sync_bridge_->SetClockForTesting(std::move(clock));  // IN-TEST
+}
+
+const Registry& WebApkSyncService::GetRegistryForTesting() const {
+  return sync_bridge_->GetRegistryForTesting();  // IN-TEST
+}
+
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 WebApkSyncService::GetModelTypeControllerDelegate() {
   return sync_bridge_->GetModelTypeControllerDelegate();

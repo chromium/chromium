@@ -321,9 +321,19 @@ public class WebappRegistry {
      * restored from Sync on Chrome's 2nd run.
      */
     @CalledByNative
-    public static void setNeedsPwaRestore() {
+    public static void setNeedsPwaRestore(boolean needs) {
         ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, true);
+                .writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, needs);
+    }
+
+    /**
+     * Gets the value of an Android Shared Preference bit which indicates whether or not there are
+     * WebAPKs that need to be restored from Sync on Chrome's 2nd run.
+     */
+    @CalledByNative
+    public static boolean getNeedsPwaRestore() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, false);
     }
 
     /**

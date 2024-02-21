@@ -232,14 +232,12 @@ std::optional<syncer::ModelError> WebApkSyncBridge::MergeFullSyncData(
 
   const std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>> installed_apps =
       webapk_specifics_fetcher_->GetWebApkSpecifics();
-  if (SyncDataContainsNewApps(installed_apps, entity_changes)) {
-    // There are apps stored in Sync that aren't currently installed on the
-    // device.
-    WebappRegistry
-        webapp_registry;  // TODO(crbug.com/1497527): WebappRegistry is supposed
-                          // to be owned by ChromeBrowsingDataRemoverDelegate.
-    webapp_registry.SetNeedsPwaRestore();
-  }
+
+  WebappRegistry
+      webapp_registry;  // TODO(crbug.com/1497527): WebappRegistry is supposed
+                        // to be owned by ChromeBrowsingDataRemoverDelegate.
+  webapp_registry.SetNeedsPwaRestore(
+      SyncDataContainsNewApps(installed_apps, entity_changes));
 
   // Since we're using "account-only" semantics for Transport Mode, we just call
   // through to ApplyIncrementalSyncChanges().
@@ -459,6 +457,10 @@ void WebApkSyncBridge::DeleteAppFromSync(const webapps::AppId& app_id) {
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
   ApplyIncrementalSyncChangesToRegistry(std::move(registry_update));
+}
+
+void WebApkSyncBridge::SetClockForTesting(std::unique_ptr<base::Clock> clock) {
+  clock_ = std::move(clock);
 }
 
 const Registry& WebApkSyncBridge::GetRegistryForTesting() const {

@@ -90,6 +90,8 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics);
   void OnWebApkUninstalled(const std::string& manifest_id);
 
+  void SetClockForTesting(std::unique_ptr<base::Clock> clock);
+
   const Registry& GetRegistryForTesting() const;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate>

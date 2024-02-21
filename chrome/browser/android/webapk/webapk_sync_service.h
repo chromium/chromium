@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_SYNC_SERVICE_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_SYNC_SERVICE_H_
 
+#include "base/time/clock.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -26,6 +27,10 @@ class WebApkSyncService : public KeyedService {
       base::OnceCallback<void(bool)> init_done_callback);
   void MergeSyncDataForTesting(std::vector<std::vector<std::string>> app_vector,
                                std::vector<int> last_used_days_vector);
+
+  void SetClockForTesting(std::unique_ptr<base::Clock> clock);
+
+  const Registry& GetRegistryForTesting() const;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate();

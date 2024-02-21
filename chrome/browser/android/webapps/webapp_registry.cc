@@ -82,6 +82,12 @@ WebappRegistry::GetWebApkSpecifics() const {
   return webapk_specifics;
 }
 
-void WebappRegistry::SetNeedsPwaRestore() {
-  Java_WebappRegistry_setNeedsPwaRestore(base::android::AttachCurrentThread());
+void WebappRegistry::SetNeedsPwaRestore(bool needs) {
+  Java_WebappRegistry_setNeedsPwaRestore(base::android::AttachCurrentThread(),
+                                         needs);
+}
+
+bool WebappRegistry::GetNeedsPwaRestore() {
+  return Java_WebappRegistry_getNeedsPwaRestore(
+      base::android::AttachCurrentThread());
 }
