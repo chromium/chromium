@@ -15,7 +15,6 @@
 #include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -27,6 +26,7 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-forward.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -34,6 +34,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+
+namespace blink {
+class URLLoaderThrottle;
+}
 
 namespace net {
 struct RedirectInfo;
@@ -53,6 +57,7 @@ class PrefetchedSignedExchangeCache;
 class SignedExchangeRequestHandler;
 class StoragePartition;
 class StoragePartitionImpl;
+class WebContents;
 struct WebPluginInfo;
 
 class CONTENT_EXPORT NavigationURLLoaderImpl
@@ -99,6 +104,40 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
  private:
   FRIEND_TEST_ALL_PREFIXES(NavigationURLLoaderImplTest,
                            OnAcceptCHFrameReceivedUKM);
+
+  // Creates a terminal URLLoaderFactory only for a known non-network scheme.
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateTerminalNonNetworkLoaderFactory(BrowserContext* browser_context,
+                                        StoragePartitionImpl* storage_partition,
+                                        FrameTreeNode* frame_tree_node,
+                                        const GURL& url);
+  // Creates a complete URLLoaderFactory for non-network-service-bound requests.
+  // Unlike `CreateTerminalNonNetworkLoaderFactory()`, this supports
+  // ContentBrowserClient/DevTools interception, external protocols, and unknown
+  // schemes.
+  // `is_cacheable` indicates whether the returned factory can be cached.
+  static std::pair</*is_cacheable=*/bool,
+                   scoped_refptr<network::SharedURLLoaderFactory>>
+  CreateNonNetworkLoaderFactory(
+      BrowserContext* browser_context,
+      StoragePartitionImpl* storage_partition,
+      FrameTreeNode* frame_tree_node,
+      const ukm::SourceIdObj& ukm_id,
+      NavigationUIData* navigation_ui_data,
+      const NavigationRequestInfo& request_info,
+      base::RepeatingCallback<WebContents*()> web_contents_getter,
+      const network::ResourceRequest& resource_request);
+  // Like `CreateNonNetworkLoaderFactory()`, but caches the factory in
+  // `non_network_url_loader_factories_` if `is_cacheable` is true, and reuses
+  // it when the same scheme is used more than once in a navigational redirect
+  // chain. This is rare because non-network schemes basically don't redirect,
+  // but can actually happen e.g. in extension scheme's dynamic URLs (see
+  // `DynamicOriginBrowserTest.DynamicUrl` unit test).
+  // TODO(crbug.com/1403746): Consider removing the caching, as caches are often
+  // source of bug. The caching mechanism is left here to keep the existing
+  // behavior.
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetOrCreateNonNetworkLoaderFactory();
 
   // Creates a SharedURLLoaderFactory for network-service-bound requests.
   static scoped_refptr<network::SharedURLLoaderFactory>
@@ -148,9 +187,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // the default behavior. This is needed for service worker network fallback.
   void FallbackToNonInterceptedRequest(
       ResponseHeadUpdateParams head_update_params);
-
-  scoped_refptr<network::SharedURLLoaderFactory>
-  PrepareForNonInterceptedRequest();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   void CheckPluginAndContinueOnReceiveResponse(
@@ -283,10 +319,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // response body to download code.
   std::optional<network::URLLoaderCompletionStatus> status_;
 
-  // The schemes that this loader can use. For anything else we'll try
-  // external protocol handlers.
-  std::set<std::string> known_schemes_;
-
   // True when a proxy will handle the redirect checks, or when an interceptor
   // intentionally returned unsafe redirect response
   // (eg: NavigationLoaderInterceptor for loading a local Web Bundle file).
@@ -294,21 +326,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   mojo::ScopedDataPipeConsumerHandle response_body_;
 
-  // Factories to handle navigation requests for non-network resources.
-  ContentBrowserClient::NonNetworkURLLoaderFactoryMap
-      non_network_url_loader_factories_;
-
   // Lazily initialized and used in the case of non-network resource
   // navigations. Keyed by URL scheme.
-  // (These are cloned by entries populated in
-  // non_network_url_loader_factories_ and are ready to use, i.e. preparation
-  // calls like WillCreateURLLoaderFactory are already called)
-  std::map<std::string, mojo::Remote<network::mojom::URLLoaderFactory>>
-      non_network_url_loader_factory_remotes_;
+  std::map<std::string, scoped_refptr<network::SharedURLLoaderFactory>>
+      non_network_url_loader_factories_;
 
-  // This needs to be declared here because the underlying object might take a
-  // reference on a URLLoaderFactory stored in
-  // `non_network_url_loader_factory_remotes_`.
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;

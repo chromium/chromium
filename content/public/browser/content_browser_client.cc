@@ -971,9 +971,12 @@ ContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
   return std::vector<std::unique_ptr<blink::URLLoaderThrottle>>();
 }
 
-void ContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
-    int frame_tree_node_id,
-    NonNetworkURLLoaderFactoryMap* factories) {}
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+ContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
+    const std::string& scheme,
+    int frame_tree_node_id) {
+  return {};
+}
 
 void ContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(

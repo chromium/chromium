@@ -38,9 +38,9 @@ class WebEngineContentBrowserClient final
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
-  void RegisterNonNetworkNavigationURLLoaderFactories(
-      int frame_tree_node_id,
-      NonNetworkURLLoaderFactoryMap* factories) override;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
+                                             int frame_tree_node_id) override;
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,

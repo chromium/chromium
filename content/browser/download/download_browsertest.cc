@@ -192,24 +192,31 @@ class DownloadTestContentBrowserClient
     return base::FilePath();
   }
 
-  void RegisterNonNetworkNavigationURLLoaderFactories(
-      int frame_tree_node_id,
-      NonNetworkURLLoaderFactoryMap* factories) override {
-    if (!enable_register_non_network_url_loader_)
-      return;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
+                                             int frame_tree_node_id) override {
+    if (!enable_register_non_network_url_loader_) {
+      return {};
+    }
 
 #if BUILDFLAG(IS_ANDROID)
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        content_factory_remote;
-    content_url_loader_factory_->Clone(
-        content_factory_remote.InitWithNewPipeAndPassReceiver());
-    factories->emplace(url::kContentScheme, std::move(content_factory_remote));
+    if (scheme == url::kContentScheme) {
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          content_factory_remote;
+      content_url_loader_factory_->Clone(
+          content_factory_remote.InitWithNewPipeAndPassReceiver());
+      return content_factory_remote;
+    }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> file_factory_remote;
-    file_url_loader_factory_->Clone(
-        file_factory_remote.InitWithNewPipeAndPassReceiver());
-    factories->emplace(url::kFileScheme, std::move(file_factory_remote));
+    if (scheme == url::kFileScheme) {
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> file_factory_remote;
+      file_url_loader_factory_->Clone(
+          file_factory_remote.InitWithNewPipeAndPassReceiver());
+      return file_factory_remote;
+    }
+
+    return {};
   }
 
  private:

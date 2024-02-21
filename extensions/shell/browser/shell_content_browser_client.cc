@@ -262,18 +262,18 @@ ShellContentBrowserClient::GetNavigationUIData(
   return std::make_unique<ShellNavigationUIData>(navigation_handle);
 }
 
-void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
-    int frame_tree_node_id,
-    NonNetworkURLLoaderFactoryMap* factories) {
-  DCHECK(factories);
-
-  content::WebContents* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  factories->emplace(
-      extensions::kExtensionScheme,
-      extensions::CreateExtensionNavigationURLLoaderFactory(
-          web_contents->GetBrowserContext(),
-          !!extensions::WebViewGuest::FromWebContents(web_contents)));
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+ShellContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
+    const std::string& scheme,
+    int frame_tree_node_id) {
+  if (scheme == extensions::kExtensionScheme) {
+    content::WebContents* web_contents =
+        content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+    return extensions::CreateExtensionNavigationURLLoaderFactory(
+        web_contents->GetBrowserContext(),
+        !!extensions::WebViewGuest::FromWebContents(web_contents));
+  }
+  return {};
 }
 
 void ShellContentBrowserClient::

@@ -3135,14 +3135,17 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
           /* network_accessed */ true, net::OK);
     }
 
-    void RegisterNonNetworkNavigationURLLoaderFactories(
-        int frame_tree_node_id,
-        NonNetworkURLLoaderFactoryMap* factories) override {
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
-      fake_url_loader_factory_->Clone(
-          pending_remote.InitWithNewPipeAndPassReceiver());
-      factories->emplace(std::string(kNoAccessScheme),
-                         std::move(pending_remote));
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+    CreateNonNetworkNavigationURLLoaderFactory(
+        const std::string& scheme,
+        int frame_tree_node_id) override {
+      if (scheme == kNoAccessScheme) {
+        mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+        fake_url_loader_factory_->Clone(
+            pending_remote.InitWithNewPipeAndPassReceiver());
+        return pending_remote;
+      }
+      return {};
     }
 
     static bool RewriteUrl(GURL* url, BrowserContext* browser_context) {

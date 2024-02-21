@@ -1695,18 +1695,20 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Allows the embedder to register per-scheme URLLoaderFactory implementations
   // to handle navigation URL requests for schemes not handled by the Network
   // Service.
+  // When a non-null PendingRemote is returned, requests for the given `scheme`
+  // are to be handled by the ContentBrowserClient-supplied factory.
+  // Otherwise (returning null), falling back to a default content//-supplied
+  // factory if any.
   //
   // Note that a RenderFrameHost or RenderProcessHost aren't passed in because
   // these can change during a navigation (e.g. depending on redirects).
-  //
-  // |ukm_source_id| can be used to record UKM events associated with the
-  // navigation.
+  virtual mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
+                                             int frame_tree_node_id);
+
   using NonNetworkURLLoaderFactoryMap =
       std::map<std::string,
                mojo::PendingRemote<network::mojom::URLLoaderFactory>>;
-  virtual void RegisterNonNetworkNavigationURLLoaderFactories(
-      int frame_tree_node_id,
-      NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory
   // implementations to handle dedicated/shared worker main script requests

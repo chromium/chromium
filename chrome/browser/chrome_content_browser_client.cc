@@ -5732,9 +5732,10 @@ ChromeContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
   return result;
 }
 
-void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
-    int frame_tree_node_id,
-    NonNetworkURLLoaderFactoryMap* factories) {
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
+    const std::string& scheme,
+    int frame_tree_node_id) {
 #if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
@@ -5742,13 +5743,15 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!ChromeContentBrowserClientExtensionsPart::
-          AreExtensionsDisabledForProfile(browser_context)) {
-    factories->emplace(
-        extensions::kExtensionScheme,
-        extensions::CreateExtensionNavigationURLLoaderFactory(
-            browser_context,
-            !!extensions::WebViewGuest::FromWebContents(web_contents)));
+  if (scheme == extensions::kExtensionScheme) {
+    if (!ChromeContentBrowserClientExtensionsPart::
+            AreExtensionsDisabledForProfile(browser_context)) {
+      return extensions::CreateExtensionNavigationURLLoaderFactory(
+          browser_context,
+          !!extensions::WebViewGuest::FromWebContents(web_contents));
+    }
+
+    return {};
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -5756,26 +5759,32 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
   // KeyedServices could be disabled based on the profile type, e.g. System
   // Profile doesn't construct services by default.
   if (AreKeyedServicesDisabledForProfileByDefault(profile))
-    return;
+    return {};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  factories->emplace(content::kExternalFileScheme,
-                     ash::ExternalFileURLLoaderFactory::Create(
-                         profile, content::ChildProcessHost::kInvalidUniqueID));
+  if (scheme == content::kExternalFileScheme) {
+    return ash::ExternalFileURLLoaderFactory::Create(
+        profile, content::ChildProcessHost::kInvalidUniqueID);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_ANDROID)
-  if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-          browser_context) &&
-      !browser_context->ShutdownStarted()) {
-    // TODO(crbug.com/1365848): Only register the factory if we are already in
-    // an isolated storage partition.
-    factories->emplace(chrome::kIsolatedAppScheme,
-                       web_app::IsolatedWebAppURLLoaderFactory::Create(
-                           frame_tree_node_id, browser_context));
+  if (scheme == chrome::kIsolatedAppScheme) {
+    if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
+            browser_context) &&
+        !browser_context->ShutdownStarted()) {
+      // TODO(crbug.com/1365848): Only register the factory if we are already in
+      // an isolated storage partition.
+      return web_app::IsolatedWebAppURLLoaderFactory::Create(frame_tree_node_id,
+                                                             browser_context);
+    }
+
+    return {};
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_CHROMEOS_ASH) ||
         // !BUILDFLAG(IS_ANDROID)
+
+  return {};
 }
 
 void ChromeContentBrowserClient::

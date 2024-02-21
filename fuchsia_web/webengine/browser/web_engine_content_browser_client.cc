@@ -222,15 +222,17 @@ void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   PopulateFuchsiaFrameBinders(map);
 }
 
-void WebEngineContentBrowserClient::
-    RegisterNonNetworkNavigationURLLoaderFactories(
-        int frame_tree_node_id,
-        NonNetworkURLLoaderFactoryMap* factories) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableContentDirectories)) {
-    factories->emplace(kFuchsiaDirScheme,
-                       ContentDirectoryLoaderFactory::Create());
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+WebEngineContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
+    const std::string& scheme,
+    int frame_tree_node_id) {
+  if (scheme == kFuchsiaDirScheme) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableContentDirectories)) {
+      return ContentDirectoryLoaderFactory::Create();
+    }
   }
+  return {};
 }
 
 void WebEngineContentBrowserClient::

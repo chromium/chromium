@@ -604,9 +604,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       int frame_tree_node_id) override;
-  void RegisterNonNetworkNavigationURLLoaderFactories(
-      int frame_tree_node_id,
-      NonNetworkURLLoaderFactoryMap* factories) override;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
+                                             int frame_tree_node_id) override;
   void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       content::BrowserContext* browser_context,
       NonNetworkURLLoaderFactoryMap* factories) override;

@@ -185,19 +185,23 @@ class FirstPartySchemeContentBrowserClient
     return scheme == "trustme";
   }
 
-  void RegisterNonNetworkNavigationURLLoaderFactories(
-      int frame_tree_node_id,
-      NonNetworkURLLoaderFactoryMap* factories) override {
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> trustme_remote;
-    trustme_factory_->Clone(trustme_remote.InitWithNewPipeAndPassReceiver());
-    factories->emplace("trustme", std::move(trustme_remote));
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateNonNetworkNavigationURLLoaderFactory(const std::string& scheme,
+                                             int frame_tree_node_id) override {
+    if (scheme == "trustme") {
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> trustme_remote;
+      trustme_factory_->Clone(trustme_remote.InitWithNewPipeAndPassReceiver());
+      return trustme_remote;
+    }
 
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        trustmeifembeddingsecure_remote;
-    trustmeifembeddingsecure_factory_->Clone(
-        trustmeifembeddingsecure_remote.InitWithNewPipeAndPassReceiver());
-    factories->emplace("trustmeifembeddingsecure",
-                       std::move(trustmeifembeddingsecure_remote));
+    if (scheme == "trustmeifembeddingsecure") {
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          trustmeifembeddingsecure_remote;
+      trustmeifembeddingsecure_factory_->Clone(
+          trustmeifembeddingsecure_remote.InitWithNewPipeAndPassReceiver());
+      return trustmeifembeddingsecure_remote;
+    }
+    return {};
   }
 
  private:

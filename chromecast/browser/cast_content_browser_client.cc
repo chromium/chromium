@@ -821,10 +821,6 @@ CastContentBrowserClient::CreateThrottlesForNavigation(
   return throttles;
 }
 
-void CastContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
-    int frame_tree_node_id,
-    NonNetworkURLLoaderFactoryMap* factories) {}
-
 void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
