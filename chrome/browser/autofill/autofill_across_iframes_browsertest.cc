@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -128,8 +129,9 @@ void FillCard(content::RenderFrameHost* rfh,
   test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
                           base::ASCIIToUTF16(base::StringPiece(kCvc)));
   auto& manager = TestAutofillManager::GetForRenderFrameHost(rfh);
-  manager.FillCreditCardForm(
-      form, triggered_field, card, base::ASCIIToUTF16(base::StringPiece(kCvc)),
+  manager.FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, triggered_field, card,
+      base::ASCIIToUTF16(base::StringPiece(kCvc)),
       AutofillTriggerDetails(AutofillTriggerSource::kPopup));
 }
 

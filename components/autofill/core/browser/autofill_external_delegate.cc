@@ -903,9 +903,9 @@ void AutofillExternalDelegate::OnPersonalDataChanged() {
 void AutofillExternalDelegate::OnCreditCardScanned(
     const AutofillTriggerSource trigger_source,
     const CreditCard& card) {
-  manager_->FillCreditCardForm(query_form_, query_field_, card,
-                               std::u16string(),
-                               {.trigger_source = trigger_source});
+  manager_->FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, query_form_, query_field_, card,
+      std::u16string(), {.trigger_source = trigger_source});
 }
 
 void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
@@ -1100,23 +1100,22 @@ void AutofillExternalDelegate::FillAutofillFormData(
                  : mojom::ActionPersistence::kFill;
 
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  if (CreditCard* credit_card = pdm->GetCreditCardByGUID(
+  if (const AutofillProfile* profile = pdm->GetProfileByGUID(
           absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
-      // Virtual credit cards are not persisted in Chrome, modify record type
-      // locally.
-      manager_->FillOrPreviewCreditCardForm(
-          action_persistence, query_form_, query_field_,
-          CreditCard::CreateVirtualCard(*credit_card), trigger_details);
-    } else {
-      manager_->FillOrPreviewCreditCardForm(action_persistence, query_form_,
-                                            query_field_, *credit_card,
-                                            trigger_details);
-    }
-  } else if (const AutofillProfile* profile = pdm->GetProfileByGUID(
-                 absl::get<Suggestion::Guid>(backend_id).value())) {
     manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
                                        query_field_, *profile, trigger_details);
+  } else if (const CreditCard* credit_card = pdm->GetCreditCardByGUID(
+                 absl::get<Suggestion::Guid>(backend_id).value())) {
+    is_preview
+        ? manager_->FillOrPreviewCreditCardForm(
+              mojom::ActionPersistence::kPreview, query_form_, query_field_,
+              *credit_card, std::u16string(), trigger_details)
+        : manager_->AuthenticateThenFillCreditCardForm(
+              query_form_, query_field_,
+              popup_item_id == PopupItemId::kVirtualCreditCardEntry
+                  ? CreditCard::CreateVirtualCard(*credit_card)
+                  : *credit_card,
+              trigger_details);
   }
 }
 

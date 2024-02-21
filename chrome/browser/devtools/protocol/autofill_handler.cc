@@ -163,9 +163,11 @@ protocol::Response AutofillHandler::Trigger(
 
   static_cast<autofill::BrowserAutofillManager&>(
       autofill_driver->GetAutofillManager())
-      .FillCreditCardForm(field_data->first, field_data->second,
-                          tmp_autofill_card, base::UTF8ToUTF16(card->GetCvc()),
-                          {.trigger_source = AutofillTriggerSource::kPopup});
+      .FillOrPreviewCreditCardForm(
+          autofill::mojom::ActionPersistence::kFill, field_data->first,
+          field_data->second, tmp_autofill_card,
+          base::UTF8ToUTF16(card->GetCvc()),
+          {.trigger_source = AutofillTriggerSource::kPopup});
 
   return Response::Success();
 }

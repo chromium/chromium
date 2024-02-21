@@ -54,6 +54,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -234,9 +235,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(void,
-              FillOrPreviewCreditCardForm,
-              (mojom::ActionPersistence action_persistence,
-               const FormData& form,
+              AuthenticateThenFillCreditCardForm,
+              (const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
                const AutofillTriggerDetails& trigger_details),
@@ -267,8 +267,9 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const AutofillTriggerDetails&),
               (override));
   MOCK_METHOD(void,
-              FillCreditCardForm,
-              (const FormData& form,
+              FillOrPreviewCreditCardForm,
+              (mojom::ActionPersistence action_persistence,
+               const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
                const std::u16string& cvc,
@@ -1054,7 +1055,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   IssueOnQuery();
   // Ensure it doesn't try to preview the negative id.
   EXPECT_CALL(manager(), FillOrPreviewProfileForm).Times(0);
-  EXPECT_CALL(manager(), FillCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm);
   const Suggestion suggestion{
       PopupItemId::kInsecureContextPaymentDisabledMessage};
@@ -1063,7 +1064,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   // Ensure it doesn't try to fill the form in with the negative id.
   EXPECT_CALL(client(),
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(manager(), FillCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
@@ -1210,7 +1211,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
   EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
                              mojom::ActionPersistence::kPreview,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), HasQueriedFieldId(), _, _, _));
   Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
   suggestion.payload = Suggestion::Guid(card.guid());
   external_delegate().DidSelectSuggestion(suggestion);
@@ -1655,7 +1656,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                              Property(&FormData::global_id, form.global_id()),
                              Property(&FormFieldData::global_id,
                                       form.fields[0].global_id()),
-                             _, _));
+                             _, _, _));
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 
   external_delegate().DidSelectSuggestion(suggestion);
@@ -1673,7 +1674,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
-  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 
   external_delegate().DidSelectSuggestion(suggestion);
@@ -1696,8 +1697,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   const CreditCard unlocked_card = test::GetFullServerCard();
-  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
-                             mojom::ActionPersistence::kFill,
+  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
                              Property(&FormData::global_id, form.global_id()),
                              Property(&FormFieldData::global_id,
                                       form.fields[0].global_id()),
@@ -1731,7 +1731,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                 /*result=*/CreditCardFetchResult::kTransientError,
                 /*credit_card=*/nullptr);
           });
-  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 
   external_delegate().DidAcceptSuggestion(suggestion,
@@ -1762,7 +1762,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                 /*result=*/CreditCardFetchResult::kSuccess,
                 /*credit_card=*/&unlocked_card);
           });
-  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 
   external_delegate().DidAcceptSuggestion(suggestion,
@@ -2126,8 +2126,9 @@ MATCHER_P(CreditCardMatches, card, "") {
 TEST_F(AutofillExternalDelegateUnitTest, FillCreditCardForm) {
   CreditCard card;
   test::SetCreditCardInfo(&card, "Alice", "4111", "1", "3000", "1");
-  EXPECT_CALL(manager(), FillCreditCardForm(_, _, CreditCardMatches(card),
-                                            std::u16string(), _));
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
+                             mojom::ActionPersistence::kFill, _, _,
+                             CreditCardMatches(card), std::u16string(), _));
   external_delegate().OnCreditCardScanned(AutofillTriggerSource::kPopup, card);
 }
 
@@ -2257,8 +2258,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
   FormData form;
   CreditCard card = test::GetMaskedServerCard();
   pdm().AddCreditCard(card);
-  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
-                             mojom::ActionPersistence::kFill,
+  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
                              HasQueriedFormId(), HasQueriedFieldId(), _, _));
   Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
   suggestion.payload = Suggestion::Guid(card.guid());
@@ -2272,7 +2272,7 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
   pdm().AddCreditCard(card);
   EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
                              mojom::ActionPersistence::kPreview,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), HasQueriedFieldId(), _, _, _));
   Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
   suggestion.payload = Suggestion::Guid(card.guid());
   external_delegate().DidSelectSuggestion(suggestion);

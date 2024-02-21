@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -80,17 +81,17 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   ~MockBrowserAutofillManager() override = default;
 
   MOCK_METHOD(void,
-              FillCreditCardForm,
-              (const FormData& form,
+              FillOrPreviewCreditCardForm,
+              (mojom::ActionPersistence action_persistence,
+               const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
                const std::u16string& cvc,
                const AutofillTriggerDetails& trigger_details),
               (override));
   MOCK_METHOD(void,
-              FillOrPreviewCreditCardForm,
-              (mojom::ActionPersistence action_persistence,
-               const FormData& form,
+              AuthenticateThenFillCreditCardForm,
+              (const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
                const AutofillTriggerDetails& trigger_details));
@@ -681,7 +682,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, ScanCreditCardIsCalled) {
   touch_to_fill_delegate_->ScanCreditCard();
 
   CreditCard credit_card = autofill::test::GetCreditCard();
-  EXPECT_CALL(*browser_autofill_manager_, FillCreditCardForm);
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
   touch_to_fill_delegate_->OnCreditCardScanned(credit_card);
   EXPECT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
 }
@@ -714,7 +715,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, CardSelectionFillsCardForm) {
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
+  EXPECT_CALL(*browser_autofill_manager_, AuthenticateThenFillCreditCardForm);
   touch_to_fill_delegate_->SuggestionSelected(credit_card.guid(), false);
 }
 
@@ -727,7 +728,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
+  EXPECT_CALL(*browser_autofill_manager_, AuthenticateThenFillCreditCardForm);
   touch_to_fill_delegate_->SuggestionSelected(credit_card.guid(), true);
 }
 

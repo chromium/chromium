@@ -105,8 +105,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
 
   // Simulate selecting the CVC suggestion.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
-  autofill_manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form(), form().fields.front(),
+  autofill_manager().AuthenticateThenFillCreditCardForm(
+      form(), form().fields.front(),
       *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -124,8 +124,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
               1)));
 
   // Simulate selecting the suggestion again.
-  autofill_manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form(), form().fields.front(),
+  autofill_manager().AuthenticateThenFillCreditCardForm(
+      form(), form().fields.front(),
       *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -149,8 +149,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
 
   // Simulate filling the CVC suggestion.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
-  autofill_manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form(), form().fields.front(),
+  autofill_manager().AuthenticateThenFillCreditCardForm(
+      form(), form().fields.front(),
       *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
@@ -170,8 +170,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
               1)));
 
   // Fill the suggestion again.
-  autofill_manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form(), form().fields.front(),
+  autofill_manager().AuthenticateThenFillCreditCardForm(
+      form(), form().fields.front(),
       *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
@@ -196,8 +196,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
 
   // Simulate filling and then submitting the card.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
-  autofill_manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form(), form().fields.front(),
+  autofill_manager().AuthenticateThenFillCreditCardForm(
+      form(), form().fields.front(),
       *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())

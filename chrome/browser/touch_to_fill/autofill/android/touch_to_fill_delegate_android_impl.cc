@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/logging/log_macros.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
 
@@ -237,8 +238,9 @@ void TouchToFillDelegateAndroidImpl::ScanCreditCard() {
 void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
     const CreditCard& card) {
   HideTouchToFill();
-  manager_->FillCreditCardForm(
-      query_form_, query_field_, card, std::u16string(),
+  manager_->FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, query_form_, query_field_, card,
+      std::u16string(),
       {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
 }
 
@@ -260,13 +262,12 @@ void TouchToFillDelegateAndroidImpl::SuggestionSelected(std::string unique_id,
   if (is_virtual) {
     // Virtual credit cards are not persisted in Chrome, modify record type
     // locally.
-    manager_->FillOrPreviewCreditCardForm(
-        mojom::ActionPersistence::kFill, query_form_, query_field_,
-        CreditCard::CreateVirtualCard(*card),
+    manager_->AuthenticateThenFillCreditCardForm(
+        query_form_, query_field_, CreditCard::CreateVirtualCard(*card),
         {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
   } else {
-    manager_->FillOrPreviewCreditCardForm(
-        mojom::ActionPersistence::kFill, query_form_, query_field_, *card,
+    manager_->AuthenticateThenFillCreditCardForm(
+        query_form_, query_field_, *card,
         {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
   }
 }

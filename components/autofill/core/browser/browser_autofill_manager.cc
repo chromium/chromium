@@ -1160,8 +1160,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 }
 
-void BrowserAutofillManager::FillOrPreviewCreditCardForm(
-    mojom::ActionPersistence action_persistence,
+void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
     const FormData& form,
     const FormFieldData& field,
     const CreditCard& credit_card,
@@ -1172,34 +1171,31 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     return;
   }
   credit_card_ = credit_card;
-  bool is_preview = action_persistence != mojom::ActionPersistence::kFill;
-
-  if (!is_preview) {
-    credit_card_form_event_logger_->OnDidSelectCardSuggestion(
-        credit_card_, *form_structure, signin_state_for_metrics_);
-    if (ShouldFetchCreditCard(form, field, *form_structure, *autofill_field,
-                              credit_card_)) {
-      credit_card_form_event_logger_->LogDeprecatedCreditCardSelectedMetric(
-          credit_card_, *form_structure, signin_state_for_metrics_);
-
-      credit_card_form_ = form;
-      credit_card_field_ = field;
-
-      // CreditCardAccessManager::FetchCreditCard() will trigger
-      // OnCreditCardFetched() in this class after successfully fetching the
-      // card.
-      fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
-      credit_card_access_manager_->FetchCreditCard(
-          &credit_card_,
-          base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
+  credit_card_form_event_logger_->OnDidSelectCardSuggestion(
+      credit_card_, *form_structure, signin_state_for_metrics_);
+  // If no authentication is needed, directly forward filling to FormFiller.
+  if (!ShouldFetchCreditCard(form, field, *form_structure, *autofill_field,
+                             credit_card_)) {
+    form_filler_->FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form, field, &credit_card_,
+        /*optional_cvc=*/std::nullopt, form_structure, autofill_field,
+        trigger_details);
+    return;
   }
+  credit_card_form_event_logger_->LogDeprecatedCreditCardSelectedMetric(
+      credit_card_, *form_structure, signin_state_for_metrics_);
 
-  form_filler_->FillOrPreviewForm(
-      action_persistence, form, field, &credit_card_,
-      /*cvc=*/std::nullopt, form_structure, autofill_field, trigger_details);
+  credit_card_form_ = form;
+  credit_card_field_ = field;
+
+  // CreditCardAccessManager::FetchCreditCard() will trigger
+  // OnCreditCardFetched() in this class after successfully fetching the
+  // card.
+  fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
+  credit_card_access_manager_->FetchCreditCard(
+      &credit_card_,
+      base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BrowserAutofillManager::FillOrPreviewProfileForm(
@@ -1266,7 +1262,8 @@ void BrowserAutofillManager::UndoAutofill(
   }
 }
 
-void BrowserAutofillManager::FillCreditCardForm(
+void BrowserAutofillManager::FillOrPreviewCreditCardForm(
+    mojom::ActionPersistence action_persistence,
     const FormData& form,
     const FormFieldData& field,
     const CreditCard& credit_card,
@@ -1280,9 +1277,9 @@ void BrowserAutofillManager::FillCreditCardForm(
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewForm(mojom::ActionPersistence::kFill, form, field,
-                                  &credit_card, &cvc, form_structure,
-                                  autofill_field, trigger_details,
+  form_filler_->FillOrPreviewForm(action_persistence, form, field, &credit_card,
+                                  &cvc, form_structure, autofill_field,
+                                  trigger_details,
                                   /*is_refill=*/false);
 }
 
@@ -1636,8 +1633,9 @@ void BrowserAutofillManager::OnCreditCardFetched(
     return;
   }
 
-  FillCreditCardForm(
-      credit_card_form_, credit_card_field_, *credit_card, credit_card->cvc(),
+  FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, credit_card_form_, credit_card_field_,
+      *credit_card, credit_card->cvc(),
       {.trigger_source = fetched_credit_card_trigger_source_.value_or(
            AutofillTriggerSource::kCreditCardCvcPopup)});
 }

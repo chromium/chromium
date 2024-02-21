@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_delegate.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -177,8 +178,9 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
                const autofill::AutofillTriggerDetails&),
               (override));
   MOCK_METHOD(void,
-              FillCreditCardForm,
-              (const FormData&,
+              FillOrPreviewCreditCardForm,
+              (autofill::mojom::ActionPersistence action_persistence,
+               const FormData&,
                const FormFieldData&,
                const autofill::CreditCard&,
                const std::u16string&,
@@ -826,7 +828,8 @@ TEST_F(FastCheckoutClientImplTest,
       *credit_card_form->field(kCreditCardFieldIndexInForm);
 
   EXPECT_CALL(*autofill_manager(),
-              FillCreditCardForm(
+              FillOrPreviewCreditCardForm(
+                  autofill::mojom::ActionPersistence::kFill,
                   FormDataEqualTo(credit_card_form->ToFormData()),
                   FormFieldDataEqualTo(field), Eq(*credit_card), Eq(cvc),
                   EqualsAutofilltriggerDetails(
@@ -1002,7 +1005,8 @@ TEST_F(FastCheckoutClientImplTest,
   std::u16string cvc = u"123";
 
   EXPECT_CALL(*autofill_manager(),
-              FillCreditCardForm(
+              FillOrPreviewCreditCardForm(
+                  autofill::mojom::ActionPersistence::kFill,
                   FormDataEqualTo(credit_card_form->ToFormData()),
                   FormFieldDataEqualTo(field), Eq(*credit_card), Eq(cvc),
                   EqualsAutofilltriggerDetails(
@@ -1115,7 +1119,7 @@ TEST_F(FastCheckoutClientImplTest,
   // resolved. This assertion is a safeguard against potential future changes.
   // E.g. having the popup only for server and masked cards, like in the
   // `BrowserAutofillManager`.
-  EXPECT_CALL(*autofill_manager(), FillCreditCardForm).Times(0);
+  EXPECT_CALL(*autofill_manager(), FillOrPreviewCreditCardForm).Times(0);
 
   fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
 
@@ -1134,7 +1138,8 @@ TEST_F(FastCheckoutClientImplTest,
       *autofill_manager(),
       SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, Ne(0)));
   EXPECT_CALL(*autofill_manager(),
-              FillCreditCardForm(
+              FillOrPreviewCreditCardForm(
+                  autofill::mojom::ActionPersistence::kFill,
                   FormDataEqualTo(credit_card_form->ToFormData()),
                   FormFieldDataEqualTo(field), _, Eq(u""),
                   EqualsAutofilltriggerDetails(

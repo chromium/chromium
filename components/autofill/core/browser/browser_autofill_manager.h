@@ -138,7 +138,8 @@ class BrowserAutofillManager : public AutofillManager {
                                           const FormFieldData& field_data,
                                           const gfx::RectF& element_bounds);
 
-  virtual void FillCreditCardForm(
+  virtual void FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FormFieldData& field,
       const CreditCard& credit_card,
@@ -175,12 +176,9 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillProfile& profile,
       const AutofillTriggerDetails& trigger_details);
 
-  // Fills or previews the credit card form.
-  // Assumes the form and field are valid.
   // Asks for authentication via CVC before filling with server card data.
   // TODO(crbug.com/1330108): Clean up the API.
-  virtual void FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence action_persistence,
+  virtual void AuthenticateThenFillCreditCardForm(
       const FormData& form,
       const FormFieldData& field,
       const CreditCard& credit_card,
@@ -408,9 +406,9 @@ class BrowserAutofillManager : public AutofillManager {
  private:
   friend class BrowserAutofillManagerTestApi;
 
-  // When `FillOrPreviewCreditCardForm()` fetches a credit card, this gets
-  // called once the fetching has finished. If successful, the `credit_card` is
-  // filled.
+  // When `AuthenticateThenFillCreditCardForm()` fetches a credit card, this
+  // gets called once the fetching has finished. If successful, the
+  // `credit_card` is filled.
   void OnCreditCardFetched(CreditCardFetchResult result,
                            const CreditCard* credit_card);
 
