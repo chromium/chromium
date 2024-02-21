@@ -310,13 +310,24 @@ void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {
                 local_group_id_.value())
           : std::to_address(browser_);
 
+  // Retrieve the SavedTabGroup before `guid_` goes out of scope if the group is
+  // opened in the browser. When a saved group is opened in the browser it is
+  // updated with the local id of that group. This change causes
+  // SavedTabGroupBar::SavedTabGroupUpdated to be called. That will
+  // invalidates the layout which closes the overflow menu if it was open,
+  // destroying this button in the process. We keep a pointer so we can access
+  // the groups data to safely perform the remaining behaviors in this function.
+  const SavedTabGroup* group = service_->model()->Get(guid_);
+
   if (!local_group_id_.has_value()) {
     // Open the group in the browser the button was pressed.
+    // NOTE: This action could cause `this` to be deleted. Make sure lines
+    // following this have either copied data by value or hold pointers to the
+    // objects it needs.
     service_->OpenSavedTabGroupInBrowser(browser_with_local_group_id, guid_);
   }
 
   // Move the open group to a new browser window.
-  const SavedTabGroup* group = service_->model()->Get(guid_);
   browser_with_local_group_id->tab_strip_model()
       ->delegate()
       ->MoveGroupToNewWindow(group->local_group_id().value());
