@@ -30,6 +30,7 @@ class LocalHttpServer:
     __start_time: datetime
 
     __path_base = "/"
+    __path_favicon = "/favicon.ico"
     __path_200 = "/200"
     __path_permanent_redirect = "/301"
     __path_basic_auth = "/401"
@@ -52,6 +53,12 @@ class LocalHttpServer:
             .respond_with_data(
                 html_doc("I prevent CORS"),
                 headers={"Content-Type": "text/html"})
+
+        self.__http_server \
+            .expect_request(self.__path_favicon) \
+            .respond_with_data(
+                "",
+                headers={"Content-Type": "image/x-icon"})
 
         # Set up 200 page.
         self.__http_server \
