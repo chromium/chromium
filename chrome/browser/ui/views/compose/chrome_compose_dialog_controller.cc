@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/compose/chrome_compose_dialog_controller.h"
 
+#include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -79,16 +80,9 @@ void ChromeComposeDialogController::ShowComposeDialog(
 
     if (base::FeatureList::IsEnabled(
             compose::features::kEnableComposeSavedStateNotification)) {
-      // Prevent closing when losing focus to show saved state notification.
-      bubble_->set_close_on_deactivate(false);
-
-      // Observe parent widget for resize and repositioning events.
-      if (bubble_->GetWidget() && bubble_->GetWidget()->parent()) {
-        widget_observation_.Observe(bubble_->GetWidget()->parent());
+      if (bubble_->GetWidget()) {
+        widget_observation_.Observe(bubble_->GetWidget());
       }
-
-      zoom_observation_.Observe(
-          zoom::ZoomController::FromWebContents(web_contents_.get()));
     }
   } else {
     compose::LogOpenComposeDialogResult(
@@ -104,7 +98,9 @@ ChromeComposeDialogController::GetBubbleWrapper() const {
   return nullptr;
 }
 
-void ChromeComposeDialogController::ShowUI() {
+void ChromeComposeDialogController::ShowUI(
+    base::OnceClosure focus_lost_callback) {
+  focus_lost_callback_ = std::move(focus_lost_callback);
   if (bubble_) {
     bubble_->ShowUI();
   }
@@ -114,7 +110,7 @@ void ChromeComposeDialogController::ShowUI() {
 void ChromeComposeDialogController::Close() {
   // This will no-op if there is no observation.
   widget_observation_.Reset();
-  zoom_observation_.Reset();
+  focus_lost_callback_.Reset();
   auto* wrapper = GetBubbleWrapper();
   if (wrapper) {
     wrapper->CloseUI();
@@ -125,38 +121,12 @@ bool ChromeComposeDialogController::IsDialogShowing() {
   return bubble_ && !bubble_->GetWidget()->IsClosed();
 }
 
-void ChromeComposeDialogController::OnWidgetBoundsChanged(
-    views::Widget* widget,
-    const gfx::Rect& new_bounds) {
-  if (base::FeatureList::IsEnabled(
-          compose::features::kEnableComposeSavedStateNotification) &&
-      IsDialogShowing() && widget == bubble_->GetWidget()->parent()) {
-    // Resizing or repositioning the parent view should close the compose
-    // dialog since it does not yet follow the associated HTML element.
-    Close();
-  }
-}
-
 void ChromeComposeDialogController::OnWidgetDestroying(views::Widget* widget) {
+  if (focus_lost_callback_) {
+    std::move(focus_lost_callback_).Run();
+  }
   // This will no-op if there is no observation.
   widget_observation_.Reset();
-}
-
-void ChromeComposeDialogController::OnZoomChanged(
-    const zoom::ZoomController::ZoomChangedEventData& data) {
-  if (base::FeatureList::IsEnabled(
-          compose::features::kEnableComposeSavedStateNotification) &&
-      IsDialogShowing()) {
-    // Zooming should close the compose dialog since it does not yet change
-    // position to follow the associated HTML element.
-    Close();
-  }
-}
-
-void ChromeComposeDialogController::OnZoomControllerDestroyed(
-    zoom::ZoomController* zoom_controller) {
-  // This will no-op if there is no observation.
-  zoom_observation_.Reset();
 }
 
 ChromeComposeDialogController::ChromeComposeDialogController(

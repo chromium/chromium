@@ -188,6 +188,10 @@ class ChromeComposeClient
   // `active_compose_form_id_`.
   void RemoveAllSessions();
 
+  // Shows the saved state notification for the active session if valid,
+  // otherwise noop.
+  void ShowSavedStateNotification();
+
   // Returns nullptr if no such session exists.
   ComposeSession* GetSessionForActiveComposeField();
 

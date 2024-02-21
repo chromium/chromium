@@ -5,14 +5,17 @@
 #ifndef COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_DIALOG_CONTROLLER_H_
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_DIALOG_CONTROLLER_H_
 
+#include "base/functional/callback_forward.h"
+
 namespace compose {
 
 // The interface for embedder-independent dialog controllers.
 class ComposeDialogController {
  public:
   virtual ~ComposeDialogController() = default;
-  // Shows the compose dialog.
-  virtual void ShowUI() = 0;
+  // Shows the compose dialog. `focus_lost_callback` is called when the compose
+  // dialog loses focus.
+  virtual void ShowUI(base::OnceClosure focus_lost_callback) = 0;
   // Closes the compose dialog.
   virtual void Close() = 0;
   // Returns true when the dialog is showing and false otherwise.

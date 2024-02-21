@@ -172,7 +172,9 @@ bool ChromeComposeClient::HasSession(
 
 void ChromeComposeClient::ShowUI() {
   if (compose_dialog_controller_) {
-    compose_dialog_controller_->ShowUI();
+    compose_dialog_controller_->ShowUI(
+        base::BindOnce(&ChromeComposeClient::ShowSavedStateNotification,
+                       weak_ptr_factory_.GetWeakPtr()));
     compose::LogComposeDialogOpenLatency(base::TimeTicks::Now() -
                                          show_dialog_start_);
   }
@@ -431,6 +433,20 @@ void ChromeComposeClient::RemoveAllSessions() {
 
   sessions_.erase(sessions_.begin(), sessions_.end());
   active_compose_ids_.reset();
+}
+
+void ChromeComposeClient::ShowSavedStateNotification() {
+  // As a callback, this method may be called at anytime. But it only shows the
+  // notification for the most recently used field if valid, otherwise it noops.
+  if (!active_compose_ids_.has_value()) {
+    return;
+  }
+  if (auto* autofill_client =
+          autofill::ContentAutofillClient::FromWebContents(&GetWebContents())) {
+    autofill_client->ShowComposeFadingPopup(
+        /*form_id=*/active_compose_ids_->second,
+        /*field_id=*/active_compose_ids_->first);
+  }
 }
 
 ComposeSession* ChromeComposeClient::GetSessionForActiveComposeField() {
