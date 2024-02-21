@@ -24,6 +24,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
+import org.chromium.ui.widget.Toast;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -131,8 +133,18 @@ public class WebApkValidator {
         return null;
     }
 
+    private static void showDeprecationWarning(Context context, String appName) {
+        assert ThreadUtils.runningOnUiThread();
+        String text =
+                context.getResources()
+                        .getString(R.string.webapk_mapsgo_deprecation_warning, appName);
+        Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
     /**
-     * Whether the given package corresponds to a WebAPK that can handle the URL.
+     * Whether the given package corresponds to a WebAPK that can handle the URL. If the
+     * corresponding WebAPK is valid but out of date, show a deprecation warning.
      *
      * @param context The application context.
      * @param webApkPackage The package to consider.
@@ -142,9 +154,22 @@ public class WebApkValidator {
     public static boolean canWebApkHandleUrl(Context context, String webApkPackage, String url) {
         List<ResolveInfo> infos = resolveInfosForUrlAndOptionalPackage(context, url, webApkPackage);
         for (ResolveInfo info : infos) {
-            if (info.activityInfo != null
-                    && isValidWebApk(context, info.activityInfo.packageName)) {
-                return true;
+            if (info.activityInfo != null) {
+                @ValidationResult
+                int result = isValidWebApkInternal(context, info.activityInfo.packageName);
+                switch (result) {
+                    case ValidationResult.FAILURE:
+                        continue;
+                    case ValidationResult.MAPS_LITE:
+                        String name = info.loadLabel(context.getPackageManager()).toString();
+                        showDeprecationWarning(context, name);
+                        return false;
+                    case ValidationResult.V1_WEB_APK:
+                    case ValidationResult.COMMENT_SIGNED:
+                        return true;
+                    default:
+                        assert false;
+                }
             }
         }
         return false;
@@ -274,6 +299,7 @@ public class WebApkValidator {
             if (DEBUG) {
                 Log.d(TAG, "Matches Maps Lite");
             }
+
             return ValidationResult.MAPS_LITE;
         }
         if (verifyCommentSignedWebApk(packageInfo)) {
