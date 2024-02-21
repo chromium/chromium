@@ -34,6 +34,13 @@ ClientPermissionState GetClientPermissionState(
     const std::string& gaia_id,
     PrefService* pref_service);
 
+// Returns whether the push notification permission statuses aggregated across
+// multiple clients are enabled or disabled.
+ClientPermissionState GetClientPermissionStateForMultipleClients(
+    std::vector<PushNotificationClientId> client_ids,
+    const std::string& gaia_id,
+    PrefService* pref_service);
+
 // Returns whether the push notification permission status is enabled for any
 // client for mobile notifications.
 BOOL IsMobileNotificationsEnabledForAnyClient(const std::string& gaia_id,
