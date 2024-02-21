@@ -9,8 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.thatMatchesFirst;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -171,7 +171,11 @@ public class AccountManagementFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
-        onView(thatMatchesFirst(withText(accountInfo.getFullName()))).check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                isDescendantOfA(withId(android.R.id.list_container)),
+                                withText(accountInfo.getFullName())))
+                .check(matches(isDisplayed()));
         onView(withText(accountInfo.getEmail())).check(doesNotExist());
     }
 
@@ -202,7 +206,10 @@ public class AccountManagementFragmentTest {
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         onView(withText(accountInfo.getEmail())).check(doesNotExist());
-        onView(thatMatchesFirst(withText(R.string.default_google_account_username)))
+        onView(
+                        allOf(
+                                isDescendantOfA(withId(android.R.id.list_container)),
+                                withText(R.string.default_google_account_username)))
                 .check(matches(isDisplayed()));
     }
 

@@ -57,6 +57,14 @@ _IGNORE_WARNINGS = (
     r'OnBackAnimationCallback',
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
+
+    # Ignore MethodParameter attribute count isn't matching in espresso.
+    # This is a banner warning and each individual file affected will have
+    # its own warning.
+    r'Warning: Invalid parameter counts in MethodParameter attributes',
+    r'Warning in obj/third_party/androidx/androidx_test_espresso_espresso_core_java',  # pylint: disable=line-too-long
+    r'Warning in obj/third_party/androidx/androidx_test_espresso_espresso_web_java',  # pylint: disable=line-too-long
+
     # We are following up in b/290389974
     r'AppSearchDocumentClassMap\.class:.*Could not inline ServiceLoader\.load',
 )

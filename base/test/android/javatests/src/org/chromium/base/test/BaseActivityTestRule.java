@@ -18,12 +18,11 @@ import androidx.annotation.Nullable;
 import androidx.test.espresso.contrib.AccessibilityChecks;
 import androidx.test.runner.lifecycle.Stage;
 
-import com.google.android.apps.common.testing.accessibility.framework.ClickableSpanViewCheck;
-import com.google.android.apps.common.testing.accessibility.framework.DuplicateClickableBoundsViewCheck;
-import com.google.android.apps.common.testing.accessibility.framework.EditableContentDescViewCheck;
-import com.google.android.apps.common.testing.accessibility.framework.SpeakableTextPresentInfoCheck;
-import com.google.android.apps.common.testing.accessibility.framework.SpeakableTextPresentViewCheck;
-import com.google.android.apps.common.testing.accessibility.framework.TouchTargetSizeViewCheck;
+import com.google.android.apps.common.testing.accessibility.framework.checks.ClickableSpanCheck;
+import com.google.android.apps.common.testing.accessibility.framework.checks.DuplicateClickableBoundsCheck;
+import com.google.android.apps.common.testing.accessibility.framework.checks.EditableContentDescCheck;
+import com.google.android.apps.common.testing.accessibility.framework.checks.SpeakableTextPresentCheck;
+import com.google.android.apps.common.testing.accessibility.framework.checks.TouchTargetSizeCheck;
 
 import org.junit.Assert;
 import org.junit.rules.TestRule;
@@ -84,23 +83,16 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
                     .setSuppressingResultMatcher(
                             anyOf(
                                     matchesCheckNames(
-                                            is(TouchTargetSizeViewCheck.class.getSimpleName())),
+                                            is(TouchTargetSizeCheck.class.getSimpleName())),
+                                    matchesCheckNames(is(ClickableSpanCheck.class.getSimpleName())),
                                     matchesCheckNames(
-                                            is(ClickableSpanViewCheck.class.getSimpleName())),
-                                    matchesCheckNames(
-                                            is(EditableContentDescViewCheck.class.getSimpleName())),
+                                            is(EditableContentDescCheck.class.getSimpleName())),
                                     matchesCheckNames(
                                             is(
-                                                    DuplicateClickableBoundsViewCheck.class
+                                                    DuplicateClickableBoundsCheck.class
                                                             .getSimpleName())),
                                     matchesCheckNames(
-                                            is(
-                                                    SpeakableTextPresentInfoCheck.class
-                                                            .getSimpleName())),
-                                    matchesCheckNames(
-                                            is(
-                                                    SpeakableTextPresentViewCheck.class
-                                                            .getSimpleName()))));
+                                            is(SpeakableTextPresentCheck.class.getSimpleName()))));
         } catch (IllegalStateException e) {
             // Suppress IllegalStateException for AccessibilityChecks already enabled.
         }

@@ -94,7 +94,7 @@ robolectric_library("junit") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
-    "//third_party/espresso:espresso_core_java",
+    "//third_party/androidx:androidx_test_espresso_espresso_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
