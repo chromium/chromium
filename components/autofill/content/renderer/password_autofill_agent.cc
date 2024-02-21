@@ -682,8 +682,6 @@ PasswordAutofillAgent::PasswordAutofillAgent(
     : content::RenderFrameObserver(render_frame),
       last_supplied_password_info_iter_(web_input_to_password_info_.end()),
       logging_state_active_(false),
-      username_autofill_state_(WebAutofillState::kNotFilled),
-      password_autofill_state_(WebAutofillState::kNotFilled),
       sent_request_to_store_(false),
       checked_safe_browsing_reputation_(false),
       password_generation_agent_(nullptr) {
@@ -911,6 +909,23 @@ void PasswordAutofillAgent::FillIntoFocusedField(
   FillPasswordFieldAndSave(&focused_input_element, credential);
 }
 
+void PasswordAutofillAgent::DoPreviewField(WebInputElement& input,
+                                           const std::u16string& credential,
+                                           bool is_password) {
+  CHECK(!input.IsNull());
+  previewed_elements_.emplace_back(PreviewInfo{
+      .field_id = form_util::GetFieldRendererId(input),
+      .autofill_state = input.GetAutofillState(),
+      .prefix_length = input.Value().Utf16().length(),
+      .is_password = is_password,
+  });
+  input.SetSuggestedValue(WebString::FromUTF16(credential));
+  if (!is_password) {
+    form_util::PreviewSuggestion(input.SuggestedValue().Utf16(),
+                                 input.Value().Utf16(), input);
+  }
+}
+
 void PasswordAutofillAgent::FillField(WebInputElement* input,
                                       const std::u16string& credential) {
   DCHECK(input);
@@ -933,8 +948,8 @@ void PasswordAutofillAgent::FillPasswordFieldAndSave(
 
 bool PasswordAutofillAgent::PreviewSuggestion(
     const WebFormControlElement& control_element,
-    const WebString& username,
-    const WebString& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   // The element in context of the suggestion popup.
   const WebInputElement element = control_element.DynamicTo<WebInputElement>();
   if (element.IsNull())
@@ -956,37 +971,47 @@ bool PasswordAutofillAgent::PreviewSuggestion(
     if (username_query_prefix_.empty())
       username_query_prefix_ = username_element.Value().Utf16();
 
-    username_autofill_state_ = username_element.GetAutofillState();
-    username_element.SetSuggestedValue(username);
-    form_util::PreviewSuggestion(username_element.SuggestedValue().Utf16(),
-                                 username_query_prefix_, username_element);
+    DoPreviewField(username_element, username, /*is_password=*/false);
   }
   if (!password_element.IsNull()) {
-    password_autofill_state_ = password_element.GetAutofillState();
-    password_element.SetSuggestedValue(password);
+    DoPreviewField(password_element, password, /*is_password=*/false);
   }
 
   return true;
 }
 
-bool PasswordAutofillAgent::DidClearAutofillSelection(
+bool PasswordAutofillAgent::ClearPreviewedForm(
     const WebFormControlElement& control_element) {
-  const WebInputElement element = control_element.DynamicTo<WebInputElement>();
-  if (element.IsNull())
-    return false;
+  for (const PreviewInfo& preview_info : previewed_elements_) {
+    WebInputElement element =
+        form_util::GetFormControlByRendererId(preview_info.field_id)
+            .DynamicTo<WebInputElement>();
+    if (element.IsNull()) {
+      continue;
+    }
+    if (preview_info.is_password &&
+        base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
+      element.SetShouldShowStrongPasswordLabel(false);
+    }
+    element.SetSuggestedValue(WebString());
+    element.SetAutofillState(preview_info.autofill_state);
+    if (!preview_info.is_password) {
+      element.SetSelectionRange(
+          base::checked_cast<unsigned>(preview_info.prefix_length),
+          base::checked_cast<unsigned>(element.Value().length()));
+    }
+  }
+  previewed_elements_.clear();
 
+  // TODO(b/325464792): Remove this cache access and make function return void.
+  const WebInputElement element = control_element.DynamicTo<WebInputElement>();
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info;
-
-  if (!FindPasswordInfoForElement(element, UseFallbackData(true),
-                                  &username_element, &password_element,
-                                  &password_info)) {
-    return false;
-  }
-
-  ClearPreview(&username_element, &password_element);
-  return true;
+  return !element.IsNull() &&
+         FindPasswordInfoForElement(element, UseFallbackData(true),
+                                    &username_element, &password_element,
+                                    &password_info);
 }
 
 bool PasswordAutofillAgent::FindPasswordInfoForElement(
@@ -1721,8 +1746,7 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   last_supplied_password_info_iter_ = web_input_to_password_info_.end();
   should_show_popup_without_passwords_ = false;
   field_data_manager().ClearData();
-  username_autofill_state_ = WebAutofillState::kNotFilled;
-  password_autofill_state_ = WebAutofillState::kNotFilled;
+  previewed_elements_.clear();
   sent_request_to_store_ = false;
   checked_safe_browsing_reputation_ = false;
   username_query_prefix_.clear();
@@ -1740,23 +1764,6 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
 #endif
 }
 
-void PasswordAutofillAgent::ClearPreview(WebInputElement* username,
-                                         WebInputElement* password) {
-  if (!username->IsNull() && !username->SuggestedValue().IsEmpty()) {
-    username->SetSuggestedValue(WebString());
-    username->SetAutofillState(username_autofill_state_);
-    username->SetSelectionRange(
-        base::checked_cast<unsigned>(username_query_prefix_.length()),
-        base::checked_cast<unsigned>(username->Value().length()));
-  }
-  if (!password->IsNull() && !password->SuggestedValue().IsEmpty()) {
-    if (base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
-      password->SetShouldShowStrongPasswordLabel(false);
-    }
-    password->SetSuggestedValue(WebString());
-    password->SetAutofillState(password_autofill_state_);
-  }
-}
 void PasswordAutofillAgent::InformBrowserAboutUserInput(
     const WebFormElement& form,
     const WebInputElement& element) {

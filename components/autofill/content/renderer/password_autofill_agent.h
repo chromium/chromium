@@ -169,14 +169,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Previews the username and password fields of this form with the given
   // values. Returns true if the fields were previewed, false otherwise.
   bool PreviewSuggestion(const blink::WebFormControlElement& node,
-                         const blink::WebString& username,
-                         const blink::WebString& password);
+                         const std::u16string& username,
+                         const std::u16string& password);
 
-  // Clears the preview for the username and password fields, restoring both to
-  // their previous filled state. Return false if no login information was
-  // found for the form.
-  bool DidClearAutofillSelection(
-      const blink::WebFormControlElement& control_element);
+  // Clears all the previously previewed fields.
+  bool ClearPreviewedForm(const blink::WebFormControlElement& control_element);
 
   // Sends a reputation check request in case if `element` has type password and
   // no check request were sent from this frame load.
@@ -300,6 +297,14 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     std::vector<FormFieldInfo> fields;
   };
 
+  // Stores information about fields previewed by this agent.
+  struct PreviewInfo {
+    FieldRendererId field_id;
+    blink::WebAutofillState autofill_state;
+    size_t prefix_length;
+    bool is_password;
+  };
+
   // This class keeps track of autofilled username and password input elements
   // and ensures that the autofilled values are not accessible to JavaScript
   // code until the user interacts with the page. This restriction improves
@@ -379,10 +384,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // document or closing the frame.
   void CleanupOnDocumentShutdown();
 
-  // Clears the preview for the username and password fields, restoring both to
-  // their previous filled state.
-  void ClearPreview(blink::WebInputElement* username,
-                    blink::WebInputElement* password);
+  // Sets suggested value of the `input` to `credential`. Persists the
+  // information about `input` to clear the previewed value in the future.
+  void DoPreviewField(blink::WebInputElement& input,
+                      const std::u16string& credential,
+                      bool is_password);
 
   // Checks that a given input field is valid before filling the given `input`
   // with the given `credential` and marking the field as auto-filled.
@@ -491,12 +497,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // True indicates that user debug information should be logged.
   bool logging_state_active_;
 
-  // Indicates whether the field is filled, previewed, or not filled by
-  // autofill.
-  blink::WebAutofillState username_autofill_state_;
-  // Indicates whether the field is filled, previewed, or not filled by
-  // autofill.
-  blink::WebAutofillState password_autofill_state_;
+  std::vector<PreviewInfo> previewed_elements_;
 
   // True indicates that a request for credentials has been sent to the store.
   bool sent_request_to_store_;

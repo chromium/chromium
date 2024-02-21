@@ -711,8 +711,9 @@ void AutofillAgent::ClearPreviewedForm() {
           last_queried_element)) {
     return;
   }
-  if (password_autofill_agent_->DidClearAutofillSelection(
-          last_queried_element)) {
+  // TODO(b/326213028): Clear fields previewed by `PasswordAutofillAgent`
+  // directly using `PasswordAutofillAgent`.
+  if (password_autofill_agent_->ClearPreviewedForm(last_queried_element)) {
     return;
   }
   std::vector<std::pair<WebFormControlElement, WebAutofillState>>
@@ -872,8 +873,7 @@ void AutofillAgent::PreviewPasswordSuggestion(const std::u16string& username,
   }
 
   bool handled = password_autofill_agent_->PreviewSuggestion(
-      last_queried_element, WebString::FromUTF16(username),
-      WebString::FromUTF16(password));
+      last_queried_element, username, password);
   DCHECK(handled);
 }
 
