@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
 
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -111,6 +112,17 @@ WebAppSettingsPageHandler::WebAppSettingsPageHandler(
 
 WebAppSettingsPageHandler::~WebAppSettingsPageHandler() = default;
 
+void WebAppSettingsPageHandler::GetSubAppToParentMap(
+    GetSubAppToParentMapCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void WebAppSettingsPageHandler::GetExtensionAppPermissionMessages(
+    const std::string& app_id,
+    GetExtensionAppPermissionMessagesCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void WebAppSettingsPageHandler::SetPinned(const std::string& app_id,
                                           bool pinned) {
   NOTIMPLEMENTED();
@@ -158,6 +170,10 @@ void WebAppSettingsPageHandler::GetOverlappingPreferredApps(
           },
           app_id),
       std::move(callback), /*arg_for_shutdown=*/std::vector<std::string>());
+}
+
+void WebAppSettingsPageHandler::UpdateAppSize(const std::string& app_id) {
+  NOTIMPLEMENTED();
 }
 
 void WebAppSettingsPageHandler::SetWindowMode(const std::string& app_id,

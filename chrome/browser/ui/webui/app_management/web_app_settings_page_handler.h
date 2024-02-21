@@ -36,6 +36,10 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
   ~WebAppSettingsPageHandler() override;
 
   // app_management::mojom::PageHandler:
+  void GetExtensionAppPermissionMessages(
+      const std::string& app_id,
+      GetExtensionAppPermissionMessagesCallback callback) override;
+  void GetSubAppToParentMap(GetSubAppToParentMapCallback callback) override;
   void SetPinned(const std::string& app_id, bool pinned) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;
   void Uninstall(const std::string& app_id) override;
@@ -44,6 +48,7 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
   void GetOverlappingPreferredApps(
       const std::string& app_id,
       GetOverlappingPreferredAppsCallback callback) override;
+  void UpdateAppSize(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::WindowMode window_mode) override;
   void SetRunOnOsLoginMode(

@@ -11,14 +11,9 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/flat_map.h"
-#include "base/debug/dump_without_crashing.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
-#include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,16 +21,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registrar_observer.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
@@ -45,18 +33,13 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/permissions/permission_message.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/text/bytes_formatting.h"
 #include "ui/events/event_constants.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #include "url/gurl.h"
@@ -64,10 +47,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -94,17 +73,6 @@ constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
     arc::kPlayStoreAppId,
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-app_management::mojom::ExtensionAppPermissionMessagePtr
-CreateExtensionAppPermissionMessage(
-    const extensions::PermissionMessage& message) {
-  std::vector<std::string> submessages;
-  for (const auto& submessage : message.submessages()) {
-    submessages.push_back(base::UTF16ToUTF8(submessage));
-  }
-  return app_management::mojom::ExtensionAppPermissionMessage::New(
-      base::UTF16ToUTF8(message.message()), std::move(submessages));
-}
 
 bool ShouldHideMoreSettings(const std::string app_id) {
   return base::Contains(kAppIdsWithHiddenMoreSettings, app_id);
@@ -133,26 +101,6 @@ bool CanShowDefaultAppAssociationsUi() {
 #endif
 }
 
-std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
-  if (bytes.has_value()) {
-    // ui::FormatBytes requires a non-negative signed integer. In general, we
-    // expect that converting from unsigned to signed int here should always
-    // yield a positive value, since overflowing into negative would require an
-    // implausibly large app (2^63 bytes ~= 9 exabytes).
-    int64_t signed_bytes = static_cast<int64_t>(bytes.value());
-    if (signed_bytes < 0) {
-      // TODO(crbug.com/1418590): Investigate ARC apps which have negative data
-      // sizes.
-      LOG(ERROR) << "Invalid app size: " << signed_bytes;
-      base::debug::DumpWithoutCrashing();
-      return std::nullopt;
-    }
-    return base::UTF16ToUTF8(ui::FormatBytes(signed_bytes));
-  }
-
-  return std::nullopt;
-}
-
 }  // namespace
 
 AppManagementPageHandlerBase::~AppManagementPageHandlerBase() {}
@@ -178,61 +126,6 @@ void AppManagementPageHandlerBase::GetApp(const std::string& app_id,
   std::move(callback).Run(CreateApp(app_id));
 }
 
-void AppManagementPageHandlerBase::GetSubAppToParentMap(
-    GetSubAppToParentMapCallback callback) {
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  if (provider) {
-    // Web apps are managed in the current process (Ash or Lacros).
-    provider->scheduler().ScheduleCallbackWithResult(
-        "AppManagementPageHandlerBase::GetSubAppToParentMap",
-        web_app::AllAppsLockDescription(),
-        base::BindOnce(
-            [](web_app::AllAppsLock& lock, base::Value::Dict& debug_value) {
-              return lock.registrar().GetSubAppToParentMap();
-            }),
-        /*on_complete=*/std::move(callback),
-        /*arg_for_shutdown=*/base::flat_map<std::string, std::string>());
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Web app data needs to be fetched from the Lacros process.
-  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->web_app_service_ash()
-          ->GetWebAppProviderBridge();
-  if (web_app_provider_bridge) {
-    web_app_provider_bridge->GetSubAppToParentMap(std::move(callback));
-    return;
-  }
-  LOG(ERROR) << "Could not find WebAppProviderBridge.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Reaching here means that WebAppProviderBridge and WebAppProvider were both
-  // not found.
-  std::move(callback).Run(base::flat_map<std::string, std::string>());
-}
-
-void AppManagementPageHandlerBase::GetExtensionAppPermissionMessages(
-    const std::string& app_id,
-    GetExtensionAppPermissionMessagesCallback callback) {
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile_);
-  const extensions::Extension* extension = registry->GetExtensionById(
-      app_id, extensions::ExtensionRegistry::ENABLED |
-                  extensions::ExtensionRegistry::DISABLED |
-                  extensions::ExtensionRegistry::BLOCKLISTED);
-  std::vector<app_management::mojom::ExtensionAppPermissionMessagePtr> messages;
-  if (extension) {
-    for (const auto& message :
-         extension->permissions_data()->GetPermissionMessages()) {
-      messages.push_back(CreateExtensionAppPermissionMessage(message));
-    }
-  }
-  std::move(callback).Run(std::move(messages));
-}
-
 void AppManagementPageHandlerBase::SetPermission(
     const std::string& app_id,
     apps::PermissionPtr permission) {
@@ -244,11 +137,6 @@ void AppManagementPageHandlerBase::OpenNativeSettings(
     const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->OpenNativeSettings(
       app_id);
-}
-
-void AppManagementPageHandlerBase::UpdateAppSize(const std::string& app_id) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->UpdateAppSize(app_id);
 }
 
 void AppManagementPageHandlerBase::SetFileHandlingEnabled(
@@ -321,9 +209,6 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
   app->version = update.Version();
 
   app->description = update.Description();
-
-  app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
-  app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
 
   app->hide_more_settings = ShouldHideMoreSettings(app->id);
   app->hide_pin_to_shelf =

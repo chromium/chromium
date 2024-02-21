@@ -48,14 +48,9 @@ class AppManagementPageHandlerBase : public app_management::mojom::PageHandler,
   // app_management::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;
   void GetApp(const std::string& app_id, GetAppCallback callback) override;
-  void GetSubAppToParentMap(GetSubAppToParentMapCallback callback) override;
-  void GetExtensionAppPermissionMessages(
-      const std::string& app_id,
-      GetExtensionAppPermissionMessagesCallback callback) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;
   void OpenNativeSettings(const std::string& app_id) override;
-  void UpdateAppSize(const std::string& app_id) override;
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
 
  protected:
