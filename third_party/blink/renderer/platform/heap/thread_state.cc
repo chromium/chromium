@@ -141,33 +141,6 @@ ThreadState::~ThreadState() {
   ThreadStateStorage::DetachNonMainThread(*ThreadStateStorage::Current());
 }
 
-void ThreadState::SafePoint(StackState stack_state) {
-  DCHECK(IsCreationThread());
-  if (stack_state != ThreadState::StackState::kNoHeapPointers)
-    return;
-
-  if (forced_scheduled_gc_for_testing_) {
-    CollectAllGarbageForTesting(stack_state);
-    forced_scheduled_gc_for_testing_ = false;
-  }
-}
-
-void ThreadState::NotifyGarbageCollection(v8::GCType type,
-                                          v8::GCCallbackFlags flags) {
-  if (flags & v8::kGCCallbackFlagForced) {
-    // Forces a precise GC at the end of the current event loop. This is
-    // required for testing code that cannot use GC internals but rather has
-    // to rely on window.gc(). Only schedule additional GCs if the last GC was
-    // using conservative stack scanning.
-    if (type == v8::kGCTypeScavenge || type == v8::kGCTypeMinorMarkSweep) {
-      forced_scheduled_gc_for_testing_ = true;
-    } else if (type == v8::kGCTypeMarkSweepCompact) {
-      forced_scheduled_gc_for_testing_ =
-          cppgc::subtle::HeapState::PreviousGCWasConservative(heap_handle());
-    }
-  }
-}
-
 void ThreadState::CollectAllGarbageForTesting(StackState stack_state) {
   size_t previous_live_bytes = 0;
   for (size_t i = 0; i < 5; i++) {

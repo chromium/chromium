@@ -53,8 +53,8 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
-#include "third_party/blink/renderer/platform/heap/gc_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
@@ -132,8 +132,6 @@ class IdleDelayedTaskHelper : public base::SingleThreadTaskRunner {
 
 static Platform* g_platform = nullptr;
 
-static GCTaskRunner* g_gc_task_runner = nullptr;
-
 static bool did_initialize_blink_ = false;
 
 Platform::Platform() = default;
@@ -192,8 +190,6 @@ void Platform::InitializeMainThreadCommon(
   font_family_names::Init();
   InitializePlatformLanguage();
 
-  DCHECK(!g_gc_task_runner);
-  g_gc_task_runner = new GCTaskRunner(Thread::MainThread());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       PartitionAllocMemoryDumpProvider::Instance(), "PartitionAlloc",
       base::SingleThreadTaskRunner::GetCurrentDefault());

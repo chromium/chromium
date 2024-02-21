@@ -136,11 +136,6 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
 
   ScriptForbiddenScope::Exit();
 
-  ThreadState* current_thread_state = ThreadState::Current();
-  if (current_thread_state) {
-    current_thread_state->NotifyGarbageCollection(type, flags);
-  }
-
   TRACE_EVENT_INSTANT1(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",
       TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {

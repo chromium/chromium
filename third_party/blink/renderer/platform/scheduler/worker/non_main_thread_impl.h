@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/renderer/platform/heap/gc_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -133,7 +132,6 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
     ~GCSupport();
 
    private:
-    std::unique_ptr<GCTaskRunner> gc_task_runner_;
     std::unique_ptr<BlinkGCMemoryDumpProvider> blink_gc_memory_dump_provider_;
   };
 

@@ -52,7 +52,6 @@ blink_platform_sources("heap") {
     "disallow_new_wrapper.h",
     "forward.h",
     "garbage_collected.h",
-    "gc_task_runner.h",
     "heap_allocator_impl.h",
     "heap_traits.h",
     "member.h",

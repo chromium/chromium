@@ -3640,7 +3640,9 @@ crbug.com/764489 editing/execCommand/format-block-multiple-paragraphs-in-pre.htm
 # Previous/NextWordPosition crossing editing boundaries.
 crbug.com/900060 editing/selection/mixed-editability-8.html [ Failure ]
 
-
+# Synchronous GC is not enough to reclaim memory here. The tests need rewriting, see bug.
+crbug.com/326091483 external/wpt/webmessaging/message-channels/close-event/garbage-collected.tentative.any.html [ Timeout ]
+crbug.com/326091483 external/wpt/webmessaging/message-channels/close-event/garbage-collected.tentative.any.worker.html [ Timeout ]
 
 # Sheriff failures 2017-09-21
 crbug.com/767469 http/tests/navigation/start-load-during-provisional-loader-detach.html [ Failure Pass ]
