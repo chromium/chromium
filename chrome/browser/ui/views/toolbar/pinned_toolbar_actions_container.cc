@@ -340,11 +340,15 @@ int PinnedToolbarActionsContainer::OnDragUpdated(
   const int offset_into_icon_area = GetMirroredXInView(event.x());
   const size_t before_icon_unclamped = WidthToIconCount(offset_into_icon_area);
 
-  const size_t visible_pinned_icons = pinned_buttons_.size();
+  const size_t visible_pinned_icons = base::ranges::count_if(
+      pinned_buttons_,
+      [](PinnedActionToolbarButton* button) { return button->GetVisible(); });
+  const size_t button_offset = pinned_buttons_.size() - visible_pinned_icons;
 
   // Because the user can drag outside the container bounds, we need to clamp
   // to the valid range.
-  before_icon = std::min(before_icon_unclamped, visible_pinned_icons - 1);
+  before_icon =
+      std::min(before_icon_unclamped, visible_pinned_icons - 1) + button_offset;
 
   if (!drop_info_.get() || drop_info_->index != before_icon) {
     drop_info_ = std::make_unique<DropInfo>(
