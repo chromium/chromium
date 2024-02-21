@@ -5,6 +5,7 @@
 #include "ash/system/notification_center/views/notification_list_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/system_notification_builder.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
@@ -782,6 +783,45 @@ TEST_P(NotificationListViewTest, OnChildNotificationViewUpdated) {
   EXPECT_TRUE(child_view);
   EXPECT_EQ(new_title,
             child_view->GetTitleRowLabelForTest()->GetDisplayTextForTesting());
+}
+
+// Tests that the view animates when notification contents are updated.
+TEST_P(NotificationListViewTest, AnimatesOnNotificationUpdated) {
+  // Skip the test when `NotificationCenterController` is enabled since the
+  // controller is not created in this test.
+  if (IsNotificationCenterControllerEnabled()) {
+    GTEST_SKIP();
+  }
+
+  const std::string id = "id";
+  // Create and add a notification without a `message` to the `MessageCenter`.
+  auto notification =
+      ash::SystemNotificationBuilder()
+          .SetId(id)
+          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
+          .SetTitle(u"Title")
+          .BuildPtr(
+              /*keep_timestamp=*/false);
+  MessageCenter::Get()->AddNotification(std::move(notification));
+
+  // Ensure the notification list does not animate when being created.
+  CreateMessageListView();
+  EXPECT_FALSE(IsAnimating());
+
+  // Update the notification by attempting to create a new notification with the
+  // same id, but it now has a non-empty `message`.
+  auto updated_notification =
+      ash::SystemNotificationBuilder()
+          .SetId(id)
+          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
+          .SetTitle(u"Title")
+          .SetMessage(u"Message")
+          .BuildPtr(
+              /*keep_timestamp=*/false);
+  MessageCenter::Get()->AddNotification(std::move(updated_notification));
+
+  // Ensure the notification list animated to fit the new contents.
+  EXPECT_TRUE(IsAnimating());
 }
 
 // Tests that preferred size changes upon toggle of expand/collapse.

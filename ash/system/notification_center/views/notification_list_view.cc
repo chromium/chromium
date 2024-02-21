@@ -888,6 +888,8 @@ void NotificationListView::OnNotificationUpdated(const std::string& id) {
   found_child->UpdateWithNotification(*notification);
   if (found_child->GetPreferredSize().height() != previous_height) {
     ResetBounds();
+    state_ = State::MOVE_DOWN;
+    StartAnimation();
   }
 }
 
