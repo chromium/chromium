@@ -176,6 +176,12 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void FallbackToNonInterceptedRequest(
       ResponseHeadUpdateParams head_update_params);
 
+  void CreateThrottlingLoaderAndStart(
+      scoped_refptr<network::SharedURLLoaderFactory> factory,
+      std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+          additional_throttles,
+      uint32_t options = network::mojom::kURLLoadOptionNone);
+
 #if BUILDFLAG(ENABLE_PLUGINS)
   void CheckPluginAndContinueOnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
