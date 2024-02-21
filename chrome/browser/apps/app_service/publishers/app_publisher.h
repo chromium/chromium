@@ -70,21 +70,21 @@ class AppPublisher
   void RegisterPublisher(AppType app_type);
 #endif
 
-  // Requests an icon for an app identified by |app_id|. The icon is identified
-  // by |icon_key| and parameterised by |icon_type| and |size_hint_in_dp|. If
-  // |allow_placeholder_icon| is true, a default placeholder icon can be
-  // returned if no other icon is available. Calls |callback| with the result.
+  // Requests an icon for an app identified by `app_id`. The icon is identified
+  // by `icon_key` and parameterised by `icon_type` and `size_hint_in_dp`. If
+  // `allow_placeholder_icon` is true, a default placeholder icon can be
+  // returned if no other icon is available. Calls `callback` with the result.
   //
   // Publishers implementing this method should:
-  //  - provide an icon as closely sized to |size_hint_in_dp| as possible
-  //  - load from the specific resource ID if |icon_key.resource_id| is set
-  //  - may optionally use |icon_key|'s timeline property as a "version number"
+  //  - provide an icon as closely sized to `size_hint_in_dp` as possible
+  //  - load from the specific resource ID if `icon_key.resource_id` is set
+  //  - may optionally use `icon_key`'s timeline property as a "version number"
   //    for an icon. Alternatively, this may be ignored if there will only ever
   //    be one version of an icon at any time.
-  //  - optionally return a placeholder default icon if |allow_placeholder_icon|
+  //  - optionally return a placeholder default icon if `allow_placeholder_icon`
   //    is true and when no icon is available for the app (or an icon for the
-  //    app cannot be efficiently provided). Otherwise, a null icon should be
-  //    returned.
+  //    app cannot be efficiently provided). Otherwise, a null icon should
+  //    be returned.
   //
   // NOTE: On Ash, App Service will not call this method, and instead will call
   // `GetCompressedIconData()` to load raw icon data from the Publisher.
@@ -135,10 +135,10 @@ class AppPublisher
                                    WindowInfoPtr window_info,
                                    LaunchCallback callback);
 
-  // Launches an app with |params|.
+  // Launches an app with `params`.
   //
   // Publishers implementing this method should:
-  // - Launch the app represent by the |params.app_id|.
+  // - Launch the app represent by the `params.app_id`.
   // - Launch the app with all the params that is applicable to the platform.
   // - Return launch_result if applicable.
   virtual void LaunchAppWithParams(AppLaunchParams&& params,
@@ -148,23 +148,23 @@ class AppPublisher
                               const std::string& shortcut_id,
                               int64_t display_id) {}
 
-  // Sets |permission| for an app identified with |app_id|. Implemented if the
+  // Sets `permission` for an app identified with `app_id`. Implemented if the
   // publisher supports per-app permissions that are exposed in App Management.
   virtual void SetPermission(const std::string& app_id,
                              PermissionPtr permission);
 
-  // Directly uninstalls an app identified by |app_id| without prompting the
-  // user. |uninstall_source| indicates where the uninstallation came from.
-  // |clear_site_data| is available for web apps only. If true, any site
+  // Directly uninstalls an app identified by `app_id` without prompting the
+  // user. `uninstall_source` indicates where the uninstallation came from.
+  // `clear_site_data` is available for web apps only. If true, any site
   // data associated with the app will be removed.
-  // |report_abuse| is available for Chrome Apps only. If true, the app will be
+  // `report_abuse` is available for Chrome Apps only. If true, the app will be
   // reported for abuse to the Chrome Web Store.
   virtual void Uninstall(const std::string& app_id,
                          UninstallSource uninstall_source,
                          bool clear_site_data,
                          bool report_abuse);
 
-  // Requests that the app identified by |app_id| is marked as paused. Paused
+  // Requests that the app identified by `app_id` is marked as paused. Paused
   // apps cannot be launched. Implemented if the publisher supports the pausing
   // of apps, and otherwise should do nothing.
   //
@@ -173,7 +173,7 @@ class AppPublisher
   // is paused again.
   virtual void PauseApp(const std::string& app_id);
 
-  // Requests that the app identified by |app_id| is unpaused. Implemented if
+  // Requests that the app identified by `app_id` is unpaused. Implemented if
   // the publisher supports the pausing of apps, and otherwise should do
   // nothing.
   //
@@ -181,29 +181,29 @@ class AppPublisher
   // icon effect. Nothing should happen if an unpaused app is unpaused again.
   virtual void UnpauseApp(const std::string& app_id);
 
-  // Stops all running instances of |app_id|.
+  // Stops all running instances of `app_id`.
   virtual void StopApp(const std::string& app_id);
 
-  // Returns the menu items for an app with |app_id|.
+  // Returns the menu items for an app with `app_id`.
   virtual void GetMenuModel(const std::string& app_id,
                             MenuType menu_type,
                             int64_t display_id,
                             base::OnceCallback<void(MenuItems)> callback);
 
-  // Requests the size of an app with |app_id|. Publishers are expected to
+  // Requests the size of an app with `app_id`. Publishers are expected to
   // calculate and update the size of the app and publish this to App Service.
   // This allows app sizes to be requested on-demand and ensure up-to-date
   // values.
   virtual void UpdateAppSize(const std::string& app_id);
 
-  // Executes the menu item command for an app with |app_id|.
+  // Executes the menu item command for an app with `app_id`.
   virtual void ExecuteContextMenuCommand(const std::string& app_id,
                                          int command_id,
                                          const std::string& shortcut_id,
                                          int64_t display_id);
 
   // Opens the platform-specific settings page for the app identified by
-  // |app_id|, e.g. the Android Settings app for an ARC app, or the Chrome
+  // `app_id`, e.g. the Android Settings app for an ARC app, or the Chrome
   // browser settings for a web app. Implemented if those settings exist and
   // need to be accessible to users. Note this is not the same as the Chrome
   // OS-wide App Management page, which should be used by default. This method
@@ -211,21 +211,21 @@ class AppPublisher
   // available in App Management.
   virtual void OpenNativeSettings(const std::string& app_id);
 
-  // Indicates that the app identified by |app_id| has had its supported links
+  // Indicates that the app identified by `app_id` has had its supported links
   // preference changed, so that all supported link filters are either preferred
-  // (|open_in_app| is true) or not preferred (|open_in_app| is false). This
+  // (`open_in_app` is true) or not preferred (`open_in_app` is false). This
   // method is used by the App Service to sync changes to publishers, and is
   // called instead of OnPreferredAppSet for supported links changes.
   virtual void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                                  bool open_in_app) {}
 
-  // Enables resize lock mode for the app identified by |app_id|. When |locked|
+  // Enables resize lock mode for the app identified by `app_id`. When `locked`
   // is kTrue, this means the app cannot be resized and is locked to a certain
   // set of dimensions. Implemented if the publisher supports resize locking of
   // apps, and otherwise should do nothing.
   virtual void SetResizeLocked(const std::string& app_id, bool locked);
 
-  // Set the window display mode for the app identified by |app_id|. Implemented
+  // Set the window display mode for the app identified by `app_id`. Implemented
   // if the publisher supports changing the window mode of apps, and otherwise
   // should do nothing.
   virtual void SetWindowMode(const std::string& app_id, WindowMode window_mode);
