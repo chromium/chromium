@@ -153,8 +153,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // progress.
   void StopDeferringForThrottle(URLLoaderThrottle* throttle);
 
-  void RestartWithFlags(int additional_load_flags);
-
   // Restart the request using |original_url_|.
   void RestartWithURLResetAndFlags(int additional_load_flags);
 

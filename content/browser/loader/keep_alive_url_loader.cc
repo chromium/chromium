@@ -214,7 +214,6 @@ class KeepAliveURLLoader::ThrottleDelegate final
                          loader_->GetWeakPtr()));
     }
   }
-  void RestartWithFlags(int additional_load_flags) override { NOTREACHED(); }
   void RestartWithURLResetAndFlags(int additional_load_flags) override {
     NOTREACHED();
   }

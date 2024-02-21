@@ -24,10 +24,6 @@ void URLLoaderThrottle::Delegate::InterceptResponse(
   NOTIMPLEMENTED();
 }
 
-void URLLoaderThrottle::Delegate::RestartWithFlags(int additional_load_flags) {
-  NOTIMPLEMENTED();
-}
-
 void URLLoaderThrottle::Delegate::RestartWithURLResetAndFlags(
     int additional_load_flags) {
   NOTIMPLEMENTED();

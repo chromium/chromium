@@ -192,14 +192,6 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
                                original_client_receiver, body);
   }
 
-  void RestartWithFlags(int additional_load_flags) override {
-    if (!loader_)
-      return;
-
-    ScopedDelegateCall scoped_delegate_call(this);
-    loader_->RestartWithFlags(additional_load_flags);
-  }
-
   void RestartWithURLResetAndFlags(int additional_load_flags) override {
     if (!loader_)
       return;
@@ -625,11 +617,6 @@ void ThrottlingURLLoader::StopDeferringForThrottle(
   deferring_throttles_.erase(iter);
   if (deferring_throttles_.empty() && !loader_completed_)
     Resume();
-}
-
-void ThrottlingURLLoader::RestartWithFlags(int additional_load_flags) {
-  pending_restart_flags_ |= additional_load_flags;
-  has_pending_restart_ = true;
 }
 
 void ThrottlingURLLoader::RestartWithURLResetAndFlags(

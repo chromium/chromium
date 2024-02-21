@@ -75,10 +75,6 @@ class CheckForCancelledOrPausedDelegate
 
   void Resume() override {}
 
-  void RestartWithFlags(int additional_load_flags) override {
-    cancelled_or_paused_ = true;
-  }
-
   void RestartWithURLResetAndFlags(int additional_load_flags) override {
     cancelled_or_paused_ = true;
   }
