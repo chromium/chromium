@@ -11758,6 +11758,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "OmniboxPopupRowContentConfiguration",
                         "OmniboxSuggestionsRTLImprovements"
                     ]
                 }
