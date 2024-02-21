@@ -8,6 +8,7 @@ source_set("browser") {
     "key_loader.h",
     "key_loader_impl.h",
     "key_rotation_launcher.h",
+    "key_utils.h",
     "metrics_utils.h",
   ]
 
@@ -19,7 +20,6 @@ source_set("browser") {
     "key_rotation_launcher_impl.cc",
     "key_rotation_launcher_impl.h",
     "key_utils.cc",
-    "key_utils.h",
     "metrics_utils.cc",
   ]
 
