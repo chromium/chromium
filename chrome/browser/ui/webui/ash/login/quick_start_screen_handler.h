@@ -18,7 +18,7 @@ class LocalizedValuesBuilder;
 
 namespace ash {
 
-class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
+class QuickStartView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"quick-start",
                                                        "QuickStartScreen"};
@@ -40,11 +40,12 @@ class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
   virtual void SetUserEmail(const std::string email) = 0;
   virtual void SetUserFullName(const std::string full_name) = 0;
   virtual void SetUserAvatar(const std::string avatar_url) = 0;
+  virtual base::WeakPtr<QuickStartView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of QuickStartView.
-class QuickStartScreenHandler : public QuickStartView,
-                                public BaseScreenHandler {
+class QuickStartScreenHandler final : public QuickStartView,
+                                      public BaseScreenHandler {
  public:
   using TView = QuickStartView;
 
@@ -71,10 +72,14 @@ class QuickStartScreenHandler : public QuickStartView,
   void SetUserEmail(const std::string email) override;
   void SetUserFullName(const std::string full_name) override;
   void SetUserAvatar(const std::string avatar_url) override;
+  base::WeakPtr<QuickStartView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<QuickStartView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

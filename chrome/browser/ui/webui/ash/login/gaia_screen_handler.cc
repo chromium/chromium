@@ -1320,6 +1320,10 @@ void GaiaScreenHandler::Reset() {
   CallExternalAPI("reset");
 }
 
+base::WeakPtr<GaiaView> GaiaScreenHandler::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void GaiaScreenHandler::ShowSecurityTokenPinDialog(
     const std::string& /*caller_extension_name*/,
     chromeos::security_token_pin::CodeType code_type,

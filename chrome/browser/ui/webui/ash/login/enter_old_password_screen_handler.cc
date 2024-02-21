@@ -38,4 +38,9 @@ void EnterOldPasswordScreenHandler::ShowWrongPasswordError() {
   CallExternalAPI("showWrongPasswordError");
 }
 
+base::WeakPtr<EnterOldPasswordScreenView>
+EnterOldPasswordScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

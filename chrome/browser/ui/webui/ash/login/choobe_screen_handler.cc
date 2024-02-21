@@ -59,4 +59,8 @@ void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<ChoobeScreenView> ChoobeScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

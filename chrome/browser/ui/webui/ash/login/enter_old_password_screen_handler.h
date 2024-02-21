@@ -10,8 +10,7 @@
 
 namespace ash {
 
-class EnterOldPasswordScreenView
-    : public base::SupportsWeakPtr<EnterOldPasswordScreenView> {
+class EnterOldPasswordScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "enter-old-password", "EnterOldPasswordScreen"};
@@ -24,11 +23,12 @@ class EnterOldPasswordScreenView
 
   virtual void Show() = 0;
   virtual void ShowWrongPasswordError() = 0;
+  virtual base::WeakPtr<EnterOldPasswordScreenView> AsWeakPtr() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
-class EnterOldPasswordScreenHandler : public BaseScreenHandler,
-                                      public EnterOldPasswordScreenView {
+class EnterOldPasswordScreenHandler final : public BaseScreenHandler,
+                                            public EnterOldPasswordScreenView {
  public:
   using TView = EnterOldPasswordScreenView;
 
@@ -41,12 +41,15 @@ class EnterOldPasswordScreenHandler : public BaseScreenHandler,
   ~EnterOldPasswordScreenHandler() override;
 
  private:
-  // EnterOldPasswordView:
+  // EnterOldPasswordScreenView:
   void Show() override;
   void ShowWrongPasswordError() override;
+  base::WeakPtr<EnterOldPasswordScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(::login::LocalizedValuesBuilder* builder) final;
+
+  base::WeakPtrFactory<EnterOldPasswordScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

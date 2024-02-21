@@ -43,7 +43,7 @@ namespace ash {
 class PublicSamlUrlFetcher;
 class ErrorScreensHistogramHelper;
 
-class GaiaView : public base::SupportsWeakPtr<GaiaView> {
+class GaiaView {
  public:
   enum class GaiaLoginVariant {
     // These values are persisted to logs. Entries should not be renumbered and
@@ -110,10 +110,13 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
 
   // Reset authenticator.
   virtual void Reset() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<GaiaView> AsWeakPtr() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
-class GaiaScreenHandler
+class GaiaScreenHandler final
     : public BaseScreenHandler,
       public GaiaView,
       public chromeos::SecurityTokenPinDialogHost,
@@ -166,6 +169,7 @@ class GaiaScreenHandler
   void SetIsGaiaPasswordRequired(bool is_required) override;
 
   void Reset() override;
+  base::WeakPtr<GaiaView> AsWeakPtr() override;
 
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(

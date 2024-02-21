@@ -20,6 +20,10 @@ void WrongHWIDScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<WrongHWIDScreenView> WrongHWIDScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void WrongHWIDScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("wrongHWIDScreenHeader", IDS_WRONG_HWID_SCREEN_HEADER);

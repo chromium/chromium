@@ -24,6 +24,11 @@ void ThemeSelectionScreenHandler::Show(base::Value::Dict data) {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<ThemeSelectionScreenView>
+ThemeSelectionScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ThemeSelectionScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("themeSelectionScreenTitle", IDS_THEME_SELECTION_TITLE);

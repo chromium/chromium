@@ -16,8 +16,7 @@ class ThemeSelectionScreen;
 
 // Interface between ThemeSelection screen and its representation,
 // either WebUI or Views one.
-class ThemeSelectionScreenView
-    : public base::SupportsWeakPtr<ThemeSelectionScreenView> {
+class ThemeSelectionScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"theme-selection",
                                                 "ThemeSelectionScreen"};
@@ -29,10 +28,11 @@ class ThemeSelectionScreenView
   virtual ~ThemeSelectionScreenView() = default;
 
   virtual void Show(base::Value::Dict data) = 0;
+  virtual base::WeakPtr<ThemeSelectionScreenView> AsWeakPtr() = 0;
 };
 
-class ThemeSelectionScreenHandler : public ThemeSelectionScreenView,
-                                    public BaseScreenHandler {
+class ThemeSelectionScreenHandler final : public ThemeSelectionScreenView,
+                                          public BaseScreenHandler {
  public:
   using TView = ThemeSelectionScreenView;
 
@@ -46,10 +46,14 @@ class ThemeSelectionScreenHandler : public ThemeSelectionScreenView,
 
   // ThemeSelectionScreenView implementation
   void Show(base::Value::Dict data) override;
+  base::WeakPtr<ThemeSelectionScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler implementation
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<ThemeSelectionScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -77,6 +77,10 @@ void QuickStartScreenHandler::SetUserAvatar(const std::string avatar_url) {
   CallExternalAPI("setUserAvatarUrl", avatar_url);
 }
 
+base::WeakPtr<QuickStartView> QuickStartScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void QuickStartScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("quickStartSetupQrTitle", IDS_LOGIN_QUICK_START_SETUP_QR_TITLE);
