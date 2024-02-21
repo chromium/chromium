@@ -27,6 +27,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
@@ -203,6 +205,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
   MOCK_METHOD2(CheckCsdAllowlistUrl,
                AsyncMatch(const GURL&, SafeBrowsingDatabaseManager::Client*));
+  MOCK_CONST_METHOD1(CanCheckUrl, bool(const GURL&));
 
  protected:
   ~MockSafeBrowsingDatabaseManager() override {}
@@ -358,12 +361,14 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   }
 
   void PhishingDetectionDone(const std::string& verdict_str) {
-    csd_host_->PhishingDetectionDone(mojom::PhishingDetectorResult::SUCCESS,
+    csd_host_->PhishingDetectionDone(ClientSideDetectionType::TRIGGER_MODELS,
+                                     mojom::PhishingDetectorResult::SUCCESS,
                                      verdict_str);
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
-    csd_host_->PhishingDetectionDone(error, "");
+    csd_host_->PhishingDetectionDone(ClientSideDetectionType::TRIGGER_MODELS,
+                                     error, "");
   }
 
   void ExpectPreClassificationChecks(const GURL& url,
@@ -381,6 +386,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
       EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _))
           .WillOnce(Return(*match_csd_allowlist ? AsyncMatch::MATCH
                                                 : AsyncMatch::NO_MATCH));
+      EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+          .WillOnce(Return(true));
     }
     if (get_valid_cached_result) {
       EXPECT_CALL(*csd_service_, GetValidCachedResult(url, NotNull()))
@@ -1160,7 +1167,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
     histogram_tester.ExpectUniqueSample(
-        "SBClientPhishing.PhishingDetectorResult",
+        "SBClientPhishing.PhishingDetectorResult.TriggerModel",
         mojom::PhishingDetectorResult::SUCCESS, 1);
   }
 
@@ -1173,7 +1180,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
     histogram_tester.ExpectUniqueSample(
-        "SBClientPhishing.PhishingDetectorResult",
+        "SBClientPhishing.PhishingDetectorResult.TriggerModel",
         mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, 1);
   }
 
@@ -1187,7 +1194,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
     histogram_tester.ExpectUniqueSample(
-        "SBClientPhishing.PhishingDetectorResult",
+        "SBClientPhishing.PhishingDetectorResult.TriggerModel",
         mojom::PhishingDetectorResult::FORWARD_BACK_TRANSITION, 1);
   }
 }
@@ -1198,7 +1205,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PhishingDetectionDuration", 0);
+      "SBClientPhishing.PhishingDetectionDuration.TriggerModel", 0);
 
   GURL start_url("http://safe.example.com/");
   ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
@@ -1206,7 +1213,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
   NavigateAndCommit(start_url);
   WaitAndCheckPreClassificationChecks();
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PhishingDetectionDuration", 1);
+      "SBClientPhishing.PhishingDetectionDuration.TriggerModel", 1);
 
   GURL url("http://phishing.example.com/");
   ClientPhishingRequest verdict;
@@ -1224,10 +1231,11 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
   PhishingDetectionDone(verdict.SerializeAsString());
 
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PhishingDetectionDuration", 3);
+      "SBClientPhishing.PhishingDetectionDuration.TriggerModel", 3);
   EXPECT_LE(duration.InMilliseconds(),
             histogram_tester
-                .GetAllSamples("SBClientPhishing.PhishingDetectionDuration")
+                .GetAllSamples(
+                    "SBClientPhishing.PhishingDetectionDuration.TriggerModel")
                 .front()
                 .min);
 }
@@ -1252,6 +1260,174 @@ TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
   ASSERT_EQ(1, verdict_sent->population().page_load_tokens_size());
+}
+
+class ClientSideDetectionHostNotificationTest
+    : public ClientSideDetectionHostTest {
+ public:
+  ClientSideDetectionHostNotificationTest() = default;
+
+  void SetUp() override {
+    ClientSideDetectionHostTest::SetUp();
+
+    SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+    SetFeatures({kClientSideDetectionNotificationPrompt}, {});
+
+    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+    auto* manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents());
+    manager->set_enabled_app_level_notification_permission_for_testing(true);
+    prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+    // Set the prefs and feature and then register the request manager because
+    // this is set up on tab start, but the prefs were not set when the test is
+    // created.
+    csd_host_->RegisterPermissionRequestManager();
+    manager->clear_permission_ui_selector_for_testing();
+  }
+
+  void TearDown() override {
+    prompt_factory_.reset();
+    ClientSideDetectionHostTest::TearDown();
+  }
+
+  void PhishingDetectionDone(const std::string& verdict_str) {
+    csd_host_->PhishingDetectionDone(
+        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
+        mojom::PhishingDetectorResult::SUCCESS, verdict_str);
+  }
+
+  void PhishingDetectionError(mojom::PhishingDetectorResult error) {
+    csd_host_->PhishingDetectionDone(
+        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT, error, "");
+  }
+
+  void WaitForBubbleToBeShown() {
+    auto* manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents());
+    manager->DocumentOnLoadCompletedInPrimaryMainFrame();
+    task_environment()->RunUntilIdle();
+  }
+
+ protected:
+  std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
+};
+
+TEST_F(ClientSideDetectionHostNotificationTest,
+       NotificationPermissionPromptTriggersClassificationRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // First navigate to a page, which should trigger preclassification check.
+  GURL url("http://example.com/");
+  ExpectPreClassificationChecks(
+      url, /*is_private=*/&kFalse, /*match_csd_allowlist=*/&kFalse,
+      /*get_valid_cached_result=*/&kFalse, /*is_in_cache=*/&kFalse,
+      /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
+
+  // Second, create a permission request that's specifically notifications, and
+  // add to the request manager, which should also trigger a preclassification
+  // check, this will skip the expect call for GetValidCachedResult.
+  ExpectPreClassificationChecks(
+      url, /*is_private=*/&kFalse, /*match_csd_allowlist=*/&kFalse,
+      /*get_valid_cached_result=*/nullptr, /*is_in_cache=*/&kFalse,
+      /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
+
+  ClientPhishingRequest verdict;
+  verdict.set_client_score(0.8f);
+
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(
+                  PartiallyEqualVerdict(verdict), _,
+                  "fake_access_token_notification_permission_prompt"));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  permissions::MockPermissionRequest request1(
+      url, permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE);
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  manager->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1);
+
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_TRUE(prompt_factory_->RequestTypeSeen(request1.request_type()));
+  ASSERT_EQ(prompt_factory_->request_count(), 1);
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_notification_permission_prompt");
+
+  manager->Accept();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(request1.granted());
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.NotificationPermissionPrompt",
+      1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT, 1);
+  // Below histogram checks that there has been two classification requests.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 2);
+}
+
+TEST_F(ClientSideDetectionHostNotificationTest,
+       NotPhishingVerdictSendsPingFromNotificationPermissionPrompt) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  verdict.set_client_side_detection_type(
+      ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT);
+
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(
+                  PartiallyEqualVerdict(verdict), _,
+                  "fake_access_token_notification_permission_prompt"));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  // Make the call.
+  PhishingDetectionDone(verdict.SerializeAsString());
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_notification_permission_prompt");
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT, 1);
 }
 
 class ClientSideDetectionHostDebugFeaturesTest

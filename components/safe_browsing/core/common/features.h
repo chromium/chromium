@@ -29,6 +29,10 @@ BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 // OptimizationGuide.
 BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 
+// Expand CSD-Phishing beyond phishing and trigger when a notification prompt
+// occurs on the page.
+BASE_DECLARE_FEATURE(kClientSideDetectionNotificationPrompt);
+
 // Creates and sends CSBRRs when notification permissions are accepted for an
 // abusive site whose interstitial has been bypassed.
 BASE_DECLARE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports);
