@@ -36,6 +36,7 @@ class PinTextfield : public views::Textfield {
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
+  void OnThemeChanged() override;
 
  private:
   // Render text for each of the pin cells.

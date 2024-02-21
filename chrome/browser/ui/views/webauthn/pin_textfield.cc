@@ -7,9 +7,13 @@
 #include "base/strings/strcat.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -20,13 +24,14 @@ constexpr int kCellHeight = 36;
 constexpr int kCellSpacing = 8;
 
 // Creates obscured render text for displaying a glyph in a specific pin cell.
-// TODO(rgod): Add correct font.
-std::unique_ptr<gfx::RenderText> CreatePinDigitRenderText() {
+std::unique_ptr<gfx::RenderText> CreatePinDigitRenderText(
+    const gfx::FontList& font_list) {
   std::unique_ptr<gfx::RenderText> render_text =
       gfx::RenderText::CreateRenderText();
   render_text->SetCursorEnabled(false);
   render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   render_text->SetObscured(true);
+  render_text->SetFontList(font_list);
   return render_text;
 }
 
@@ -39,8 +44,11 @@ PinTextfield::PinTextfield(int pin_digits_amount)
   SetCursorEnabled(false);
   SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 
+  const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_TEXTFIELD,
+      views::style::TextStyle::STYLE_BODY_1_BOLD);
   for (int i = 0; i < pin_digits_count_; i++) {
-    render_texts_.push_back(CreatePinDigitRenderText());
+    render_texts_.push_back(CreatePinDigitRenderText(font_list));
   }
 }
 
@@ -99,6 +107,17 @@ gfx::Size PinTextfield::CalculatePreferredSize() const {
   return gfx::Size(
       pin_digits_count_ * kCellWidth + (pin_digits_count_ - 1) * kCellSpacing,
       kCellHeight);
+}
+
+void PinTextfield::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  SkColor text_color =
+      GetColorProvider()->GetColor(views::TypographyProvider::Get().GetColorId(
+          views::style::CONTEXT_TEXTFIELD, views::style::STYLE_PRIMARY));
+  for (int i = 0; i < pin_digits_count_; i++) {
+    render_texts_[i]->SetColor(text_color);
+  }
 }
 
 BEGIN_METADATA(PinTextfield)
