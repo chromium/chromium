@@ -17,5 +17,5 @@ declare_args() {
   # feature is enabled for the PDF viewer.
   enable_ink = enable_cros_media_app
 
-  enable_pdf = !is_android && !is_ios && !is_castos
+  enable_pdf = !is_android && !is_ios && !is_castos && !is_fuchsia
 }
