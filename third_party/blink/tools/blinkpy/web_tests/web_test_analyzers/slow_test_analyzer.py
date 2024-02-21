@@ -25,9 +25,7 @@ import argparse
 import re
 import urllib.parse
 
-from blinkpy.common.host import Host
-from blinkpy.common.net.luci_auth import LuciAuth
-from blinkpy.w3c.monorail import MonorailAPI
+from blinkpy.w3c.buganizer import BuganizerClient
 from blinkpy.web_tests.web_test_analyzers import analyzer
 from blinkpy.web_tests.web_test_analyzers import data_types
 from blinkpy.web_tests.web_test_analyzers import queries
@@ -98,13 +96,9 @@ def main() -> int:
                 for test_id in bug['test_ids']
             ]
             if bug['bug_id']:
-                # Only check for monorail for now.
-                bug_id = bug['bug_id'].partition('chromium/')[2]
-                if bug_id:
-                    bugs[bug_id] = test_path_list
+                bugs[bug['bug_id']] = test_path_list
         if args.attach_analysis_result:
-            token = LuciAuth(Host()).get_access_token()
-            monorail_api = MonorailAPI(access_token=token)
+            buganizer_api = BuganizerClient()
     else:
         bugs = {'': [args.test_path]}
 
@@ -126,16 +120,14 @@ def main() -> int:
         # Attach the analysis result for this bug.
         if bug_id and args.attach_analysis_result and bug_result_string:
             bug_result_string = RESULT_TITLE + bug_result_string
-            if RESULT_TITLE not in str(
-                    monorail_api.get_comment_list('chromium', bug_id)):
-                monorail_api.insert_comment('chromium', bug_id,
-                                            bug_result_string)
+            if RESULT_TITLE not in str(buganizer_api.GetIssueComments(bug_id)):
+                buganizer_api.NewComment(bug_id, bug_result_string)
                 bug_ids.append(bug_id)
 
     # Insert bug attachment results to database.
     if bug_ids:
         querier_instance.insert_web_test_analyzer_result(
-            data_types.SLOW_TEST_ANALYZER, data_types.MONORAIL, bug_ids)
+            data_types.SLOW_TEST_ANALYZER, data_types.BUGANIZER, bug_ids)
 
     return 0
 

@@ -44,6 +44,7 @@ TestSlownessData = namedtuple(
     ['builder', 'slow_count', 'slow_ratio', 'timeout_count', 'avg_duration'])
 
 MONORAIL = 'Monorail'
+BUGANIZER = 'Buganizer'
 FUZZY_DIFF_ANALYZER = 'fuzzy_diff_analyzer'
 SLOW_TEST_ANALYZER = 'slow_test_analyzer'
 
