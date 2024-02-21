@@ -450,22 +450,27 @@ interface MyAppElement {
 }
 ```
 
-* Use `this.foo` instead of `newFoo` arguments in observers when possible.
-  This makes changing the type of `this.foo` easier (as the `@type` is
-  duplicated in less places, i.e. `@param`).
+* Use `this.foo` instead of `newFoo` arguments when possible in observers,
+  property computation methods, and in element instance methods called from
+  HTML.
 
-```js
-static get properties() {
-  return {
-    foo: {type: Number, observer: 'fooChanged_'},
-  };
-}
+  The signature of the `computeBar_()` function in the TS file does not matter,
+  so omit parameters there, as they would be unused. What matters is for the
+  call site to declare the right properties as dependencies, so that the
+  binding correctly triggers whenever it changes.
 
-/** @private */
-fooChanged_() {
-  this.bar = this.derive(this.foo);
-}
-```
+  ```ts
+  static get properties() {
+    return {
+      foo: {type: Number, value: 42},
+      bar: {type: Boolean, computed: 'computeBar_(foo)'},
+    };
+  }
+
+  private computeBar_(): boolean {
+    return this.derive(this.foo);
+  }
+  ```
 
 * Use native `on-click` for click events instead of `on-tap`. 'tap' is a
   synthetic event provided by Polymer for backward compatibility with some
