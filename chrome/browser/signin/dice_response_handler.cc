@@ -450,23 +450,28 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
     const std::vector<signin::DiceResponseParams::AccountInfo>& account_infos) {
   VLOG(1) << "Start processing Dice signout response";
 
-  // If there is a restriction on removing the primary account. Do not remove
-  // the account regardless of the consent level. Else, the sync account can
-  // only be invalidated.
-  signin::ConsentLevel level =
-      signin_client_->IsClearPrimaryAccountAllowed(
-          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
-          ? signin::ConsentLevel::kSync
-          : signin::ConsentLevel::kSignin;
+  // In some cases, the primary account can only be invalidated:
+  // - There is a sync primary account
+  // - Browser explicit sign in is enabled, setting/clearing the primary account
+  //   requires explicit user action through chrome UI.
+  // - If there is a policy restriction on removing the primary account.
+  bool invalidate_only_primary_account =
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull) ||
+      !signin_client_->IsClearPrimaryAccountAllowed(
+          /*has_sync_account=*/false);
 
-  CoreAccountId primary_account = identity_manager_->GetPrimaryAccountId(level);
+  CoreAccountId primary_account =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   bool primary_account_signed_out = false;
   auto* accounts_mutator = identity_manager_->GetAccountsMutator();
   for (const auto& account_info : account_infos) {
     CoreAccountId signed_out_account =
         identity_manager_->PickAccountIdForAccount(account_info.gaia_id,
                                                    account_info.email);
-    if (signed_out_account == primary_account) {
+    if (invalidate_only_primary_account &&
+        signed_out_account == primary_account) {
       primary_account_signed_out = true;
       RecordDiceResponseHeader(kSignoutPrimary);
 
@@ -492,8 +497,9 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
     }
   }
 
-  if (!primary_account_signed_out)
+  if (!primary_account_signed_out) {
     RecordDiceResponseHeader(kSignoutSecondary);
+  }
 }
 
 void DiceResponseHandler::DeleteTokenFetcher(DiceTokenFetcher* token_fetcher) {
