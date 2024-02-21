@@ -255,6 +255,17 @@ TEST_F(ImmersiveModeControllerChromeosTest, LayeredSpinners) {
   EXPECT_TRUE(tabstrip->CanPaintThrobberToLayer());
 }
 
+// Ensure SetEnable is called when needed even when the previous request is
+// passed from different client.
+TEST_F(ImmersiveModeControllerChromeosTest, CallEnableForWidgetWhenNeeded) {
+  ASSERT_FALSE(controller()->IsEnabled());
+  chromeos::ImmersiveFullscreenController::EnableForWidget(
+      browser_view()->frame(), /*enabled=*/true);
+  ASSERT_TRUE(controller()->IsEnabled());
+  controller()->SetEnabled(/*enabled=*/false);
+  ASSERT_FALSE(controller()->IsEnabled());
+}
+
 class ImmersiveModeControllerChromeosWebUITabStripTest
     : public ImmersiveModeControllerChromeosTest {
  public:

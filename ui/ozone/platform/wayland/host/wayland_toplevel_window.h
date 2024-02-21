@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 
 #include "base/memory/raw_ptr.h"
@@ -270,6 +271,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   // This is used to detect fullscreen type changes from the Aura side
   // to inform Lacros clients from the asynchronous task completion.
   PlatformFullscreenType fullscreen_type_ = PlatformFullscreenType::kNone;
+
+  // The flag that indicates the last requested immersive fullscreen status from
+  // SetImmersiveFullscreenStatue to detect the immersive status changes. Set to
+  // null if it had never been called.
+  std::optional<bool> last_requested_immersive_status_ = std::nullopt;
 
   // Unique ID for this window. May be shared over non-Wayland IPC transports
   // (e.g. mojo) to identify the window.

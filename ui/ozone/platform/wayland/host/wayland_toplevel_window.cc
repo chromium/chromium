@@ -842,6 +842,12 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
+  // Skip if `status` is same as the last request.
+  if (last_requested_immersive_status_ == status) {
+    return;
+  }
+  last_requested_immersive_status_ = std::make_optional(status);
+
   if (shell_toplevel_) {
     shell_toplevel_->SetUseImmersiveMode(status);
   } else {
