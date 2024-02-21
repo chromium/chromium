@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.FaviconAvailability"
-    enum="SupervisedUserFaviconAvailability" expires_after="2024-04-28">
+    enum="SupervisedUserFaviconAvailability" expires_after="2024-12-12">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ChromeOS.FamilyLinkUser.ParentAccessWidgetShowDialogError.{FlowType}"
     enum="FamilyLinkUserParentAccessWidgetShowDialogError"
-    expires_after="2024-02-20">
+    expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
