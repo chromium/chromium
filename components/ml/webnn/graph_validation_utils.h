@@ -11,33 +11,24 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/types/expected.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace webnn {
 
+// TODO: crbug.com/325598628 - Consider removing this struct, which has diverged
+// from its corresponding mojo definition.
+//
 // The struct defined in this file need to be synced with,
 // - "services/webnn/public/mojom/webnn_graph.mojom"
 //
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
 struct Operand {
-  // Represents the `MLOperandDataType` in the WebIDL definition.
-  enum DataType {
-    kMinValue = 0,
-    kFloat32 = 0,
-    kFloat16,
-    kInt32,
-    kUint32,
-    kInt64,
-    kUint64,
-    kInt8,
-    kUint8,
-    kMaxValue = kUint8,
-  };
-
-  Operand(DataType data_type, std::vector<uint32_t> dimensions);
+  Operand(mojom::Operand::DataType data_type, std::vector<uint32_t> dimensions);
   // Used for converting MLOperand to the component::Operand.
-  Operand(DataType data_type, base::span<const uint32_t> dimensions);
+  Operand(mojom::Operand::DataType data_type,
+          base::span<const uint32_t> dimensions);
   ~Operand();
 
   Operand(Operand&& other);
@@ -50,42 +41,40 @@ struct Operand {
   Operand& operator=(const Operand&) = delete;
 
   // The data type of the operand.
-  DataType data_type;
+  mojom::Operand::DataType data_type;
   // The dimensions of the operand.
   std::vector<uint32_t> dimensions;
 };
 
-using DataTypeConstraintSet = base::EnumSet<Operand::DataType,
-                                            Operand::DataType::kMinValue,
-                                            Operand::DataType::kMaxValue>;
+using DataTypeConstraintSet =
+    base::EnumSet<mojom::Operand::DataType,
+                  mojom::Operand::DataType::kMinValue,
+                  mojom::Operand::DataType::kMaxValue>;
 
 namespace DataTypeConstraint {
 
-static constexpr DataTypeConstraintSet kFloat = {Operand::DataType::kFloat32,
-                                                 Operand::DataType::kFloat16};
+static constexpr DataTypeConstraintSet kFloat = {
+    mojom::Operand::DataType::kFloat32, mojom::Operand::DataType::kFloat16};
 
 static constexpr DataTypeConstraintSet kSignedInteger = {
-    Operand::DataType::kInt32, Operand::DataType::kInt64,
-    Operand::DataType::kInt8};
+    mojom::Operand::DataType::kInt32, mojom::Operand::DataType::kInt64,
+    mojom::Operand::DataType::kInt8};
 
 static constexpr DataTypeConstraintSet kSignedNumber = {
-    Operand::DataType::kFloat32, Operand::DataType::kFloat16,
-    Operand::DataType::kInt32, Operand::DataType::kInt64,
-    Operand::DataType::kInt8};
+    mojom::Operand::DataType::kFloat32, mojom::Operand::DataType::kFloat16,
+    mojom::Operand::DataType::kInt32, mojom::Operand::DataType::kInt64,
+    mojom::Operand::DataType::kInt8};
 
 static constexpr DataTypeConstraintSet kGatherOperatorIndexDataTypes = {
-    Operand::DataType::kInt32, Operand::DataType::kUint32,
-    Operand::DataType::kInt64, Operand::DataType::kUint64};
+    mojom::Operand::DataType::kInt32, mojom::Operand::DataType::kUint32,
+    mojom::Operand::DataType::kInt64, mojom::Operand::DataType::kUint64};
 
 }  // namespace DataTypeConstraint
 
+std::string DataTypeToString(mojom::Operand::DataType data_type);
+
 std::string DataTypeConstraintToString(
     const DataTypeConstraintSet& constraint_set);
-
-// Represents the `MLInputOperandLayout` that specifies the layout format of
-// the input tensor. N is the batch, C is input channels, H is height and W is
-// the width of the tensor.
-enum class InputOperandLayout { kNchw, kNhwc };
 
 // Represents the `MLConv2dFilterOperandLayout` that specifies the layout format
 // of the filter tensor. O is output channels, I is input channels / groups, H
@@ -108,19 +97,6 @@ enum class RoundingType { kFloor, kCeil };
 // Represents the `MLRecurrentNetworkDirection` that specifies the processing
 // direction of the input sequence.
 enum class RecurrentNetworkDirection { kForward, kBackward, kBoth };
-
-enum ReduceKind {
-  kL1,
-  kL2,
-  kLogSum,
-  kLogSumExp,
-  kMax,
-  kMean,
-  kMin,
-  kProduct,
-  kSum,
-  kSumSquare
-};
 
 // A size has height and width values.
 template <typename T>
@@ -183,7 +159,8 @@ struct Conv2dAttributesBase {
   // into.
   uint32_t groups = 1;
   // The layout format of the input.
-  InputOperandLayout input_layout = InputOperandLayout::kNchw;
+  mojom::InputOperandLayout input_layout =
+      mojom::InputOperandLayout::kChannelsFirst;
   // The additional 1-D tensor with the shape of [output_channels] whose values
   // are to be added to the convolution result.
   std::optional<Operand> bias_operand;
@@ -240,7 +217,7 @@ struct Pool2dAttributes {
   // The automatic input padding options.
   AutoPad auto_pad = AutoPad::kExplicit;
   // The layout format of the input.
-  InputOperandLayout layout = InputOperandLayout::kNchw;
+  mojom::InputOperandLayout layout = mojom::InputOperandLayout::kChannelsFirst;
   // The rounding function used to compute the output shape.
   RoundingType rounding_type = RoundingType::kFloor;
   // The element height and width of the output tensor.
@@ -289,7 +266,7 @@ struct InstanceNormalizationAttributes {
   // The bias operand.
   std::optional<Operand> bias;
   // The layout format of the input.
-  InputOperandLayout layout = InputOperandLayout::kNchw;
+  mojom::InputOperandLayout layout = mojom::InputOperandLayout::kChannelsFirst;
 };
 
 // Contains the attributes of layerNormalization operator.
@@ -504,7 +481,7 @@ base::expected<Operand, std::string> ValidateSliceAndInferOutput(
 // Validate and infer output information of reduce operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce
 base::expected<Operand, std::string> ValidateReduceAndInferOutput(
-    ReduceKind kind,
+    mojom::Reduce::Kind kind,
     const Operand& input,
     base::span<const uint32_t> axes,
     bool keepDimensions = false);
@@ -581,7 +558,7 @@ base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
     const uint32_t dilation,
     const uint32_t output_padding);
 
-bool IsFloatingPointType(Operand::DataType data_type);
+bool IsFloatingPointType(mojom::Operand::DataType data_type);
 
 }  // namespace webnn
 

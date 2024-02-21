@@ -239,14 +239,14 @@ ValidateAndGetConv2dInputInfo(const Operand& input,
   // The input layout option specifies the layout format of the input tensor.
   uint32_t batches, channels, height, width;
   switch (attributes.input_layout) {
-    case InputOperandLayout::kNchw:
+    case mojom::InputOperandLayout::kChannelsFirst:
       // "nchw": [batches, input_channels, height, width]
       batches = input_shape[0];
       channels = input_shape[1];
       height = input_shape[2];
       width = input_shape[3];
       break;
-    case InputOperandLayout::kNhwc:
+    case mojom::InputOperandLayout::kChannelsLast:
       // "nhwc": [batches, height, width, input_channels]
       batches = input_shape[0];
       height = input_shape[1];
@@ -286,12 +286,12 @@ base::expected<Operand, std::string> ValidateConv2dBiasAndCreateOutputOperand(
   // The input layout option specifies the layout format of the output tensor.
   std::vector<uint32_t> output_shape;
   switch (attributes.input_layout) {
-    case InputOperandLayout::kNchw:
+    case mojom::InputOperandLayout::kChannelsFirst:
       // "nchw": [batches, output_channels, height, width]
       output_shape = {output_info.batches, output_info.channels,
                       output_info.height, output_info.width};
       break;
-    case InputOperandLayout::kNhwc:
+    case mojom::InputOperandLayout::kChannelsLast:
       // "nhwc": [batches, height, width, output_channels]
       output_shape = {output_info.batches, output_info.height,
                       output_info.width, output_info.channels};
@@ -333,7 +333,7 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
     const Operand& operand,
     const char* operand_name,
     base::span<const uint32_t> expected_shape,
-    Operand::DataType input_data_type) {
+    mojom::Operand::DataType input_data_type) {
   const auto& operand_dimensions = operand.dimensions;
   if (operand_dimensions.size() != expected_shape.size()) {
     return base::unexpected(
@@ -355,12 +355,14 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
 
 }  // namespace
 
-Operand::Operand(DataType data_type, std::vector<uint32_t> dimensions) {
+Operand::Operand(mojom::Operand::DataType data_type,
+                 std::vector<uint32_t> dimensions) {
   this->data_type = data_type;
   this->dimensions = std::move(dimensions);
 }
 
-Operand::Operand(DataType data_type, base::span<const uint32_t> dimensions) {
+Operand::Operand(mojom::Operand::DataType data_type,
+                 base::span<const uint32_t> dimensions) {
   this->data_type = data_type;
   this->dimensions.assign(dimensions.begin(), dimensions.end());
 }
@@ -378,23 +380,23 @@ bool Operand::operator!=(const Operand& other) const {
   return !(*this == other);
 }
 
-std::string DataTypeToString(Operand::DataType data_type) {
+std::string DataTypeToString(mojom::Operand::DataType data_type) {
   switch (data_type) {
-    case Operand::DataType::kFloat32:
+    case mojom::Operand::DataType::kFloat32:
       return "float32";
-    case Operand::DataType::kFloat16:
+    case mojom::Operand::DataType::kFloat16:
       return "float16";
-    case Operand::DataType::kInt32:
+    case mojom::Operand::DataType::kInt32:
       return "int32";
-    case Operand::DataType::kUint32:
+    case mojom::Operand::DataType::kUint32:
       return "uint32";
-    case Operand::DataType::kInt64:
+    case mojom::Operand::DataType::kInt64:
       return "int64";
-    case Operand::DataType::kUint64:
+    case mojom::Operand::DataType::kUint64:
       return "uint64";
-    case Operand::DataType::kInt8:
+    case mojom::Operand::DataType::kInt8:
       return "int8";
-    case Operand::DataType::kUint8:
+    case mojom::Operand::DataType::kUint8:
       return "uint8";
   }
   NOTREACHED_NORETURN();
@@ -437,7 +439,7 @@ base::expected<Operand, std::string> ValidateArgMinMaxAndInferOutput(
     return base::unexpected(validated_output_shape.error());
   }
 
-  return Operand(Operand::DataType::kInt64,
+  return Operand(mojom::Operand::DataType::kInt64,
                  std::move(validated_output_shape.value()));
 }
 
@@ -511,7 +513,7 @@ base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
 base::expected<void, std::string>
 ValidateNormalizationOperandIsCompatibleWithInput(
     const Operand& operand,
-    const Operand::DataType input_data_type,
+    const mojom::Operand::DataType input_data_type,
     size_t input_size_on_axis) {
   if (operand.data_type != input_data_type) {
     return base::unexpected("the data type doesn't match the input data type.");
@@ -935,14 +937,14 @@ base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
   // The layout option specifies the layout format of the input tensor.
   uint32_t input_batches, input_channels, input_height, input_width;
   switch (attributes.layout) {
-    case InputOperandLayout::kNchw:
+    case mojom::InputOperandLayout::kChannelsFirst:
       // "nchw": [batches, channels, height, width]
       input_batches = input_shape[0];
       input_channels = input_shape[1];
       input_height = input_shape[2];
       input_width = input_shape[3];
       break;
-    case InputOperandLayout::kNhwc:
+    case mojom::InputOperandLayout::kChannelsLast:
       // "nhwc": [batches, height, width, channels]
       input_batches = input_shape[0];
       input_height = input_shape[1];
@@ -1028,12 +1030,12 @@ base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
   // The layout option specifies the layout format of the output tensor.
   std::vector<uint32_t> output_shape;
   switch (attributes.layout) {
-    case InputOperandLayout::kNchw:
+    case mojom::InputOperandLayout::kChannelsFirst:
       // "nchw": [batches, channels, height, width]
       output_shape = {input_batches, input_channels, output_height,
                       output_width};
       break;
-    case InputOperandLayout::kNhwc:
+    case mojom::InputOperandLayout::kChannelsLast:
       // "nhwc": [batches, height, width, channels]
       output_shape = {input_batches, output_height, output_width,
                       input_channels};
@@ -1269,10 +1271,10 @@ ValidateInstanceNormalizationAndInferOutput(
 
   uint32_t axis;
   switch (attributes.layout) {
-    case InputOperandLayout::kNchw:
+    case mojom::InputOperandLayout::kChannelsFirst:
       axis = 1;
       break;
-    case InputOperandLayout::kNhwc:
+    case mojom::InputOperandLayout::kChannelsLast:
       axis = 3;
       break;
   }
@@ -1682,12 +1684,13 @@ base::expected<Operand, std::string> ValidateSliceAndInferOutput(
 }
 
 base::expected<Operand, std::string> ValidateReduceAndInferOutput(
-    ReduceKind kind,
+    mojom::Reduce::Kind kind,
     const Operand& input,
     base::span<const uint32_t> axes,
     bool keep_dimensions) {
-  if (kind == ReduceKind::kL2 || kind == ReduceKind::kMean ||
-      kind == ReduceKind::kLogSum || kind == ReduceKind::kLogSumExp) {
+  if (kind == mojom::Reduce::Kind::kL2 || kind == mojom::Reduce::Kind::kMean ||
+      kind == mojom::Reduce::Kind::kLogSum ||
+      kind == mojom::Reduce::Kind::kLogSumExp) {
     if (!IsFloatingPointType(input.data_type)) {
       return base::unexpected(
           "The input data type must be one of the floating point types.");
@@ -1707,7 +1710,7 @@ base::expected<Operand, std::string> ValidateWhereAndInferOutput(
     const Operand& condition,
     const Operand& true_value,
     const Operand& false_value) {
-  if (condition.data_type != Operand::DataType::kUint8) {
+  if (condition.data_type != mojom::Operand::DataType::kUint8) {
     return base::unexpected("The condition data type must be uint8.");
   }
 
@@ -1918,7 +1921,7 @@ base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
   return checked_output_size.ValueOrDie();
 }
 
-bool IsFloatingPointType(Operand::DataType data_type) {
+bool IsFloatingPointType(mojom::Operand::DataType data_type) {
   return DataTypeConstraint::kFloat.Has(data_type);
 }
 

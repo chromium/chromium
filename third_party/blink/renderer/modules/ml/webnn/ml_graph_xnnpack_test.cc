@@ -153,7 +153,8 @@ TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
                               V8MLOperandDataType::Enum::kFloat32,
                               scope.GetExceptionState());
     auto* output = BuildElementWiseBinary(
-        scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
+        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        input0, input1);
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
     ASSERT_THAT(graph, testing::NotNull());
     MLGraphXnnpack* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());
@@ -185,7 +186,8 @@ TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
         BuildConstant(builder, shape, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* output = BuildElementWiseBinary(
-        scope, builder, ElementWiseBinaryKind::kAdd, input, constant);
+        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        input, constant);
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
     ASSERT_THAT(graph, testing::NotNull());
     MLGraphXnnpack* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());
@@ -219,12 +221,14 @@ TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
         BuildConstant(builder, shape, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* intermediate = BuildElementWiseBinary(
-        scope, builder, ElementWiseBinaryKind::kAdd, input, constant0);
+        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        input, constant0);
     auto* constant1 =
         BuildConstant(builder, shape, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* output = BuildElementWiseBinary(
-        scope, builder, ElementWiseBinaryKind::kAdd, intermediate, constant1);
+        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        intermediate, constant1);
     auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
     ASSERT_THAT(graph, testing::NotNull());
     MLGraphXnnpack* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());
@@ -259,13 +263,15 @@ TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
                               V8MLOperandDataType::Enum::kFloat32,
                               scope.GetExceptionState());
     auto* intermediate = BuildElementWiseBinary(
-        scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
+        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        input0, input1);
     auto* output0 = builder->relu(intermediate, scope.GetExceptionState());
     auto* input2 = BuildInput(builder, "input2", shape,
                               V8MLOperandDataType::Enum::kFloat32,
                               scope.GetExceptionState());
     auto* output1 = BuildElementWiseBinary(
-        scope, builder, ElementWiseBinaryKind::kAdd, intermediate, input2);
+        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        intermediate, input2);
     auto [graph, exception] = BuildGraph(
         scope, builder, {{"output0", output0}, {"output1", output1}});
     ASSERT_THAT(graph, testing::NotNull());
@@ -341,7 +347,8 @@ TEST_P(MLGraphXnnpackTest, PowTest) {
   auto* input1 = BuildConstant(builder, {}, V8MLOperandDataType::Enum::kFloat32,
                                Vector<float>({3.0}), scope.GetExceptionState());
   auto* output = BuildElementWiseBinary(
-      scope, builder, ElementWiseBinaryKind::kPow, input0, input1);
+      scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kPow,
+      input0, input1);
   auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
   EXPECT_THAT(graph, testing::IsNull());
   EXPECT_EQ(exception->message(),
@@ -367,7 +374,8 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
       BuildInput(builder, "input1", shape, V8MLOperandDataType::Enum::kFloat32,
                  scope.GetExceptionState());
   auto* output = BuildElementWiseBinary(
-      scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
+      scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+      input0, input1);
   auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
   ASSERT_THAT(graph, testing::NotNull());
   auto* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());
@@ -514,7 +522,8 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
         BuildInput(builder, "y", shape, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* output = BuildElementWiseBinary(
-        scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
+        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        input0, input1);
     auto [graph, exception] = BuildGraph(scope, builder, {{"y", output}});
     ASSERT_THAT(graph, testing::NotNull());
     auto* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());

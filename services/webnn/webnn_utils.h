@@ -20,8 +20,6 @@ std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     OpKindToString(mojom::ElementWiseUnary::Kind kind);
 std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     OpKindToString(mojom::Reduce::Kind kind);
-std::string COMPONENT_EXPORT(WEBNN_SERVICE)
-    DataTypeToString(mojom::Operand::DataType type);
 
 }  // namespace webnn
 

@@ -267,7 +267,8 @@ struct ElementWiseAddTester {
     auto* constant = BuildConstant(builder, rhs.dimensions, rhs.data_type,
                                    rhs.values, scope.GetExceptionState());
     auto* output = BuildElementWiseBinary(
-        scope, builder, ElementWiseBinaryKind::kAdd, input, constant);
+        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        input, constant);
     EXPECT_EQ(output->DataType(), expected.data_type);
     auto [graph, exception] =
         helper.BuildGraph(scope, builder, {{"output", output}});
