@@ -524,12 +524,12 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   if (IsThirdPartyCookiesAllowedScheme(first_party_url.scheme())) {
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
   }
-  if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
-  }
   if (IsAllowedByTopLevel3pcdTrialSettings(first_party_url, overrides)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD};
+  }
+  if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
+    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
   }
   if (IsAllowedBy3pcdHeuristicsGrantsSettings(url, first_party_url,
                                               overrides)) {
