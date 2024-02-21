@@ -2466,7 +2466,7 @@ AccessibleNode* Element::accessibleNode() {
 
 void Element::ariaNotify(const String announcement,
                          const AriaNotificationOptions* options) {
-  DCHECK(RuntimeEnabledFeatures::ConfirmationOfActionEnabled());
+  DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled());
 
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   if (!cache) {
