@@ -42,17 +42,19 @@ suite('<history-toolbar>', function() {
     assertFalse(app.$.toolbar.$.mainToolbar.getSearchField().isSearchFocused());
   });
 
-  test('shortcuts to open search field', function() {
+  test('shortcuts to open search field', async function() {
     const field = app.$.toolbar.$.mainToolbar.getSearchField();
     field.blur();
     assertFalse(field.showingSearch);
 
     const modifier = isMac ? 'meta' : 'ctrl';
     pressAndReleaseKeyOn(document.body, 70, modifier, 'f');
+    await field.updateComplete;
     assertTrue(field.showingSearch);
     assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
 
     pressAndReleaseKeyOn(field.$.searchInput, 27, '', 'Escape');
+    await field.updateComplete;
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
     assertNotEquals(field.$.searchInput, field.shadowRoot!.activeElement);
   });

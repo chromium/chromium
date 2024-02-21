@@ -107,12 +107,14 @@ suite('<bookmarks-app>', function() {
     assertEquals(null, getFocusAttribute());
   });
 
-  test('when find shortcut is invoked, focus on search input', () => {
-    const searchInput =
-        app.shadowRoot!.querySelector(
-                           'bookmarks-toolbar')!.searchField.getSearchInput();
+  test('when find shortcut is invoked, focus on search input', async () => {
+    const searchField =
+        app.shadowRoot!.querySelector('bookmarks-toolbar')!.searchField;
+    const searchInput = searchField.getSearchInput();
+    searchInput.blur();
     assertNotEquals(searchInput, getDeepActiveElement());
     pressAndReleaseKeyOn(document.body, 0, isMac ? 'meta' : 'ctrl', 'f');
+    await searchField.updateComplete;
     assertEquals(searchInput, getDeepActiveElement());
   });
 });

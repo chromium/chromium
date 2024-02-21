@@ -83,6 +83,7 @@ build_webui("build") {
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_scrollable_mixin.ts",
       "cr_search_field/cr_search_field_mixin.ts",
+      "cr_search_field/cr_search_field_mixin_lit.ts",
       "find_shortcut_mixin.ts",
       "focus_row_mixin.ts",
       "i18n_mixin.ts",
@@ -106,6 +107,7 @@ build_webui("build") {
       "cr_radio_button/cr_radio_button_style.css",
       "cr_screen_reader_only.css",
       "cr_shared_style.css",
+      "cr_shared_style_lit.css",
       "cr_shared_vars.css",
       "md_select.css",
       "mwb_element_shared_style.css",
@@ -119,6 +121,7 @@ build_webui("build") {
       "cr_input/cr_input_style.css",
       "cr_toggle/cr_toggle.css",
       "cr_toolbar/cr_toolbar.css",
+      "cr_toolbar/cr_toolbar_search_field.css",
       "cr_toolbar/cr_toolbar_selection_overlay.css",
       "cr_view_manager/cr_view_manager.css",
     ]
