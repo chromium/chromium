@@ -16,6 +16,7 @@ source_set("inactive_tabs") {
   deps = [
     ":inactive_tabs_button_ui",
     ":inactive_tabs_constants",
+    ":inactive_tabs_delegate",
     ":inactive_tabs_ui",
     "//base",
     "//base:i18n",
@@ -40,6 +41,7 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_configuration_provider",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_view_controller_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular:regular_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
@@ -54,15 +56,22 @@ source_set("inactive_tabs") {
 
 source_set("inactive_tabs_ui") {
   sources = [
+    "inactive_tabs_grid_view_controller.h",
+    "inactive_tabs_grid_view_controller.mm",
     "inactive_tabs_view_controller.h",
     "inactive_tabs_view_controller.mm",
   ]
   deps = [
+    ":inactive_tabs_button_ui",
+    ":inactive_tabs_delegate",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_view_controller_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular:regular_ui",
     "//ios/chrome/common/ui/colors",
+    "//ios/web/public",
     "//ui/base",
   ]
 }
@@ -72,6 +81,10 @@ source_set("inactive_tabs_constants") {
     "inactive_tabs_constants.h",
     "inactive_tabs_constants.mm",
   ]
+}
+
+source_set("inactive_tabs_delegate") {
+  sources = [ "inactive_tabs_coordinator_delegate.h" ]
 }
 
 source_set("inactive_tabs_button") {

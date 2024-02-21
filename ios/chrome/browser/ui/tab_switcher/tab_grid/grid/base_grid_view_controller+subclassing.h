@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_SUBCLASSING_H_
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 
 extern NSString* const kGridOpenTabsSectionIdentifier;
@@ -18,6 +19,7 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
     GridDiffableDataSource;
 
 @interface BaseGridViewController (Subclassing) <
+    GridCellDelegate,
     UICollectionViewDragDelegate,
     UICollectionViewDelegate,
     // TODO(crbug.com/1504112): Remove when the compositional layout is fully
@@ -59,6 +61,9 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 // TODO(crbug.com/1504153): Refactor to avoid reusing the same section
 // definition for the different use cases.
 - (void)updateTabsSectionHeaderType;
+
+// Returns the number of tabs in the collection view.
+- (NSInteger)numberOfTabs;
 
 @end
 

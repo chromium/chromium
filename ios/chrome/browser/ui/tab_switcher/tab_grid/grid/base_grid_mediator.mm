@@ -596,6 +596,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)closeItemWithID:(web::WebStateID)itemID {
+  [self.gridConsumer setPageIdleStatus:NO];
   int index = GetWebStateIndex(self.webStateList,
                                WebStateSearchCriteria{
                                    .identifier = itemID,
@@ -1260,6 +1261,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   _selectedEditingItemIDs.erase(itemID);
   _selectedSharableEditingItemIDs.erase(itemID);
   [self configureToolbarsButtons];
+}
+
+- (void)closeItemID:(web::WebStateID)itemID {
+  [self closeItemWithID:itemID];
 }
 
 #pragma mark - BaseGridMediatorItemProvider

@@ -16,42 +16,38 @@
 #import "ios/web/public/web_state_id.h"
 
 @implementation TabGroupMediator {
-  // Web state list which contains groups.
-  raw_ptr<WebStateList> _webStateList;
   // Tab group consumer.
-  __weak id<TabGroupConsumer> _consumer;
-  // Grid consumer.
-  __weak id<TabCollectionConsumer> _gridConsumer;
+  __weak id<TabGroupConsumer> _groupConsumer;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                            consumer:(id<TabGroupConsumer>)consumer
+                            consumer:(id<TabGroupConsumer>)groupConsumer
                         gridConsumer:(id<TabCollectionConsumer>)gridConsumer {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group mediator outside the "
          "Tab Groups experiment.";
   CHECK(webStateList);
-  CHECK(consumer);
+  CHECK(groupConsumer);
   if (self = [super init]) {
-    _webStateList = webStateList;
-    _consumer = consumer;
-    _gridConsumer = gridConsumer;
+    self.webStateList = webStateList;
+    _groupConsumer = groupConsumer;
+    self.consumer = gridConsumer;
     // TODO(crbug.com/1501837): Replace temporary values by calling model layer
     // to get the following informations.
-    [_consumer setGroupTitle:@"Temporary title"];
-    [_consumer setGroupColor:[UIColor colorNamed:kYellow500Color]];
-    [_consumer setGroupDateCreation:base::Time::Now()];
+    [_groupConsumer setGroupTitle:@"Temporary title"];
+    [_groupConsumer setGroupColor:[UIColor colorNamed:kYellow500Color]];
+    [_groupConsumer setGroupDateCreation:base::Time::Now()];
 
     web::WebStateID activeWebStateID;
-    int webStateIndex = _webStateList->active_index();
+    int webStateIndex = self.webStateList->active_index();
     if (webStateIndex == WebStateList::kInvalidIndex) {
       activeWebStateID = web::WebStateID();
     } else {
-      web::WebState* webState = _webStateList->GetWebStateAt(webStateIndex);
+      web::WebState* webState = self.webStateList->GetWebStateAt(webStateIndex);
       activeWebStateID = webState->GetUniqueIdentifier();
     }
 
-    [_gridConsumer populateItems:CreateItems(_webStateList)
+    [self.consumer populateItems:CreateItems(self.webStateList)
                   selectedItemID:activeWebStateID];
   }
   return self;
@@ -63,6 +59,12 @@
   // TODO(crbug.com/1501837): Call the appropriate function. Ensure to add new
   // tab only if policies allows it.
   return NO;
+}
+
+#pragma mark - Parent's functions
+
+- (void)configureToolbarsButtons {
+  // No-op
 }
 
 @end

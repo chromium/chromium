@@ -450,4 +450,22 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   return _tabsCloser && _tabsCloser->CanUndoCloseTabs();
 }
 
+#pragma mark - GridViewControllerMutator
+
+- (void)userTappedOnItemID:(web::WebStateID)itemID {
+  // No-op
+}
+
+- (void)addToSelectionItemID:(web::WebStateID)itemID {
+  NOTREACHED_NORETURN();
+}
+
+- (void)removeFromSelectionItemID:(web::WebStateID)itemID {
+  // No-op
+}
+
+- (void)closeItemID:(web::WebStateID)itemID {
+  [self closeItemWithID:itemID];
+}
+
 @end

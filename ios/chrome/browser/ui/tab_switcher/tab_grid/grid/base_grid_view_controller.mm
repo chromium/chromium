@@ -1017,8 +1017,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - GridCellDelegate
 
 - (void)closeButtonTappedForCell:(GridCell*)cell {
-  [self.delegate gridViewController:self
-                 didCloseItemWithID:cell.itemIdentifier];
+  [self.mutator closeItemID:cell.itemIdentifier];
   // Record when a tab is closed via the X.
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseControlTapped"));
@@ -1031,8 +1030,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - GroupGridCellDelegate
 
 - (void)closeButtonTappedForGroupCell:(GroupGridCell*)cell {
-  [self.delegate gridViewController:self
-                 didCloseItemWithID:cell.itemIdentifier];
+  [self.mutator closeItemID:cell.itemIdentifier];
 }
 
 #pragma mark - SuggestedActionsViewControllerDelegate

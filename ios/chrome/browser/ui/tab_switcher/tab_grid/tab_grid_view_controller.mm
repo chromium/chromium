@@ -1842,22 +1842,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-        didCloseItemWithID:(web::WebStateID)itemID {
-  [self setCurrentIdlePageStatus:NO];
-
-  if (gridViewController == self.regularTabsViewController) {
-    [self.regularGridHandler closeItemWithID:itemID];
-    // Record when a regular tab is closed.
-    base::RecordAction(base::UserMetricsAction("MobileTabGridCloseRegularTab"));
-  } else if (gridViewController == self.incognitoTabsViewController) {
-    [self.incognitoGridHandler closeItemWithID:itemID];
-    // Record when an incognito tab is closed.
-    base::RecordAction(
-        base::UserMetricsAction("MobileTabGridCloseIncognitoTab"));
-  }
-}
-
-- (void)gridViewController:(BaseGridViewController*)gridViewController
          didMoveItemWithID:(web::WebStateID)itemID
                    toIndex:(NSUInteger)destinationIndex {
   [self setCurrentIdlePageStatus:NO];

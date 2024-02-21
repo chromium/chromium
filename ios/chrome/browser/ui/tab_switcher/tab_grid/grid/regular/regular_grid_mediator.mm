@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/web/public/web_state.h"
 
 // TODO(crbug.com/1457146): Needed for `TabPresentationDelegate`, should be
 // refactored.
@@ -35,6 +36,12 @@
 }
 
 #pragma mark - GridCommands
+
+- (void)closeItemWithID:(web::WebStateID)itemID {
+  // Record when a regular tab is closed.
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCloseRegularTab"));
+  [super closeItemWithID:itemID];
+}
 
 // TODO(crbug.com/1457146): Refactor the grid commands to have the same function
 // name to close all.

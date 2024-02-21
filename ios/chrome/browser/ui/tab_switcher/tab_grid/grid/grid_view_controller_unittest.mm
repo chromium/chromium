@@ -44,11 +44,6 @@
   // an item, not generically when items are moved in the data source.
 }
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-        didCloseItemWithID:(web::WebStateID)itemID {
-  // No-op for unittests. This is only called when a user taps to close a cell,
-  // not generically when items are removed from the data source.
-}
-- (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID {
   // No-op for unittests. This is only called when an item has been removed.
 }

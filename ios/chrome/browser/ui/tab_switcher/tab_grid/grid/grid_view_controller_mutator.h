@@ -19,6 +19,9 @@
 // Removes the given `itemID` to the selected item lists.
 - (void)removeFromSelectionItemID:(web::WebStateID)itemID;
 
+// Notifies the model to close a specific item id.
+- (void)closeItemID:(web::WebStateID)itemID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_MUTATOR_H_

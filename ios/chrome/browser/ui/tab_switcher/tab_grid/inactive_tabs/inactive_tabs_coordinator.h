@@ -7,27 +7,10 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class InactiveTabsCoordinator;
 @protocol GridCommands;
 @protocol GridToolbarsConfigurationProvider;
+@protocol InactiveTabsCoordinatorDelegate;
 @protocol TabContextMenuDelegate;
-namespace web {
-class WebStateID;
-}  // namespace web
-
-// Delegate for the coordinator.
-@protocol InactiveTabsCoordinatorDelegate
-
-// Tells the delegate that the user selected an item.
-- (void)inactiveTabsCoordinator:
-            (InactiveTabsCoordinator*)inactiveTabsCoordinator
-            didSelectItemWithID:(web::WebStateID)itemID;
-
-// Tells the delegate that the coordinator should be dismissed.
-- (void)inactiveTabsCoordinatorDidFinish:
-    (InactiveTabsCoordinator*)inactiveTabsCoordinator;
-
-@end
 
 // Handles interaction for Inactive Tabs.
 //

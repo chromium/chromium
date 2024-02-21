@@ -36,10 +36,6 @@ class WebStateID;
 // `gridViewController`.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID;
-// Tells the delegate that the item with `itemID` was closed in
-// `gridViewController`.
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-        didCloseItemWithID:(web::WebStateID)itemID;
 // Tells the delegate that the item with `itemID` was moved to
 // `destinationIndex`.
 - (void)gridViewController:(BaseGridViewController*)gridViewController

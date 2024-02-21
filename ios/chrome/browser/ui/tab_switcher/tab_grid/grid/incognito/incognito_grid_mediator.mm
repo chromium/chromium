@@ -49,6 +49,12 @@
 // name to close all.
 #pragma mark - GridCommands
 
+- (void)closeItemWithID:(web::WebStateID)itemID {
+  // Record when an incognito tab is closed.
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCloseIncognitoTab"));
+  [super closeItemWithID:itemID];
+}
+
 - (void)closeAllItems {
   RecordTabGridCloseTabsCount(self.webStateList->count());
   base::RecordAction(

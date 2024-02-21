@@ -42,8 +42,10 @@
       initWithWebStateList:self.browser->GetWebStateList()
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController];
+  _mediator.browser = self.browser;
 
   _viewController.mutator = _mediator;
+  _viewController.gridViewController.mutator = _mediator;
 
   // TODO(crbug.com/1501837): Add the tab group animation when user tap on a tab
   // group cell in the tab grid.
