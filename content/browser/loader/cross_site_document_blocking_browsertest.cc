@@ -56,6 +56,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -727,8 +728,11 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, AllowCorsFetches) {
 
     base::HistogramTester histograms;
     // Fetch and verify results of the fetch.
-    EXPECT_EQ(false, EvalJs(shell(), base::StringPrintf("sendRequest('%s');",
-                                                        resource)));
+    EXPECT_EQ(
+        false,
+        EvalJs(shell(), base::StringPrintf(
+                            "sendRequest('http://bar.com/site_isolation/%s');",
+                            resource)));
   }
 }
 
@@ -1409,8 +1413,73 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingDisableWebSecurityTest,
   GURL foo_url("http://foo.com/cross_site_document_blocking/request.html");
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
 
-  ASSERT_EQ(false, EvalJs(shell(), "sendRequest(\"valid.html\");"));
+  ASSERT_EQ(
+      false,
+      EvalJs(shell(),
+             "sendRequest(\"http://bar.com/site_isolation/valid.html\");"));
 }
+
+// Test class to verify that documents are blocked for sandboxed iframes (opaque
+// origins) as well.
+class CrossSiteDocumentBlockingSandboxedIframeTest
+    : public CrossSiteDocumentBlockingTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CrossSiteDocumentBlockingSandboxedIframeTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kIsolateSandboxedIframes);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kIsolateSandboxedIframes);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that documents are blocked from an opaque origin in a sandboxed iframe
+// whose precursor is the same as the parent frame's origin.
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingSandboxedIframeTest,
+                       BlockDocumentsFromOpaqueOriginInSameOriginEmbedder) {
+  embedded_test_server()->StartAcceptingConnections();
+  // Load frame at foo.com, then use it to load a same-origin sandboxed iframe
+  // with request.html.
+  GURL foo_url("http://foo.com/title1.html");
+  GURL sandboxed_frame_url(
+      "http://foo.com/cross_site_document_blocking/request.html");
+  EXPECT_TRUE(NavigateToURL(shell(), foo_url));
+
+  TestNavigationObserver observer(shell()->web_contents());
+  const char kScriptTemplate[] = R"(
+      const frm = document.createElement('iframe');
+      frm.sandbox='allow-scripts';
+      frm.src = $1;
+      document.body.append(frm);
+  )";
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, sandboxed_frame_url)));
+  observer.Wait();
+  EXPECT_EQ(sandboxed_frame_url, observer.last_navigation_url());
+
+  RenderFrameHost* child = ChildFrameAt(shell(), 0);
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(child->GetLastCommittedOrigin().opaque());
+
+  ASSERT_EQ(
+      true,
+      EvalJs(child,
+             "sendRequest(\"http://foo.com/site_isolation/valid.html\");"));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CrossSiteDocumentBlockingSandboxedIframeTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "kIsolateSandboxedIframesEnabled"
+                                      : "kIsolateSandboxedIframesDisabled";
+                         });
 
 // Test class to verify that documents are blocked for isolated origins as well.
 class CrossSiteDocumentBlockingIsolatedOriginTest
@@ -1438,7 +1507,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingIsolatedOriginTest,
   GURL foo_url("http://foo.com/cross_site_document_blocking/request.html");
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
 
-  ASSERT_EQ(true, EvalJs(shell(), "sendRequest(\"valid.html\");"));
+  ASSERT_EQ(
+      true,
+      EvalJs(shell(),
+             "sendRequest(\"http://bar.com/site_isolation/valid.html\");"));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
