@@ -2031,7 +2031,12 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     if (SUCCEEDED(hr)) {
       constexpr int kMaxSyncTimeMs = 100;
       hr = keyed_mutex->AcquireSync(0, kMaxSyncTimeMs);
-      RETURN_ON_HR_FAILURE(hr, "Failed to acquire keyed mutex", hr);
+      // Can't check for FAILED(hr) because AcquireSync may return e.g.
+      // WAIT_ABANDONED.
+      if (hr != S_OK && hr != WAIT_TIMEOUT) {
+        LOG(ERROR) << "Failed to acquire mutex: " << PrintHr(hr);
+        return E_FAIL;
+      }
       release_keyed_mutex.emplace(std::move(keyed_mutex), 0);
     }
     sample_texture = input_texture;
@@ -2492,7 +2497,12 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
       // level then it still may block here temporarily.
       constexpr int kMaxSyncTimeMs = 100;
       hr = keyed_mutex->AcquireSync(0, kMaxSyncTimeMs);
-      RETURN_ON_HR_FAILURE(hr, "Failed to acquire keyed mutex", hr);
+      // Can't check for FAILED(hr) because AcquireSync may return e.g.
+      // WAIT_ABANDONED.
+      if (hr != S_OK && hr != WAIT_TIMEOUT) {
+        LOG(ERROR) << "Failed to acquire mutex: " << PrintHr(hr);
+        return E_FAIL;
+      }
       release_keyed_mutex.emplace(std::move(keyed_mutex), 0);
     }
 
@@ -2598,7 +2608,12 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DCopy(
     if (SUCCEEDED(hr)) {
       constexpr int kMaxSyncTimeMs = 100;
       hr = keyed_mutex->AcquireSync(0, kMaxSyncTimeMs);
-      RETURN_ON_HR_FAILURE(hr, "Failed to acquire keyed mutex", hr);
+      // Can't check for FAILED(hr) because AcquireSync may return e.g.
+      // WAIT_ABANDONED.
+      if (hr != S_OK && hr != WAIT_TIMEOUT) {
+        LOG(ERROR) << "Failed to acquire mutex: " << PrintHr(hr);
+        return E_FAIL;
+      }
       release_keyed_mutex.emplace(std::move(keyed_mutex), 0);
     }
 

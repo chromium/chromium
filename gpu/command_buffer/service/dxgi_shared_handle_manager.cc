@@ -152,7 +152,9 @@ bool DXGISharedHandleState::BeginAccessD3D11(
 
   const HRESULT hr = d3d11_state.dxgi_keyed_mutex->AcquireSync(
       kDXGIKeyedMutexAcquireKey, INFINITE);
-  if (FAILED(hr)) {
+  // Can't check for FAILED(hr) because AcquireSync may return e.g.
+  // WAIT_ABANDONED.
+  if (hr != S_OK) {
     LOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
     return false;
   }

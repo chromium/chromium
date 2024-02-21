@@ -688,7 +688,14 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
   hr = target_texture.As(&keyed_mutex);
   CHECK(SUCCEEDED(hr));
 
-  keyed_mutex->AcquireSync(0, INFINITE);
+  hr = keyed_mutex->AcquireSync(0, INFINITE);
+  // Can't check for FAILED(hr) because AcquireSync may return e.g.
+  // WAIT_ABANDONED.
+  if (hr != S_OK) {
+    DLOG(ERROR) << "Failed to acquire the mutex:"
+                << logging::SystemErrorCodeToString(hr);
+    return E_FAIL;
+  }
   device_context->CopySubresourceRegion(target_texture.Get(), 0, 0, 0, 0,
                                         texture, 0, nullptr);
   keyed_mutex->ReleaseSync(0);
