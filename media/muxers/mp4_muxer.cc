@@ -52,6 +52,11 @@ bool Mp4Muxer::PutFrame(EncodedFrame frame,
                                        frame.codec_description,
                                        base::TimeTicks() + relative_timestamp);
     seen_audio_ = true;
+    if (!has_video_) {
+      // If there is no video, we can try flush the fragment regardless of
+      // video key frame.
+      MaybeForceFragmentFlush();
+    }
   } else {
     auto* video_params = absl::get_if<VideoParameters>(&frame.params);
     CHECK(video_params);
@@ -65,7 +70,7 @@ bool Mp4Muxer::PutFrame(EncodedFrame frame,
     // fragment, which is based on the video key frame. So, it checks flush
     // only when the next key frame arrives.
     if (frame.is_keyframe) {
-      MaybeForceFlush();
+      MaybeForceFragmentFlush();
     }
     mp4_muxer_delegate_->AddVideoFrame(
         *video_params, std::move(frame.data), frame.codec_description,
@@ -74,24 +79,24 @@ bool Mp4Muxer::PutFrame(EncodedFrame frame,
   return true;
 }
 
-void Mp4Muxer::MaybeForceFlush() {
+void Mp4Muxer::MaybeForceFragmentFlush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // It follows pattern of webm muxer where it does not respect
   // interval flush time unless video stream exists.
-  DCHECK(has_video_);
   if (max_data_output_interval_.is_zero()) {
     return;
   }
 
-  if (start_or_last_flushed_timestamp_.is_null()) {
-    start_or_last_flushed_timestamp_ = base::TimeTicks::Now();
+  if (start_or_lastest_flushed_time_.is_null()) {
+    start_or_lastest_flushed_time_ = base::TimeTicks::Now();
     return;
   }
 
-  if (base::TimeTicks::Now() - start_or_last_flushed_timestamp_ >=
+  if (base::TimeTicks::Now() - start_or_lastest_flushed_time_ >=
       max_data_output_interval_) {
-    Flush();
+    mp4_muxer_delegate_->FlushFragment();
+    start_or_lastest_flushed_time_ = base::TimeTicks::Now();
   }
 }
 
@@ -104,7 +109,8 @@ bool Mp4Muxer::Flush() {
     return false;
   }
 
-  start_or_last_flushed_timestamp_ = base::TimeTicks();
+  start_or_lastest_flushed_time_ = base::TimeTicks::Now();
+
   return true;
 }
 

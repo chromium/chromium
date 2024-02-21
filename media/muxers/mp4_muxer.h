@@ -34,7 +34,7 @@ class MEDIA_EXPORT Mp4Muxer : public Muxer {
   bool Flush() override;
 
  private:
-  void MaybeForceFlush();
+  void MaybeForceFragmentFlush();
   void Reset();
 
   const std::unique_ptr<Mp4MuxerDelegateInterface> mp4_muxer_delegate_;
@@ -42,7 +42,7 @@ class MEDIA_EXPORT Mp4Muxer : public Muxer {
   // TODO(crbug.com/1381323): consider if output should be based on media
   // timestamps.
   base::TimeDelta max_data_output_interval_;
-  base::TimeTicks start_or_last_flushed_timestamp_;
+  base::TimeTicks start_or_lastest_flushed_time_;
   bool seen_audio_ = false;
 
   const bool has_video_;

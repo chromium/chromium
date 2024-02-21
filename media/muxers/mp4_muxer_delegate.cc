@@ -283,6 +283,22 @@ void Mp4MuxerDelegate::AddDataToAudioFragment(std::string encoded_data) {
   MaybeFlushFileTypeBoxForStartup();
 }
 
+bool Mp4MuxerDelegate::FlushFragment() {
+  // `live_mode_` is set to true regardless of `Flush()` failure as
+  // `FlushFragment()` is called only when it is a live mode and it
+  // will be referenced inside `Flush()` for the `mfra` box.
+  live_mode_ = true;
+
+  if (!Flush()) {
+    DVLOG(1) << __func__
+             << "flush fragment failed, it could be the first video frame";
+    return false;
+  }
+
+  fragments_.clear();
+  return true;
+}
+
 bool Mp4MuxerDelegate::Flush() {
   if (!video_track_index_.has_value() && !audio_track_index_.has_value()) {
     return false;
@@ -348,7 +364,7 @@ void Mp4MuxerDelegate::MaybeFlushMoofAndMfraBoxes(size_t written_offset) {
 
   mp4::writable_boxes::TrackFragmentRandomAccess video_track_random_access;
   for (auto& fragment : fragments_) {
-    if (video_track_index_.has_value()) {
+    if (video_track_index_.has_value() && !live_mode_) {
       base::TimeTicks start_timestamp = fragment->GetVideoStartTimestamp();
       if (start_timestamp.is_null()) {
         start_timestamp = start_video_time_;
@@ -370,6 +386,11 @@ void Mp4MuxerDelegate::MaybeFlushMoofAndMfraBoxes(size_t written_offset) {
     Mp4MediaDataBoxWriter mdat_box_writer(*context_, fragment->GetMediaData());
 
     written_offset += mdat_box_writer.WriteAndFlush(box_byte_stream);
+  }
+
+  if (live_mode_) {
+    // live mode can not have `mfra` box.
+    return;
   }
 
   // Write `mfra` box as a last box for mp4 file.
@@ -435,6 +456,11 @@ void Mp4MuxerDelegate::BuildMovieBox() {
         last_audio_time_include_last_sample - start_audio_time_;
     CopyCreationTimeAndDuration(moov_->tracks[audio_track_index_.value()],
                                 moov_->header, audio_track_duration);
+  }
+
+  if (live_mode_) {
+    // live should not have duration.
+    return;
   }
 
   // Update the track's duration that the longest duration on the track
