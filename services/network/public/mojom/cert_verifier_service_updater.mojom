@@ -4,6 +4,20 @@
 
 module cert_verifier.mojom;
 
+import "services/network/public/mojom/ip_address.mojom";
+
+struct CIDR {
+  network.mojom.IPAddress ip;
+  network.mojom.IPAddress mask;
+};
+
+// Certificate with constraints specified outside of the certificate.
+struct CertWithConstraints {
+  array<uint8> certificate;
+  array<string> permitted_dns_names;
+  array<CIDR> permitted_cidrs;
+};
+
 struct AdditionalCertificates {
   // List of untrusted certificates, which will be used during path building.
   array<array<uint8>> all_certificates;
@@ -13,6 +27,10 @@ struct AdditionalCertificates {
 
   // List of additional trust anchors that have enforced constraints.
   array<array<uint8>> trust_anchors_with_enforced_constraints;
+
+  // List of additional trust anchors with constraints specified separate from
+  // the certificate.
+  array<CertWithConstraints> trust_anchors_with_additional_constraints;
 
   // List of SPKIs that are explicitly distrusted.
   array<array<uint8>> distrusted_spkis;

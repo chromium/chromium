@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/hash_value.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -99,6 +100,29 @@ class NET_EXPORT CertVerifyProc
 #endif
   };
 
+  // CIDR, consisting of an IP and a netmask.
+  struct NET_EXPORT CIDR {
+    net::IPAddress ip;
+    net::IPAddress mask;
+  };
+
+  // Single certificate, with constraints.
+  struct NET_EXPORT CertificateWithConstraints {
+    CertificateWithConstraints();
+    ~CertificateWithConstraints();
+    CertificateWithConstraints(const CertificateWithConstraints&);
+    CertificateWithConstraints& operator=(
+        const CertificateWithConstraints& other);
+    CertificateWithConstraints(CertificateWithConstraints&&);
+    CertificateWithConstraints& operator=(CertificateWithConstraints&& other);
+
+    std::shared_ptr<const bssl::ParsedCertificate> certificate;
+
+    std::vector<std::string> permitted_dns_names;
+
+    std::vector<CIDR> permitted_cidrs;
+  };
+
   // The set of parameters that are variable over time and can differ between
   // different verifiers created by a CertVerifierProcFactory.
   struct NET_EXPORT InstanceParams {
@@ -119,6 +143,11 @@ class NET_EXPORT CertVerifyProc
     // NotBefore/NotAfter are enforced.
     bssl::ParsedCertificateList
         additional_trust_anchors_with_enforced_constraints;
+
+    // Additional trust anchors to consider during path validation, but with
+    // name constraints specified outside of the certificate.
+    std::vector<CertificateWithConstraints>
+        additional_trust_anchors_with_constraints;
 
     // Additional temporary certs to consider as intermediates during path
     // validation. Ordinarily, implementations of CertVerifier use intermediate

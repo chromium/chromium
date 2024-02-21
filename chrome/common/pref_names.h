@@ -3996,6 +3996,13 @@ inline constexpr char kReadAloudSyntheticTrials[] =
 // Only specifiable as an enterprise policy.
 inline constexpr char kCACertificates[] = "certificates.ca_certificates";
 
+// A list of objects. Each object contains a base64 encoded certificates that
+// are to be trusted as root certs, but with constraints specified outside of
+// the certificate in the object.
+// Only specifiable as an enterprise policy.
+inline constexpr char kCACertificatesWithConstraints[] =
+    "certificates.ca_certificates_with_constraints";
+
 // A list of base64 encoded certificates containing SPKIs that are not to be
 // trusted.
 // Only specifiable as an enterprise policy.

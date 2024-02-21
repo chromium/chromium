@@ -230,6 +230,16 @@ class NET_EXPORT IPAddress {
   // Returns an IPAddress instance representing the :: address.
   static IPAddress IPv6AllZeros();
 
+  // Create an IPv4 mask with prefix |mask_prefix_length|
+  // Returns false if |max_prefix_length| is greater than the maximum length of
+  // an IPv4 address.
+  static bool CreateIPv4Mask(IPAddress* ip_address, size_t mask_prefix_length);
+
+  // Create an IPv6 mask with prefix |mask_prefix_length|
+  // Returns false if |max_prefix_length| is greater than the maximum length of
+  // an IPv6 address.
+  static bool CreateIPv6Mask(IPAddress* ip_address, size_t mask_prefix_length);
+
   bool operator==(const IPAddress& that) const;
   bool operator!=(const IPAddress& that) const;
   bool operator<(const IPAddress& that) const;

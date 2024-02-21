@@ -879,6 +879,52 @@ TEST(IPAddressTest, FromInvalidValue) {
   EXPECT_FALSE(IPAddress::FromValue(value).has_value());
 }
 
+TEST(IPAddressTest, IPv4Mask) {
+  IPAddress mask;
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv6AddressSize * 8));
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, (IPAddress::kIPv4AddressSize + 1) * 8));
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv4AddressSize * 8 + 1));
+  EXPECT_TRUE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv4AddressSize * 8));
+  EXPECT_EQ("255.255.255.255", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 31));
+  EXPECT_EQ("255.255.255.254", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 24));
+  EXPECT_EQ("255.255.255.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 23));
+  EXPECT_EQ("255.255.254.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 18));
+  EXPECT_EQ("255.255.192.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 16));
+  EXPECT_EQ("255.255.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 8));
+  EXPECT_EQ("255.0.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 1));
+  EXPECT_EQ("128.0.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 0));
+  EXPECT_EQ("0.0.0.0", mask.ToString());
+}
+
+TEST(IPAddressTest, IPv6Mask) {
+  IPAddress mask;
+  EXPECT_FALSE(
+      IPAddress::CreateIPv6Mask(&mask, (IPAddress::kIPv6AddressSize * 8) + 1));
+  EXPECT_TRUE(
+      IPAddress::CreateIPv6Mask(&mask, IPAddress::kIPv6AddressSize * 8));
+  EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 112));
+  EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 32));
+  EXPECT_EQ("ffff:ffff::", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 1));
+  EXPECT_EQ("8000::", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 0));
+  EXPECT_EQ("::", mask.ToString());
+}
+
 }  // anonymous namespace
 
 }  // namespace net

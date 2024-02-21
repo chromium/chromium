@@ -856,4 +856,20 @@ CertVerifyProc::InstanceParams::InstanceParams(InstanceParams&&) = default;
 CertVerifyProc::InstanceParams& CertVerifyProc::InstanceParams::operator=(
     InstanceParams&& other) = default;
 
+CertVerifyProc::CertificateWithConstraints::CertificateWithConstraints() =
+    default;
+CertVerifyProc::CertificateWithConstraints::~CertificateWithConstraints() =
+    default;
+
+CertVerifyProc::CertificateWithConstraints::CertificateWithConstraints(
+    const CertificateWithConstraints&) = default;
+CertVerifyProc::CertificateWithConstraints&
+CertVerifyProc::CertificateWithConstraints::operator=(
+    const CertificateWithConstraints& other) = default;
+CertVerifyProc::CertificateWithConstraints::CertificateWithConstraints(
+    CertificateWithConstraints&&) = default;
+CertVerifyProc::CertificateWithConstraints&
+CertVerifyProc::CertificateWithConstraints::operator=(
+    CertificateWithConstraints&& other) = default;
+
 }  // namespace net

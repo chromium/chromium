@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ip_address.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/x509_util.h"
@@ -154,6 +155,32 @@ void CertVerifierServiceImpl::UpdateAdditionalCertificates(
 
   instance_params_.include_system_trust_store =
       additional_certificates->include_system_trust_store;
+
+  for (const auto& cert_with_constraints_mojo :
+       additional_certificates->trust_anchors_with_additional_constraints) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
+        net::x509_util::CreateCryptoBuffer(
+            base::as_byte_span(cert_with_constraints_mojo->certificate));
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        bssl::ParsedCertificate::Create(
+            std::move(cert_buffer),
+            net::x509_util::DefaultParseCertificateOptions(), nullptr);
+    if (!cert) {
+      continue;
+    }
+
+    net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+    cert_with_constraints.certificate = std::move(cert);
+    cert_with_constraints.permitted_dns_names =
+        cert_with_constraints_mojo->permitted_dns_names;
+
+    for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
+      cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
+    }
+
+    instance_params_.additional_trust_anchors_with_constraints.push_back(
+        std::move(cert_with_constraints));
+  }
 
   verifier_->UpdateVerifyProcData(cert_net_fetcher_,
                                   service_factory_impl_->get_impl_params(),

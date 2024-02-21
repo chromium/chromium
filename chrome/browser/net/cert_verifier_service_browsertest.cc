@@ -43,6 +43,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #endif
 
+// TODO(https://issues.chromium.org/issues/40928765): add tests for updates to
+// policies w/ same verifier for all policies (except CACertsWithConstraints
+// which is already done).
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 // Testing the CACertificates policy
 class CertVerifierServiceCACertificatesPolicyTest
@@ -317,6 +320,254 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CertVerifierServiceCAPlatformIntegrationPolicyTest,
                          ::testing::Bool());
 #endif  // BUILDFLAG(IS_LINUX)
+
+// Test the CACertificatesWithConstraints policy
+class CertVerifierServiceCACertsWithConstraintsPolicyTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    // Use a certificate valid for the dns name localhost rather than an IP.
+    https_test_server_.SetSSLConfig(
+        net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_test_server_.Start());
+
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+
+    // Set policy. DNS constraint only matches when
+    // set_proper_dns_name_constraint() = true.
+    std::string dns_name_constraint =
+        set_proper_dns_name_constraint() ? "localhost" : "cruddyhost";
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    base::Value::List certs_with_constraints_value = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("certificate", b64_cert)
+            .Set("constraints",
+                 base::Value::Dict().Set(
+                     "permitted_dns_names",
+                     base::Value::List().Append(dns_name_constraint))));
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
+              std::make_optional(
+                  base::Value(std::move(certs_with_constraints_value))));
+    UpdateProviderPolicy(policies);
+  }
+
+  net::EmbeddedTestServer https_test_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+
+  bool set_proper_dns_name_constraint() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceCACertsWithConstraintsPolicyTest,
+                       TestCACertsWithConstraintsPolicy) {
+  // `net::EmbeddedTestServer` uses `net::TestRootCerts` to install a trusted
+  // root.
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + policies.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
+  EXPECT_NE(set_proper_dns_name_constraint(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServiceCACertsWithConstraintsPolicyTest,
+                         ::testing::Bool());
+
+class CertVerifierServiceCACertsWithCIDRConstraintsPolicyTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_test_server_.Start());
+
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+
+    // Set policy. CIDR constraint only matches when
+    // set_proper_cidr_name_constraint() = true.
+    std::string cidr_name_constraint =
+        set_proper_cidr_name_constraint() ? "127.127.0.1/8" : "127.127.0.1/16";
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    base::Value::List certs_with_constraints_value = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("certificate", b64_cert)
+            .Set("constraints",
+                 base::Value::Dict().Set(
+                     "permitted_cidrs",
+                     base::Value::List().Append(cidr_name_constraint))));
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
+              std::make_optional(
+                  base::Value(std::move(certs_with_constraints_value))));
+    UpdateProviderPolicy(policies);
+  }
+
+  net::EmbeddedTestServer https_test_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+
+  bool set_proper_cidr_name_constraint() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceCACertsWithCIDRConstraintsPolicyTest,
+                       TestCACertsWithCIDRConstraintsPolicy) {
+  // `net::EmbeddedTestServer` uses `net::TestRootCerts` to install a trusted
+  // root.
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + policies.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
+  EXPECT_NE(set_proper_cidr_name_constraint(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CertVerifierServiceCACertsWithCIDRConstraintsPolicyTest,
+    ::testing::Bool());
+
+class CertVerifierServiceCACertsWithInvalidCIDRConstraintsPolicyTest
+    : public policy::PolicyTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    https_test_server_.SetSSLConfig(
+        net::test_server::EmbeddedTestServer::CERT_AUTO);
+    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_test_server_.Start());
+
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+
+    // Set invalid policy.
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    base::Value::List certs_with_constraints_value = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("certificate", b64_cert)
+            .Set("constraints",
+                 base::Value::Dict().Set(
+                     "permitted_cidrs",
+                     base::Value::List().Append("invalidcidr"))));
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
+              std::make_optional(
+                  base::Value(std::move(certs_with_constraints_value))));
+    UpdateProviderPolicy(policies);
+  }
+
+  net::EmbeddedTestServer https_test_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    CertVerifierServiceCACertsWithInvalidCIDRConstraintsPolicyTest,
+    TestCACertsWithCIDRConstraintsPolicy) {
+  // `net::EmbeddedTestServer` uses `net::TestRootCerts` to install a trusted
+  // root.
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + policies.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
+  // invalid CIDR constraint means the root cert isn't trusted.
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      chrome_test_utils::GetActiveWebContents(this)));
+}
+
+class CertVerifierServiceCACertsWithConstraintsUpdatePolicyTest
+    : public policy::PolicyTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_test_server_.Start());
+  }
+
+  net::EmbeddedTestServer https_test_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+// Test update of CACertsWithConstraints policy after verifier is already
+// created.
+IN_PROC_BROWSER_TEST_F(
+    CertVerifierServiceCACertsWithConstraintsUpdatePolicyTest,
+    TestCACertsWithCIDRConstraintsPolicy) {
+  // `net::EmbeddedTestServer` uses `net::TestRootCerts` to install a trusted
+  // root.
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + policies.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+
+  {
+    // Set invalid policy.
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    base::Value::List certs_with_constraints_value = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("certificate", b64_cert)
+            .Set("constraints",
+                 base::Value::Dict().Set(
+                     "permitted_cidrs",
+                     base::Value::List().Append("invalidcidr"))));
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
+              std::make_optional(
+                  base::Value(std::move(certs_with_constraints_value))));
+    UpdateProviderPolicy(policies);
+
+    ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
+    // invalid CIDR constraint means the root cert isn't trusted.
+    EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+        chrome_test_utils::GetActiveWebContents(this)));
+  }
+
+  {
+    // Update with valid policy
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    base::Value::List certs_with_constraints_value = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("certificate", b64_cert)
+            .Set("constraints",
+                 base::Value::Dict().Set(
+                     "permitted_cidrs",
+                     base::Value::List().Append("127.127.0.1/8"))));
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
+              std::make_optional(
+                  base::Value(std::move(certs_with_constraints_value))));
+    UpdateProviderPolicy(policies);
+
+    ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
+    // Updated with a valid CIDR constraint, cert should be trusted.
+    EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+        chrome_test_utils::GetActiveWebContents(this)));
+  }
+}
 
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 

@@ -39,6 +39,7 @@ declare_args() {
   # components/policy/resources/templates/policy_definitions/:
   #
   # * CertificateManagement/CACertificates.yaml
+  # * CertificateManagement/CACertificatesWithConstraints.yaml
   # * CertificateManagement/CADistrustedCertificates.yaml
   # * CertificateManagement/CAHintCertificates.yaml
   # * CertificateManagement/CAPlatformIntegrationEnabled.yaml

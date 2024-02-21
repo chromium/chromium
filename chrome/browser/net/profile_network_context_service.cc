@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -307,6 +308,8 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::Unretained(this));
   pref_change_registrar_.Add(prefs::kCACertificates,
                              schedule_update_cert_policy);
+  pref_change_registrar_.Add(prefs::kCACertificatesWithConstraints,
+                             schedule_update_cert_policy);
   pref_change_registrar_.Add(prefs::kCADistrustedCertificates,
                              schedule_update_cert_policy);
   pref_change_registrar_.Add(prefs::kCAHintCertificates,
@@ -386,6 +389,7 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kHSTSPolicyBypassList);
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   registry->RegisterListPref(prefs::kCACertificates);
+  registry->RegisterListPref(prefs::kCACertificatesWithConstraints);
   registry->RegisterListPref(prefs::kCADistrustedCertificates);
   registry->RegisterListPref(prefs::kCAHintCertificates);
   // Include user added platform certs by default.
@@ -543,12 +547,9 @@ void ProfileNetworkContextService::ScheduleUpdateCTPolicy() {
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 cert_verifier::mojom::AdditionalCertificatesPtr
 ProfileNetworkContextService::GetCertificatePolicy() {
-  std::vector<std::vector<uint8_t>> additional_untrusted_certificates;
-  std::vector<std::vector<uint8_t>> additional_trust_anchors;
-  std::vector<std::vector<uint8_t>>
-      additional_trust_anchors_enforced_constraints;
-  std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
   auto* prefs = profile_->GetPrefs();
+  auto additional_certificates =
+      cert_verifier::mojom::AdditionalCertificates::New();
 
   for (const base::Value& cert_b64 :
        prefs->GetList(prefs::kCAHintCertificates)) {
@@ -556,7 +557,8 @@ ProfileNetworkContextService::GetCertificatePolicy() {
         base::Base64Decode(cert_b64.GetString());
 
     if (decoded_opt.has_value()) {
-      additional_untrusted_certificates.push_back(std::move(*decoded_opt));
+      additional_certificates->all_certificates.push_back(
+          std::move(*decoded_opt));
     }
   }
 
@@ -565,9 +567,111 @@ ProfileNetworkContextService::GetCertificatePolicy() {
         base::Base64Decode(cert_b64.GetString());
 
     if (decoded_opt.has_value()) {
-      additional_trust_anchors_enforced_constraints.push_back(
-          std::move(*decoded_opt));
+      additional_certificates->trust_anchors_with_enforced_constraints
+          .push_back(std::move(*decoded_opt));
     }
+  }
+
+  // Add trust anchors with constraints outside the cert
+  for (const base::Value& cert_with_constraints :
+       prefs->GetList(prefs::kCACertificatesWithConstraints)) {
+    const base::Value::Dict* cert_with_constraints_dict =
+        cert_with_constraints.GetIfDict();
+    if (!cert_with_constraints_dict) {
+      continue;
+    }
+
+    const std::string* cert_b64 =
+        cert_with_constraints_dict->FindString("certificate");
+    const base::Value::Dict* constraints_dict =
+        cert_with_constraints_dict->FindDict("constraints");
+    if (!constraints_dict) {
+      continue;
+    }
+    const base::Value::List* permitted_cidrs =
+        constraints_dict->FindList("permitted_cidrs");
+    const base::Value::List* permitted_dns_names =
+        constraints_dict->FindList("permitted_dns_names");
+
+    // Need to have a cert, and at least one set of restrictions.
+    if (!cert_b64) {
+      continue;
+    }
+
+    if (!((permitted_cidrs && permitted_cidrs->size() > 0) ||
+          (permitted_dns_names && permitted_dns_names->size() > 0))) {
+      continue;
+    }
+
+    std::optional<std::vector<uint8_t>> decoded_cert_opt =
+        base::Base64Decode(*cert_b64);
+    if (!decoded_cert_opt.has_value()) {
+      // Cert isn't valid b64, continue.
+      continue;
+    }
+
+    bool invalid_constraint = false;
+    auto cert_with_constraints_mojo =
+        cert_verifier::mojom::CertWithConstraints::New();
+    cert_with_constraints_mojo->certificate = std::move(*decoded_cert_opt);
+    if (permitted_dns_names) {
+      for (const base::Value& dns_name : *permitted_dns_names) {
+        if (dns_name.is_string() && base::IsStringASCII(dns_name.GetString()) &&
+            dns_name.GetString().length() <= 255) {
+          cert_with_constraints_mojo->permitted_dns_names.push_back(
+              dns_name.GetString());
+        } else {
+          invalid_constraint = true;
+          break;
+        }
+      }
+    }
+    if (invalid_constraint) {
+      continue;
+    }
+
+    if (permitted_cidrs) {
+      for (const base::Value& cidr : *permitted_cidrs) {
+        if (!cidr.is_string()) {
+          invalid_constraint = true;
+          break;
+        }
+        net::IPAddress parsed_cidr;
+        net::IPAddress mask;
+        size_t prefix_length;
+        if (!net::ParseCIDRBlock(cidr.GetString(), &parsed_cidr,
+                                 &prefix_length)) {
+          // Don't add trust for cert if CIDR block doesn't parse.
+          invalid_constraint = true;
+          break;
+        }
+        if (parsed_cidr.IsIPv4()) {
+          if (!net::IPAddress::CreateIPv4Mask(&mask, prefix_length)) {
+            // Error in mask creation.
+            invalid_constraint = true;
+            break;
+          }
+        } else if (parsed_cidr.IsIPv6()) {
+          if (!net::IPAddress::CreateIPv6Mask(&mask, prefix_length)) {
+            // Error in mask creation.
+            invalid_constraint = true;
+            break;
+          }
+        } else {
+          // Somehow got an IP address that isn't ipv4 or ipv6?
+          invalid_constraint = true;
+          break;
+        }
+        cert_with_constraints_mojo->permitted_cidrs.push_back(
+            cert_verifier::mojom::CIDR::New(/*ip=*/parsed_cidr, /*mask=*/mask));
+      }
+    }
+    if (invalid_constraint) {
+      continue;
+    }
+
+    additional_certificates->trust_anchors_with_additional_constraints
+        .push_back(std::move(cert_with_constraints_mojo));
   }
 
   for (const base::Value& cert_b64 :
@@ -579,19 +683,15 @@ ProfileNetworkContextService::GetCertificatePolicy() {
     base::StringPiece spki_piece;
     bool success = net::asn1::ExtractSPKIFromDERCert(decoded, &spki_piece);
     if (success) {
-      additional_distrusted_spkis.push_back(
-          std::vector<uint8_t>(spki_piece.begin(), spki_piece.end()));
+      additional_certificates->distrusted_spkis.emplace_back(spki_piece.begin(),
+                                                             spki_piece.end());
     }
   }
 
-  bool include_system_trust_store =
+  additional_certificates->include_system_trust_store =
       prefs->GetBoolean(prefs::kCAPlatformIntegrationEnabled);
 
-  return cert_verifier::mojom::AdditionalCertificates::New(
-      std::move(additional_untrusted_certificates),
-      std::move(additional_trust_anchors),
-      std::move(additional_trust_anchors_enforced_constraints),
-      std::move(additional_distrusted_spkis), include_system_trust_store);
+  return additional_certificates;
 }
 
 void ProfileNetworkContextService::UpdateCertificatePolicy() {

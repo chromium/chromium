@@ -562,6 +562,145 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithConstraintsNotEnforced) {
   EXPECT_THAT(error, IsOk());
 }
 
+TEST_F(CertVerifyProcBuiltinTest, AddedRootWithOutsideDNSConstraints) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  CertVerifyProc::InstanceParams instance_params;
+
+  std::shared_ptr<const bssl::ParsedCertificate> root_cert =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root_cert);
+  CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+  cert_with_constraints.certificate = std::move(root_cert);
+  cert_with_constraints.permitted_dns_names.push_back("example.com");
+
+  instance_params.additional_trust_anchors_with_constraints.push_back(
+      cert_with_constraints);
+
+  InitializeVerifyProc(instance_params);
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  base::HistogramTester histogram_tester;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.CertVerifier.PathBuilderIterationCount"),
+              testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       AddedRootWithOutsideDNSConstraintsNotMatched) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  CertVerifyProc::InstanceParams instance_params;
+
+  std::shared_ptr<const bssl::ParsedCertificate> root_cert =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root_cert);
+  CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+  cert_with_constraints.certificate = std::move(root_cert);
+  cert_with_constraints.permitted_dns_names.push_back("foobar.com");
+
+  instance_params.additional_trust_anchors_with_constraints.push_back(
+      cert_with_constraints);
+
+  InitializeVerifyProc(instance_params);
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+}
+
+TEST_F(CertVerifyProcBuiltinTest, AddedRootWithOutsideCIDRConstraints) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  CertVerifyProc::InstanceParams instance_params;
+
+  std::shared_ptr<const bssl::ParsedCertificate> root_cert =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root_cert);
+  CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+  cert_with_constraints.certificate = std::move(root_cert);
+  cert_with_constraints.permitted_cidrs.push_back(
+      {net::IPAddress(192, 168, 1, 104), net::IPAddress(255, 255, 255, 0)});
+
+  instance_params.additional_trust_anchors_with_constraints.push_back(
+      cert_with_constraints);
+
+  InitializeVerifyProc(instance_params);
+
+  leaf->SetSubjectAltNames(/*dns_names=*/{"www.example.com"},
+                           /*ip_addresses=*/{net::IPAddress(192, 168, 1, 254)});
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  base::HistogramTester histogram_tester;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.CertVerifier.PathBuilderIterationCount"),
+              testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       AddedRootWithOutsideCIDRConstraintsNotMatched) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  CertVerifyProc::InstanceParams instance_params = CreateParams({});
+
+  std::shared_ptr<const bssl::ParsedCertificate> root_cert =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root_cert);
+  CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+  cert_with_constraints.certificate = std::move(root_cert);
+  cert_with_constraints.permitted_cidrs.push_back(
+      {net::IPAddress(192, 168, 1, 1), net::IPAddress(255, 255, 255, 0)});
+
+  instance_params.additional_trust_anchors_with_constraints.push_back(
+      cert_with_constraints);
+
+  InitializeVerifyProc(instance_params);
+
+  leaf->SetSubjectAltNames(/*dns_names=*/{"www.example.com"},
+                           /*ip_addresses=*/{net::IPAddress(10, 2, 2, 2)});
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+}
+
 TEST_F(CertVerifyProcBuiltinTest, AddedRootWithBadTime) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(10),

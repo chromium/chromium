@@ -60,6 +60,43 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   return true;
 }
 
+bool CreateIPMask(IPAddressBytes* ip_address,
+                  size_t prefix_length_in_bits,
+                  size_t ip_address_length) {
+  if (ip_address_length != IPAddress::kIPv4AddressSize &&
+      ip_address_length != IPAddress::kIPv6AddressSize) {
+    return false;
+  }
+  if (prefix_length_in_bits > ip_address_length * 8) {
+    return false;
+  }
+
+  ip_address->Resize(ip_address_length);
+  size_t idx = 0;
+  // Set all fully masked bytes
+  size_t num_entire_bytes_in_prefix = prefix_length_in_bits / 8;
+  for (size_t i = 0; i < num_entire_bytes_in_prefix; ++i) {
+    (*ip_address)[idx++] = 0xff;
+  }
+
+  // In case the prefix was not a multiple of 8, there will be 1 byte
+  // which is only partially masked.
+  size_t remaining_bits = prefix_length_in_bits % 8;
+  if (remaining_bits != 0) {
+    uint8_t remaining_bits_mask = 0xFF << (8 - remaining_bits);
+    (*ip_address)[idx++] = remaining_bits_mask;
+  }
+
+  // Zero out any other bytes.
+  size_t bytes_remaining = ip_address_length - num_entire_bytes_in_prefix -
+                           (remaining_bits != 0 ? 1 : 0);
+  for (size_t i = 0; i < bytes_remaining; ++i) {
+    (*ip_address)[idx++] = 0;
+  }
+
+  return true;
+}
+
 // Returns false if |ip_address| matches any of the reserved IPv4 ranges. This
 // method operates on a list of reserved IPv4 ranges. Some ranges are
 // consolidated.
@@ -360,6 +397,20 @@ IPAddress IPAddress::IPv4AllZeros() {
 // static
 IPAddress IPAddress::IPv6AllZeros() {
   return AllZeros(kIPv6AddressSize);
+}
+
+// static
+bool IPAddress::CreateIPv4Mask(IPAddress* ip_address,
+                               size_t mask_prefix_length) {
+  return CreateIPMask(&(ip_address->ip_address_), mask_prefix_length,
+                      kIPv4AddressSize);
+}
+
+// static
+bool IPAddress::CreateIPv6Mask(IPAddress* ip_address,
+                               size_t mask_prefix_length) {
+  return CreateIPMask(&(ip_address->ip_address_), mask_prefix_length,
+                      kIPv6AddressSize);
 }
 
 bool IPAddress::operator==(const IPAddress& that) const {

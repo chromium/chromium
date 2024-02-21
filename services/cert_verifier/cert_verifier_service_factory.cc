@@ -20,12 +20,14 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
+#include "services/cert_verifier/cert_verifier_creation.h"
 #include "services/cert_verifier/cert_verifier_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -92,6 +94,33 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
     instance_params.include_system_trust_store =
         creation_params->initial_additional_certificates
             ->include_system_trust_store;
+
+    for (const auto& cert_with_constraints_mojo :
+         creation_params->initial_additional_certificates
+             ->trust_anchors_with_additional_constraints) {
+      bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
+          net::x509_util::CreateCryptoBuffer(
+              base::as_byte_span(cert_with_constraints_mojo->certificate));
+      std::shared_ptr<const bssl::ParsedCertificate> cert =
+          bssl::ParsedCertificate::Create(
+              std::move(cert_buffer),
+              net::x509_util::DefaultParseCertificateOptions(), nullptr);
+      if (!cert) {
+        continue;
+      }
+
+      net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+      cert_with_constraints.certificate = std::move(cert);
+      cert_with_constraints.permitted_dns_names =
+          cert_with_constraints_mojo->permitted_dns_names;
+
+      for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
+        cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
+      }
+
+      instance_params.additional_trust_anchors_with_constraints.push_back(
+          std::move(cert_with_constraints));
+    }
   }
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =
