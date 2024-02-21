@@ -308,13 +308,10 @@ std::string ConvertUninstallSourceToStringType(
 
 // Management types that can be uninstalled by the user.
 constexpr WebAppManagementTypes kUserUninstallableSources = {
-    WebAppManagement::kDefault,
-    WebAppManagement::kSync,
-    WebAppManagement::kWebAppStore,
-    WebAppManagement::kSubApp,
-    WebAppManagement::kOem,
-    WebAppManagement::kCommandLine,
-    WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kDefault,     WebAppManagement::kApsDefault,
+    WebAppManagement::kSync,        WebAppManagement::kWebAppStore,
+    WebAppManagement::kSubApp,      WebAppManagement::kOem,
+    WebAppManagement::kCommandLine, WebAppManagement::kOneDriveIntegration,
 };
 
 // Management types that resulted from a user web app install.
