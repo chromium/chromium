@@ -199,6 +199,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     GetLorgnetteManagerClient()->ListScanners(
         kListScannersDiscoveryClientId,
         /*local_only=*/false,
+        /*preferred_only=*/true,
         base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerNamesResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -211,6 +212,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     GetLorgnetteManagerClient()->ListScanners(
         client_id, (local_only == LocalScannerFilter::kLocalScannersOnly),
+        /*preferred_only=*/false,
         base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerInfoResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(client_id),
                        std::move(callback), local_only, secure_only));

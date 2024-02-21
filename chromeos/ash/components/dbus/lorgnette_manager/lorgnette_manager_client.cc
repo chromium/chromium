@@ -56,6 +56,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   void ListScanners(
       const std::string& client_id,
       bool local_only,
+      bool preferred_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override {
     if (features::IsAsynchronousScannerDiscoveryEnabled()) {
@@ -72,7 +73,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
       lorgnette::StartScannerDiscoveryRequest request;
       request.set_client_id(client_id);
-      request.set_preferred_only(true);
+      request.set_preferred_only(preferred_only);
       request.set_local_only(local_only);
 
       StartScannerDiscovery(

@@ -958,6 +958,7 @@ TEST_F(LorgnetteManagerClientTest, ListScanners) {
   GetClient()->ListScanners(
       kClientId,
       /*local_only=*/false,
+      /*preferred_only=*/true,
       base::BindLambdaForTesting(
           [&](std::optional<lorgnette::ListScannersResponse> result) {
             run_loop.Quit();
@@ -992,6 +993,7 @@ TEST_F(LorgnetteManagerClientTest, ListScannersViaAsyncDiscovery) {
   GetClient()->ListScanners(
       kClientId,
       /*local_only=*/false,
+      /*preferred_only=*/true,
       base::BindLambdaForTesting(
           [&](std::optional<lorgnette::ListScannersResponse> result) {
             run_loop.Quit();
@@ -1038,6 +1040,7 @@ TEST_F(LorgnetteManagerClientTest, AsyncDiscoveryTimeout) {
   GetClient()->ListScanners(
       kClientId,
       /*local_only=*/false,
+      /*preferred_only=*/true,
       base::BindLambdaForTesting(
           [&](std::optional<lorgnette::ListScannersResponse> result) {
             run_loop.Quit();
@@ -1095,6 +1098,7 @@ TEST_F(LorgnetteManagerClientTest, ListScannersAsyncEmptyClient) {
   GetClient()->ListScanners(
       /*client_id=*/"",
       /*local_only=*/false,
+      /*preferred_only=*/true,
       base::BindLambdaForTesting(
           [&](std::optional<lorgnette::ListScannersResponse> result) {
             run_loop.Quit();
@@ -1114,6 +1118,7 @@ TEST_F(LorgnetteManagerClientTest, NullResponseToListScanners) {
   GetClient()->ListScanners(
       kClientId,
       /*local_only=*/false,
+      /*preferred_only=*/true,
       base::BindLambdaForTesting(
           [&](std::optional<lorgnette::ListScannersResponse> result) {
             EXPECT_EQ(result, std::nullopt);
@@ -1133,6 +1138,7 @@ TEST_F(LorgnetteManagerClientTest, EmptyResponseToListScanners) {
   GetClient()->ListScanners(
       kClientId,
       /*local_only=*/false,
+      /*preferred_only=*/true,
       base::BindLambdaForTesting(
           [&](std::optional<lorgnette::ListScannersResponse> result) {
             EXPECT_EQ(result, std::nullopt);
