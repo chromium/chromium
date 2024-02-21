@@ -41,7 +41,7 @@ class ComboboxTestApi {
   ui::MenuModel* menu_model();
 
  private:
-  const raw_ptr<Combobox, DanglingUntriaged> combobox_;
+  const raw_ptr<Combobox> combobox_;
 };
 
 }  // namespace test
