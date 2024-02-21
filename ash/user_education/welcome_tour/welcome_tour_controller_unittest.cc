@@ -48,6 +48,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -447,6 +448,7 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
     EXPECT_CALL(*user_education_delegate,
                 LaunchSystemWebAppAsync(
                     Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                    Eq(apps::LaunchSource::kFromWelcomeTour),
                     Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
         .Times(display::Screen::GetScreen()->InTabletMode() ? 0u : 1u);
     std::move(ended_callback).Run();
@@ -503,6 +505,7 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
 
   // Click the `cancel_button` and verify the Welcome Tour is ended.
@@ -538,6 +541,7 @@ TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
 
   auto* const a11y_controller = Shell::Get()->accessibility_controller();
@@ -570,6 +574,7 @@ TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
   session->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
@@ -633,6 +638,7 @@ TEST_P(WelcomeTourControllerCounterfactualTest,
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
       .Times(IsCounterfactual().value_or(false) ? 1u : 0u);
 
@@ -767,6 +773,7 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id()), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
       .Times(0);
 
@@ -863,6 +870,7 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
         *user_education_delegate(),
         LaunchSystemWebAppAsync(
             Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+            Eq(apps::LaunchSource::kFromWelcomeTour),
             Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
 
     // Click `accept_button` to close the Welcome Tour dialog.
@@ -1333,6 +1341,7 @@ TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
       .Times(0);
   SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
@@ -1375,6 +1384,7 @@ TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
       .Times(0);
   EXPECT_CALL(*observer(), OnWelcomeTourEnded);

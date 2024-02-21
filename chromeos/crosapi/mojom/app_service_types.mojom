@@ -483,6 +483,7 @@ enum LaunchSource {
   [MinVersion=11] kFromSysTrayCalendar,          // System Tray Calendar.
   [MinVersion=12] kFromInstaller,                // Installation UI.
   [MinVersion=13] kFromFirstRun,                 // First Run.
+  [MinVersion=14] kFromWelcomeTour,              // Welcome Tour.
 };
 
 [Stable, Extensible]

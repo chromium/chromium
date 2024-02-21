@@ -15003,6 +15003,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="36" label="Launch from system tray Calendar"/>
   <int value="37" label="Installer"/>
   <int value="38" label="First run"/>
+  <int value="39" label="Welcome Tour"/>
 </enum>
 
 <enum name="LcppHintStatus">

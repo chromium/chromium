@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
@@ -184,13 +185,16 @@ void ChromeUserEducationDelegate::AbortTutorial(
 void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(
     const AccountId& account_id,
     ash::SystemWebAppType system_web_app_type,
+    apps::LaunchSource launch_source,
     int64_t display_id) {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
   auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
-  ash::LaunchSystemWebAppAsync(profile, system_web_app_type,
-                               ash::SystemAppLaunchParams(),
+
+  ash::SystemAppLaunchParams launch_params;
+  launch_params.launch_source = launch_source;
+  ash::LaunchSystemWebAppAsync(profile, system_web_app_type, launch_params,
                                std::make_unique<apps::WindowInfo>(display_id));
 }
 

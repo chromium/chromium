@@ -172,6 +172,7 @@ ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromSysTrayCalendar:
     case apps::LaunchSource::kFromInstaller:
     case apps::LaunchSource::kFromFirstRun:
+    case apps::LaunchSource::kFromWelcomeTour:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }
