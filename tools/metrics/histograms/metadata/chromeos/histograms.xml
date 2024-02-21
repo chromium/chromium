@@ -2012,6 +2012,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Lacros.UmaInitParamsResult"
+    enum="UmaInitParamsResult" expires_after="2025-02-20">
+  <owner>skuhne@chromium.org</owner>
+  <owner>sophiagao@google.com</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    The result of receiving the UMA client ID and entropy sources from Ash.
+    Emitted once on startup, before the creation of MetricsStateManager.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.LanguagePacks.GetPackState.FeatureId"
     enum="LanguagePackFeatureIds" expires_after="2024-06-30">
   <owner>claudiomagni@chromium.org</owner>

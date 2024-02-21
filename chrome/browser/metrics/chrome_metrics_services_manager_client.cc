@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -96,6 +97,22 @@ const char kRateParamName[] = "sampling_rate_per_mille";
 }  // namespace metrics
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class UmaInitParamsResult {
+  // Both the client ID and entropy sources were found.
+  kClientIdAndEntropySources = 0,
+  // Only the client ID was found.
+  kClientIdOnly = 1,
+  // Only the entropy sources were found.
+  kEntropySourcesOnly = 2,
+  // Neither the client ID nor the entropy sources were found.
+  kNone = 3,
+  kMaxValue = kNone,
+};
+#endif
 
 // Posts |GoogleUpdateSettings::StoreMetricsClientInfo| on blocking pool thread
 // because it needs access to IO and cannot work from UI thread.
@@ -307,8 +324,10 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Read metrics service client id from ash chrome if it's present.
     auto* init_params = chromeos::BrowserParamsProxy::Get();
-    if (init_params->MetricsServiceClientId().has_value())
-      client_id = init_params->MetricsServiceClientId().value();
+    const auto& ash_client_id = init_params->MetricsServiceClientId();
+    if (ash_client_id) {
+      client_id = ash_client_id.value();
+    }
 
     // Sync the randomization seed from Ash Chrome so that the group assignment
     // is the same on Lacros.
@@ -330,6 +349,19 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
               ? entropy_source->limited_entropy_randomization_source.value()
               : std::string_view());
     }
+
+    UmaInitParamsResult init_params_result;
+    if (ash_client_id && entropy_source) {
+      init_params_result = UmaInitParamsResult::kClientIdAndEntropySources;
+    } else if (ash_client_id) {
+      init_params_result = UmaInitParamsResult::kClientIdOnly;
+    } else if (entropy_source) {
+      init_params_result = UmaInitParamsResult::kEntropySourcesOnly;
+    } else {
+      init_params_result = UmaInitParamsResult::kNone;
+    }
+    base::UmaHistogramEnumeration("ChromeOS.Lacros.UmaInitParamsResult",
+                                  init_params_result);
 #endif
 
     metrics_state_manager_ = metrics::MetricsStateManager::Create(

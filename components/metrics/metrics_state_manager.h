@@ -237,6 +237,11 @@ class MetricsStateManager final {
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, EntropySourceUsed_Low);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, EntropySourceUsed_High);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest,
+                           EntropySourceUsed_High_ExternalClientId);
+  FRIEND_TEST_ALL_PREFIXES(
+      MetricsStateManagerTest,
+      EntropySourceUsed_High_ExternalClientId_MetricsReportingDisabled);
+  FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest,
                            ProvisionalClientId_PromotedToClientId);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest,
                            ProvisionalClientId_PersistedAcrossFirstRuns);
