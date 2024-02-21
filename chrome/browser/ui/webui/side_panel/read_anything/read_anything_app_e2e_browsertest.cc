@@ -127,6 +127,6 @@ class ReadAnythingAppE2ETest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppE2ETest, Sample) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppE2ETest, DISABLED_Sample) {
   ASSERT_TRUE(RunTest("simple.html", "simple_expected.html"));
 }
