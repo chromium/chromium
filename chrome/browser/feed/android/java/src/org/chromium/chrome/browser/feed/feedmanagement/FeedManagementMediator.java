@@ -119,7 +119,6 @@ public class FeedManagementMediator {
         intent.setData(Uri.parse(uri));
         intent.setAction(Intent.ACTION_VIEW);
         intent.setClassName(mContext, "org.chromium.chrome.browser.customtabs.CustomTabActivity");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Needed for pre-N versions of android.
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
         mContext.startActivity(intent);
 
