@@ -19946,11 +19946,7 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "favicon_size_in_dip": "32"
-                    },
                     "enable_features": [
-                        "LargeFaviconFromGoogle",
                         "SearchEngineChoiceTrigger"
                     ]
                 }
