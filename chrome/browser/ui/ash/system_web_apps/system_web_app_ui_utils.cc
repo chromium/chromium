@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -182,15 +181,11 @@ void LaunchSystemWebAppAsync(Profile* profile,
   if (profile_for_launch == nullptr) {
     // We can't find a suitable profile to launch. Complain about this so we
     // can identify the call site, and ask them to pick the right profile.
-    base::debug::DumpWithoutCrashing();
-
-    DVLOG(1)
+    // Note that this is fatal in developer builds.
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
         << "LaunchSystemWebAppAsync is called on a profile that can't launch "
            "system web apps. The launch request is ignored. Please check the "
            "profile you are using is correct.";
-
-    // This will DCHECK in debug builds. But no-op in production builds.
-    NOTREACHED();
 
     // Early return if we can't find a profile to launch.
     return;
