@@ -840,4 +840,14 @@ void OrderChildWindow(NSWindow* child_window,
   return NO;
 }
 
+#ifndef NDEBUG
+- (NSString*)debugDescription {
+  if (!self.title.length) {
+    return [super debugDescription];
+  }
+  return [NSString
+      stringWithFormat:@"%@ - %@", [super debugDescription], self.title];
+}
+#endif  // NDEBUG
+
 @end

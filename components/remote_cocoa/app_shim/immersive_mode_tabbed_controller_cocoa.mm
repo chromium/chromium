@@ -25,6 +25,9 @@ ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
     NativeWidgetMacNSWindow* tab_window)
     : ImmersiveModeControllerCocoa(browser_window, overlay_window) {
   tab_window_ = tab_window;
+#ifndef NDEBUG
+  tab_window_.title = @"tab overlay";
+#endif  // NDEBUG
 
   browser_window.titleVisibility = NSWindowTitleHidden;
 
@@ -268,7 +271,12 @@ void ImmersiveModeTabbedControllerCocoa::OrderTabWindowZOrderOnTop() {
   // window to always be z-order on top of overlay window children.
   // Practically this allows for the tab preview hover card to be z-order on top
   // of omnibox results popup.
-  if (overlay_window().childWindows.lastObject != tab_window_) {
+  // If the tab window does not have a parent or the parent is not the overlay
+  // window, do not perform the shuffle. Otherwise we could throw off the child
+  // window counts in NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown
+  // during immersive fullscreen exit.
+  if (tab_window_.parentWindow == overlay_window() &&
+      overlay_window().childWindows.lastObject != tab_window_) {
     [overlay_window() removeChildWindow:tab_window_];
     [overlay_window() addChildWindow:tab_window_ ordered:NSWindowAbove];
   }

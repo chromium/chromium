@@ -155,6 +155,9 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
     : weak_ptr_factory_(this) {
   browser_window_ = browser_window;
   overlay_window_ = overlay_window;
+#ifndef NDEBUG
+  overlay_window_.title = @"overlay";
+#endif  // NDEBUG
   // Record this now, since it will be 0 at the end of the transition if the
   // menu bar is set to autohide.
   menu_bar_height_ =
