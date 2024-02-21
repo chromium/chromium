@@ -10,6 +10,7 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -73,13 +74,18 @@ class ReloadResponseProvider : public web::DataResponseProvider {
 
 @implementation BrowsingTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(kModernTabStrip);
+  return config;
+}
+
 // Matcher for the title of the current tab (on tablet only), which is
 // sufficiently visible.
 id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
-  id<GREYMatcher> notPartOfOmnibox =
-      grey_not(grey_ancestor(chrome_test_util::Omnibox()));
   return grey_allOf(grey_accessibilityLabel(base::SysUTF8ToNSString(tab_title)),
-                    notPartOfOmnibox, grey_sufficientlyVisible(), nil);
+                    grey_kindOfClassName(@"TabStripCell"),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Tests that page successfully reloads.
