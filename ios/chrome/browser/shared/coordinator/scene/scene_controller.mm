@@ -923,6 +923,9 @@ void InjectNTP(Browser* browser) {
   DCHECK(self.sceneState.appState.mainBrowserState);
 
   SceneState* sceneState = self.sceneState;
+
+  // TODO(b/326184192): startUpChromeUI should use the browser state associated
+  // to the scene.
   ChromeBrowserState* browserState = sceneState.appState.mainBrowserState;
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
       initWithBrowserState:browserState

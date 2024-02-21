@@ -138,6 +138,8 @@
   self.appState.lastTimeInForeground = base::TimeTicks();
 }
 
+// TODO(b/326183375): Avoid using appState.mainBrowserState. Evaluate if this
+// should be run for multiple browser states.
 - (IOSProfileSessionDurationsService*)psdService {
   if (!self.appState.mainBrowserState) {
     return nil;

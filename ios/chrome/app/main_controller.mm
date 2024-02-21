@@ -1267,6 +1267,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if (GetApplicationContext()->WasLastShutdownClean()) {
     // Delay the cleanup of the unreferenced files to not impact startup
     // performance.
+    // TODO(b/326183377): Run this code for all browser states.
     ExternalFileRemoverFactory::GetForBrowserState(
         self.appState.mainBrowserState)
         ->RemoveAfterDelay(base::Seconds(kExternalFilesCleanupDelaySeconds),
