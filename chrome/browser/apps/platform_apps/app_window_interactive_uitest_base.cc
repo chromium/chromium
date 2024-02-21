@@ -12,6 +12,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "ui/display/display_switches.h"
 
 FullscreenChangeWaiter::FullscreenChangeWaiter(
     extensions::NativeAppWindow* window)

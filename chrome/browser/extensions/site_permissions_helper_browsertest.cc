@@ -14,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"

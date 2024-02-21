@@ -22,6 +22,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "ui/display/display_switches.h"
 
 using extensions::AppWindowGeometryCache;
 using extensions::ResultCatcher;

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"

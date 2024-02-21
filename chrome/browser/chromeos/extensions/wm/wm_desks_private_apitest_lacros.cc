@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/spin_wait.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"

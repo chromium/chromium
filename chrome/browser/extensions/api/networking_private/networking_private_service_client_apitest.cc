@@ -16,6 +16,7 @@
 #include "extensions/browser/api/networking_private/networking_private_event_router_factory.h"
 #include "extensions/browser/api/networking_private/networking_private_service_client.h"
 #include "extensions/common/switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 // This tests the Windows / Mac implementation of the networkingPrivate API
 // (NetworkingPrivateServiceClient). Note, only a subset of the
