@@ -13,7 +13,7 @@
 
 namespace {
 
-const CGFloat kFaviconViewScaleFactor = 0.6;
+const CGFloat kFaviconViewScaleFactor = 0.5;
 const NSInteger kTabGridButtonFontSize = 14;
 const CGFloat kBottomFaviconViewWidthAndHeightAnchor = 24;
 const CGFloat kBottomFaviconBottomTrailingOffset = 4;

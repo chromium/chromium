@@ -7,35 +7,26 @@
 
 #import <UIKit/UIKit.h>
 
+@class GroupTabInfo;
+
 // `GroupGridConfigurableView` is a UIView with 4 subviews distributed equally,
 // topleading/topTrailing/bottomLeading/bottomTrailing.
 @interface GroupGridConfigurableView : UIView
 
-// Used to set the corner radius of the 4 subviews within the
-// `GroupGridConfigurableView`.
-@property(nonatomic, assign) CGFloat applicableCornerRadius;
-
-// Designated initializer with `spacing` to apply as vertical/horizontal gap
-// between the subviews and a boolean `adaptForCompactSizeClass` to inform
-// whether to use compact constraints (if applicable) or not.
-- (instancetype)initWithSpacing:(CGFloat)spacing
-       adaptForCompactSizeClass:(BOOL)adaptForCompactSizeClass
+// Designated initializer with `isGroupView` to configure the view, when `NO`
+// the view will be configured as a bottom trailing view that displays and the
+// count of the remaining tabs in the group when `YES the view will be
+// configured as a main group view.
+- (instancetype)initWithIsMainGroupView:(BOOL)isMainGroupView
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Adds a subview to the top leading view with the same constraints.
-- (void)updateTopLeadingWithView:(UIView*)view;
-
-// Adds a subview to the top trailing view with the same constraints.
-- (void)updateTopTrailingWithView:(UIView*)view;
-
-// Adds a subview to the bottom leading view with the same constraints.
-- (void)updateBottomLeadingWithView:(UIView*)view;
-
-// Adds a subview to the bottom trailing view with the same constraints.
-- (void)updateBottomTrailingWithView:(UIView*)view;
+// Configures the subviews with a given snapshot/favicon pairs and
+// passes the total tabs count to the bottomTrailingView.
+- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
+                    totalTabsCount:(NSInteger)totalTabsCount;
 
 @end
 
