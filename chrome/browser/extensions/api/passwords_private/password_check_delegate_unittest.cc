@@ -675,7 +675,7 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   RunUntilIdle();
 
-  EXPECT_TRUE(store().stored_passwords().at(kExampleCom).empty());
+  EXPECT_THAT(store().stored_passwords(), IsEmpty());
 }
 
 // Test that we don't create an entry in the password store if IsLeaked is

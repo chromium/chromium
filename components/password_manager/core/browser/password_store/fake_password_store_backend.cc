@@ -373,6 +373,9 @@ PasswordStoreChangeList FakePasswordStoreBackend::RemoveLoginInternal(
       ++it;
     }
   }
+  if (forms.empty()) {
+    stored_passwords_.erase(form.signon_realm);
+  }
   return changes;
 }
 

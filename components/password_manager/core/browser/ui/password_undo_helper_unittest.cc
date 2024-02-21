@@ -85,8 +85,7 @@ TEST_F(PasswordUndoHelperTest, UndoSingleForm) {
   UndoHelper().EndGroupingActions();
   RunUntilIdle();
 
-  EXPECT_THAT(ProfileStore()->stored_passwords(),
-              ElementsAre(Pair(form.signon_realm, IsEmpty())));
+  EXPECT_THAT(ProfileStore()->stored_passwords(), IsEmpty());
 
   UndoHelper().Undo();
   RunUntilIdle();
@@ -125,9 +124,7 @@ TEST_F(PasswordUndoHelperTest, UndoMultipleForms) {
   UndoHelper().EndGroupingActions();
   RunUntilIdle();
 
-  EXPECT_THAT(ProfileStore()->stored_passwords(),
-              UnorderedElementsAre(Pair(form_1.signon_realm, IsEmpty()),
-                                   Pair(form_2.signon_realm, IsEmpty())));
+  EXPECT_THAT(ProfileStore()->stored_passwords(), IsEmpty());
   // Undo forms removal.
   UndoHelper().Undo();
   RunUntilIdle();
@@ -164,10 +161,8 @@ TEST_F(PasswordUndoHelperTest, UndoFormsMultipleStores) {
   UndoHelper().EndGroupingActions();
   RunUntilIdle();
 
-  EXPECT_THAT(ProfileStore()->stored_passwords(),
-              ElementsAre(Pair(profile_form.signon_realm, IsEmpty())));
-  EXPECT_THAT(AccountStore()->stored_passwords(),
-              ElementsAre(Pair(account_form.signon_realm, IsEmpty())));
+  EXPECT_THAT(ProfileStore()->stored_passwords(), IsEmpty());
+  EXPECT_THAT(AccountStore()->stored_passwords(), IsEmpty());
 
   UndoHelper().Undo();
   RunUntilIdle();

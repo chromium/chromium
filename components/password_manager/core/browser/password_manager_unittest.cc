@@ -2276,8 +2276,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword) {
   // The user removes the generated password.
   manager()->OnPasswordNoLongerGenerated(&driver_, updated_form.form_data);
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(store_->stored_passwords(),
-              ElementsAre(Pair(form.signon_realm, testing::IsEmpty())));
+  EXPECT_THAT(store_->stored_passwords(), testing::IsEmpty());
 }
 
 TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword_NoFormManager) {
@@ -2697,8 +2696,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving_GeneratedPassword) {
   manager()->HideManualFallbackForSaving();
   task_environment_.RunUntilIdle();
 
-  EXPECT_THAT(store_->stored_passwords(),
-              ElementsAre(Pair(form.signon_realm, testing::IsEmpty())));
+  EXPECT_THAT(store_->stored_passwords(), testing::IsEmpty());
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

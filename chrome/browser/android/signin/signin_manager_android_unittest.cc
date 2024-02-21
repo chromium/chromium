@@ -186,8 +186,7 @@ TEST_F(SigninManagerAndroidTest, WipePasswordsIfLocalUpmOff) {
 
   WipeData(/*all_data=*/true);
 
-  EXPECT_THAT(profile_password_store()->stored_passwords(),
-              UnorderedElementsAre(Pair(form.signon_realm, IsEmpty())));
+  EXPECT_THAT(profile_password_store()->stored_passwords(), IsEmpty());
 }
 
 class SigninManagerAndroidWithLocalUpmTest : public SigninManagerAndroidTest {

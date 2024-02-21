@@ -375,8 +375,7 @@ TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStore) {
   // Verify that the credential is now stored in the account password store.
   EXPECT_EQ(*mediator().credentials[0].stored_in.begin(),
             PasswordForm::Store::kAccountStore);
-  EXPECT_THAT(GetTestProfileStore().stored_passwords(),
-              ElementsAre(Pair(kExampleSignonRealm, IsEmpty())));
+  EXPECT_THAT(GetTestProfileStore().stored_passwords(), IsEmpty());
   EXPECT_THAT(
       GetTestAccountStore().stored_passwords(),
       ElementsAre(Pair(kExampleSignonRealm, ElementsAre(expected_form))));
@@ -451,8 +450,7 @@ TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStoreWithConflict) {
   // Check that the profile password store is now empty and that the account
   // store only has the updated version (i.e., version with password
   // "password2") of the credential previously saved.
-  EXPECT_THAT(GetTestProfileStore().stored_passwords(),
-              ElementsAre(Pair(kExampleSignonRealm, IsEmpty())));
+  EXPECT_THAT(GetTestProfileStore().stored_passwords(), IsEmpty());
   EXPECT_THAT(
       GetTestAccountStore().stored_passwords(),
       ElementsAre(Pair(kExampleSignonRealm, ElementsAre(expected_form))));
@@ -531,8 +529,7 @@ TEST_F(PasswordDetailsMediatorTest,
   // Check that the profile password store is now empty and that the account
   // store only has the updated version (i.e., version with password
   // "password2") of the credential previously saved.
-  EXPECT_THAT(GetTestProfileStore().stored_passwords(),
-              ElementsAre(Pair(kExampleSignonRealm, IsEmpty())));
+  EXPECT_THAT(GetTestProfileStore().stored_passwords(), IsEmpty());
   EXPECT_THAT(
       GetTestAccountStore().stored_passwords(),
       ElementsAre(Pair(kExampleSignonRealm, ElementsAre(expected_form))));

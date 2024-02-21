@@ -228,7 +228,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   if (test.is_hsts_enabled &&
       test.expected != HttpCredentialType::kConflicting) {
     // HTTP credentials have to be removed.
-    EXPECT_TRUE(current_store.find(http_form.signon_realm)->second.empty());
+    EXPECT_FALSE(current_store.contains(http_form.signon_realm));
 
     // For no matching case https credentials were added and for an equivalent
     // case they already existed.
