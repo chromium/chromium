@@ -212,19 +212,12 @@ class OperatorTakeUntilSubscribeDelegate final
                                      Observable* notifier)
       : source_observable_(source_observable), notifier_(notifier) {}
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
-    AbortController* controller = AbortController::Create(script_state);
-
-    HeapVector<Member<AbortSignal>> signals{controller->signal(),
-                                            subscriber->signal()};
-    AbortSignal* signal =
-        MakeGarbageCollected<AbortSignal>(script_state, signals);
-
     SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
-    options->setSignal(signal);
+    options->setSignal(subscriber->signal());
 
     notifier_->SubscribeWithNativeObserver(
         script_state,
-        MakeGarbageCollected<NotifierInternalObserver>(subscriber, controller,
+        MakeGarbageCollected<NotifierInternalObserver>(subscriber,
                                                        script_state),
         options);
 
@@ -237,8 +230,7 @@ class OperatorTakeUntilSubscribeDelegate final
 
     source_observable_->SubscribeWithNativeObserver(
         script_state,
-        MakeGarbageCollected<SourceInternalObserver>(subscriber, controller,
-                                                     script_state),
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state),
         options);
   }
 
@@ -253,38 +245,34 @@ class OperatorTakeUntilSubscribeDelegate final
   // This is the "internal observer" that we use to subscribe to
   // `source_observable_`. It is a simple pass-through, which forwards all of
   // the `source_observable_` values to `outer_subscriber_`, which is the
-  // `Subscriber` associated with the subscription to `this`. In addition to
-  // being a simple pass-through, it also appropriately unsubscribes from
-  // `notifier_`, once the `source_observable_` subscription ends.
+  // `Subscriber` associated with the subscription to `this`.
+  //
+  // In addition to being a simple pass-through, it also appropriately
+  // unsubscribes from `notifier_`, once the `source_observable_` subscription
+  // ends. This is accomplished by simply calling
+  // `outer_subscriber_->complete()` which will abort the outer subscriber's
+  // signal, triggering the dependent signals to be aborted as well, including
+  // the signal associated with the notifier's Observable's subscription.
   class SourceInternalObserver final : public ObservableInternalObserver {
    public:
     SourceInternalObserver(Subscriber* outer_subscriber,
-                           AbortController* controller,
                            ScriptState* script_state)
         : outer_subscriber_(outer_subscriber),
-          controller_(controller),
           script_state_(script_state) {
       CHECK(outer_subscriber_);
-      CHECK(controller_);
       CHECK(script_state_);
     }
 
     void Next(ScriptValue value) override { outer_subscriber_->next(value); }
     void Error(ScriptState* script_state, ScriptValue error) override {
-      // When a notifier Observable emits an "error" value, we "complete"
-      // `outer_subscriber_` and abort `controller_`, which requires a valid
-      // execution context.
       outer_subscriber_->error(script_state_, error);
-      controller_->abort(script_state_);
     }
     void Complete() override {
       outer_subscriber_->complete(script_state_);
-      controller_->abort(script_state_);
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(outer_subscriber_);
-      visitor->Trace(controller_);
       visitor->Trace(script_state_);
 
       ObservableInternalObserver::Trace(visitor);
@@ -292,7 +280,6 @@ class OperatorTakeUntilSubscribeDelegate final
 
    private:
     Member<Subscriber> outer_subscriber_;
-    Member<AbortController> controller_;
     Member<ScriptState> script_state_;
   };
   // The `Observable` which `this` will mirror, when `this` is subscribed to.
@@ -304,28 +291,26 @@ class OperatorTakeUntilSubscribeDelegate final
   class NotifierInternalObserver final : public ObservableInternalObserver {
    public:
     NotifierInternalObserver(Subscriber* outer_subscriber,
-                             AbortController* controller,
                              ScriptState* script_state)
         : outer_subscriber_(outer_subscriber),
-          controller_(controller),
           script_state_(script_state) {
       CHECK(outer_subscriber_);
-      CHECK(controller_);
       CHECK(script_state_);
     }
     void Next(ScriptValue) override {
+      // When a notifier Observable emits a "next" or "error" value, we
+      // "complete" `outer_subscriber_`, since the outer/source Observables
+      // don't care about anything the notifier produces; only its completion is
+      // interesting.
       outer_subscriber_->complete(script_state_);
-      controller_->abort(script_state_);
     }
     void Error(ScriptState* script_state, ScriptValue) override {
       outer_subscriber_->complete(script_state_);
-      controller_->abort(script_state_);
     }
     void Complete() override {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(outer_subscriber_);
-      visitor->Trace(controller_);
       visitor->Trace(script_state_);
 
       ObservableInternalObserver::Trace(visitor);
@@ -333,7 +318,6 @@ class OperatorTakeUntilSubscribeDelegate final
 
    private:
     Member<Subscriber> outer_subscriber_;
-    Member<AbortController> controller_;
     Member<ScriptState> script_state_;
   };
   // The `Observable` that, once a `next` or `error` value is emitted`, will

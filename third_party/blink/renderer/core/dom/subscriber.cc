@@ -121,30 +121,34 @@ void Subscriber::next(ScriptValue value) {
 
 void Subscriber::complete(ScriptState* script_state) {
   ObservableInternalObserver* internal_observer = internal_observer_;
+  // `CloseSubscription()` makes it impossible to invoke user-provided callbacks
+  // via `internal_observer_` anymore/re-entrantly, which is why we pull the
+  // `internal_observer` out before calling this.
   CloseSubscription();
-
-  if (internal_observer) {
-    // Once `signal_` is aborted, the first thing that runs is
-    // `CloseSubscription()`, which makes it impossible to invoke user-provided
-    // callbacks anymore.
-    CHECK(!signal_->aborted());
-    internal_observer->Complete();
-  }
 
   // This will trigger the abort of `signal_`, which will run all of the
   // registered teardown callbacks.
   complete_or_error_controller_->abort(script_state);
+
+  if (internal_observer) {
+    CHECK(signal_->aborted());
+    internal_observer->Complete();
+  }
 }
 
 void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
   ObservableInternalObserver* internal_observer = internal_observer_;
+  // `CloseSubscription()` makes it impossible to invoke user-provided callbacks
+  // via `internal_observer_` anymore/re-entrantly, which is why we pull the
+  // `internal_observer` out before calling this.
   CloseSubscription();
 
+  // This will trigger the abort of `signal_`, which will run all of the
+  // registered teardown callbacks.
+  complete_or_error_controller_->abort(script_state, error_value);
+
   if (internal_observer) {
-    // Once `signal_` is aborted, the first thing that runs is
-    // `CloseSubscription()`, which makes it impossible to invoke user-provided
-    // callbacks anymore.
-    CHECK(!signal_->aborted());
+    CHECK(signal_->aborted());
     internal_observer->Error(script_state, error_value);
   } else {
     // The given `internal_observer` can be null here if the subscription is
@@ -166,10 +170,6 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
     V8ScriptRunner::ReportException(script_state->GetIsolate(),
                                     error_value.V8Value());
   }
-
-  // This will trigger the abort of `signal_`, which will run all of the
-  // registered teardown callbacks.
-  complete_or_error_controller_->abort(script_state);
 }
 
 void Subscriber::addTeardown(V8VoidFunction* teardown) {
