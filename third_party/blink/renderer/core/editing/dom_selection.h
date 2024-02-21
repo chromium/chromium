@@ -113,7 +113,6 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
   // Convenience methods for accessors, does not check owner Frame presence.
   VisibleSelection GetVisibleSelection() const;
   bool IsAnchorFirstInSelection() const;
-  const Position& AnchorPosition() const;
 
   Node* ShadowAdjustedNode(const Position&) const;
   unsigned ShadowAdjustedOffset(const Position&) const;
