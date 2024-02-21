@@ -514,7 +514,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::ApplyTransform(
 
   // Otherwise, try to set an arbitrary transform, if possible.
   if (context_.supports_arbitrary_transform &&
-      !quad_to_target_transform.HasPerspective()) {
+      (!quad_to_target_transform.HasPerspective() ||
+       quad_to_target_transform.Preserves2dAffine())) {
     gfx::Transform transform = quad_to_target_transform;
     if (y_flipped) {
       transform.PreConcat(gfx::OverlayTransformToTransform(

@@ -502,6 +502,56 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
             gfx::OVERLAY_TRANSFORM_NONE);
 }
 
+TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
+       Allow3DTransformNoPerspective) {
+  AggregatedRenderPass render_pass;
+  render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
+                     gfx::Rect(0, 0, 10, 10), gfx::Rect(), gfx::Transform());
+
+  OverlayCandidateFactory factory =
+      CreateCandidateFactory(render_pass, gfx::RectF(render_pass.output_rect),
+                             kOverlayContextForTesting);
+
+  gfx::Transform transform;
+  transform.RotateAboutXAxis(5);
+  transform.RotateAboutYAxis(5);
+  transform.RotateAboutZAxis(5);
+
+  EXPECT_TRUE(!transform.HasPerspective());
+
+  auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform);
+
+  OverlayCandidate candidate;
+  OverlayCandidate::CandidateStatus result =
+      factory.FromDrawQuad(&quad, candidate);
+  ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+}
+
+// Checks that a transform that preserve the flatness of quads on the XY-plane,
+// but not necessarily without perspective are still allowed to be promoted.
+TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
+       TechnicallyFlatTransform) {
+  AggregatedRenderPass render_pass;
+  render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
+                     gfx::Rect(0, 0, 10, 10), gfx::Rect(), gfx::Transform());
+
+  OverlayCandidateFactory factory =
+      CreateCandidateFactory(render_pass, gfx::RectF(render_pass.output_rect),
+                             kOverlayContextForTesting);
+
+  gfx::Transform transform = gfx::Transform::ColMajor(1, 0.1, 0, 0,      //
+                                                      0.1, 1, 0, 0,      //
+                                                      0.1, 0.1, 2, 0.1,  //
+                                                      0.1, 0.1, 0, 1);
+
+  auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform);
+
+  OverlayCandidate candidate;
+  OverlayCandidate::CandidateStatus result =
+      factory.FromDrawQuad(&quad, candidate);
+  ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+}
+
 #if DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST)
 class OverlayCandidateFactoryInvalidContextTest
     : public OverlayCandidateFactoryTestBase {
