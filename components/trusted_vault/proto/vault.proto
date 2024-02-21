@@ -83,8 +83,8 @@ message ListSecurityDomainMembersResponse {
   string next_page_token = 2;
 }
 
-// TODO(crbug.com/1234719): figure out how to link google.protobuf.Any and use
-// it instead.
+// There is no way to google.protobuf.Any directly in this codebase, so this
+// proto just replicates it.
 message Proto3Any {
   string type_url = 1;
   bytes value = 2;
