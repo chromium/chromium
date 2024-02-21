@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/video_types.h"
 
 namespace ash {
@@ -88,12 +87,11 @@ std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
                GetTotalDamage().ToString());
 
   CHECK(client_shared_image_);
-  CHECK(!gpu_memory_buffer_);
 
   auto frame = fast_ink_internal::CreateCompositorFrame(
       begin_frame_ack, GetContentRect(), GetTotalDamage(), auto_update,
-      *host_window(), buffer_size_, gpu_memory_buffer_.get(), &resource_manager,
-      client_shared_image_, sync_token_);
+      *host_window(), buffer_size_, /*gpu_memory_buffer=*/nullptr,
+      &resource_manager, client_shared_image_, sync_token_);
 
   ResetDamage();
 
@@ -119,11 +117,6 @@ void FastInkHost::InitBufferMetadata(aura::Window* host_window) {
 }
 
 void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
-  // `gpu_memory_buffer_` should only be initialized once.
-  DCHECK(!gpu_memory_buffer_);
-
-  constexpr auto buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-
   // Create a single mappable SharedImage. Content will be written into this
   // SharedImage without any buffering. The result is that we might be modifying
   // the underlying memory while it's being displayed. This provides minimal
@@ -139,10 +132,10 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
                              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
                              gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-  CHECK(!gpu_memory_buffer_);
   CHECK(!client_shared_image_);
   client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
-      buffer_size_, usage, buffer_usage);
+      buffer_size_, usage, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+
   LOG_IF(ERROR, !client_shared_image_) << "Failed to create MappableSI";
   sync_token_ = sii->GenVerifiedSyncToken();
 

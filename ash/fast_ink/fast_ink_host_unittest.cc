@@ -32,7 +32,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -160,7 +159,6 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
 
 TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   // Buffer is not initialized when there is no begin frame received.
-  ASSERT_FALSE(fast_ink_host_->gpu_memory_buffer_for_test());
   ASSERT_FALSE(fast_ink_host_->client_si_for_test());
   EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
 
