@@ -1226,7 +1226,7 @@ policies:
   1225: AutomaticFullscreenAllowedForUrls
   1226: AutomaticFullscreenBlockedForUrls
   1227: MutationEventsEnabled
-
+  1228: DevToolsGenAiSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

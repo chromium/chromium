@@ -2041,6 +2041,7 @@ chromium-metrics-reviews@google.com.
   <int value="1225" label="AutomaticFullscreenAllowedForUrls"/>
   <int value="1226" label="AutomaticFullscreenBlockedForUrls"/>
   <int value="1227" label="MutationEventsEnabled"/>
+  <int value="1228" label="DevToolsGenAiSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

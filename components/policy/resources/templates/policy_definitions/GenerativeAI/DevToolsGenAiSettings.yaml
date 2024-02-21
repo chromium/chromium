@@ -1,0 +1,38 @@
+caption: Settings for DevTools Generative AI Features
+
+desc: |-
+  These features in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s DevTools employ generative AI models to provide additional debugging information. To use these features, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> has to collect data such as error messages, stack traces, code snippets, and network requests and send them to a server owned by Google, which runs a generative AI model. Response body or authentication and cookie headers in network requests are not included in the data sent to the server.
+
+  0 = Enable the feature for users, and send relevant data to Google to help train or improve AI models. 0 is the default value.
+
+  2 = Disable the feature.
+
+  DevTools Generative AI features include:
+
+  - Console Insights: explains console messages and offers suggestions on how to fix console errors.
+default: 0
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable the features and send data to help train AI models
+  name: Allowed
+  value: 0
+# Potential future value 1: Enable the feature but don't send data to help train AI models
+- caption: Disable the features
+  name: Disabled
+  value: 2
+owners:
+- wolfi@chromium.org
+- devtools-console-insights@google.com
+schema:
+  enum:
+  - 0
+  - 2
+  type: integer
+supported_on:
+- chrome.*:124-
+- chrome_os:124-
+tags: []
+type: int-enum
