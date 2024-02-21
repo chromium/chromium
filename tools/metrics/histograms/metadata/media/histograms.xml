@@ -4444,7 +4444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.DisplayPage"
-    enum="MediaNotificationDisplayPage" expires_after="2024-03-31">
+    enum="MediaNotificationDisplayPage" expires_after="2024-08-04">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
