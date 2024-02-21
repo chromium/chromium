@@ -16,7 +16,6 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/shared_image_stub.h"
-#include "media/base/video_frame.h"
 #include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -38,13 +37,17 @@ struct GpuFenceHandle;
 
 namespace media {
 
-// This class is used for converting GpuMemoryBuffer-backed VideoFrames to
+class VideoFrame;
+
+// This class is used for converting GpuMemoryBuffer-backed FrameResources to
 // gpu::Mailbox-backed FrameResources. See ConvertFrame() for more details.
 // After conversion, the returned gpu::Mailbox-backed FrameResource will retain
 // a reference to the VideoFrame passed to ConvertFrame().
 class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
  public:
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<FrameResource>)>;
+  // TODO(nhebert): change GetOriginalFrameCB to return a FrameResource pointer
+  // when PlatformVideoFramePool and OOPVideoDecoder migrate to FrameResource.
   using GetOriginalFrameCB =
       base::RepeatingCallback<VideoFrame*(gfx::GenericSharedMemoryId frame_id)>;
   using GetCommandBufferStubCB =
@@ -81,7 +84,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
     virtual bool UpdateSharedImage(const gpu::Mailbox& mailbox,
                                    gfx::GpuFenceHandle in_fence_handle) = 0;
     virtual bool WaitOnSyncTokenAndReleaseFrame(
-        scoped_refptr<VideoFrame> frame,
+        scoped_refptr<FrameResource> frame,
         const gpu::SyncToken& sync_token) = 0;
   };
 
@@ -105,16 +108,17 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // VideoFrameResource. If set_get_original_frame_cb() was called with a
   // non-null callback, |frame| must wrap a GpuMemoryBuffer-backed VideoFrame
   // that is retrieved via that callback. Otherwise, |frame| will be used
-  // directly and must be a GpuMemoryBuffer-backed VideoFrame. The generated
-  // gpu::Mailbox is kept alive until the GpuMemoryBuffer-backed VideoFrame is
-  // destroyed. These methods must be called on |parent_task_runner_|.
-  void ConvertFrame(scoped_refptr<VideoFrame> frame);
+  // directly and must be a GpuMemoryBuffer-backed VideoFrameResource. The
+  // generated gpu::Mailbox is kept alive until the underlying VideoFrame that
+  // is referenced by the VideoFrameResource is destroyed. These methods must
+  // be called on |parent_task_runner_|.
+  void ConvertFrame(scoped_refptr<FrameResource> frame);
   void AbortPendingFrames();
   bool HasPendingFrames() const;
 
-  // Sets the callback to unwrap VideoFrames provided to ConvertFrame(). If
+  // Sets the callback to unwrap FrameResources provided to ConvertFrame(). If
   // |get_original_frame_cb| is null or this method is never called at all,
-  // ConvertFrame() assumes it's called with unwrapped VideoFrames.
+  // ConvertFrame() assumes it's called with unwrapped VideoFrameResources.
   //
   // This method must be called on |parent_task_runner_|.
   //
@@ -149,26 +153,26 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // Wraps |mailbox| and |frame| into a new VideoFrameResource and sends it via
   // |output_cb_|.
   void WrapMailboxAndVideoFrameAndOutput(VideoFrame* origin_frame,
-                                         scoped_refptr<VideoFrame> frame,
+                                         scoped_refptr<FrameResource> frame,
                                          const gpu::Mailbox& mailbox);
 
   // ConvertFrame() delegates to this method to GenerateSharedImageOnGPUThread()
   // or just UpdateSharedImageOnGPUThread(), then to jump back to
   // WrapMailboxAndVideoFrameAndOutput().
   void ConvertFrameOnGPUThread(VideoFrame* origin_frame,
-                               scoped_refptr<VideoFrame> frame,
+                               scoped_refptr<FrameResource> frame,
                                ScopedSharedImage* stored_shared_image);
 
-  // Populates a ScopedSharedImage from a GpuMemoryBuffer-backed |video_frame|.
-  // |video_frame| must be kept alive for the duration of this method. This
-  // method runs on |gpu_task_runner_|. Returns true if the SharedImage could be
-  // created successfully; false otherwise (and OnError() is called).
-  bool GenerateSharedImageOnGPUThread(VideoFrame* video_frame,
+  // Populates a ScopedSharedImage from a VideoFrame. |origin_frame| must be
+  // kept alive for the duration of this method. This method runs on
+  // |gpu_task_runner_|. Returns true if the SharedImage could be created
+  // successfully; false otherwise (and OnError() is called).
+  bool GenerateSharedImageOnGPUThread(VideoFrame* origin_frame,
                                       const gfx::ColorSpace& src_color_space,
                                       const gfx::Rect& destination_visible_rect,
                                       ScopedSharedImage* shared_image);
 
-  // Registers the mapping between a GpuMemoryBuffer-backed VideoFrame and the
+  // Registers the mapping between a GpuMemoryBuffer-backed frame and the
   // SharedImage. |origin_frame| must be kept alive for the duration of this
   // method. After this method returns, |scoped_shared_image| will be owned by
   // |origin_frame|. This guarantees that the SharedImage lives as long as the
@@ -190,7 +194,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // Waits on |sync_token|, keeping |frame| alive until it is signalled. It
   // trampolines threads to |gpu_task_runner| if necessary.
   void WaitOnSyncTokenAndReleaseFrameOnGPUThread(
-      scoped_refptr<VideoFrame> frame,
+      scoped_refptr<FrameResource> frame,
       const gpu::SyncToken& sync_token);
 
   // Invoked when any error occurs. |msg| is the error message.
@@ -236,7 +240,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // The queue of input frames and the unique_id of their origin frame.
   // Accessed only on |parent_task_runner_|.
   // TODO(crbug.com/998279): remove this member entirely.
-  base::queue<std::pair<scoped_refptr<VideoFrame>, UniqueID>>
+  base::queue<std::pair<scoped_refptr<FrameResource>, UniqueID>>
       input_frame_queue_;
 
   // The working task runner.

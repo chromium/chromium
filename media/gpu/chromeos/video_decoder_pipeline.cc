@@ -803,7 +803,8 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
     return;
   }
   if (frame_converter_) {
-    frame_converter_->ConvertFrame(std::move(frame));
+    frame_converter_->ConvertFrame(
+        VideoFrameResource::Create(std::move(frame)));
   } else {
     OnFrameConverted(VideoFrameResource::Create(std::move(frame)));
   }
@@ -815,7 +816,8 @@ void VideoDecoderPipeline::OnFrameProcessed(scoped_refptr<VideoFrame> frame) {
   TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameProcessed",
                "timestamp", (frame ? frame->timestamp().InMicroseconds() : 0));
   if (frame_converter_) {
-    frame_converter_->ConvertFrame(std::move(frame));
+    frame_converter_->ConvertFrame(
+        VideoFrameResource::Create(std::move(frame)));
   } else {
     OnFrameConverted(VideoFrameResource::Create(std::move(frame)));
   }
