@@ -57,8 +57,7 @@ IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
   WebContentsStateByteBuffer web_contents_state =
       WebContentsStateByteBuffer(result, 2);
 
-  EXPECT_NE(web_contents_state.byte_buffer_data, nullptr);
-  EXPECT_GT(web_contents_state.byte_buffer_size, 0);
+  EXPECT_FALSE(web_contents_state.backing_buffer.empty());
 
   WebContentsStateByteBuffer* web_contents_state_ptr = &web_contents_state;
   auto native_contents = WebContentsState::RestoreContentsFromByteBuffer(
