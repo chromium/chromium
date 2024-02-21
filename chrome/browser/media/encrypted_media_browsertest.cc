@@ -1064,7 +1064,14 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, VerifyCdmHostTest) {
 }
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
+// TODO(b/326134178): Disable this test on branded builder
+// ci/linux_lacros_chrome since it fails.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_StorageIdTest DISABLED_StorageIdTest
+#else
+#define MAYBE_StorageIdTest StorageIdTest
+#endif
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
   TestNonPlaybackCases(media::kExternalClearKeyStorageIdTestKeySystem,
                        kUnitTestSuccess);
 }
