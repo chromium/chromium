@@ -25,6 +25,7 @@ compile_js_files = [
   "device/mode/scan.ts",
   "device/mode/video.ts",
   "device/preview.ts",
+  "device/ptz_controller.ts",
   "device/stream_constraints.ts",
   "device/stream_manager.ts",
   "device/stream_manager_chrome.ts",

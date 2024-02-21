@@ -221,11 +221,9 @@ export class Options implements CameraUI {
 
   private initOpenPTZPanel() {
     this.openPTZPanel.addEventListener('click', () => {
-      nav.open(ViewName.PTZ_PANEL, new PTZPanelOptions({
-                 stream: this.cameraManager.getPreviewVideo().getStream(),
-                 vidPid: this.cameraManager.getVidPid(),
-                 resetPTZ: () => this.cameraManager.resetPTZ(),
-               }));
+      nav.open(
+          ViewName.PTZ_PANEL,
+          new PTZPanelOptions(this.cameraManager.getPTZController()));
     });
   }
 

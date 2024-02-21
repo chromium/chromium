@@ -38,6 +38,7 @@ import {windowController} from '../window_controller.js';
 import {EventListener, OperationScheduler} from './camera_operation.js';
 import {VideoCaptureCandidate} from './capture_candidate.js';
 import {Preview} from './preview.js';
+import {PTZController} from './ptz_controller.js';
 import {
   CameraConfig,
   CameraInfo,
@@ -473,6 +474,10 @@ export class CameraManager implements EventListener {
    */
   setPointOfInterest(point: Point): Promise<void> {
     return this.preview.setPointOfInterest(point);
+  }
+
+  getPTZController(): PTZController {
+    return this.preview.getPTZController();
   }
 
   resetPTZ(): Promise<void> {

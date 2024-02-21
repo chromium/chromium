@@ -51,6 +51,7 @@ import {
 import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
+import {MediaStreamPTZController, PTZController} from './ptz_controller.js';
 import {
   StreamConstraints,
   toMediaStreamConstraints,
@@ -121,6 +122,12 @@ export class Preview {
   private enableFaceOverlay = false;
 
   private readonly autoQRFlag = loadTimeData.getChromeFlag(Flag.AUTO_QR);
+
+  /**
+   * PTZController for the current stream constraint. Null if PTZ is not
+   * supported.
+   */
+  private ptzController: PTZController|null = null;
 
   /**
    * @param onNewStreamNeeded Callback to request new stream.
@@ -217,13 +224,24 @@ export class Preview {
     })();
 
     if (!this.isSupportPTZInternal) {
+      this.ptzController = null;
       return;
     }
 
     const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
+    const deviceDefaultPTZ = await this.getDeviceDefaultPTZ(deviceId);
+    this.ptzController = new MediaStreamPTZController(
+        this.getVideoTrack(), deviceDefaultPTZ, this.vidPid);
+  }
+
+  private async getDeviceDefaultPTZ(deviceId: string):
+      Promise<MediaTrackConstraintSet> {
     if (this.deviceDefaultPTZ.has(deviceId)) {
-      return;
+      return assertExists(this.deviceDefaultPTZ.get(deviceId));
     }
+
+    const deviceOperator = DeviceOperator.getInstance();
+    const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
 
     const defaultConstraints: MediaTrackConstraintSet = {};
     if (deviceOperator === null) {
@@ -250,6 +268,7 @@ export class Preview {
       }
     }
     this.deviceDefaultPTZ.set(deviceId, defaultConstraints);
+    return defaultConstraints;
   }
 
   /**
@@ -259,14 +278,16 @@ export class Preview {
     return this.isSupportPTZInternal;
   }
 
+  getPTZController(): PTZController {
+    return assertExists(this.ptzController);
+  }
+
   async resetPTZ(): Promise<void> {
     if (this.streamInternal === null || !this.isSupportPTZInternal) {
       return;
     }
-    const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
-    const defaultPTZ = this.deviceDefaultPTZ.get(deviceId);
-    assert(defaultPTZ !== undefined);
-    await this.getVideoTrack().applyConstraints({advanced: [defaultPTZ]});
+    assert(this.ptzController !== null);
+    await this.ptzController.resetPTZ();
   }
 
   /**

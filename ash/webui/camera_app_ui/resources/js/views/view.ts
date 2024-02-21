@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertExists, assertInstanceof} from '../assert.js';
+import {PTZController} from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
 import {I18nString} from '../i18n_string.js';
 import * as state from '../state.js';
@@ -43,20 +44,10 @@ export type FlashEnterOptions = string;
  * Options for open PTZ panel.
  */
 export class PTZPanelOptions {
-  readonly stream: MediaStream;
+  readonly ptzController: PTZController;
 
-  readonly vidPid: string|null;
-
-  readonly resetPTZ: () => Promise<void>;
-
-  constructor({stream, vidPid, resetPTZ}: {
-    stream: MediaStream,
-    vidPid: string|null,
-    resetPTZ: () => Promise<void>,
-  }) {
-    this.stream = stream;
-    this.vidPid = vidPid;
-    this.resetPTZ = resetPTZ;
+  constructor(ptzController: PTZController) {
+    this.ptzController = ptzController;
   }
 }
 
