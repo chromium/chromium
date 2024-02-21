@@ -338,11 +338,6 @@ class UserSessionManager
   // app has not yet been shown in the current milestone.
   void MaybeShowHelpAppReleaseNotesNotification(Profile* profile);
 
-  // Shows Help App discover notification if the profile meets the criteria and
-  // if a notification for the help app has not yet been shown in the current
-  // milestone.
-  void MaybeShowHelpAppDiscoverNotification(Profile* profile);
-
   using EolNotificationHandlerFactoryCallback =
       base::RepeatingCallback<std::unique_ptr<EolNotification>(
           Profile* profile)>;

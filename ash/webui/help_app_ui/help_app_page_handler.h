@@ -37,7 +37,6 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void IsLauncherSearchEnabled(
       IsLauncherSearchEnabledCallback callback) override;
   void LaunchMicrosoft365Setup() override;
-  void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;
   void OpenUrlInBrowserAndTriggerInstallDialog(const GURL& url) override;

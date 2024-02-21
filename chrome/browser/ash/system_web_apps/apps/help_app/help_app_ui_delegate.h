@@ -40,7 +40,6 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
       help_app::mojom::ActionTypeId action_type_id) override;
   PrefService* GetLocalState() override;
   void LaunchMicrosoft365Setup() override;
-  void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(ash::help_app::mojom::PageHandler::GetDeviceInfoCallback
                          callback) override;

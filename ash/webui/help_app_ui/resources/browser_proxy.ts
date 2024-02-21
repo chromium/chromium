@@ -273,10 +273,6 @@ guestMessagePipe.registerHandler(Message.LAUNCH_MICROSOFT_365_SETUP, () => void
   helpApp.handler.launchMicrosoft365Setup());
 
 guestMessagePipe.registerHandler(
-    Message.MAYBE_SHOW_DISCOVER_NOTIFICATION, () => void
-      helpApp.handler.maybeShowDiscoverNotification());
-
-guestMessagePipe.registerHandler(
     Message.MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION, () => void
       helpApp.handler.maybeShowReleaseNotesNotification());
 

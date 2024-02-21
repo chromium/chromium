@@ -164,12 +164,6 @@ declare interface ClientApiDelegate {
    */
   launchMicrosoft365Setup: () => Promise<void>;
   /**
-   * Request for the discover page notification to be shown to the user. The
-   * notification will only be shown if the relevant heuristics are true, i.e.
-   * user is a child, is using a supported language etc.
-   */
-  maybeShowDiscoverNotification: () => Promise<void>;
-  /**
    * Request for the release notes notification to be shown to the user. The
    * notification will only be shown if a notification for the help app has not
    * yet been shown in the current milestone.

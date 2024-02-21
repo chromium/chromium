@@ -70,11 +70,6 @@ interface PageHandler {
   // was already completed).
   LaunchMicrosoft365Setup();
 
-  // Requests that the help app discover notification is shown if the required
-  // heuristics are present and if a notification for the Help App has not yet
-  // been shown in the current milestone.
-  MaybeShowDiscoverNotification();
-
   // Request for the help app release notes notification to be shown, if a
   // notification for the Help App has not yet been shown in the current
   // milestone.

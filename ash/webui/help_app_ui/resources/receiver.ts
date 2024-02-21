@@ -55,10 +55,6 @@ const DELEGATE: ClientApiDelegate = {
   launchMicrosoft365Setup() {
     return parentMessagePipe.sendMessage(Message.LAUNCH_MICROSOFT_365_SETUP);
   },
-  maybeShowDiscoverNotification() {
-    return parentMessagePipe.sendMessage(
-        Message.MAYBE_SHOW_DISCOVER_NOTIFICATION);
-  },
   maybeShowReleaseNotesNotification() {
     return parentMessagePipe.sendMessage(
         Message.MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION);

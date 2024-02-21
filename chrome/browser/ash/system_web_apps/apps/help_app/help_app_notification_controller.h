@@ -15,7 +15,6 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-class HelpAppDiscoverTabNotification;
 class ReleaseNotesNotification;
 
 // Class to show notifications under the Help App.
@@ -35,17 +34,8 @@ class HelpAppNotificationController {
   // has already been shown in the current milestone.
   void MaybeShowReleaseNotesNotification();
 
-  // Returns whether the discover notification should be shown to the user.
-  bool ShouldShowDiscoverNotification();
-
-  // Determines if the discover notification should be shown to the user and
-  // shows it if so. This will not do anything if a Help app notification has
-  // already been shown in the current milestone.
-  void MaybeShowDiscoverNotification();
-
  private:
   const raw_ptr<Profile> profile_;
-  std::unique_ptr<HelpAppDiscoverTabNotification> discover_tab_notification_;
   std::unique_ptr<ReleaseNotesNotification> release_notes_notification_;
 
   base::WeakPtrFactory<HelpAppNotificationController> weak_ptr_factory_{this};

@@ -2188,13 +2188,7 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
   // Show legacy U2F notification if applicable.
   MaybeShowU2FNotification();
 
-  // If the profile does not meet the criteria for showing the Discover
-  // notification, show the Release Notes notification early instead of waiting
-  // for the background page to trigger it.
-  if (!GetHelpAppNotificationController(profile)
-           ->ShouldShowDiscoverNotification()) {
-    MaybeShowHelpAppReleaseNotesNotification(profile);
-  }
+  MaybeShowHelpAppReleaseNotesNotification(profile);
 
   g_browser_process->platform_part()
       ->browser_policy_connector_ash()
@@ -2646,13 +2640,6 @@ void UserSessionManager::SetEolNotificationHandlerFactoryForTesting(
 base::WeakPtr<UserSessionManager>
 UserSessionManager::GetUserSessionManagerAsWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-void UserSessionManager::MaybeShowHelpAppDiscoverNotification(
-    Profile* profile) {
-  if (!ProfileHelper::IsPrimaryProfile(profile))
-    return;
-  GetHelpAppNotificationController(profile)->MaybeShowDiscoverNotification();
 }
 
 void UserSessionManager::CreateTokenUtilIfMissing() {

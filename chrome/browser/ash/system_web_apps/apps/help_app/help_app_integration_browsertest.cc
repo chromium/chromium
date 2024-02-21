@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
-#include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_discover_tab_notification.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
@@ -95,7 +94,6 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
             net::EmbeddedTestServer::TYPE_HTTPS)} {
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kUploadOfficeToCloud,
-         features::kHelpAppDiscoverTabNotificationAllChannels,
          features::kReleaseNotesNotificationAllChannels,
          features::kHelpAppLauncherSearch},
         {});
@@ -396,65 +394,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_EQ(0,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
 #endif
-}
-
-// Test that discover tab notification shows and has functional interactions.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
-                       HelpAppV2DiscoverTabNotification) {
-  WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
-  auto display_service =
-      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
-  base::UserActionTester user_action_tester;
-  profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                   supervised_user::kChildAccountSUID);
-  profile()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
-  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
-                prefs::kDiscoverTabSuggestionChipTimesLeftToShow),
-            0);
-
-  // Script that simulates what the Help App background page would do to show
-  // the discover notification.
-  constexpr char kScript[] = R"(
-    (async () => {
-      await window.customLaunchData.delegate.maybeShowDiscoverNotification();
-      return true;
-    })();
-  )";
-  // Use EvalJs instead of EvalJsInAppFrame because the script needs to
-  // run in the same world as the page's code.
-  EXPECT_EQ(true,
-            content::EvalJs(
-                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
-  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
-                prefs::kDiscoverTabSuggestionChipTimesLeftToShow),
-            3);
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  // Close the web contents we just created to simulate what would happen in
-  // production with a background page. This helps us ensure that our
-  // notification shows up and can be interacted with even after the web ui
-  // that triggered it has died.
-  web_contents->Close();
-  // Wait until the browser with the web contents closes.
-  ui_test_utils::WaitForBrowserToClose(browser);
-
-  // Assert that the notification really is there.
-  auto notifications = display_service->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::TRANSIENT);
-  ASSERT_EQ(1u, notifications.size());
-  ASSERT_EQ(kShowHelpAppDiscoverTabNotificationId, notifications[0].id());
-
-  // Click on the notification.
-  GURL expected_url = GURL("chrome://help-app/discover");
-  content::TestNavigationObserver navigation_observer(expected_url);
-  navigation_observer.StartWatchingNewWebContents();
-  display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                 kShowHelpAppDiscoverTabNotificationId,
-                                 std::nullopt, std::nullopt);
-
-  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
-  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
 // Test that the background page can trigger the release notes notification.

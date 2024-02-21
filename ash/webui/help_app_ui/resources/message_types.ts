@@ -18,7 +18,6 @@ export enum Message {
   CLOSE_BACKGROUND_PAGE = 'close-background-page',
   UPDATE_LAUNCHER_SEARCH_INDEX = 'update-launcher-search-index',
   LAUNCH_MICROSOFT_365_SETUP = 'launch-microsoft-365-setup',
-  MAYBE_SHOW_DISCOVER_NOTIFICATION = 'maybe-show-discover-notification',
   MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION =
       'maybe-show-release-notes-notification',
   GET_DEVICE_INFO = 'get-device-info',

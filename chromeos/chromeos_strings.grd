@@ -633,12 +633,6 @@
         <message name="IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_DETAILS" desc="Details label for a ChromeOS launcher continue section item that can be used to quickly access most recent ChromeOS release notes. Continue section contains set of UI elements that are suggestions for continuing recent user workflows. Release notes element is shown after ChromeOS device updates to a new version. Clicking the relese notes element will redirect user to an app that gives the user more information about the ChromeOS update [CHAR_LIMIT=22]">
           See what's new
         </message>
-        <message name="IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_TITLE" desc="Title for a notification that points to the Help app's Discover tab, which features a magazine to teach users how they can use their Chromebooks for creating movies and animations.">
-          Create your own movie
-        </message>
-        <message name="IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_MESSAGE" desc="Message on a notification that points to the Help app's Discover tab, which features a magazine to teach users how they can create content using their Chromebooks.">
-          Check out Chromebook's new digital magazine for creators
-        </message>
 
         <!-- Media App -->
         <message name="IDS_MEDIA_APP_APP_NAME" desc="Name of the Media App in the app shelf. This app is the default installed app to open and edit images, video, pdf and audio files." meaning="App name.">

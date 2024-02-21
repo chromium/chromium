@@ -145,12 +145,6 @@ void ChromeHelpAppUIDelegate::LaunchMicrosoft365Setup() {
       profile, web_ui_->GetWebContents()->GetTopLevelNativeWindow());
 }
 
-void ChromeHelpAppUIDelegate::MaybeShowDiscoverNotification() {
-  Profile* profile = Profile::FromWebUI(web_ui_);
-  UserSessionManager::GetInstance()->MaybeShowHelpAppDiscoverNotification(
-      profile);
-}
-
 void ChromeHelpAppUIDelegate::MaybeShowReleaseNotesNotification() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   UserSessionManager::GetInstance()->MaybeShowHelpAppReleaseNotesNotification(

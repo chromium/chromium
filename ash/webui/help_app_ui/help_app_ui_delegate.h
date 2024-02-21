@@ -40,11 +40,6 @@ class HelpAppUIDelegate {
   // was already completed).
   virtual void LaunchMicrosoft365Setup() = 0;
 
-  // Asks the help app notification controller to show the discover notification
-  // if the required heuristics are present and if a notification for the help
-  // app has not yet been shown in the current milestone.
-  virtual void MaybeShowDiscoverNotification() = 0;
-
   // Asks the help app notification controller to show the release notes
   // notification if a notification for the help app has not yet been shown in
   // the current milestone.
