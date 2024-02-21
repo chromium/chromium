@@ -21,7 +21,6 @@ class StoragePartition;
 }
 
 namespace browsing_data {
-class CannedCacheStorageHelper;
 class CannedCookieHelper;
 class CannedLocalStorageHelper;
 
@@ -67,9 +66,6 @@ class LocalSharedObjectsContainer {
   CannedLocalStorageHelper* local_storages() const {
     return local_storages_.get();
   }
-  CannedCacheStorageHelper* cache_storages() const {
-    return cache_storages_.get();
-  }
   CannedLocalStorageHelper* session_storages() const {
     return session_storages_.get();
   }
@@ -79,7 +75,6 @@ class LocalSharedObjectsContainer {
 
   scoped_refptr<CannedCookieHelper> cookies_;
   scoped_refptr<CannedLocalStorageHelper> local_storages_;
-  scoped_refptr<CannedCacheStorageHelper> cache_storages_;
   scoped_refptr<CannedLocalStorageHelper> session_storages_;
 };
 

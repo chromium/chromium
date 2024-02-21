@@ -135,18 +135,6 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       dict.Set(kKeyTemporaryUsage, ui::FormatBytes(quota_info.temporary_usage));
       break;
     }
-    case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE: {
-      dict.Set(kKeyType, "cache_storage");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
-      dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
-      dict.Set(kKeyModified,
-               base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
-      break;
-    }
     default:
       break;
   }

@@ -19,8 +19,6 @@
 #include "ui/base/models/tree_node_model.h"
 
 class CookiesTreeModel;
-class CookieTreeCacheStorageNode;
-class CookieTreeCacheStoragesNode;
 class CookieTreeCookieNode;
 class CookieTreeCookiesNode;
 class CookieTreeHostNode;
@@ -66,8 +64,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
       TYPE_SESSION_STORAGES,  // This is used for CookieTreeSessionStoragesNode.
       TYPE_SESSION_STORAGE,   // This is used for CookieTreeSessionStorageNode.
       TYPE_QUOTA,             // This is used for CookieTreeQuotaNode.
-      TYPE_CACHE_STORAGES,    // This is used for CookieTreeCacheStoragesNode.
-      TYPE_CACHE_STORAGE,     // This is used for CookieTreeCacheStorageNode.
     };
 
     DetailedInfo();
@@ -82,8 +78,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     DetailedInfo& InitSessionStorage(
         const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitQuota(const BrowsingDataQuotaHelper::QuotaInfo* quota);
-    DetailedInfo& InitCacheStorage(
-        const content::StorageUsageInfo* storage_usage_info);
 
     NodeType node_type;
     url::Origin origin;
@@ -166,7 +160,6 @@ class CookieTreeHostNode : public CookieTreeNode {
   CookieTreeCookiesNode* GetOrCreateCookiesNode();
   CookieTreeLocalStoragesNode* GetOrCreateLocalStoragesNode();
   CookieTreeSessionStoragesNode* GetOrCreateSessionStoragesNode();
-  CookieTreeCacheStoragesNode* GetOrCreateCacheStoragesNode();
   CookieTreeQuotaNode* UpdateOrCreateQuotaNode(
       std::list<BrowsingDataQuotaHelper::QuotaInfo>::iterator quota_info);
 
@@ -198,7 +191,6 @@ class CookieTreeHostNode : public CookieTreeNode {
       session_storages_child_ = nullptr;
   raw_ptr<CookieTreeQuotaNode, AcrossTasksDanglingUntriaged> quota_child_ =
       nullptr;
-  raw_ptr<CookieTreeCacheStoragesNode> cache_storages_child_ = nullptr;
 
   // The URL for which this node was initially created.
   GURL url_;
@@ -295,7 +287,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateLocalStorageInfo(LocalDataContainer* container);
   void PopulateSessionStorageInfo(LocalDataContainer* container);
   void PopulateQuotaInfo(LocalDataContainer* container);
-  void PopulateCacheStorageUsageInfo(LocalDataContainer* container);
 
   LocalDataContainer* data_container() {
     return data_container_.get();
@@ -340,10 +331,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateQuotaInfoWithFilter(LocalDataContainer* container,
                                    ScopedBatchUpdateNotifier* notifier,
                                    const std::u16string& filter);
-  void PopulateCacheStorageUsageInfoWithFilter(
-      LocalDataContainer* container,
-      ScopedBatchUpdateNotifier* notifier,
-      const std::u16string& filter);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The extension special storage policy; see ExtensionsProtectingNode() above.

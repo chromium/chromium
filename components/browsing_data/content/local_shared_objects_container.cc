@@ -11,7 +11,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
-#include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
@@ -45,8 +44,6 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
       local_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
           storage_partition,
           /*update_ignored_empty_keys_on_fetch=*/ignore_empty_localstorage)),
-      cache_storages_(
-          base::MakeRefCounted<CannedCacheStorageHelper>(storage_partition)),
       session_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
           storage_partition,
           /*update_ignored_empty_keys_on_fetch=*/false)) {}
@@ -57,7 +54,6 @@ size_t LocalSharedObjectsContainer::GetObjectCount() const {
   size_t count = 0;
   count += cookies()->GetCookieCount();
   count += local_storages()->GetCount();
-  count += cache_storages()->GetCount();
   count += session_storages()->GetCount();
   return count;
 }
@@ -126,11 +122,6 @@ LocalSharedObjectsContainer::GetObjectCountPerOriginMap() const {
     origins[storage_key.origin()]++;
   }
 
-  for (const auto& storage_key : cache_storages()->GetStorageKeys()) {
-    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
-    origins[storage_key.origin()]++;
-  }
-
   return origins;
 }
 
@@ -142,7 +133,6 @@ void LocalSharedObjectsContainer::UpdateIgnoredEmptyStorageKeys(
 void LocalSharedObjectsContainer::Reset() {
   cookies_->Reset();
   local_storages_->Reset();
-  cache_storages_->Reset();
   session_storages_->Reset();
 }
 

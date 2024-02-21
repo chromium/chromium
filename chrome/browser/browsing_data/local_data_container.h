@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
-#include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/browsing_data/content/local_storage_helper.h"
@@ -38,7 +37,6 @@ class LocalDataContainer {
   using LocalStorageInfoList = std::list<content::StorageUsageInfo>;
   using SessionStorageInfoList = std::list<content::StorageUsageInfo>;
   using QuotaInfoList = std::list<BrowsingDataQuotaHelper::QuotaInfo>;
-  using CacheStorageUsageInfoList = std::list<content::StorageUsageInfo>;
 
   static std::unique_ptr<LocalDataContainer>
   CreateFromLocalSharedObjectsContainer(
@@ -53,8 +51,7 @@ class LocalDataContainer {
       scoped_refptr<browsing_data::CookieHelper> cookie_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
-      scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
-      scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper);
+      scoped_refptr<BrowsingDataQuotaHelper> quota_helper);
 
   LocalDataContainer(const LocalDataContainer&) = delete;
   LocalDataContainer& operator=(const LocalDataContainer&) = delete;
@@ -71,7 +68,6 @@ class LocalDataContainer {
   friend class CookieTreeLocalStorageNode;
   friend class CookieTreeSessionStorageNode;
   friend class CookieTreeQuotaNode;
-  friend class CookieTreeCacheStorageNode;
 
   // Callback methods to be invoked when fetching the data is complete.
   void OnCookiesModelInfoLoaded(const net::CookieList& cookie_list);
@@ -80,8 +76,6 @@ class LocalDataContainer {
   void OnSessionStorageModelInfoLoaded(
       const LocalStorageInfoList& local_storage_info);
   void OnQuotaModelInfoLoaded(const QuotaInfoList& quota_info);
-  void OnCacheStorageModelInfoLoaded(
-      const CacheStorageUsageInfoList& cache_storage_info);
 
   // Pointers to the helper objects, needed to retreive all the types of locally
   // stored data.
@@ -89,7 +83,6 @@ class LocalDataContainer {
   scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
-  scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper_;
 
   // Storage for all the data that was retrieved through the helper objects.
   // The collected data is used for (re)creating the CookiesTreeModel.
@@ -97,7 +90,6 @@ class LocalDataContainer {
   LocalStorageInfoList local_storage_info_list_;
   LocalStorageInfoList session_storage_info_list_;
   QuotaInfoList quota_info_list_;
-  CacheStorageUsageInfoList cache_storage_info_list_;
 
   // A delegate, which must outlive this object. The update callbacks use the
   // delegate to deliver the updated data to the CookieTreeModel.

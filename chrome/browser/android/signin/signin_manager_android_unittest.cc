@@ -22,7 +22,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
@@ -115,69 +114,6 @@ class SigninManagerAndroidTest : public ::testing::Test {
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
 };
-
-// TODO(crbug.com/929456): This test does not actually test anything; the
-// CannedCacheStorageHelper isn't hooked up to observe any deletions. Disabled
-// to allow refactoring of browsing data code.
-TEST_F(SigninManagerAndroidTest, DISABLED_DeleteGoogleServiceWorkerCaches) {
-  struct TestCase {
-    std::string worker_url;
-    bool should_be_deleted;
-  } kTestCases[] = {
-      // A Google domain.
-      {"https://google.com/foo/bar", true},
-
-      // A Google domain with long TLD.
-      {"https://plus.google.co.uk/?query_params", true},
-
-      // Youtube.
-      {"https://youtube.com", false},
-
-      // A random domain.
-      {"https://a.b.c.example.com", false},
-
-      // Another Google domain.
-      {"https://www.google.de/worker.html", true},
-
-      // Ports don't matter, only TLDs.
-      {"https://google.com:8444/worker.html", true},
-  };
-
-  // TODO(crbug.com/929456): This helper is not attached anywhere to
-  // be able to observe deletions.
-  // Add service workers.
-  auto helper = base::MakeRefCounted<browsing_data::CannedCacheStorageHelper>(
-      profile()->GetDefaultStoragePartition());
-
-  for (const TestCase& test_case : kTestCases)
-    helper->Add(blink::StorageKey::CreateFirstParty(
-        url::Origin::Create(GURL(test_case.worker_url))));
-
-  ASSERT_EQ(std::size(kTestCases), helper->GetCount());
-
-  // Delete service workers and wait for completion.
-  base::RunLoop run_loop;
-  SigninManagerAndroid::WipeData(profile(),
-                                 false /* only Google service worker caches */,
-                                 run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Test whether the correct service worker caches were deleted.
-  std::set<blink::StorageKey> remaining_cache_storages =
-      helper->GetStorageKeys();
-
-  // TODO(crbug.com/929456): If deleted, the key should not be present.
-  for (const TestCase& test_case : kTestCases) {
-    EXPECT_EQ(test_case.should_be_deleted,
-              base::Contains(remaining_cache_storages,
-                             blink::StorageKey::CreateFromStringForTesting(
-                                 test_case.worker_url)))
-        << test_case.worker_url << " should "
-        << (test_case.should_be_deleted ? "" : "NOT ")
-        << "be deleted, but it was"
-        << (test_case.should_be_deleted ? "NOT" : "") << ".";
-  }
-}
 
 // Tests that wiping all data also deletes bookmarks.
 TEST_F(SigninManagerAndroidTest, DeleteBookmarksWhenWipingAllData) {
