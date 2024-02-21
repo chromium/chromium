@@ -68,9 +68,9 @@
         margin: 12px;
       }
 
-      /* #checkbox[unresolved] styling is necessary since cr-checkbox is being
-         lazy-loaded. */
-      #checkbox[unresolved] {
+      /* Styling the element before cr-checkbox is defined is necessary since
+         cr-checkbox is being lazy-loaded. */
+      #checkbox:not(:defined) {
         border: 2px solid var(--cr-secondary-text-color);
         border-radius: 2px;
         content: '';
@@ -201,7 +201,7 @@
       <div role="row" on-mousedown="onRowMousedown_" on-click="onRowClick_">
         <div id="item-container" focus-row-container>
           <div role="gridcell">
-            <cr-checkbox id="checkbox" checked="[[selected]]" unresolved
+            <cr-checkbox id="checkbox" checked="[[selected]]"
                 focus-row-control focus-type="cr-checkbox"
                 on-mousedown="onCheckboxClick_" on-keydown="onCheckboxClick_"
                 on-change="onCheckboxChange_" class="no-label"
