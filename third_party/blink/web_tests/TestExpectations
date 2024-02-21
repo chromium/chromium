@@ -6250,6 +6250,7 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-playback-speed-menu.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-iframe.https.sub.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/responsive/interpolation/background-position-responsive.html [ Skip Timeout ]
+[ Debug Mac13 ] http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/console/console-tests.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/speculation-rules/prerender/response-code-successful.html?code=202 [ Failure ]
@@ -6787,14 +6788,6 @@ crbug.com/1504244 [ Mac ] virtual/automatic-lazy-frame-loading-ads/http/tests/su
 
 # DevTools roll
 crbug.com/1421694 http/tests/devtools/extensions/extensions-api.js [ Failure Pass ]
-
-# Temporarily disable some tests to allow DevTools frontend CL to land.
-crbug.com/1172985 http/tests/devtools/elements/styles-1/edit-media-text.js [ Failure Pass ]
-crbug.com/1172985 http/tests/devtools/elements/styles-2/media-emulation.js [ Failure Pass ]
-crbug.com/1172985 http/tests/devtools/elements/styles-4/styles-do-not-detach-sourcemap-on-edits.js [ Failure Pass ]
-crbug.com/1172985 http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Failure Pass Skip Timeout ]
-crbug.com/1172985 http/tests/devtools/elements/styles-4/styles-update-links-2.js [ Failure Pass ]
-crbug.com/1172985 http/tests/devtools/elements/styles-4/styles-update-links-3.js [ Failure Pass ]
 
 # Fix importer 2024-01-12
 crbug.com/626703 external/wpt/webauthn/public-key-credential-to-json.https.window.html [ Failure ]
