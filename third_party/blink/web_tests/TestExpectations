@@ -4969,6 +4969,7 @@ crbug.com/1293591 images/color-profile-image-shape.html [ Failure Pass ]
 crbug.com/1293591 images/color-profile-mask-image-svg.html [ Failure Pass ]
 crbug.com/1293591 images/color-profile-object.html [ Failure Pass ]
 crbug.com/1293591 images/color-profile-svg-fill-text.html [ Failure Pass ]
+crbug.com/1293591 images/color-profile-svg-foreign-object.html [ Failure Pass ]
 crbug.com/1293591 images/color-profile-svg.html [ Failure Pass ]
 crbug.com/1293591 images/jpeg-with-color-profile.html [ Failure Pass ]
 
