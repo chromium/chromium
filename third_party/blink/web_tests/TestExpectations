@@ -258,10 +258,9 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 #  view-transition
 # Some additional bugs that are caused by painting problems are also within this section.
 
-# The tests happened to pass with two bugs canceled each other. Now they fail
-# with the first bug fixed. Will be fixed when the second bug is fixed (crrev.com/c/3752748).
 
 # --- Skia roll test suppressions
+
 crbug.com/1494899 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]
 
 crbug.com/1497170 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.alpha.blending.html [ Failure Pass ]
@@ -277,13 +276,16 @@ crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.shadow.w.html [ Failure Pass ]
 crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.w.html [ Failure Pass ]
 
+crbug.com/40045243 css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
+crbug.com/40045243 css3/filters/effect-reference-zoom-hw.html [ Failure Pass ]
+
 crbug.com/324053529 css3/filters/effect-reference-composite-hw.html [ Failure Pass ]
 crbug.com/324053529 svg/batik/filters/feTile.svg [ Failure Pass ]
 crbug.com/324053529 [ Linux ] compositing/reflections/masked-reflection-on-composited.html [ Failure Pass ]
 crbug.com/324053529 [ Linux ] css3/filters/effect-all-on-background-hw.html [ Failure Pass ]
 crbug.com/324053529 [ Linux ] css3/blending/effect-background-blend-mode-stacking.html [ Failure Pass ]
-crbug.com/324053529 [ Mac ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
-crbug.com/324053529 [ Win ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
+#crbug.com/324053529 [ Mac ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
+#crbug.com/324053529 [ Win ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
 crbug.com/324053529 [ Linux ] virtual/scalefactor200/css3/filters/effect-drop-shadow-hw.html [ Failure Pass ]
 crbug.com/324053529 css3/filters/effect-reference-colorspace.html [ Failure Pass ]
 crbug.com/324053529 [ Mac ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
@@ -297,9 +299,7 @@ crbug.com/324053529 fast/reflections/reflection-with-zoom.html [ Failure Pass ]
 crbug.com/324053529 paint/invalidation/reflection/reflection-with-rotation.html [ Failure Pass ]
 crbug.com/324053529 svg/filters/feDropShadow.svg [ Failure Pass ]
 
-
 # --- END Skia roll test suppresions
-
 
 
 crbug.com/1462226 wpt_internal/prerender/restriction-web-auth.https.html [ Crash Failure Pass Timeout ]
