@@ -164,6 +164,70 @@ crbug.com/1339293 external/wpt/content-security-policy/media-src/media-src-7_1_2
 
 # ====== Timed HTML parser budget tests to here ========================
 
+# ====== Mutation Events tests from here ========================
+
+# This is the virtual suite that should continue passing.
+crbug.com/1446498 virtual/mutation-events-enabled/* [ Pass ]
+
+# TODO(crbug.com/1446498) These are all of the files that test Mutation Events
+# directly. These can all be deleted once Mutation Events are disabled by
+# default and things have stabilized.
+crbug.com/1446498 dom/mutation-event-tests/* [ Failure Skip ]
+# These are immovable tests, either because they're WPT or http/tests/*.
+crbug.com/1446498 external/wpt/editing/crashtests/indent-outdent-after-closing-editable-dialog-element.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/editing/other/move-inserted-node-from-DOMNodeInserted-during-exec-command-insertHTML.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/042.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/043.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/044.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/045.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/054.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/055.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/uievents/legacy-domevents-tests/approved/domnodeinserted.html [ Failure Skip ]
+crbug.com/1446498 external/wpt/uievents/legacy-domevents-tests/approved/ProcessingInstruction.DOMCharacterDataModified.html [ Failure Skip ]
+crbug.com/1446498 http/tests/inspector-protocol/console/console-dom-mutation-violations.js [ Failure Skip ]
+crbug.com/1446498 http/tests/inspector-protocol/issues/mutation-events-issue.js [ Failure Skip ]
+crbug.com/1446498 virtual/text-antialias/split-text-crash.xhtml [ Failure Skip ]
+
+# TODO(crbug.com/1446498) These fail when Mutation Events are disabled, but
+# these are tests of other (non-Mutation-Event) things, and just happen to use
+# Mutation Events for the test. Triage and fix or remove all of these before
+# disabling Mutation Events by default.
+crbug.com/1446498 accessibility/details-summary-crash.html [ Failure Pass ]
+crbug.com/1446498 custom-elements/cereactions-with-exception.html [ Failure Pass ]
+crbug.com/1446498 dom/node/replace_child_recheck.html [ Failure Pass ]
+crbug.com/1446498 editing/execCommand/crash-inserting-list.html [ Failure Pass ]
+crbug.com/1446498 editing/pasteboard/drag-and-drop-objectimage-contenteditable.html [ Failure Pass ]
+crbug.com/1446498 editing/undo/paste_with_mutation_event_undo_order.html [ Failure Pass ]
+crbug.com/1446498 editing/undo/type_with_mutation_event_undo_order.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/dom-constructors.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/dom-method-document-change.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/global-constructors.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/move-nodes-across-documents.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/mutation-events-usecounter.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/replaceChild-domsubtreemodified.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/wrapper-classes.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/HTMLElement/set-inner-outer-optimization.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/MutationObserver/observe-attributes.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/MutationObserver/observe-characterdata.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/Window/get-set-properties.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/Window/window-lookup-precedence.html [ Failure Pass ]
+crbug.com/1446498 fast/dom/shadow/shadow-boundary-crossing.html [ Failure Pass ]
+crbug.com/1446498 fast/events/event-creation.html [ Failure Pass ]
+crbug.com/1446498 fast/events/init-event-exceptions.html [ Failure Pass ]
+crbug.com/1446498 fast/events/init-events.html [ Failure Pass ]
+crbug.com/1446498 fast/js/constructor.html [ Failure Pass ]
+crbug.com/1446498 http/tests/xmlhttprequest/reentrant-cancel-abort.html [ Failure Pass ]
+
+crbug.com/1446498 editing/pasteboard/drag-and-drop-image-contenteditable.html [ Timeout Pass ]
+crbug.com/1446498 editing/pasteboard/drag-and-drop-inputimage-contenteditable.html [ Timeout Pass ]
+crbug.com/1446498 fast/dom/mutation-event-for-fragment-insertion.html [ Timeout Pass ]
+crbug.com/1446498 fast/events/window-onerror-isolatedworld-02.html [ Timeout Pass ]
+crbug.com/1446498 http/tests/xmlhttprequest/reentrant-cancel.html [ Timeout Pass ]
+crbug.com/1446498 svg/foreignObject/viewport-foreignobject-crash.html [ Timeout Pass ]
+
+
+# ====== Mutation Events tests to here ========================
+
 
 # ====== Site Isolation failures from here ======
 # See also third_party/blink/web_tests/virtual/not-site-per-process/README.md

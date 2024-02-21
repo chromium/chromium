@@ -4044,18 +4044,6 @@ interface MouseEvent : UIEvent
     method constructor
     method getModifierState
     method initMouseEvent
-interface MutationEvent : Event
-    attribute @@toStringTag
-    attribute ADDITION
-    attribute MODIFICATION
-    attribute REMOVAL
-    getter attrChange
-    getter attrName
-    getter newValue
-    getter prevValue
-    getter relatedNode
-    method constructor
-    method initMutationEvent
 interface MutationObserver
     attribute @@toStringTag
     method constructor

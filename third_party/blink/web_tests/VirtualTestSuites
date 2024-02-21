@@ -1439,12 +1439,28 @@
     "expires": "May 1, 2024"
   },
   {
-    "prefix": "mutation-events-disabled",
+    "prefix": "mutation-events-enabled",
     "platforms": ["Linux"],
-    "bases": [],
-    "args": ["--disable-blink-features=MutationEvents",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Sep 1, 2024"
+    "owners": ["masonf@chromium.org"],
+    "bases": [
+      "fast/events/mutation-events-disabled.html",
+      "dom/mutation-event-tests",
+      "external/wpt/editing/crashtests/indent-outdent-after-closing-editable-dialog-element.html",
+      "external/wpt/editing/other/move-inserted-node-from-DOMNodeInserted-during-exec-command-insertHTML.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/042.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/043.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/044.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/045.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/054.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/055.html",
+      "external/wpt/uievents/legacy-domevents-tests/approved/domnodeinserted.html",
+      "external/wpt/uievents/legacy-domevents-tests/approved/ProcessingInstruction.DOMCharacterDataModified.html",
+      "http/tests/inspector-protocol/console/console-dom-mutation-violations.js",
+      "http/tests/inspector-protocol/issues/mutation-events-issue.js",
+      "virtual/text-antialias/split-text-crash.xhtml"
+    ],
+    "args": ["--enable-blink-features=MutationEvents"],
+    "expires": "Mar 1, 2025"
   },
   {
     "prefix": "popover-hint-disabled",

@@ -28,10 +28,6 @@ Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
 [FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "IDBVersionChangeEvent"
   assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
-[FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "MutationEvent"
-  assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
-[FAIL] Should throw NOT_SUPPORTED_ERR for pluralized non-legacy event interface "MutationEvents"
-  assert_throws_dom: function "function () {\n        var evt = document.createEvent(eventInterface + "s");\n      }" did not throw
 [FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "PageTransitionEvent"
   assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
 [FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "PopStateEvent"
