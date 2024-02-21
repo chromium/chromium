@@ -11,6 +11,7 @@ if (is_linux) {
 import("//build/util/lastchange.gni")
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
 
 declare_args() {
   # Make macOS request permissions for the chrome binary instead of its parent
@@ -68,12 +69,20 @@ action("embed_mobile_devices_in_cpp") {
   args += rebase_path(ts_files, root_build_dir)
 }
 
+minify_js("minify_bidimapper") {
+  deps = [ "//third_party/bidimapper:bidimapper" ]
+  input_dir =
+      get_label_info("//third_party/bidimapper:bidimapper", "target_gen_dir")
+  in_folder = "$input_dir"
+  in_files = [ "mapper.js" ]
+  out_folder = "$target_gen_dir/bidimapper/minified"
+}
+
 action("embed_bidimapper_in_cpp") {
   script = "embed_bidimapper_in_cpp.py"
 
-  input_dir =
-      get_label_info("//third_party/bidimapper:bidimapper", "target_gen_dir")
-  js_files = [ "$input_dir/mapper.js" ]
+  input_dir = get_label_info(":minify_bidimapper", "target_gen_dir")
+  js_files = [ "$input_dir/bidimapper/minified/mapper.js" ]
 
   inputs = [ "cpp_source.py" ] + js_files
 
@@ -87,7 +96,7 @@ action("embed_bidimapper_in_cpp") {
   ]
   args += rebase_path(js_files, root_build_dir)
 
-  deps = [ "//third_party/bidimapper:bidimapper" ]
+  deps = [ ":minify_bidimapper" ]
 }
 
 action("embed_user_data_dir_in_cpp") {
