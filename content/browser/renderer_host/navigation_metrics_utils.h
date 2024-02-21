@@ -11,12 +11,13 @@ namespace content {
 
 class RenderFrameHostImpl;
 
-// Records the AdClickMainFrameNavigation use counter for `initiator_frame` if
-// `initiator_activation_and_ad_status` indicates that the navigation is from
-// an ad click. Precondition: The navigation is targeting the outermost main
-// frame. It's only necessary to call this function for renderer-initiated
-// navigations, as browser-initiated navigations can never be initiated from ad.
-void MaybeRecordAdClickMainFrameNavigationUseCounter(
+// Records the AdClickMainFrameNavigation use counter for `initiator_frame`, and
+// records the Navigation.MainFrame.FromAdClick UMA, if
+// `initiator_activation_and_ad_status` indicates that the navigation is from an
+// ad click. Precondition: The navigation is targeting the outermost main frame.
+// It's only necessary to call this function for renderer-initiated navigations,
+// as browser-initiated navigations can never be initiated from ad.
+void MaybeRecordAdClickMainFrameNavigationMetrics(
     RenderFrameHostImpl* initiator_frame,
     blink::mojom::NavigationInitiatorActivationAndAdStatus
         initiator_activation_and_ad_status);

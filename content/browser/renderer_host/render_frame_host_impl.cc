@@ -8116,7 +8116,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     // TODO(crbug.com/1237552): Resolve the discussion of download policy.
     blink::NavigationDownloadPolicy download_policy;
 
-    MaybeRecordAdClickMainFrameNavigationUseCounter(
+    MaybeRecordAdClickMainFrameNavigationMetrics(
         /*initiator_frame=*/this, params->initiator_activation_and_ad_status);
 
     target_frame->frame_tree_node()->navigator().NavigateFromFrameProxy(
@@ -8148,7 +8148,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     // targeting this page's main frame, or targeting a new tab.
     if (params->disposition != WindowOpenDisposition::CURRENT_TAB ||
         IsOutermostMainFrame()) {
-      MaybeRecordAdClickMainFrameNavigationUseCounter(
+      MaybeRecordAdClickMainFrameNavigationMetrics(
           initiator_frame, params->initiator_activation_and_ad_status);
     }
   }
@@ -8421,7 +8421,7 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   transient_allow_popup_.Deactivate();
 
-  MaybeRecordAdClickMainFrameNavigationUseCounter(
+  MaybeRecordAdClickMainFrameNavigationMetrics(
       /*initiator_frame=*/this, params->initiator_activation_and_ad_status);
 
   if (is_new_browsing_instance || !new_frame_tree) {
@@ -9363,7 +9363,7 @@ void RenderFrameHostImpl::BeginNavigation(
     RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
         GetProcess()->GetID(), begin_params->initiator_frame_token.value());
     if (IsOutermostMainFrame()) {
-      MaybeRecordAdClickMainFrameNavigationUseCounter(
+      MaybeRecordAdClickMainFrameNavigationMetrics(
           initiator_frame, begin_params->initiator_activation_and_ad_status);
     }
   }

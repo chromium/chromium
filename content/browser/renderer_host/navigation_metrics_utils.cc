@@ -11,7 +11,7 @@
 
 namespace content {
 
-void MaybeRecordAdClickMainFrameNavigationUseCounter(
+void MaybeRecordAdClickMainFrameNavigationMetrics(
     RenderFrameHostImpl* initiator_frame,
     blink::mojom::NavigationInitiatorActivationAndAdStatus
         initiator_activation_and_ad_status) {
@@ -24,6 +24,8 @@ void MaybeRecordAdClickMainFrameNavigationUseCounter(
           kStartedWithTransientActivationFromAd) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         initiator_frame, blink::mojom::WebFeature::kAdClickMainFrameNavigation);
+
+    UMA_HISTOGRAM_BOOLEAN("Navigation.MainFrame.FromAdClick", true);
   }
 }
 

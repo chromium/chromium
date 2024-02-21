@@ -955,6 +955,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.MainFrame.FromAdClick" enum="Boolean"
+    expires_after="2025-02-14">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records a True boolean value when clicking on an Ad triggers a main frame
+    navigation. Recorded when the (renderer-initiated) navigation IPC is
+    received by the browser process.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.MainFrame.MaxFrameCount" units="frames"
     expires_after="2024-07-28">
   <owner>michaelpg@chromium.org</owner>
