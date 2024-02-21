@@ -38,6 +38,7 @@ import './os_a11y_page/display_and_magnification_subpage.js';
 import './os_a11y_page/facegaze_cursor_subpage.js';
 import './os_a11y_page/facegaze_facial_expression_subpage.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
+import './os_a11y_page/live_caption_section.js';
 import './os_a11y_page/select_to_speak_subpage.js';
 import './os_a11y_page/switch_access_subpage.js';
 import './os_a11y_page/text_to_speech_subpage.js';
@@ -133,6 +134,7 @@ import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
 import './os_reset_page/os_sanitize_dialog.js';
 
+export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 export {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {NetworkListElement} from 'chrome://resources/ash/common/network/network_list.js';
 export {AddSmbShareDialogElement} from 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
@@ -226,6 +228,7 @@ export {SettingsDisplayAndMagnificationSubpageElement} from './os_a11y_page/disp
 export {SettingsFaceGazeCursorSubpageElement} from './os_a11y_page/facegaze_cursor_subpage.js';
 export {SettingsFaceGazeFacialExpressionSubpageElement} from './os_a11y_page/facegaze_facial_expression_subpage.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
+export {SettingsLiveCaptionElement} from './os_a11y_page/live_caption_section.js';
 export {HandlerVoice, SettingsSelectToSpeakSubpageElement} from './os_a11y_page/select_to_speak_subpage.js';
 export {SettingsSwitchAccessActionAssignmentDialogElement} from './os_a11y_page/switch_access_action_assignment_dialog.js';
 export {SettingsSwitchAccessActionAssignmentPaneElement} from './os_a11y_page/switch_access_action_assignment_pane.js';

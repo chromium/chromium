@@ -951,6 +951,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled, OsA11yPage) {
   RunSettingsTest("os_a11y_page/os_a11y_page_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled,
+                       OsA11yPageLiveCaptionSection) {
+  RunSettingsTest("os_a11y_page/live_caption_section_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageAudioAndCaptionsPage) {
   RunSettingsTest("os_a11y_page/audio_and_captions_page_test.js");
 }
