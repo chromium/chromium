@@ -6869,6 +6869,12 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #if BUILDFLAG(IS_CHROMEOS)
+    {"add-printer-via-printscanmgr",
+     flag_descriptions::kAddPrinterViaPrintscanmgrName,
+     flag_descriptions::kAddPrinterViaPrintscanmgrDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(printing::features::kAddPrinterViaPrintscanmgr)},
+
     {"enable-borderless-printing",
      flag_descriptions::kEnableBorderlessPrintingName,
      flag_descriptions::kEnableBorderlessPrintingDescription,

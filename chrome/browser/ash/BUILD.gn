@@ -6251,6 +6251,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//chromeos/ash/components/dbus/oobe_config",
     "//chromeos/ash/components/dbus/pciguard",
+    "//chromeos/ash/components/dbus/printscanmgr",
     "//chromeos/ash/components/dbus/resourced",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/dbus/seneschal:seneschal_proto",

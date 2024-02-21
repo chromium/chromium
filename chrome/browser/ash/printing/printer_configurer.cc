@@ -26,11 +26,13 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "chromeos/dbus/common/dbus_library_error.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/printing_features.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace ash {
@@ -105,6 +107,69 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
   }
 }
 
+PrinterSetupResult PrinterSetupResultFromAddPrinterResult(
+    const Printer& printer,
+    printscanmgr::AddPrinterResult result) {
+  const std::string prefix = printer.make_and_model() + " setup result: ";
+  switch (result) {
+    case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_SUCCESS:
+      PRINTER_LOG(EVENT) << prefix << "Printer setup successful";
+      return PrinterSetupResult::kSuccess;
+    case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_CUPS_INVALID_PPD:
+      PRINTER_LOG(EVENT) << prefix << "PPD Invalid";
+      return PrinterSetupResult::kInvalidPpd;
+    case printscanmgr::AddPrinterResult::
+        ADD_PRINTER_RESULT_CUPS_LPADMIN_FAILURE:
+      PRINTER_LOG(ERROR) << prefix << "lpadmin-manual failed";
+      return PrinterSetupResult::kFatalError;
+    case printscanmgr::AddPrinterResult::
+        ADD_PRINTER_RESULT_CUPS_AUTOCONF_FAILURE:
+      PRINTER_LOG(ERROR) << prefix << "lpadmin-autoconf failed";
+      return PrinterSetupResult::kFatalError;
+    case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_CUPS_BAD_URI:
+      PRINTER_LOG(EVENT) << prefix << "Bad URI";
+      return PrinterSetupResult::kBadUri;
+    case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_CUPS_IO_ERROR:
+      PRINTER_LOG(ERROR) << prefix << "I/O error";
+      return PrinterSetupResult::kIoError;
+    case printscanmgr::AddPrinterResult::
+        ADD_PRINTER_RESULT_CUPS_MEMORY_ALLOC_ERROR:
+      PRINTER_LOG(EVENT) << prefix << "Memory allocation error";
+      return PrinterSetupResult::kMemoryAllocationError;
+    case printscanmgr::AddPrinterResult::
+        ADD_PRINTER_RESULT_CUPS_PRINTER_UNREACHABLE:
+      PRINTER_LOG(EVENT) << prefix << "Printer is unreachable";
+      return PrinterSetupResult::kPrinterUnreachable;
+    case printscanmgr::AddPrinterResult::
+        ADD_PRINTER_RESULT_CUPS_PRINTER_WRONG_RESPONSE:
+      PRINTER_LOG(EVENT) << prefix << "Unexpected response from printer";
+      return PrinterSetupResult::kPrinterSentWrongResponse;
+    case printscanmgr::AddPrinterResult::
+        ADD_PRINTER_RESULT_CUPS_PRINTER_NOT_AUTOCONF:
+      PRINTER_LOG(EVENT) << prefix << "Printer is not autoconfigurable";
+      return PrinterSetupResult::kPrinterIsNotAutoconfigurable;
+    case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_GENERIC:
+      PRINTER_LOG(ERROR) << prefix << "Unknown D-Bus error";
+      return PrinterSetupResult::kDbusError;
+    case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_NO_REPLY:
+      PRINTER_LOG(ERROR) << prefix << "D-Bus error - no reply";
+      return PrinterSetupResult::kDbusNoReply;
+    case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_TIMEOUT:
+      PRINTER_LOG(ERROR) << prefix << "D-Bus error - timeout";
+      return PrinterSetupResult::kDbusTimeout;
+    // TODO(pmoy): handle new D-Bus encoding error here.
+    case printscanmgr::AddPrinterResult::
+        ADD_PRINTER_RESULT_UNSPECIFIED:  // FALLTHROUGH
+    case printscanmgr::AddPrinterResult::
+        ADD_PRINTER_RESULT_CUPS_FATAL:  // FALLTHROUGH
+    default:
+      // We have no idea.  It must be fatal.
+      PRINTER_LOG(ERROR) << prefix << "Unrecognized error: "
+                         << printscanmgr::AddPrinterResult_Name(result);
+      return PrinterSetupResult::kFatalError;
+  }
+}
+
 // Configures printers by downloading PPDs then adding them to CUPS through
 // debugd.  This class must be used on the UI thread.
 class PrinterConfigurerImpl : public PrinterConfigurer {
@@ -149,20 +214,55 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     PRINTER_LOG(DEBUG) << printer.make_and_model()
                        << " Attempting driverless setup at "
                        << printer.uri().GetNormalized();
-    DebugDaemonClient::Get()->CupsAddAutoConfiguredPrinter(
-        printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
-        g_browser_process->GetApplicationLocale(),
-        base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,
-                       weak_factory_.GetWeakPtr(), printer,
-                       std::move(callback)));
+    if (base::FeatureList::IsEnabled(
+            printing::features::kAddPrinterViaPrintscanmgr)) {
+      printscanmgr::CupsAddAutoConfiguredPrinterRequest request;
+      request.set_name(printer.id());
+      request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
+      request.set_language(g_browser_process->GetApplicationLocale());
+      PrintscanmgrClient::Get()->CupsAddAutoConfiguredPrinter(
+          std::move(request),
+          base::BindOnce(
+              &PrinterConfigurerImpl::OnAddedPrinter<
+                  printscanmgr::CupsAddAutoConfiguredPrinterResponse>,
+              weak_factory_.GetWeakPtr(), printer, std::move(callback)));
+    } else {
+      DebugDaemonClient::Get()->CupsAddAutoConfiguredPrinter(
+          printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
+          g_browser_process->GetApplicationLocale(),
+          base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinterDebugd,
+                         weak_factory_.GetWeakPtr(), printer,
+                         std::move(callback)));
+    }
   }
 
  private:
-  // Receive the callback from the debug daemon client once we attempt to
+  // Receive the callback from the printscanmgr daemon client once we attempt to
   // add the printer.
+  template <typename T>
   void OnAddedPrinter(const Printer& printer,
                       PrinterSetupCallback cb,
-                      int32_t result_code) {
+                      std::optional<T> response) {
+    // It's expected that the printscanmgr daemon posts callbacks on the UI
+    // thread.
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    if (!response) {
+      PRINTER_LOG(ERROR) << "Null response to OnAddedPrinter";
+      std::move(cb).Run(PrinterSetupResult::kFatalError);
+      return;
+    }
+
+    PrinterSetupResult setup_result =
+        PrinterSetupResultFromAddPrinterResult(printer, response->result());
+    std::move(cb).Run(setup_result);
+  }
+
+  // Receive the callback from the debug daemon client once we attempt to
+  // add the printer.
+  void OnAddedPrinterDebugd(const Printer& printer,
+                            PrinterSetupCallback cb,
+                            int32_t result_code) {
     // It's expected that debug daemon posts callbacks on the UI thread.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -180,11 +280,26 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     PRINTER_LOG(EVENT) << printer.make_and_model()
                        << " Attempting setup with PPD at "
                        << printer.uri().GetNormalized();
-    DebugDaemonClient::Get()->CupsAddManuallyConfiguredPrinter(
-        printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
-        g_browser_process->GetApplicationLocale(), ppd_contents,
-        base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,
-                       weak_factory_.GetWeakPtr(), printer, std::move(cb)));
+    if (base::FeatureList::IsEnabled(
+            printing::features::kAddPrinterViaPrintscanmgr)) {
+      printscanmgr::CupsAddManuallyConfiguredPrinterRequest request;
+      request.set_name(printer.id());
+      request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
+      request.set_ppd_contents(ppd_contents);
+      request.set_language(g_browser_process->GetApplicationLocale());
+      PrintscanmgrClient::Get()->CupsAddManuallyConfiguredPrinter(
+          std::move(request),
+          base::BindOnce(
+              &PrinterConfigurerImpl::OnAddedPrinter<
+                  printscanmgr::CupsAddManuallyConfiguredPrinterResponse>,
+              weak_factory_.GetWeakPtr(), printer, std::move(cb)));
+    } else {
+      DebugDaemonClient::Get()->CupsAddManuallyConfiguredPrinter(
+          printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
+          g_browser_process->GetApplicationLocale(), ppd_contents,
+          base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinterDebugd,
+                         weak_factory_.GetWeakPtr(), printer, std::move(cb)));
+    }
   }
 
   void ResolvePpdDone(const Printer& printer,

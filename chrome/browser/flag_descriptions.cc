@@ -7466,6 +7466,11 @@ const char kGetAllScreensMediaDescription[] =
 
 #if BUILDFLAG(IS_CHROMEOS)
 
+const char kAddPrinterViaPrintscanmgrName[] =
+    "Uses printscanmgr to add printers";
+const char kAddPrinterViaPrintscanmgrDescription[] =
+    "Changes the daemon used to add printers from debugd to printscanmgr.";
+
 const char kAppToAppLinkCapturingName[] = "App-to-app link capturing";
 const char kAppToAppLinkCapturingDescription[] =
     "Enables link capturing from one app to another, even when the target app "

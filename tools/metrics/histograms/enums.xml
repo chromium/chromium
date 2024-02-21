@@ -25104,6 +25104,7 @@ from previous Chrome versions.
   <int value="2002003766" label="LeftHandSideActivityIndicators:enabled"/>
   <int value="2002113900" label="AdaptiveButtonInTopToolbar:disabled"/>
   <int value="2002573873" label="ChromeHomeMenuItemsExpandSheet:enabled"/>
+  <int value="2002578149" label="AddPrinterViaPrintscanmgr:disabled"/>
   <int value="2002724184" label="MouseAndTrackpadDropdownMenu:enabled"/>
   <int value="2003568209" label="TouchpadAndWheelScrollLatching:disabled"/>
   <int value="2003811018" label="enable-touch-support-for-screen-magnifier"/>
@@ -25200,6 +25201,7 @@ from previous Chrome versions.
   <int value="2058439723" label="CalculateNativeWinOcclusion:disabled"/>
   <int value="2059322877" label="new-avatar-menu"/>
   <int value="2062051946" label="AccessCodeCastFreezeUI:disabled"/>
+  <int value="2062665434" label="AddPrinterViaPrintscanmgr:enabled"/>
   <int value="2062752242" label="ApnRevamp:enabled"/>
   <int value="2063091429" label="OfflinePagesSharing:enabled"/>
   <int value="2063238104" label="ContextMenuPopupForAllScreenSizes:enabled"/>

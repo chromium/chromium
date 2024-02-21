@@ -15,6 +15,11 @@ namespace printing {
 namespace features {
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Add printers via printscanmgr instead of debugd.
+BASE_FEATURE(kAddPrinterViaPrintscanmgr,
+             "AddPrinterViaPrintscanmgr",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable support for borderless printing and media type.
 BASE_FEATURE(kEnableBorderlessPrinting,
              "EnableBorderlessPrinting",

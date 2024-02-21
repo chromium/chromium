@@ -4296,6 +4296,9 @@ extern const char kGetAllScreensMediaDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
+extern const char kAddPrinterViaPrintscanmgrName[];
+extern const char kAddPrinterViaPrintscanmgrDescription[];
+
 extern const char kAppToAppLinkCapturingName[];
 extern const char kAppToAppLinkCapturingDescription[];
 

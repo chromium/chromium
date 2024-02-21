@@ -67,6 +67,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "add-printer-via-printscanmgr",
+    "owners": [ "pmoy@chromium.org", "project-bolton-eng@google.com" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "add-to-homescreen-iph",
     "owners": [ "shaktisahu@chromium.org" ],
     "expiry_milestone": 100
