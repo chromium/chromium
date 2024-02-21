@@ -217,6 +217,8 @@ class WebTestControlHost : public WebContentsObserver,
   void OverridePreferences(
       const blink::web_pref::WebPreferences& web_preferences) override;
   void SetMainWindowHidden(bool hidden) override;
+  void SetFrameWindowHidden(const blink::LocalFrameToken& frame_token,
+                            bool hidden) override;
   void CheckForLeakedWindows() override;
   void GoToOffset(int offset) override;
   void SendBluetoothManualChooserEvent(const std::string& event,
@@ -308,6 +310,14 @@ class WebTestControlHost : public WebContentsObserver,
   void OnPixelDumpCaptured(const SkBitmap& snapshot);
   void ReportResults();
   void EnqueueSurfaceCopyRequest();
+
+  // Returns the WebContents associated with `frame_token`. Must only be called
+  // when processing messages received on the mojom::WebTestControlHost
+  // interface from renderer processes. `frame_token` must correspond to a valid
+  // RenderFrameHost.
+  // The return value can not be null.
+  WebContents* GetWebContentsFromCurrentContext(
+      const blink::LocalFrameToken& frame_token);
 
   mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
   GetWebTestRenderFrameRemote(RenderFrameHost* frame);

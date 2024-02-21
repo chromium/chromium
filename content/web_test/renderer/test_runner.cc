@@ -346,6 +346,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetMockScreenOrientation(const std::string& orientation);
   void SetPOSIXLocale(const std::string& locale);
   void SetMainWindowHidden(bool hidden);
+  void SetFrameWindowHidden(bool hidden);
   void SetWindowRect(const gin::Dictionary& rect);
   void SetPermission(const std::string& name,
                      const std::string& value,
@@ -758,9 +759,15 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       // Calls setlocale(LC_ALL, ...) for a specified locale.
       .SetMethod("setPOSIXLocale", &TestRunnerBindings::SetPOSIXLocale)
       // Hide or show the main window. Watch for the |document.visibilityState|
-      // to change in order to wait for the side effects of calling this.
+      // on the primary window's Document to change in order to wait for the
+      // side effects of calling this.
       .SetMethod("setMainWindowHidden",
                  &TestRunnerBindings::SetMainWindowHidden)
+      // Hide or show the window displaying this frame. Watch for the
+      // |document.visibilityState| to change in order to wait for the side
+      // effects of calling this.
+      .SetMethod("setFrameWindowHidden",
+                 &TestRunnerBindings::SetFrameWindowHidden)
       .SetMethod("setWindowRect", &TestRunnerBindings::SetWindowRect)
       // Sets the permission's |name| to |value| for a given {origin, embedder}
       // tuple. Sends a message to the WebTestPermissionManager in order for it
@@ -1333,6 +1340,15 @@ void TestRunnerBindings::SetMainWindowHidden(bool hidden) {
     return;
   }
   frame_->GetWebTestControlHostRemote()->SetMainWindowHidden(hidden);
+}
+
+void TestRunnerBindings::SetFrameWindowHidden(bool hidden) {
+  if (!frame_) {
+    return;
+  }
+
+  frame_->GetWebTestControlHostRemote()->SetFrameWindowHidden(
+      frame_->GetWebFrame()->GetLocalFrameToken(), hidden);
 }
 
 void TestRunnerBindings::SetWindowRect(const gin::Dictionary& bounds) {

@@ -13,6 +13,7 @@ import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 struct WebTestRunTestConfiguration {
   // The current working directory.
@@ -203,9 +204,14 @@ interface WebTestControlHost {
   // avoid having them closed at the end of the test before the leak checker.
   CheckForLeakedWindows();
 
-  // Show or hide the window. This mimics the user switching tabs in a
+  // Show or hide the primary window. This mimics the user switching tabs in a
   // multi-tab window, or occluding the window.
   SetMainWindowHidden(bool hidden);
+
+  // Show or hide the window hosting the frame corresponding to `frame_token`.
+  // This mimics the user switching tabs in a multi-tab window, or occluding the
+  // window.
+  SetFrameWindowHidden(blink.mojom.LocalFrameToken frame_token, bool hidden);
 
   // Trigger a GoToOffset navigation on the main WebView.
   GoToOffset(int32 offset);

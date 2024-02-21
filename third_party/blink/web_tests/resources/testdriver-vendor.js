@@ -511,7 +511,7 @@
   }
 
   window.test_driver_internal.minimize_window = async () => {
-    window.testRunner.setMainWindowHidden(true);
+    window.testRunner.setFrameWindowHidden(true);
     // Wait until the new state is reflected in the document
     while (!document.hidden) {
       await new Promise(resolve => setTimeout(resolve, 0));
@@ -519,7 +519,7 @@
   };
 
   window.test_driver_internal.set_window_rect = async (rect, context) => {
-    window.testRunner.setMainWindowHidden(false);
+    window.testRunner.setFrameWindowHidden(false);
     // Wait until the new state is reflected in the document
     while (document.hidden) {
       await new Promise(resolve => setTimeout(resolve, 0));
