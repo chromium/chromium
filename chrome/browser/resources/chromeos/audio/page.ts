@@ -38,7 +38,7 @@ export class PageNavigator {
   showPage(pageName: string) {
     if (this.storedPages.has(pageName)) {
       const page: Page = this.storedPages.get(pageName) as Page;
-      if (pageName != this.activePage?.pageName) {
+      if (pageName !== this.activePage?.pageName) {
         page.showPage();
         history.pushState({}, '', ('#' + page.pageName));
         this.activePage?.hidePage();
