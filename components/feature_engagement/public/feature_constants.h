@@ -232,6 +232,7 @@ BASE_DECLARE_FEATURE(kIPHiOSPromoStaySafeFeature);
 BASE_DECLARE_FEATURE(kIPHiOSSwipeBackForwardFeature);
 BASE_DECLARE_FEATURE(kIPHiOSSwipeToolbarToChangeTabFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPostDefaultAbandonmentPromoFeature);
+BASE_DECLARE_FEATURE(kIPHiOSPromoGenericDefaultBrowserFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET
@@ -251,6 +252,11 @@ extern const char kGestureInProductHelpMaxOccurrence[];
 // The param name for the minimum number of days between two impressions for
 // each type of in-product help feature.
 extern const char kGestureInProductHelpDaysBetweenOccurrences[];
+
+// Non-FET feature flag that enables the generic default browser promo to be
+// displayed without matching all the criteria and in depth metrics collection
+// for the displayed promo.
+BASE_DECLARE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment);
 
 #endif  // BUILDFLAG(IS_IOS)
 

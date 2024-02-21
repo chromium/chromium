@@ -590,6 +590,9 @@ BASE_FEATURE(kIPHiOSSwipeToolbarToChangeTabFeature,
 BASE_FEATURE(kIPHiOSPostDefaultAbandonmentPromoFeature,
              "IPH_iOSPostDefaultAbandonmentPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoGenericDefaultBrowserFeature,
+             "IPH_iOSPromoGenericDefaultBrowser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
@@ -604,6 +607,10 @@ constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
 const char kGestureInProductHelpMaxOccurrence[] = "gesture-iph-max-occurrence";
 const char kGestureInProductHelpDaysBetweenOccurrences[] =
     "gesture-iph-days-between-occurrences";
+
+BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
+             "DefaultBrowserTriggerCriteriaExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_IOS)
 

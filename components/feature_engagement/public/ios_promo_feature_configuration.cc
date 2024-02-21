@@ -84,6 +84,39 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     }
   }
 
+  if (kIPHiOSPromoGenericDefaultBrowserFeature.name == feature->name) {
+    config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+
+    if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
+      // Show this promo once in number of days specified by the feature param.
+      config->trigger = EventConfig(
+          "generic_default_browser_promo_trigger", Comparator(EQUAL, 0),
+          feature_engagement::kDefaultBrowserEligibilitySlidingWindowParam
+              .Get(),
+          feature_engagement::kMaxStoragePeriod);
+    } else {
+      // Show this promo only once.
+      config->trigger = EventConfig("generic_default_browser_promo_trigger",
+                                    Comparator(EQUAL, 0),
+                                    feature_engagement::kMaxStoragePeriod,
+                                    feature_engagement::kMaxStoragePeriod);
+    }
+
+    // Show the promo if promo specific conditions are met during last 21 days.
+    // Skip this check for trigger criteria experiment.
+    if (!base::FeatureList::IsEnabled(
+            kDefaultBrowserTriggerCriteriaExperiment)) {
+      config->event_configs.insert(
+          EventConfig("generic_default_browser_promo_conditions_met",
+                      Comparator(GREATER_THAN, 0), 21, 365));
+    }
+  }
+
   if (kIPHiOSPromoAllTabsFeature.name == feature->name) {
     // Should show this promo only once if promo specific and group conditions
     // are met.
@@ -99,9 +132,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
     config->event_configs.insert(EventConfig(
-        "all_tabs_promo_conditions_met", Comparator(GREATER_THAN, 0),
-        feature_engagement::kMaxStoragePeriod,
-        feature_engagement::kMaxStoragePeriod));
+        "all_tabs_promo_conditions_met", Comparator(GREATER_THAN, 0), 21, 365));
   }
 
   if (kIPHiOSPromoMadeForIOSFeature.name == feature->name) {
@@ -118,10 +149,9 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig("made_for_ios_promo_trigger", Comparator(EQUAL, 0),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
-    config->event_configs.insert(EventConfig(
-        "made_for_ios_promo_conditions_met", Comparator(GREATER_THAN, 0),
-        feature_engagement::kMaxStoragePeriod,
-        feature_engagement::kMaxStoragePeriod));
+    config->event_configs.insert(
+        EventConfig("made_for_ios_promo_conditions_met",
+                    Comparator(GREATER_THAN, 0), 21, 365));
   }
 
   if (kIPHiOSPromoStaySafeFeature.name == feature->name) {
@@ -138,10 +168,9 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig("stay_safe_promo_trigger", Comparator(EQUAL, 0),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
-    config->event_configs.insert(EventConfig(
-        "stay_safe_promo_conditions_met", Comparator(GREATER_THAN, 0),
-        feature_engagement::kMaxStoragePeriod,
-        feature_engagement::kMaxStoragePeriod));
+    config->event_configs.insert(EventConfig("stay_safe_promo_conditions_met",
+                                             Comparator(GREATER_THAN, 0), 21,
+                                             365));
   }
 
   if (kIPHiOSPromoCredentialProviderExtensionFeature.name == feature->name) {

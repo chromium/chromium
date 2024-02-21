@@ -145,8 +145,9 @@ TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserFullscreenPromo) {
 // experiment is enabled.
 TEST_F(DefaultBrowserPromoManagerTest,
        showDefaultBrowserFullscreenPromo_TriggerExpEnabled) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {kDefaultBrowserVideoPromo});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment},
+      {kDefaultBrowserVideoPromo});
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
 

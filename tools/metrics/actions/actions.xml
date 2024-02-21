@@ -41457,6 +41457,7 @@ should be able to be added at any place in this file.
       label="For iOSPasswordPromoDesktop feature"/>
   <suffix name="iOSPostDefaultAbandonmentPromo"
       label="For iOSPostDefaultAbandonmentPromo feature"/>
+  <suffix name="iOSPromoAllTabs" label="For All Tabs default browser promo."/>
   <suffix name="iOSPromoAppStore" label="For iOSPromoAppStore feature"/>
   <suffix name="iOSPromoCredentialProviderExtension"
       label="For iOSPromoCredentialProviderExtension feature"/>
@@ -41464,11 +41465,16 @@ should be able to be added at any place in this file.
       label="For iOSPromoDefaultBrowser feature"/>
   <suffix name="iOSPromoDefaultBrowserReminder"
       label="For iOSPromoDefaultBrowserReminder feature"/>
+  <suffix name="iOSPromoGenericDefaultBrowser"
+      label="For generivc default browser promo."/>
+  <suffix name="iOSPromoMadeForIOS"
+      label="For Made for iOS default browser promo."/>
   <suffix name="iOSPromoPasswordManagerWidget"
       label="For iOSPromoPasswordManagerWidget feature"/>
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
   <suffix name="iOSPromoPostRestoreDefaultBrowser"
       label="For iOSPromoPostRestoreDefaultBrowser feature"/>
+  <suffix name="iOSPromoStaySafe" label="For Stay Safe default browser promo."/>
   <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
   <suffix name="iOSPullToRefreshFeature"
       label="For iOSPullToRefreshFeature feature"/>

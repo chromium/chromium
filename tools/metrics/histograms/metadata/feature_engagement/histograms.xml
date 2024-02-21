@@ -239,6 +239,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the Default Browser Promo on iOS"/>
   <variant name="IPH_iOSPromoDefaultBrowserReminder"
       summary="showing the Default Browser Promo after remind me later on iOS"/>
+  <variant name="IPH_iOSPromoGenericDefaultBrowser"
+      summary="showing generic default browser promo"/>
   <variant name="IPH_iOSPromoMadeForIOS"
       summary="showing Made for iOS default browser promo"/>
   <variant name="IPH_iOSPromoPasswordManagerWidget"

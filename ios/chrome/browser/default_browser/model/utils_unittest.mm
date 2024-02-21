@@ -427,8 +427,8 @@ TEST_F(DefaultBrowserUtilsTest,
 
 // Test `CalculatePromoStatistics` when feature flag is disabled.
 TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagDisabled) {
-  feature_list_.InitWithFeatures({},
-                                 {kDefaultBrowserTriggerCriteriaExperiment});
+  feature_list_.InitWithFeatures(
+      {}, {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.promoDisplayCount);
@@ -456,8 +456,8 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagDisabled) {
 
 // Test `CalculatePromoStatistics` when feature flag is enabled.
 TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment}, {});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.promoDisplayCount);
@@ -487,8 +487,8 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
 
 // Test `CalculatePromoStatistics` for chrome open metrics.
 TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ChromeOpen) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment}, {});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.chromeColdStartCount);
@@ -561,8 +561,8 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ChromeOpen) {
 
 // Test `CalculatePromoStatistics` for active day count metrics.
 TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ActiveDayCount) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment}, {});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.activeDayCount);
@@ -610,8 +610,8 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ActiveDayCount) {
 // Test `CalculatePromoStatistics` for password manager use.
 TEST_F(DefaultBrowserUtilsTest,
        CalculatePromoStatisticsTest_PasswordManagerUseCount) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment}, {});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.passwordManagerUseCount);
@@ -649,8 +649,8 @@ TEST_F(DefaultBrowserUtilsTest,
 // Test `CalculatePromoStatistics` for omnibox use count.
 TEST_F(DefaultBrowserUtilsTest,
        CalculatePromoStatisticsTest_OmniboxClipboardUseCount) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment}, {});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.omniboxClipboardUseCount);
@@ -686,8 +686,8 @@ TEST_F(DefaultBrowserUtilsTest,
 
 // Test `CalculatePromoStatistics` for bookmark use count.
 TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_BookmarkUseCount) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment}, {});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.bookmarkUseCount);
@@ -723,8 +723,8 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_BookmarkUseCount) {
 
 // Test `CalculatePromoStatistics` for autofill use count.
 TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_AutofillUseCount) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment}, {});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.autofillUseCount);
@@ -762,8 +762,8 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_AutofillUseCount) {
 // Test `CalculatePromoStatistics` for pinned or remote tab use.
 TEST_F(DefaultBrowserUtilsTest,
        CalculatePromoStatisticsTest_SpecialTabUseCount) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment}, {});
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(0, promo_stats.specialTabsUseCount);

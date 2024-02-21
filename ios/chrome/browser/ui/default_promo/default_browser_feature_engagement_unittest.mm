@@ -24,6 +24,26 @@ class DefaultBrowserFeatureEngagementTest : public PlatformTest {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
   }
 
+  std::unique_ptr<feature_engagement::Tracker> CreateAndInitTracker() {
+    std::unique_ptr<feature_engagement::Tracker> tracker =
+        feature_engagement::CreateTestTracker();
+    base::Time initial_time = test_clock_.Now();
+    tracker->SetClockForTesting(test_clock_, initial_time);
+
+    // Make sure tracker is initialized.
+    tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+    run_loop_.Run();
+
+    return tracker;
+  }
+
+  void SatisfyChromeOpenCondition(feature_engagement::Tracker* tracker) {
+    // Promos can be displayed only after Chrome opened 7 times.
+    for (int i = 0; i < 7; i++) {
+      tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
+    }
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
 
@@ -38,16 +58,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, TestRemindMeLater) {
   feature_engagement::test::ScopedIphFeatureList list;
   list.InitAndEnableFeatures(
       {feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  base::Time initial_time = test_clock_.Now();
-  tracker->SetClockForTesting(test_clock_, initial_time);
-
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
   // At first, the user has not chosen to be reminded later, so it should not
   // trigger.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
@@ -77,23 +88,14 @@ TEST_F(DefaultBrowserFeatureEngagementTest, TestRemindMeLater) {
 
 // Basic test for the generic default browser promo.
 TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserBasicTest) {
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  base::Time initial_time = test_clock_.Now();
-  tracker->SetClockForTesting(test_clock_, initial_time);
-
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
 
   // Promo shouldn't trigger because the preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoDefaultBrowserFeature));
 
   // Promos can be displayed only after Chrome opened 7 times.
-  for (int i = 0; i < 7; i++) {
-    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
-  }
+  SatisfyChromeOpenCondition(tracker.get());
 
   // The promo should trigger because all the preconditions are now satisfied.
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
@@ -109,14 +111,8 @@ TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserBasicTest) {
 TEST_F(DefaultBrowserFeatureEngagementTest, AllTabsPromoBasicTest) {
   feature_engagement::test::ScopedIphFeatureList list;
   list.InitAndEnableFeatures({feature_engagement::kIPHiOSPromoAllTabsFeature});
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  base::Time initial_time = test_clock_.Now();
-  tracker->SetClockForTesting(test_clock_, initial_time);
 
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
 
   // Promo shouldn't trigger because the preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
@@ -124,11 +120,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, AllTabsPromoBasicTest) {
 
   // Make sure the preconditions are satisfied.
   tracker->NotifyEvent("all_tabs_promo_conditions_met");
-
-  // Promos can be displayed only after Chrome opened 7 times.
-  for (int i = 0; i < 7; i++) {
-    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
-  }
+  SatisfyChromeOpenCondition(tracker.get());
 
   // The promo should trigger because all the preconditions are now satisfied.
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
@@ -139,7 +131,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, AllTabsPromoBasicTest) {
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoAllTabsFeature));
 
-  // After a month is still shouldn't trigger
+  // After a month it still shouldn't trigger
   test_clock_.Advance(base::Days(30));
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoAllTabsFeature));
@@ -150,14 +142,8 @@ TEST_F(DefaultBrowserFeatureEngagementTest, MadeForIOSPromoBasicTest) {
   feature_engagement::test::ScopedIphFeatureList list;
   list.InitAndEnableFeatures(
       {feature_engagement::kIPHiOSPromoMadeForIOSFeature});
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  base::Time initial_time = test_clock_.Now();
-  tracker->SetClockForTesting(test_clock_, initial_time);
 
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
 
   // Promo shouldn't trigger because the preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
@@ -165,11 +151,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, MadeForIOSPromoBasicTest) {
 
   // Make sure the preconditions are satisfied.
   tracker->NotifyEvent("made_for_ios_promo_conditions_met");
-
-  // Promos can be displayed only after Chrome opened 7 times.
-  for (int i = 0; i < 7; i++) {
-    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
-  }
+  SatisfyChromeOpenCondition(tracker.get());
 
   // The promo should trigger because all the preconditions are now satisfied.
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
@@ -180,7 +162,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, MadeForIOSPromoBasicTest) {
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoMadeForIOSFeature));
 
-  // After a month is still shouldn't trigger
+  // After a month it still shouldn't trigger
   test_clock_.Advance(base::Days(30));
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoMadeForIOSFeature));
@@ -190,14 +172,8 @@ TEST_F(DefaultBrowserFeatureEngagementTest, MadeForIOSPromoBasicTest) {
 TEST_F(DefaultBrowserFeatureEngagementTest, StaySafePromoBasicTest) {
   feature_engagement::test::ScopedIphFeatureList list;
   list.InitAndEnableFeatures({feature_engagement::kIPHiOSPromoStaySafeFeature});
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  base::Time initial_time = test_clock_.Now();
-  tracker->SetClockForTesting(test_clock_, initial_time);
 
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
 
   // Promo shouldn't trigger because the preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
@@ -205,11 +181,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, StaySafePromoBasicTest) {
 
   // Make sure the preconditions are satisfied.
   tracker->NotifyEvent("stay_safe_promo_conditions_met");
-
-  // Promos can be displayed only after Chrome opened 7 times.
-  for (int i = 0; i < 7; i++) {
-    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
-  }
+  SatisfyChromeOpenCondition(tracker.get());
 
   // The promo should trigger because all the preconditions are now satisfied.
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
@@ -220,24 +192,135 @@ TEST_F(DefaultBrowserFeatureEngagementTest, StaySafePromoBasicTest) {
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoStaySafeFeature));
 
-  // After a month is still shouldn't trigger
+  // After a month it still shouldn't trigger
   test_clock_.Advance(base::Days(30));
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoStaySafeFeature));
+}
+
+// Basic test for the generic default browser promo.
+TEST_F(DefaultBrowserFeatureEngagementTest, GenericPromoBasicTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Promo shouldn't trigger because the preconditions are not satistfied.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+
+  // Make sure the preconditions are satisfied.
+  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  // The promo should trigger because all the preconditions are now satisfied.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
+
+  // It shouldn't trigger the second time.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+
+  // After a year it still shouldn't trigger
+  test_clock_.Advance(base::Days(366));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+}
+
+// Verify that promo conditions expire.
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       AllTabsPromoConditionExpirationTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures({feature_engagement::kIPHiOSPromoAllTabsFeature});
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Make sure the preconditions are satisfied.
+  tracker->NotifyEvent("all_tabs_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  // Verify that promo would trigger.
+  ASSERT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoAllTabsFeature));
+
+  // Conditions should expire after 21 days.
+  test_clock_.Advance(base::Days(21));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoAllTabsFeature));
+}
+
+// Verify that promo conditions expire.
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       MadeForIOSPromoConditionExpirationTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSPromoMadeForIOSFeature});
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Make sure the preconditions are satisfied.
+  tracker->NotifyEvent("made_for_ios_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  // Verify that promo would trigger.
+  ASSERT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoMadeForIOSFeature));
+
+  // Conditions should expire after 21 days.
+  test_clock_.Advance(base::Days(21));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoMadeForIOSFeature));
+}
+
+// Verify that promo conditions expire.
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       StaySafePromoConditionExpirationTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures({feature_engagement::kIPHiOSPromoStaySafeFeature});
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Make sure the preconditions are satisfied.
+  tracker->NotifyEvent("stay_safe_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  // Verify that promo would trigger.
+  ASSERT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoStaySafeFeature));
+
+  // Conditions should expire after 21 days.
+  test_clock_.Advance(base::Days(21));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoStaySafeFeature));
+}
+
+// Verify that promo conditions expire.
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       GenericPromoConditionExpirationTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature});
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Make sure the preconditions are satisfied.
+  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  // Verify that promo would trigger.
+  ASSERT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+
+  // Conditions should expire after 21 days.
+  test_clock_.Advance(base::Days(21));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 }
 
 // Test for default browser group configuration.
 TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserGroupTest) {
   feature_engagement::test::ScopedIphFeatureList list;
   list.InitAndEnableFeatures({feature_engagement::kIPHiOSPromoStaySafeFeature});
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  base::Time initial_time = test_clock_.Now();
-  tracker->SetClockForTesting(test_clock_, initial_time);
-
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
 
   // Promo shouldn't trigger because the preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
@@ -245,11 +328,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserGroupTest) {
 
   // Make sure the preconditions are satisfied for the Stay Safe promo.
   tracker->NotifyEvent("stay_safe_promo_conditions_met");
-
-  // Promos can be displayed only after Chrome opened 7 times.
-  for (int i = 0; i < 7; i++) {
-    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
-  }
+  SatisfyChromeOpenCondition(tracker.get());
 
   // Mark one of the group promos as displayed.
   tracker->NotifyEvent("default_browser_promos_group_trigger");
@@ -264,4 +343,81 @@ TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserGroupTest) {
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoStaySafeFeature));
   tracker->Dismissed(feature_engagement::kIPHiOSPromoStaySafeFeature);
+}
+
+// Verify generic promo triggers with sliding window experiment.
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       GenericPromoSlidingWindowExperimentTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature,
+       feature_engagement::kDefaultBrowserEligibilitySlidingWindow});
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Make sure the preconditions are satisfied.
+  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  // The promo should trigger because all the preconditions are now satisfied.
+  ASSERT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+  // Mark promo displayed without calling ```ShouldTriggerHelpUI``` to avoid
+  // session rate limitations.
+  tracker->NotifyEvent("generic_default_browser_promo_trigger");
+
+  // It shouldn't trigger the second time.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+
+  // After a month it still shouldn't trigger
+  test_clock_.Advance(base::Days(30));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+
+  // After 365 days it should show again.
+  test_clock_.Advance(base::Days(366));
+
+  // Still need to satisfy the preconditions.
+  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+}
+
+// Verify generic promo triggers without satisfying all conditions when in
+// experiment.
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       GenericPromoTriggerCriteriaExperimentTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature,
+       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment});
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Promo shouldn't trigger because the group preconditions are not satistfied.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoDefaultBrowserFeature));
+
+  // Make sure the group preconditions are satisfied.
+  SatisfyChromeOpenCondition(tracker.get());
+
+  // The promo should trigger because all the preconditions are now satisfied.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
+
+  // It shouldn't trigger the second time.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+
+  // After a year and satisfying all the conditions again it still shouldn't
+  // trigger.
+  test_clock_.Advance(base::Days(366));
+  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 }

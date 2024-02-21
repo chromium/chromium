@@ -273,9 +273,6 @@ BASE_FEATURE(kOnlyAccessClipboardAsync,
 BASE_FEATURE(kDefaultBrowserVideoInSettings,
              "DefaultBrowserVideoInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
-             "DefaultBrowserTriggerCriteriaExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFullScreenPromoOnOmniboxCopyPaste,
              "FullScreenPromoOnOmniboxCopyPaste",

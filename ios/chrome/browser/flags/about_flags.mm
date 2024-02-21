@@ -1137,7 +1137,8 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserTriggerCriteriaExperimentName,
      flag_descriptions::kDefaultBrowserTriggerCriteriaExperimentDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kDefaultBrowserTriggerCriteriaExperiment)},
+     FEATURE_VALUE_TYPE(
+         feature_engagement::kDefaultBrowserTriggerCriteriaExperiment)},
     {"default-browser-video-in-settings",
      flag_descriptions::kDefaultBrowserVideoInSettingsName,
      flag_descriptions::kDefaultBrowserVideoInSettingsDescription,

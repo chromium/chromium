@@ -592,7 +592,8 @@ DefaultPromoType ForceDefaultPromoType() {
 }
 
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserTriggerCriteriaExperiment);
+  return base::FeatureList::IsEnabled(
+      feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
 }
 
 bool IsFullScreenPromoOnOmniboxCopyPasteEnabled() {
