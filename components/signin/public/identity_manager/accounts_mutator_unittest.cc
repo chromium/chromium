@@ -7,11 +7,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -656,6 +659,41 @@ TEST_F(AccountsMutatorTest, MoveAccount) {
   EXPECT_TRUE(
       other_identity_test_env.identity_manager()->HasAccountWithRefreshToken(
           other_accounts_with_refresh_token[0].account_id));
+  EXPECT_FALSE(other_identity_test_env.identity_manager()
+                   ->HasAccountWithRefreshTokenInPersistentErrorState(
+                       other_accounts_with_refresh_token[0].account_id));
+}
+
+TEST(ExplicitBrowserSigninAccountsMutatorTest, MoveAccount) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+  IdentityTestEnvironment identity_test_env;
+  IdentityManager* identity_manager = identity_test_env.identity_manager();
+  AccountsMutator* accounts_mutator = identity_manager->GetAccountsMutator();
+  AccountInfo account_info = identity_test_env.MakePrimaryAccountAvailable(
+      kTestEmail, ConsentLevel::kSignin);
+  EXPECT_TRUE(identity_manager->HasPrimaryAccountWithRefreshToken(
+      ConsentLevel::kSignin));
+  EXPECT_EQ(identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin),
+            account_info.account_id);
+  EXPECT_EQ(1U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  IdentityTestEnvironment other_identity_test_env;
+  IdentityManager* other_identity_manager =
+      other_identity_test_env.identity_manager();
+  auto* other_accounts_mutator = other_identity_manager->GetAccountsMutator();
+  accounts_mutator->MoveAccount(other_accounts_mutator,
+                                account_info.account_id);
+
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_EQ(0U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  auto other_accounts_with_refresh_token =
+      other_identity_manager->GetAccountsWithRefreshTokens();
+  EXPECT_EQ(1U, other_accounts_with_refresh_token.size());
+  EXPECT_TRUE(other_identity_manager->HasAccountWithRefreshToken(
+      other_accounts_with_refresh_token[0].account_id));
   EXPECT_FALSE(other_identity_test_env.identity_manager()
                    ->HasAccountWithRefreshTokenInPersistentErrorState(
                        other_accounts_with_refresh_token[0].account_id));

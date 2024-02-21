@@ -138,6 +138,9 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // Allowed as the user wasn't signed in initially and data has not been
     // synced yet.
     signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
+    // Data not synced yet.
+    // Used when moving the primary account (e.g. profile switch).
+    signin_metrics::ProfileSignout::kMovePrimaryAccount,
 };
 
 // Returns the histogram suffix name per group of `signin_metrics::AccessPoint`.

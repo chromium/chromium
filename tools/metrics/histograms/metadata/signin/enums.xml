@@ -731,6 +731,13 @@ chromium-metrics-reviews@google.com.
     User added the primary account through the sync flow. On abort, the primary
     account is cleared.
   </int>
+  <int value="33"
+      label="Move primary account in some cases of signin interception and
+             sync merge data confirmation">
+    The primary account might be moved to another profile in some cases e.g.
+    profile switch, enterprise related interception or sync merge data
+    confirmation.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">

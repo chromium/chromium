@@ -109,8 +109,11 @@ enum class ProfileSignout {
   kIdleTimeoutPolicyTriggeredSignOut = 31,
   // User adds the primary account through the sync flow then aborts.
   kCancelSyncConfirmationRemoveAccount = 32,
+  // Move primary account to another profile on sign in interception or sync
+  // merge data confirmation.
+  kMovePrimaryAccount = 33,
   // Keep this as the last enum.
-  kMaxValue = kCancelSyncConfirmationRemoveAccount
+  kMaxValue = kMovePrimaryAccount
 };
 
 // Enum values which enumerates all access points where sign in could be
