@@ -30,9 +30,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     c1.addAttribute('domain', 'example.com');
     request.addExtraRequestInfo({
       includedRequestCookies: [
-        c1,
-        new SDK.Cookie.Cookie('a1', 'b1'),
-        new SDK.Cookie.Cookie('c1', 'd1'),
+        {cookie: c1},
+        {cookie: new SDK.Cookie.Cookie('a1', 'b1')},
+        {cookie: new SDK.Cookie.Cookie('c1', 'd1')},
       ],
       blockedRequestCookies: [],
       requestHeaders: [{name: 'version', value: 'HTTP/1.1'}],

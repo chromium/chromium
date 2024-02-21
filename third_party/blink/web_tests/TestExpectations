@@ -6846,9 +6846,6 @@ crbug.com/41490297 virtual/speculation-rules-prerender-target-hint/external/wpt/
 # Flaky test in virtual suite.
 crbug.com/324113086 virtual/stable/external/wpt/performance-timeline/tentative/with-filter-options-originA.html [ Failure Pass ]
 
-# Temporarily disable for landing crrev.com/c/5273025
-crbug.com/41491846 http/tests/devtools/resource-har-conversion.js [ Failure Pass ]
-
 crbug.com/1467464 http/tests/devtools/a11y-axe-core/sources/event-listener-breakpoints-a11y-test.js [ Failure Pass ]
 
 # Gardener: 2024-02-06
