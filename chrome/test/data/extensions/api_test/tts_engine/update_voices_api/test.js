@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function setup() {
-  var speakListener = function(utterance, options, sendTtsEvent) {};
-  var stopListener = function() {};
+let numVoicesChangedCallbacks = 0;
+setup = () => {
+  numVoicesChangedCallbacks = 0;
+  const speakListener = (utterance, options, sendTtsEvent) => {};
+  const stopListener = () => {};
   chrome.ttsEngine.onSpeak.addListener(speakListener);
   chrome.ttsEngine.onStop.addListener(stopListener);
+  chrome.tts.onVoicesChanged.addListener(() => {numVoicesChangedCallbacks++;});
 }
 
 chrome.test.runTests([
   function testGetVoices() {
-    var testVoiceData = [
+    const testVoiceData = [
       {
         eventTypes: ['start'],
         extensionId: 'pkplfbidichfdicaijlchgnapepdginl',
@@ -29,7 +32,8 @@ chrome.test.runTests([
       }
     ];
     setup();
-    chrome.tts.getVoices(function(voices) {
+    chrome.test.assertEq(0, numVoicesChangedCallbacks);
+    chrome.tts.getVoices((voices) => {
       chrome.test.assertEq(1, voices.length);
       chrome.test.assertEq({
         eventTypes: [ 'end', 'interrupted', 'cancelled', 'error'],
@@ -39,20 +43,21 @@ chrome.test.runTests([
         voiceName: 'Zach'
       }, voices[0]);
       chrome.ttsEngine.updateVoices(testVoiceData);
-      chrome.tts.getVoices(function(runtimeVoices) {
+      chrome.tts.getVoices((runtimeVoices) => {
         chrome.test.assertEq(testVoiceData.length, runtimeVoices.length);
-        for (var i = 0; i < runtimeVoices.length; i++) {
+        for (let i = 0; i < runtimeVoices.length; i++) {
           // The result should not have 'gender'.
           delete testVoiceData[i]['gender'];
           chrome.test.assertEq(testVoiceData[i], runtimeVoices[i]);
           chrome.test.assertEq(runtimeVoices[i], testVoiceData[i]);
         }
+        chrome.test.assertEq(1, numVoicesChangedCallbacks);
         chrome.test.assertNoLastError();
         chrome.test.succeed();
       });
     });
   },
-  function testExtensionIdMismatch() {
+  testExtensionIdMismatch = () => {
     setup();
     chrome.ttsEngine.updateVoices([]);
 
@@ -64,12 +69,12 @@ chrome.test.runTests([
       voiceName: 'Zach'
     }]);
 
-    chrome.tts.getVoices(function(voices) {
+    chrome.tts.getVoices((voices) => {
       chrome.test.assertEq(0, voices.length);
       chrome.test.succeed();
     });
   },
-  function testInvalidLang() {
+  testInvalidLang = () => {
     setup();
     chrome.ttsEngine.updateVoices([{
       eventTypes: [ 'end', 'interrupted', 'cancelled', 'error'],
@@ -79,8 +84,9 @@ chrome.test.runTests([
       voiceName: 'Zach'
     }]);
 
-    chrome.tts.getVoices(function(voices) {
+    chrome.tts.getVoices((voices) => {
       chrome.test.assertEq(0, voices.length);
+      chrome.test.assertEq(0, numVoicesChangedCallbacks);
       chrome.test.succeed();
     });
   }

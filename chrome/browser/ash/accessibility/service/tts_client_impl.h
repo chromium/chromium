@@ -36,6 +36,8 @@ class TtsClientImpl : public ax::mojom::Tts {
   void IsSpeaking(IsSpeakingCallback callback) override;
   void GetVoices(GetVoicesCallback callback) override;
 
+  // TODO(b/323189746): Add onVoicesChanged listener in ATP.
+
  private:
   mojo::ReceiverSet<ax::mojom::Tts> tts_receivers_;
   raw_ptr<content::BrowserContext> profile_ = nullptr;

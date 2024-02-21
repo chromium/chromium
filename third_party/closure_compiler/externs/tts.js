@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -228,3 +228,11 @@ chrome.tts.getVoices = function(callback) {};
  * @see https://developer.chrome.com/extensions/tts#event-onEvent
  */
 chrome.tts.onEvent;
+
+/**
+ * Called when the list of voices that would be returned by getVoices has
+ * changed.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/tts#event-onVoicesChanged
+ */
+chrome.tts.onVoicesChanged;

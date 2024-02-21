@@ -574,6 +574,7 @@ enum HistogramValue {
   ODFS_CONFIG_PRIVATE_ACCOUNT_RESTRICTIONS_CHANGED = 552,
   PDF_VIEWER_PRIVATE_ON_SAVE = 553,
   ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_FOCUS_CHANGED = 554,
+  TTS_ON_VOICES_CHANGED = 555,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
