@@ -1299,30 +1299,17 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionAccessibilityPdfOcrTest);
 
 class PDFOCRIntegrationTest
     : public PDFExtensionAccessibilityTest,
-      public screen_ai::ScreenAIInstallState::Observer,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> /*kScreenAIOCREnabled*/ {
  public:
   PDFOCRIntegrationTest() = default;
   ~PDFOCRIntegrationTest() override = default;
-
-  bool IsOcrServiceEnabled() const { return std::get<0>(GetParam()); }
-  bool IsLibraryAvailable() const { return std::get<1>(GetParam()); }
-  bool IsOcrAvailable() const {
-    return IsOcrServiceEnabled() && IsLibraryAvailable();
-  }
 
   // PDFExtensionAccessibilityTest:
   void SetUpOnMainThread() override {
     PDFExtensionAccessibilityTest::SetUpOnMainThread();
 
-    if (IsLibraryAvailable()) {
-      screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
-          screen_ai::GetLatestComponentBinaryPath().DirName());
-    } else {
-      // Set an observer to mark download as failed when requested.
-      component_download_observer_.Observe(
-          screen_ai::ScreenAIInstallState::GetInstance());
-    }
+    screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
+        screen_ai::GetLatestComponentBinaryPath().DirName());
 
     mode_override_.emplace(ui::kAXModeComplete);
     EnableScreenReader(true);
@@ -1334,6 +1321,8 @@ class PDFOCRIntegrationTest
     PDFExtensionAccessibilityTest::TearDownOnMainThread();
   }
 
+  bool IsOcrServiceAvailable() const { return GetParam(); }
+
   void WaitForTreeStatus(int status_message_id) {
     WebContents* contents = GetActiveWebContents();
     ASSERT_TRUE(contents);
@@ -1342,21 +1331,12 @@ class PDFOCRIntegrationTest
     WaitForAccessibilityTreeToContainNodeWithName(contents, expected_message);
   }
 
-  // ScreenAIInstallState::Observer:
-  void StateChanged(screen_ai::ScreenAIInstallState::State state) override {
-    if (state == screen_ai::ScreenAIInstallState::State::kDownloading &&
-        !IsLibraryAvailable()) {
-      screen_ai::ScreenAIInstallState::GetInstance()->SetState(
-          screen_ai::ScreenAIInstallState::State::kDownloadFailed);
-    }
-  }
-
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(::features::kPdfOcr);
     enabled.push_back(::features::kScreenAITestMode);
-    if (IsOcrServiceEnabled()) {
+    if (IsOcrServiceAvailable()) {
       enabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
     }
     return enabled;
@@ -1367,7 +1347,7 @@ class PDFOCRIntegrationTest
     // disabled features. Now that `::features::kPdfOcr` is used in this test,
     // parent disabled features should not be used.
     std::vector<base::test::FeatureRef> disabled;
-    if (!IsOcrServiceEnabled()) {
+    if (!IsOcrServiceAvailable()) {
       disabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
     }
     return disabled;
@@ -1386,9 +1366,6 @@ class PDFOCRIntegrationTest
 
  private:
   std::optional<content::ScopedAccessibilityModeOverride> mode_override_;
-  base::ScopedObservation<screen_ai::ScreenAIInstallState,
-                          screen_ai::ScreenAIInstallState::Observer>
-      component_download_observer_{this};
 };
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
@@ -1409,21 +1386,18 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
             EXPECT_EQ(expected_result, successful);
             run_loop->Quit();
           },
-          &run_loop, IsOcrAvailable()));
+          &run_loop, IsOcrServiceAvailable()));
   run_loop.Run();
 
-  // If OCR is not available, PdfOcrController sets the pref to false.
+  // If OCR service is not available, PdfOcrController sets the pref to false.
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetBoolean(
                 prefs::kAccessibilityPdfOcrAlwaysActive),
-            IsOcrAvailable());
+            IsOcrServiceAvailable());
 
-  // Library download state should not depend on OcrService availability.
-  screen_ai::ScreenAIInstallState::State expected_state =
-      IsLibraryAvailable()
-          ? screen_ai::ScreenAIInstallState::State::kDownloaded
-          : screen_ai::ScreenAIInstallState::State::kDownloadFailed;
-  EXPECT_EQ(expected_state,
-            screen_ai::ScreenAIInstallState::GetInstance()->get_state());
+  // The library should be downloaded anyway since the kill switch only applies
+  // to OCR and not other functionalities.
+  auto state = screen_ai::ScreenAIInstallState::GetInstance()->get_state();
+  EXPECT_TRUE(state == screen_ai::ScreenAIInstallState::State::kDownloaded);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
@@ -1434,16 +1408,16 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
   EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL(
       "/pdf/accessibility/hello-world-in-image.pdf")));
 
-  WaitForTreeStatus(IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED
-                                     : IDS_PDF_OCR_FEATURE_ALERT);
+  WaitForTreeStatus(IsOcrServiceAvailable() ? IDS_PDF_OCR_COMPLETED
+                                            : IDS_PDF_OCR_FEATURE_ALERT);
 
   ui::AXTreeUpdate ax_tree =
       GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
   std::string ax_tree_dump =
       DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
   const char* expected_tree_dump =
-      IsOcrAvailable() ? kExpectedHelloWorldPDFAXTreeWithOcrResults
-                       : kExpectedHelloWorldPDFAXTreeWithoutOcrResults;
+      IsOcrServiceAvailable() ? kExpectedHelloWorldPDFAXTreeWithOcrResults
+                              : kExpectedHelloWorldPDFAXTreeWithoutOcrResults;
   ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
 }
 
@@ -1477,8 +1451,8 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
       embedded_test_server()->GetURL("/pdf/accessibility/blank_image.pdf")));
 
   // "/pdf/accessibility/blank_image.pdf" has a blank image.
-  WaitForTreeStatus(IsOcrAvailable() ? IDS_PDF_OCR_NO_RESULT
-                                     : IDS_PDF_OCR_FEATURE_ALERT);
+  WaitForTreeStatus(IsOcrServiceAvailable() ? IDS_PDF_OCR_NO_RESULT
+                                            : IDS_PDF_OCR_FEATURE_ALERT);
 
   ui::AXTreeUpdate ax_tree =
       GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
@@ -1486,19 +1460,11 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
       DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
 
   const char* expected_tree_dump =
-      IsOcrAvailable() ? kExpectedBlankPDFAXTreeWithPdfOcr
-                       : kExpectedBlankPDFAXTreeWithoutOcrResults;
+      IsOcrServiceAvailable() ? kExpectedBlankPDFAXTreeWithPdfOcr
+                              : kExpectedBlankPDFAXTreeWithoutOcrResults;
   ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PDFOCRIntegrationTest,
-    ::testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      return base::StringPrintf(
-          "OCR_%s_Library_%s", std::get<0>(info.param) ? "Enabled" : "Disabled",
-          std::get<1>(info.param) ? "Available" : "Unavailable");
-    });
+INSTANTIATE_TEST_SUITE_P(All, PDFOCRIntegrationTest, testing::Bool());
 
 #endif  // defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
