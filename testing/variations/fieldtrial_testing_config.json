@@ -20881,6 +20881,25 @@
             ]
         }
     ],
+    "WebViewIPProtectionPhase0": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "//0": "Refers to the combined Chrome + Full Device MDL",
+                    "name": "TrafficSizingExperimentEnabled",
+                    "params": {
+                        "MaskedDomainListExperimentGroup": "3"
+                    },
+                    "enable_features": [
+                        "MaskedDomainList"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewMediaIntegrityApi": [
         {
             "platforms": [
