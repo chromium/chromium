@@ -155,7 +155,18 @@ std::optional<FileSuggestData> CreateFileSuggestion(
 DriveRecentFileSuggestionProvider::DriveRecentFileSuggestionProvider(
     Profile* profile,
     base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback)
-    : FileSuggestionProvider(notify_update_callback), profile_(profile) {}
+    : FileSuggestionProvider(notify_update_callback), profile_(profile) {
+  auto* drive_integration_service =
+      drive::DriveIntegrationServiceFactory::GetForProfile(profile);
+  if (drive_integration_service) {
+    drive::DriveIntegrationService::Observer::Observe(
+        drive_integration_service);
+    auto* drive_fs_host = drive_integration_service->GetDriveFsHost();
+    if (drive_fs_host) {
+      drivefs::DriveFsHost::Observer::Observe(drive_fs_host);
+    }
+  }
+}
 
 DriveRecentFileSuggestionProvider::~DriveRecentFileSuggestionProvider() =
     default;
@@ -165,12 +176,11 @@ void DriveRecentFileSuggestionProvider::GetSuggestFileData(
   const bool has_active_request =
       !on_drive_results_ready_callback_list_.empty();
 
-  // Add `callback` to the waiting list.
-  on_drive_results_ready_callback_list_.AddUnsafe(std::move(callback));
-
   // Return early if there is an active search request. `callback` will run when
   // the active search completes.
   if (has_active_request) {
+    // Add `callback` to the waiting list, and return.
+    on_drive_results_ready_callback_list_.AddUnsafe(std::move(callback));
     return;
   }
 
@@ -179,12 +189,23 @@ void DriveRecentFileSuggestionProvider::GetSuggestFileData(
 
   // If there is not any available drive service, return early.
   if (!drive_service || !drive_service->IsMounted()) {
-    on_drive_results_ready_callback_list_.Notify(
-        /*suggest_results=*/std::nullopt);
+    std::move(callback).Run(/*suggest_results=*/std::nullopt);
     return;
   }
 
+  if (can_use_cache_) {
+    std::move(callback).Run(GetSuggestionsFromLatestQueryResults());
+    return;
+  }
+
+  on_drive_results_ready_callback_list_.AddUnsafe(std::move(callback));
+
   search_start_time_ = base::Time::Now();
+  query_result_files_by_path_.clear();
+
+  // Allow using cached results for requests that come in after the current one
+  // finishes.
+  can_use_cache_ = true;
 
   base::RepeatingClosure search_callback = base::BarrierClosure(
       3, base::BindOnce(
@@ -208,6 +229,51 @@ std::string DriveRecentFileSuggestionProvider::GetHistogramSuffix(
       return "Modified";
     case SearchType::kSharedWithUser:
       return "Shared";
+  }
+}
+
+void DriveRecentFileSuggestionProvider::OnDriveIntegrationServiceDestroyed() {
+  drive::DriveIntegrationService::Observer::Reset();
+  drivefs::DriveFsHost::Observer::Reset();
+
+  can_use_cache_ = false;
+  query_result_files_by_path_.clear();
+  on_drive_results_ready_callback_list_.Notify(
+      /*suggest_results=*/std::nullopt);
+}
+
+void DriveRecentFileSuggestionProvider::OnFileSystemMounted() {
+  if (!drivefs::DriveFsHost::Observer::GetHost()) {
+    auto* drive_fs_host = drive::DriveIntegrationService::Observer::GetService()
+                              ->GetDriveFsHost();
+    if (drive_fs_host) {
+      drivefs::DriveFsHost::Observer::Observe(drive_fs_host);
+    }
+  }
+  NotifySuggestionUpdate(FileSuggestionType::kDriveFile);
+}
+
+void DriveRecentFileSuggestionProvider::OnHostDestroyed() {
+  drivefs::DriveFsHost::Observer::Reset();
+}
+
+void DriveRecentFileSuggestionProvider::OnUnmounted() {
+  can_use_cache_ = false;
+  query_result_files_by_path_.clear();
+  on_drive_results_ready_callback_list_.Notify(
+      /*suggest_results=*/std::nullopt);
+
+  NotifySuggestionUpdate(FileSuggestionType::kDriveFile);
+}
+
+void DriveRecentFileSuggestionProvider::OnFilesChanged(
+    const std::vector<drivefs::mojom::FileChange>& changes) {
+  can_use_cache_ = false;
+
+  for (const auto& change : changes) {
+    if (change.type == drivefs::mojom::FileChange::Type::kDelete) {
+      query_result_files_by_path_.erase(change.path);
+    }
   }
 }
 
@@ -241,7 +307,15 @@ void DriveRecentFileSuggestionProvider::OnSearchRequestComplete(
           "."),
       std::abs(error));
 
-  if (error == drive::FileError::FILE_ERROR_OK && items) {
+  if (error != drive::FileError::FILE_ERROR_OK &&
+      error != drive::FileError::FILE_ERROR_INVALID_OPERATION &&
+      error != drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS) {
+    can_use_cache_ = false;
+  }
+
+  if ((error == drive::FileError::FILE_ERROR_OK ||
+       error == drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS) &&
+      items) {
     base::UmaHistogramTimes(
         base::JoinString({kBaseHistogramName, "DurationOnSuccess",
                           GetHistogramSuffix(search_type)},
@@ -279,17 +353,13 @@ void DriveRecentFileSuggestionProvider::OnSearchRequestComplete(
   callback.Run();
 }
 
-void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
-  std::vector<FileSuggestData> results;
-
+std::vector<FileSuggestData>
+DriveRecentFileSuggestionProvider::GetSuggestionsFromLatestQueryResults() {
   drive::DriveIntegrationService* const drive_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
-  if (!drive_service || !drive_service->IsMounted()) {
-    query_result_files_by_path_.clear();
-    on_drive_results_ready_callback_list_.Notify(results);
-    return;
-  }
+  CHECK(drive_service);
 
+  std::vector<FileSuggestData> results;
   for (const auto& item : query_result_files_by_path_) {
     base::FilePath root("/");
     base::FilePath path = drive_service->GetMountPointPath();
@@ -304,8 +374,6 @@ void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
     }
   }
 
-  query_result_files_by_path_.clear();
-
   base::ranges::sort(results, [](const auto& lhs, const auto& rhs) {
     if (lhs.timestamp == rhs.timestamp) {
       return lhs.secondary_timestamp.value_or(base::Time()) >
@@ -314,6 +382,23 @@ void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
     return lhs.timestamp.value_or(base::Time()) >
            rhs.timestamp.value_or(base::Time());
   });
+
+  return results;
+}
+
+void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
+  drive::DriveIntegrationService* const drive_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
+  if (!drive_service || !drive_service->IsMounted()) {
+    can_use_cache_ = false;
+    query_result_files_by_path_.clear();
+    on_drive_results_ready_callback_list_.Notify(
+        std::vector<FileSuggestData>());
+    NotifySuggestionUpdate(FileSuggestionType::kDriveFile);
+    return;
+  }
+
+  std::vector<FileSuggestData> results = GetSuggestionsFromLatestQueryResults();
 
   base::UmaHistogramTimes(
       base::JoinString({kBaseHistogramName, "DurationOnSuccess.Total"}, "."),
@@ -333,6 +418,7 @@ void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
   }
 
   on_drive_results_ready_callback_list_.Notify(results);
+  NotifySuggestionUpdate(FileSuggestionType::kDriveFile);
 }
 
 }  // namespace ash
