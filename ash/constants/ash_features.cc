@@ -3050,12 +3050,6 @@ BASE_FEATURE(kEnableFastInkForSoftwareCursor,
              "EnableFastInkForSoftwareCursor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// NOTE: Do not check the value of this feature directly; instead, use
-// ShouldUseMappableSharedImage() below.
-BASE_FEATURE(kEnableMappableSIForFastInkHost,
-             "EnableMappableSIForFastInkHost",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreDesksTemplatesEnabled() {
@@ -4516,10 +4510,6 @@ bool ShouldShowPlayStoreInDemoMode() {
 bool IsFeatureAwareDeviceDemoModeEnabled() {
   return base::FeatureList::IsEnabled(
       kFeatureManagementFeatureAwareDeviceDemoMode);
-}
-
-bool ShouldUseMappableSharedImage() {
-  return base::FeatureList::IsEnabled(kEnableMappableSIForFastInkHost);
 }
 
 bool ShouldUseV1DeviceSync() {
