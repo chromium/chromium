@@ -1358,11 +1358,9 @@ class BackForwardTransitionAnimationManagerBrowserTestWithNavigationQueueing
 
 // Assert that once the gesture navigation has sent the commit message to the
 // renderer, the animation will not be cancelled.
-//
-// TODO(https://crbug.com/326256165): Re-enable this in a follow up.
 IN_PROC_BROWSER_TEST_P(
     BackForwardTransitionAnimationManagerBrowserTestWithNavigationQueueing,
-    DISABLED_QueuedNavigationNoCancel) {
+    QueuedNavigationNoCancel) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
