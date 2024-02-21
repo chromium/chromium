@@ -6,11 +6,11 @@
 #define ASH_PICKER_VIEWS_PICKER_SECTION_VIEW_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/link.h"
@@ -22,12 +22,15 @@ class Label;
 
 namespace ash {
 
-class PickerItemView;
 class PickerEmojiItemView;
-class PickerSymbolItemView;
-class PickerListItemView;
 class PickerEmoticonItemView;
+class PickerImageItemGridView;
 class PickerImageItemView;
+class PickerItemView;
+class PickerListItemContainerView;
+class PickerListItemView;
+class PickerSmallItemGridView;
+class PickerSymbolItemView;
 
 // View for a Picker section with a title and related items.
 class ASH_EXPORT PickerSectionView : public views::View {
@@ -59,12 +62,6 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   const views::Label* title_label_for_testing() const { return title_label_; }
 
-  const views::View* small_items_grid_for_testing() const {
-    return small_items_grid_;
-  }
-
-  const views::View* image_grid_for_testing() const { return image_grid_; }
-
   // TODO: b/322900302 - Figure out a nice way to access the item views for
   // keyboard navigation (e.g. how to handle grid items).
   base::span<const raw_ptr<PickerItemView>> item_views() const {
@@ -76,8 +73,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   }
 
  private:
-  // Adds a small grid item. These are displayed in rows.
-  void AddSmallGridItem(std::unique_ptr<PickerItemView> small_grid_item);
+  void CreateSmallItemGridIfNeeded();
 
   // Width available for laying out section items. This is needed to determine
   // row and column widths for grid items in the section.
@@ -89,13 +85,9 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Link> title_trailing_link_ = nullptr;
 
-  raw_ptr<views::Label> title_ = nullptr;
-
-  raw_ptr<views::View> list_items_container_ = nullptr;
-
-  raw_ptr<views::View> small_items_grid_ = nullptr;
-
-  raw_ptr<views::View> image_grid_ = nullptr;
+  raw_ptr<PickerListItemContainerView> list_item_container_ = nullptr;
+  raw_ptr<PickerSmallItemGridView> small_item_grid_ = nullptr;
+  raw_ptr<PickerImageItemGridView> image_item_grid_ = nullptr;
 
   // The views for each result item.
   std::vector<raw_ptr<PickerItemView>> item_views_;

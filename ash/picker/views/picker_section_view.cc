@@ -4,25 +4,24 @@
 
 #include "ash/picker/views/picker_section_view.h"
 
-#include <algorithm>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
+#include "ash/picker/views/picker_image_item_grid_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_container_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_small_item_grid_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/style/typography.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -31,8 +30,6 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/layout/table_layout.h"
-#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -41,87 +38,6 @@ namespace {
 constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
 constexpr auto kSectionTitleTrailingLinkMargins =
     gfx::Insets::TLBR(4, 8, 4, 16);
-
-// Horizontal padding between small grid items.
-constexpr auto kSmallGridItemMargins = gfx::Insets::VH(0, 12);
-
-// Padding around each row of small items.
-constexpr auto kSmallGridItemRowMargins = gfx::Insets::TLBR(0, 8, 8, 8);
-
-// Preferred size of small grid items.
-constexpr gfx::Size kSmallGridItemPreferredSize(32, 32);
-
-// Padding between and around image grid items.
-constexpr int kImageGridPadding = 8;
-
-// Number of columns in an image grid.
-constexpr int kNumImageGridColumns = 2;
-
-int GetImageGridColumnWidth(int section_width) {
-  return (section_width - (kNumImageGridColumns + 1) * kImageGridPadding) /
-         kNumImageGridColumns;
-}
-
-std::unique_ptr<views::View> CreateSmallItemsGridRow() {
-  auto row = views::Builder<views::FlexLayoutView>()
-                 .SetOrientation(views::LayoutOrientation::kHorizontal)
-                 .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-                 .SetCollapseMargins(true)
-                 .SetIgnoreDefaultMainAxisMargins(true)
-                 .SetProperty(views::kMarginsKey, kSmallGridItemRowMargins)
-                 .Build();
-  row->SetDefault(views::kMarginsKey, kSmallGridItemMargins);
-  return row;
-}
-
-std::unique_ptr<views::View> CreateSmallItemsGrid() {
-  return views::Builder<views::FlexLayoutView>()
-      .SetOrientation(views::LayoutOrientation::kVertical)
-      .Build();
-}
-
-std::unique_ptr<views::View> CreateImageGridColumn() {
-  auto column = views::Builder<views::FlexLayoutView>()
-                    .SetOrientation(views::LayoutOrientation::kVertical)
-                    .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-                    .Build();
-  column->SetDefault(views::kMarginsKey,
-                     gfx::Insets::TLBR(0, 0, kImageGridPadding, 0));
-  return column;
-}
-
-std::unique_ptr<views::View> CreateImageGrid() {
-  auto container =
-      views::Builder<views::TableLayoutView>()
-          .AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                     /*v_align=*/views::LayoutAlignment::kStart,
-                     /*horizontal_resize=*/1.0f,
-                     /*size_type=*/views::TableLayout::ColumnSize::kFixed,
-                     /*fixed_width=*/0, /*min_width=*/0)
-          .AddPaddingColumn(
-              /*horizontal_resize=*/views::TableLayout::kFixedSize,
-              /*width=*/kImageGridPadding)
-          .AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                     /*v_align=*/views::LayoutAlignment::kStart,
-                     /*horizontal_resize=*/1.0f,
-                     /*size_type=*/views::TableLayout::ColumnSize::kFixed,
-                     /*fixed_width=*/0, /*min_width=*/0)
-          .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize,
-                   /*height=*/0)
-          .SetProperty(views::kMarginsKey,
-                       gfx::Insets::VH(0, kImageGridPadding))
-          .Build();
-  container->AddChildView(CreateImageGridColumn());
-  container->AddChildView(CreateImageGridColumn());
-  return container;
-}
-
-std::unique_ptr<views::View> CreateListItemsContainer() {
-  return views::Builder<views::FlexLayoutView>()
-      .SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .Build();
-}
 
 }  // namespace
 
@@ -171,67 +87,48 @@ void PickerSectionView::AddTitleTrailingLink(
 
 void PickerSectionView::AddListItem(
     std::unique_ptr<PickerListItemView> list_item) {
-  if (list_items_container_ == nullptr) {
-    list_items_container_ = AddChildView(CreateListItemsContainer());
+  if (list_item_container_ == nullptr) {
+    list_item_container_ =
+        AddChildView(std::make_unique<PickerListItemContainerView>());
   }
   item_views_.push_back(
-      list_items_container_->AddChildView(std::move(list_item)));
+      list_item_container_->AddListItem(std::move(list_item)));
 }
 
 void PickerSectionView::AddEmojiItem(
     std::unique_ptr<PickerEmojiItemView> emoji_item) {
-  emoji_item->SetPreferredSize(kSmallGridItemPreferredSize);
-  AddSmallGridItem(std::move(emoji_item));
+  CreateSmallItemGridIfNeeded();
+  item_views_.push_back(small_item_grid_->AddEmojiItem(std::move(emoji_item)));
 }
 
 void PickerSectionView::AddSymbolItem(
     std::unique_ptr<PickerSymbolItemView> symbol_item) {
-  symbol_item->SetPreferredSize(kSmallGridItemPreferredSize);
-  AddSmallGridItem(std::move(symbol_item));
+  CreateSmallItemGridIfNeeded();
+  item_views_.push_back(
+      small_item_grid_->AddSymbolItem(std::move(symbol_item)));
 }
 
 void PickerSectionView::AddEmoticonItem(
     std::unique_ptr<PickerEmoticonItemView> emoticon_item) {
-  emoticon_item->SetPreferredSize(
-      gfx::Size(std::max(emoticon_item->GetPreferredSize().width(),
-                         kSmallGridItemPreferredSize.width()),
-                kSmallGridItemPreferredSize.height()));
-  AddSmallGridItem(std::move(emoticon_item));
+  CreateSmallItemGridIfNeeded();
+  item_views_.push_back(
+      small_item_grid_->AddEmoticonItem(std::move(emoticon_item)));
 }
 
 void PickerSectionView::AddImageItem(
     std::unique_ptr<PickerImageItemView> image_item) {
-  if (image_grid_ == nullptr) {
-    image_grid_ = AddChildView(CreateImageGrid());
+  if (image_item_grid_ == nullptr) {
+    image_item_grid_ =
+        AddChildView(std::make_unique<PickerImageItemGridView>(section_width_));
   }
-
-  image_item->SetImageSizeFromWidth(GetImageGridColumnWidth(section_width_));
-  views::View* shortest_column =
-      base::ranges::min(image_grid_->children(),
-                        /*comp=*/base::ranges::less(),
-                        /*proj=*/[](const views::View* v) {
-                          return v->GetPreferredSize().height();
-                        });
-  item_views_.push_back(shortest_column->AddChildView(std::move(image_item)));
+  item_views_.push_back(image_item_grid_->AddImageItem(std::move(image_item)));
 }
 
-void PickerSectionView::AddSmallGridItem(
-    std::unique_ptr<PickerItemView> grid_item) {
-  if (small_items_grid_ == nullptr) {
-    small_items_grid_ = AddChildView(CreateSmallItemsGrid());
-    small_items_grid_->AddChildView(CreateSmallItemsGridRow());
+void PickerSectionView::CreateSmallItemGridIfNeeded() {
+  if (small_item_grid_ == nullptr) {
+    small_item_grid_ =
+        AddChildView(std::make_unique<PickerSmallItemGridView>(section_width_));
   }
-
-  // Try to add the item to the last row. If it doesn't fit, create a new row
-  // and add the item there.
-  views::View* row = small_items_grid_->children().back();
-  if (!row->children().empty() &&
-      row->GetPreferredSize().width() + kSmallGridItemMargins.left() +
-              grid_item->GetPreferredSize().width() >
-          section_width_) {
-    row = small_items_grid_->AddChildView(CreateSmallItemsGridRow());
-  }
-  item_views_.push_back(row->AddChildView(std::move(grid_item)));
 }
 
 BEGIN_METADATA(PickerSectionView)
