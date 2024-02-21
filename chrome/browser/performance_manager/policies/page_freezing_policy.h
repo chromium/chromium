@@ -58,9 +58,6 @@ class PageFreezingPolicy : public GraphObserver,
     page_freezer_ = std::move(page_freezer);
   }
 
-  static const base::TimeDelta GetUnfreezeIntervalForTesting();
-  static const base::TimeDelta GetUnfreezeDurationForTesting();
-
  protected:
   // List of states that prevent a tab from being frozen.
   enum CannotFreezeReason {
@@ -82,13 +79,6 @@ class PageFreezingPolicy : public GraphObserver,
   static const char* CannotFreezeReasonToString(CannotFreezeReason reason);
 
  private:
-  // Actions that can be performed by the temporary unfreeze logic. It either
-  // should unfreeze the page node or refreeze it.
-  enum class PageNodeUnfreezeAction {
-    kTemporaryUnfreeze,
-    kRefreeze,
-  };
-
   // GraphObserver implementation:
   void OnBeforeGraphDestroyed(Graph* graph) override;
 
@@ -107,7 +97,6 @@ class PageFreezingPolicy : public GraphObserver,
       override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
-  void OnPageLifecycleStateChanged(const PageNode* page_node) override;
 
   // PageLiveStateObserverDefaultImpl:
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override;
@@ -132,22 +121,9 @@ class PageFreezingPolicy : public GraphObserver,
   void InvalidateNegativeFreezingVote(const PageNode* page_node,
                                       CannotFreezeReason reason);
 
-  // Unfreeze |page_node| and schedule a task to refreeze it.
-  void TemporarilyUnfreezePageNode(const PageNode* page_node);
-
-  // Refreeze |page_node| after it has been temporarily unfrozen.
-  void FreezePageNodeAfterTemporaryUnfreeze(const PageNode* page_node);
-
   // Holds one voting channel per CannotFreezeReason.
   std::array<freezing::FreezingVotingChannel, CannotFreezeReason::kCount>
       voting_channels_;
-
-  // Map that tracks the frozen |page_node| and the periodic unfreeze/refreeze
-  // tasks associated to them.
-  base::flat_map<
-      const PageNode*,
-      std::pair<PageNodeUnfreezeAction, std::unique_ptr<base::OneShotTimer>>>
-      page_nodes_unfreeze_tasks_;
 
   // Map that associates the PageNodes that have recently been audible with a
   // timer used to clear the negative freezing vote used to protect these pages
@@ -155,8 +131,8 @@ class PageFreezingPolicy : public GraphObserver,
   base::flat_map<const PageNode*, std::unique_ptr<base::OneShotTimer>>
       page_nodes_recently_audible_;
 
-  // The page node being removed, used to avoid freezing/unfreezing a page node
-  // while it's being removed.
+  // The page node being removed, used to avoid freezing a page node while it's
+  // being removed.
   raw_ptr<const PageNode> page_node_being_removed_ = nullptr;
 
   // The freezing mechanism used to do the actual freezing.

@@ -21,8 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
 
@@ -264,93 +263,4 @@ TEST_F(PageFreezingPolicyTest, PageNodeIsntFrozenBeforeLoadingCompletes) {
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 }
 
-TEST_F(PageFreezingPolicyTest, PeriodicUnfreeze) {
-  std::unique_ptr<MockPageFreezer> page_freezer =
-      std::make_unique<MockPageFreezer>();
-  auto* page_freezer_raw = page_freezer.get();
-  policy()->SetPageFreezerForTesting(std::move(page_freezer));
-  page_node()->set_freezing_vote(kCanFreezeVote);
-  EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
-  page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-  EXPECT_EQ(performance_manager::mojom::LifecycleState::kFrozen,
-            page_node()->GetLifecycleState());
-
-  // Ensure that the page gets unfrozen periodically.
-  for (int i = 0; i < 2; ++i) {
-    EXPECT_CALL(*page_freezer_raw, UnfreezePageNodeImpl(page_node()));
-    task_env().FastForwardBy(
-        PageFreezingPolicy::GetUnfreezeIntervalForTesting());
-    ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-    EXPECT_EQ(performance_manager::mojom::LifecycleState::kRunning,
-              page_node()->GetLifecycleState());
-
-    EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
-    task_env().FastForwardBy(
-        PageFreezingPolicy::GetUnfreezeDurationForTesting());
-    ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-    EXPECT_EQ(performance_manager::mojom::LifecycleState::kFrozen,
-              page_node()->GetLifecycleState());
-  }
-}
-
-TEST_F(PageFreezingPolicyTest,
-       PeriodicUnfreezeCancelledIfPageIsUnfreezeVoteChanges) {
-  std::unique_ptr<MockPageFreezer> page_freezer =
-      std::make_unique<MockPageFreezer>();
-  auto* page_freezer_raw = page_freezer.get();
-  policy()->SetPageFreezerForTesting(std::move(page_freezer));
-  page_node()->set_freezing_vote(kCanFreezeVote);
-  EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
-  page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-  EXPECT_EQ(performance_manager::mojom::LifecycleState::kFrozen,
-            page_node()->GetLifecycleState());
-
-  task_env().FastForwardBy(PageFreezingPolicy::GetUnfreezeIntervalForTesting() /
-                           2);
-
-  EXPECT_CALL(*page_freezer_raw, UnfreezePageNodeImpl(page_node()));
-  page_node()->set_freezing_vote(kCannotFreezeVote);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-  EXPECT_EQ(performance_manager::mojom::LifecycleState::kRunning,
-            page_node()->GetLifecycleState());
-
-  task_env().FastForwardBy(PageFreezingPolicy::GetUnfreezeIntervalForTesting() *
-                           2);
-  // There should be no further call to |MaybeFreezePageNodeImpl|.
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-}
-
-TEST_F(PageFreezingPolicyTest,
-       PeriodicUnfreezeCancelledIfPageIsFreezingStateChanges) {
-  std::unique_ptr<MockPageFreezer> page_freezer =
-      std::make_unique<MockPageFreezer>();
-  auto* page_freezer_raw = page_freezer.get();
-  policy()->SetPageFreezerForTesting(std::move(page_freezer));
-  page_node()->set_freezing_vote(kCanFreezeVote);
-  EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
-  page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-  EXPECT_EQ(performance_manager::mojom::LifecycleState::kFrozen,
-            page_node()->GetLifecycleState());
-
-  task_env().FastForwardBy(PageFreezingPolicy::GetUnfreezeIntervalForTesting() /
-                           2);
-
-  // UnfreezePageNodeImpl won't be called if the page gets unfreeze from outside
-  // of PerformanceManager (e.g. if it becomes visible).
-  page_node()->SetLifecycleStateForTesting(
-      performance_manager::mojom::LifecycleState::kRunning);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-  EXPECT_EQ(performance_manager::mojom::LifecycleState::kRunning,
-            page_node()->GetLifecycleState());
-
-  task_env().FastForwardBy(PageFreezingPolicy::GetUnfreezeIntervalForTesting() *
-                           2);
-  // There should be no further call to |MaybeFreezePageNodeImpl|.
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
-}
-
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies

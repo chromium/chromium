@@ -13,16 +13,11 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom-shared.h"
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
-
-constexpr base::TimeDelta kUnfreezeInterval = base::Minutes(5);
-constexpr base::TimeDelta kUnfreezeDuration = base::Seconds(10);
 
 bool IsPageNodeFrozen(const PageNode* page_node) {
   return page_node->GetLifecycleState() ==
@@ -70,16 +65,6 @@ PageFreezingPolicy::PageFreezingPolicy()
     : page_freezer_(std::make_unique<mechanism::PageFreezer>()) {}
 PageFreezingPolicy::~PageFreezingPolicy() = default;
 
-// static
-const base::TimeDelta PageFreezingPolicy::GetUnfreezeIntervalForTesting() {
-  return kUnfreezeInterval;
-}
-
-// static
-const base::TimeDelta PageFreezingPolicy::GetUnfreezeDurationForTesting() {
-  return kUnfreezeDuration;
-}
-
 void PageFreezingPolicy::OnBeforeGraphDestroyed(Graph* graph) {
   graph->RemovePageNodeObserver(this);
   graph->RemoveGraphObserver(this);
@@ -121,8 +106,6 @@ void PageFreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
 
 void PageFreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
   page_node_being_removed_ = page_node;
-
-  page_nodes_unfreeze_tasks_.erase(page_node);
 
   if (auto iter = page_nodes_recently_audible_.find(page_node);
       iter != page_nodes_recently_audible_.end()) {
@@ -228,11 +211,9 @@ void PageFreezingPolicy::OnFreezingVoteChanged(
       // reflected in PerformanceManager before the vote gets invalidated (e.g.
       // if the vote has a really short lifetime).
       page_freezer_->UnfreezePageNode(page_node);
-      page_nodes_unfreeze_tasks_.erase(page_node);
     }
   } else {
     DCHECK_EQ(freezing::FreezingVoteValue::kCanFreeze, freezing_vote->value());
-    DCHECK(!base::Contains(page_nodes_unfreeze_tasks_, page_node));
 
     // Don't attempt to freeze a page if it's not fully loaded yet.
     if (page_node->GetLoadingState() != PageNode::LoadingState::kLoadedIdle)
@@ -253,32 +234,6 @@ void PageFreezingPolicy::OnLoadingStateChanged(
   if (freezing_vote.has_value() &&
       freezing_vote->value() == freezing::FreezingVoteValue::kCanFreeze) {
     page_freezer_->MaybeFreezePageNode(page_node);
-  }
-}
-
-void PageFreezingPolicy::OnPageLifecycleStateChanged(
-    const PageNode* page_node) {
-  if (page_node->GetLifecycleState() == PageNode::LifecycleState::kFrozen) {
-    // Once the page is frozen start a timer to automatically unfreeze it after
-    // a fixed interval of time.
-    DCHECK(!base::Contains(page_nodes_unfreeze_tasks_, page_node));
-    base::OnceClosure cb =
-        base::BindOnce(&PageFreezingPolicy::TemporarilyUnfreezePageNode,
-                       base::Unretained(this), page_node);
-    auto timer = std::make_unique<base::OneShotTimer>();
-    timer->Start(FROM_HERE, kUnfreezeInterval, std::move(cb));
-    page_nodes_unfreeze_tasks_[page_node] = std::make_pair(
-        PageNodeUnfreezeAction::kTemporaryUnfreeze, std::move(timer));
-  } else {
-    // If |page_node| is in |page_nodes_to_unfreeze_| it means that the tab
-    // lifecycle state has changed because of something external to this class
-    // (e.g. a frozen tab became visible). The unfreeze task should be
-    // cancelled.
-    auto iter = page_nodes_unfreeze_tasks_.find(page_node);
-    if (iter != page_nodes_unfreeze_tasks_.end() &&
-        iter->second.first == PageNodeUnfreezeAction::kTemporaryUnfreeze) {
-      page_nodes_unfreeze_tasks_.erase(iter);
-    }
   }
 }
 
@@ -375,29 +330,4 @@ void PageFreezingPolicy::InvalidateNegativeFreezingVote(
   voting_channels_[reason].InvalidateVote(page_node);
 }
 
-void PageFreezingPolicy::TemporarilyUnfreezePageNode(
-    const PageNode* page_node) {
-  // Update the task type to |kRefreeze| before sending the unfreeze signal to
-  // avoid |page_nodes_unfreeze_tasks_[page_node]| from being deleted in
-  // unittests where OnPageLifecycleStateChanged is called synchronously.
-  auto& refreeze_task = page_nodes_unfreeze_tasks_[page_node];
-  refreeze_task.first = PageNodeUnfreezeAction::kRefreeze;
-
-  // Unfreeze |page_node| and schedule the refreeze.
-  page_freezer_->UnfreezePageNode(page_node);
-  base::OnceClosure cb =
-      base::BindOnce(&PageFreezingPolicy::FreezePageNodeAfterTemporaryUnfreeze,
-                     base::Unretained(this), page_node);
-  refreeze_task.second->Start(FROM_HERE, kUnfreezeDuration, std::move(cb));
-}
-
-void PageFreezingPolicy::FreezePageNodeAfterTemporaryUnfreeze(
-    const PageNode* page_node) {
-  page_nodes_unfreeze_tasks_.erase(page_node);
-  // Try to refreeze |page_node|. If this succeeds this will cause a lifecycle
-  // state change and schedule the next unfreeze task.
-  page_freezer_->MaybeFreezePageNode(page_node);
-}
-
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies
