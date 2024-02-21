@@ -503,10 +503,11 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ArrayBuffer(
   }
 
   if (val->IsArrayBuffer()) {
-    auto backing_store = val.As<v8::ArrayBuffer>()->GetBackingStore();
-    const auto* data = static_cast<const uint8_t*>(backing_store->Data());
+    auto array_buffer = val.As<v8::ArrayBuffer>();
+    const auto* data = static_cast<const uint8_t*>(array_buffer->Data());
+    const size_t byte_length = array_buffer->ByteLength();
     return base::Value::ToUniquePtrValue(
-        base::Value(base::make_span(data, backing_store->ByteLength())));
+        base::Value(base::make_span(data, byte_length)));
   }
   if (val->IsArrayBufferView()) {
     v8::Local<v8::ArrayBufferView> view = val.As<v8::ArrayBufferView>();
