@@ -1464,7 +1464,7 @@ def main():
     if e.is_infra_error:
       return constants.INFRA_EXIT_CODE
     return constants.ERROR_EXIT_CODE
-  except: # pylint: disable=W0702
+  except Exception:  # pylint: disable=W0703
     logging.exception('Unrecognized error occurred.')
     return constants.ERROR_EXIT_CODE
 
