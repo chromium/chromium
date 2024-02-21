@@ -1156,10 +1156,6 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
   assert(keypiece_counter.size() == 
           trigger_registration.aggregatable_values.values().size());
 
-  for (const auto& outerPair : keypiece_counter) {
-      LOG(INFO) << "Outer Key: " << outerPair.first << std::endl;
-  }
-
   double total_count = sources_to_attribute.size();
 
   for (const auto& pair : keypiece_counter) {

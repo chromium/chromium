@@ -363,6 +363,20 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
 
   out->aggregatable_values = std::move(*aggregatable_values);
 
+  attribution_reporting::AggregatableValues::Values cap_values;
+  if (!data.ReadAggregatableCapValues(&cap_values)) {
+    return false;
+  }
+
+  auto aggregatable_cap_values =
+      attribution_reporting::AggregatableValues::Create(std::move(cap_values));
+  if (!aggregatable_cap_values) {
+    return false;
+  }
+
+  out->aggregatable_cap_values = std::move(*aggregatable_cap_values);
+
+
   if (!data.ReadAggregatableDedupKeys(&out->aggregatable_dedup_keys)) {
     return false;
   }
@@ -395,10 +409,6 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
   }
 
   if (!data.ReadAttributionWindow(&out->attribution_window)) {
-    return false;
-  }
-
-  if (!data.ReadSourceIdCandidates(&out->source_id_candidates)) {
     return false;
   }
 

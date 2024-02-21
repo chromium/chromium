@@ -46,7 +46,7 @@ constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
 constexpr char kAggregatableValues[] = "aggregatable_values";
 constexpr char kEventTriggerData[] = "event_trigger_data";
 constexpr char kAttributionWindow[] = "attribution_window";
-constexpr char kSourceIdCandidates[] = "source_id_candidates";
+constexpr char kAggregatableCapValues[] = "aggregatable_cap_values";
 constexpr char kAttributionLogic[] = "attribution_logic";
 
 
@@ -172,28 +172,16 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
   
+  ASSIGN_OR_RETURN(
+      registration.aggregatable_cap_values,
+      AggregatableValues::FromJSON(dict.Find(kAggregatableCapValues)));
+  
   ASSIGN_OR_RETURN(registration.global_epsilon,
                    GlobalEpsilon::Parse(dict));
 
   ASSIGN_OR_RETURN(
       registration.attribution_window,
       AttributionWindow::FromJSON(dict.Find(kAttributionWindow)));
-
-  auto parseUint64Lambda = [](base::Value& value) -> base::expected<uint64_t, TriggerRegistrationError> {      
-    std::optional<uint64_t> v = value.GetIfInt();
-    if (!v.has_value()) {
-      return base::unexpected(
-          TriggerRegistrationError::kSourceIdCandidatesWrongType);
-    }
-      return *v;
-  };
-
-  ASSIGN_OR_RETURN(
-      registration.source_id_candidates,
-        ParseList<uint64_t>(
-          dict.Find(kSourceIdCandidates),
-          TriggerRegistrationError::kSourceIdCandidatesListWrongType,
-          parseUint64Lambda));
 
   auto parseStringLambda = [](base::Value& value) -> base::expected<std::string, TriggerRegistrationError> {
       const std::string* str = value.GetIfString();
@@ -279,6 +267,10 @@ base::Value::Dict TriggerRegistration::ToJson() const {
     dict.Set(kAggregatableValues, aggregatable_values.ToJson());
   }
 
+  if (!aggregatable_cap_values.values().empty()) {
+    dict.Set(kAggregatableCapValues, aggregatable_cap_values.ToJson());
+  }
+  
   SerializeDebugKey(dict, debug_key);
 
   SerializeDebugReporting(dict, debug_reporting);
@@ -293,7 +285,6 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   aggregatable_trigger_config.Serialize(dict);
   global_epsilon.Serialize(dict);
   dict.Set(kAttributionWindow, attribution_window.ToJson());
-  SerializeListIfNotEmpty(dict, kSourceIdCandidates, source_id_candidates);
   dict.Set(kAttributionLogic, attribution_logic);
   return dict;
 }

@@ -2016,16 +2016,6 @@ ToAttributionWindow(const attribution_reporting::AttributionWindow& attribution_
           .Build();
   }
 
-std::unique_ptr<Array<std::string>>
-ToSourceIdCandidates(const std::vector<uint64_t>& source_id_candidates) {
-  auto out = std::make_unique<Array<std::string>>();
-  for (const auto& source_id_candidate : source_id_candidates) {
-    out->emplace_back(base::NumberToString(source_id_candidate));
-  }
-
-  return out;
-}
-
 std::unique_ptr<Array<Storage::AttributionReportingAggregatableTriggerData>>
 ToAggregatableTriggerData(
     const std::vector<attribution_reporting::AggregatableTriggerData>&
@@ -2151,7 +2141,8 @@ void StorageHandler::OnTriggerHandled(const AttributionTrigger& trigger,
                   .source_registration_time_config()))
           .SetGlobalEpsilon(registration.global_epsilon)
           .SetAttributionWindow(ToAttributionWindow(registration.attribution_window))
-          .SetSourceIdCandidates(ToSourceIdCandidates(registration.source_id_candidates))
+          .SetAggregatableCapValues(
+              ToAggregatableValueEntries(registration.aggregatable_cap_values))
           .SetAttributionLogic(registration.attribution_logic)
           .Build();
 

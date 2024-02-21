@@ -58,9 +58,5 @@ enum TriggerRegistrationError {
   kAttributionWindowEndMissing = 44,
   kAttributionWindowListWrongType = 45,
 
-  kSourceIdCandidatesListWrongType = 46,
-  kSourceIdCandidatesWrongType = 47,
-  kSourceIdCandidatesValueInvalid = 48,
-
-  kAttributionLogicValueInvalid = 49,
+  kAttributionLogicValueInvalid = 46,
 };

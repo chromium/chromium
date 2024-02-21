@@ -212,8 +212,9 @@ struct TriggerRegistration {
   // The attribution_window in which the attribution logic will look for matching sources
   AttributionWindow attribution_window;
 
-  // The ids of the sources that are candidates for attribution
-  array<uint64> source_id_candidates;
+  // A map of aggregation key identifier and the corresponding cap value.
+  map<string, uint32> aggregatable_cap_values;
+
 
   // The attribution logic
   string attribution_logic;

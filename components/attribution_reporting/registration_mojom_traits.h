@@ -353,6 +353,12 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return trigger.aggregatable_values.values();
   }
 
+  static const attribution_reporting::AggregatableValues::Values&
+  aggregatable_cap_values(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregatable_cap_values.values();
+  }
+
   static std::optional<uint64_t> debug_key(
       const attribution_reporting::TriggerRegistration& trigger) {
     return trigger.debug_key;
@@ -395,11 +401,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static const attribution_reporting::AttributionWindow& attribution_window(
       const attribution_reporting::TriggerRegistration& trigger) {
     return trigger.attribution_window;
-  }
-
-  static const std::vector<uint64_t>& source_id_candidates(
-      const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.source_id_candidates;
   }
 
   static std::string attribution_logic(

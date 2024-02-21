@@ -10235,7 +10235,7 @@ experimental domain Storage
       optional string triggerContextId
       optional number globalEpsilon
       AttributionReportingAttributionWindow attributionWindow
-      array of string sourceIdCandidates
+      array of AttributionReportingAggregatableValueEntry aggregatableCapValues
       optional string attributionLogic
 
   experimental type AttributionReportingEventLevelResult extends string

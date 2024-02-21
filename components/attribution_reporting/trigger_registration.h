@@ -68,7 +68,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   
   GlobalEpsilon global_epsilon;
   AttributionWindow attribution_window;
-  std::vector<uint64_t> source_id_candidates;
+  AggregatableValues aggregatable_cap_values;
   std::string attribution_logic;
 
 };
