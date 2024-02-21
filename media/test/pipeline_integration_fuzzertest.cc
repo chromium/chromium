@@ -189,8 +189,11 @@ class MediaSourcePipelineIntegrationFuzzerTest
     if (size == 0)
       return;
 
-    scoped_refptr<media::DecoderBuffer> buffer(
-        DecoderBuffer::CopyFrom(data, size));
+    auto external_memory =
+        std::make_unique<media::DecoderBuffer::ExternalMemory>(
+            base::make_span(data, size));
+    scoped_refptr<media::DecoderBuffer> buffer =
+        media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
 
     TestMediaSource source(buffer, mimetype, kAppendWholeFile);
 
