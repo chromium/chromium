@@ -512,7 +512,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
                                    PickerSearchController::kGifDebouncingDelay);
 }
 
-TEST_F(PickerSearchControllerTest, DoNotShowEmptySections) {
+TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
@@ -539,6 +539,34 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySections) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Property("sections", &PickerSearchResults::sections,
+                    Not(Contains(Property(
+                        "heading", &PickerSearchResults::Section::heading,
+                        u"Matching links"))))))
+      .Times(AtLeast(1));
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBurnInPeriod);
+
+  client.cros_search_callback()->Run(ash::AppListSearchResultType::kOmnibox,
+                                     {});
+  std::move(*client.gif_search_callback())
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
+          gfx::Size(480, 480), u"cat blink")});
 }
 
 TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {

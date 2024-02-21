@@ -157,7 +157,9 @@ void PickerSearchController::AppendPostBurnInResults(
   }
 
   CHECK(IsPostBurnIn());
-  current_callback_.Run(PickerSearchResults({{std::move(section)}}));
+  if (!section.results().empty()) {
+    current_callback_.Run(PickerSearchResults({{std::move(section)}}));
+  }
 }
 
 void PickerSearchController::HandleCrosSearchResults(
