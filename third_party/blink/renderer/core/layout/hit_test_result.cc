@@ -115,8 +115,7 @@ HitTestResult::HitTestResult(const HitTestResult& other)
       scrollbar_(other.GetScrollbar()),
       is_over_embedded_content_view_(other.IsOverEmbeddedContentView()),
       is_over_resizer_(other.is_over_resizer_),
-      is_over_scroll_corner_(other.is_over_scroll_corner_),
-      canvas_region_id_(other.CanvasRegionId()) {
+      is_over_scroll_corner_(other.is_over_scroll_corner_) {
   // Only copy the NodeSet in case of list hit test.
   list_based_test_result_ =
       other.list_based_test_result_
@@ -161,7 +160,6 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
 
   is_over_embedded_content_view_ = other.IsOverEmbeddedContentView();
   cacheable_ = other.cacheable_;
-  canvas_region_id_ = other.CanvasRegionId();
   is_over_resizer_ = other.IsOverResizer();
   is_over_scroll_corner_ = other.IsOverScrollCorner();
 
@@ -625,7 +623,6 @@ void HitTestResult::Append(const HitTestResult& other) {
     point_in_inner_node_frame_ = other.point_in_inner_node_frame_;
     inner_url_element_ = other.URLElement();
     is_over_embedded_content_view_ = other.IsOverEmbeddedContentView();
-    canvas_region_id_ = other.CanvasRegionId();
     is_over_resizer_ = other.IsOverResizer();
     is_over_scroll_corner_ = other.is_over_scroll_corner_;
   }

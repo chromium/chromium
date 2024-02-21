@@ -171,9 +171,6 @@ class CORE_EXPORT HitTestResult {
   bool IsLiveLink() const;
   bool IsContentEditable() const;
 
-  const String& CanvasRegionId() const { return canvas_region_id_; }
-  void SetCanvasRegionId(const String& id) { canvas_region_id_ = id; }
-
   bool IsOverLink() const;
 
   bool IsCacheable() const { return cacheable_; }
@@ -251,7 +248,6 @@ class CORE_EXPORT HitTestResult {
   bool is_over_scroll_corner_ = false;
 
   mutable Member<NodeSet> list_based_test_result_;
-  String canvas_region_id_;
 };
 
 }  // namespace blink
