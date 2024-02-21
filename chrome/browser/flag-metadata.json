@@ -8527,11 +8527,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "web-sql-access",
-    "owners": [ "arichiv@chromium.org"],
-    "expiry_milestone": 124
-  },
-  {
     "name": "webpage-alternative-text-zoom",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 120

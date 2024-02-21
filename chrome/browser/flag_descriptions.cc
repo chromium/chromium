@@ -3848,10 +3848,6 @@ const char kSkipServiceWorkerFetchHandlerDescription[] =
     "Skips starting the service worker and run the fetch handler if the fetch "
     "handler is recognized as skippable.";
 
-const char kWebSQLAccessName[] = "Allows access to WebSQL APIs";
-const char kWebSQLAccessDescription[] =
-    "The WebSQL API is disabled by default, but can be enabled here.";
-
 const char kUseGpuSchedulerDfsName[] = "Use new gpu scheduler.";
 const char kUseGpuSchedulerDfsDescription[] =
     "Enables using the new gpu "

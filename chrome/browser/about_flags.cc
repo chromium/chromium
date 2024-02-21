@@ -9524,10 +9524,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kInternalServerSideSpeechRecognition)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"web-sql-access", flag_descriptions::kWebSQLAccessName,
-     flag_descriptions::kWebSQLAccessDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kWebSQLAccess)},
-
     {"omit-cors-client-cert", flag_descriptions::kOmitCorsClientCertName,
      flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
