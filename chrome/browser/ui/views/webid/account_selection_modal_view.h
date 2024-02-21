@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class AccountSelectionModalView : public views::DialogDelegateView,
@@ -67,6 +68,11 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const std::optional<content::IdentityCredentialTokenError>& error)
       override;
 
+  void ShowRequestPermissionDialog(
+      const std::u16string& top_frame_for_display,
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_display_data) override;
+
   void CloseDialog() override;
 
   std::string GetDialogTitle() const override;
@@ -78,17 +84,32 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   std::unique_ptr<views::View> CreateAccountChooserHeader(
       const content::IdentityProviderMetadata& idp_metadata);
 
-  // Returns a View for single account chooser. It contains clickable account
-  // information, and a button for the user to close the modal dialog. The size
-  // of the `idp_display_data.accounts` vector must be 1.
+  // Returns a View for single account chooser. It contains a row of account
+  // information. `The size of the `idp_display_data.accounts` vector must be 1.
+  // `should_hover` determines whether the row is clickable.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
       const IdentityProviderDisplayData& idp_display_data,
-      const content::IdentityRequestAccount& account);
+      const content::IdentityRequestAccount& account,
+      bool should_hover);
 
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
       const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
+
+  // Returns a View for header of a request permission dialog. It contains text
+  // to prompt the user to confirm a sign in to an RP with an account from an
+  // IDP.
+  std::unique_ptr<views::View> CreateRequestPermissionHeader(
+      const content::IdentityProviderMetadata& idp_metadata);
+
+  // Returns a View for a row of custom buttons. A cancel button is always shown
+  // and a confirm button is shown if `confirm_callback` is specified.
+  std::unique_ptr<views::View> CreateButtonRow(
+      std::optional<views::Button::PressedCallback> continue_callback);
+
+  // Resizes the modal dialog to the size of its contents.
+  void UpdateModalPositionAndTitle();
 
   // View containing the modal dialog title.
   raw_ptr<views::Label> title_label_ = nullptr;

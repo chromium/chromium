@@ -1,0 +1,168 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
+
+#include "chrome/browser/ui/views/webid/account_selection_view_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
+
+AccountSelectionViewTestBase::AccountSelectionViewTestBase() = default;
+
+AccountSelectionViewTestBase::~AccountSelectionViewTestBase() = default;
+
+std::u16string AccountSelectionViewTestBase::GetHoverButtonTitle(
+    HoverButton* account) {
+  return account->title()->GetText();
+}
+
+views::Label* AccountSelectionViewTestBase::GetHoverButtonSubtitle(
+    HoverButton* account) {
+  return account->subtitle();
+}
+
+views::View* AccountSelectionViewTestBase::GetHoverButtonIconView(
+    HoverButton* account) {
+  return account->icon_view();
+}
+
+content::IdentityRequestAccount
+AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
+    const std::string& account_suffix,
+    content::IdentityRequestAccount::LoginState login_state) {
+  return content::IdentityRequestAccount(
+      std::string(kIdBase) + account_suffix,
+      std::string(kEmailBase) + account_suffix,
+      std::string(kNameBase) + account_suffix,
+      std::string(kGivenNameBase) + account_suffix, GURL(),
+      /*login_hints=*/std::vector<std::string>(),
+      /*domain_hints=*/std::vector<std::string>(), login_state);
+}
+
+std::vector<content::IdentityRequestAccount>
+AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
+    const std::vector<std::string>& account_suffixes,
+    content::IdentityRequestAccount::LoginState login_state) {
+  std::vector<content::IdentityRequestAccount> accounts;
+  for (const std::string& account_suffix : account_suffixes) {
+    accounts.push_back(
+        CreateTestIdentityRequestAccount(account_suffix, login_state));
+  }
+  return accounts;
+}
+
+content::ClientMetadata AccountSelectionViewTestBase::CreateTestClientMetadata(
+    const std::string& terms_of_service_url) {
+  return content::ClientMetadata((GURL(terms_of_service_url)),
+                                 (GURL(kPrivacyPolicyUrl)));
+}
+
+std::vector<std::string> AccountSelectionViewTestBase::GetChildClassNames(
+    views::View* parent) {
+  std::vector<std::string> child_class_names;
+  for (views::View* child_view : parent->children()) {
+    child_class_names.push_back(child_view->GetClassName());
+  }
+  return child_class_names;
+}
+
+views::View* AccountSelectionViewTestBase::GetViewWithClassName(
+    views::View* parent,
+    const std::string& class_name) {
+  for (views::View* child_view : parent->children()) {
+    if (child_view->GetClassName() == class_name) {
+      return child_view;
+    }
+  }
+  return nullptr;
+}
+
+void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
+    views::View* row,
+    const std::string& account_suffix) {
+  std::vector<raw_ptr<views::View, VectorExperimental>> row_children =
+      row->children();
+  ASSERT_EQ(row_children.size(), 2u);
+
+  // Check the image.
+  views::ImageView* image_view =
+      static_cast<views::ImageView*>(row_children[0]);
+  EXPECT_TRUE(image_view);
+
+  // Check the text shown.
+  views::View* text_view = row_children[1];
+  views::BoxLayout* layout_manager =
+      static_cast<views::BoxLayout*>(text_view->GetLayoutManager());
+  ASSERT_TRUE(layout_manager);
+  EXPECT_EQ(layout_manager->GetOrientation(),
+            views::BoxLayout::Orientation::kVertical);
+  std::vector<raw_ptr<views::View, VectorExperimental>> text_view_children =
+      text_view->children();
+  ASSERT_EQ(text_view_children.size(), 2u);
+
+  std::string expected_name(std::string(kNameBase) + account_suffix);
+  views::StyledLabel* name_view =
+      static_cast<views::StyledLabel*>(text_view_children[0]);
+  ASSERT_TRUE(name_view);
+  EXPECT_EQ(name_view->GetText(), base::UTF8ToUTF16(expected_name));
+
+  std::string expected_email(std::string(kEmailBase) + account_suffix);
+  views::Label* email_view = static_cast<views::Label*>(text_view_children[1]);
+  ASSERT_TRUE(email_view);
+  EXPECT_EQ(email_view->GetText(), base::UTF8ToUTF16(expected_email));
+}
+
+void AccountSelectionViewTestBase::CheckHoverableAccountRows(
+    const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
+    const std::vector<std::string>& account_suffixes,
+    size_t& accounts_index) {
+  EXPECT_GE(accounts.size(), account_suffixes.size());
+  // Checks the account rows starting at `accounts[accounts_index]`. Updates
+  // `accounts_index` to the first unused index in `accounts`, or to
+  // `accounts.size()` if done.
+  for (const auto& account_suffix : account_suffixes) {
+    ASSERT_STREQ("HoverButton", accounts[accounts_index]->GetClassName());
+    HoverButton* account_row =
+        static_cast<HoverButton*>(accounts[accounts_index++]);
+    ASSERT_TRUE(account_row);
+    EXPECT_EQ(GetHoverButtonTitle(account_row),
+              base::UTF8ToUTF16(kNameBase + account_suffix));
+    EXPECT_EQ(GetHoverButtonSubtitle(account_row)->GetText(),
+              base::UTF8ToUTF16(std::string(kEmailBase) + account_suffix));
+    // The subtitle has changed style, so AutoColorReadabilityEnabled should
+    // be set.
+    EXPECT_TRUE(
+        GetHoverButtonSubtitle(account_row)->GetAutoColorReadabilityEnabled());
+    views::View* icon_view = GetHoverButtonIconView(account_row);
+    EXPECT_TRUE(icon_view);
+    EXPECT_EQ(icon_view->size(),
+              gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+  }
+}
+
+void AccountSelectionViewTestBase::CheckDisclosureText(
+    views::View* disclosure_text,
+    bool expect_terms_of_service,
+    bool expect_privacy_policy) {
+  views::StyledLabel* disclosure_label =
+      static_cast<views::StyledLabel*>(disclosure_text);
+  ASSERT_TRUE(disclosure_label);
+
+  std::u16string expected_disclosure_text =
+      u"To continue, idp-example.com will share your name, email address, and "
+      u"profile picture with this site.";
+  if (expect_privacy_policy && expect_terms_of_service) {
+    expected_disclosure_text +=
+        u" See this site's privacy policy and terms of service.";
+  } else if (expect_privacy_policy) {
+    expected_disclosure_text += u" See this site's privacy policy.";
+  } else if (expect_terms_of_service) {
+    expected_disclosure_text += u" See this site's terms of service.";
+  }
+
+  EXPECT_EQ(disclosure_label->GetText(), expected_disclosure_text);
+}

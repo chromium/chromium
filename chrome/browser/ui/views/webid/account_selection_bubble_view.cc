@@ -130,21 +130,6 @@ void SendAccessibilityEvent(views::Widget* widget,
   root_view->GetViewAccessibility().AnnounceText(announcement);
 }
 
-// Selects string for disclosure text based on passed-in `privacy_policy_url`
-// and `terms_of_service_url`.
-int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
-                                   const GURL& terms_of_service_url) {
-  if (privacy_policy_url.is_empty()) {
-    return terms_of_service_url.is_empty()
-               ? IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS
-               : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP;
-  }
-
-  return terms_of_service_url.is_empty()
-             ? IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS
-             : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT;
-}
-
 std::pair<std::u16string, std::u16string> GetErrorDialogText(
     const std::optional<TokenError>& error,
     const std::u16string& top_frame_for_display,
@@ -429,8 +414,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
       base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
                           base::Unretained(observer_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
-      l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE),
-      this, idp_metadata);
+      l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE), this, idp_metadata);
   row->AddChildView(std::move(button));
   AddChildView(std::move(row));
 
@@ -524,6 +508,14 @@ void AccountSelectionBubbleView::ShowErrorDialog(
 
   SizeToContents();
   PreferredSizeChanged();
+}
+
+void AccountSelectionBubbleView::ShowRequestPermissionDialog(
+    const std::u16string& top_frame_for_display,
+    const content::IdentityRequestAccount& account,
+    const IdentityProviderDisplayData& idp_display_data) {
+  NOTREACHED() << "ShowRequestPermissionDialog is only implemented for "
+                  "AccountSelectionModalView";
 }
 
 void AccountSelectionBubbleView::CloseDialog() {
@@ -709,58 +701,8 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     return row;
   }
 
-  // Add disclosure text. It requires a StyledLabel so that we can add the links
-  // to the privacy policy and terms of service URLs.
-  views::StyledLabel* const disclosure_label =
-      row->AddChildView(std::make_unique<views::StyledLabel>());
-  disclosure_label->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-
-  // Set custom top margin for `disclosure_label` in order to take
-  // (line_height - font_height) into account.
-  disclosure_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 0, 0)));
-  disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-
-  const content::ClientMetadata& client_metadata =
-      idp_display_data.client_metadata;
-  int disclosure_resource_id = SelectDisclosureTextResourceId(
-      client_metadata.privacy_policy_url, client_metadata.terms_of_service_url);
-
-  // The order that the links are added to `link_data` should match the order of
-  // the links in `disclosure_resource_id`.
-  std::vector<std::pair<LinkType, GURL>> link_data;
-  if (!client_metadata.privacy_policy_url.is_empty()) {
-    link_data.emplace_back(LinkType::PRIVACY_POLICY,
-                           client_metadata.privacy_policy_url);
-  }
-  if (!client_metadata.terms_of_service_url.is_empty()) {
-    link_data.emplace_back(LinkType::TERMS_OF_SERVICE,
-                           client_metadata.terms_of_service_url);
-  }
-
-  // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
-  std::vector<std::u16string> replacements = {
-      idp_display_data.idp_etld_plus_one};
-  replacements.insert(replacements.end(), link_data.size() * 2,
-                      std::u16string());
-
-  std::vector<size_t> offsets;
-  const std::u16string disclosure_text = l10n_util::GetStringFUTF16(
-      disclosure_resource_id, replacements, &offsets);
-  disclosure_label->SetText(disclosure_text);
-
-  size_t offset_index = 1u;
-  for (const std::pair<LinkType, GURL>& link_data_item : link_data) {
-    disclosure_label->AddStyleRange(
-        gfx::Range(offsets[offset_index], offsets[offset_index + 1]),
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &AccountSelectionViewBase::Observer::OnLinkClicked,
-            base::Unretained(observer_), link_data_item.first,
-            link_data_item.second)));
-    offset_index += 2;
-  }
-
+  // Add disclosure text.
+  row->AddChildView(CreateDisclosureLabel(idp_display_data));
   return row;
 }
 

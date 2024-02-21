@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -15,62 +16,8 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/views/controls/styled_label.h"
 
-namespace {
-
-const std::u16string kTopFrameETLDPlusOne = u"top-frame-example.com";
-const std::u16string kIdpETLDPlusOne = u"idp-example.com";
-const std::u16string kTitleSignIn =
-    u"Sign in to top-frame-example.com with idp-example.com";
-const std::u16string kBodySignIn = u"Choose an account to continue";
-
-constexpr char kIdBase[] = "id";
-constexpr char kEmailBase[] = "email";
-constexpr char kNameBase[] = "name";
-constexpr char kGivenNameBase[] = "given_name";
-
-constexpr char kTermsOfServiceUrl[] = "https://terms-of-service.com";
-constexpr char kPrivacyPolicyUrl[] = "https://privacy-policy.com";
-
-content::IdentityRequestAccount CreateTestIdentityRequestAccount(
-    const std::string& account_suffix,
-    content::IdentityRequestAccount::LoginState login_state) {
-  return content::IdentityRequestAccount(
-      std::string(kIdBase) + account_suffix,
-      std::string(kEmailBase) + account_suffix,
-      std::string(kNameBase) + account_suffix,
-      std::string(kGivenNameBase) + account_suffix, GURL::EmptyGURL(),
-      /*login_hints=*/std::vector<std::string>(),
-      /*domain_hints=*/std::vector<std::string>(), login_state);
-}
-
-std::vector<content::IdentityRequestAccount> CreateTestIdentityRequestAccounts(
-    const std::vector<std::string>& account_suffixes,
-    content::IdentityRequestAccount::LoginState login_state) {
-  std::vector<content::IdentityRequestAccount> accounts;
-  for (const std::string& account_suffix : account_suffixes) {
-    accounts.push_back(
-        CreateTestIdentityRequestAccount(account_suffix, login_state));
-  }
-  return accounts;
-}
-
-content::ClientMetadata CreateTestClientMetadata(
-    const std::string& terms_of_service_url) {
-  return content::ClientMetadata((GURL(terms_of_service_url)),
-                                 (GURL(kPrivacyPolicyUrl)));
-}
-
-std::vector<std::string> GetChildClassNames(views::View* parent) {
-  std::vector<std::string> child_class_names;
-  for (views::View* child_view : parent->children()) {
-    child_class_names.push_back(child_view->GetClassName());
-  }
-  return child_class_names;
-}
-
-}  // namespace
-
-class AccountSelectionModalViewTest : public DialogBrowserTest {
+class AccountSelectionModalViewTest : public DialogBrowserTest,
+                                      public AccountSelectionViewTestBase {
  public:
   AccountSelectionModalViewTest() {
     test_shared_url_loader_factory_ =
@@ -134,45 +81,36 @@ class AccountSelectionModalViewTest : public DialogBrowserTest {
     dialog_->ShowMultiAccountPicker(idp_data);
   }
 
-  void CheckAccountRow(views::View* row, const std::string& account_suffix) {
-    ASSERT_STREQ("HoverButton", row->GetClassName());
-    HoverButton* account_row = static_cast<HoverButton*>(row);
-    ASSERT_TRUE(account_row);
-    EXPECT_EQ(GetAccountButtonTitle(account_row),
-              base::UTF8ToUTF16(kNameBase + account_suffix));
-    EXPECT_EQ(GetAccountButtonSubtitle(account_row)->GetText(),
-              base::UTF8ToUTF16(std::string(kEmailBase) + account_suffix));
-    // The subtitle has changed style, so AutoColorReadabilityEnabled should
-    // be set.
-    EXPECT_TRUE(GetAccountButtonSubtitle(account_row)
-                    ->GetAutoColorReadabilityEnabled());
-    views::View* icon_view = GetAccountButtonIconView(account_row);
-    EXPECT_TRUE(icon_view);
-    EXPECT_EQ(icon_view->size(),
-              gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
-  }
-
-  void CheckAccountRows(
-      const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
-      const std::vector<std::string>& account_suffixes) {
-    EXPECT_EQ(accounts.size(), account_suffixes.size());
-    for (size_t i = 0; i < std::size(account_suffixes); ++i) {
-      CheckAccountRow(accounts[i], account_suffixes[i]);
-    }
+  void CreateRequestPermissionDialog(
+      const content::IdentityRequestAccount& account,
+      const content::IdentityProviderMetadata& idp_metadata,
+      const std::string& terms_of_service_url) {
+    CreateAccountSelectionModal();
+    IdentityProviderDisplayData idp_data(
+        kIdpETLDPlusOne, idp_metadata,
+        CreateTestClientMetadata(terms_of_service_url), {account},
+        /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+    dialog_->ShowRequestPermissionDialog(kTopFrameETLDPlusOne, account,
+                                         idp_data);
   }
 
   void PerformHeaderChecks(views::View* header,
-                           const std::u16string& expected_title) {
+                           const std::u16string& expected_title,
+                           const std::u16string& expected_body) {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
 
+    // Default buttons should not be shown.
     EXPECT_FALSE(dialog()->GetOkButton());
-    EXPECT_TRUE(dialog()->GetCancelButton());
+    EXPECT_FALSE(dialog()->GetCancelButton());
 
-    // Order: Brand icon, title, body
+    // Order: Brand icon, title, potentially body
     std::vector<std::string> expected_class_names = {"BrandIconImageView",
-                                                     "Label", "Label"};
+                                                     "Label"};
+    if (!expected_body.empty()) {
+      expected_class_names.push_back("Label");
+    }
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
 
@@ -185,25 +123,38 @@ class AccountSelectionModalViewTest : public DialogBrowserTest {
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), expected_title);
 
+    if (expected_body.empty()) {
+      return;
+    }
+
     // Check body text.
     views::Label* body_view = static_cast<views::Label*>(header_children[2]);
     ASSERT_TRUE(body_view);
-    EXPECT_EQ(body_view->GetText(), kBodySignIn);
+    EXPECT_EQ(body_view->GetText(), expected_body);
   }
 
-  std::u16string GetAccountButtonTitle(HoverButton* account) {
-    return account->title()->GetText();
+  void CheckButtonRow(views::View* button_row, bool expect_continue_button) {
+    std::vector<raw_ptr<views::View, VectorExperimental>> button_row_children =
+        button_row->children();
+
+    // Number of buttons: cancel button, continue button
+    ASSERT_EQ(button_row_children.size(), expect_continue_button ? 2u : 1u);
+
+    views::MdTextButton* cancel_button =
+        static_cast<views::MdTextButton*>(button_row_children[0]);
+    ASSERT_TRUE(cancel_button);
+
+    if (!expect_continue_button) {
+      return;
+    }
+
+    views::MdTextButton* continue_button =
+        static_cast<views::MdTextButton*>(button_row_children[1]);
+    ASSERT_TRUE(continue_button);
   }
 
-  views::Label* GetAccountButtonSubtitle(HoverButton* account) {
-    return account->subtitle();
-  }
-
-  views::View* GetAccountButtonIconView(HoverButton* account) {
-    return account->icon_view();
-  }
-
-  void TestSingleAccount(const std::u16string expected_title) {
+  void TestSingleAccount(const std::u16string& expected_title,
+                         const std::u16string& expected_body) {
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
@@ -213,23 +164,27 @@ class AccountSelectionModalViewTest : public DialogBrowserTest {
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
-    ASSERT_EQ(children.size(), 2u);
-    PerformHeaderChecks(children[0], expected_title);
+    ASSERT_EQ(children.size(), 3u);
+    PerformHeaderChecks(children[0], expected_title, expected_body);
 
-    views::View* single_account_chooser = children[1];
-    ASSERT_EQ(single_account_chooser->children().size(), 1u);
+    views::View* account_rows = children[1];
+    ASSERT_EQ(account_rows->children().size(), 1u);
 
-    CheckAccountRow(single_account_chooser->children()[0], kAccountSuffix);
+    size_t accounts_index = 0;
+    CheckHoverableAccountRows(account_rows->children(), {kAccountSuffix},
+                              accounts_index);
+    CheckButtonRow(children[2], /*expect_continue_button=*/true);
   }
 
-  void TestMultipleAccounts(const std::u16string& expected_title) {
+  void TestMultipleAccounts(const std::u16string& expected_title,
+                            const std::u16string& expected_body) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
     CreateMultiAccountPicker(kAccountSuffixes);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
-    ASSERT_EQ(children.size(), 2u);
-    PerformHeaderChecks(children[0], expected_title);
+    ASSERT_EQ(children.size(), 3u);
+    PerformHeaderChecks(children[0], expected_title, expected_body);
 
     views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
     ASSERT_FALSE(scroller->children().empty());
@@ -245,7 +200,31 @@ class AccountSelectionModalViewTest : public DialogBrowserTest {
     std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
         contents->children();
 
-    CheckAccountRows(accounts, kAccountSuffixes);
+    size_t accounts_index = 0;
+    CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index);
+    CheckButtonRow(children[2], /*expect_continue_button=*/false);
+  }
+
+  void TestRequestPermission(const std::u16string& expected_title,
+                             const std::u16string& expected_body) {
+    const std::string kAccountSuffix = "suffix";
+    content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
+        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
+    CreateRequestPermissionDialog(account, content::IdentityProviderMetadata(),
+                                  kTermsOfServiceUrl);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 4u);
+    PerformHeaderChecks(children[0], expected_title, expected_body);
+
+    views::View* account_rows = children[1];
+    ASSERT_EQ(account_rows->children().size(), 1u);
+
+    CheckNonHoverableAccountRow(account_rows->children()[0], kAccountSuffix);
+    CheckDisclosureText(children[2], /*expect_terms_of_service=*/true,
+                        /*expect_privacy_policy=*/true);
+    CheckButtonRow(children[3], /*expect_continue_button=*/true);
   }
 
   AccountSelectionModalView* dialog() { return dialog_; }
@@ -263,9 +242,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, SingleAccount) {
-  TestSingleAccount(kTitleSignIn);
+  TestSingleAccount(kTitleSignIn, kBodySignIn);
 }
 
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleAccounts) {
-  TestMultipleAccounts(kTitleSignIn);
+  TestMultipleAccounts(kTitleSignIn, kBodySignIn);
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, RequestPermission) {
+  TestRequestPermission(kTitleRequestPermission, /*expected_body=*/u"");
 }

@@ -243,6 +243,12 @@ class AccountSelectionViewBase {
       const content::IdentityProviderMetadata& idp_metadata,
       const std::optional<TokenError>& error) = 0;
 
+  // Updates the FedCM dialog to show the "request permission" sheet.
+  virtual void ShowRequestPermissionDialog(
+      const std::u16string& top_frame_for_display,
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_display_data) = 0;
+
   // Closes the dialog, without dismissing the FedCM API.
   virtual void CloseDialog() = 0;
 
@@ -285,6 +291,11 @@ class AccountSelectionViewBase {
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool should_hover);
+
+  // Returns a view containing a disclosure label. The label links to privacy
+  // policy and terms of service URLs, if available.
+  std::unique_ptr<views::View> CreateDisclosureLabel(
+      const IdentityProviderDisplayData& idp_display_data);
 
   // Sets the brand views::ImageView visibility and image. Initiates the
   // download of the brand icon if necessary.

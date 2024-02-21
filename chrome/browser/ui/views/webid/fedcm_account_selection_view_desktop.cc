@@ -76,7 +76,7 @@ void FedCmAccountSelectionView::Show(
   // on the mismatch dialog or the "Add Account" button from the account
   // chooser.
   if (popup_window_ && (state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
-                        state_ == State::ACCOUNT_PICKER)) {
+                        state_ == State::MULTI_ACCOUNT_PICKER)) {
     popup_window_state_ =
         PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
     show_accounts_dialog_callback_ =
@@ -98,10 +98,6 @@ void FedCmAccountSelectionView::Show(
       sign_in_mode != Account::SignInMode::kAuto &&
       !identity_provider_data_list[0].idp_metadata.supports_add_account;
 
-  // TODO(crbug.com/1518356): Implement modal request permissions dialog.
-  bool should_request_permission =
-      rp_mode == blink::mojom::RpMode::kWidget || !has_modal_support;
-
   idp_display_data_list_.clear();
 
   size_t accounts_size = 0u;
@@ -110,9 +106,7 @@ void FedCmAccountSelectionView::Show(
     idp_display_data_list_.emplace_back(
         base::UTF8ToUTF16(identity_provider.idp_for_display),
         identity_provider.idp_metadata, identity_provider.client_metadata,
-        identity_provider.accounts,
-        should_request_permission ? identity_provider.request_permission
-                                  : false,
+        identity_provider.accounts, identity_provider.request_permission,
         identity_provider.has_login_status_mismatch);
     // TODO(crbug.com/1406014): Decide what we should display if the IdPs use
     // different contexts here.
@@ -165,13 +159,14 @@ void FedCmAccountSelectionView::Show(
              !idp_display_data_list_[0].idp_metadata.supports_add_account) {
     // When there is a single IDP and a single account to show and the IDP does
     // not support adding an account, we can use the single account UI.
-    state_ = State::PERMISSION;
+    state_ = GetDialogType() == DialogType::MODAL ? State::SINGLE_ACCOUNT_PICKER
+                                                  : State::REQUEST_PERMISSION;
     account_selection_view_->ShowSingleAccountConfirmDialog(
         top_frame_for_display_, iframe_for_display_,
         idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
         /*show_back_button=*/false);
   } else {
-    state_ = State::ACCOUNT_PICKER;
+    state_ = State::MULTI_ACCOUNT_PICKER;
     account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
   }
 
@@ -455,12 +450,14 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   browser->tab_strip_model()->AddObserver(this);
 
   if (rp_mode == blink::mojom::RpMode::kButton && has_modal_support) {
+    dialog_type_ = DialogType::MODAL;
     return new AccountSelectionModalView(
         top_frame_etld_plus_one, idp_title, rp_context, web_contents,
         SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
         this, this);
   }
 
+  dialog_type_ = DialogType::BUBBLE;
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   views::View* anchor_view = browser_view->contents_web_view();
 
@@ -491,22 +488,37 @@ void FedCmAccountSelectionView::OnAccountSelected(
     return;
   }
 
+  // Return early if the dialog doesn't need to ask for the user's permission to
+  // share their id/email/name/picture.
   if (!idp_display_data.request_permission) {
-    // Return early if the dialog doesn't need to ask for the
-    // user's permission to share their id/email/name/picture.
     delegate_->OnAccountSelected(idp_display_data.idp_metadata.config_url,
                                  account);
     return;
   }
 
-  state_ = (state_ == State::ACCOUNT_PICKER &&
-            account.login_state == Account::LoginState::kSignUp)
-               ? State::PERMISSION
-               : State::VERIFYING;
-  if (state_ == State::VERIFYING) {
+  // At this point, we should request permission. If the account is a returning
+  // user or if the account is selected from UI which shows the disclosure text,
+  // they have already granted permission.
+  if (account.login_state != Account::LoginState::kSignUp ||
+      state_ == State::REQUEST_PERMISSION) {
+    state_ = State::VERIFYING;
     ShowVerifyingSheet(account, idp_display_data);
     return;
   }
+
+  // At this point, the account is a non-returning user. If the dialog is modal,
+  // we'd request permission through the request permission dialog.
+  if (GetDialogType() == DialogType::MODAL) {
+    state_ = State::REQUEST_PERMISSION;
+    account_selection_view_->ShowRequestPermissionDialog(
+        top_frame_for_display_, account, idp_display_data);
+    return;
+  }
+
+  // At this point, the account is a non-returning user, the dialog is a bubble
+  // and it is a multi account picker, there is no disclosure text on the dialog
+  // so we'd request permission through a single account dialog.
+  state_ = State::REQUEST_PERMISSION;
   account_selection_view_->ShowSingleAccountConfirmDialog(
       top_frame_for_display_, iframe_for_display_, account, idp_display_data,
       /*show_back_button=*/true);
@@ -523,7 +535,7 @@ void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
 
 void FedCmAccountSelectionView::OnBackButtonClicked() {
   // No need to protect input here since back cannot be the first event.
-  state_ = State::ACCOUNT_PICKER;
+  state_ = State::MULTI_ACCOUNT_PICKER;
   account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
 }
 
@@ -600,7 +612,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     // TODO(crbug.com/1479978): Verify if the current behaviour is what we want
     // for AuthZ/error.
     if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
-        state_ == State::ACCOUNT_PICKER) {
+        state_ == State::MULTI_ACCOUNT_PICKER) {
       should_destroy_dialog_widget_ = false;
       is_modal_closed_but_accounts_fetch_pending_ = true;
       idp_close_popup_time_ = base::TimeTicks::Now();
@@ -657,8 +669,9 @@ FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
     case State::IDP_SIGNIN_STATUS_MISMATCH:
       return SheetType::SIGN_IN_TO_IDP_STATIC;
 
-    case State::ACCOUNT_PICKER:
-    case State::PERMISSION:
+    case State::SINGLE_ACCOUNT_PICKER:
+    case State::MULTI_ACCOUNT_PICKER:
+    case State::REQUEST_PERMISSION:
       return SheetType::ACCOUNT_SELECTION;
 
     case State::VERIFYING:
@@ -722,6 +735,11 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
 base::WeakPtr<views::Widget> FedCmAccountSelectionView::GetDialogWidget() {
   return account_selection_view_ ? account_selection_view_->GetDialogWidget()
                                  : nullptr;
+}
+
+FedCmAccountSelectionView::DialogType
+FedCmAccountSelectionView::GetDialogType() {
+  return dialog_type_;
 }
 
 void FedCmAccountSelectionView::ResetAccountSelectionView() {

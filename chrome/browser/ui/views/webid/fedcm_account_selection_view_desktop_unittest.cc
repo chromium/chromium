@@ -43,7 +43,8 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
     kConfirmAccount,
     kVerifying,
     kFailure,
-    kError
+    kError,
+    kRequestPermission
   };
 
   explicit TestAccountSelectionView(views::Widget* dialog_widget)
@@ -98,6 +99,14 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
                        const std::optional<TokenError>& error) override {
     sheet_type_ = SheetType::kError;
     account_ids_ = {};
+  }
+
+  void ShowRequestPermissionDialog(
+      const std::u16string& top_frame_for_display,
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_display_data) override {
+    sheet_type_ = SheetType::kRequestPermission;
+    account_ids_ = {account.id};
   }
 
   std::string GetDialogTitle() const override { return std::string(); }
@@ -174,12 +183,21 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
       bool has_modal_support) override {
     ++num_dialogs_;
     rp_context_ = rp_context;
+    if (rp_mode == blink::mojom::RpMode::kButton && has_modal_support) {
+      dialog_type_ = FedCmAccountSelectionView::DialogType::MODAL;
+    }
     return account_selection_view_;
+  }
+
+  FedCmAccountSelectionView::DialogType GetDialogType() override {
+    return dialog_type_;
   }
 
  private:
   raw_ptr<TestAccountSelectionView> account_selection_view_;
   blink::mojom::RpContext rp_context_;
+  FedCmAccountSelectionView::DialogType dialog_type_{
+      FedCmAccountSelectionView::DialogType::BUBBLE};
 };
 
 // Stub AccountSelectionView::Delegate.
@@ -355,29 +373,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
   const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
-  AccountSelectionViewBase::Observer* observer =
-      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
-
-  EXPECT_FALSE(account_selection_view_->show_back_button_);
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
-            account_selection_view_->sheet_type_);
-  EXPECT_THAT(account_selection_view_->account_ids_,
-              testing::ElementsAre(kAccountId));
-
-  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
-            account_selection_view_->sheet_type_);
-  EXPECT_THAT(account_selection_view_->account_ids_,
-              testing::ElementsAre(kAccountId));
-}
-
-TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowModal) {
-  const char kAccountId[] = "account_id";
-  IdentityProviderDisplayData idp_data =
-      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
-  const std::vector<Account>& accounts = idp_data.accounts;
-  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
-      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
@@ -1279,4 +1274,121 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Reset the widget explicitly since no widget was shown. Otherwise, the test
   // will complain that a widget is still open.
   dialog_widget_.reset();
+}
+
+// Tests that if a single account chooser is opened in button flow mode,
+// selecting an account shows the request permission sheet. Then, confirming the
+// account on the request permission sheet shows the verifying sheet.
+TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowModal) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+}
+
+// Tests that if a multiple account chooser is opened in button flow mode,
+// selecting an account shows the request permission sheet. Then, confirming the
+// account on the request permission sheet shows the verifying sheet.
+TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowModal) {
+  const char kAccountId1[] = "account_id1";
+  const char kAccountId2[] = "account_id2";
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+      {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
+}
+
+// Tests that if a single account chooser is opened in button flow mode,
+// selecting a returning account shows the verifying sheet.
+TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowReturningModal) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignIn}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+}
+
+// Tests that if a multiple account chooser is opened in button flow mode,
+// selecting a returning account shows the verifying sheet.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       MultipleAccountFlowReturningModal) {
+  const char kAccountId1[] = "account_id1";
+  const char kAccountId2[] = "account_id2";
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+      {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
 }

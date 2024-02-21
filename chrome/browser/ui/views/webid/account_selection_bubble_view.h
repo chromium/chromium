@@ -75,6 +75,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
 
+  void ShowRequestPermissionDialog(
+      const std::u16string& top_frame_for_display,
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_display_data) override;
+
   void CloseDialog() override;
 
   std::string GetDialogTitle() const override;

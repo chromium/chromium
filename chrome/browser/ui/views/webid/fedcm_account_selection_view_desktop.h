@@ -48,6 +48,18 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     COUNT = 5
   };
 
+  enum class DialogType {
+    // FedCM dialog inherits a bubble dialog, which is typically shown on the
+    // top-right corner of the browser. The user can switch tabs and interact
+    // with web contents.
+    BUBBLE,
+
+    // FedCM dialog inherits a modal dialog, which is typically shown in the
+    // middle of the browser overlapping the line of death. The user can switch
+    // tabs but cannot interact with web contents.
+    MODAL
+  };
+
   explicit FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate);
   ~FedCmAccountSelectionView() override;
 
@@ -106,7 +118,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Returns an AccountSelectionViewBase to render bubble dialogs for
   // widget flows, otherwise returns an AccountSelectionViewBase to render
   // modal dialogs for button flows. Registers any observers. May fail and
-  // return nullptr if there is no browser or tab strip model.
+  // return nullptr if there is no browser or tab strip model. Virtual for
+  // testing purposes.
   virtual AccountSelectionViewBase* CreateAccountSelectionView(
       const std::u16string& top_frame_etld_plus_one,
       const std::optional<std::u16string>& iframe_etld_plus_one,
@@ -115,6 +128,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox,
       bool has_modal_support);
+
+  // Gets the type of dialog shown. Virtual for testing purposes.
+  virtual DialogType GetDialogType();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
@@ -146,13 +162,17 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // Dialog has button to sign-in to IdP.
     IDP_SIGNIN_STATUS_MISMATCH,
 
+    // User is shown a single account they have with IDP and is prompted to
+    // continue with the account.
+    SINGLE_ACCOUNT_PICKER,
+
     // User is shown list of accounts they have with IDP and is prompted to
     // select an account.
-    ACCOUNT_PICKER,
+    MULTI_ACCOUNT_PICKER,
 
     // User is prompted to grant permission for specific account they have with
     // IDP to communicate with RP.
-    PERMISSION,
+    REQUEST_PERMISSION,
 
     // Shown after the user has granted permission while the id token is being
     // fetched.
@@ -238,7 +258,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   std::optional<std::u16string> iframe_for_display_;
 
-  State state_{State::ACCOUNT_PICKER};
+  State state_{State::MULTI_ACCOUNT_PICKER};
+
+  DialogType dialog_type_{DialogType::BUBBLE};
 
   // Whether to notify the delegate when the widget is closed.
   bool notify_delegate_of_dismiss_{true};

@@ -20,6 +20,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "skia/ext/image_operations.h"
@@ -29,10 +30,12 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -70,33 +73,42 @@ AccountSelectionModalView::AccountSelectionModalView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kBetweenChildSpacing));
-  SetButtons(ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CANCEL));
+  SetButtons(ui::DIALOG_BUTTON_NONE);
 
   title_ = GetTitle(top_frame_for_display, /*iframe_for_display=*/std::nullopt,
                     idp_title, rp_context);
   SetAccessibleTitle(title_);
+
+  // TODO(crbug.com/1518356): Add loading modal UI.
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() {}
+
+void AccountSelectionModalView::UpdateModalPositionAndTitle() {
+  constrained_window::UpdateWebContentsModalDialogPosition(
+      GetWidget(),
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
+          ->delegate()
+          ->GetWebContentsModalDialogHost());
+  GetWidget()->UpdateWindowTitle();
+}
 
 void AccountSelectionModalView::InitDialogWidget() {
   if (!web_contents_) {
     return;
   }
 
+  if (dialog_widget_) {
+    UpdateModalPositionAndTitle();
+    return;
+  }
+
   views::Widget* widget =
       constrained_window::ShowWebModalDialogViews(this, web_contents_);
-  constrained_window::UpdateWebContentsModalDialogPosition(
-      GetWidget(),
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
-          ->delegate()
-          ->GetWebContentsModalDialogHost());
-
   if (!widget) {
     return;
   }
+  UpdateModalPositionAndTitle();
 
   // Add the widget observer, if available. It is null in tests.
   if (widget_observer_) {
@@ -104,6 +116,46 @@ void AccountSelectionModalView::InitDialogWidget() {
   }
 
   dialog_widget_ = widget->GetWeakPtr();
+}
+
+std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
+    std::optional<views::Button::PressedCallback> continue_callback) {
+  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  std::unique_ptr<views::View> button_container =
+      std::make_unique<views::View>();
+  button_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetDefault(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(0,
+                            layout_provider->GetDistanceMetric(
+                                views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
+                            0, 0))
+      .SetIgnoreDefaultMainAxisMargins(true);
+
+  std::unique_ptr<views::MdTextButton> cancel_button =
+      std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
+              base::Unretained(observer_)),
+          l10n_util::GetStringUTF16(IDS_CANCEL));
+  cancel_button->SetStyle(ui::ButtonStyle::kTonal);
+  button_container->AddChildView(std::move(cancel_button));
+
+  if (continue_callback) {
+    std::unique_ptr<views::MdTextButton> continue_button =
+        std::make_unique<views::MdTextButton>(
+            std::move(*continue_callback),
+            l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE));
+    continue_button->SetStyle(ui::ButtonStyle::kProminent);
+    button_container->AddChildView(std::move(continue_button));
+  }
+
+  // TODO(crbug.com/1518356): Connect with add account API.
+  // TODO(crbug.com/1518356): Add back button.
+
+  return button_container;
 }
 
 std::unique_ptr<views::View>
@@ -174,13 +226,11 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   AddChildView(
       CreateAccountChooserHeader(idp_display_data_list[0].idp_metadata));
   AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
+  AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt));
 
   InitDialogWidget();
 
   // TODO(crbug.com/1518356): Connect with multi IDP API.
-  // TODO(crbug.com/1518356): Connect with add account API.
-  // TODO(crbug.com/1518356): Add permissions UI. This should include the
-  // disclosure text.
 }
 
 void AccountSelectionModalView::ShowVerifyingSheet(
@@ -193,17 +243,15 @@ void AccountSelectionModalView::ShowVerifyingSheet(
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreateSingleAccountChooser(
     const IdentityProviderDisplayData& idp_display_data,
-    const content::IdentityRequestAccount& account) {
+    const content::IdentityRequestAccount& account,
+    bool should_hover) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(0, kHorizontalPadding), kVerticalPadding));
-  // TODO(crbug.com/1518356): Currently, clicking on the account row triggers
-  // the sign-in. To match the mocks, the account row should instead be selected
-  // then clicking on a separate continue button triggers the sign-in. Also,
-  // there should be an arrow to the right of the account.
-  row->AddChildView(
-      CreateAccountRow(account, idp_display_data, /*should_hover=*/true));
+  // TODO(crbug.com/1518356): There should be an arrow to the right of the
+  // account when the account row is hoverable.
+  row->AddChildView(CreateAccountRow(account, idp_display_data, should_hover));
   return row;
 }
 
@@ -214,14 +262,16 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
   AddChildView(CreateAccountChooserHeader(idp_display_data.idp_metadata));
-  AddChildView(CreateSingleAccountChooser(idp_display_data, account));
+  AddChildView(CreateSingleAccountChooser(idp_display_data, account,
+                                          /*should_hover=*/true));
+  AddChildView(CreateButtonRow(base::BindRepeating(
+      &AccountSelectionViewBase::Observer::OnAccountSelected,
+      base::Unretained(observer_), std::cref(account),
+      std::cref(idp_display_data))));
 
   InitDialogWidget();
 
   // TODO(crbug.com/1518356): Connect with multi IDP API.
-  // TODO(crbug.com/1518356): Connect with add account API.
-  // TODO(crbug.com/1518356): Add permissions UI. This should include the
-  // disclosure text.
 }
 
 void AccountSelectionModalView::ShowFailureDialog(
@@ -229,7 +279,8 @@ void AccountSelectionModalView::ShowFailureDialog(
     const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  // TODO(crbug.com/1518356): Implement modal failure dialog.
+  NOTREACHED()
+      << "ShowFailureDialog is only implemented for AccountSelectionBubbleView";
 }
 
 void AccountSelectionModalView::ShowErrorDialog(
@@ -238,7 +289,63 @@ void AccountSelectionModalView::ShowErrorDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  // TODO(crbug.com/1518356): Implement modal error dialog.
+  NOTREACHED()
+      << "ShowErrorDialog is only implemented for AccountSelectionBubbleView";
+}
+
+std::unique_ptr<views::View>
+AccountSelectionModalView::CreateRequestPermissionHeader(
+    const content::IdentityProviderMetadata& idp_metadata) {
+  std::unique_ptr<views::View> header = std::make_unique<views::View>();
+  header->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  // TODO(crbug.com/1518356): Show RP icon instead of IDP icon.
+  // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
+  std::unique_ptr<BrandIconImageView> image_view =
+      std::make_unique<BrandIconImageView>(
+          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kModalIconSize);
+  image_view->SetImageSize(gfx::Size(kModalIconSize, kModalIconSize));
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_bottom(kVerticalPadding));
+  if (idp_metadata.brand_icon_url.is_valid()) {
+    ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
+  } else {
+    image_view->SetImage(
+        gfx::CreateVectorIcon(kGlobeIcon, kModalIconSize, gfx::kGoogleGrey700));
+    image_view->SetVisible(true);
+  }
+  header->AddChildView(std::move(image_view));
+
+  // Add the title.
+  title_label_ = header->AddChildView(std::make_unique<views::Label>(
+      title_, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  SetLabelProperties(title_label_);
+
+  return header;
+}
+
+void AccountSelectionModalView::ShowRequestPermissionDialog(
+    const std::u16string& top_frame_for_display,
+    const content::IdentityRequestAccount& account,
+    const IdentityProviderDisplayData& idp_display_data) {
+  RemoveAllChildViews();
+  title_ = l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONFIRM_ACCOUNT,
+                                      top_frame_for_display,
+                                      idp_display_data.idp_etld_plus_one);
+  SetAccessibleTitle(title_);
+  AddChildView(CreateRequestPermissionHeader(idp_display_data.idp_metadata));
+  AddChildView(CreateSingleAccountChooser(idp_display_data, account,
+                                          /*should_hover=*/false));
+  AddChildView(CreateDisclosureLabel(idp_display_data));
+  AddChildView(CreateButtonRow(base::BindRepeating(
+      &AccountSelectionViewBase::Observer::OnAccountSelected,
+      base::Unretained(observer_), std::cref(account),
+      std::cref(idp_display_data))));
+
+  InitDialogWidget();
 }
 
 void AccountSelectionModalView::CloseDialog() {
