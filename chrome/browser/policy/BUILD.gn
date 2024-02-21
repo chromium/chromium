@@ -201,7 +201,6 @@ source_set("policy_specific_browser_tests") {
     "test/ssl_error_overriding_allowed_policy_browsertest.cc",
     "test/url_keyed_anonymized_data_collection_enabled_browsertest.cc",
     "test/web_rtc_udp_port_range_policy_browsertest.cc",
-    "test/web_sql_access_policy_browsertest.cc",
   ]
   if (is_chromeos) {
     sources += [ "test/policy_certs_browsertest.cc" ]
