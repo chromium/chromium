@@ -203,9 +203,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   FakeCrosHealthd();
   ~FakeCrosHealthd() override;
 
-  // Binds a new mojo remote and disconnected the old one if exists.
-  mojo::Remote<mojom::CrosHealthdServiceFactory> BindNewRemote();
-
   // CrosHealthdDiagnosticsService overrides:
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
   void GetRoutineUpdate(int32_t id,

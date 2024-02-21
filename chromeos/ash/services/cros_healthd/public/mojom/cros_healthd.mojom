@@ -19,38 +19,6 @@ import "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojo
 import "chromeos/services/network_health/public/mojom/network_diagnostics.mojom";
 import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
-// Factory interface which allows remote ends to request implementations of the
-// probe, diagnostics, or event services. Additionally, the browser can send
-// network-related implementations to the cros_healthd daemon.
-//
-// NextMinVersion: 2, NextIndex: 7
-interface CrosHealthdServiceFactory {
-  // Returns a bound interface to the diagnostics service.
-  GetDiagnosticsService@0(pending_receiver<CrosHealthdDiagnosticsService> service);
-  // Returns a bound interface to the event service.
-  GetEventService@1(pending_receiver<CrosHealthdEventService> service);
-  // Returns a bound interface to the probe service.
-  GetProbeService@2(pending_receiver<CrosHealthdProbeService> service);
-  // Sends a bound interface to the Network Health service in Chrome.
-  SendNetworkHealthService@3(
-      pending_remote<
-          chromeos.network_health.mojom.NetworkHealthService> remote);
-  // Sends a NetworkDiagnosticsRoutines pending remote to the cros_healthd
-  // daemon.
-  SendNetworkDiagnosticsRoutines@4(
-      pending_remote<
-          chromeos.network_diagnostics.mojom.NetworkDiagnosticsRoutines>
-              network_diagnostics_routines);
-  // TODO(http://b/181133872): Move this service out of this interface
-  // Returns a bound interface to the system service.
-  GetSystemService@5(pending_receiver<CrosHealthdSystemService> service);
-  // Sends a NetworkDiagnosticsRoutines pending remote to the cros_healthd
-  // daemon.
-  [MinVersion=1] SendChromiumDataCollector@6(
-      pending_remote<
-          ash.cros_healthd.internal.mojom.ChromiumDataCollector> remote);
-};
-
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
 // NextMinVersion: 15, NextIndex: 49
@@ -912,24 +880,4 @@ interface CrosHealthdProbeService {
   [MinVersion=1] ProbeMultipleProcessInfo@2(array<uint32>? process_ids,
                                             bool ignore_single_process_error)
     => (MultipleProcessResult multiple_process_info);
-};
-
-// Contains data about the current service instance of cros_healthd.
-//
-// NextMinVersion: 1, NextIndex: 2
-struct ServiceStatus {
-  // Boolean flag if the NetworkHealthService mojo remote has been sent from
-  // Chrome and bound in cros_healthd.
-  bool network_health_bound@0;
-  // Boolean flag if the NetworkDiagnosticsService mojo remote has been sent
-  // from Chrome and bound in cros_healthd.
-  bool network_diagnostics_bound@1;
-};
-
-// Interface to query the status of the cros_healthd service.
-//
-// NextMinVersion: 1, NextIndex: 1
-interface CrosHealthdSystemService {
-  // Returns the status of the cros_healthd service and external mojo remotes.
-  GetServiceStatus@0() => (ServiceStatus response);
 };
