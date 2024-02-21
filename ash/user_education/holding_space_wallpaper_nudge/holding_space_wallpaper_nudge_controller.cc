@@ -741,7 +741,9 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
       case ItemAction::kPause:
       case ItemAction::kRemove:
       case ItemAction::kResume:
+      case ItemAction::kShowInBrowser:
       case ItemAction::kShowInFolder:
+      case ItemAction::kViewDetailsInBrowser:
         RecordUsedInteraction(items);
         break;
       case ItemAction::kUnpin:

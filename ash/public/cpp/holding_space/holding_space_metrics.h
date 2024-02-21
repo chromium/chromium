@@ -72,7 +72,9 @@ enum class ItemAction {
   kCancel = 7,
   kPause = 8,
   kResume = 9,
-  kMaxValue = kResume,
+  kShowInBrowser = 10,
+  kViewDetailsInBrowser = 11,
+  kMaxValue = kViewDetailsInBrowser,
 };
 
 // Enumeration of reasons that a holding space item might fail to launch. These

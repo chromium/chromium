@@ -36,8 +36,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Pin" summary="pin"/>
   <variant name="Remove" summary="remove"/>
   <variant name="Resume" summary="resume"/>
+  <variant name="ShowInBrowser" summary="show-in-browser"/>
   <variant name="ShowInFolder" summary="show-in-folder"/>
   <variant name="Unpin" summary="unpin"/>
+  <variant name="ViewDetailsInBrowser" summary="view-details-in-browser"/>
 </variants>
 
 <variants name="HoldingSpaceItemType">

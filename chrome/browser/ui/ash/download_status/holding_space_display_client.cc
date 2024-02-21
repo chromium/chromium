@@ -11,13 +11,13 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -48,6 +48,27 @@ HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
       return HoldingSpaceCommandId::kShowInFolder;
     case CommandType::kViewDetailsInBrowser:
       return HoldingSpaceCommandId::kViewItemDetailsInBrowser;
+  }
+}
+
+// Returns the holding space item action corresponding to `type`.
+holding_space_metrics::ItemAction ConvertCommandTypeToAction(CommandType type) {
+  using ItemAction = holding_space_metrics::ItemAction;
+  switch (type) {
+    case CommandType::kCancel:
+      return ItemAction::kCancel;
+    case CommandType::kOpenFile:
+      return ItemAction::kLaunch;
+    case CommandType::kPause:
+      return ItemAction::kPause;
+    case CommandType::kResume:
+      return ItemAction::kResume;
+    case CommandType::kShowInBrowser:
+      return ItemAction::kShowInBrowser;
+    case CommandType::kShowInFolder:
+      return ItemAction::kShowInFolder;
+    case CommandType::kViewDetailsInBrowser:
+      return ItemAction::kViewDetailsInBrowser;
   }
 }
 
@@ -105,8 +126,16 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
         holding_space_util::IsInProgressCommand(id)) {
       in_progress_commands.emplace_back(
           id, command_info.text_id, command_info.icon,
-          base::IgnoreArgs<const HoldingSpaceItem*, HoldingSpaceCommandId,
-                           holding_space_metrics::EventSource>(
+          base::BindRepeating(
+              [](holding_space_metrics::ItemAction action,
+                 const base::RepeatingClosure& command_callback,
+                 const HoldingSpaceItem* item, HoldingSpaceCommandId command_id,
+                 holding_space_metrics::EventSource event_source) {
+                command_callback.Run();
+                holding_space_metrics::RecordItemAction(
+                    /*items=*/{item}, action, event_source);
+              },
+              ConvertCommandTypeToAction(command_info.type),
               command_info.command_callback));
     }
   }

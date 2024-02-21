@@ -84,10 +84,14 @@ std::string ToString(ItemAction action) {
       return "Remove";
     case ItemAction::kResume:
       return "Resume";
+    case ItemAction::kShowInBrowser:
+      return "ShowInBrowser";
     case ItemAction::kShowInFolder:
       return "ShowInFolder";
     case ItemAction::kUnpin:
       return "Unpin";
+    case ItemAction::kViewDetailsInBrowser:
+      return "ViewDetailsInBrowser";
   }
   NOTREACHED();
   return std::string();

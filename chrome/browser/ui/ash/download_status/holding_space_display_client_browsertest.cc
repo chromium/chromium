@@ -12,12 +12,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -221,6 +223,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
 
   // Press ENTER to execute the "Cancel" command, expecting and waiting for
   // the in-progress download item to be removed from the holding space model.
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
       .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
@@ -230,6 +233,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
       });
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   run_loop.Run();
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.All",
+                                     holding_space_metrics::ItemAction::kCancel,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.Cancel",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/1);
 
   // Verify that there is now only a single download chip.
   download_chips = test_api().GetDownloadChips();
@@ -325,6 +334,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   // Press the `primary_action_container` to execute "Cancel", expecting and
   // waiting for the in-progress download item to be removed from the holding
   // space model.
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
       .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
@@ -334,6 +344,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
       });
   test::Click(primary_action_container);
   run_loop.Run();
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.All",
+                                     holding_space_metrics::ItemAction::kCancel,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.Cancel",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/1);
 
   // Verify that there is now only a single download chip.
   download_chips = test_api().GetDownloadChips();
@@ -412,6 +428,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
 
   // Double click `in_progress_download_chip`. Check that the underlying
   // download is shown in browser.
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   EXPECT_CALL(download_status_updater_client(),
               ShowInBrowser(download->guid, _))
@@ -426,6 +443,13 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   test::Click(in_progress_download_chip, ui::EF_IS_DOUBLE_CLICK);
   run_loop.Run();
   Mock::VerifyAndClearExpectations(&download_status_updater_client());
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Item.Action.All",
+      holding_space_metrics::ItemAction::kShowInBrowser,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.ShowInBrowser",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
@@ -604,6 +628,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
 
   // Press ENTER to execute the "Pause" command and then check that the download
   // is paused.
+  base::HistogramTester histogram_tester;
   auto run_loop = std::make_unique<base::RunLoop>();
   EXPECT_CALL(download_status_updater_client(), Pause(download->guid, _))
       .WillOnce([&](const std::string& guid,
@@ -617,11 +642,25 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
       });
   PressAndReleaseKey(ui::VKEY_RETURN);
   run_loop->Run();
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.All",
+                                     holding_space_metrics::ItemAction::kPause,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.Pause",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/1);
 
   // Right click the download chip. Because the underlying download is paused,
   // the context menu should contain a "Resume" command.
   RightClick(download_chips[0]);
   EXPECT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kResumeItem));
+
+  // Download resuming should not be recorded yet.
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.All",
+                                     holding_space_metrics::ItemAction::kResume,
+                                     /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.Resume",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/0);
 
   // Press ENTER to execute the "Resume" command and then check that the
   // download is resumed.
@@ -638,6 +677,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
       });
   PressAndReleaseKey(ui::VKEY_RETURN);
   run_loop->Run();
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.All",
+                                     holding_space_metrics::ItemAction::kResume,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.Resume",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
@@ -667,6 +712,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   ViewDrawnWaiter().Wait(pause_button);
 
   // Press `pause_button` and then check that the download is paused.
+  base::HistogramTester histogram_tester;
   auto run_loop = std::make_unique<base::RunLoop>();
   EXPECT_CALL(download_status_updater_client(), Pause(download->guid, _))
       .WillOnce([&](const std::string& guid,
@@ -680,6 +726,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
       });
   test::Click(pause_button);
   run_loop->Run();
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.All",
+                                     holding_space_metrics::ItemAction::kPause,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.Pause",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/1);
 
   // Move mouse to `download_chip` and wait until `resume_button` shows.
   test::MoveMouseTo(download_chip, /*count=*/10);
@@ -687,6 +739,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
       secondary_action_container->GetViewByID(kHoldingSpaceItemResumeButtonId);
   ASSERT_TRUE(resume_button);
   ViewDrawnWaiter().Wait(resume_button);
+
+  // Download resuming should not be recorded yet.
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.All",
+                                     holding_space_metrics::ItemAction::kResume,
+                                     /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.Resume",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/0);
 
   // Press `resume_button` and then check that the download is resumed.
   run_loop = std::make_unique<base::RunLoop>();
@@ -702,6 +762,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
       });
   test::Click(resume_button);
   run_loop->Run();
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.All",
+                                     holding_space_metrics::ItemAction::kResume,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.Action.Resume",
+                                     HoldingSpaceItem::Type::kLacrosDownload,
+                                     /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, SecondaryLabel) {
@@ -820,6 +886,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
 
   // Press ENTER to execute the "View details in browser" command. Then check
   // that the download is shown in browser.
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   EXPECT_CALL(download_status_updater_client(),
               ShowInBrowser(download->guid, _))
@@ -832,6 +899,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
           });
   PressAndReleaseKey(ui::VKEY_RETURN);
   run_loop.Run();
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Item.Action.All",
+      holding_space_metrics::ItemAction::kViewDetailsInBrowser,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Item.Action.ViewDetailsInBrowser",
+      HoldingSpaceItem::Type::kLacrosDownload,
+      /*expected_count=*/1);
 }
 
 }  // namespace ash::download_status
