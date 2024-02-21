@@ -19718,9 +19718,6 @@
                         "FeatureManagementVideoConference",
                         "VCBackgroundReplace",
                         "VideoConference"
-                    ],
-                    "disable_features": [
-                        "VcStopAllScreenShare"
                     ]
                 }
             ]
