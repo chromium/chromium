@@ -2444,6 +2444,9 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kFullscreenInsetsApiMigrationName[];
 extern const char kFullscreenInsetsApiMigrationDescription[];
 
+extern const char kFullscreenInsetsApiMigrationOnAutomotiveName[];
+extern const char kFullscreenInsetsApiMigrationOnAutomotiveDescription[];
+
 extern const char kRefreshFeedOnRestartName[];
 extern const char kRefreshFeedOnRestartDescription[];
 

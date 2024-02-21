@@ -4170,6 +4170,12 @@ const char kFullscreenInsetsApiMigrationName[] =
 const char kFullscreenInsetsApiMigrationDescription[] =
     "Migration from View#setSystemUiVisibility to WindowInsetsController.";
 
+const char kFullscreenInsetsApiMigrationOnAutomotiveName[] =
+    "Migrate to the new fullscreen insets APIs on automotive";
+const char kFullscreenInsetsApiMigrationOnAutomotiveDescription[] =
+    "Migration from View#setSystemUiVisibility to WindowInsetsController on "
+    "automotive.";
+
 const char kRefreshFeedOnRestartName[] = "Enable refreshing feed on restart";
 const char kRefreshFeedOnRestartDescription[] =
     "Refresh feed when Chrome restarts.";

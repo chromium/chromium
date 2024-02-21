@@ -38,6 +38,7 @@ import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
@@ -445,7 +446,7 @@ public class CompositorViewHolder extends FrameLayout
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         setOnSystemUiVisibilityChangeListener(visibility -> handleSystemUiVisibilityChange());
-        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) {
+        if (isFullscreenApiMigrationEnabled()) {
             setOnApplyWindowInsetsListener(
                     (view, windowInsets) -> {
                         handleSystemUiVisibilityChange();
@@ -526,9 +527,15 @@ public class CompositorViewHolder extends FrameLayout
         postDelayed(mSystemUiFullscreenResizeRunnable, delay);
     }
 
+    private static boolean isFullscreenApiMigrationEnabled() {
+        return ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()
+                || (BuildInfo.getInstance().isAutomotive
+                        && ChromeFeatureList.sFullscreenInsetsApiMigrationOnAutomotive.isEnabled());
+    }
+
     private boolean isInFullscreenMode(int uiVisibility, View view) {
         // If the fullscreen api migration is enabled, check the updated API instead.
-        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) {
+        if (isFullscreenApiMigrationEnabled()) {
             if (view != null
                     && view.getRootWindowInsets() != null
                     && mActivity != null
@@ -555,7 +562,7 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private boolean isLayoutFullscreen(int uiVisibility) {
-        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) {
+        if (isFullscreenApiMigrationEnabled()) {
             if (mActivity != null
                     && mActivity.getWindow() != null
                     && mActivity.getWindow().getDecorView() != null) {

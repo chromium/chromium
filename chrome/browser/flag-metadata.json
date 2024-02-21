@@ -8181,6 +8181,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "use-fullscreen-insets-api-on-automotive",
+    "owners": [ "clhager@google.com", "geoffhuang@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "use-gms-core-for-branding-info",
     "owners": [ "vsemeniuk@google.com", "vasilii@chromium.org" ],
     "expiry_milestone": 125

@@ -218,6 +218,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kExperimentsForAgsa,
     &kFocusOmniboxInIncognitoTabIntents,
     &kFullscreenInsetsApiMigration,
+    &kFullscreenInsetsApiMigrationOnAutomotive,
     &kGridTabSwitcherAndroidAnimations,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
@@ -640,6 +641,10 @@ BASE_FEATURE(kExperimentsForAgsa,
 BASE_FEATURE(kFullscreenInsetsApiMigration,
              "FullscreenInsetsApiMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
+             "FullscreenInsetsApiMigrationOnAutomotive",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherAndroidAnimations,
              "GridTabSwitcherAndroidAnimations",

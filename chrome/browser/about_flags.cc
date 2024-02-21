@@ -10889,6 +10889,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFullscreenInsetsApiMigrationName,
      flag_descriptions::kFullscreenInsetsApiMigrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kFullscreenInsetsApiMigration)},
+
+    {"use-fullscreen-insets-api-on-automotive",
+     flag_descriptions::kFullscreenInsetsApiMigrationOnAutomotiveName,
+     flag_descriptions::kFullscreenInsetsApiMigrationOnAutomotiveDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kFullscreenInsetsApiMigrationOnAutomotive)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

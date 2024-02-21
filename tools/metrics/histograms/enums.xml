@@ -18035,6 +18035,8 @@ from previous Chrome versions.
   <int value="-1237921078" label="SyncUSSNigori:enabled"/>
   <int value="-1237821073" label="SharedHighlightingUseBlocklist:enabled"/>
   <int value="-1237621246" label="WebXRGamepadSupport:disabled"/>
+  <int value="-1236644821"
+      label="FullscreenInsetsApiMigrationOnAutomotive:disabled"/>
   <int value="-1236065190" label="HardwareMediaKeyHandling:disabled"/>
   <int value="-1235586511" label="enable-datasaver-prompt"/>
   <int value="-1235356380" label="UseOutOfProcessVideoDecoding:disabled"/>
@@ -21627,6 +21629,8 @@ from previous Chrome versions.
   <int value="410400234" label="WebAppEnableProtocolHandlers:disabled"/>
   <int value="411250226" label="AutoplayMutedVideos:disabled"/>
   <int value="411536809" label="AutofillAcrossIframes:enabled"/>
+  <int value="411920294"
+      label="FullscreenInsetsApiMigrationOnAutomotive:enabled"/>
   <int value="412185345"
       label="DownloadServiceForegroundSessionIOSFeature:enabled"/>
   <int value="412957264" label="tab-close-buttons-hidden-with-touch"/>

@@ -302,6 +302,8 @@ public abstract class ChromeFeatureList {
     public static final String FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION =
             "FriendlierSafeBrowsingSettingsStandardProtection";
     public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
+    public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
+            "FullscreenInsetsApiMigrationOnAutomotive";
     public static final String GRID_TAB_SWITCHER_ANDROID_ANIMATIONS =
             "GridTabSwitcherAndroidAnimations";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
@@ -580,6 +582,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION, false);
     public static final CachedFlag sFullscreenInsetsApiMigration =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION, false);
+    public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
+            newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
     public static final CachedFlag sGridTabSwitcherAndroidAnimations =
             newCachedFlag(GRID_TAB_SWITCHER_ANDROID_ANIMATIONS, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
@@ -704,6 +708,7 @@ public abstract class ChromeFeatureList {
                     sFriendlierSafeBrowsingSettingsEnhancedProtection,
                     sFriendlierSafeBrowsingSettingsStandardProtection,
                     sFullscreenInsetsApiMigration,
+                    sFullscreenInsetsApiMigrationOnAutomotive,
                     sGridTabSwitcherAndroidAnimations,
                     sIncognitoReauthenticationForAndroid,
                     sInstantStart,
