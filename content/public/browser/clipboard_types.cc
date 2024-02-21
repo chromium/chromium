@@ -31,6 +31,38 @@ size_t ClipboardPasteData::size() {
   return size;
 }
 
+void ClipboardPasteData::Merge(ClipboardPasteData&& other) {
+  if (!other.text.empty()) {
+    text = std::move(other.text);
+  }
+
+  if (!other.html.empty()) {
+    html = std::move(other.html);
+  }
+
+  if (!other.svg.empty()) {
+    svg = std::move(other.svg);
+  }
+
+  if (!other.rtf.empty()) {
+    rtf = std::move(other.rtf);
+  }
+
+  if (!other.png.empty()) {
+    png = std::move(other.png);
+  }
+
+  if (!other.file_paths.empty()) {
+    file_paths = std::move(other.file_paths);
+  }
+
+  if (!other.custom_data.empty()) {
+    for (auto& entry : other.custom_data) {
+      custom_data[entry.first] = std::move(entry.second);
+    }
+  }
+}
+
 ClipboardPasteData::~ClipboardPasteData() = default;
 
 ClipboardEndpoint::ClipboardEndpoint(

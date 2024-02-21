@@ -190,37 +190,44 @@ TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_AddCallback) {
 
 TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_Complete) {
   ClipboardHostImpl::IsPasteAllowedRequest request;
-  ClipboardHostImpl::ClipboardPasteData final_clipboard_paste_data;
-  final_clipboard_paste_data.text = u"text";
-  final_clipboard_paste_data.png = {1, 2, 3, 4, 5};
+  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data_1;
+  clipboard_paste_data_1.text = u"text";
+  clipboard_paste_data_1.png = {1, 2, 3, 4, 5};
+  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data_2;
+  clipboard_paste_data_2.text = u"other text";
+  clipboard_paste_data_2.png = {6, 7, 8, 9, 10};
 
   int count = 0;
 
   // Add a callback.  It should not fire right away.
   request.AddCallback(base::BindLambdaForTesting(
-      [&count, final_clipboard_paste_data](
+      [&count, clipboard_paste_data_1](
           std::optional<ClipboardHostImpl::ClipboardPasteData>
               clipboard_paste_data) {
         ++count;
-        ASSERT_EQ(clipboard_paste_data->text, final_clipboard_paste_data.text);
-        ASSERT_EQ(clipboard_paste_data->png, final_clipboard_paste_data.png);
+        ASSERT_EQ(clipboard_paste_data->text, clipboard_paste_data_1.text);
+        ASSERT_EQ(clipboard_paste_data->png, clipboard_paste_data_1.png);
       }));
   EXPECT_EQ(0, count);
 
   // Complete the request.  Callback should fire.  Whether paste is allowed
   // or not is not important.
-  request.Complete(final_clipboard_paste_data);
+  request.Complete(clipboard_paste_data_1);
   EXPECT_EQ(1, count);
 
-  // Adding a new callback after completion invokes it immediately.
+  // Add a second callback.  It should not fire right away.
   request.AddCallback(base::BindLambdaForTesting(
-      [&count, final_clipboard_paste_data](
+      [&count, clipboard_paste_data_2](
           std::optional<ClipboardHostImpl::ClipboardPasteData>
               clipboard_paste_data) {
         ++count;
-        ASSERT_EQ(clipboard_paste_data->text, final_clipboard_paste_data.text);
-        ASSERT_EQ(clipboard_paste_data->png, final_clipboard_paste_data.png);
+        ASSERT_EQ(clipboard_paste_data->text, clipboard_paste_data_2.text);
+        ASSERT_EQ(clipboard_paste_data->png, clipboard_paste_data_2.png);
       }));
+  EXPECT_EQ(1, count);
+
+  // Calling `Complete()` again will call the second callback.
+  request.Complete(clipboard_paste_data_2);
   EXPECT_EQ(2, count);
 }
 
