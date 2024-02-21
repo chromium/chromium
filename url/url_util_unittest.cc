@@ -432,25 +432,6 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
   }
 }
 
-TEST_F(URLUtilTest, TestNoRefComponent) {
-  // The hash-mark must be ignored when mailto: scheme is parsed,
-  // even if the URL has a base and relative part.
-  const char* base = "mailto://to/";
-  const char* rel = "any#body";
-
-  Parsed base_parsed;
-  ParsePathURL(base, strlen(base), false, &base_parsed);
-
-  std::string resolved;
-  StdStringCanonOutput output(&resolved);
-  Parsed resolved_parsed;
-
-  bool valid = ResolveRelative(base, strlen(base), base_parsed, rel,
-                               strlen(rel), nullptr, &output, &resolved_parsed);
-  EXPECT_TRUE(valid);
-  EXPECT_FALSE(resolved_parsed.ref.is_valid());
-}
-
 TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
   struct ResolveRelativeCase {
     const char* base;
@@ -785,6 +766,62 @@ class URLUtilTypedTest : public ::testing::TestWithParam<bool> {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_P(URLUtilTypedTest, TestNoRefComponent) {
+  // This test was originally written before full support for non-special URLs
+  // became available. We need a flag-dependent test here because the test uses
+  // an internal parse function. See http://crbug.com/40063064 for details.
+  //
+  // The test case corresponds to the following user scenario:
+  //
+  // > const url = new URL("any#body", "mailto://to/");
+  // > assertEquals(url.href, "mailto://to/any#body");
+  //
+  // TODO(crbug.com/40063064): Remove this test once the flag is enabled.
+  const std::string_view base = "mailto://to/";
+  const std::string_view rel = "any#body";
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    // We probably don't need to test with the flag enabled, however, including
+    // a test with the flag enabled would be beneficial for comparison purposes,
+    // at least until we enable the flag by default.
+    Parsed base_parsed;
+    ParseNonSpecialURL(base.data(), base.size(), &base_parsed);
+
+    std::string resolved;
+    StdStringCanonOutput output(&resolved);
+    Parsed resolved_parsed;
+
+    bool valid =
+        ResolveRelative(base.data(), base.size(), base_parsed, rel.data(),
+                        rel.size(), nullptr, &output, &resolved_parsed);
+    EXPECT_TRUE(valid);
+    // Note: If the flag is enabled and the correct parsing function is used,
+    // resolved_parsed.ref becomes valid correctly.
+    EXPECT_TRUE(resolved_parsed.ref.is_valid());
+    output.Complete();
+    EXPECT_EQ(resolved, "mailto://to/any#body");
+  } else {
+    // Note: See the description of https://codereview.chromium.org/767713002/
+    // for the intention of this test, which added this test to record a wrong
+    // result if a wrong parser function is used. I kept the following original
+    // comment as is:
+    //
+    // The hash-mark must be ignored when mailto: scheme is parsed,
+    // even if the URL has a base and relative part.
+    Parsed base_parsed;
+    ParsePathURL(base.data(), base.size(), false, &base_parsed);
+
+    std::string resolved;
+    StdStringCanonOutput output(&resolved);
+    Parsed resolved_parsed;
+
+    bool valid =
+        ResolveRelative(base.data(), base.size(), base_parsed, rel.data(),
+                        rel.size(), nullptr, &output, &resolved_parsed);
+    EXPECT_TRUE(valid);
+    EXPECT_FALSE(resolved_parsed.ref.is_valid());
+  }
+}
 
 TEST_P(URLUtilTypedTest, Cannolicalize) {
   // Verify that the feature flag changes canonicalization behavior,
