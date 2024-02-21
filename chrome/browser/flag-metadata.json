@@ -8101,7 +8101,7 @@
   {
     "name": "upload-office-to-cloud",
     "owners": [ "jboulic@chromium.org", "petermarshall@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 126
   },
   {
     "name": "upm-local-no-migration",
