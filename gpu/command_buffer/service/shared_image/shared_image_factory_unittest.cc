@@ -36,6 +36,10 @@ class SharedImageFactoryTest : public testing::Test {
     bool result = context_->MakeCurrent(surface_.get());
     ASSERT_TRUE(result);
 
+#if BUILDFLAG(IS_MAC)
+    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+#endif  // BUILDFLAG(IS_MAC)
+
     GpuPreferences preferences;
     GpuDriverBugWorkarounds workarounds;
     factory_ = std::make_unique<SharedImageFactory>(
