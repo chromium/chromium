@@ -4228,6 +4228,7 @@ enum WebFeature {
   kTrustedTypesIntrospectionAttributeType = 4865,
   kTrustedTypesIntrospectionPropertyType = 4866,
   kTrustedTypesIntrospectionTypeMapping = 4867,
+  kIndexedDBFileLastModifiedDate = 4868,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

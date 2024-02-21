@@ -11247,6 +11247,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4865" label="TrustedTypesIntrospectionAttributeType"/>
   <int value="4866" label="TrustedTypesIntrospectionPropertyType"/>
   <int value="4867" label="TrustedTypesIntrospectionTypeMapping"/>
+  <int value="4868" label="IndexedDBFileLastModifiedDate"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

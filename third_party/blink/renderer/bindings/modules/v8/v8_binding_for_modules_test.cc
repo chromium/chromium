@@ -36,6 +36,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/fileapi/file.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
@@ -248,6 +252,28 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyNumberValue) {
                                  .GetScriptValue();
   CheckKeyPathNumberValue(isolate, script_value, "foo", 456);
   CheckKeyPathNullValue(isolate, script_value, "bar");
+}
+
+TEST(IDBKeyFromValueAndKeyPathTest, FileLastModifiedDateUseCounterTest) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
+  File* file =
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path");
+  file_factory_helper.FlushForTesting();
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), file);
+
+  IDBKeyPath idb_key_path("lastModifiedDate");
+  ASSERT_TRUE(idb_key_path.IsValid());
+
+  NonThrowableExceptionState exception_state;
+  ASSERT_TRUE(ScriptValue::To<std::unique_ptr<IDBKey>>(
+      scope.GetIsolate(), wrapper, exception_state, idb_key_path));
+  ASSERT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kIndexedDBFileLastModifiedDate));
 }
 
 TEST(IDBKeyFromValueAndKeyPathTest, SubProperty) {

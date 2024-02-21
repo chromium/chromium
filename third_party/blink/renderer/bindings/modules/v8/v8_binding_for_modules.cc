@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_object_store.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
@@ -54,6 +55,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -330,6 +332,10 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
       }
       if (element == "lastModifiedDate") {
         v8_value = file->lastModifiedDate(ScriptState::From(context)).V8Value();
+        ScriptState* script_state = ScriptState::From(context);
+        ExecutionContext* execution_context = ToExecutionContext(script_state);
+        UseCounter::Count(execution_context,
+                          WebFeature::kIndexedDBFileLastModifiedDate);
         continue;
       }
       // Fall through.
