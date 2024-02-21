@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_tokenizer.h"
@@ -18,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -408,7 +410,7 @@ void ComposeSession::MakeRequest(
     return;
   }
 
-  // Increase compose count regradless of status of request.
+  // Increase compose count regardless of status of request.
   session_events_.compose_count += 1;
 
   if (!collect_inner_text_ || got_inner_text_) {
@@ -430,8 +432,18 @@ void ComposeSession::RequestWithSession(
     AddPageContentToSession("", std::nullopt);
   }
 
+  // Add timeout for high latency Compose requests.
+  const compose::Config& config = compose::GetComposeConfig();
+
   base::ElapsedTimer request_timer;
   request_id_++;
+
+  auto timeout = std::make_unique<base::OneShotTimer>();
+  timeout->Start(FROM_HERE,
+                 base::Seconds(config.request_latency_timeout_seconds),
+                 base::BindOnce(&ComposeSession::ComposeRequestTimeout,
+                                base::Unretained(this), request_id_));
+  request_timeouts_.emplace(request_id_, std::move(timeout));
 
   session_->ExecuteModel(
       request, base::BindRepeating(&ComposeSession::ModelExecutionCallback,
@@ -440,12 +452,42 @@ void ComposeSession::RequestWithSession(
                                    is_input_edited));
 }
 
+void ComposeSession::ComposeRequestTimeout(int id) {
+  request_timeouts_.erase(id);
+
+  current_state_->has_pending_request = false;
+  current_state_->response = compose::mojom::ComposeResponse::New();
+  current_state_->response->status =
+      compose::mojom::ComposeStatus::kRequestTimeout;
+
+  if (dialog_remote_.is_bound()) {
+    dialog_remote_->ResponseReceived(current_state_->response->Clone());
+  }
+}
+
 void ComposeSession::ModelExecutionCallback(
     const base::ElapsedTimer& request_timer,
     int request_id,
     bool was_input_edited,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   base::TimeDelta request_delta = request_timer.Elapsed();
+
+  // Presence of the timer with the corresponding `request_id` indicates that
+  // the request has not timed out - process the response. Otherwise ignore the
+  // response.
+  if (auto iter = request_timeouts_.find(request_id);
+      iter != request_timeouts_.end()) {
+    iter->second->Stop();
+    // If a partial response was received, then this callback may be reused.
+    // Only remove the associated timer if the response is complete.
+    if (result.response.has_value() && result.response->is_complete) {
+      request_timeouts_.erase(request_id);
+    }
+  } else {
+    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+                                was_input_edited);
+    return;
+  }
 
   // A new request has been issued, ignore this one.
   if (request_id != request_id_) {

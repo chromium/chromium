@@ -70,6 +70,10 @@ Config::Config() {
       base::GetFieldTrialParamByFeatureAsInt(
           features::kComposeUiParams, "positioning_strategy",
           base::to_underlying(positioning_strategy)));
+
+  request_latency_timeout_seconds = base::GetFieldTrialParamByFeatureAsInt(
+      features::kComposeRequestLatencyTimeout,
+      "request_latency_timeout_seconds", request_latency_timeout_seconds);
 }
 
 Config::Config(const Config& other) = default;

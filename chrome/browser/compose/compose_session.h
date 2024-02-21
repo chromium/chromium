@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -216,10 +217,13 @@ class ComposeSession
                    bool is_input_edited);
 
   // RequestWithSession can either be called synchronously or on a later event
-  // loop
+  // loop.
   void RequestWithSession(
       const optimization_guide::proto::ComposeRequest& request,
       bool is_input_edited);
+
+  // Callback for processing a timeout error for Compose request with `id`.
+  void ComposeRequestTimeout(int id);
 
   // This function is bound to the callback for requesting inner-text.
   // `request_id` is used to identify the request.
@@ -277,6 +281,9 @@ class ComposeSession
 
   // Tracks how long a session has been open.
   std::unique_ptr<base::ElapsedTimer> session_duration_;
+
+  // Map for managing client-side request timeouts.
+  base::flat_map<int, std::unique_ptr<base::OneShotTimer>> request_timeouts_;
 
   // ComposeSession is owned by WebContentsUserData, so `web_contents_` outlives
   // `this`.

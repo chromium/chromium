@@ -50,6 +50,9 @@ BASE_DECLARE_FEATURE(kComposeTextOutputAnimation);
 // Constrols parameters around text selection and insert/replacement heuristics.
 BASE_DECLARE_FEATURE(kComposeTextSelection);
 
+// Enables client-side timeout of a Compose request.
+BASE_DECLARE_FEATURE(kComposeRequestLatencyTimeout);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_

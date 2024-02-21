@@ -97,6 +97,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Request was cancelled"/>
   <int value="16" label="No response received from the server"/>
   <int value="17" label="The user is offline"/>
+  <int value="18" label="The request timed out"/>
 </enum>
 
 <enum name="ComposeSessionCloseReasonType">

@@ -64,6 +64,10 @@ struct Config {
   DialogFallbackPositioningStrategy positioning_strategy =
       DialogFallbackPositioningStrategy::kShiftUpUntilMaxSizeIsOnscreen;
 
+  // The threshold for Compose request latency before showing a client-side
+  // error message.
+  unsigned int request_latency_timeout_seconds = 20;
+
   Config();
   Config(const Config& other);
   ~Config();

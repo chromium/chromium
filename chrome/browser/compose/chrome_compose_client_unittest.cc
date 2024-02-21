@@ -861,6 +861,22 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
       0);
 }
 
+TEST_F(ChromeComposeClientTest, TestComposeRequestTimeout) {
+  base::HistogramTester histogram_tester;
+
+  // Set config such that requests time out immediately.
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.request_latency_timeout_seconds = 0;
+
+  ShowDialogAndBindMojo();
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  BindComposeFutureToOnResponseReceived(test_future);
+  page_handler()->Compose("", false);
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kRequestTimeout, result->status);
+}
+
 TEST_F(ChromeComposeClientTest, TestComposeParams) {
   ShowDialogAndBindMojo();
   std::string user_input = "a user typed this";

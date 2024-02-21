@@ -481,6 +481,7 @@ suite('ComposeApp', () => {
     await testError(ComposeStatus.kFiltered, 'errorFiltered');
     await testError(ComposeStatus.kRequestThrottled, 'errorRequestThrottled');
     await testError(ComposeStatus.kOffline, 'errorOffline');
+    await testError(ComposeStatus.kRequestTimeout, 'errorTryAgainLater');
     await testError(ComposeStatus.kClientError, 'errorTryAgain');
     await testError(ComposeStatus.kMisconfiguration, 'errorTryAgain');
     await testError(ComposeStatus.kServerError, 'errorTryAgain');

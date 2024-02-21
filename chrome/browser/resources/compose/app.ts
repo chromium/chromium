@@ -764,6 +764,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
         return this.i18n('errorRequestThrottled');
       case ComposeStatus.kOffline:
         return this.i18n('errorOffline');
+      case ComposeStatus.kRequestTimeout:
+        return this.i18n('errorTryAgainLater');
       case ComposeStatus.kClientError:
       case ComposeStatus.kMisconfiguration:
       case ComposeStatus.kServerError:
