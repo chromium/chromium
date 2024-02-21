@@ -3907,6 +3907,47 @@ TEST_F(
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
 }
 
+// Test that a success response for a VCN 3DS authentication is handled
+// correctly and notifies the caller with the proper fields set.
+TEST_F(CreditCardAccessManagerTest,
+       VirtualCardUnmasking_3dsResponseReceived_Success) {
+  // Set up the test.
+  CreditCard card = test::GetVirtualCard();
+  credit_card_access_manager().FetchCreditCard(
+      &card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                            accessor_->GetWeakPtr()));
+  payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
+  response.card = card;
+
+  // Mock the VCN 3DS authentication response.
+  credit_card_access_manager().OnVcn3dsAuthenticationCompleteForTesting(
+      response);
+
+  // Check that `accessor_` was triggered with the expected values.
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+  EXPECT_EQ(accessor_->number(), response.card->number());
+  EXPECT_EQ(accessor_->cvc(), response.card->cvc());
+}
+
+// Test that a failure response for a VCN 3DS authentication is handled
+// correctly and notifies the caller with the proper fields set.
+TEST_F(CreditCardAccessManagerTest,
+       VirtualCardUnmasking_3dsResponseReceived_Error) {
+  // Set up the test.
+  CreditCard card = test::GetVirtualCard();
+  credit_card_access_manager().FetchCreditCard(
+      &card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                            accessor_->GetWeakPtr()));
+  payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
+
+  // Mock the VCN 3DS authentication response.
+  credit_card_access_manager().OnVcn3dsAuthenticationCompleteForTesting(
+      response);
+
+  // Check that `accessor_` was triggered with the expected error.
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Ensures that the virtual card risk-based unmasking response is handled
 // correctly and authentication is delegated to the FIDO authenticator, when

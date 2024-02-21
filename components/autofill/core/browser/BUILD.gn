@@ -447,6 +447,7 @@ static_library("browser") {
     "payments/payments_service_url.h",
     "payments/payments_util.cc",
     "payments/payments_util.h",
+    "payments/payments_window_manager.cc",
     "payments/payments_window_manager.h",
     "payments/payments_window_manager_util.cc",
     "payments/payments_window_manager_util.h",

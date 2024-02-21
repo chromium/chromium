@@ -23,8 +23,11 @@ class DesktopPaymentsWindowManagerTestApi {
 
   void CreatePopup(const GURL& url) { window_manager_->CreatePopup(url); }
 
-  std::optional<PaymentsWindowManager::Vcn3dsContext> GetVcn3dsContext() {
-    return window_manager_->vcn_3ds_context_;
+  void OnVcn3dsAuthenticationResponseReceived(
+      AutofillClient::PaymentsRpcResult result,
+      PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
+    window_manager_->OnVcn3dsAuthenticationResponseReceived(result,
+                                                            response_details);
   }
 
  private:

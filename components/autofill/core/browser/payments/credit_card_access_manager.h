@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
@@ -196,6 +197,11 @@ class CreditCardAccessManager
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferFidoAuthForTesting() { return ShouldOfferFidoAuth(); }
 #endif
+
+  void OnVcn3dsAuthenticationCompleteForTesting(
+      payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response) {
+    OnVcn3dsAuthenticationComplete(std::move(response));
+  }
 
  private:
   // TODO(crbug.com/1249665): Remove FRIEND and create test_api class to access
@@ -438,6 +444,12 @@ class CreditCardAccessManager
       payments::MandatoryReauthAuthenticationMethod authentication_method,
       const CreditCard* card,
       bool successful_auth);
+
+  // Notifies the class that triggered card unmasking that the unmasking flow
+  // has completed. This method is run after a VCN 3DS authentication has
+  // completed.
+  void OnVcn3dsAuthenticationComplete(
+      payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response);
 
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;

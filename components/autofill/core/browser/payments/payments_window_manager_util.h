@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 
@@ -35,6 +36,14 @@ CreateUnmaskRequestDetailsForVcn3ds(
     AutofillClient& client,
     const PaymentsWindowManager::Vcn3dsContext& context,
     PaymentsWindowManager::RedirectCompletionProof redirect_completion_proof);
+
+// Creates the Vcn3dsAuthenticationResponse for the response from the
+// UnmaskCardRequest that was sent during the VCN 3DS authentication.
+PaymentsWindowManager::Vcn3dsAuthenticationResponse
+CreateVcn3dsAuthenticationResponse(
+    AutofillClient::PaymentsRpcResult result,
+    const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
+    CreditCard card);
 
 }  // namespace payments
 

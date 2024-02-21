@@ -1718,4 +1718,16 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
   Reset();
 }
 
+void CreditCardAccessManager::OnVcn3dsAuthenticationComplete(
+    payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response) {
+  if (response.card.has_value()) {
+    card_ = std::make_unique<CreditCard>(std::move(response.card.value()));
+    std::move(on_credit_card_fetched_callback_)
+        .Run(CreditCardFetchResult::kSuccess, card_.get());
+  } else {
+    std::move(on_credit_card_fetched_callback_)
+        .Run(CreditCardFetchResult::kTransientError, nullptr);
+  }
+}
+
 }  // namespace autofill

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -90,6 +91,25 @@ CreateUnmaskRequestDetailsForVcn3ds(
   request_details.redirect_completion_proof =
       std::move(redirect_completion_proof);
   return request_details;
+}
+
+PaymentsWindowManager::Vcn3dsAuthenticationResponse
+CreateVcn3dsAuthenticationResponse(
+    AutofillClient::PaymentsRpcResult result,
+    const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
+    CreditCard card) {
+  PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+    card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
+    card.SetExpirationMonthFromString(
+        base::UTF8ToUTF16(response_details.expiration_month),
+        /*app_locale=*/std::string());
+    card.SetExpirationYearFromString(
+        base::UTF8ToUTF16(response_details.expiration_year));
+    card.set_cvc(base::UTF8ToUTF16(response_details.dcvv));
+    response.card = std::move(card);
+  }
+  return response;
 }
 
 }  // namespace autofill::payments

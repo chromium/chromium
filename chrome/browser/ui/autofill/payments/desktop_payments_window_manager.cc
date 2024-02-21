@@ -32,6 +32,7 @@ void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
     Vcn3dsContext context) {
   CHECK_EQ(flow_type_, FlowType::kNoFlow);
   CHECK_EQ(context.card.record_type(), CreditCard::RecordType::kVirtualCard);
+  CHECK(!context.completion_callback.is_null());
   flow_type_ = FlowType::kVcn3ds;
   vcn_3ds_context_ = std::move(context);
   CreatePopup(vcn_3ds_context_->challenge_option.url_to_open);
@@ -72,12 +73,16 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
           result = ParseFinalUrlForVcn3ds(web_contents()->GetVisibleURL());
       result.has_value()) {
     CHECK(!result.value()->empty());
-    client_->GetPaymentsAutofillClient()->LoadRiskData(base::BindOnce(
+    return client_->GetPaymentsAutofillClient()->LoadRiskData(base::BindOnce(
         &DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds,
         weak_ptr_factory_.GetWeakPtr(), std::move(result.value())));
-  } else {
-    // TODO(crbug.com/1517762): Handle failure response.
   }
+
+  // TODO(crbug.com/1517762): Trigger an error dialog if `result` is
+  // `kAuthenticationFailed`.
+  std::move(vcn_3ds_context_->completion_callback)
+      .Run(Vcn3dsAuthenticationResponse());
+  vcn_3ds_context_.reset();
 }
 
 void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
@@ -91,9 +96,22 @@ void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
   client_->GetPaymentsNetworkInterface()->UnmaskCard(
       CreateUnmaskRequestDetailsForVcn3ds(*client_, vcn_3ds_context_.value(),
                                           std::move(redirect_completion_proof)),
-      // TODO(crbug.com/1517762): Handle the response of the
-      // UnmaskCardRequest triggered here.
-      /*callback=*/base::DoNothing());
+      base::BindOnce(
+          &DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
+    AutofillClient::PaymentsRpcResult result,
+    PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
+  Vcn3dsAuthenticationResponse response = CreateVcn3dsAuthenticationResponse(
+      result, response_details, std::move(vcn_3ds_context_->card));
+  client_->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/response.card.has_value());
+  // TODO(crbug.com/1517762): Trigger an error dialog if no card is present in
+  // `response`.
+  std::move(vcn_3ds_context_->completion_callback).Run(std::move(response));
+  vcn_3ds_context_.reset();
 }
 
 }  // namespace autofill::payments
