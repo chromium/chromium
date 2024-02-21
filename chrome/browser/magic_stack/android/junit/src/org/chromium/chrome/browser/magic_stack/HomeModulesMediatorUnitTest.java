@@ -59,6 +59,7 @@ public class HomeModulesMediatorUnitTest {
     private int[] mModuleTypeList;
     private ListItem[] mListItems;
     private ModuleProviderBuilder[] mModuleProviderBuilderList;
+    private ModuleProvider[] mModuleProviders;
 
     private @HostSurface int mHostSurface = HostSurface.START_SURFACE;
     private HomeModulesMediator mMediator;
@@ -68,11 +69,13 @@ public class HomeModulesMediatorUnitTest {
         mModuleTypeList = new int[MODULE_TYPES];
         mListItems = new ListItem[MODULE_TYPES];
         mModuleProviderBuilderList = new ModuleProviderBuilder[MODULE_TYPES];
+        mModuleProviders = new ModuleProvider[MODULE_TYPES];
         for (int i = 0; i < MODULE_TYPES; i++) {
             mModuleTypeList[i] = i;
             mModuleProviderBuilderList[i] = Mockito.mock(ModuleProviderBuilder.class);
             doReturn(true).when(mModuleProviderBuilderList[i]).build(eq(mModuleDelegate), any());
             mListItems[i] = new ListItem(mModuleTypeList[i], Mockito.mock(PropertyModel.class));
+            mModuleProviders[i] = Mockito.mock(ModuleProvider.class);
         }
         when(mModuleDelegate.getHostSurfaceType()).thenReturn(mHostSurface);
         mMediator = new HomeModulesMediator(mModel, mModuleRegistry);
@@ -201,6 +204,11 @@ public class HomeModulesMediatorUnitTest {
                 mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
 
+        // Calls onModuleBuilt() to add ModuleProviders to the map.
+        for (int i = 0; i < 3; i++) {
+            mMediator.onModuleBuilt(i, mModuleProviders[i]);
+        }
+
         // The response of the second highest ranking module arrives first.
         PropertyModel propertyModel0 = Mockito.mock(PropertyModel.class);
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], propertyModel0);
@@ -216,6 +224,7 @@ public class HomeModulesMediatorUnitTest {
         // highest ranking modules arrive.
         verify(mModel, times(1)).add(any());
         verify(mSetVisibilityCallback).onResult(true);
+        verify(mModuleProviders[2]).hideModule();
         assertEquals(2, mMediator.getModuleResultsWaitingIndexForTesting());
 
         // Verifies that the callback to change the visibility isn't called again.
@@ -336,6 +345,10 @@ public class HomeModulesMediatorUnitTest {
 
         // Calls buildModulesAndShow() to initialize ranking index map.
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        // Calls onModuleBuilt() to add ModuleProviders to the map.
+        for (int i = 0; i < 3; i++) {
+            mMediator.onModuleBuilt(i, mModuleProviders[i]);
+        }
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
         SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
@@ -349,6 +362,7 @@ public class HomeModulesMediatorUnitTest {
         assertFalse(moduleFetchResultsIndicator[1]);
         verify(mModel, never()).add(any());
         verify(mSetVisibilityCallback, never()).onResult(true);
+        verify(mModuleProviders[1]).hideModule();
 
         // The third ranking module returns a successful result.
         PropertyModel propertyModel0 = Mockito.mock(PropertyModel.class);
@@ -358,6 +372,7 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mModel, never()).add(any());
         verify(mSetVisibilityCallback, never()).onResult(true);
+        verify(mModuleProviders[0], never()).hideModule();
 
         when(mModel.size()).thenReturn(1);
         mMediator.onModuleFetchTimeOut();
@@ -366,11 +381,22 @@ public class HomeModulesMediatorUnitTest {
         verify(mSetVisibilityCallback).onResult(true);
         // The magic stack is no longer waiting for modules to be load.
         assertFalse(mMediator.getIsFetchingModulesForTesting());
+        verify(mModuleProviders[0], never()).hideModule();
+        // Verifies that #hideModule() is called for the module which doesn't respond.
+        verify(mModuleProviders[2]).hideModule();
+        // Verifies that #hideModule() won't be called again for the module which has responded
+        // without any data to show.
+        verify(mModuleProviders[1]).hideModule();
 
         PropertyModel propertyModel2 = Mockito.mock(PropertyModel.class);
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], propertyModel2);
         // Verifies that there isn't any new module added to the recyclerview.
         verify(mModel, times(1)).add(any());
+        // Verifies that #hideModule() won't be called again for the module which responds after
+        // the timeout. This is because #hideModule() has been called in onModuleFetchTimeOut().
+        verify(mModuleProviders[2]).hideModule();
+        verify(mModuleProviders[0], never()).hideModule();
+        verify(mModuleProviders[1]).hideModule();
     }
 
     @Test
