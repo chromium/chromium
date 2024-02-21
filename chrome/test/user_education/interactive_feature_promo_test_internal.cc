@@ -101,14 +101,16 @@ void InteractiveFeaturePromoTestPrivate::AdvanceTime(NewTime new_time) {
   }
 }
 
-void InteractiveFeaturePromoTestPrivate::UpdateIdleState(NewTime time,
-                                                         bool screen_locked) {
+void InteractiveFeaturePromoTestPrivate::UpdateIdleState(
+    NewTime time,
+    bool application_is_active) {
   CHECK(test_time_.has_value());
   const auto last_active_time =
       CalculateNewTime(test_time_.value_or(base::Time::Now()), time);
   for (auto& [profile, data] : profile_data_) {
     if (data.test_util) {
-      data.test_util->UpdateIdleState(last_active_time, screen_locked);
+      data.test_util->UpdateIdleState(
+          {last_active_time, application_is_active});
     }
   }
 }

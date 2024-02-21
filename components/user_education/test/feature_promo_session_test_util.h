@@ -11,11 +11,11 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "components/user_education/common/feature_promo_session_manager.h"
 
 namespace user_education {
 struct FeaturePromoPolicyData;
 struct FeaturePromoSessionData;
-class FeaturePromoSessionManager;
 }  // namespace user_education
 
 namespace user_education::test {
@@ -33,6 +33,8 @@ namespace user_education::test {
 // `InteractiveFeaturePromoTest[T]` instead of directly using this class.
 class FeaturePromoSessionTestUtil {
  public:
+  using IdleState = FeaturePromoSessionManager::IdleState;
+
   // Creates the util object and seizes control of the session manager.
   // If `new_now` is set, also replaces the system clock with a test clock.
   FeaturePromoSessionTestUtil(FeaturePromoSessionManager& session_manager,
@@ -49,7 +51,7 @@ class FeaturePromoSessionTestUtil {
 
   // Sets the current time if using a test clock; fails if using the real clock.
   void SetNow(base::Time new_now);
-  void UpdateIdleState(base::Time last_active_time, bool screen_locked);
+  void UpdateIdleState(const IdleState& idle_state);
 
  private:
   const raw_ref<FeaturePromoSessionManager> session_manager_;

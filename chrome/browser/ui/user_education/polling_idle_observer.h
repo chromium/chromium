@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SESSION_MANAGER_IMPL_H_
-#define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SESSION_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_USER_EDUCATION_POLLING_IDLE_OBSERVER_H_
+#define CHROME_BROWSER_UI_USER_EDUCATION_POLLING_IDLE_OBSERVER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/user_education/common/feature_promo_session_manager.h"
 #include "ui/base/idle/idle_polling_service.h"
 
-namespace user_education {
-
 // Used to observe the system/application idle state. Override virtual methods
 // for testing.
-class PollingIdleObserver : public FeaturePromoSessionManager::IdleObserver,
-                            public ui::IdlePollingService::Observer {
+class PollingIdleObserver :
+    public user_education::FeaturePromoSessionManager::IdleObserver,
+    public ui::IdlePollingService::Observer {
  public:
+  using IdleState = user_education::FeaturePromoSessionManager::IdleState;
+
   PollingIdleObserver();
   ~PollingIdleObserver() override;
 
@@ -24,9 +26,12 @@ class PollingIdleObserver : public FeaturePromoSessionManager::IdleObserver,
 
   // Returns the current idle state. Used on startup and shutdown.
   // Override for testing.
-  FeaturePromoSessionManager::IdleState GetCurrentState() const override;
+  IdleState GetCurrentState() const override;
 
  private:
+  // Returns whether the current application is active.
+  bool IsChromeActive() const;
+
   // ui::IdlePollingService::Observer:
   void OnIdleStateChange(const ui::IdlePollingService::State& state) final;
 
@@ -35,6 +40,4 @@ class PollingIdleObserver : public FeaturePromoSessionManager::IdleObserver,
       service_observer_{this};
 };
 
-}  // namespace user_education
-
-#endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SESSION_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_USER_EDUCATION_POLLING_IDLE_OBSERVER_H_

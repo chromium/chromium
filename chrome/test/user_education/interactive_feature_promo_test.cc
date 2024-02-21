@@ -80,9 +80,9 @@ InteractiveFeaturePromoTestApi::AdvanceTime(NewTime time) {
 
 InteractiveFeaturePromoTestApi::StepBuilder
 InteractiveFeaturePromoTestApi::UpdateIdleState(NewTime time,
-                                                bool screen_locked) {
-  return std::move(Do([this, time, screen_locked]() {
-                     test_impl().UpdateIdleState(time, screen_locked);
+                                                bool application_is_active) {
+  return std::move(Do([this, time, application_is_active]() {
+                     test_impl().UpdateIdleState(time, application_is_active);
                    }).SetDescription("UpdateIdleState()"));
 }
 

@@ -75,7 +75,8 @@ class InteractiveFeaturePromoTestApi
   // Returns a test step that updates the idle session state based on the given
   // parameters. If `time` is relative, the new value is based on the current
   // time (either default or test clock).
-  [[nodiscard]] StepBuilder UpdateIdleState(NewTime time, bool screen_locked);
+  [[nodiscard]] StepBuilder UpdateIdleState(NewTime time,
+                                            bool application_is_active = true);
 
   // --------------------------------------------------------------------------
   // IMPORTANT NOTE: the following methods only work for Views help bubbles.

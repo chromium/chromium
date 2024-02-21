@@ -24,14 +24,6 @@ FeaturePromoSessionManager::IdleState TestIdleObserver::GetCurrentState()
   return state_;
 }
 
-TestIdlePolicy::TestIdlePolicy(base::TimeDelta minimum_idle_time,
-                               base::TimeDelta new_session_idle_time,
-                               base::TimeDelta minimum_valid_session_length)
-    : IdlePolicy(minimum_idle_time,
-                 new_session_idle_time,
-                 minimum_valid_session_length) {}
-TestIdlePolicy::~TestIdlePolicy() = default;
-
 MockIdlePolicy::MockIdlePolicy() = default;
 MockIdlePolicy::~MockIdlePolicy() = default;
 

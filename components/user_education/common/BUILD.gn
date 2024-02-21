@@ -69,19 +69,6 @@ source_set("common") {
   ]
 }
 
-source_set("idle_service") {
-  sources = [
-    "feature_promo_session_manager_impl.cc",
-    "feature_promo_session_manager_impl.h",
-  ]
-
-  deps = [
-    ":common",
-    "//base",
-    "//ui/base/idle",
-  ]
-}
-
 component("events") {
   output_name = "user_education_common_events"
 

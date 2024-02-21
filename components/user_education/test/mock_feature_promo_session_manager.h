@@ -29,22 +29,13 @@ class TestIdleObserver : public FeaturePromoSessionManager::IdleObserver {
   FeaturePromoSessionManager::IdleState state_;
 };
 
-// Version of `IdlePolicy` that allows specific threshold values to be set.
-class TestIdlePolicy : public FeaturePromoSessionManager::IdlePolicy {
- public:
-  TestIdlePolicy(base::TimeDelta minimum_idle_time,
-                 base::TimeDelta new_session_idle_time,
-                 base::TimeDelta minimum_valid_session_length);
-  ~TestIdlePolicy() override;
-};
-
 // Mock version of `IdlePolicy` that allows specific queries to be intercepted.
 class MockIdlePolicy : public FeaturePromoSessionManager::IdlePolicy {
  public:
   MockIdlePolicy();
   ~MockIdlePolicy() override;
 
-  MOCK_METHOD(bool, IsActive, (base::Time, bool), (const, override));
+  MOCK_METHOD(bool, IsActive, (base::Time), (const, override));
   MOCK_METHOD(bool,
               IsNewSession,
               (base::Time, base::Time, base::Time),
@@ -58,7 +49,7 @@ class MockFeaturePromoSessionManager : public FeaturePromoSessionManager {
   MockFeaturePromoSessionManager();
   ~MockFeaturePromoSessionManager() override;
 
-  MOCK_METHOD(void, OnIdleStateUpdating, (base::Time, bool), (override));
+  MOCK_METHOD(void, OnIdleStateUpdating, (const IdleState&), (override));
   MOCK_METHOD(void,
               OnNewSession,
               (const base::Time, const base::Time, const base::Time),

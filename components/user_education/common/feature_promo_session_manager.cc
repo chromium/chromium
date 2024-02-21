@@ -43,6 +43,11 @@ base::Time FeaturePromoSessionManager::IdleObserver::GetCurrentTime() const {
   return session_manager_->storage_service_->GetCurrentTime();
 }
 
+// static
+base::TimeDelta FeaturePromoSessionManager::IdlePolicy::idle_time_resolution_;
+constexpr double
+    FeaturePromoSessionManager::IdlePolicy::kIdleTimeResolutionFactor;
+
 FeaturePromoSessionManager::IdlePolicy::IdlePolicy()
     : IdlePolicy(features::GetTimeToIdle(),
                  features::GetIdleTimeBetweenSessions(),
@@ -63,12 +68,11 @@ FeaturePromoSessionManager::IdlePolicy::IdlePolicy(
 FeaturePromoSessionManager::IdlePolicy::~IdlePolicy() = default;
 
 bool FeaturePromoSessionManager::IdlePolicy::IsActive(
-    base::Time most_recent_active_time,
-    bool is_locked) const {
+    base::Time most_recent_active_time) const {
   const auto inactive_time =
       session_manager_->storage_service_->GetCurrentTime() -
       most_recent_active_time;
-  return !is_locked && inactive_time < minimum_idle_time();
+  return inactive_time < minimum_idle_time();
 }
 
 bool FeaturePromoSessionManager::IdlePolicy::IsNewSession(
@@ -81,6 +85,20 @@ bool FeaturePromoSessionManager::IdlePolicy::IsNewSession(
       most_recent_active_time - previous_last_active_time;
   return time_between_active >= new_session_idle_time() &&
          last_session_length >= minimum_valid_session_length();
+}
+
+// static
+void FeaturePromoSessionManager::IdlePolicy::SetIdleTimeResolution(
+    base::TimeDelta resolution) {
+  if (idle_time_resolution_.is_zero()) {
+    idle_time_resolution_ = resolution;
+    DUMP_WILL_BE_CHECK_GE(features::GetTimeToIdle(),
+                          kIdleTimeResolutionFactor * resolution)
+        << "Time to idle (" << features::GetTimeToIdle()
+        << ") is too short to resolve; resolution is " << resolution;
+  } else {
+    CHECK_EQ(idle_time_resolution_, resolution);
+  }
 }
 
 FeaturePromoSessionManager::FeaturePromoSessionManager() = default;
@@ -106,10 +124,9 @@ void FeaturePromoSessionManager::Init(
 }
 
 bool FeaturePromoSessionManager::IsApplicationActive() const {
-  return idle_policy_ &&
+  return idle_policy_ && application_is_active_ &&
          idle_policy_->IsActive(
-             storage_service_->ReadSessionData().most_recent_active_time,
-             is_locked_);
+             storage_service_->ReadSessionData().most_recent_active_time);
 }
 
 void FeaturePromoSessionManager::OnNewSession(
@@ -128,9 +145,7 @@ void FeaturePromoSessionManager::OnNewSession(
   RecordIdlePeriodDuration(new_active_time - old_active_time);
 }
 
-void FeaturePromoSessionManager::OnIdleStateUpdating(
-    base::Time new_last_active_time,
-    bool new_locked_state) {}
+void FeaturePromoSessionManager::OnIdleStateUpdating(const IdleState&) {}
 
 void FeaturePromoSessionManager::RecordActivePeriodDuration(
     base::TimeDelta duration) {
@@ -169,25 +184,42 @@ void FeaturePromoSessionManager::RecordIdlePeriodDuration(
 void FeaturePromoSessionManager::UpdateIdleState(
     const IdleState& new_idle_state) {
   CHECK(idle_policy_);
-  OnIdleStateUpdating(new_idle_state.last_active_time,
-                      new_idle_state.screen_locked);
+  OnIdleStateUpdating(new_idle_state);
 
-  is_locked_ = new_idle_state.screen_locked;
+  application_is_active_ = new_idle_state.application_active;
+  if (!application_is_active_) {
+    // While the machine may be active, the browser is not, or the screen is
+    // locked, or some other thing that means the user isn't interacting with
+    // the browser, so do not update the last active time.
+    return;
+  }
+
+  if (!idle_policy_->IsActive(new_idle_state.last_active_time)) {
+    // The machine is not active. Therefore, avoid updating the most recent
+    // application active time; this time can be updated when the machine
+    // becomes active again (possibly triggering a new session).
+    return;
+  }
 
   auto session_data = storage_service_->ReadSessionData();
   const auto old_start_time = session_data.start_time;
   const auto old_active_time = session_data.most_recent_active_time;
   const auto new_active_time = new_idle_state.last_active_time;
-
   session_data.most_recent_active_time = new_active_time;
-  if (idle_policy_->IsActive(new_active_time, is_locked_)) {
-    if (idle_policy_->IsNewSession(old_start_time, old_active_time,
-                                   new_active_time)) {
-      session_data.start_time = new_active_time;
-      OnNewSession(old_start_time, old_active_time, new_active_time);
-    }
+  if (idle_policy_->IsNewSession(old_start_time, old_active_time,
+                                 new_active_time)) {
+    session_data.start_time = new_active_time;
+    OnNewSession(old_start_time, old_active_time, new_active_time);
   }
   storage_service_->SaveSessionData(session_data);
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const FeaturePromoSessionManager::IdleState& idle_state) {
+  os << "IdleState{ " << idle_state.last_active_time << ", "
+     << idle_state.application_active << " }";
+  return os;
 }
 
 }  // namespace user_education

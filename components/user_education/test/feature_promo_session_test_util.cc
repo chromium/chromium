@@ -26,7 +26,7 @@ FeaturePromoSessionTestUtil::FeaturePromoSessionTestUtil(
   }
   session_manager_->storage_service_->SaveSessionData(session_data);
   session_manager_->storage_service_->SavePolicyData(policy_data);
-  session_manager_->is_locked_ = false;
+  session_manager_->application_is_active_ = true;
 
   // Unsubscribe from the current idle poller and eliminate it.
   session_manager_->idle_observer_subscription_ =
@@ -44,10 +44,8 @@ void FeaturePromoSessionTestUtil::SetNow(base::Time new_now) {
   clock_->SetNow(new_now);
 }
 
-void FeaturePromoSessionTestUtil::UpdateIdleState(base::Time last_active_time,
-                                                  bool screen_locked) {
-  session_manager_->UpdateIdleState(
-      FeaturePromoSessionManager::IdleState{last_active_time, screen_locked});
+void FeaturePromoSessionTestUtil::UpdateIdleState(const IdleState& idle_state) {
+  session_manager_->UpdateIdleState(idle_state);
 }
 
 }  // namespace user_education::test

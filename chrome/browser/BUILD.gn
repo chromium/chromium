@@ -2605,7 +2605,6 @@ static_library("browser") {
       "//components/manta",
       "//components/manta/proto",
       "//components/user_education/common",
-      "//components/user_education/common:idle_service",
     ]
   }
 

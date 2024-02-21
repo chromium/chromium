@@ -1735,12 +1735,12 @@ class BrowserFeaturePromoControllerPriorityTest
 
   auto AdvanceTime(base::TimeDelta until_last_active,
                    base::TimeDelta idle_time = base::Seconds(1),
-                   bool screen_locked = false) {
-    return Do([this, until_last_active, idle_time, screen_locked]() {
+                   bool application_is_active = true) {
+    return Do([this, until_last_active, idle_time, application_is_active]() {
       const auto new_active_time = now_ + until_last_active;
       now_ = new_active_time + idle_time;
       test_util_->SetNow(now_);
-      test_util_->UpdateIdleState(new_active_time, screen_locked);
+      test_util_->UpdateIdleState({new_active_time, application_is_active});
     });
   }
 
@@ -2119,10 +2119,11 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest, InactivePreventsPromoInV2) {
                                          : FeaturePromoResult::Success()));
 }
 
-TEST_P(BrowserFeaturePromoControllerPolicyTest, LockedScreenPreventsPromoInV2) {
+TEST_P(BrowserFeaturePromoControllerPolicyTest,
+       InactiveApplicationPreventsPromoInV2) {
   RunTestSequence(ResetSessionData(kLessThanGracePeriod),
                   // Short idle time, but locked.
-                  AdvanceTime(kLessThanNewSession, kLessThanIdleTime, true),
+                  AdvanceTime(kLessThanNewSession, kLessThanIdleTime, false),
                   CheckSessionActive(false),
                   MaybeShowPromo(kTutorialIPHFeature,
                                  UseV2() ? FeaturePromoResult::kBlockedByUi
