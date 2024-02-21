@@ -2464,7 +2464,7 @@ AccessibleNode* Element::accessibleNode() {
   return rare_data.EnsureAccessibleNode(this);
 }
 
-void Element::ariaNotify(const String announcement,
+void Element::ariaNotify(const String& announcement,
                          const AriaNotificationOptions* options) {
   DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled());
 

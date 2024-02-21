@@ -443,7 +443,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   AccessibleNode* ExistingAccessibleNode() const;
   AccessibleNode* accessibleNode();
 
-  void ariaNotify(const String announcement, const AriaNotificationOptions*);
+  void ariaNotify(const String& announcement, const AriaNotificationOptions*);
 
   void DidMoveToNewDocument(Document&) override;
 

@@ -7132,7 +7132,7 @@ void Document::TrustTokenQueryAnswererConnectionError() {
   data_->pending_trust_token_query_resolvers_.clear();
 }
 
-void Document::ariaNotify(const String announcement,
+void Document::ariaNotify(const String& announcement,
                           const AriaNotificationOptions* options) {
   DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled());
 

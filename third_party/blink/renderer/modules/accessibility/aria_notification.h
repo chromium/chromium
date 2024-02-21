@@ -11,23 +11,18 @@
 
 namespace blink {
 
-enum class AriaNotificationInsertionMode { kQueue, kStack, kClear };
-
 class AriaNotification final : public GarbageCollected<AriaNotification> {
  public:
   AriaNotification(Node*,
-                   const String announcement,
+                   const String& announcement,
                    const AriaNotificationOptions* options);
 
   void Trace(Visitor* visitor) const { visitor->Trace(node_); }
 
  private:
   Member<Node> node_;
-  const String announcement_;
-  AriaNotificationInsertionMode insertion_mode_;
-  bool interrupt_current_;
-  bool prevent_interrupt_;
-  String label_;
+  String announcement_;
+  String notification_id_;
 };
 
 }  // namespace blink
