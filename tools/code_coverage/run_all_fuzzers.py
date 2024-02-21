@@ -13,7 +13,11 @@ from multiprocessing import Process, Manager, cpu_count, Pool
 import os
 import subprocess
 
-FUZZ_RETRIES = 3
+WHOLE_CORPUS_RETRIES = 2
+WHOLE_CORPUS_TIMEOUT_SECS = 1200
+INDIVIDUAL_TESTCASE_TIMEOUT_SECS = 60
+INDIVIDUAL_TESTCASES_MAX_TO_TRY = 500
+INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED = 100
 
 
 def _run_fuzzer_target(args):
@@ -50,12 +54,12 @@ def _run_fuzzer_target(args):
   if corpus_dir is not None:
     fullcorpus_cmd.append(corpus_dir)
   valid_profraws = set()
-  for i in range(FUZZ_RETRIES):
+  for i in range(WHOLE_CORPUS_RETRIES):
     print("Trying command with full corpus %s" % str(fullcorpus_cmd))
     try:
       subprocess.run(fullcorpus_cmd,
                      env=env,
-                     timeout=1800,
+                     timeout=WHOLE_CORPUS_TIMEOUT_SECS,
                      capture_output=True,
                      check=True)
       break
@@ -89,7 +93,7 @@ def _run_fuzzer_target(args):
       try:
         subprocess.run(specific_test_case_cmd,
                        env=env,
-                       timeout=1800,
+                       timeout=INDIVIDUAL_TESTCASE_TIMEOUT_SECS,
                        capture_output=True,
                        check=True)
       except Exception as e:
@@ -107,18 +111,18 @@ def _run_fuzzer_target(args):
                         ) and os.path.getsize(specific_test_case_profraw) > 0:
         valid_profraws.add(specific_test_case_profraw)
       # The corpus may be huge - don't keep going forever.
-      if count > 1000:
-        print("Skipping remaining test cases - >1000 tried")
+      if count > INDIVIDUAL_TESTCASES_MAX_TO_TRY:
+        print("Skipping remaining test cases - >%d tried" %
+              INDIVIDUAL_TESTCASES_MAX_TO_TRY)
         break
-      # And if we've got 10 valid coverage files, assume this is a
+      # And if we've got enough valid coverage files, assume this is a
       # reasonable approximation of the total coverage. This is partly
       # to ensure the profdata command line isn't too huge, partly
       # to reduce processing time to something reasonable, and partly
       # because profraw files are huge and can fill up bot disk space.
-      if len(valid_profraws) > 10:
-        print(
-            "Skipping remaining individual test cases, >10 valid profiles recorded."
-        )
+      if len(valid_profraws) > INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED:
+        print("Skipping remaining test cases, >%d valid profiles recorded." %
+              INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED)
         break
   if len(valid_profraws) == 0:
     failed_targets.append(target)
