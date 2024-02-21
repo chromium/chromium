@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
-#define CHROME_BROWSER_ASH_APP_MODE_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
+#ifndef CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
+#define CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
@@ -44,4 +44,4 @@ class RepeatingTimeIntervalTaskExecutor {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
+#endif  // CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_

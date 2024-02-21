@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/device_weekly_scheduled_suspend_controller.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 
 #include <memory>
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/device_weekly_scheduled_suspend_test_policy_builder.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"

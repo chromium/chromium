@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_DEVICE_WEEKLY_SCHEDULED_SUSPEND_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_APP_MODE_DEVICE_WEEKLY_SCHEDULED_SUSPEND_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_DEVICE_WEEKLY_SCHEDULED_SUSPEND_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_DEVICE_WEEKLY_SCHEDULED_SUSPEND_CONTROLLER_H_
 
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/app_mode/repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -56,4 +56,4 @@ class DeviceWeeklyScheduledSuspendController {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_DEVICE_WEEKLY_SCHEDULED_SUSPEND_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_DEVICE_WEEKLY_SCHEDULED_SUSPEND_CONTROLLER_H_

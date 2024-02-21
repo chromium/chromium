@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/device_weekly_scheduled_suspend_controller.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 
 #include <memory>
 #include <vector>
@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
