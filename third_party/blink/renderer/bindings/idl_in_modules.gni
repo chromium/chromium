@@ -1152,6 +1152,8 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/websockets/websocket_stream.idl",
   "//third_party/blink/renderer/modules/websockets/websocket_stream_options.idl",
   "//third_party/blink/renderer/modules/webtransport/web_transport.idl",
+  "//third_party/blink/renderer/modules/webtransport/web_transport_datagram_stats.idl",
+  "//third_party/blink/renderer/modules/webtransport/web_transport_connection_stats.idl",
   "//third_party/blink/renderer/modules/webtransport/web_transport_bidirectional_stream.idl",
   "//third_party/blink/renderer/modules/webtransport/web_transport_close_info.idl",
   "//third_party/blink/renderer/modules/webtransport/web_transport_datagram_duplex_stream.idl",

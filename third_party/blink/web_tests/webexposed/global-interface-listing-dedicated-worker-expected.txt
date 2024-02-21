@@ -3713,6 +3713,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method createBidirectionalStream
 [Worker]     method createUnidirectionalStream
+[Worker]     method getStats
 [Worker] interface WebTransportBidirectionalStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter readable

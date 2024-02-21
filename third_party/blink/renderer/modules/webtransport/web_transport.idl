@@ -22,4 +22,7 @@
   void close(optional WebTransportCloseInfo closeInfo = {});
   readonly attribute Promise<void> ready;
   readonly attribute Promise<WebTransportCloseInfo> closed;
+
+  [CallWith=ScriptState, RuntimeEnabled=WebTransportStats]
+  Promise<WebTransportConnectionStats> getStats();
 };

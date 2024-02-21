@@ -4260,6 +4260,13 @@
       base_feature: "none",
     },
     {
+      // Note: enabling this without setting WebTransportCongestionControl to
+      // either BBRv1 or BBRv2 will produce poor bandwidth estimates.
+      name: "WebTransportStats",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebUSB",
       public: true,
       status: "stable",

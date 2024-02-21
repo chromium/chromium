@@ -3323,6 +3323,7 @@ interface WebTransport
     method constructor
     method createBidirectionalStream
     method createUnidirectionalStream
+    method getStats
 interface WebTransportBidirectionalStream
     attribute @@toStringTag
     getter readable
