@@ -50,6 +50,7 @@ using base::test::RunClosure;
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBIndexKeys;
 using blink::IndexedDBKey;
+using storage::BucketLocator;
 using testing::_;
 using testing::StrictMock;
 using url::Origin;
@@ -87,7 +88,7 @@ base::FilePath CreateAndReturnTempDir(base::ScopedTempDir* temp_dir) {
   return temp_dir->GetPath();
 }
 
-storage::BucketInfo ToBucketInfo(const storage::BucketLocator& bucket_locator) {
+storage::BucketInfo ToBucketInfo(const BucketLocator& bucket_locator) {
   storage::BucketInfo bucket_info;
   bucket_info.id = bucket_locator.id;
   bucket_info.storage_key = bucket_locator.storage_key;
@@ -156,13 +157,12 @@ class TestIndexedDBObserver : public storage::mojom::IndexedDBObserver {
       mojo::PendingReceiver<storage::mojom::IndexedDBObserver> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  void OnIndexedDBListChanged(
-      const storage::BucketLocator& bucket_locator) override {
+  void OnIndexedDBListChanged(const BucketLocator& bucket_locator) override {
     ++notify_list_changed_count;
   }
 
   void OnIndexedDBContentChanged(
-      const storage::BucketLocator& bucket_locator,
+      const BucketLocator& bucket_locator,
       const std::u16string& database_name,
       const std::u16string& object_store_name) override {
     ++notify_content_changed_count;
@@ -185,23 +185,23 @@ class IndexedDBTest
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   blink::StorageKey kNormalFirstPartyStorageKey;
-  storage::BucketLocator kNormalFirstPartyBucketLocator;
+  BucketLocator kNormalFirstPartyBucketLocator;
   blink::StorageKey kSessionOnlyFirstPartyStorageKey;
-  storage::BucketLocator kSessionOnlyFirstPartyBucketLocator;
+  BucketLocator kSessionOnlyFirstPartyBucketLocator;
   blink::StorageKey kSessionOnlySubdomainFirstPartyStorageKey;
-  storage::BucketLocator kSessionOnlySubdomainFirstPartyBucketLocator;
+  BucketLocator kSessionOnlySubdomainFirstPartyBucketLocator;
   blink::StorageKey kNormalThirdPartyStorageKey;
-  storage::BucketLocator kNormalThirdPartyBucketLocator;
+  BucketLocator kNormalThirdPartyBucketLocator;
   blink::StorageKey kSessionOnlyThirdPartyStorageKey;
-  storage::BucketLocator kSessionOnlyThirdPartyBucketLocator;
+  BucketLocator kSessionOnlyThirdPartyBucketLocator;
   blink::StorageKey kSessionOnlySubdomainThirdPartyStorageKey;
-  storage::BucketLocator kSessionOnlySubdomainThirdPartyBucketLocator;
+  BucketLocator kSessionOnlySubdomainThirdPartyBucketLocator;
   blink::StorageKey kInvertedNormalThirdPartyStorageKey;
-  storage::BucketLocator kInvertedNormalThirdPartyBucketLocator;
+  BucketLocator kInvertedNormalThirdPartyBucketLocator;
   blink::StorageKey kInvertedSessionOnlyThirdPartyStorageKey;
-  storage::BucketLocator kInvertedSessionOnlyThirdPartyBucketLocator;
+  BucketLocator kInvertedSessionOnlyThirdPartyBucketLocator;
   blink::StorageKey kInvertedSessionOnlySubdomainThirdPartyStorageKey;
-  storage::BucketLocator kInvertedSessionOnlySubdomainThirdPartyBucketLocator;
+  BucketLocator kInvertedSessionOnlySubdomainThirdPartyBucketLocator;
 
   IndexedDBTest()
       : special_storage_policy_(
@@ -330,8 +330,9 @@ class IndexedDBTest
   }
 
   void TearDown() override {
-    if (context_ && !context_->IsInMemoryContext()) {
-      for (auto bucket_locator : context_->GetAllBuckets()) {
+    if (context_ && !context_->in_memory()) {
+      std::set<BucketLocator> buckets = context_->bucket_set_;
+      for (const BucketLocator& bucket_locator : buckets) {
         context_->DeleteBucketData(bucket_locator, base::DoNothing());
       }
     }
@@ -343,8 +344,7 @@ class IndexedDBTest
       ASSERT_TRUE(temp_dir_.Delete());
   }
 
-  base::FilePath GetFilePathForTesting(
-      const storage::BucketLocator& bucket_locator) {
+  base::FilePath GetFilePathForTesting(const BucketLocator& bucket_locator) {
     base::test::TestFuture<const base::FilePath&> path_future;
     context()->GetFilePathForTesting(bucket_locator, path_future.GetCallback());
     return path_future.Take();
@@ -355,10 +355,10 @@ class IndexedDBTest
   }
 
   bool DeleteBucket(const storage::BucketInfo* bucket_info) {
-    base::test::TestFuture<bool> success;
+    base::test::TestFuture<blink::mojom::QuotaStatusCode> result_code;
     context()->DeleteBucketData(bucket_info->ToBucketLocator(),
-                                success.GetCallback());
-    return success.Get();
+                                result_code.GetCallback());
+    return result_code.Get() == blink::mojom::QuotaStatusCode::kOk;
   }
 
   void BindIndexedDBFactory(
@@ -389,7 +389,7 @@ class IndexedDBTest
     if (out_info) {
       *out_info = bucket_info;
     }
-    storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
+    BucketLocator bucket_locator = bucket_info.ToBucketLocator();
     base::FilePath test_path = GetFilePathForTesting(bucket_locator);
 
     // Bind the IDBFactory.
@@ -447,7 +447,7 @@ class IndexedDBTest
     if (!bucket_locator) {
       const blink::StorageKey storage_key =
           blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-      bucket_locator = storage::BucketLocator();
+      bucket_locator = BucketLocator();
       bucket_locator->storage_key = storage_key;
     }
     IndexedDBBucketContextHandle bucket_context_handle(
@@ -1500,9 +1500,9 @@ TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   storage::BucketInfo bucket_1 = GetOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key_1));
-  storage::BucketLocator bucket_locator_1 = bucket_1.ToBucketLocator();
-  auto file_1 = context_->GetLevelDBPathForTesting(bucket_locator_1)
-                    .AppendASCII("1.json");
+  BucketLocator bucket_locator_1 = bucket_1.ToBucketLocator();
+  auto file_1 =
+      context_->GetLevelDBPath(bucket_locator_1).AppendASCII("1.json");
   ASSERT_TRUE(CreateDirectory(file_1.DirName()));
   ASSERT_TRUE(base::WriteFile(file_1, std::string(10, 'a')));
 
@@ -1510,9 +1510,9 @@ TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:82");
   storage::BucketInfo bucket_2 = GetOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key_2));
-  storage::BucketLocator bucket_locator_2 = bucket_2.ToBucketLocator();
-  auto file_2 = context_->GetLevelDBPathForTesting(bucket_locator_2)
-                    .AppendASCII("2.json");
+  BucketLocator bucket_locator_2 = bucket_2.ToBucketLocator();
+  auto file_2 =
+      context_->GetLevelDBPath(bucket_locator_2).AppendASCII("2.json");
   ASSERT_TRUE(CreateDirectory(file_2.DirName()));
   ASSERT_TRUE(base::WriteFile(file_2, std::string(100, 'a')));
 
@@ -1520,9 +1520,9 @@ TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost2:82");
   storage::BucketInfo bucket_3 = GetOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key_3));
-  storage::BucketLocator bucket_locator_3 = bucket_3.ToBucketLocator();
-  auto file_3 = context_->GetLevelDBPathForTesting(bucket_locator_3)
-                    .AppendASCII("3.json");
+  BucketLocator bucket_locator_3 = bucket_3.ToBucketLocator();
+  auto file_3 =
+      context_->GetLevelDBPath(bucket_locator_3).AppendASCII("3.json");
   ASSERT_TRUE(CreateDirectory(file_3.DirName()));
   ASSERT_TRUE(base::WriteFile(file_3, std::string(1000, 'a')));
 
@@ -1531,18 +1531,18 @@ TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
       blink::mojom::AncestorChainBit::kCrossSite);
   storage::BucketInfo bucket_4 = GetOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key_4));
-  storage::BucketLocator bucket_locator_4 = bucket_4.ToBucketLocator();
-  auto file_4 = context_->GetLevelDBPathForTesting(bucket_locator_4)
-                    .AppendASCII("4.json");
+  BucketLocator bucket_locator_4 = bucket_4.ToBucketLocator();
+  auto file_4 =
+      context_->GetLevelDBPath(bucket_locator_4).AppendASCII("4.json");
   ASSERT_TRUE(CreateDirectory(file_4.DirName()));
   ASSERT_TRUE(base::WriteFile(file_4, std::string(10000, 'a')));
 
   const blink::StorageKey storage_key_5 = storage_key_1;
   storage::BucketInitParams params(storage_key_5, "inbox");
   storage::BucketInfo bucket_5 = GetOrCreateBucket(params);
-  storage::BucketLocator bucket_locator_5 = bucket_5.ToBucketLocator();
-  auto file_5 = context_->GetLevelDBPathForTesting(bucket_locator_5)
-                    .AppendASCII("5.json");
+  BucketLocator bucket_locator_5 = bucket_5.ToBucketLocator();
+  auto file_5 =
+      context_->GetLevelDBPath(bucket_locator_5).AppendASCII("5.json");
   ASSERT_TRUE(CreateDirectory(file_5.DirName()));
   ASSERT_TRUE(base::WriteFile(file_5, std::string(20000, 'a')));
   EXPECT_NE(file_5.DirName(), file_1.DirName());
@@ -1837,11 +1837,9 @@ TEST_P(IndexedDBTest, CompactionTaskTiming) {
 
 TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
   SetUpInMemoryContext();
-  ASSERT_TRUE(context()->IsInMemoryContext());
 
   IndexedDBBucketContextHandle bucket_context_handle = CreateBucketHandle();
-  storage::BucketLocator bucket_locator =
-      bucket_context_handle->bucket_locator();
+  BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
   EXPECT_TRUE(bucket_context_handle->backing_store()->in_memory());
   bucket_context_handle.Release();
@@ -1876,7 +1874,7 @@ TEST_P(IndexedDBTest, TooLongOrigin) {
                                                     ":81/");
   storage::BucketInfo bucket_info = GetOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(too_long_storage_key));
-  storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
+  BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   IndexedDBBucketContextHandle bucket_context_handle(GetOrCreateBucketContext(
       ToBucketInfo(bucket_locator), context()->GetDataPath(bucket_locator)));
@@ -1890,8 +1888,7 @@ TEST_P(IndexedDBTest, TooLongOrigin) {
 
 TEST_P(IndexedDBTest, FactoryForceClose) {
   IndexedDBBucketContextHandle bucket_context_handle = CreateBucketHandle();
-  storage::BucketLocator bucket_locator =
-      bucket_context_handle->bucket_locator();
+  BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
   bucket_context_handle->ForceClose(/*doom=*/false);
   bucket_context_handle.Release();
@@ -1907,7 +1904,7 @@ TEST_P(IndexedDBTest, FactoryForceClose) {
 TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
+  auto bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
 
   // Bind the IDBFactory.
@@ -1949,7 +1946,7 @@ TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
 TEST_P(IndexedDBTest, DeleteDatabase) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
+  auto bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
 
   // Bind the IDBFactory.
@@ -2018,7 +2015,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
 TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
+  auto bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
 
   // Bind the IDBFactory.
@@ -2084,7 +2081,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
   // Bind the IDBFactory.
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
+  auto bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -2119,7 +2116,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
 TEST_P(IndexedDBTest, DatabaseFailedOpen) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
+  auto bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
   const std::u16string db_name(u"db");
 
@@ -2176,7 +2173,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
 TEST_P(IndexedDBTest, DataLoss) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
+  auto bucket_locator = BucketLocator();
   bucket_locator.storage_key = storage_key;
   const std::u16string db_name(u"test_db");
 

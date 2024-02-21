@@ -26,7 +26,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
-#include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "storage/browser/test/mock_quota_manager.h"
@@ -106,35 +105,38 @@ class IndexedDBQuotaClientTest : public testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
-  static int64_t GetBucketUsage(storage::mojom::QuotaClient& client,
-                                const storage::BucketLocator& bucket) {
+  int64_t GetBucketUsage(const storage::BucketLocator& bucket,
+                         IndexedDBContextImpl* context = nullptr) {
     base::test::TestFuture<int64_t> future;
-    client.GetBucketUsage(bucket, future.GetCallback());
+    (context ? context : idb_context_.get())
+        ->GetBucketUsage(bucket, future.GetCallback());
     int64_t result = future.Get();
     EXPECT_GT(result, -1);
     return result;
   }
 
-  static std::vector<StorageKey> GetStorageKeysForType(
-      storage::mojom::QuotaClient& client,
-      StorageType type) {
+  std::vector<StorageKey> GetStorageKeysForType(
+      StorageType type,
+      IndexedDBContextImpl* context = nullptr) {
     std::vector<StorageKey> result;
     base::RunLoop loop;
-    client.GetStorageKeysForType(
-        type, base::BindLambdaForTesting(
-                  [&](const std::vector<StorageKey>& storage_keys) {
-                    result = storage_keys;
-                    loop.Quit();
-                  }));
+    (context ? context : idb_context_.get())
+        ->GetStorageKeysForType(
+            type, base::BindLambdaForTesting(
+                      [&](const std::vector<StorageKey>& storage_keys) {
+                        result = storage_keys;
+                        loop.Quit();
+                      }));
     loop.Run();
     return result;
   }
 
-  static blink::mojom::QuotaStatusCode DeleteBucketData(
-      storage::mojom::QuotaClient& client,
-      const storage::BucketLocator& bucket) {
+  blink::mojom::QuotaStatusCode DeleteBucketData(
+      const storage::BucketLocator& bucket,
+      IndexedDBContextImpl* context = nullptr) {
     base::test::TestFuture<blink::mojom::QuotaStatusCode> future;
-    client.DeleteBucketData(bucket, future.GetCallback());
+    (context ? context : idb_context_.get())
+        ->DeleteBucketData(bucket, future.GetCallback());
     return future.Get();
   }
 
@@ -222,42 +224,36 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool());
 
 TEST_P(IndexedDBQuotaClientTest, GetBucketUsageFirstParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 6);
   AddFakeIndexedDB(kStorageKeyFirstPartyB, 3);
   ASSERT_OK_AND_ASSIGN(auto bucket_a, GetBucket(kStorageKeyFirstPartyA,
                                                 storage::kDefaultBucketName));
   ASSERT_OK_AND_ASSIGN(auto bucket_b, GetBucket(kStorageKeyFirstPartyB,
                                                 storage::kDefaultBucketName));
-  EXPECT_EQ(6, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(6, GetBucketUsage(bucket_a));
+  EXPECT_EQ(3, GetBucketUsage(bucket_b));
 
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
-  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(1000, GetBucketUsage(bucket_a));
+  EXPECT_EQ(3, GetBucketUsage(bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest, GetBucketUsageThirdParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 6);
   AddFakeIndexedDB(kStorageKeyThirdPartyB, 3);
   ASSERT_OK_AND_ASSIGN(auto bucket_a, GetBucket(kStorageKeyThirdPartyA,
                                                 storage::kDefaultBucketName));
   ASSERT_OK_AND_ASSIGN(auto bucket_b, GetBucket(kStorageKeyThirdPartyB,
                                                 storage::kDefaultBucketName));
-  EXPECT_EQ(6, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(6, GetBucketUsage(bucket_a));
+  EXPECT_EQ(3, GetBucketUsage(bucket_b));
 
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 1000);
-  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(1000, GetBucketUsage(bucket_a));
+  EXPECT_EQ(3, GetBucketUsage(bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest, GetBucketUsageMixedParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 6);
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 3);
   ASSERT_OK_AND_ASSIGN(auto bucket_a, GetBucket(kStorageKeyFirstPartyA,
@@ -270,101 +266,87 @@ TEST_P(IndexedDBQuotaClientTest, GetBucketUsageMixedParty) {
     EXPECT_EQ(bucket_a, bucket_b);
   }
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_EQ(6, GetBucketUsage(client, bucket_a));
+    EXPECT_EQ(6, GetBucketUsage(bucket_a));
   } else {
-    EXPECT_EQ(3, GetBucketUsage(client, bucket_a));
+    EXPECT_EQ(3, GetBucketUsage(bucket_a));
   }
-  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(3, GetBucketUsage(bucket_b));
 
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
-  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
+  EXPECT_EQ(1000, GetBucketUsage(bucket_a));
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+    EXPECT_EQ(3, GetBucketUsage(bucket_b));
   } else {
-    EXPECT_EQ(1000, GetBucketUsage(client, bucket_b));
+    EXPECT_EQ(1000, GetBucketUsage(bucket_b));
   }
 }
 
 TEST_P(IndexedDBQuotaClientTest, GetBucketUsageCustom) {
-  IndexedDBQuotaClient client(*idb_context());
-
   ASSERT_OK_AND_ASSIGN(auto bucket_a,
                        GetOrCreateBucket(kStorageKeyFirstPartyA, "inbox"));
   ASSERT_OK_AND_ASSIGN(auto bucket_b,
                        GetOrCreateBucket(kStorageKeyFirstPartyB, "drafts"));
   AddFakeIndexedDBForBucket(bucket_a, 6);
   AddFakeIndexedDBForBucket(bucket_b, 3);
-  EXPECT_EQ(6, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(6, GetBucketUsage(bucket_a));
+  EXPECT_EQ(3, GetBucketUsage(bucket_b));
 
   AddFakeIndexedDBForBucket(bucket_a, 1000);
-  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(1000, GetBucketUsage(bucket_a));
+  EXPECT_EQ(3, GetBucketUsage(bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest, GetStorageKeysForTypeFirstParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
-  EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
+  EXPECT_TRUE(GetStorageKeysForType(kTemp).empty());
 
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(client, kTemp);
+  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyFirstPartyA));
 }
 
 TEST_P(IndexedDBQuotaClientTest, GetStorageKeysForTypeThirdParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
-  EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
+  EXPECT_TRUE(GetStorageKeysForType(kTemp).empty());
 
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(client, kTemp);
+  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyThirdPartyA));
 }
 
 TEST_P(IndexedDBQuotaClientTest, DeleteBucketFirstParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
   AddFakeIndexedDB(kStorageKeyFirstPartyB, 50);
   ASSERT_OK_AND_ASSIGN(auto bucket_a, GetBucket(kStorageKeyFirstPartyA,
                                                 storage::kDefaultBucketName));
   ASSERT_OK_AND_ASSIGN(auto bucket_b, GetBucket(kStorageKeyFirstPartyB,
                                                 storage::kDefaultBucketName));
-  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(1000, GetBucketUsage(bucket_a));
+  EXPECT_EQ(50, GetBucketUsage(bucket_b));
 
-  blink::mojom::QuotaStatusCode delete_status =
-      DeleteBucketData(client, bucket_a);
+  blink::mojom::QuotaStatusCode delete_status = DeleteBucketData(bucket_a);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, delete_status);
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(0, GetBucketUsage(bucket_a));
+  EXPECT_EQ(50, GetBucketUsage(bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest, DeleteBucketThirdParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 1000);
   AddFakeIndexedDB(kStorageKeyThirdPartyB, 50);
   ASSERT_OK_AND_ASSIGN(auto bucket_a, GetBucket(kStorageKeyThirdPartyA,
                                                 storage::kDefaultBucketName));
   ASSERT_OK_AND_ASSIGN(auto bucket_b, GetBucket(kStorageKeyThirdPartyB,
                                                 storage::kDefaultBucketName));
-  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(1000, GetBucketUsage(bucket_a));
+  EXPECT_EQ(50, GetBucketUsage(bucket_b));
 
-  blink::mojom::QuotaStatusCode delete_status =
-      DeleteBucketData(client, bucket_a);
+  blink::mojom::QuotaStatusCode delete_status = DeleteBucketData(bucket_a);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, delete_status);
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(0, GetBucketUsage(bucket_a));
+  EXPECT_EQ(50, GetBucketUsage(bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest, DeleteBucketMixedParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 50);
   ASSERT_OK_AND_ASSIGN(auto bucket_a, GetBucket(kStorageKeyFirstPartyA,
@@ -377,102 +359,88 @@ TEST_P(IndexedDBQuotaClientTest, DeleteBucketMixedParty) {
     EXPECT_EQ(bucket_a, bucket_b);
   }
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
+    EXPECT_EQ(1000, GetBucketUsage(bucket_a));
   } else {
-    EXPECT_EQ(50, GetBucketUsage(client, bucket_a));
+    EXPECT_EQ(50, GetBucketUsage(bucket_a));
   }
-  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(50, GetBucketUsage(bucket_b));
 
-  blink::mojom::QuotaStatusCode delete_status =
-      DeleteBucketData(client, bucket_a);
+  blink::mojom::QuotaStatusCode delete_status = DeleteBucketData(bucket_a);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, delete_status);
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_a));
+  EXPECT_EQ(0, GetBucketUsage(bucket_a));
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+    EXPECT_EQ(50, GetBucketUsage(bucket_b));
   } else {
-    EXPECT_EQ(0, GetBucketUsage(client, bucket_b));
+    EXPECT_EQ(0, GetBucketUsage(bucket_b));
   }
 }
 
 TEST_P(IndexedDBQuotaClientTest, DeleteBucketCustom) {
-  IndexedDBQuotaClient client(*idb_context());
-
   ASSERT_OK_AND_ASSIGN(auto bucket_a,
                        GetOrCreateBucket(kStorageKeyFirstPartyA, "inbox"));
   ASSERT_OK_AND_ASSIGN(auto bucket_b,
                        GetOrCreateBucket(kStorageKeyFirstPartyB, "drafts"));
   AddFakeIndexedDBForBucket(bucket_a, 1000);
   AddFakeIndexedDBForBucket(bucket_b, 50);
-  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(1000, GetBucketUsage(bucket_a));
+  EXPECT_EQ(50, GetBucketUsage(bucket_b));
 
-  blink::mojom::QuotaStatusCode delete_status =
-      DeleteBucketData(client, bucket_a);
+  blink::mojom::QuotaStatusCode delete_status = DeleteBucketData(bucket_a);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, delete_status);
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_a));
-  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(0, GetBucketUsage(bucket_a));
+  EXPECT_EQ(50, GetBucketUsage(bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest, NonDefaultBucketFirstParty) {
-  IndexedDBQuotaClient client(*idb_context());
   ASSERT_OK_AND_ASSIGN(
       auto bucket, GetOrCreateBucket(kStorageKeyFirstPartyA, "logs_bucket"));
   ASSERT_FALSE(bucket.is_default);
 
-  EXPECT_EQ(0, GetBucketUsage(client, bucket));
-  blink::mojom::QuotaStatusCode delete_status =
-      DeleteBucketData(client, bucket);
+  EXPECT_EQ(0, GetBucketUsage(bucket));
+  blink::mojom::QuotaStatusCode delete_status = DeleteBucketData(bucket);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, delete_status);
 }
 
 TEST_P(IndexedDBQuotaClientTest, NonDefaultBucketThirdParty) {
-  IndexedDBQuotaClient client(*idb_context());
   ASSERT_OK_AND_ASSIGN(
       auto bucket, GetOrCreateBucket(kStorageKeyThirdPartyA, "logs_bucket"));
   ASSERT_FALSE(bucket.is_default);
 
-  EXPECT_EQ(0, GetBucketUsage(client, bucket));
-  blink::mojom::QuotaStatusCode delete_status =
-      DeleteBucketData(client, bucket);
+  EXPECT_EQ(0, GetBucketUsage(bucket));
+  blink::mojom::QuotaStatusCode delete_status = DeleteBucketData(bucket);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, delete_status);
 }
 
 TEST_P(IndexedDBQuotaClientTest,
        GetStorageKeyUsageForNonexistentKeyFirstParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(client, kTemp);
+  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyFirstPartyA));
 
   ASSERT_OK_AND_ASSIGN(
       auto bucket_b,
       GetOrCreateBucket(kStorageKeyFirstPartyB, storage::kDefaultBucketName));
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(0, GetBucketUsage(bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest,
        GetStorageKeyUsageForNonexistentKeyThirdParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(client, kTemp);
+  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyThirdPartyA));
 
   ASSERT_OK_AND_ASSIGN(
       auto bucket_b,
       GetOrCreateBucket(kStorageKeyThirdPartyB, storage::kDefaultBucketName));
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(0, GetBucketUsage(bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest,
        GetStorageKeyUsageForNonexistentKeyMixedParty) {
-  IndexedDBQuotaClient client(*idb_context());
-
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(client, kTemp);
+  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyFirstPartyA));
 
@@ -480,9 +448,9 @@ TEST_P(IndexedDBQuotaClientTest,
       auto bucket_b,
       GetOrCreateBucket(kStorageKeyThirdPartyA, storage::kDefaultBucketName));
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_EQ(0, GetBucketUsage(client, bucket_b));
+    EXPECT_EQ(0, GetBucketUsage(bucket_b));
   } else {
-    EXPECT_EQ(1000, GetBucketUsage(client, bucket_b));
+    EXPECT_EQ(1000, GetBucketUsage(bucket_b));
   }
 }
 
@@ -499,8 +467,6 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
       base::SequencedTaskRunner::GetCurrentDefault());
   base::RunLoop().RunUntilIdle();
 
-  IndexedDBQuotaClient client(*incognito_idb_context.get());
-
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
       bucket_future;
   quota_manager->CreateBucketForTesting(kStorageKeyFirstPartyA,
@@ -509,8 +475,10 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
   ASSERT_OK_AND_ASSIGN(auto bucket_a, bucket_future.Take());
 
   // No FakeIndexDB is added.
-  EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_a.ToBucketLocator()));
+  EXPECT_TRUE(
+      GetStorageKeysForType(kTemp, incognito_idb_context.get()).empty());
+  EXPECT_EQ(0, GetBucketUsage(bucket_a.ToBucketLocator(),
+                              incognito_idb_context.get()));
 }
 
 TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
@@ -526,8 +494,6 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
       base::SequencedTaskRunner::GetCurrentDefault());
   base::RunLoop().RunUntilIdle();
 
-  IndexedDBQuotaClient client(*incognito_idb_context.get());
-
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
       bucket_future;
   quota_manager->CreateBucketForTesting(kStorageKeyThirdPartyA,
@@ -536,8 +502,10 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
   ASSERT_OK_AND_ASSIGN(auto bucket_a, bucket_future.Take());
 
   // No FakeIndexDB is added.
-  EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_a.ToBucketLocator()));
+  EXPECT_TRUE(
+      GetStorageKeysForType(kTemp, incognito_idb_context.get()).empty());
+  EXPECT_EQ(0, GetBucketUsage(bucket_a.ToBucketLocator(),
+                              incognito_idb_context.get()));
 }
 
 }  // namespace content

@@ -12,9 +12,9 @@ import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.moj
 import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import type {BucketId} from './bucket_id.mojom-webui.js';
-import {IdbTransactionMode, IdbTransactionState} from './indexed_db_bucket_types.mojom-webui.js';
 import type {IdbInternalsHandlerInterface, IdbPartitionMetadata} from './indexed_db_internals.mojom-webui.js';
 import {IdbInternalsHandler} from './indexed_db_internals.mojom-webui.js';
+import {IdbTransactionMode, IdbTransactionState} from './indexed_db_internals_types.mojom-webui.js';
 import type {SchemefulSite} from './schemeful_site.mojom-webui.js';
 
 // TODO: This comes from components/flags_ui/resources/flags.ts. It should be

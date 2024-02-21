@@ -5,7 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom_bucket") {
-  sources = [ "indexed_db_bucket_types.mojom" ]
+  sources = [ "indexed_db_internals_types.mojom" ]
   public_deps = [
     "//components/services/storage/public/mojom/buckets",
     "//mojo/public/mojom/base",

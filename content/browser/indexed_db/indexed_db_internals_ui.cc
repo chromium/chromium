@@ -16,7 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/thread_pool.h"
-#include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom-forward.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom.h"
 #include "content/grit/indexed_db_resources.h"

@@ -1153,8 +1153,6 @@ source_set("browser") {
     "indexed_db/indexed_db_pending_connection.h",
     "indexed_db/indexed_db_pre_close_task_queue.cc",
     "indexed_db/indexed_db_pre_close_task_queue.h",
-    "indexed_db/indexed_db_quota_client.cc",
-    "indexed_db/indexed_db_quota_client.h",
     "indexed_db/indexed_db_reporting.cc",
     "indexed_db/indexed_db_reporting.h",
     "indexed_db/indexed_db_return_value.cc",

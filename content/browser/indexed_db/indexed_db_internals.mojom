@@ -4,7 +4,7 @@
 
 module storage.mojom;
 
-import "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom";
+import "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_id.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 

@@ -29,7 +29,7 @@ build_webui("build") {
   mojo_files = [
     "$root_gen_dir/$buckets_folder/bucket_id.mojom-webui.ts",
     "$root_gen_dir/$buckets_folder/bucket_locator.mojom-webui.ts",
-    "$root_gen_dir/$indexeddb_bucket_folder/indexed_db_bucket_types.mojom-webui.ts",
+    "$root_gen_dir/$indexeddb_bucket_folder/indexed_db_internals_types.mojom-webui.ts",
     "$root_gen_dir/$indexeddb_internal_folder/indexed_db_internals.mojom-webui.ts",
     "$root_gen_dir/$quota_folder/quota_types.mojom-webui.ts",
     "$root_gen_dir/$schemeful_site_folder/schemeful_site.mojom-webui.ts",
