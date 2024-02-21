@@ -1649,9 +1649,15 @@ void CaptureModeController::HandleNotificationClicked(
     const BehaviorType behavior_type,
     std::optional<int> button_index) {
   if (!button_index.has_value()) {
-    // Show the item in the folder.
-    delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
-    RecordScreenshotNotificationQuickAction(CaptureQuickAction::kFiles);
+    if (base::FeatureList::IsEnabled(features::kFileNotificationRevamp)) {
+      // Open the item with the default handler.
+      delegate_->OpenScreenCaptureItem(screen_capture_path);
+      RecordScreenshotNotificationQuickAction(CaptureQuickAction::kOpenDefault);
+    } else {
+      // Show the item in the folder.
+      delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
+      RecordScreenshotNotificationQuickAction(CaptureQuickAction::kFiles);
+    }
   } else {
     const int button_index_value = button_index.value();
     if (type == CaptureModeType::kVideo) {

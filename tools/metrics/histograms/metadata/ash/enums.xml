@@ -457,6 +457,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Edit file in backlight"/>
   <int value="1" label="Go to file location"/>
   <int value="2" label="Delete file"/>
+  <int value="3" label="Open file with default handler"/>
 </enum>
 
 <enum name="ClassroomUserAction">

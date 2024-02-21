@@ -93,6 +93,9 @@ base::FilePath TestCaptureModeDelegate::GetUserDefaultDownloadsFolder() const {
 void TestCaptureModeDelegate::ShowScreenCaptureItemInFolder(
     const base::FilePath& file_path) {}
 
+void TestCaptureModeDelegate::OpenScreenCaptureItem(
+    const base::FilePath& file_path) {}
+
 void TestCaptureModeDelegate::OpenScreenshotInImageEditor(
     const base::FilePath& file_path) {}
 

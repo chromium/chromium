@@ -74,6 +74,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void ShowScreenCaptureItemInFolder(
       const base::FilePath& file_path) = 0;
 
+  // Opens the screenshot or screen recording item with the default handler.
+  virtual void OpenScreenCaptureItem(const base::FilePath& file_path) = 0;
+
   // Opens the screenshot item in an image editor.
   virtual void OpenScreenshotInImageEditor(const base::FilePath& file_path) = 0;
 
