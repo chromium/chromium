@@ -1019,56 +1019,28 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
     const std::optional<net::CookiePartitionKey> expected;
   };
 
+  base::test::ScopedFeatureList scope_feature_list;
+  scope_feature_list.InitWithFeatures(
+      {net::features::kThirdPartyStoragePartitioning}, {});
+
   auto nonce = base::UnguessableToken::Create();
 
-  {  // Cookie partitioning disabled.
-    base::test::ScopedFeatureList scope_feature_list;
-    scope_feature_list.InitWithFeatures(
-        {net::features::kThirdPartyStoragePartitioning},
-        {net::features::kPartitionedCookies});
-
-    TestCase test_cases[] = {
-        {StorageKey::CreateFromStringForTesting("https://www.example.com"),
-         std::nullopt},
-        {StorageKey::Create(url::Origin::Create(GURL("https://www.foo.com")),
-                            net::SchemefulSite(GURL("https://www.bar.com")),
-                            mojom::AncestorChainBit::kCrossSite),
-         std::nullopt},
-        {StorageKey::CreateWithNonce(
-             url::Origin::Create(GURL("https://www.example.com")), nonce),
-         std::nullopt},
-    };
-    for (const auto& test_case : test_cases) {
-      EXPECT_EQ(test_case.expected,
-                test_case.storage_key.ToCookiePartitionKey());
-    }
-  }
-
-  {  // Cookie partitioning enabled.
-    base::test::ScopedFeatureList scope_feature_list;
-    scope_feature_list.InitWithFeatures(
-        {net::features::kThirdPartyStoragePartitioning,
-         net::features::kPartitionedCookies},
-        {});
-
-    TestCase test_cases[] = {
-        {StorageKey::CreateFromStringForTesting("https://www.example.com"),
-         net::CookiePartitionKey::FromURLForTesting(
-             GURL("https://www.example.com"))},
-        {StorageKey::Create(url::Origin::Create(GURL("https://www.foo.com")),
-                            net::SchemefulSite(GURL("https://www.bar.com")),
-                            mojom::AncestorChainBit::kCrossSite),
-         net::CookiePartitionKey::FromURLForTesting(
-             GURL("https://subdomain.bar.com"))},
-        {StorageKey::CreateWithNonce(
-             url::Origin::Create(GURL("https://www.example.com")), nonce),
-         net::CookiePartitionKey::FromURLForTesting(
-             GURL("https://www.example.com"), nonce)},
-    };
-    for (const auto& test_case : test_cases) {
-      EXPECT_EQ(test_case.expected,
-                test_case.storage_key.ToCookiePartitionKey());
-    }
+  TestCase test_cases[] = {
+      {StorageKey::CreateFromStringForTesting("https://www.example.com"),
+       net::CookiePartitionKey::FromURLForTesting(
+           GURL("https://www.example.com"))},
+      {StorageKey::Create(url::Origin::Create(GURL("https://www.foo.com")),
+                          net::SchemefulSite(GURL("https://www.bar.com")),
+                          mojom::AncestorChainBit::kCrossSite),
+       net::CookiePartitionKey::FromURLForTesting(
+           GURL("https://subdomain.bar.com"))},
+      {StorageKey::CreateWithNonce(
+           url::Origin::Create(GURL("https://www.example.com")), nonce),
+       net::CookiePartitionKey::FromURLForTesting(
+           GURL("https://www.example.com"), nonce)},
+  };
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.expected, test_case.storage_key.ToCookiePartitionKey());
   }
 }
 

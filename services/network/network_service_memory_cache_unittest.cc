@@ -821,9 +821,6 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedMultipleVaryHeader) {
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_DevToolsAttached) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kPartitionedCookies);
-
   ResourceRequest request = CreateRequest("/cacheable?max-age=120");
   request.devtools_request_id = "fake-id";
   StoreResponseToMemoryCache(request);

@@ -302,12 +302,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kWaitForFirstPartySetsInit);
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kWaitForFirstPartySetsInitNavigationThrottleTimeout;
 
-// When enabled, sites can opt-in to having their cookies partitioned by
-// top-level site with the Partitioned attribute. Partitioned cookies will only
-// be sent when the browser is on the same top-level site that it was on when
-// the cookie was set.
-NET_EXPORT BASE_DECLARE_FEATURE(kPartitionedCookies);
-
 // When enabled, cookie-related code will treat cookies containing '\0', '\r',
 // and '\n' as invalid and reject the cookie.
 NET_EXPORT BASE_DECLARE_FEATURE(kBlockTruncatedCookies);

@@ -136,12 +136,9 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
   cookie.store_id = store_id;
 
   if (canonical_cookie.PartitionKey()) {
-    CHECK(canonical_cookie.PartitionKey()->IsSerializeable());
     std::string top_level_site;
-    CHECK_EQ(base::FeatureList::IsEnabled(net::features::kPartitionedCookies),
-             net::CookiePartitionKey::Serialize(canonical_cookie.PartitionKey(),
-                                                top_level_site));
-
+    CHECK(net::CookiePartitionKey::Serialize(canonical_cookie.PartitionKey(),
+                                             top_level_site));
     cookie.partition_key = extensions::api::cookies::CookiePartitionKey();
     cookie.partition_key->top_level_site = top_level_site;
   }
@@ -226,14 +223,11 @@ bool ValidateCookieApiPartitionKey(
         partition_key,
     std::optional<net::CookiePartitionKey>& net_partition_key,
     std::string& error_message) {
-  if (partition_key &&
-      base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
-    if (partition_key->top_level_site &&
-        !net::CookiePartitionKey::Deserialize(
-            partition_key->top_level_site.value(), net_partition_key)) {
-      error_message = "Invalid format for partitionKey.topLevelSite.";
-      return false;
-    }
+  if (partition_key && partition_key->top_level_site &&
+      !net::CookiePartitionKey::Deserialize(
+          partition_key->top_level_site.value(), net_partition_key)) {
+    error_message = "Invalid format for partitionKey.topLevelSite.";
+    return false;
   }
   return true;
 }

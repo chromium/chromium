@@ -18,14 +18,12 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/spin_wait.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
@@ -243,10 +241,7 @@ class SynchronousCookieManager {
 
 class CookieManagerTest : public testing::Test {
  public:
-  CookieManagerTest() {
-    scoped_feature_list_.InitWithFeatures({net::features::kPartitionedCookies},
-                                          {});
-  }
+  CookieManagerTest() = default;
 
   void SetUp() override { InitializeCookieService(nullptr, nullptr); }
 
@@ -328,10 +323,6 @@ class CookieManagerTest : public testing::Test {
 
   bool connection_error_seen() const { return connection_error_seen_; }
 
-  base::test::ScopedFeatureList& scoped_feature_list() {
-    return scoped_feature_list_;
-  }
-
  protected:
   void InitializeCookieService(
       scoped_refptr<net::CookieMonster::PersistentCookieStore> store,
@@ -376,7 +367,6 @@ class CookieManagerTest : public testing::Test {
 
   bool connection_error_seen_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<CookieManager> cookie_service_;
   mojo::Remote<mojom::CookieManager> cookie_service_remote_;

@@ -63,7 +63,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -421,10 +420,6 @@ MakeCookieFromProtocolValues(const std::string& name,
 
   std::optional<net::CookiePartitionKey> deserialized_partition_key;
   if (partition_key.has_value()) {
-    if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
-      return Response::InvalidParams(
-          "Partitioned cookies disabled. Cannot set cookie partition key");
-    }
     if (!net::CookiePartitionKey::Deserialize(partition_key.value(),
                                               deserialized_partition_key)) {
       return Response::InvalidParams(

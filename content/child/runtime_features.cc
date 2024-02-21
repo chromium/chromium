@@ -32,7 +32,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
-#include "net/base/features.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/buildflags.h"
@@ -415,7 +414,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"LegacyWindowsDWriteFontFallback",
            raw_ref(features::kLegacyWindowsDWriteFontFallback)},
           {"OriginIsolationHeader", raw_ref(features::kOriginIsolationHeader)},
-          {"PartitionedCookies", raw_ref(net::features::kPartitionedCookies)},
           {"ReduceAcceptLanguage",
            raw_ref(network::features::kReduceAcceptLanguage)},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),

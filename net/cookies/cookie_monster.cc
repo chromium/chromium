@@ -66,7 +66,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
@@ -2470,32 +2469,29 @@ bool CookieMonster::DoRecordPeriodicStats() {
   base::UmaHistogramCounts100000("Cookie.MaxCookieJarSizePerKey",
                                  max_n_bytes >> 10);
 
-  // Collect stats for partitioned cookies if they are enabled.
-  if (base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    base::UmaHistogramCounts1000("Cookie.PartitionCount",
-                                 partitioned_cookies_.size());
-    base::UmaHistogramCounts100000("Cookie.PartitionedCookieCount",
-                                   num_partitioned_cookies_);
-    base::UmaHistogramCounts100000("Cookie.PartitionedCookieCount.Nonced",
-                                   num_nonced_partitioned_cookies_);
-    base::UmaHistogramCounts100000(
-        "Cookie.PartitionedCookieCount.Unnonced",
-        num_partitioned_cookies_ - num_nonced_partitioned_cookies_);
-    base::UmaHistogramCounts100000("Cookie.PartitionedCookieJarSizeKibibytes",
-                                   num_partitioned_cookies_bytes_ >> 10);
-    base::UmaHistogramCounts100000(
-        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced",
-        num_nonced_partitioned_cookie_bytes_ >> 10);
-    base::UmaHistogramCounts100000(
-        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced",
-        (num_partitioned_cookies_bytes_ -
-         num_nonced_partitioned_cookie_bytes_) >>
-            10);
+  // Collect stats for partitioned cookies.
+  base::UmaHistogramCounts1000("Cookie.PartitionCount",
+                               partitioned_cookies_.size());
+  base::UmaHistogramCounts100000("Cookie.PartitionedCookieCount",
+                                 num_partitioned_cookies_);
+  base::UmaHistogramCounts100000("Cookie.PartitionedCookieCount.Nonced",
+                                 num_nonced_partitioned_cookies_);
+  base::UmaHistogramCounts100000(
+      "Cookie.PartitionedCookieCount.Unnonced",
+      num_partitioned_cookies_ - num_nonced_partitioned_cookies_);
+  base::UmaHistogramCounts100000("Cookie.PartitionedCookieJarSizeKibibytes",
+                                 num_partitioned_cookies_bytes_ >> 10);
+  base::UmaHistogramCounts100000(
+      "Cookie.PartitionedCookieJarSizeKibibytes.Nonced",
+      num_nonced_partitioned_cookie_bytes_ >> 10);
+  base::UmaHistogramCounts100000(
+      "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced",
+      (num_partitioned_cookies_bytes_ - num_nonced_partitioned_cookie_bytes_) >>
+          10);
 
-    for (const auto& it : bytes_per_cookie_partition_) {
-      base::UmaHistogramCounts100000("Cookie.CookiePartitionSizeKibibytes",
-                                     it.second >> 10);
-    }
+  for (const auto& it : bytes_per_cookie_partition_) {
+    base::UmaHistogramCounts100000("Cookie.CookiePartitionSizeKibibytes",
+                                   it.second >> 10);
   }
 
   return true;

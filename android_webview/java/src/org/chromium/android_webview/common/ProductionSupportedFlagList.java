@@ -635,8 +635,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,
                 "Enables WebView to use the extended keyboard shortcuts added for Android U"),
         Flag.baseFeature(
-                NetFeatures.PARTITIONED_COOKIES, "Enables the Partitioned cookie attribute"),
-        Flag.baseFeature(
                 NetFeatures.SUPPORT_PARTITIONED_BLOB_URL,
                 "Enables the new Blob URL implementation needed for third-party storage"
                         + " partitioning"),

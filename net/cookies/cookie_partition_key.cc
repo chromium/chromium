@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/types/optional_util.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 
 namespace net {
@@ -77,11 +76,6 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
     out = std::nullopt;
     return true;
   }
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    DLOG(WARNING) << "Attempting to deserialize CookiePartitionKey when "
-                     "PartitionedCookies is disabled";
-    return false;
-  }
   auto schemeful_site = SchemefulSite::Deserialize(in);
   // SchemfulSite is opaque if the input is invalid.
   if (schemeful_site.opaque()) {
@@ -94,10 +88,6 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
 
 std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key) {
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    return std::nullopt;
-  }
-
   const std::optional<base::UnguessableToken>& nonce =
       network_isolation_key.GetNonce();
 
@@ -120,18 +110,10 @@ std::optional<net::CookiePartitionKey>
 CookiePartitionKey::FromStorageKeyComponents(
     const SchemefulSite& site,
     const std::optional<base::UnguessableToken>& nonce) {
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    return std::nullopt;
-  }
   return CookiePartitionKey::FromWire(site, nonce);
 }
 
 bool CookiePartitionKey::IsSerializeable() const {
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    DLOG(WARNING) << "Attempting to serialize CookiePartitionKey when "
-                     "PartitionedCookies feature is disabled";
-    return false;
-  }
   // We should not try to serialize a partition key created by a renderer.
   DCHECK(!from_script_);
   return !site_.opaque() && !nonce_.has_value();
