@@ -437,28 +437,20 @@ void ViewAndroid::OnBackgroundColorChanged(unsigned int color) {
   Java_ViewAndroidDelegate_onBackgroundColorChanged(env, delegate, color);
 }
 
-void ViewAndroid::OnTopControlsChanged(float top_controls_offset,
-                                       float top_content_offset,
-                                       float top_controls_min_height_offset) {
+void ViewAndroid::OnControlsChanged(float top_controls_offset,
+                                    float top_content_offset,
+                                    float top_controls_min_height_offset,
+                                    float bottom_controls_offset,
+                                    float bottom_controls_min_height_offset) {
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
   if (delegate.is_null())
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ViewAndroidDelegate_onTopControlsChanged(
+  Java_ViewAndroidDelegate_onControlsChanged(
       env, delegate, std::round(top_controls_offset),
       std::round(top_content_offset),
-      std::round(top_controls_min_height_offset));
-}
-
-void ViewAndroid::OnBottomControlsChanged(
-    float bottom_controls_offset,
-    float bottom_controls_min_height_offset) {
-  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
-  if (delegate.is_null())
-    return;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ViewAndroidDelegate_onBottomControlsChanged(
-      env, delegate, std::round(bottom_controls_offset),
+      std::round(top_controls_min_height_offset),
+      std::round(bottom_controls_offset),
       std::round(bottom_controls_min_height_offset));
 }
 

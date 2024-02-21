@@ -56,38 +56,33 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
 
     /**
      * Sets new top control, content, and min-height offset from renderer.
+     *
      * @param topControlsOffset Top control offset.
      * @param contentOffset Content offset.
      * @param topControlsMinHeightOffset Current min-height offset for the top controls that may be
-     *                                   changing as a result of an in-progress min-height change
-     *                                   animation in the renderer.
+     *     changing as a result of an in-progress min-height change animation in the renderer.
+     * @param bottomControlsOffset Bottom control offset.
+     * @param bottomControlsMinHeightOffset Current min-height offset for the bottom controls that
+     *     may be changing as a result of an in-progress min-height change animation in the
+     *     renderer.
      */
-    void setTopOffset(int topControlsOffset, int contentOffset, int topControlsMinHeightOffset) {
+    void setOffsets(
+            int topControlsOffset,
+            int contentOffset,
+            int topControlsMinHeightOffset,
+            int bottomControlsOffset,
+            int bottomControlsMinHeightOffset) {
         if (mOffsetInitialized
                 && topControlsOffset == mTopControlsOffset
                 && mContentOffset == contentOffset
-                && mTopControlsMinHeightOffset == topControlsMinHeightOffset) {
+                && mTopControlsMinHeightOffset == topControlsMinHeightOffset
+                && mBottomControlsOffset == bottomControlsOffset
+                && mBottomControlsMinHeightOffset == bottomControlsMinHeightOffset) {
             return;
         }
         mTopControlsOffset = topControlsOffset;
         mContentOffset = contentOffset;
         mTopControlsMinHeightOffset = topControlsMinHeightOffset;
-        notifyControlsOffsetChanged();
-    }
-
-    /**
-     * Sets new bottom control offset from renderer.
-     * @param bottomControlsOffset Bottom control offset.
-     * @param bottomControlsMinHeightOffset Current min-height offset for the bottom controls that
-     *                                      may be changing as a result of an in-progress min-height
-     *                                      change animation in the renderer.
-     */
-    void setBottomOffset(int bottomControlsOffset, int bottomControlsMinHeightOffset) {
-        if (mOffsetInitialized
-                && mBottomControlsOffset == bottomControlsOffset
-                && mBottomControlsMinHeightOffset == bottomControlsMinHeightOffset) {
-            return;
-        }
         mBottomControlsOffset = bottomControlsOffset;
         mBottomControlsMinHeightOffset = bottomControlsMinHeightOffset;
         notifyControlsOffsetChanged();

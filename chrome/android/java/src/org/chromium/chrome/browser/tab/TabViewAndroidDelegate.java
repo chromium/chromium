@@ -84,17 +84,19 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     }
 
     @Override
-    public void onTopControlsChanged(
-            int topControlsOffsetY, int contentOffsetY, int topControlsMinHeightOffsetY) {
+    public void onControlsChanged(
+            int topControlsOffsetY,
+            int contentOffsetY,
+            int topControlsMinHeightOffsetY,
+            int bottomControlsOffsetY,
+            int bottomControlsMinHeightOffsetY) {
         TabBrowserControlsOffsetHelper.get(mTab)
-                .setTopOffset(topControlsOffsetY, contentOffsetY, topControlsMinHeightOffsetY);
-    }
-
-    @Override
-    public void onBottomControlsChanged(
-            int bottomControlsOffsetY, int bottomControlsMinHeightOffsetY) {
-        TabBrowserControlsOffsetHelper.get(mTab)
-                .setBottomOffset(bottomControlsOffsetY, bottomControlsMinHeightOffsetY);
+                .setOffsets(
+                        topControlsOffsetY,
+                        contentOffsetY,
+                        topControlsMinHeightOffsetY,
+                        bottomControlsOffsetY,
+                        bottomControlsMinHeightOffsetY);
     }
 
     @Override
