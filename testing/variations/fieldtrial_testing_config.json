@@ -13716,26 +13716,6 @@
             ]
         }
     ],
-    "PrivateAggregationFacilitatedTestingCookieDeprecation": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "windows",
-                "mac",
-                "linux",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivateAggregationDebugReportingCookieDeprecationTesting"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivateStateTokens": [
         {
             "platforms": [
