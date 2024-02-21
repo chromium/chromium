@@ -204,7 +204,7 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
 
   if (empty()) {
     // If we've got no matches we can copy everything from the last result.
-    Swap(old_matches);
+    SwapMatchesWith(old_matches);
     for (auto& match : *this)
       match.from_previous = true;
     return;
@@ -1034,8 +1034,7 @@ size_t AutocompleteResult::CalculateNumMatchesPerUrlCount(
 
 void AutocompleteResult::Reset() {
   ClearMatches();
-  zero_prefix_enabled_in_session_ = false;
-  num_zero_prefix_suggestions_shown_in_session_ = 0u;
+  session_.Reset();
 }
 
 void AutocompleteResult::ClearMatches() {
@@ -1047,28 +1046,27 @@ void AutocompleteResult::ClearMatches() {
 #endif
 }
 
-void AutocompleteResult::Swap(AutocompleteResult* other) {
+void AutocompleteResult::SessionData::Reset() {
+  zero_prefix_enabled_ = false;
+  num_zero_prefix_suggestions_shown_ = 0u;
+}
+
+void AutocompleteResult::SwapMatchesWith(AutocompleteResult* other) {
   matches_.swap(other->matches_);
   suggestion_groups_map_.swap(other->suggestion_groups_map_);
-  std::swap(zero_prefix_enabled_in_session_,
-            other->zero_prefix_enabled_in_session_);
-  std::swap(num_zero_prefix_suggestions_shown_in_session_,
-            other->num_zero_prefix_suggestions_shown_in_session_);
+
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
   other->DestroyJavaObject();
 #endif
 }
 
-void AutocompleteResult::CopyFrom(const AutocompleteResult& other) {
+void AutocompleteResult::CopyMatchesFrom(const AutocompleteResult& other) {
   if (this == &other)
     return;
 
   matches_ = other.matches_;
   suggestion_groups_map_ = other.suggestion_groups_map_;
-  zero_prefix_enabled_in_session_ = other.zero_prefix_enabled_in_session_;
-  num_zero_prefix_suggestions_shown_in_session_ =
-      other.num_zero_prefix_suggestions_shown_in_session_;
 
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
