@@ -156,7 +156,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "android",
         short_name = "siso",
     ),
-    reclient_rewrapper_env = {"RBE_exec_strategy": "remote"},
+    siso_experiments = ["no-fallback"],
 )
 
 cq_build_perf_builder(
