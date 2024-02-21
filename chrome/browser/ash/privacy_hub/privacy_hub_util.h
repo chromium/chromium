@@ -37,6 +37,11 @@ void TrackGeolocationAttempted(const std::string& name);
 // Notifies the Privacy Hub controller.
 void TrackGeolocationRelinquished(const std::string& name);
 
+// Checks if the user can modify the ChromeOS system location toggle in the OOBE
+// consents screen. Returns true, if the underlying pref is not managed.
+// Returns false if the Privacy Hub Location feature flag is not enabled.
+bool IsCrosLocationOobeNegotiationNeeded();
+
 // Checks if we use the fallback solution for the camera LED
 // (go/privacy-hub:camera-led-fallback).
 // TODO(b/289510726): remove when all cameras fully support the software

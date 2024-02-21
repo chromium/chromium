@@ -97,6 +97,7 @@ const ConsolidatedConsentScreenElementBase = mixinBehaviors(
  * Data that is passed to the screen during onBeforeShow.
  */
 interface ConsolidatedConsentScreenData {
+  isPrivacyHubLocationEnabled: boolean;
   isArcEnabled: boolean;
   isDemo: boolean;
   isChildAccount: boolean;
@@ -120,6 +121,11 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
+      isPrivacyHubLocationEnabled: {
+        type: Boolean,
+        value: false,
+      },
+
       isArcEnabled: {
         type: Boolean,
         value: true,
@@ -192,6 +198,7 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     };
   }
 
+  private isPrivacyHubLocationEnabled: boolean;
   private isArcEnabled: boolean;
   private isDemo: boolean;
   private isChildAccount: boolean;
@@ -269,6 +276,7 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   onBeforeShow(data: ConsolidatedConsentScreenData): void {
     window.setTimeout(this.applyOobeConfiguration);
 
+    this.isPrivacyHubLocationEnabled = data['isPrivacyHubLocationEnabled'];
     this.isArcEnabled = data['isArcEnabled'];
     this.isDemo = data['isDemo'];
     this.isChildAccount = data['isChildAccount'];
@@ -640,6 +648,24 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   private isArcOptInsHidden(isArcEnabled: boolean, isDemo: boolean): boolean {
     return !isArcEnabled || isDemo;
+  }
+
+  private isArcBackupOptInHidden(isArcEnabled: boolean, isDemo: boolean):
+      boolean {
+    return this.isArcOptInsHidden(isArcEnabled, isDemo);
+  }
+
+  private isLocationOptInHidden(isArcEnabled: boolean, isDemo: boolean):
+      boolean {
+    if (this.isPrivacyHubLocationEnabled) {
+      // Skip ToS in Demo mode.
+      if (isDemo) {
+        return true;
+      }
+      return false;
+    }
+
+    return this.isArcOptInsHidden(isArcEnabled, isDemo);
   }
 
   private setUsageMode(enabled: boolean, managed: boolean): void {

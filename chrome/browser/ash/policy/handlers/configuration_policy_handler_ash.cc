@@ -12,7 +12,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -685,6 +689,27 @@ void ArcServicePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
              static_cast<int>(ArcServicePolicyValue::kEnabled)) {
     prefs->SetBoolean(pref_, true);
   }
+}
+
+ArcLocationServicePolicyHandler::ArcLocationServicePolicyHandler(
+    const char* policy,
+    const char* pref)
+    : ArcServicePolicyHandler(policy, pref) {}
+
+void ArcLocationServicePolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
+  // After the Privacy Hub rollout, the Android location toggle will be replaced
+  // by the ChromeOS location toggle in the OOBE dialog. This new toggle will be
+  // controlled by `kGoogleLocationServicesEnabled`. This new toggle will no
+  // longer support force-setting only the initial value during the setup flow,
+  // so we can ignore this policy.
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    return;
+  }
+
+  // Legacy handling.
+  ArcServicePolicyHandler::ApplyPolicySettings(policies, prefs);
 }
 
 }  // namespace policy

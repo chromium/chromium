@@ -217,7 +217,7 @@ found in the LICENSE file.
 
     <!-- Backup toggle row -->
     <div id="backup" class="layout horizontal center oobe-optin-row"
-        hidden="[[isArcOptInsHidden(isArcEnabled, isDemo)]]">
+        hidden="[[isArcBackupOptInHidden(isArcEnabled, isDemo)]]">
       <div class="oobe-optin-content flex">
         <span id="backupTitle" class="oobe-optin-title">
           [[i18nDynamic(locale, 'consolidatedConsentBackupOptInTitle')]]
@@ -260,7 +260,7 @@ found in the LICENSE file.
 
     <!-- Location services toggle row -->
     <div id="location" class="layout horizontal center oobe-optin-row"
-        hidden="[[isArcOptInsHidden(isArcEnabled, isDemo)]]">
+        hidden="[[isLocationOptInHidden(isArcEnabled, isDemo)]]">
       <div class="oobe-optin-content flex">
         <span id="locationTitle" class="oobe-optin-title">
           [[i18nDynamic(locale, 'consolidatedConsentLocationOptInTitle')]]
@@ -284,7 +284,7 @@ found in the LICENSE file.
           disabled="[[locationManaged]]" aria-describedby="locationTitle">
       </cr-toggle>
     </div>
-    <div id="footer" hidden="[[isArcOptInsHidden(isArcEnabled, isDemo)]]"
+    <div id="footer" hidden="[[isLocationOptInHidden(isArcEnabled, isDemo)]]"
         class="oobe-optin-row">
       <span id="footerText">
         <span hidden="[[isChildAccount]]">

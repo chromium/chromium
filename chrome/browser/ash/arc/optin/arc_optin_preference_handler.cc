@@ -48,11 +48,22 @@ void ArcOptInPreferenceHandler::Start() {
       base::BindRepeating(
           &ArcOptInPreferenceHandler::OnBackupAndRestorePreferenceChanged,
           base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kArcLocationServiceEnabled,
-      base::BindRepeating(
-          &ArcOptInPreferenceHandler::OnLocationServicePreferenceChanged,
-          base::Unretained(this)));
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    // TODO(b/325438501): Migrate `kUserGeolocationAccessLevel` to
+    // ChromeOS-specific preference handler.
+    pref_change_registrar_.Add(
+        ash::prefs::kUserGeolocationAccessLevel,
+        base::BindRepeating(
+            &ArcOptInPreferenceHandler::OnLocationServicePreferenceChanged,
+            base::Unretained(this)));
+  } else {
+    pref_change_registrar_.Add(
+        prefs::kArcLocationServiceEnabled,
+        base::BindRepeating(
+            &ArcOptInPreferenceHandler::OnLocationServicePreferenceChanged,
+            base::Unretained(this)));
+  }
+
   if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
     pref_change_registrar_.Add(
         metrics::prefs::kMetricsUserConsent,
@@ -125,29 +136,31 @@ void ArcOptInPreferenceHandler::SendBackupAndRestoreMode() {
 }
 
 void ArcOptInPreferenceHandler::SendLocationServicesMode() {
-  // Override the pref default to the true value, in order to encourage users to
-  // consent with it during OptIn flow.
-  bool enabled =
-      pref_service_->HasPrefPath(prefs::kArcLocationServiceEnabled)
-          ? pref_service_->GetBoolean(prefs::kArcLocationServiceEnabled)
-          : true;
+  bool enabled = false;
+  bool managed = false;
 
   // We should use device location setting during optin, in case user has
   // disabled location of device we should show the same preference during
   // opt-in. Default value of kUserGeolocationAccessLevel is
   // `AccessLevel::kAllowed`.
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub) &&
-      // TODO(vsomani): Remove managed user check once
-      // kUserGeolocationAccessLevel is in sync with the managed policy of
-      // arcgooglelocationservicesenabled.
-      !pref_service_->IsManagedPreference(prefs::kArcLocationServiceEnabled)) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     enabled = ash::PrivacyHubController::CrosToArcGeolocationPermissionMapping(
         static_cast<ash::GeolocationAccessLevel>(pref_service_->GetInteger(
             ash::prefs::kUserGeolocationAccessLevel)));
+    managed = pref_service_->IsManagedPreference(
+        ash::prefs::kUserGeolocationAccessLevel);
+  } else {
+    // Legacy handling.
+    // Override the pref default to the true value, in order to encourage users
+    // to consent with it during OptIn flow.
+    enabled = pref_service_->HasPrefPath(prefs::kArcLocationServiceEnabled)
+                  ? pref_service_->GetBoolean(prefs::kArcLocationServiceEnabled)
+                  : true;
+    managed =
+        pref_service_->IsManagedPreference(prefs::kArcLocationServiceEnabled);
   }
-  observer_->OnLocationServicesModeChanged(
-      enabled,
-      pref_service_->IsManagedPreference(prefs::kArcLocationServiceEnabled));
+
+  observer_->OnLocationServicesModeChanged(enabled, managed);
 }
 
 void ArcOptInPreferenceHandler::EnableMetrics(bool is_enabled,
@@ -170,7 +183,7 @@ void ArcOptInPreferenceHandler::EnableBackupRestore(bool is_enabled) {
 
 void ArcOptInPreferenceHandler::EnableLocationService(bool is_enabled) {
   pref_service_->SetBoolean(prefs::kArcLocationServiceEnabled, is_enabled);
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     pref_service_->SetBoolean(prefs::kArcInitialLocationSettingSyncRequired,
                               false);
     if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {

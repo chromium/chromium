@@ -7,6 +7,8 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/privacy_hub_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
@@ -18,7 +20,10 @@
 #include "base/check_deref.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash::privacy_hub_util {
 
@@ -93,6 +98,21 @@ void TrackGeolocationRelinquished(const std::string& name) {
   if (controller) {
     controller->TrackGeolocationRelinquished(name);
   }
+}
+
+bool IsCrosLocationOobeNegotiationNeeded() {
+  // No negotiation needed, if the PH Location feature is not yet enabled.
+  if (!ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    return false;
+  }
+
+  const Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  if (profile->GetPrefs()->IsManagedPreference(
+          ash::prefs::kUserGeolocationAccessLevel)) {
+    return false;
+  }
+
+  return true;
 }
 
 namespace {
