@@ -264,7 +264,7 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ReportNewInstanceIdTokenState(new_instance_id_token);
   DropAllSavedSubscriptionsOnTokenChange(new_instance_id_token);
-  instance_id_token_ = new_instance_id_token;
+  StoreNewToken(new_instance_id_token);
 
   for (const auto& topic : topics) {
     auto it = pending_subscriptions_.find(topic.first);
@@ -565,15 +565,18 @@ void PerUserTopicSubscriptionManager::ReportNewInstanceIdTokenState(
   }
 }
 
+void PerUserTopicSubscriptionManager::StoreNewToken(
+    const std::string& new_instance_id_token) {
+  instance_id_token_ = new_instance_id_token;
+  ScopedDictPrefUpdate token_update(pref_service_, kActiveRegistrationTokens);
+  token_update->Set(project_id_, new_instance_id_token);
+}
+
 void PerUserTopicSubscriptionManager::DropAllSavedSubscriptionsOnTokenChange(
     const std::string& new_instance_id_token) {
   if (instance_id_token_ == new_instance_id_token) {
     return;
   }
-
-  // Store the new token.
-  ScopedDictPrefUpdate token_update(pref_service_, kActiveRegistrationTokens);
-  token_update->Set(project_id_, new_instance_id_token);
 
   // The token has been cleared or changed. In either case, clear all existing
   // subscriptions since they won't be valid anymore. (No need to send

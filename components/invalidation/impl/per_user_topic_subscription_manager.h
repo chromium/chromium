@@ -145,10 +145,19 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   void OnAccessTokenRequestSucceeded(const std::string& access_token);
   void OnAccessTokenRequestFailed(GoogleServiceAuthError error);
 
+  // Compares `new_instance_id_token` and `instance_id_token_` to report the
+  // nature of the change (if any) to UMA.
   void ReportNewInstanceIdTokenState(
       const std::string& new_instance_id_token) const;
+
+  // In case `new_instance_id_token` differs from `instance_id_token_`, this
+  // drops subscriptions from memory and `pref_service_`.
   void DropAllSavedSubscriptionsOnTokenChange(
       const std::string& new_instance_id_token);
+
+  // Stores `new_instance_id_token` as `instance_id_token_` and persists it in
+  // `pref_service_`.
+  void StoreNewToken(const std::string& new_instance_id_token);
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<IdentityProvider> identity_provider_;
