@@ -848,9 +848,6 @@ enum class ProfileMode {
 };
 
 struct ARTestParams {
-  ARTestParams(ProfileMode profile_mode, ContextType context_type)
-      : profile_mode(profile_mode), context_type(context_type) {}
-
   ProfileMode profile_mode;
   ContextType context_type;
 };
@@ -3365,9 +3362,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 }
 
 struct SWTestParams {
-  SWTestParams(bool extra_info_spec, ContextType context_type)
-      : extra_info_spec(extra_info_spec), context_type(context_type) {}
-
   // This parameter is for opt_extraInfoSpec passed to addEventListener.
   // 'blocking' and 'requestHeaders' if it's false, and 'extraHeaders' in
   // addition to them if it's true.
@@ -4150,9 +4144,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 
 struct SWBTestParams {
-  SWBTestParams(bool extra_info_spec, ContextType context_type)
-      : extra_info_spec(extra_info_spec), context_type(context_type) {}
-
   // The parameter is for opt_extraInfoSpec passed to addEventListener.
   // 'blocking' if it's false, and 'extraHeaders' in addition to them
   // if it's true.
@@ -5096,9 +5087,6 @@ enum class RedirectType {
 };
 
 struct RITestParams {
-  RITestParams(RedirectType redirect_type, ContextType context_type)
-      : redirect_type(redirect_type), context_type(context_type) {}
-
   RedirectType redirect_type;
   ContextType context_type;
 };
