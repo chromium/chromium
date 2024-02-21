@@ -201,6 +201,11 @@ BASE_FEATURE(kQuickAnswersRichCard,
              "QuickAnswersRichCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable Material Next UI for Quick Answers.
+BASE_FEATURE(kQuickAnswersMaterialNextUI,
+             "QuickAnswersMaterialNextUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Office files upload workflow to improve Office files support.
 BASE_FEATURE(kUploadOfficeToCloud,
              "UploadOfficeToCloud",

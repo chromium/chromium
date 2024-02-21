@@ -7638,6 +7638,11 @@ const char kQuickAnswersRichCardName[] = "Enable Quick Answers Rich Card";
 const char kQuickAnswersRichCardDescription[] =
     "Enable rich card views of the Quick Answers feature.";
 
+const char kQuickAnswersMaterialNextUIName[] =
+    "Enable Quick Answers Material Next UI";
+const char kQuickAnswersMaterialNextUIDescription[] =
+    "Enable Material Next UI for the Quick Answers feature.";
+
 const char kSyncChromeOSExplicitPassphraseSharingName[] =
     "Sync passphrase sharing";
 const char kSyncChromeOSExplicitPassphraseSharingDescription[] =

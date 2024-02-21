@@ -7330,6 +7330,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"quick-answers-rich-card", flag_descriptions::kQuickAnswersRichCardName,
      flag_descriptions::kQuickAnswersRichCardDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersRichCard)},
+    {"quick-answers-material-next-ui",
+     flag_descriptions::kQuickAnswersMaterialNextUIName,
+     flag_descriptions::kQuickAnswersMaterialNextUIDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersMaterialNextUI)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-gamepad-button-axis-events",

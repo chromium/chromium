@@ -18632,6 +18632,7 @@ from previous Chrome versions.
   <int value="-964676765" label="enable-accelerated-mjpeg-decode"/>
   <int value="-964620377" label="CSSOMViewScrollCoordinates:enabled"/>
   <int value="-963683462" label="EnablePalmSuppression:enabled"/>
+  <int value="-962574060" label="kQuickAnswersMaterialNextUI:enabled"/>
   <int value="-962233051" label="PasspointSettings:enabled"/>
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
   <int value="-962004315" label="EnterpriseProfileBadging:disabled"/>
@@ -19717,6 +19718,7 @@ from previous Chrome versions.
   <int value="-455203267" label="use_new_features_summary"/>
   <int value="-454459100" label="ReadAnythingWithAlgorithm:enabled"/>
   <int value="-454362199" label="HelpAppV2:disabled"/>
+  <int value="-454359275" label="kQuickAnswersMaterialNextUI:disabled"/>
   <int value="-451898735" label="private-aggregation-developer-mode"/>
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
@@ -21492,6 +21494,7 @@ from previous Chrome versions.
   <int value="355367368" label="SharesheetCopyToClipboard:disabled"/>
   <int value="355970257" label="MediaRouterOTRInstance:disabled"/>
   <int value="356453693" label="SystemNudgeV2:disabled"/>
+  <int value="356857664" label="QuickAnswersMaterialNextUI:enabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="357165937" label="ShareToGoogleCollections:enabled"/>
   <int value="357832577" label="OmniboxSuggestionHoverFillShape:disabled"/>
@@ -21870,6 +21873,7 @@ from previous Chrome versions.
   <int value="533115840"
       label="HoldingSpaceInProgressDownloadsIntegration:enabled"/>
   <int value="533814676" label="CCTResizableForFirstParties:enabled"/>
+  <int value="534614617" label="QuickAnswersMaterialNextUI:disabled"/>
   <int value="534825129" label="ReducedWifiPollingInterval:disabled"/>
   <int value="535131384" label="OmniboxTailSuggestions:enabled"/>
   <int value="535194142" label="TemporaryHoldingSpacePreviews:enabled"/>

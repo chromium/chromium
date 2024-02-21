@@ -4386,6 +4386,9 @@ extern const char kDisableQuickAnswersV2TranslationDescription[];
 extern const char kQuickAnswersRichCardName[];
 extern const char kQuickAnswersRichCardDescription[];
 
+extern const char kQuickAnswersMaterialNextUIName[];
+extern const char kQuickAnswersMaterialNextUIDescription[];
+
 extern const char kSyncChromeOSExplicitPassphraseSharingName[];
 extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
 
