@@ -197,7 +197,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       IOSurfaceBackingEGLState* egl_state,
       bool have_context) override;
 
+  // Updates the read and write accesses tracker variables on BeginAccess.
   bool BeginAccess(bool readonly);
+  // Updates the read and write accesses tracker variables on EndAccess.
   void EndAccess(bool readonly);
 
   void AddSharedEventForEndAccess(id<MTLSharedEvent> shared_event,
@@ -209,8 +211,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // Updates the read and write accesses tracker variables on BeginAccess and
   // waits on `release_fence_` if fence is not null.
   bool HandleBeginAccessSync(bool readonly);
-  // Updates the read and write accesses tracker variables on EndAccess.
-  void HandleEndAccessSync(bool readonly);
 
   bool IsPassthrough() const { return true; }
 

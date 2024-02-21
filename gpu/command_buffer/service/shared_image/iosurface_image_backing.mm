@@ -609,7 +609,7 @@ void IOSurfaceImageBacking::SkiaGraphiteRepresentation::EndWriteAccess() {
   }
 #endif
   write_surfaces_.clear();
-  backing_impl()->HandleEndAccessSync(/*readonly=*/false);
+  backing_impl()->EndAccess(/*readonly=*/false);
 }
 
 std::vector<skgpu::graphite::BackendTexture>
@@ -621,7 +621,7 @@ IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginReadAccess() {
 }
 
 void IOSurfaceImageBacking::SkiaGraphiteRepresentation::EndReadAccess() {
-  backing_impl()->HandleEndAccessSync(/*readonly=*/true);
+  backing_impl()->EndAccess(/*readonly=*/true);
 }
 #endif
 
@@ -1559,15 +1559,6 @@ gfx::GpuMemoryBufferHandle IOSurfaceImageBacking::GetGpuMemoryBufferHandle() {
 }
 
 bool IOSurfaceImageBacking::BeginAccess(bool readonly) {
-  // TODO(penghuang): tracking access
-  return true;
-}
-
-void IOSurfaceImageBacking::EndAccess(bool readonly) {
-  // TODO(penghuang): tracking access
-}
-
-bool IOSurfaceImageBacking::HandleBeginAccessSync(bool readonly) {
   if (!readonly && ongoing_write_access_) {
     DLOG(ERROR) << "Unable to begin write access because another "
                    "write access is in progress";
@@ -1593,6 +1584,14 @@ bool IOSurfaceImageBacking::HandleBeginAccessSync(bool readonly) {
     ongoing_write_access_ = true;
   }
 
+  return true;
+}
+
+bool IOSurfaceImageBacking::HandleBeginAccessSync(bool readonly) {
+  if (!BeginAccess(readonly)) {
+    return false;
+  }
+
   if (!release_fence_.is_null()) {
     auto fence = gfx::GpuFence(std::move(release_fence_));
     if (gl::GLFence::IsGpuFenceSupported()) {
@@ -1605,7 +1604,7 @@ bool IOSurfaceImageBacking::HandleBeginAccessSync(bool readonly) {
   return true;
 }
 
-void IOSurfaceImageBacking::HandleEndAccessSync(bool readonly) {
+void IOSurfaceImageBacking::EndAccess(bool readonly) {
   if (readonly) {
     CHECK_GT(num_ongoing_read_accesses_, 0u);
     if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
@@ -1721,7 +1720,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
 void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
     IOSurfaceBackingEGLState* egl_state,
     bool readonly) {
-  HandleEndAccessSync(readonly);
+  EndAccess(readonly);
 
   // If this image could potentially be shared with Metal via WebGPU, then flush
   // the GL context to ensure Metal will see it.
