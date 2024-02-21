@@ -68,6 +68,10 @@ class LegacyChromeTableViewControllerTest : public BlockCleanupTest {
   // `expected_text_id`.
   void CheckSectionFooterWithId(int expected_text_id, int section);
 
+  // Verifies that the text cell in section `section` at index `index` has a
+  // `isEnabled` property that matches `expected_enabled`.
+  void CheckTextCellEnabled(BOOL expected_enabled, int section, int item);
+
   // Verifies that the text cell at `item` in `section` has a text property
   // which matches `expected_text`.
   void CheckTextCellText(NSString* expected_text, int section, int item);
