@@ -164,7 +164,8 @@ void WaitforPDFExtensionView() {
   WaitforPDFExtensionView();
 
   // Test that the toolbar is hidden after a user swipes up.
-  HideToolbarUsingUI();
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
 
   // Test that the toolbar is visible after a user swipes down.
@@ -173,7 +174,8 @@ void WaitforPDFExtensionView() {
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Test that the toolbar is hidden after a user swipes up.
-  HideToolbarUsingUI();
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
 }
 
