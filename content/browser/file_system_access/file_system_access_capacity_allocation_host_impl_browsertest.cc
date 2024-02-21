@@ -38,7 +38,7 @@ class FileSystemAccessCapacityAllocationHostImplBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    command_line->AppendSwitchPath(switches::kContentShellDataPath,
+    command_line->AppendSwitchPath(switches::kContentShellUserDataDir,
                                    temp_dir_.GetPath());
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);

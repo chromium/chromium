@@ -75,8 +75,15 @@ void ShellBrowserContext::InitWhileIOAllowed() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(switches::kIgnoreCertificateErrors))
     ignore_certificate_errors_ = true;
+
+  // TODO(b/1295373): We are migrating from '--data-path' to '--user-data-dir'.
+  // Scripts use '--data-path' should be updated to use '--user-data-dir'.
   if (cmd_line->HasSwitch(switches::kContentShellDataPath)) {
-    path_ = cmd_line->GetSwitchValuePath(switches::kContentShellDataPath);
+    CHECK(cmd_line->HasSwitch(switches::kContentShellUserDataDir));
+  }
+
+  if (cmd_line->HasSwitch(switches::kContentShellUserDataDir)) {
+    path_ = cmd_line->GetSwitchValuePath(switches::kContentShellUserDataDir);
     if (base::DirectoryExists(path_) || base::CreateDirectory(path_))  {
       // BrowserContext needs an absolute path, which we would normally get via
       // PathService. In this case, manually ensure the path is absolute.

@@ -66,7 +66,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
   base::CommandLine MakeShellCommandLine() {
     base::CommandLine command_line(
         GetFilePathNextToCurrentExecutable(kShellExecutableName));
-    command_line.AppendSwitchPath(switches::kContentShellDataPath,
+    command_line.AppendSwitchPath(switches::kContentShellUserDataDir,
                                   temp_dir_.GetPath());
 #if BUILDFLAG(IS_OZONE)
     const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();

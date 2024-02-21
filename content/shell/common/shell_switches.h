@@ -12,6 +12,7 @@
 namespace switches {
 
 extern const char kContentShellDataPath[];
+extern const char kContentShellUserDataDir[];
 extern const char kCrashDumpsDir[];
 extern const char kDisableSystemFontCheck[];
 extern const char kExposeInternalsForTesting[];

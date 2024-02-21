@@ -110,7 +110,7 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
      * causes test failures due to state bleedthrough. See crbug.com/617734 for details.
      */
     protected String getUserDataDirectoryCommandLineSwitch() {
-        return "data-path";
+        return "user-data-dir";
     }
 
     protected abstract int getTestActivityViewId();

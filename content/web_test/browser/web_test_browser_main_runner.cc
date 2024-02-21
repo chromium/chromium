@@ -181,7 +181,7 @@ void WebTestBrowserMainRunner::Initialize() {
   CHECK(browser_context_path_for_web_tests_.CreateUniqueTempDir());
   CHECK(!browser_context_path_for_web_tests_.GetPath().MaybeAsASCII().empty());
   command_line.AppendSwitchASCII(
-      switches::kContentShellDataPath,
+      switches::kContentShellUserDataDir,
       browser_context_path_for_web_tests_.GetPath().MaybeAsASCII());
 
   command_line.AppendSwitch(switches::kIgnoreCertificateErrors);
