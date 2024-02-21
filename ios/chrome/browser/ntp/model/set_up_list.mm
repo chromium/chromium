@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
@@ -18,6 +19,8 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -38,28 +41,20 @@ bool GetIsItemComplete(SetUpListItemType type,
       return IsChromeLikelyDefaultBrowser();
     case SetUpListItemType::kAutofill:
       return password_manager_util::IsCredentialProviderEnabledOnStartup(prefs);
-    case SetUpListItemType::kNotifications:
-      // TODO(crbug.com/325279788): use
-      // GetMobileNotificationPermissionStatusForClient to determine opt-in
-      // state.
+    case SetUpListItemType::kNotifications: {
+      id<SystemIdentity> identity =
+          auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       if (IsIOSTipsNotificationsEnabled()) {
-        return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-                   .FindBool(kContentNotificationKey)
-                   .value_or(false) ||
-               local_state->GetDict(prefs::kAppLevelPushNotificationPermissions)
-                   .FindBool(kTipsNotificationKey)
-                   .value_or(false) ||
-               prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-                   .FindBool(kSportsNotificationKey)
-                   .value_or(false) ||
-               prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-                   .FindBool(kCommerceNotificationKey)
-                   .value_or(false);
+        return push_notification_settings::
+            IsMobileNotificationsEnabledForAnyClient(
+                base::SysNSStringToUTF8(identity.gaiaID), prefs);
       } else {
-        return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-            .FindBool(kContentNotificationKey)
-            .value_or(false);
+        return push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kContent,
+                base::SysNSStringToUTF8(identity.gaiaID));
       }
+    }
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
       NOTREACHED_NORETURN();
