@@ -16199,6 +16199,7 @@ from previous Chrome versions.
   <int value="-2053860791" label="XGEOVisibleNetworks:enabled"/>
   <int value="-2053098867" label="AutofillEnableCvcStorageAndFilling:enabled"/>
   <int value="-2053062676" label="EnableNeuralPalmAdaptiveHold:enabled"/>
+  <int value="-2051121685" label="EnablePixPayments:enabled"/>
   <int value="-2050829390" label="LensRegionSearchStaticPage:enabled"/>
   <int value="-2050039250"
       label="JourneysOnDeviceClusteringContentClustering:enabled"/>
@@ -16643,6 +16644,7 @@ from previous Chrome versions.
   <int value="-1871472551" label="PwaRestoreUi:enabled"/>
   <int value="-1871389939" label="DeskButton:enabled"/>
   <int value="-1871185948" label="VrLaunchIntents:disabled"/>
+  <int value="-1871034583" label="EnablePixPayments:disabled"/>
   <int value="-1870961970" label="enable-filemanager-mtp"/>
   <int value="-1869845022" label="force-show-update-menu-item"/>
   <int value="-1869700024" label="DisableDnsProxy:enabled"/>
@@ -20776,6 +20778,8 @@ from previous Chrome versions.
   <int value="27507364" label="apps-keep-chrome-alive"/>
   <int value="27632363" label="JourneysOmniboxHistoryClusterProvider:enabled"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
+  <int value="31258497"
+      label="AutofillEnableSyncingOfPixBankAccounts:disabled"/>
   <int value="31439497" label="ZeroSuggestInMemoryCaching:disabled"/>
   <int value="31776417" label="EnableIkev2Vpn:disabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
@@ -23906,6 +23910,8 @@ from previous Chrome versions.
   <int value="1475210901" label="AvatarToolbarButton:disabled"/>
   <int value="1475771788" label="BackgroundResourceFetch:enabled"/>
   <int value="1475987503" label="CrosComponents:enabled"/>
+  <int value="1476652203"
+      label="AutofillEnableSyncingOfPixBankAccounts:enabled"/>
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>

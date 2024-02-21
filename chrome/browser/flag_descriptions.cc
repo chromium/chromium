@@ -562,6 +562,14 @@ const char kAutofillEnableStickyManualFallbackForCardsDescription[] =
     "When enabled, if the user interacts with the manual fallback bottom "
     "sheet, it'll remain sticky until the user dismisses it.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAutofillEnableSyncingOfPixBankAccountsName[] =
+    "Sync Pix bank accounts from Google Payments";
+const char kAutofillEnableSyncingOfPixBankAccountsDescription[] =
+    "When enabled, Pix bank accounts are synced from Google Payments backend. "
+    "These bank account will show up in Chrome settings.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAutofillEnableUpdateVirtualCardEnrollmentName[] =
     "Enable Update Virtual Card Enrollment";
 const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[] =
@@ -1012,6 +1020,13 @@ const char kEnableRawDrawDescription[] =
 const char kEnableDelegatedCompositingName[] = "Enable delegated compositing";
 const char kEnableDelegatedCompositingDescription[] =
     "When enabled and applicable, the act of compositing is delegated to Ash.";
+
+#if BUILDFLAG(IS_ANDROID)
+const char kEnablePixPaymentsName[] = "Enable Pix payments";
+const char kEnablePixPaymentsDescription[] =
+    "When enabled, users will be offered to pay for Pix transactions using "
+    "their bank accounts stored with Google payments.";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const char kEnableRemovingAllThirdPartyCookiesName[] =
     "Enable removing SameSite=None cookies";

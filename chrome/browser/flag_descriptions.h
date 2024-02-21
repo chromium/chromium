@@ -329,6 +329,11 @@ extern const char kAutofillEnableServerIbanDescription[];
 extern const char kAutofillEnableStickyManualFallbackForCardsName[];
 extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillEnableSyncingOfPixBankAccountsName[];
+extern const char kAutofillEnableSyncingOfPixBankAccountsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentName[];
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];
 
@@ -590,6 +595,11 @@ extern const char kEnableRawDrawDescription[];
 
 extern const char kEnableDelegatedCompositingName[];
 extern const char kEnableDelegatedCompositingDescription[];
+
+#if BUILDFLAG(IS_ANDROID)
+extern const char kEnablePixPaymentsName[];
+extern const char kEnablePixPaymentsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kEnableRemovingAllThirdPartyCookiesName[];
 extern const char kEnableRemovingAllThirdPartyCookiesDescription[];
