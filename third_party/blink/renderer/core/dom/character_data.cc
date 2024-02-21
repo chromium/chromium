@@ -205,6 +205,7 @@ void CharacterData::SetDataAndUpdate(const String& new_data,
                                      const TextDiffRange& diff,
                                      UpdateSource source) {
   String old_data = this->data();
+  diff.CheckValid(old_data, new_data);
   SetDataWithoutUpdate(new_data);
 
   DCHECK(!GetLayoutObject() || IsTextNode());

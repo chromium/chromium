@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_DIFF_RANGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_DIFF_RANGE_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -32,12 +33,20 @@ struct TextDiffRange {
   inline wtf_size_t OldEndOffset() const { return offset + old_size; }
   inline wtf_size_t NewEndOffset() const { return offset + new_size; }
 
+  // Check if text outside of the diff are not changed.
+  void CheckValid(const String& old_text, const String& new_text) const;
+
   wtf_size_t offset = 0;
   // Indicates a deletion of `old_size` characters at `offset`.
   wtf_size_t old_size = 0;
   // Indicates an insertion of `new_size` characters at `offset`.
   wtf_size_t new_size = 0;
 };
+
+#if !EXPENSIVE_DCHECKS_ARE_ON()
+inline void TextDiffRange::CheckValid(const String& old_text,
+                                      const String& new_text) const {}
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
 }  // namespace blink
 

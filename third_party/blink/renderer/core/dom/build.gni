@@ -265,6 +265,7 @@ blink_core_sources_dom = [
   "template_content_document_fragment.h",
   "text.cc",
   "text.h",
+  "text_diff_range.cc",
   "text_diff_range.h",
   "text_link_colors.cc",
   "text_link_colors.h",
