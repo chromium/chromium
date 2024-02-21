@@ -436,11 +436,6 @@ class DIPSWebContentsObserver
     clock_ = *clock;
   }
 
-  std::set<std::string> AllSitesFollowingFirstPartyForTesting(
-      const GURL& first_party_url) {
-    return AllSitesFollowingFirstParty(first_party_url);
-  }
-
  private:
   DIPSWebContentsObserver(content::WebContents* web_contents,
                           DIPSService* dips_service);
@@ -449,38 +444,12 @@ class DIPSWebContentsObserver
 
   void EmitDIPSIssue(const std::set<std::string>& sites);
 
-  // Record a RedirectHeuristic event for a cookie access, if eligible. This
-  // applies when the tracking site has appeared previously in the current
-  // redirect context.
-  void MaybeRecordRedirectHeuristic(
-      const ukm::SourceId& first_party_source_id,
-      const content::CookieAccessDetails& details);
-  void RecordRedirectHeuristic(
-      const ukm::SourceId& first_party_source_id,
-      const ukm::SourceId& third_party_source_id,
-      const content::CookieAccessDetails& details,
-      const size_t sites_passed_count,
-      bool is_current_interaction,
-      std::optional<base::Time> last_user_interaction_time);
-
-  // Create all eligible RedirectHeuristic grants for the current redirect
-  // chain. This may create a storage access grant for any site in the redirect
-  // chain on the last committed site, if it meets the criteria.
-  void CreateAllRedirectHeuristicGrants(const GURL& first_party_url);
-  void CreateRedirectHeuristicGrant(const GURL& url,
-                                    const GURL& first_party_url,
-                                    base::TimeDelta grant_duration,
-                                    bool has_interaction);
-
   void RecordEvent(DIPSRecordedEvent event,
                    const GURL& url,
                    const base::Time& time);
   void IncrementPageSpecificBounceCount(const GURL& final_url);
-  std::set<std::string> AllSitesFollowingFirstParty(
-      const GURL& first_party_url);
 
   // Start RedirectChainDetector::Observer overrides:
-  void OnNavigationCommitted() override;
   void ReportRedirectors(const std::set<std::string>& sites) override;
   void OnRedirectChainEnded(const std::vector<DIPSRedirectInfoPtr>& redirects,
                             const DIPSRedirectChainInfo& chain) override;
@@ -491,8 +460,6 @@ class DIPSWebContentsObserver
 
   // Start WebContentsObserver overrides:
   void PrimaryPageChanged(content::Page& page) override;
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override;
   void OnServiceWorkerAccessed(
       content::RenderFrameHost* render_frame_host,
       const GURL& scope,
@@ -541,12 +508,10 @@ class DIPSWebContentsObserver
   // with the BrowserContext/Profile which will outlive the WebContents that
   // DIPSWebContentsObserver is observing.
   raw_ptr<DIPSService> dips_service_;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   DIPSIssueReportingCallback issue_reporting_callback_;
 
   std::optional<std::string> last_committed_site_;
-  std::optional<base::Time> last_commit_timestamp_;
   std::optional<base::Time> last_storage_timestamp_;
   std::optional<base::Time> last_interaction_timestamp_;
 

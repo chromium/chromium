@@ -81,6 +81,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
+#include "chrome/browser/tpcd/heuristics/redirect_heuristic_tab_helper.h"
 #include "chrome/browser/tpcd/http_error_observer/http_error_tab_helper.h"
 #include "chrome/browser/tpcd/metadata/devtools_observer.h"
 #include "chrome/browser/tpcd/support/validity_service.h"
@@ -475,6 +476,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   PrefsTabHelper::CreateForWebContents(web_contents);
   prerender::NoStatePrefetchTabHelper::CreateForWebContents(web_contents);
   RecentlyAudibleHelper::CreateForWebContents(web_contents);
+  RedirectHeuristicTabHelper::CreateForWebContents(web_contents);
 #if BUILDFLAG(IS_ANDROID)
   RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
       web_contents);

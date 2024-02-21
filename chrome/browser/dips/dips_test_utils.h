@@ -289,4 +289,8 @@ class OpenedWindowObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
+// Simulate a mouse click and wait for the main frame to receive user
+// activation.
+void SimulateMouseClickAndWait(content::WebContents*);
+
 #endif  // CHROME_BROWSER_DIPS_DIPS_TEST_UTILS_H_

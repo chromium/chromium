@@ -40,6 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
+#include "chrome/browser/tpcd/heuristics/redirect_heuristic_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -63,7 +64,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
-#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -539,13 +539,7 @@ class DIPSBounceDetectorBrowserTest
   }
 
   void SimulateMouseClick() {
-    WebContents* web_contents = GetActiveWebContents();
-    content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-    UserActivationObserver observer(web_contents,
-                                    web_contents->GetPrimaryMainFrame());
-    content::SimulateMouseClick(web_contents, 0,
-                                blink::WebMouseEvent::Button::kLeft);
-    observer.Wait();
+    SimulateMouseClickAndWait(GetActiveWebContents());
   }
 
   void SimulateCookieWrite() {
@@ -1626,9 +1620,33 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                   "c.test/title1.html")));
 }
 
+class RedirectHeuristicBrowserTest : public PlatformBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  // Perform a browser-based navigation to terminate the current redirect chain.
+  void EndRedirectChain() {
+    ASSERT_TRUE(content::NavigateToURL(
+        GetActiveWebContents(),
+        embedded_test_server()->GetURL("endthechain.test", "/title1.html")));
+  }
+
+  void SimulateMouseClick() {
+    SimulateMouseClickAndWait(GetActiveWebContents());
+  }
+};
+
 // Tests the conditions for recording RedirectHeuristic_CookieAccess and
 // RedirectHeuristic_CookieAccessThirdParty UKM events.
-IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
                        RecordsRedirectHeuristicCookieAccessEvent) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = GetActiveWebContents();
@@ -1738,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 // Tests setting different metrics for the RedirectHeuristic_CookieAccess UKM
 // event.
 // TODO(https://crbug.com/1489241): Flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
                        DISABLED_RedirectHeuristicCookieAccessEvent_AllMetrics) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = GetActiveWebContents();
@@ -1913,7 +1931,7 @@ struct RedirectHeuristicFlags {
 // Android.
 #if !BUILDFLAG(IS_ANDROID)
 class RedirectHeuristicGrantTest
-    : public DIPSBounceDetectorBrowserTest,
+    : public RedirectHeuristicBrowserTest,
       public testing::WithParamInterface<RedirectHeuristicFlags> {
  public:
   RedirectHeuristicGrantTest() {
@@ -1933,8 +1951,24 @@ class RedirectHeuristicGrantTest
            require_current_interaction_string}}});
   }
 
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features_,
+        /*disabled_features=*/{
+            // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
+            // to disable this feature.
+            features::kHttpsUpgrades,
+        });
+    RedirectHeuristicBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Prevents flakiness by handling clicks even before content is drawn.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
   void SetUpOnMainThread() override {
-    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
+    RedirectHeuristicBrowserTest::SetUpOnMainThread();
 
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
@@ -1943,6 +1977,9 @@ class RedirectHeuristicGrantTest
     browser()->profile()->GetPrefs()->SetBoolean(
         prefs::kTrackingProtection3pcdEnabled, true);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::vector<base::test::FeatureRefAndParams> enabled_features_;
 };
 
 IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
@@ -2933,14 +2970,20 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                                               start_time + base::Seconds(1))));
 }
 
-class AllSitesFollowingFirstPartyTest : public DIPSBounceDetectorBrowserTest {
+class AllSitesFollowingFirstPartyTest : public PlatformBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
+    PlatformBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    host_resolver()->AddRule("*", "127.0.0.1");
 
     first_party_url_ = embedded_test_server()->GetURL("a.test", "/title1.html");
     third_party_url_ = embedded_test_server()->GetURL("b.test", "/title1.html");
     other_url_ = embedded_test_server()->GetURL("c.test", "/title1.html");
+  }
+
+  WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
   }
 
  protected:
@@ -2957,8 +3000,8 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
 
-  EXPECT_THAT(web_contents_observer_->AllSitesFollowingFirstPartyForTesting(
-                  first_party_url_),
+  EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
+                  GetActiveWebContents(), first_party_url_),
               testing::ElementsAre(GetSiteForDIPS(third_party_url_)));
 }
 
@@ -2969,8 +3012,8 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
 
-  EXPECT_THAT(web_contents_observer_->AllSitesFollowingFirstPartyForTesting(
-                  first_party_url_),
+  EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
+                  GetActiveWebContents(), first_party_url_),
               testing::ElementsAre(GetSiteForDIPS(third_party_url_)));
 }
 
@@ -2980,8 +3023,8 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest, MultipleSitesIncluded) {
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), first_party_url_));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
 
-  EXPECT_THAT(web_contents_observer_->AllSitesFollowingFirstPartyForTesting(
-                  first_party_url_),
+  EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
+                  GetActiveWebContents(), first_party_url_),
               testing::ElementsAre(GetSiteForDIPS(third_party_url_),
                                    GetSiteForDIPS(other_url_)));
 }
@@ -2991,8 +3034,8 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
 
-  EXPECT_THAT(web_contents_observer_->AllSitesFollowingFirstPartyForTesting(
-                  first_party_url_),
+  EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
+                  GetActiveWebContents(), first_party_url_),
               testing::IsEmpty());
 }
 
@@ -3002,8 +3045,8 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), first_party_url_));
 
-  EXPECT_THAT(web_contents_observer_->AllSitesFollowingFirstPartyForTesting(
-                  first_party_url_),
+  EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
+                  GetActiveWebContents(), first_party_url_),
               testing::IsEmpty());
 }
 
