@@ -117,6 +117,10 @@ class GEOMETRY_EXPORT QuadF {
   // box of the quad intersects `rect`.
   bool IntersectsRectPartial(const RectF& rect) const;
 
+  // Tests whether any part of the quad intersects with this quad.
+  // This intersection is edge-inclusive.
+  bool IntersectsQuad(const QuadF& quad) const;
+
   // Test whether any part of the circle/ellipse intersects with this quad.
   // Note that these two functions only work for convex quads.
   // These intersections are edge-inclusive and will return true even if the
@@ -135,6 +139,10 @@ class GEOMETRY_EXPORT QuadF {
   std::string ToString() const;
 
  private:
+  bool IsToTheLeftOfOrTouchingLine(const PointF& base,
+                                   const Vector2dF& vector) const;
+  bool FullyOutsideOneEdge(const QuadF& quad) const;
+
   PointF p1_;
   PointF p2_;
   PointF p3_;

@@ -559,6 +559,121 @@ TEST(QuadFTest, RectIntersectionIsInclusive) {
   EXPECT_FALSE(quad2.IntersectsRect(RectF(60, 130, 30, 10)));
 }
 
+TEST(FloatQuadTest, QuadIntersection) {
+  // Clockwise (convex) quad.
+  // (Centroid = { 72.5, 85 }, Min = { 50, 40 }, Max = { 100, 120 })
+  QuadF cw_quad(PointF(100, 100), PointF(80, 120), PointF(50, 80),
+                PointF(60, 40));
+
+  // All points contained.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(72.5, 85, 1, 1))));
+
+  // All points contained (degenerate).
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(72.5, 85, 0, 0))));
+
+  // One point contained.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(72.5, 85, 100, 100))));
+
+  // Quad contained by other quad.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(40, 30, 70, 100))));
+
+  // Touching a single point.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(80, 120, 100, 100))));
+
+  // Touching p1 - p2 edge.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(90, 110, 10, 10))));
+
+  // Touching p2 - p3 edge.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(55, 100, 10, 10))));
+
+  // Touching p3 - p4 edge.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(45, 50, 10, 10))));
+
+  // Touching p4 - p1 edge.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(80, 60, 10, 10))));
+
+  // Edge crossing (but no points in quad.)
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(RectF(50, 30, 50, 15))));
+
+  // Co-linear edges.
+  EXPECT_TRUE(cw_quad.IntersectsQuad(QuadF(PointF(20, 40), PointF(110, 160),
+                                           PointF(70, 160), PointF(10, 40))));
+
+  // Fully outside.
+  // L = { 80, 120 } + t * { -30, -40 }
+  EXPECT_FALSE(cw_quad.IntersectsQuad(
+      QuadF(PointF(10, 40), PointF(100, 160), PointF(70, 160), PointF(0, 40))));
+  // L = { 100, 100 } + t * { -20, 20 }
+  EXPECT_FALSE(cw_quad.IntersectsQuad(QuadF(PointF(120, 90), PointF(80, 130),
+                                            PointF(90, 130), PointF(130, 90))));
+  // L = { 50, 80 } + t * { 10, -40 }
+  EXPECT_FALSE(cw_quad.IntersectsQuad(
+      QuadF(PointF(35, 100), PointF(55, 20), PointF(45, 20), PointF(25, 100))));
+  // L = { 60, 40 } + t * { 40, 60 }
+  EXPECT_FALSE(cw_quad.IntersectsQuad(QuadF(PointF(50, 10), PointF(130, 130),
+                                            PointF(150, 130), PointF(80, 10))));
+  // BBox = { { 50, 40 }, { 100, 120 } }; w = 50, h = 80
+  EXPECT_FALSE(cw_quad.IntersectsQuad(QuadF(RectF(110, 50, 10, 60))));
+  EXPECT_FALSE(cw_quad.IntersectsQuad(QuadF(RectF(60, 130, 30, 10))));
+  EXPECT_FALSE(cw_quad.IntersectsQuad(QuadF(RectF(30, 50, 10, 60))));
+  EXPECT_FALSE(cw_quad.IntersectsQuad(QuadF(RectF(60, 20, 30, 10))));
+
+  // Same quad, but counter-clockwise.
+  // (Centroid = { 72.5, 85 }, Min = { 50, 40 }, Max = { 100, 120 })
+  QuadF ccw_quad(PointF(100, 100), PointF(60, 40), PointF(50, 80),
+                 PointF(80, 120));
+
+  // All points contained.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(72.5, 85, 1, 1))));
+
+  // One point contained.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(72.5, 85, 100, 100))));
+
+  // Quad contained by other quad.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(40, 30, 70, 100))));
+
+  // Touching a single point.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(80, 120, 100, 100))));
+
+  // Touching p1 - p2 edge.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(90, 110, 10, 10))));
+
+  // Touching p2 - p3 edge.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(55, 100, 10, 10))));
+
+  // Touching p3 - p4 edge.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(45, 50, 10, 10))));
+
+  // Touching p4 - p1 edge.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(80, 60, 10, 10))));
+
+  // Edge crossing (but no points in quad.)
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(RectF(50, 30, 50, 15))));
+
+  // Co-linear edges.
+  EXPECT_TRUE(ccw_quad.IntersectsQuad(QuadF(PointF(20, 40), PointF(110, 160),
+                                            PointF(70, 160), PointF(10, 40))));
+
+  // Fully outside.
+  // L = { 80, 120 } + t * { -30, -40 }
+  EXPECT_FALSE(ccw_quad.IntersectsQuad(
+      QuadF(PointF(10, 40), PointF(100, 160), PointF(70, 160), PointF(0, 40))));
+  // L = { 100, 100 } + t * { -20, 20 }
+  EXPECT_FALSE(ccw_quad.IntersectsQuad(QuadF(
+      PointF(120, 90), PointF(80, 130), PointF(90, 130), PointF(130, 90))));
+  // L = { 50, 80 } + t * { 10, -40 }
+  EXPECT_FALSE(ccw_quad.IntersectsQuad(
+      QuadF(PointF(35, 100), PointF(55, 20), PointF(45, 20), PointF(25, 100))));
+  // L = { 60, 40 } + t * { 40, 60 }
+  EXPECT_FALSE(ccw_quad.IntersectsQuad(QuadF(
+      PointF(50, 10), PointF(130, 130), PointF(150, 130), PointF(80, 10))));
+  // BBox = { { 50, 40 }, { 100, 120 } }; w = 50, h = 80
+  EXPECT_FALSE(ccw_quad.IntersectsQuad(QuadF(RectF(110, 50, 10, 60))));
+  EXPECT_FALSE(ccw_quad.IntersectsQuad(QuadF(RectF(60, 130, 30, 10))));
+  EXPECT_FALSE(ccw_quad.IntersectsQuad(QuadF(RectF(30, 50, 10, 60))));
+  EXPECT_FALSE(ccw_quad.IntersectsQuad(QuadF(RectF(60, 20, 30, 10))));
+}
+
 TEST(QuadFTest, IntersectsEllipseClockWise) {
   QuadF quad(PointF(10, 0), PointF(20, 10), PointF(10, 20), PointF(0, 10));
 

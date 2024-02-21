@@ -189,11 +189,16 @@ bool HitTestLocation::Intersects(const FloatRoundedRect& rect) const {
 }
 
 bool HitTestLocation::Intersects(const gfx::QuadF& quad) const {
-  // TODO(chrishtr): if the quads are not rectilinear, calling Intersects
-  // has false positives.
-  if (is_rect_based_)
-    return Intersects(quad.BoundingBox());
-  return quad.Contains(gfx::PointF(point_));
+  if (is_rect_based_) {
+    if (!Intersects(quad.BoundingBox())) {
+      return false;
+    }
+    if (quad.IsRectilinear()) {
+      return true;
+    }
+    return quad.IntersectsQuad(transformed_rect_);
+  }
+  return quad.Contains(transformed_point_);
 }
 
 bool HitTestLocation::ContainsPoint(const gfx::PointF& point) const {
