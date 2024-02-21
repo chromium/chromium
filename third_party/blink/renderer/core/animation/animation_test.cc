@@ -2261,7 +2261,7 @@ TEST_P(AnimationPendingAnimationsTest,
 }
 
 TEST_P(AnimationAnimationTestCompositing,
-       ScrollLinkedAnimationNotCompositedIfSourceIsNotComposited) {
+       ScrollLinkedAnimationCompositedEvenIfSourceIsNotComposited) {
   SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -2320,8 +2320,11 @@ TEST_P(AnimationAnimationTestCompositing,
   UpdateAllLifecyclePhasesForTest();
   scroll_animation->play();
   scroll_animation->SetDeferredStartTimeForTesting();
-  EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
-            CompositorAnimations::kTimelineSourceHasInvalidCompositingState);
+  EXPECT_EQ(
+      scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
+      RuntimeEnabledFeatures::ScrollTimelineAlwaysOnCompositorEnabled()
+          ? CompositorAnimations::kNoFailure
+          : CompositorAnimations::kTimelineSourceHasInvalidCompositingState);
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)

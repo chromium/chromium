@@ -2189,9 +2189,8 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // TODO(crbug.com/476553): Once all ScrollNodes including uncomposited ones
   // are in the compositor, the animation should be composited.
   if (timeline_ && timeline_->IsScrollSnapshotTimeline() &&
-      (!RuntimeEnabledFeatures::ScrollTimelineOnCompositorEnabled() ||
-       !CompositorAnimations::CheckUsesCompositedScrolling(
-           To<ScrollSnapshotTimeline>(*timeline_).ResolvedSource()))) {
+      !CompositorAnimations::CanStartScrollTimelineOnCompositor(
+          To<ScrollSnapshotTimeline>(*timeline_).ResolvedSource())) {
     reasons |= CompositorAnimations::kTimelineSourceHasInvalidCompositingState;
   }
 

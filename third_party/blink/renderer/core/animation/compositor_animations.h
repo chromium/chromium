@@ -206,7 +206,7 @@ class CORE_EXPORT CompositorAnimations {
   static CompositorElementIdNamespace CompositorElementNamespaceForProperty(
       CSSPropertyID property);
 
-  static bool CheckUsesCompositedScrolling(Node* target);
+  static bool CanStartScrollTimelineOnCompositor(Node* target);
 
   static bool CanStartTransformAnimationOnCompositorForSVG(const SVGElement&);
 
