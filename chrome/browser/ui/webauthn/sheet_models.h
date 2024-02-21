@@ -681,9 +681,14 @@ class AuthenticatorPriorityMechanismSheetModel
 // The sheet shown when the user is entering a GPM pin.
 class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
  public:
+  // Indicates whether the view should accommodate creating a new pin or
+  // entering an exisiting one.
+  enum class Mode { kPinCreate, kPinEntry };
+
   explicit AuthenticatorGPMPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
-      int pin_digits_count);
+      int pin_digits_count,
+      Mode mode);
   ~AuthenticatorGPMPinSheetModel() override;
 
   int pin_digits_count() const;
@@ -702,6 +707,7 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
 
   std::u16string pin_;
   const int pin_digits_count_;
+  const Mode mode_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

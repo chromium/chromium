@@ -162,6 +162,7 @@ class AuthenticatorRequestDialogModel
     kTrustThisComputer,
     kGPMCreatePasskey,
     kGPMCreatePin,
+    kGPMEnterPin,
     kGPMOnboarding,
     kWaitingForEnclave,
 

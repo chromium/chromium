@@ -1584,10 +1584,12 @@ void AuthenticatorPriorityMechanismSheetModel::OnAccept() {
 
 AuthenticatorGPMPinSheetModel::AuthenticatorGPMPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
-    int pin_digits_count)
+    int pin_digits_count,
+    Mode mode)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden),
-      pin_digits_count_(pin_digits_count) {
+      pin_digits_count_(pin_digits_count),
+      mode_(mode) {
   // TODO(rgod): Add correct illustration.
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 }
@@ -1607,12 +1609,23 @@ void AuthenticatorGPMPinSheetModel::SetPin(std::u16string pin) {
 }
 
 std::u16string AuthenticatorGPMPinSheetModel::GetStepTitle() const {
-  return u"Create a PIN for your Google Password Manager (UNTRANSLATED)";
+  switch (mode_) {
+    case Mode::kPinCreate:
+      return u"Create a PIN for your Google Password Manager (UNTRANSLATED)";
+    case Mode::kPinEntry:
+      return u"Enter your PIN for your Google Password Manager (UNTRANSLATED)";
+  }
 }
 
 std::u16string AuthenticatorGPMPinSheetModel::GetStepDescription() const {
-  return u"Your PIN protects your data. You'll need it when you want to start "
-         u"using your passkeys on new devices. (UNTRANSLATED)";
+  switch (mode_) {
+    case Mode::kPinCreate:
+      return u"Your PIN protects your data. You'll need it when you want to "
+             u"start using your passkeys on new devices. (UNTRANSLATED)";
+    case Mode::kPinEntry:
+      return u"Sign in with your passkey to example.com as example@gmail.com "
+             u"(UNTRANSLATED)";
+  }
 }
 
 bool AuthenticatorGPMPinSheetModel::IsAcceptButtonVisible() const {
