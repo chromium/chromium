@@ -61,9 +61,12 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
   }
 
   void AddBrowser(Browser* browser, const std::vector<GURL>& urls) {
+    ui_test_utils::BrowserChangeObserver new_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     ui_test_utils::NavigateToURLWithDisposition(
         browser, urls[0], WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+    ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
     AddNavigations(BrowserList::GetInstance()->GetLastActive(),
                    {urls.begin() + 1, urls.end()});
   }

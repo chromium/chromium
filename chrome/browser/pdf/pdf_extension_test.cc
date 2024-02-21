@@ -1920,7 +1920,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftLeft) {
   SimulateMouseClickAt(guest, blink::WebInputEvent::kShiftKey,
                        blink::WebMouseEvent::Button::kLeft,
                        GetLinkPosition(guest));
-  ui_test_utils::WaitForBrowserToOpen();
+  Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+  ui_test_utils::WaitForBrowserSetLastActive(browser);
 
   ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
 
@@ -2128,7 +2129,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, ShiftLeft) {
   SimulateMouseClickAt(guest, blink::WebInputEvent::kShiftKey,
                        blink::WebMouseEvent::Button::kLeft,
                        GetLinkPosition(guest));
-  ui_test_utils::WaitForBrowserToOpen();
+  Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+  ui_test_utils::WaitForBrowserSetLastActive(browser);
 
   ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
 
