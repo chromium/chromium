@@ -83,6 +83,9 @@ class AppListToastContainerView : public views::View {
   // Creates a reorder nudge view in the container.
   void CreateReorderNudgeView();
 
+  // Creates a tutorial nudge view in the container.
+  void CreateTutorialNudgeView();
+
   // Removes the reorder nudge view if the nudge view is showing.
   void RemoveReorderNudgeView();
 

@@ -7,10 +7,16 @@
 #include <limits>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/views/app_list_keyboard_controller.h"
+#include "ash/app_list/views/app_list_nudge_controller.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -57,7 +63,13 @@ constexpr base::TimeDelta kShowPageAnimationOpacityDuration =
 
 }  // namespace
 
-AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage() {
+AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
+    AppListViewDelegate* view_delegate,
+    AppListConfig* app_list_config,
+    AppListA11yAnnouncer* a11y_announcer,
+    base::OnceClosure exit_page_callback)
+    : app_list_nudge_controller_(std::make_unique<AppListNudgeController>()),
+      exit_page_callback_(std::move(exit_page_callback)) {
   SetUseDefaultFillLayout(true);
 
   // The entire page scrolls.
@@ -91,7 +103,19 @@ AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage() {
       kVerticalPaddingBetweenSections));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
+  // Add a empty container view. A toast view should be added to
+  // `toast_container_` for user ed.
+  toast_container_ =
+      scroll_contents->AddChildView(std::make_unique<AppListToastContainerView>(
+          app_list_nudge_controller_.get(), /*keyboard_controller=*/nullptr,
+          a11y_announcer, view_delegate,
+          /*delegate=*/this,
+          /*tablet_mode=*/false));
+
   scroll_view_->SetContents(std::move(scroll_contents));
+  toast_container_->CreateTutorialNudgeView();
+  toast_container_->UpdateVisibilityState(
+      AppListToastContainerView::VisibilityState::kShown);
 }
 
 AppListBubbleAppsCollectionsPage::~AppListBubbleAppsCollectionsPage() = default;
@@ -174,13 +198,30 @@ void AppListBubbleAppsCollectionsPage::AnimateHidePage() {
 }
 
 void AppListBubbleAppsCollectionsPage::AbortAllAnimations() {
-  if (scroll_view_->contents()->layer()) {
-    scroll_view_->contents()->layer()->GetAnimator()->AbortAllAnimations();
+  auto abort_animations = [](views::View* view) {
+    if (view->layer()) {
+      view->layer()->GetAnimator()->AbortAllAnimations();
+    }
+  };
+  abort_animations(scroll_view_->contents());
+  if (toast_container_) {
+    abort_animations(toast_container_);
   }
+}
+
+void AppListBubbleAppsCollectionsPage::OnNudgeRemoved() {
+  CHECK(exit_page_callback_);
+
+  std::move(exit_page_callback_).Run();
 }
 
 ui::Layer* AppListBubbleAppsCollectionsPage::GetPageAnimationLayerForTest() {
   return scroll_view_->contents()->layer();
+}
+
+AppListToastContainerView*
+AppListBubbleAppsCollectionsPage::GetToastContainerViewForTest() {
+  return toast_container_;
 }
 
 void AppListBubbleAppsCollectionsPage::SetVisibilityAfterAnimation(

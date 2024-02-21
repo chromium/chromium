@@ -17,6 +17,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
@@ -126,6 +127,38 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, AnimateShowPage) {
 
   // Apps page is visible.
   EXPECT_TRUE(apps_collections_page->GetVisible());
+}
+
+TEST_F(AppListBubbleAppsCollectionsPageTest, DismissNudgeIsVisible) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  AppListToastContainerView* toast_container =
+      helper->GetBubbleAppsCollectionsPage()->GetToastContainerViewForTest();
+  EXPECT_TRUE(toast_container->IsToastVisible());
+}
+
+TEST_F(AppListBubbleAppsCollectionsPageTest, ShowAppsPageAfterDismissingNudge) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  AppListToastContainerView* toast_container =
+      apps_collections_page->GetToastContainerViewForTest();
+  EXPECT_TRUE(toast_container->IsToastVisible());
+
+  // Click on close button to dismiss the toast.
+  LeftClickOn(toast_container->GetToastButton());
+  EXPECT_FALSE(toast_container->IsToastVisible());
+
+  // Apps page is not visible.
+  EXPECT_FALSE(apps_collections_page->GetVisible());
 }
 
 }  // namespace

@@ -322,8 +322,13 @@ void AppListBubbleView::InitContentsView(
           view_delegate_, drag_and_drop_host, GetAppListConfig(),
           a11y_announcer_.get(), /*folder_controller=*/this,
           /*search_box=*/search_box_view_));
+
   apps_collections_page_ = pages_container->AddChildView(
-      std::make_unique<AppListBubbleAppsCollectionsPage>());
+      std::make_unique<AppListBubbleAppsCollectionsPage>(
+          view_delegate_, GetAppListConfig(), a11y_announcer_.get(),
+          base::BindOnce(&AppListBubbleView::ShowPage,
+                         weak_factory_.GetWeakPtr(),
+                         AppListBubblePage::kApps)));
 
   // Skip the "hide continue section" button on arrow up/down in app list.
   button_focus_skipper_->AddButton(

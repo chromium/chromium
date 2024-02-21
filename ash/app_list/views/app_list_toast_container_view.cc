@@ -73,7 +73,6 @@ AppListToastContainerView::AppListToastContainerView(
       keyboard_controller_(keyboard_controller),
       current_toast_(AppListToastType::kNone) {
   DCHECK(a11y_announcer_);
-  DCHECK(keyboard_controller_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -97,8 +96,9 @@ AppListToastContainerView::~AppListToastContainerView() {
 }
 
 bool AppListToastContainerView::OnKeyPressed(const ui::KeyEvent& event) {
-  if (!delegate_)
+  if (!delegate_ || !keyboard_controller_) {
     return false;
+  }
 
   if (event.key_code() == ui::VKEY_UP)
     return keyboard_controller_->MoveFocusUpFromToast(focused_app_column_);
@@ -191,6 +191,29 @@ void AppListToastContainerView::CreateReorderNudgeView() {
   current_toast_ = AppListToastType::kReorderNudge;
 }
 
+void AppListToastContainerView::CreateTutorialNudgeView() {
+  if (toast_view_) {
+    return;
+  }
+
+  AppListToastView::Builder toast_view_builder(u"Tutorial view is on");
+
+  toast_view_builder
+      .SetButton(
+          u"Dismiss view",
+          base::BindRepeating(&AppListToastContainerView::FadeOutToastView,
+                              base::Unretained(this)))
+      .SetStyleForTabletMode(tablet_mode_)
+      .SetSubtitle(u"Apps are grouped by category")
+      .SetIconBackground(true);
+
+  toast_view_ = AddChildView(toast_view_builder.Build());
+  if (available_width_) {
+    toast_view_->SetAvailableWidth(*available_width_);
+  }
+  current_toast_ = AppListToastType::kTutorialViewNudge;
+}
+
 void AppListToastContainerView::RemoveReorderNudgeView() {
   // If the nudge is requested to be removed, it is likely that it won't be
   // shown to the user again. Therefore, the nudge child view is directly
@@ -213,8 +236,8 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
   // Return early if the reorder nudge is not showing when the app list is
   // hiding.
   if (nudge_controller_->is_visible() &&
-      nudge_controller_->current_nudge() !=
-          AppListNudgeController::NudgeType::kReorderNudge) {
+      (nudge_controller_->current_nudge() !=
+       AppListNudgeController::NudgeType::kReorderNudge)) {
     return;
   }
 
@@ -225,9 +248,14 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
   }
 
   AppListNudgeController::NudgeType new_nudge =
-      nudge_controller_->ShouldShowReorderNudge()
-          ? AppListNudgeController::NudgeType::kReorderNudge
-          : AppListNudgeController::NudgeType::kNone;
+      AppListNudgeController::NudgeType::kNone;
+
+  if (nudge_controller_->current_nudge() ==
+      AppListNudgeController::NudgeType::kTutorialNudge) {
+    new_nudge = AppListNudgeController::NudgeType::kTutorialNudge;
+  } else if (nudge_controller_->ShouldShowReorderNudge()) {
+    new_nudge = AppListNudgeController::NudgeType::kReorderNudge;
+  }
 
   // Update the visible and active state in `nudge_controller_`.
   switch (state) {
