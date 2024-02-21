@@ -65,8 +65,6 @@ enum DialogViewId : int {
   // The following are views::Label objects.
   EXPIRATION_DATE_LABEL,  // Appears during save offer bubble
   NICKNAME_LABEL,         // Appears during manage saved IBAN bubble.
-  DESCRIPTION_LABEL,      // Appears during save card and virtual card enroll
-                          // confirmation bubble.
 
   // The following are views::StyledLabel objects.
   SETTINGS_LABEL,  // Appears in the mandatory reauth opt-in confirmation
@@ -74,9 +72,7 @@ enum DialogViewId : int {
 
   // The following are views::Throbber objects.
   LOADING_THROBBER,  // Appears during server card upload in save card offer
-                     // bubble and during ongoing enrollment in virtual card
-                     //  enroll bubble.
-
+                     // bubble.
 };
 
 }  // namespace autofill
