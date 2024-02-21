@@ -14,9 +14,7 @@ namespace blink {
 
 LayoutRubyAsBlock::LayoutRubyAsBlock(Element* element)
     : LayoutNGBlockFlow(element),
-      ruby_container_(RuntimeEnabledFeatures::RubySimplePairingEnabled()
-                          ? MakeGarbageCollected<RubyContainer>(*this)
-                          : nullptr) {
+      ruby_container_(MakeGarbageCollected<RubyContainer>(*this)) {
   UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
 }
 
@@ -58,39 +56,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
     return;
   }
 
-  if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
-    ruby_container_->AddChild(child, before_child);
-    return;
-  }
-
-  if (before_child) {
-    // Insert the child into a column.
-    LayoutObject* column = before_child;
-    while (column && !column->IsRubyColumn()) {
-      column = column->Parent();
-    }
-    if (column) {
-      if (before_child == column) {
-        before_child = To<LayoutRubyColumn>(before_child)->FirstChild();
-      }
-      DCHECK(!before_child || before_child->IsDescendantOf(column));
-      column->AddChild(child, before_child);
-      return;
-    }
-    NOTREACHED();  // before_child should always have a column as parent!
-                   // Emergency fallback: fall through and just append.
-  }
-
-  // If the new child would be appended, try to add the child to the previous
-  // column if possible, or create a new column otherwise.
-  // (The LayoutRubyColumn object will handle the details)
-  auto* last_column = LayoutRuby::LastRubyColumn(*this);
-  if (!last_column || last_column->HasRubyText()) {
-    last_column = &LayoutRubyColumn::Create(this, *this);
-    LayoutNGBlockFlow::AddChild(last_column, before_child);
-    last_column->EnsureRubyBase();
-  }
-  last_column->AddChild(child);
+  ruby_container_->AddChild(child, before_child);
 }
 
 void LayoutRubyAsBlock::RemoveChild(LayoutObject* child) {
@@ -113,15 +79,7 @@ void LayoutRubyAsBlock::RemoveChild(LayoutObject* child) {
     return;
   }
 
-  if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
-    NOTREACHED();
-    return;
-  }
-
-  // Otherwise find the containing column and remove it from there.
-  auto* column = LayoutRuby::FindRubyColumnParent(child);
-  DCHECK(column);
-  column->RemoveChild(child);
+  NOTREACHED() << child;
 }
 
 void LayoutRubyAsBlock::DidRemoveChildFromColumn(LayoutObject& child) {

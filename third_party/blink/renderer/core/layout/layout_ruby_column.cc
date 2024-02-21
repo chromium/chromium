@@ -94,102 +94,30 @@ void LayoutRubyColumn::AddChild(LayoutObject* child,
       DCHECK(!HasRubyText());
       // prepend ruby texts as first child
       LayoutBlockFlow::AddChild(child, FirstChild());
-    } else if (before_child->IsRubyText()) {
-      DCHECK(!RuntimeEnabledFeatures::RubySimplePairingEnabled());
-      // New text is inserted just before another.
-      // In this case the new text takes the place of the old one, and
-      // the old text goes into a new column that is inserted as next sibling.
-      DCHECK_EQ(before_child->Parent(), this);
-      LayoutObject* ruby = Parent();
-      DCHECK(ruby->IsRuby());
-      auto& new_column = Create(ruby, *ContainingBlock());
-      ruby->AddChild(&new_column, NextSibling());
-      new_column.EnsureRubyBase();
-      // Add the new ruby text and move the old one to the new column
-      // Note: Doing it in this order and not using LayoutRubyColumn's methods,
-      // in order to avoid automatic removal of the ruby column in case there is
-      // no other child besides the old ruby text.
-      LayoutBlockFlow::AddChild(child, before_child);
-      LayoutBlockFlow::RemoveChild(before_child);
-      new_column.AddChild(before_child);
-    } else if (RubyBase()->FirstChild()) {
-      DCHECK(!RuntimeEnabledFeatures::RubySimplePairingEnabled());
-      // Insertion before a ruby base object.
-      // In this case we need insert a new column before the current one and
-      // split the base.
-      LayoutObject* ruby = Parent();
-      LayoutRubyColumn& new_column = Create(ruby, *ContainingBlock());
-      ruby->AddChild(&new_column, this);
-      auto& new_base = new_column.EnsureRubyBase();
-      new_column.AddChild(child);
-
-      EnsureRubyBase().MoveChildren(new_base, before_child);
+    } else {
+      NOTREACHED() << before_child;
     }
-  } else if (RuntimeEnabledFeatures::RubySimplePairingEnabled() &&
-             child->IsRubyBase()) {
+  } else if (child->IsRubyBase()) {
     DCHECK(!before_child);
     DCHECK(!RubyBase());
     LayoutBlockFlow::AddChild(child);
   } else {
-    DCHECK(!RuntimeEnabledFeatures::RubySimplePairingEnabled());
-    // child is not a text -> insert it into the base
-    // (append it instead if beforeChild is the ruby text)
-    auto& base = EnsureRubyBase();
-    if (before_child == &base) {
-      before_child = base.FirstChild();
-    }
-    if (before_child && before_child->IsRubyText()) {
-      before_child = nullptr;
-    }
-    DCHECK(!before_child || before_child->IsDescendantOf(&base));
-    base.AddChild(child, before_child);
+    NOTREACHED() << child;
   }
 }
 
 void LayoutRubyColumn::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  // If the child is a ruby text, then merge the ruby base with the base of
-  // the right sibling column, if possible.
-  if (!RuntimeEnabledFeatures::RubySimplePairingEnabled() &&
-      !BeingDestroyed() && !DocumentBeingDestroyed() && child->IsRubyText()) {
-    auto* base = RubyBase();
-    LayoutObject* right_neighbour = NextSibling();
-    if (base->FirstChild() && right_neighbour &&
-        right_neighbour->IsRubyColumn()) {
-      auto* right_column = To<LayoutRubyColumn>(right_neighbour);
-      auto& right_base = right_column->EnsureRubyBase();
-      if (right_base.FirstChild()) {
-        // Collect all children in a single base, then swap the bases.
-        right_base.MoveChildren(*base);
-        MoveChildTo(right_column, base);
-        right_column->MoveChildTo(this, &right_base);
-        DCHECK(!RubyBase()->FirstChild());
-      }
-    }
-  }
-
   LayoutBlockFlow::RemoveChild(child);
 
-  if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
-    if (!DocumentBeingDestroyed()) {
-      DCHECK(child->IsRubyBase() || child->IsRubyText());
-      if (auto* inline_ruby = DynamicTo<LayoutRuby>(Parent())) {
-        inline_ruby->DidRemoveChildFromColumn(*child);
-      } else {
-        To<LayoutRubyAsBlock>(Parent())->DidRemoveChildFromColumn(*child);
-      }
-      // Do nothing here! `this` might be destroyed by RubyContainer::Repair().
+  if (!DocumentBeingDestroyed()) {
+    DCHECK(child->IsRubyBase() || child->IsRubyText());
+    if (auto* inline_ruby = DynamicTo<LayoutRuby>(Parent())) {
+      inline_ruby->DidRemoveChildFromColumn(*child);
+    } else {
+      To<LayoutRubyAsBlock>(Parent())->DidRemoveChildFromColumn(*child);
     }
-    return;
-  }
-  if (!BeingDestroyed() && !DocumentBeingDestroyed()) {
-    // If this has only an empty LayoutRubyBase, destroy this sub-tree.
-    LayoutBlockFlow* base = RubyBase();
-    if (!HasRubyText() && !base->FirstChild()) {
-      LayoutBlockFlow::RemoveChild(base);
-      base->Destroy();
-      Destroy();
-    }
+    // Do nothing here! `this` might be destroyed by RubyContainer::Repair().
   }
 }
 

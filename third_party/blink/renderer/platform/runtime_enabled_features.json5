@@ -3214,10 +3214,6 @@
       name: "RubyLineBreakable",
     },
     {
-      name: "RubySimplePairing",
-      status: "stable",
-    },
-    {
       // Runs a microtask checkpoint before creating custom elements in
       // XMLDocumentParser. Should be safe to remove after M125
       name: "RunMicrotaskBeforeXmlCustomElement",
