@@ -394,6 +394,15 @@ void LocalFrame::CreateView(const gfx::Size& viewport_size,
 
   bool is_local_root = IsLocalRoot();
 
+  if (LcppScriptObserverEnabled()) {
+    // Force attach LCPP during Frame creation to avoid missing script
+    // executions from being observed. This is a temporary fix until
+    // script observer probe can be refactored out and be directly attached to
+    // the frame. More info at:
+    // https://crrev.com/c/chromium/src/+/5294177/comment/2c12a4bd_eedc9810/
+    std::ignore = GetLCPP();
+  }
+
   if (is_local_root && View())
     View()->SetParentVisible(false);
 
