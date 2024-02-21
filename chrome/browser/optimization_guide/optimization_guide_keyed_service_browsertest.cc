@@ -1130,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
           optimization_guide::prefs::FeatureOptInState::kDisabled));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_EQ(0, wallpaper_search_observer.count_feature_enabled_state_changes_);
   EXPECT_EQ(2, compose_observer.count_feature_enabled_state_changes_);
   EXPECT_FALSE(compose_observer.is_currently_enabled_);
   EXPECT_EQ(2, tab_observer.count_feature_enabled_state_changes_);
@@ -1147,6 +1147,12 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_EQ(optimization_guide::prefs::FeatureOptInState::kNotInitialized,
+            static_cast<optimization_guide::prefs::FeatureOptInState>(
+                prefs->GetInteger(
+                    optimization_guide::prefs::GetSettingEnabledPrefName(
+                        optimization_guide::proto::ModelExecutionFeature::
+                            MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH))));
 }
 
 // Verifies that Model Execution Features Controller returns null for incognito
