@@ -173,7 +173,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                          const std::u16string& password);
 
   // Clears all the previously previewed fields.
-  bool ClearPreviewedForm(const blink::WebFormControlElement& control_element);
+  void ClearPreviewedForm();
 
   // Sends a reputation check request in case if `element` has type password and
   // no check request were sent from this frame load.

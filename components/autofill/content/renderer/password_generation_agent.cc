@@ -315,23 +315,17 @@ void PasswordGenerationAgent::PreviewGenerationSuggestion(
   }
 }
 
-bool PasswordGenerationAgent::DidClearGenerationSuggestion(
-    const WebFormControlElement& control_element) {
-  const WebInputElement element = control_element.DynamicTo<WebInputElement>();
-  if (element.IsNull() || !current_generation_item_ ||
-      element != current_generation_item_->generation_element_)
-    return false;
+void PasswordGenerationAgent::ClearPreviewedForm() {
+  if (!current_generation_item_) {
+    return;
+  }
 
-  bool suggestion_cleared = false;
   for (auto& password_field : current_generation_item_->password_elements_) {
     if (password_field.SuggestedValue().IsEmpty())
       continue;
 
     ClearPreviewedValue(password_field);
-    suggestion_cleared = true;
   }
-
-  return suggestion_cleared;
 }
 
 void PasswordGenerationAgent::GeneratedPasswordAccepted(

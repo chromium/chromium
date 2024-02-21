@@ -1415,18 +1415,13 @@ TEST_F(PasswordGenerationAgentTest, SuggestionPreviewTest) {
             blink::WebAutofillState::kPreviewed);
 
   // Previewed suggestions should be successfully cleared upon request.
-  EXPECT_TRUE(password_generation_->DidClearGenerationSuggestion(
-      first_password_element));
+  password_generation_->ClearPreviewedForm();
   EXPECT_TRUE(first_password_element.SuggestedValue().IsNull());
   EXPECT_TRUE(second_password_element.SuggestedValue().IsNull());
   EXPECT_EQ(first_password_element.GetAutofillState(),
             blink::WebAutofillState::kNotFilled);
   EXPECT_EQ(second_password_element.GetAutofillState(),
             blink::WebAutofillState::kNotFilled);
-
-  // Clearing should not succeed when there is nothing to clear.
-  EXPECT_FALSE(password_generation_->DidClearGenerationSuggestion(
-      first_password_element));
 }
 
 TEST_F(PasswordGenerationAgentTest, AdvancesFocusToNextFieldAfterPasswords) {

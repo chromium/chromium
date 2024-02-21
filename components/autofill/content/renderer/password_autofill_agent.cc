@@ -980,8 +980,7 @@ bool PasswordAutofillAgent::PreviewSuggestion(
   return true;
 }
 
-bool PasswordAutofillAgent::ClearPreviewedForm(
-    const WebFormControlElement& control_element) {
+void PasswordAutofillAgent::ClearPreviewedForm() {
   for (const PreviewInfo& preview_info : previewed_elements_) {
     WebInputElement element =
         form_util::GetFormControlByRendererId(preview_info.field_id)
@@ -1002,16 +1001,6 @@ bool PasswordAutofillAgent::ClearPreviewedForm(
     }
   }
   previewed_elements_.clear();
-
-  // TODO(b/325464792): Remove this cache access and make function return void.
-  const WebInputElement element = control_element.DynamicTo<WebInputElement>();
-  WebInputElement username_element;
-  WebInputElement password_element;
-  PasswordInfo* password_info;
-  return !element.IsNull() &&
-         FindPasswordInfoForElement(element, UseFallbackData(true),
-                                    &username_element, &password_element,
-                                    &password_info);
 }
 
 bool PasswordAutofillAgent::FindPasswordInfoForElement(

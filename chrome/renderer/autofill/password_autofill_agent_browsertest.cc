@@ -1804,7 +1804,7 @@ TEST_F(PasswordAutofillAgentTest, ClearPreviewWithPasswordAutofilled) {
   for (const auto& selected_element : {username_element_, password_element_}) {
     EXPECT_TRUE(password_autofill_agent_->PreviewSuggestion(
         selected_element, kAliceUsername16, kAlicePassword16));
-    EXPECT_TRUE(password_autofill_agent_->ClearPreviewedForm(selected_element));
+    password_autofill_agent_->ClearPreviewedForm();
 
     EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
     EXPECT_TRUE(password_element_.SuggestedValue().IsEmpty());
@@ -1829,7 +1829,7 @@ TEST_F(PasswordAutofillAgentTest, ClearPreviewWithUsernameAutofilled) {
   for (const auto& selected_element : {username_element_, password_element_}) {
     EXPECT_TRUE(password_autofill_agent_->PreviewSuggestion(
         selected_element, kAliceUsername16, kAlicePassword16));
-    EXPECT_TRUE(password_autofill_agent_->ClearPreviewedForm(selected_element));
+    password_autofill_agent_->ClearPreviewedForm();
 
     EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
     EXPECT_TRUE(password_element_.SuggestedValue().IsEmpty());
@@ -1855,7 +1855,7 @@ TEST_F(PasswordAutofillAgentTest,
   for (const auto& selected_element : {username_element_, password_element_}) {
     EXPECT_TRUE(password_autofill_agent_->PreviewSuggestion(
         selected_element, kAliceUsername16, kAlicePassword16));
-    EXPECT_TRUE(password_autofill_agent_->ClearPreviewedForm(selected_element));
+    password_autofill_agent_->ClearPreviewedForm();
 
     EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
     EXPECT_TRUE(password_element_.SuggestedValue().IsEmpty());
@@ -2273,7 +2273,7 @@ TEST_F(PasswordAutofillAgentTest,
   for (const auto& selected_element : {username_element_, password_element_}) {
     EXPECT_TRUE(password_autofill_agent_->PreviewSuggestion(
         selected_element, kAliceUsername16, kAlicePassword16));
-    EXPECT_TRUE(password_autofill_agent_->ClearPreviewedForm(selected_element));
+    password_autofill_agent_->ClearPreviewedForm();
 
     EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
     EXPECT_TRUE(password_element_.SuggestedValue().IsEmpty());
@@ -4396,7 +4396,7 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
 
   EXPECT_TRUE(password_autofill_agent_->PreviewSuggestion(
       username_element_, kAliceUsername16, kAlicePassword16));
-  EXPECT_TRUE(password_autofill_agent_->ClearPreviewedForm(username_element_));
+  password_autofill_agent_->ClearPreviewedForm();
 
   EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
   CheckTextFieldsDOMState("ali", true, std::string(), false);

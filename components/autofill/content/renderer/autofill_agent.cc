@@ -705,17 +705,16 @@ void AutofillAgent::ClearPreviewedForm() {
   if (last_queried_element.IsNull()) {
     return;
   }
-  // |password_generation_agent_| can be null in android_webview & weblayer.
-  if (password_generation_agent_ &&
-      password_generation_agent_->DidClearGenerationSuggestion(
-          last_queried_element)) {
-    return;
+  // `password_generation_agent_` can be null in android_webview & weblayer.
+  // TODO(b/326213028): Clear fields previewed by `PasswordGenerationAgent`
+  // directly using `PasswordGenerationAgent`.
+  if (password_generation_agent_) {
+    password_generation_agent_->ClearPreviewedForm();
   }
   // TODO(b/326213028): Clear fields previewed by `PasswordAutofillAgent`
   // directly using `PasswordAutofillAgent`.
-  if (password_autofill_agent_->ClearPreviewedForm(last_queried_element)) {
-    return;
-  }
+  password_autofill_agent_->ClearPreviewedForm();
+
   std::vector<std::pair<WebFormControlElement, WebAutofillState>>
       previewed_elements;
   for (const auto& [previewed_element, prior_autofill_state] :
