@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -136,6 +137,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton(
     // When user clicks "Accept", the bubble closing is delayed since we wait
     // for the enrollment to finish on the server.
     enrollment_status_ = EnrollmentStatus::kPaymentsServerRequestInFlight;
+    LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/true);
 
     // Log metrics here instead of when the bubble is closed. When
     // "did_switch_to_loading_state == true" we don't immediately close the
@@ -157,6 +159,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton(
     }
   } else {
     bubble_state_ = BubbleState::kHidden;
+    LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/false);
   }
 #endif
 }
@@ -232,10 +235,12 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
     return false;
 #else
     switch (enrollment_status_) {
-        // TODO(crbug.com/40287758) Record metrics for closing the loading and
-        // confirmation view.
       case EnrollmentStatus::kPaymentsServerRequestInFlight:
+        LogVirtualCardEnrollmentLoadingViewResult(get_metric(closed_reason));
+        return true;
       case EnrollmentStatus::kCompleted:
+        LogVirtualCardEnrollmentConfirmationViewResult(
+            get_metric(closed_reason), confirmation_ui_params_->is_success);
         return true;
       case EnrollmentStatus::kNone:
         return false;
@@ -332,13 +337,19 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
-  if (enrollment_status_ == EnrollmentStatus::kCompleted &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    set_bubble_view(
-        browser->window()
-            ->GetAutofillBubbleHandler()
-            ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
+  if (enrollment_status_ == EnrollmentStatus::kCompleted) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+      set_bubble_view(
+          browser->window()
+              ->GetAutofillBubbleHandler()
+              ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
+      LogVirtualCardEnrollmentConfirmationViewShown(
+          /*is_shown=*/true, confirmation_ui_params_->is_success);
+    } else {
+      LogVirtualCardEnrollmentConfirmationViewShown(
+          /*is_shown=*/false, confirmation_ui_params_->is_success);
+    }
   } else {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;

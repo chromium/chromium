@@ -5718,6 +5718,49 @@ chromium-metrics-reviews@google.com.
   <token key="LinkType" variants="Autofill.VirtualCardEnrollmentLinkType"/>
 </histogram>
 
+<histogram
+    name="Autofill.VirtualCardEnrollBubble.ConfirmationResult.{IsCardEnrolled}"
+    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason for closing the virtual card confirmation bubble.
+    IsCardEnrolled ({IsCardEnrolled}) indicates whether the bubble shown was for
+    a successful VCN enrollment or not. Recorded when the confirmation bubble is
+    closed.
+  </summary>
+  <token key="IsCardEnrolled">
+    <variant name="CardEnrolled"
+        summary="Credit card was successfully enrolled."/>
+    <variant name="CardNotEnrolled"
+        summary="Credit card failed to be enrolled."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Autofill.VirtualCardEnrollBubble.ConfirmationShown.{IsCardEnrolled}"
+    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records if the virtual card confirmation bubble is shown after credit card
+    enrollment is completed. IsCardEnrolled ({IsCardEnrolled}) indicates whether
+    the confirmation bubble is for a successful VCN enrollment or not. Recorded
+    after the confirmation bubble is shown or after the decision to not show the
+    confirmation bubble.
+  </summary>
+  <token key="IsCardEnrolled">
+    <variant name="CardEnrolled"
+        summary="Credit card was successfully enrolled."/>
+    <variant name="CardNotEnrolled"
+        summary="Credit card failed to be enrolled."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.VirtualCardEnrollBubble.LatencySinceUpstream"
     units="ms" expires_after="2024-07-01">
   <owner>vinnypersky@google.com</owner>
@@ -5730,6 +5773,31 @@ chromium-metrics-reviews@google.com.
     before the Virtual Card Enroll Bubble is shown, but if web contents are
     unavailable it will be logged before waiting for web contents to become
     available.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.VirtualCardEnrollBubble.LoadingResult"
+    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason for closing the virtual card loading bubble. Recorded
+    when the loading bubble is closed.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.VirtualCardEnrollBubble.LoadingShown"
+    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records if the virtual card loading bubble is shown during credit card
+    enrollment. Recorded after the loading bubble is shown or after the decision
+    to not show the loading bubble.
   </summary>
 </histogram>
 
