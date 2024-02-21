@@ -1274,6 +1274,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Very unguessable password"/>
 </enum>
 
+<enum name="PostPasswordMigrationSheetOutcome">
+  <int value="0" label="The sheet was acknowledged"/>
+  <int value="1" label="The sheet was dismissed"/>
+</enum>
+
 <enum name="PrefilledUsernameFillOutcome">
   <int value="0" label="Prefilled placeholder username overridden">
     1) the page has a username input element whose value was prefilled by the

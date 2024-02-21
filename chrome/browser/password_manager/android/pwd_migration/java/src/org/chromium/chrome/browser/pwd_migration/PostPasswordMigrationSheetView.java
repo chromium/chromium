@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.logPostPasswordMigrationOutcome;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +18,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PostPasswordMigrationSheetOutcome;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.widget.TextViewWithLeading;
@@ -31,20 +35,27 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
     private Callback<Integer> mDismissHandler;
     private final RelativeLayout mContentView;
 
+    private boolean mAcknowledged;
+
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
-                public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                public void onSheetClosed(@StateChangeReason int reason) {
                     assert mDismissHandler != null;
                     mDismissHandler.onResult(reason);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
+
+                    logPostPasswordMigrationOutcome(
+                            mAcknowledged
+                                    ? PostPasswordMigrationSheetOutcome.GOT_IT
+                                    : PostPasswordMigrationSheetOutcome.DISMISS);
                 }
 
                 @Override
                 public void onSheetStateChanged(int newState, int reason) {
                     if (newState != BottomSheetController.SheetState.HIDDEN) return;
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
-                    mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
+                    mDismissHandler.onResult(StateChangeReason.NONE);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                 }
             };
@@ -68,8 +79,8 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
         Button acknowledgeButton = mContentView.findViewById(R.id.acknowledge_button);
         acknowledgeButton.setOnClickListener(
                 (unusedView) -> {
-                    assert mDismissHandler != null;
-                    mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
+                    setVisible(false);
+                    mAcknowledged = true;
                 });
     }
 
@@ -86,7 +97,7 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
         if (!mBottomSheetController.requestShowContent(this, true)) {
             mBottomSheetController.removeObserver(mBottomSheetObserver);
             assert mDismissHandler != null;
-            mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
+            mDismissHandler.onResult(StateChangeReason.NONE);
         }
     }
 

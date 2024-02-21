@@ -3102,6 +3102,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PostPasswordsMigrationSheet.Outcome"
+    enum="PostPasswordMigrationSheetOutcome" expires_after="2025-02-20">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    This histogram logs how the post password migration sheet was closed.
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PrefilledUsernameFillOutcome"
     enum="PrefilledUsernameFillOutcome" expires_after="2024-06-30">
   <owner>khamutov@google.com</owner>

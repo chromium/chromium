@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.pwd_migration;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -13,6 +14,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.POST_PASSWORD_MIGRATION_SHEET_OUTCOME;
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
@@ -31,7 +33,9 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PostPasswordMigrationSheetOutcome;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -117,6 +121,46 @@ public class PostPasswordMigrationSheetViewTest {
 
         // The dismiss callback was called.
         verify(mDismissCallback).onResult(BottomSheetController.StateChangeReason.NONE);
+    }
+
+    @Test
+    @MediumTest
+    public void testAcceptingTheNoticeRecordsMetrics() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                POST_PASSWORD_MIGRATION_SHEET_OUTCOME,
+                                PostPasswordMigrationSheetOutcome.GOT_IT)
+                        .build();
+
+        // The sheet is shown.
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The notice is acknowledged.
+        onView(withId(R.id.acknowledge_button)).perform(click());
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissingTheNoticeRecordsMetrics() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                POST_PASSWORD_MIGRATION_SHEET_OUTCOME,
+                                PostPasswordMigrationSheetOutcome.DISMISS)
+                        .build();
+
+        // The sheet is shown.
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The notice is dismissed.
+        pressBack();
+
+        histogram.assertExpected();
     }
 
     private @SheetState int getBottomSheetState() {

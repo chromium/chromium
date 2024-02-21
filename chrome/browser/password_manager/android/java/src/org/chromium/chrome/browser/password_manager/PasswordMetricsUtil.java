@@ -45,6 +45,23 @@ public class PasswordMetricsUtil {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
+        PostPasswordMigrationSheetOutcome.GOT_IT,
+        PostPasswordMigrationSheetOutcome.DISMISS,
+        PostPasswordMigrationSheetOutcome.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PostPasswordMigrationSheetOutcome {
+        int GOT_IT = 0;
+        int DISMISS = 1;
+        int COUNT = 2;
+    }
+
+    public static final String POST_PASSWORD_MIGRATION_SHEET_OUTCOME =
+            "PasswordManager.PostPasswordsMigrationSheet.Outcome";
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
         PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED,
         PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_BY_USER_INTERACTION,
         PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION,
@@ -144,6 +161,20 @@ public class PasswordMetricsUtil {
                 PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                 result,
                 PasswordMigrationWarningUserActions.COUNT);
+    }
+
+    /**
+     * This is a helper that logs what happened with the post password migration sheet such that it
+     * got closed.
+     *
+     * @param result is the value to be recorded
+     */
+    public static void logPostPasswordMigrationOutcome(
+            @PostPasswordMigrationSheetOutcome int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                POST_PASSWORD_MIGRATION_SHEET_OUTCOME,
+                result,
+                PostPasswordMigrationSheetOutcome.COUNT);
     }
 
     /**
