@@ -4,6 +4,7 @@
 
 source_set("public") {
   sources = [
+    "magic_stack_consumer.h",
     "magic_stack_module.h",
     "magic_stack_module.mm",
   ]
@@ -15,8 +16,10 @@ source_set("ranking_model") {
   sources = [
     "magic_stack_ranking_model.h",
     "magic_stack_ranking_model.mm",
+    "magic_stack_ranking_model_delegate.h",
   ]
   deps = [
+    ":magic_stack",
     ":public",
     "//components/segmentation_platform/public",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
@@ -88,12 +91,16 @@ source_set("unit_tests") {
     ":ranking_model",
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",
+    "//components/feature_engagement/test:test_support",
     "//components/segmentation_platform/public",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/parcel_tracking:features",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/reading_list/model:test_support",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -107,6 +114,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",

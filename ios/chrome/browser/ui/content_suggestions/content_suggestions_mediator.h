@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace user_prefs {
@@ -17,6 +19,7 @@ class PrefRegistrySyncable;
 
 class Browser;
 @class ContentSuggestionsMetricsRecorder;
+@protocol MagicStackConsumer;
 @class MagicStackRankingModel;
 @class MostVisitedTilesMediator;
 @protocol NewTabPageMetricsDelegate;
@@ -25,7 +28,9 @@ class Browser;
 
 // Mediator for ContentSuggestions.
 @interface ContentSuggestionsMediator
-    : NSObject <ContentSuggestionsCommands, StartSurfaceRecentTabObserving>
+    : NSObject <ContentSuggestionsCommands,
+                StartSurfaceRecentTabObserving,
+                MagicStackRankingModelDelegate>
 
 // Default initializer.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
@@ -35,10 +40,15 @@ class Browser;
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
+// Ranking Model for the Magic Stack.
 @property(nonatomic, weak) MagicStackRankingModel* magicStackRankingModel;
 
 // The consumer that will be notified when the data change.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
+
+// The consumer that will be notified when the underlying Magic Stack data
+// changes.
+@property(nonatomic, weak) id<MagicStackConsumer> magicStackConsumer;
 
 // Delegate for reporting content suggestions actions to the NTP metrics
 // recorder.

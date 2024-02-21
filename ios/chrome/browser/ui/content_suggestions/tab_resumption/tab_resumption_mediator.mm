@@ -339,9 +339,19 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
       /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
         TabResumptionMediator* strongSelf = weakSelf;
         if (strongSelf && !attributes.usesDefaultImage) {
+          if ([UIImagePNGRepresentation(item.faviconImage)
+                  isEqual:UIImagePNGRepresentation(attributes.faviconImage)]) {
+            return;
+          }
           item.faviconImage = attributes.faviconImage;
+          TabResumptionItem* previousItem = strongSelf.itemConfig;
           strongSelf.itemConfig = item;
-          [strongSelf.delegate tabResumptionHelperDidReceiveItem];
+          if (previousItem) {
+            [strongSelf.delegate
+                tabResumptionHelperDidReplaceItem:previousItem];
+          } else {
+            [strongSelf.delegate tabResumptionHelperDidReceiveItem];
+          }
         }
       });
 }

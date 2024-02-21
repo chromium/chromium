@@ -98,6 +98,8 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/content_suggestions/cells:most_visited_tiles",
     "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:ranking_model",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",

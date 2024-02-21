@@ -43,7 +43,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/placeholder_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
@@ -149,6 +152,25 @@ using RequestSource = SearchTermsData::RequestSource;
   }
 }
 
+#pragma mark - MagicStackRankingModelDelegate
+
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+      didGetLatestRankingOrder:(NSArray<MagicStackModule*>*)rank {
+  [self.magicStackConsumer populateItems:rank];
+}
+
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+                 didInsertItem:(MagicStackModule*)item
+                       atIndex:(NSUInteger)index {
+  [self.magicStackConsumer insertItem:item atIndex:index];
+}
+
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+                didReplaceItem:(MagicStackModule*)oldItem
+                      withItem:(MagicStackModule*)item {
+  [self.magicStackConsumer replaceItem:oldItem withItem:item];
+}
+
 #pragma mark - ContentSuggestionsCommands
 
 - (void)openMostRecentTab {
@@ -252,6 +274,11 @@ using RequestSource = SearchTermsData::RequestSource;
 - (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
   _consumer = consumer;
   [self configureConsumer];
+}
+
+- (void)setMagicStackConsumer:(id<MagicStackConsumer>)magicStackConsumer {
+  _magicStackConsumer = magicStackConsumer;
+  [self.magicStackRankingModel fetchLatestMagicStackRanking];
 }
 
 @end

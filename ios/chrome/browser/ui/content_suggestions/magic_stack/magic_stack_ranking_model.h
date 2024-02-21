@@ -14,12 +14,17 @@ class SegmentationPlatformService;
 @protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMetricsRecorder;
 enum class ContentSuggestionsModuleType;
+@class MagicStackModule;
+@protocol MagicStackRankingModelDelegate;
 class PrefService;
 
 // Manages the Magic Stack module ranking fetch and returns the
 @interface MagicStackRankingModel : NSObject
 
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
+
+// Delegate for this model.
+@property(nonatomic, weak) id<MagicStackRankingModelDelegate> delegate;
 
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)

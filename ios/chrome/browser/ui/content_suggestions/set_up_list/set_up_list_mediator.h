@@ -16,6 +16,7 @@ class AuthenticationService;
 @protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
 @class SceneState;
+@class SetUpListConfig;
 @class SetUpListItem;
 @class SetUpListItemViewData;
 
@@ -60,6 +61,9 @@ class SyncService;
 
 // Sends the SetUpList items up to the consumer.
 - (void)showSetUpList;
+
+// Returns the Set Up List module configuration(s) to show.
+- (NSArray<SetUpListConfig*>*)setUpListConfigs;
 
 // Returns the complete list of tasks, inclusive of the ones the user has
 // already completed.

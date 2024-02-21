@@ -171,17 +171,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   return allItems;
 }
 
-- (NSArray<SetUpListItemViewData*>*)setUpListItems {
-  NSMutableArray<SetUpListItemViewData*>* items = [[NSMutableArray alloc] init];
-  for (SetUpListItem* model in _setUpList.items) {
-    SetUpListItemViewData* item =
-        [[SetUpListItemViewData alloc] initWithType:model.type
-                                           complete:model.complete];
-    [items addObject:item];
-  }
-  return items;
-}
-
 - (BOOL)allItemsComplete {
   return [_setUpList allItemsComplete];
 }
@@ -205,59 +194,65 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)showSetUpList {
   NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
   if (IsMagicStackEnabled()) {
-    if ([self allItemsComplete]) {
-      SetUpListItemViewData* allSetItem =
-          [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
-                                             complete:NO];
-      allSetItem.compactLayout = NO;
-      allSetItem.heroCellMagicStackLayout = YES;
-
-      SetUpListConfig* config = [[SetUpListConfig alloc] init];
-      config.setUpListConsumerSource = self;
-      config.commandHandler = self.commandHandler;
-      config.setUpListItems = @[ allSetItem ];
-      [self.consumer showSetUpListModuleWithConfigs:@[ config ]];
-    } else {
-      BOOL shouldShowCompactedSetUpListModule =
-          set_up_list_utils::ShouldShowCompactedSetUpListModule();
-      if (shouldShowCompactedSetUpListModule) {
-        SetUpListConfig* config = [[SetUpListConfig alloc] init];
-        config.shouldShowCompactModule = YES;
-        config.shouldShowSeeMore = YES;
-        config.setUpListConsumerSource = self;
-        config.commandHandler = self.commandHandler;
-
-        if ([items count] > 2) {
-          items = [items subarrayWithRange:NSMakeRange(0, 2)];
-        }
-        for (SetUpListItemViewData* data in items) {
-          data.compactLayout = YES;
-          data.heroCellMagicStackLayout = NO;
-        }
-        config.setUpListItems = items;
-        [self.consumer showSetUpListModuleWithConfigs:@[ config ]];
-      } else {
-        // Iterate through all items and create config for each hero module.
-        NSMutableArray<SetUpListConfig*>* configs = [NSMutableArray array];
-        for (SetUpListItemViewData* data in items) {
-          data.compactLayout = NO;
-          data.heroCellMagicStackLayout = YES;
-          SetUpListConfig* config = [[SetUpListConfig alloc] init];
-          config.setUpListConsumerSource = self;
-          config.commandHandler = self.commandHandler;
-
-          config.setUpListItems = @[ data ];
-          [configs addObject:config];
-        }
-        [self.consumer showSetUpListModuleWithConfigs:configs];
-      }
-    }
+    DCHECK(!IsIOSMagicStackCollectionViewEnabled());
+    [self.consumer showSetUpListModuleWithConfigs:[self setUpListConfigs]];
   } else {
     [self.consumer showSetUpListWithItems:items];
   }
   [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
   for (SetUpListItemViewData* item in items) {
     [self.contentSuggestionsMetricsRecorder recordSetUpListItemShown:item.type];
+  }
+}
+
+- (NSArray<SetUpListConfig*>*)setUpListConfigs {
+  NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
+  if ([self allItemsComplete]) {
+    SetUpListItemViewData* allSetItem =
+        [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
+                                           complete:NO];
+    allSetItem.compactLayout = NO;
+    allSetItem.heroCellMagicStackLayout = YES;
+
+    SetUpListConfig* config = [[SetUpListConfig alloc] init];
+    config.setUpListConsumerSource = self;
+    config.commandHandler = self.commandHandler;
+    config.setUpListItems = @[ allSetItem ];
+    return @[ config ];
+  } else {
+    BOOL shouldShowCompactedSetUpListModule =
+        set_up_list_utils::ShouldShowCompactedSetUpListModule();
+    if (shouldShowCompactedSetUpListModule) {
+      SetUpListConfig* config = [[SetUpListConfig alloc] init];
+      config.shouldShowCompactModule = YES;
+      config.shouldShowSeeMore = YES;
+      config.setUpListConsumerSource = self;
+      config.commandHandler = self.commandHandler;
+
+      if ([items count] > 2) {
+        items = [items subarrayWithRange:NSMakeRange(0, 2)];
+      }
+      for (SetUpListItemViewData* data in items) {
+        data.compactLayout = YES;
+        data.heroCellMagicStackLayout = NO;
+      }
+      config.setUpListItems = items;
+      return @[ config ];
+    } else {
+      // Iterate through all items and create config for each hero module.
+      NSMutableArray<SetUpListConfig*>* configs = [NSMutableArray array];
+      for (SetUpListItemViewData* data in items) {
+        data.compactLayout = NO;
+        data.heroCellMagicStackLayout = YES;
+        SetUpListConfig* config = [[SetUpListConfig alloc] init];
+        config.setUpListConsumerSource = self;
+        config.commandHandler = self.commandHandler;
+
+        config.setUpListItems = @[ data ];
+        [configs addObject:config];
+      }
+      return configs;
+    }
   }
 }
 
@@ -369,6 +364,17 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 #pragma mark - Private
+
+- (NSArray<SetUpListItemViewData*>*)setUpListItems {
+  NSMutableArray<SetUpListItemViewData*>* items = [[NSMutableArray alloc] init];
+  for (SetUpListItem* model in _setUpList.items) {
+    SetUpListItemViewData* item =
+        [[SetUpListItemViewData alloc] initWithType:model.type
+                                           complete:model.complete];
+    [items addObject:item];
+  }
+  return items;
+}
 
 // Sets the pref for a SetUpList item to indicate it is complete.
 - (void)markSetUpListItemPrefComplete:(SetUpListItemType)type {

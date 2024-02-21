@@ -10,15 +10,19 @@
 #import "base/test/test_timeouts.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/commerce/core/mock_shopping_service.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -32,14 +36,17 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
@@ -71,6 +78,13 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
     OCMExpect([consumer setMagicStackOrder:block_checker]);              \
   }
 
+namespace {
+std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
+    web::BrowserState* browser_state) {
+  return std::make_unique<feature_engagement::test::MockTracker>();
+}
+}  // namespace
+
 // Expose -addConsumer: to validate consumer calls.
 @interface SetUpListMediator (Testing)
 - (void)addConsumer:(id<SetUpListConsumer>)consumer;
@@ -93,9 +107,14 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 @interface FakeParcelTrackingMediator : ParcelTrackingMediator
 @end
 
-@implementation FakeParcelTrackingMediator
+@implementation FakeParcelTrackingMediator {
+  ParcelTrackingItem* _item;
+}
 - (ParcelTrackingItem*)parcelTrackingItemToShow {
-  return [[ParcelTrackingItem alloc] init];
+  if (!_item) {
+    _item = [[ParcelTrackingItem alloc] init];
+  }
+  return _item;
 }
 @end
 
@@ -103,10 +122,16 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 @interface FakeTabResumptionMediator : TabResumptionMediator
 @end
 
-@implementation FakeTabResumptionMediator
+@implementation FakeTabResumptionMediator {
+  TabResumptionItem* _item;
+}
 
 - (TabResumptionItem*)itemConfig {
-  return [[TabResumptionItem alloc] initWithItemType:kMostRecentTab];
+  if (!_item) {
+    _item = [[TabResumptionItem alloc] initWithItemType:kMostRecentTab];
+    _item.tabURL = GURL("http://test.com");
+  }
+  return _item;
 }
 
 - (void)fetchLastTabResumptionItem {
@@ -114,8 +139,41 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 
 @end
 
+// Fake MagicStackRankingModelDelegate receiver to validate results sent by
+// MagicStackRankingModel.
+@interface FakeMagicStackRankingModelDelegate
+    : NSObject <MagicStackRankingModelDelegate>
+@property(strong, nonatomic) NSArray<MagicStackModule*>* rank;
+@property(strong, nonatomic) MagicStackModule* lastInsertedItem;
+@property(nonatomic, assign) NSUInteger lastInsertionIndex;
+@property(strong, nonatomic) MagicStackModule* lastReplacedItem;
+@property(strong, nonatomic) MagicStackModule* lastReplacingItem;
+@end
+
+@implementation FakeMagicStackRankingModelDelegate
+
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+      didGetLatestRankingOrder:(NSArray<MagicStackModule*>*)rank {
+  _rank = rank;
+}
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+                 didInsertItem:(MagicStackModule*)item
+                       atIndex:(NSUInteger)index {
+  _lastInsertedItem = item;
+  _lastInsertionIndex = index;
+}
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+                didReplaceItem:(MagicStackModule*)oldItem
+                      withItem:(MagicStackModule*)item {
+  _lastReplacedItem = oldItem;
+  _lastReplacingItem = item;
+}
+
+@end
+
 // Expose -hasReceivedMagicStackResponse for waiting for ranking to return.
-@interface MagicStackRankingModel (Testing)
+@interface MagicStackRankingModel (Testing) <ParcelTrackingMediatorDelegate,
+                                             TabResumptionHelperDelegate>
 @property(nonatomic, assign, readonly) BOOL hasReceivedMagicStackResponse;
 @end
 
@@ -143,6 +201,13 @@ class MagicStackRankingModelTest : public PlatformTest {
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ReadingListModelFactory::GetInstance(),
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::vector<scoped_refptr<ReadingListEntry>>()));
+    test_cbs_builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(&BuildFeatureEngagementMockTracker));
     chrome_browser_state_ = test_cbs_builder.Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
@@ -169,6 +234,19 @@ class MagicStackRankingModelTest : public PlatformTest {
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
 
+    ReadingListModel* readingListModel =
+        ReadingListModelFactory::GetForBrowserState(
+            chrome_browser_state_.get());
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            chrome_browser_state_.get());
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
+    _shortcutsMediator = [[ShortcutsMediator alloc]
+        initWithReadingListModel:readingListModel
+        featureEngagementTracker:(feature_engagement::Tracker*)tracker
+                     authService:authentication_service];
     _setUpListMediator = [[FakeSetUpListMediator alloc]
           initWithPrefService:chrome_browser_state_.get()->GetPrefs()
                   syncService:syncService
@@ -190,8 +268,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                         prefService:chrome_browser_state_.get()->GetPrefs()
                          localState:local_state_.Get()
                     moduleMediators:@[
-                      _setUpListMediator, _parcelTrackingMediator,
-                      _tabResumptionMediator
+                      _shortcutsMediator, _setUpListMediator,
+                      _parcelTrackingMediator, _tabResumptionMediator
                     ]];
     consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
     _magicStackRankingModel.consumer = consumer_;
@@ -208,6 +286,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     [_setUpListMediator disconnect];
     [_tabResumptionMediator disconnect];
     [_parcelTrackingMediator disconnect];
+    [_shortcutsMediator disconnect];
   }
 
  protected:
@@ -241,6 +320,7 @@ class MagicStackRankingModelTest : public PlatformTest {
   FakeSetUpListMediator* _setUpListMediator;
   FakeParcelTrackingMediator* _parcelTrackingMediator;
   FakeTabResumptionMediator* _tabResumptionMediator;
+  ShortcutsMediator* _shortcutsMediator;
   MagicStackRankingModel* _magicStackRankingModel;
   id consumer_;
   id setUpListConsumer_;
@@ -375,4 +455,70 @@ TEST_F(MagicStackRankingModelTest, TestModuleClickIndexMetric) {
                                ContentSuggestionsModuleType::kMostVisited];
   histogram_tester_->ExpectUniqueSample(
       "IOS.MagicStack.Module.Click.MostVisited", 1, 1);
+}
+
+// Test that the ranking model passed an expected list of module configs in
+// -didGetLatestRankingOrder:
+TEST_F(MagicStackRankingModelTest, TestModelDidGetLatestRankingOrder) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
+       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+       {kMagicStack, {}},
+       {kIOSParcelTracking, {}},
+       {kTabResumption, {}},
+       {kIOSMagicStackCollectionView, {}}},
+      {});
+  FakeMagicStackRankingModelDelegate* delegate_ =
+      [[FakeMagicStackRankingModelDelegate alloc] init];
+  _magicStackRankingModel.delegate = delegate_;
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return [delegate_.rank count] > 0;
+      }));
+  NSArray* expectedModuleRank = @[ @(5), @(1), @(10), @(11) ];
+  EXPECT_EQ([delegate_.rank count], [expectedModuleRank count]);
+  for (NSUInteger i = 0; i < [expectedModuleRank count]; i++) {
+    MagicStackModule* config = delegate_.rank[i];
+    EXPECT_EQ(@(int(config.type)), expectedModuleRank[i])
+        << "For Magic Stack order index " << i;
+  }
+}
+
+// Tests that the ranking model sends insertion signals to its delgate in
+// response to feature delegate signals.
+TEST_F(MagicStackRankingModelTest, TestFeatureInsertCalls) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
+       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+       {kMagicStack, {}},
+       {kIOSParcelTracking, {}},
+       {kTabResumption, {}},
+       {kIOSMagicStackCollectionView, {}}},
+      {});
+
+  FakeMagicStackRankingModelDelegate* delegate_ =
+      [[FakeMagicStackRankingModelDelegate alloc] init];
+  _magicStackRankingModel.delegate = delegate_;
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return [delegate_.rank count] > 0;
+      }));
+
+  [_magicStackRankingModel newParcelsAvailable];
+  EXPECT_EQ(delegate_.lastInsertionIndex, 3u);
+  EXPECT_EQ(delegate_.lastInsertedItem,
+            _parcelTrackingMediator.parcelTrackingItemToShow);
+
+  [_magicStackRankingModel tabResumptionHelperDidReceiveItem];
+  EXPECT_EQ(delegate_.lastInsertionIndex, 2u);
+  EXPECT_EQ(delegate_.lastInsertedItem, _tabResumptionMediator.itemConfig);
 }

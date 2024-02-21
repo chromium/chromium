@@ -346,6 +346,9 @@
         self.contentSuggestionsMetricsRecorder;
     self.contentSuggestionsMediator.magicStackRankingModel =
         _magicStackRankingModel;
+    if (IsIOSMagicStackCollectionViewEnabled()) {
+      _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
+    }
   }
 
   self.contentSuggestionsMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
