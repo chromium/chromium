@@ -123,7 +123,6 @@ public class QuickDeleteController {
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
                 @TimePeriod int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
-                mDeleteTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
                 mDelegate.performQuickDelete(
                         () -> onBrowsingDataDeletionFinished(timePeriod), timePeriod);
                 break;
@@ -144,6 +143,7 @@ public class QuickDeleteController {
     }
 
     private void maybeShowQuickDeleteAnimation(@TimePeriod int timePeriod) {
+        mDeleteTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
         if (isQuickDeleteAnimationEnabled()) {
             List<Tab> tabs = mDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
             mDelegate.showQuickDeleteAnimation(() -> showPostDeleteFeedback(timePeriod), tabs);
