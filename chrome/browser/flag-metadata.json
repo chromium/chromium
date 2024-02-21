@@ -2885,11 +2885,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-follow-management-instant-reload",
-    "owners": [ "sczs@chromium.org", "tinazwang@chromium.org" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "enable-follow-ui-update",
     "owners": [ "sczs@chromium.org", "adamta@chromium.org", "guiperez@chromium.org" ],
     "expiry_milestone": 130

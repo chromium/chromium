@@ -116,22 +116,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:DefaultSectionIdentifier];
 
-  if (IsFollowManagementInstantReloadEnabled()) {
-    // Show a spinner.
-    [self startLoadingIndicatorWithLoadingMessage:@""];
-    // Load the followed websites.
-    [self.followedWebChannelsDataSource loadFollowedWebSites];
-  } else {
-    NSArray<FollowedWebChannel*>* followedWebChannels =
-        self.followedWebChannelsDataSource.followedWebChannels;
-    for (FollowedWebChannel* followedWebChannel in followedWebChannels) {
-      FollowedWebChannelItem* item = [[FollowedWebChannelItem alloc]
-          initWithType:FollowedWebChannelItemType];
-      item.followedWebChannel = followedWebChannel;
-      [model addItem:item toSectionWithIdentifier:DefaultSectionIdentifier];
-    }
-    [self showOrHideEmptyTableViewBackground];
-  }
+  // Show a spinner.
+  [self startLoadingIndicatorWithLoadingMessage:@""];
+  // Load the followed websites.
+  [self.followedWebChannelsDataSource loadFollowedWebSites];
 }
 
 #pragma mark - UITableViewDelegate
@@ -319,8 +307,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)updateFollowedWebSites {
-  CHECK(IsFollowManagementInstantReloadEnabled());
-
   // TODO(crbug.com/1430863): implement a timeout feature.
 
   // Remove the spinner.

@@ -41,10 +41,6 @@ BASE_DECLARE_FEATURE(kOverrideFeedSettings);
 // Feature flag to enable sending discover feedback to an updated target
 BASE_DECLARE_FEATURE(kWebFeedFeedbackReroute);
 
-// Feature flag to enable follow management page instant reload when being
-// opened.
-BASE_DECLARE_FEATURE(kEnableFollowManagementInstantReload);
-
 // Feature flag to enable signed out user view demotion.
 BASE_DECLARE_FEATURE(kEnableSignedOutViewDemotion);
 
@@ -124,9 +120,6 @@ int FollowingFeedHeaderHeight();
 
 // YES if discover feedback is going to be sent to the updated target.
 bool IsWebFeedFeedbackRerouteEnabled();
-
-// YES when enabling follow management page instant reload when being opened.
-bool IsFollowManagementInstantReloadEnabled();
 
 // YES if the signed out user view demotion is enabled.
 bool IsSignedOutViewDemotionEnabled();

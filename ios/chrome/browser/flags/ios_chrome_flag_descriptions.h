@@ -272,11 +272,6 @@ extern const char kEnableFeedCardMenuSignInPromoDescription[];
 extern const char kEnableFollowIPHExpParamsName[];
 extern const char kEnableFollowIPHExpParamsDescription[];
 
-// Title and description for the flag to enable follow management page instant
-// reload when opening.
-extern const char kEnableFollowManagementInstantReloadName[];
-extern const char kEnableFollowManagementInstantReloadDescription[];
-
 // Title and description for the flag to enable the Follow UI Updates.
 extern const char kEnableFollowUIUpdateName[];
 extern const char kEnableFollowUIUpdateDescription[];

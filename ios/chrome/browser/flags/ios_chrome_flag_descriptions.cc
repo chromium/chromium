@@ -373,11 +373,6 @@ const char kEnableFollowIPHExpParamsName[] =
 const char kEnableFollowIPHExpParamsDescription[] =
     "Enable follow IPH experiment parameters.";
 
-const char kEnableFollowManagementInstantReloadName[] =
-    "Enable Follow Management Instant Reload";
-const char kEnableFollowManagementInstantReloadDescription[] =
-    "Enable follow management page instant reloading when being opened.";
-
 const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
 const char kEnableFollowUIUpdateDescription[] =
     "Enable Follow UI Update for the Feed.";
