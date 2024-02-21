@@ -3,8 +3,6 @@ include_rules = [
   "+ash/components/arc",
   "+ash/public/cpp/external_arc/overlay",
   "+chromeos/components/payments",
-  # TODO(b/129295708): Remove after move is complete.
-  "+components/arc",
   "+components/autofill",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
