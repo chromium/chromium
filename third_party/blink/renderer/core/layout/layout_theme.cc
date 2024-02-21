@@ -528,61 +528,6 @@ base::TimeDelta LayoutTheme::CaretBlinkInterval() const {
                                             : caret_blink_interval_;
 }
 
-static FontDescription& GetCachedFontDescription(CSSValueID system_font_id) {
-  DEFINE_STATIC_LOCAL(FontDescription, caption, ());
-  DEFINE_STATIC_LOCAL(FontDescription, icon, ());
-  DEFINE_STATIC_LOCAL(FontDescription, menu, ());
-  DEFINE_STATIC_LOCAL(FontDescription, message_box, ());
-  DEFINE_STATIC_LOCAL(FontDescription, small_caption, ());
-  DEFINE_STATIC_LOCAL(FontDescription, status_bar, ());
-  DEFINE_STATIC_LOCAL(FontDescription, webkit_mini_control, ());
-  DEFINE_STATIC_LOCAL(FontDescription, webkit_small_control, ());
-  DEFINE_STATIC_LOCAL(FontDescription, webkit_control, ());
-  DEFINE_STATIC_LOCAL(FontDescription, default_description, ());
-  switch (system_font_id) {
-    case CSSValueID::kCaption:
-      return caption;
-    case CSSValueID::kIcon:
-      return icon;
-    case CSSValueID::kMenu:
-      return menu;
-    case CSSValueID::kMessageBox:
-      return message_box;
-    case CSSValueID::kSmallCaption:
-      return small_caption;
-    case CSSValueID::kStatusBar:
-      return status_bar;
-    case CSSValueID::kWebkitMiniControl:
-      return webkit_mini_control;
-    case CSSValueID::kWebkitSmallControl:
-      return webkit_small_control;
-    case CSSValueID::kWebkitControl:
-      return webkit_control;
-    case CSSValueID::kNone:
-      return default_description;
-    default:
-      NOTREACHED();
-      return default_description;
-  }
-}
-
-void LayoutTheme::SystemFont(CSSValueID system_font_id,
-                             FontDescription& font_description,
-                             const Document* document) {
-  font_description = GetCachedFontDescription(system_font_id);
-  if (font_description.IsAbsoluteSize())
-    return;
-
-  font_description.SetSpecifiedSize(
-      LayoutThemeFontProvider::SystemFontSize(system_font_id, document));
-  font_description.SetIsAbsoluteSize(true);
-  const AtomicString& system_font =
-      LayoutThemeFontProvider::SystemFontFamily(system_font_id);
-  font_description.FirstFamily().SetFamily(
-      system_font, FontFamily::InferredTypeFor(system_font));
-  font_description.SetGenericFamily(FontDescription::kNoFamily);
-}
-
 // TODO(crbug.com/1231644): Use color_provider to get the system colors if
 // available.
 Color LayoutTheme::SystemColor(CSSValueID css_value_id,
