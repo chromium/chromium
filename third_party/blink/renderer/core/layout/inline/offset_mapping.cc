@@ -597,6 +597,21 @@ bool OffsetMapping::HasBidiControlCharactersOnly(unsigned start,
   return true;
 }
 
+unsigned OffsetMapping::LayoutObjectConverter::TextContentOffset(
+    unsigned offset) const {
+  auto iter = offset >= last_offset_ ? last_unit_ : units_.begin();
+  if (offset >= iter->DOMEnd()) {
+    iter = base::ranges::find_if(
+        iter, units_.end(), [offset](const OffsetMappingUnit& unit) {
+          return unit.DOMStart() <= offset && offset < unit.DOMEnd();
+        });
+  }
+  CHECK(iter != units_.end());
+  last_unit_ = iter;
+  last_offset_ = offset;
+  return iter->ConvertDOMOffsetToTextContent(offset);
+}
+
 void OffsetMappingUnit::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object_);
 }
