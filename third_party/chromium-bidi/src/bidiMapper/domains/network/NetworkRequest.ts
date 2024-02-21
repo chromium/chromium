@@ -266,16 +266,19 @@ export class NetworkRequest {
       error: new Error('Network event loading failed'),
     });
 
-    this.#eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.Network.EventNames.FetchError,
-        params: {
-          ...this.#getBaseEventParams(),
-          errorText: event.errorText,
-        },
+    this.#queueEventPromise(
+      Promise.resolve({kind: 'success', value: undefined}),
+      () => {
+        return {
+          params: {
+            ...this.#getBaseEventParams(),
+            errorText: event.errorText,
+          },
+          method: ChromiumBidi.Network.EventNames.FetchError,
+          type: 'event' as const,
+        };
       },
-      this.#context
+      ChromiumBidi.Network.EventNames.FetchError
     );
   }
 
@@ -321,18 +324,22 @@ export class NetworkRequest {
     if (!this.blocked) {
       void this.continueWithAuth();
     }
-    this.#eventManager.registerEvent(
-      {
-        type: 'event',
-        method: ChromiumBidi.Network.EventNames.AuthRequired,
-        params: {
-          ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
-          // TODO: Why is this on the Spec
-          // How are we suppose to know the response if we are blocked by Auth
-          response: {} as any,
-        },
+
+    this.#queueEventPromise(
+      Promise.resolve({kind: 'success', value: undefined}),
+      () => {
+        return {
+          params: {
+            ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
+            // TODO: Why is this on the Spec
+            // How are we suppose to know the response if we are blocked by Auth
+            response: {} as any,
+          },
+          method: ChromiumBidi.Network.EventNames.AuthRequired,
+          type: 'event' as const,
+        };
       },
-      this.#context
+      ChromiumBidi.Network.EventNames.AuthRequired
     );
   }
 
@@ -433,6 +440,37 @@ export class NetworkRequest {
     );
   }
 
+  #queueEventPromise(
+    deferred: Promise<Result<void>>,
+    getEventData: () => ChromiumBidi.Event,
+    eventName: ChromiumBidi.Network.EventNames
+  ) {
+    if (this.#isIgnoredEvent()) {
+      return;
+    }
+
+    this.#eventManager.registerPromiseEvent(
+      deferred.then((result) => {
+        if (result.kind === 'success') {
+          try {
+            return {
+              kind: 'success',
+              value: getEventData(),
+            };
+          } catch (error) {
+            return {
+              kind: 'error',
+              error: error instanceof Error ? error : new Error('Unknown'),
+            };
+          }
+        }
+        return result;
+      }),
+      this.#context,
+      eventName
+    );
+  }
+
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {
     const interceptProps: Pick<
       Network.BaseParameters,
@@ -519,30 +557,13 @@ export class NetworkRequest {
   }
 
   #queueBeforeRequestSentEvent() {
-    if (this.#isIgnoredEvent()) {
-      return;
-    }
-
-    this.#eventManager.registerPromiseEvent(
-      this.#beforeRequestSentDeferred.then((result) => {
-        if (result.kind === 'success') {
-          try {
-            return {
-              kind: 'success',
-              value: Object.assign(this.#getBeforeRequestEvent(), {
-                type: 'event' as const,
-              }),
-            };
-          } catch (error) {
-            return {
-              kind: 'error',
-              error: error instanceof Error ? error : new Error('Unknown'),
-            };
-          }
-        }
-        return result;
-      }),
-      this.#context,
+    this.#queueEventPromise(
+      this.#beforeRequestSentDeferred,
+      () => {
+        return Object.assign(this.#getBeforeRequestEvent(), {
+          type: 'event' as const,
+        });
+      },
       ChromiumBidi.Network.EventNames.BeforeRequestSent
     );
   }
@@ -564,29 +585,13 @@ export class NetworkRequest {
   }
 
   #queueResponseStartedEvent() {
-    if (this.#isIgnoredEvent()) {
-      return;
-    }
-    this.#eventManager.registerPromiseEvent(
-      this.#responseStartedDeferred.then((result) => {
-        if (result.kind === 'success') {
-          try {
-            return {
-              kind: 'success',
-              value: Object.assign(this.#getResponseStartedEvent(), {
-                type: 'event' as const,
-              }),
-            };
-          } catch (error) {
-            return {
-              kind: 'error',
-              error: error instanceof Error ? error : new Error('Unknown'),
-            };
-          }
-        }
-        return result;
-      }),
-      this.#context,
+    this.#queueEventPromise(
+      this.#responseStartedDeferred,
+      () => {
+        return Object.assign(this.#getResponseStartedEvent(), {
+          type: 'event' as const,
+        });
+      },
       ChromiumBidi.Network.EventNames.ResponseStarted
     );
   }
@@ -647,29 +652,13 @@ export class NetworkRequest {
   }
 
   #queueResponseCompletedEvent() {
-    if (this.#isIgnoredEvent()) {
-      return;
-    }
-    this.#eventManager.registerPromiseEvent(
-      this.#responseCompletedDeferred.then((result) => {
-        if (result.kind === 'success') {
-          try {
-            return {
-              kind: 'success',
-              value: Object.assign(this.#getResponseReceivedEvent(), {
-                type: 'event' as const,
-              }),
-            };
-          } catch (error) {
-            return {
-              kind: 'error',
-              error: error instanceof Error ? error : new Error('Unknown'),
-            };
-          }
-        }
-        return result;
-      }),
-      this.#context,
+    this.#queueEventPromise(
+      this.#responseCompletedDeferred,
+      () => {
+        return Object.assign(this.#getResponseReceivedEvent(), {
+          type: 'event' as const,
+        });
+      },
       ChromiumBidi.Network.EventNames.ResponseCompleted
     );
   }
