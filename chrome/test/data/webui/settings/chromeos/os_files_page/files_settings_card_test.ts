@@ -307,6 +307,13 @@ suite('<files-settings-card>', () => {
       flush();
       assertEquals(routes.OFFICE, Router.getInstance().currentRoute);
     });
+
+    test('Office row is focused when returning from subpage', async () => {
+      setupBrowserProxy({email: null});
+      await createFilesSettingsCard();
+
+      await assertSubpageTriggerFocused('#officeRow', routes.OFFICE);
+    });
   });
 
   suite('with enableDriveFsBulkPinning set to true', () => {
