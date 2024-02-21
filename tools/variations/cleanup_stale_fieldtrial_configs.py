@@ -22,6 +22,7 @@ from __future__ import print_function
 import json
 import optparse
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -30,7 +31,40 @@ CONFIG_PATH = 'testing/variations/fieldtrial_testing_config.json'
 PRESUBMIT_SCRIPT = 'testing/variations/PRESUBMIT.py'
 THREAD_COUNT = 16
 
+# The following is a list of regexes to run against literals, and if matched,
+# the literal would be counted as being used. Use this to skip removal of
+# studies (and studies that depend on features) that are not visible in code.
+# Eg. ChromeOS where experiments are passed from ash to platform services.
+_LITERAL_SKIP_REGEX_STRINGS = ['^CrOSLateBoot.*', '^CrOSEarlyBoot.*']
+
+_LITERAL_SKIP_REGEXES = [
+    re.compile(regexp_str) for regexp_str in _LITERAL_SKIP_REGEX_STRINGS
+]
 _LITERAL_CACHE = {}
+
+
+def is_literal_in_skiplist(literal):
+  for regex in _LITERAL_SKIP_REGEXES:
+    if regex.match(literal):
+      print('Skipping', repr(literal), 'due to', regex)
+      return True
+  return False
+
+
+def is_literal_in_git(literal):
+  git_grep_cmd = ('git', 'grep', '--threads', '2', '-l', '\"%s\"' % literal)
+  git_grep_proc = subprocess.Popen(git_grep_cmd, stdout=subprocess.PIPE)
+  # Check for >1 since fieldtrial_testing_config.json will always be a result.
+  return len(git_grep_proc.stdout.read().splitlines()) > 1
+
+
+def is_literal_in_files(literal, code_files):
+  bash_files_using_literal = subprocess.Popen(
+      ('xargs', 'grep', '-s', '-l', '\\\"%s\\\"' % literal),
+      stdin=subprocess.PIPE,
+      stdout=subprocess.PIPE)
+  files_using_literal = bash_files_using_literal.communicate(code_files)[0]
+  return len(files_using_literal.splitlines()) > 0
 
 
 def is_literal_used(literal, code_files):
@@ -38,24 +72,11 @@ def is_literal_used(literal, code_files):
   if literal in _LITERAL_CACHE:
     return _LITERAL_CACHE[literal]
 
-  git_grep_cmd = ('git', 'grep', '--threads', '2', '-l', '\"%s\"' % literal)
-  git_grep_proc = subprocess.Popen(git_grep_cmd, stdout=subprocess.PIPE)
-  # Check for >1 since fieldtrial_testing_config.json will always be a result.
-  if len(git_grep_proc.stdout.read().splitlines()) > 1:
-    _LITERAL_CACHE[literal] = True
-    return True
-
-  bash_files_using_literal = subprocess.Popen(
-      ('xargs', 'grep', '-s', '-l', '\\\"%s\\\"' % literal),
-      stdin=subprocess.PIPE,
-      stdout=subprocess.PIPE)
-
-  files_using_literal = bash_files_using_literal.communicate(code_files)[0]
-  used = len(files_using_literal.splitlines()) > 0
-  _LITERAL_CACHE[literal] = used
+  used = is_literal_in_skiplist(literal) or is_literal_in_git(
+      literal) or is_literal_in_files(literal, code_files)
   if not used:
     print('Did not find', repr(literal))
-
+  _LITERAL_CACHE[literal] = used
   return used
 
 
