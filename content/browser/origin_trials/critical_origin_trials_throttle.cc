@@ -52,29 +52,30 @@ void CriticalOriginTrialsThrottle::WillStartRequest(
 void CriticalOriginTrialsThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer) {
+    RestartWithURLReset* restart_with_url_reset) {
   if (is_navigation_request_) {
     DCHECK_EQ(response_url, request_url_);
-    MaybeRestartWithTrials(response_head);
+    MaybeRestartWithTrials(response_head, restart_with_url_reset);
   }
 }
 
 void CriticalOriginTrialsThrottle::BeforeWillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer,
+    RestartWithURLReset* restart_with_url_reset,
     std::vector<std::string>* to_be_removed_request_headers,
     net::HttpRequestHeaders* modified_request_headers,
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
   if (is_navigation_request_) {
-    MaybeRestartWithTrials(response_head);
+    MaybeRestartWithTrials(response_head, restart_with_url_reset);
     // Update the stored information for the new request
     SetPreRequestFields(redirect_info->new_url);
   }
 }
 
 void CriticalOriginTrialsThrottle::MaybeRestartWithTrials(
-    const network::mojom::URLResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head,
+    RestartWithURLReset* restart_with_url_reset) {
   if (!response_head.headers)
     return;
 
@@ -126,7 +127,7 @@ void CriticalOriginTrialsThrottle::MaybeRestartWithTrials(
         request_origin, partition_origin, /*script_origins=*/{},
         origin_trial_tokens, base::Time::Now());
     restarted_origins_.insert(request_origin);
-    delegate_->RestartWithURLResetAndFlags(0);
+    *restart_with_url_reset = RestartWithURLReset(true);
   }
 }
 

@@ -70,19 +70,15 @@ class CheckForCancelledOrPausedDelegate
   // URLLoaderThrottle::Delegate:
   void CancelWithError(int error_code,
                        base::StringPiece custom_reason) override {
-    cancelled_or_paused_ = true;
+    cancelled_ = true;
   }
 
   void Resume() override {}
 
-  void RestartWithURLResetAndFlags(int additional_load_flags) override {
-    cancelled_or_paused_ = true;
-  }
-
-  bool cancelled_or_paused() const { return cancelled_or_paused_; }
+  bool cancelled() const { return cancelled_; }
 
  private:
-  bool cancelled_or_paused_ = false;
+  bool cancelled_ = false;
 };
 
 // Computes the user agent value that should set for the User-Agent header.
@@ -297,7 +293,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
                                              &new_canonical_search_url);
 
       if (should_defer || new_canonical_search_url != canonical_search_url_ ||
-          cancel_or_pause_delegate.cancelled_or_paused()) {
+          cancel_or_pause_delegate.cancelled()) {
         return false;
       }
     }

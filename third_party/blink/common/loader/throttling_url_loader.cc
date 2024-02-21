@@ -192,14 +192,6 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
                                original_client_receiver, body);
   }
 
-  void RestartWithURLResetAndFlags(int additional_load_flags) override {
-    if (!loader_)
-      return;
-
-    ScopedDelegateCall scoped_delegate_call(this);
-    loader_->RestartWithURLResetAndFlags(additional_load_flags);
-  }
-
   void Detach() { loader_ = nullptr; }
 
   void DidRestartForCriticalClientHint() override {
@@ -495,10 +487,6 @@ void ThrottlingURLLoader::Start(
 
 void ThrottlingURLLoader::StartNow() {
   DCHECK(start_info_);
-  if (throttle_will_start_original_url_) {
-    throttle_will_start_redirect_url_ = original_url_;
-    throttle_will_start_original_url_ = false;
-  }
   if (!throttle_will_start_redirect_url_.is_empty()) {
     auto first_party_url_policy =
         start_info_->url_request.update_first_party_url_on_redirect
@@ -524,8 +512,9 @@ void ThrottlingURLLoader::StartNow() {
         redirect_info, std::nullopt, std::nullopt,
         &start_info_->url_request.headers, &should_clear_upload);
 
-    if (should_clear_upload)
+    if (should_clear_upload) {
       start_info_->url_request.request_body = nullptr;
+    }
 
     // Set the new URL in the ResourceRequest struct so that it is the URL
     // that's requested.
@@ -575,13 +564,10 @@ void ThrottlingURLLoader::StartNow() {
   response_url_ = start_info_->url_request.url;
 }
 
-void ThrottlingURLLoader::RestartWithFlagsNow() {
-  DCHECK(has_pending_restart_);
+void ThrottlingURLLoader::RestartWithURLResetNow() {
   url_loader_.reset();
   client_receiver_.reset();
-  start_info_->url_request.load_flags |= pending_restart_flags_;
-  has_pending_restart_ = false;
-  pending_restart_flags_ = 0;
+  throttle_will_start_redirect_url_ = original_url_;
   StartNow();
 }
 
@@ -619,13 +605,6 @@ void ThrottlingURLLoader::StopDeferringForThrottle(
     Resume();
 }
 
-void ThrottlingURLLoader::RestartWithURLResetAndFlags(
-    int additional_load_flags) {
-  pending_restart_flags_ |= additional_load_flags;
-  throttle_will_start_original_url_ = true;
-  has_pending_restart_ = true;
-}
-
 void ThrottlingURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
@@ -654,29 +633,20 @@ void ThrottlingURLLoader::OnReceiveResponse(
 
   // Dispatch BeforeWillProcessResponse().
   if (!throttles_.empty()) {
-    pending_restart_flags_ = 0;
-    has_pending_restart_ = false;
-    bool deferred = false;
+    URLLoaderThrottle::RestartWithURLReset has_pending_restart(false);
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
-      bool throttle_deferred = false;
       base::Time start = base::Time::Now();
       throttle->BeforeWillProcessResponse(response_url_, *response_head,
-                                          &throttle_deferred);
-      RecordExecutionTimeHistogram(
-          GetStageNameForHistogram(DEFERRED_BEFORE_RESPONSE), start);
-      if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
+                                          &has_pending_restart);
+      RecordExecutionTimeHistogram("BeforeWillProcessResponse", start);
+      if (!HandleThrottleResult(throttle)) {
         return;
+      }
     }
 
-    if (deferred) {
-      deferred_stage_ = DEFERRED_BEFORE_RESPONSE;
-      client_receiver_.Pause();
-      return;
-    }
-
-    if (has_pending_restart_) {
-      RestartWithFlagsNow();
+    if (has_pending_restart) {
+      RestartWithURLResetNow();
       return;
     }
   }
@@ -721,29 +691,28 @@ void ThrottlingURLLoader::OnReceiveRedirect(
   }
 
   if (!throttles_.empty()) {
-    bool deferred = false;
-    has_pending_restart_ = false;
+    URLLoaderThrottle::RestartWithURLReset has_pending_restart(false);
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
-      bool throttle_deferred = false;
       auto weak_ptr = weak_factory_.GetWeakPtr();
       std::vector<std::string> removed_headers;
       net::HttpRequestHeaders modified_headers;
       net::HttpRequestHeaders modified_cors_exempt_headers;
       net::RedirectInfo redirect_info_copy = redirect_info;
       throttle->BeforeWillRedirectRequest(
-          &redirect_info_copy, *response_head, &throttle_deferred,
+          &redirect_info_copy, *response_head, &has_pending_restart,
           &removed_headers, &modified_headers, &modified_cors_exempt_headers);
 
       if (!weak_ptr)
         return;
     }
 
-    if (has_pending_restart_) {
-      RestartWithFlagsNow();
+    if (has_pending_restart) {
+      RestartWithURLResetNow();
       return;
     }
 
+    bool deferred = false;
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
@@ -848,8 +817,6 @@ void ThrottlingURLLoader::OnComplete(
 
   // Only dispatch WillOnCompleteWithError() if status is not OK.
   if (!throttles_.empty() && status.error_code != net::OK) {
-    pending_restart_flags_ = 0;
-    has_pending_restart_ = false;
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       base::Time start = base::Time::Now();
@@ -858,11 +825,6 @@ void ThrottlingURLLoader::OnComplete(
       if (!HandleThrottleResult(throttle)) {
         return;
       }
-    }
-
-    if (has_pending_restart_) {
-      RestartWithFlagsNow();
-      return;
     }
   }
 
@@ -927,17 +889,6 @@ void ThrottlingURLLoader::Resume() {
       // Note: |this| may be deleted here.
       break;
     }
-    case DEFERRED_BEFORE_RESPONSE: {
-      // TODO(eroman): For simplicity we require throttles that defer during
-      // BeforeWillProcessResponse() to do a restart. We could support deferring
-      // and choosing not to restart if needed, however the current consumers
-      // don't need that.
-      CHECK(has_pending_restart_);
-
-      RestartWithFlagsNow();
-      // Note: |this| may be deleted here.
-      break;
-    }
     case DEFERRED_RESPONSE: {
       client_receiver_.Resume();
       forwarding_client_->OnReceiveResponse(
@@ -946,7 +897,7 @@ void ThrottlingURLLoader::Resume() {
       // Note: |this| may be deleted here.
       break;
     }
-    default:
+    case DEFERRED_NONE:
       NOTREACHED();
       break;
   }
@@ -1033,14 +984,12 @@ const char* ThrottlingURLLoader::GetStageNameForHistogram(DeferredStage stage) {
       return "WillStartRequest";
     case DEFERRED_REDIRECT:
       return "WillRedirectRequest";
-    case DEFERRED_BEFORE_RESPONSE:
-      return "BeforeWillProcessResponse";
     case DEFERRED_RESPONSE:
       return "WillProcessResponse";
-    default:
+    case DEFERRED_NONE:
       NOTREACHED();
+      return "";
   }
-  return "";
 }
 
 ThrottlingURLLoader::ThrottleEntry::ThrottleEntry(

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -734,6 +735,7 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
   headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage, language);
   request.headers = headers;
   bool defer = false;
+  blink::URLLoaderThrottle::RestartWithURLReset restart_with_url_reset(false);
   throttle.WillStartRequest(&request, &defer);
 
   delegate.PersistReducedLanguage(url::Origin::Create(request_url), language);
@@ -744,7 +746,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
 
   // Early returns without the variants header.
   {
-    throttle.BeforeWillProcessResponse(request_url, response_head, &defer);
+    throttle.BeforeWillProcessResponse(request_url, response_head,
+                                       &restart_with_url_reset);
     std::optional<std::string> persist_language =
         delegate.GetReducedLanguage(url::Origin::Create(request_url));
     EXPECT_EQ(persist_language.value(), language);
@@ -758,7 +761,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
       network::ParseVariantsHeaders("accept-language=(en zh)");
   {
     response_head.did_service_worker_navigation_preload = true;
-    throttle.BeforeWillProcessResponse(request_url, response_head, &defer);
+    throttle.BeforeWillProcessResponse(request_url, response_head,
+                                       &restart_with_url_reset);
 
     std::optional<std::string> persist_language =
         delegate.GetReducedLanguage(url::Origin::Create(request_url));
@@ -772,7 +776,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
                     {"Origin-Trial: ", kFirstPartyOriginToken, "\r\n"});
     response_head.headers =
         base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
-    throttle.BeforeWillProcessResponse(request_url, response_head, &defer);
+    throttle.BeforeWillProcessResponse(request_url, response_head,
+                                       &restart_with_url_reset);
 
     std::optional<std::string> persist_language =
         delegate.GetReducedLanguage(url::Origin::Create(request_url));
@@ -782,7 +787,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
   // Without valid origin trial token.
   {
     response_head.did_service_worker_navigation_preload = false;
-    throttle.BeforeWillProcessResponse(request_url, response_head, &defer);
+    throttle.BeforeWillProcessResponse(request_url, response_head,
+                                       &restart_with_url_reset);
 
     std::optional<std::string> persist_language =
         delegate.GetReducedLanguage(url::Origin::Create(request_url));

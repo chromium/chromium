@@ -214,9 +214,6 @@ class KeepAliveURLLoader::ThrottleDelegate final
                          loader_->GetWeakPtr()));
     }
   }
-  void RestartWithURLResetAndFlags(int additional_load_flags) override {
-    NOTREACHED();
-  }
 
  private:
   // `loader_` is alive and ready to take actions triggered from in-browser

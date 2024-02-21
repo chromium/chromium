@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -87,23 +88,6 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
             original_client_receiver,
         mojo::ScopedDataPipeConsumerHandle* body);
 
-    // Restarts the URL loader using |additional_load_flags| and the unmodified
-    // URL if it was changed in WillStartRequest().
-    //
-    // Restarting is only valid while executing within
-    // BeforeWillRedirectRequest(), BeforeWillProcessResponse(), or during
-    // deferred handling of BeforeWillProcessResponse() (before having called
-    // Resume()).
-    //
-    // When a URL loader is restarted, throttles will NOT have their
-    // WillStartRequest() method called again - that is only called for the
-    // initial request start.
-    //
-    // If multiple throttles call RestartWithURLResetAndFlags() then the URL
-    // loader will be restarted using a combined value of all of the
-    // |additional_load_flags|.
-    virtual void RestartWithURLResetAndFlags(int additional_load_flags);
-
     // Indicates a restart did occur due to a Critical-CH HTTP Header.
     virtual void DidRestartForCriticalClientHint() {}
 
@@ -172,8 +156,17 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
   // throttle defers the navigation in WillProcessResponse().
   virtual const char* NameForLoggingWillProcessResponse();
 
+  // When `*restart_with_url_reset` is set to true in
+  // `BeforeWillProcessResponse` or `BeforeWillRedirectRequest`, the caller
+  // should restart the URL loader using the original URL before modified by
+  // WillStartRequest(). When a URL loader is restarted, throttles will NOT have
+  // their WillStartRequest() method called again - that is only called for the
+  // initial request start.
+  using RestartWithURLReset =
+      base::StrongAlias<struct RestartWithURLResetTag, bool>;
+
   // Called prior WillProcessResponse() to allow throttles to restart the URL
-  // load by calling delegate_->RestartWithFlags().
+  // load by setting `RestartWithURLReset` to true.
   //
   // Having this method separate from WillProcessResponse() ensures that
   // WillProcessResponse() is called at most once even in the presence of
@@ -181,10 +174,10 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
   virtual void BeforeWillProcessResponse(
       const GURL& response_url,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer);
+      RestartWithURLReset* restart_with_url_reset);
 
   // Called prior WillRedirectRequest() to allow throttles to restart the URL
-  // load by calling delegate_->RestartWithFlags().
+  // load by setting `RestartWithURLReset` to true.
   //
   // Having this method separate from WillRedirectRequest() ensures that
   // WillRedirectRequest() is called at most once per redirect even in the
@@ -195,7 +188,7 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
   virtual void BeforeWillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer,
+      RestartWithURLReset* restart_with_url_reset,
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers);

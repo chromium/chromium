@@ -138,7 +138,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
              std::optional<std::vector<std::string>> cors_exempt_header_list);
 
   void StartNow();
-  void RestartWithFlagsNow();
+  void RestartWithURLResetNow();
 
   // Processes the result of a URLLoaderThrottle call. If it's deferred, adds
   // the throttle to the blocking set and updates |*should_defer| accordingly.
@@ -152,12 +152,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // deferring throttle, the request remains deferred. Otherwise it resumes
   // progress.
   void StopDeferringForThrottle(URLLoaderThrottle* throttle);
-
-  // Restart the request using |original_url_|.
-  void RestartWithURLResetAndFlags(int additional_load_flags);
-
-  // Restart the request immediately if the response has not started yet.
-  void RestartWithURLResetAndFlagsNow(int additional_load_flags);
 
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -198,7 +192,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     DEFERRED_NONE,
     DEFERRED_START,
     DEFERRED_REDIRECT,
-    DEFERRED_BEFORE_RESPONSE,
     DEFERRED_RESPONSE,
   };
   const char* GetStageNameForHistogram(DeferredStage stage);
@@ -285,15 +278,21 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // Set if request is deferred and SetPriority() is called.
   std::unique_ptr<PriorityInfo> priority_info_;
 
-  // Set if a throttle changed the URL in WillStartRequest.
+  // If
+  // - A throttle changed the URL in WillStartRequest(), or
+  // - `RestartWithURLReset` is set to true in `BeforeWillProcessResponse()` or
+  //   `BeforeWillRedirectRequest()`,
+  // a synthesized redirect to the modified URL is dispatched.
+  // 1. `throttle_will_start_redirect_url_` is set when the synthesized redirect
+  //    is scheduled.
+  // 2. The actual redirect is started in the first half of `StartNow()`.
+  // 3. `throttle_will_start_redirect_url_` is reset when the redirect is done.
   GURL throttle_will_start_redirect_url_;
 
   // Set if a throttle changed the URL in WillRedirectRequest.
   // Only supported with the network service.
   GURL throttle_will_redirect_redirect_url_;
 
-  // Set if the request should be made using the |original_url_|.
-  bool throttle_will_start_original_url_ = false;
   // The first URL seen by the throttle.
   GURL original_url_;
 
@@ -309,9 +308,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   std::vector<std::string> removed_headers_;
   net::HttpRequestHeaders modified_headers_;
   net::HttpRequestHeaders modified_cors_exempt_headers_;
-
-  int pending_restart_flags_ = 0;
-  bool has_pending_restart_ = false;
 
   base::TimeTicks critical_ch_restart_time_;
 

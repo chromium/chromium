@@ -43,11 +43,11 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
   void BeforeWillProcessResponse(
       const GURL& response_url,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer) override;
+      RestartWithURLReset* restart_with_url_reset) override;
   void BeforeWillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer,
+      RestartWithURLReset* restart_with_url_reset,
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
@@ -56,7 +56,8 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
   // Contains the logic for whether or not the navigation should restart, and
   // persists the Accept-CH header if there is a restart.
   void MaybeRestartWithHints(
-      const network::mojom::URLResponseHead& response_head);
+      const network::mojom::URLResponseHead& response_head,
+      RestartWithURLReset* restart_with_url_reset);
 
   raw_ptr<BrowserContext> context_;
   raw_ptr<ClientHintsControllerDelegate> client_hint_delegate_;

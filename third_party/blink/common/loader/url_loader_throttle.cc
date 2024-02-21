@@ -24,11 +24,6 @@ void URLLoaderThrottle::Delegate::InterceptResponse(
   NOTIMPLEMENTED();
 }
 
-void URLLoaderThrottle::Delegate::RestartWithURLResetAndFlags(
-    int additional_load_flags) {
-  NOTIMPLEMENTED();
-}
-
 URLLoaderThrottle::Delegate::~Delegate() {}
 
 URLLoaderThrottle::~URLLoaderThrottle() {}
@@ -64,12 +59,12 @@ const char* URLLoaderThrottle::NameForLoggingWillProcessResponse() {
 void URLLoaderThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer) {}
+    RestartWithURLReset* restart_with_url_reset) {}
 
 void URLLoaderThrottle::BeforeWillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer,
+    RestartWithURLReset* restart_with_url_reset,
     std::vector<std::string>* to_be_removed_request_headers,
     net::HttpRequestHeaders* modified_request_headers,
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {}

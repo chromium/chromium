@@ -39,11 +39,11 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   void BeforeWillProcessResponse(
       const GURL& response_url,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer) override;
+      RestartWithURLReset* restart_with_url_reset) override;
   void BeforeWillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer,
+      RestartWithURLReset* restart_with_url_reset,
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
@@ -75,7 +75,8 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   // Determine if critical origin trials have been enabled by the server
   // response and a restart is required.
   void MaybeRestartWithTrials(
-      const network::mojom::URLResponseHead& response_head);
+      const network::mojom::URLResponseHead& response_head,
+      RestartWithURLReset* restart_with_url_reset);
 
   // Stores the pre-request information, so it can be compared with the received
   // response headers.
