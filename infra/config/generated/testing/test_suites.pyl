@@ -3245,7 +3245,6 @@
           '--use-weston',
           '--weston-use-gl',
         ],
-        'ci_only': True,
       },
     },
 

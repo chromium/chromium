@@ -2920,7 +2920,6 @@ targets.legacy_basic_suite(
                 "--use-weston",
                 "--weston-use-gl",
             ],
-            ci_only = True,
         ),
     },
 )
