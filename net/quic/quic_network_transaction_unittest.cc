@@ -6323,6 +6323,7 @@ TEST_P(QuicNetworkTransactionWithDestinationTest,
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
 
   const auto kQuicProxyChain =
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -6415,6 +6416,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
 
   const auto kQuicProxyChain =
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -6509,6 +6511,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
 
   const auto kQuicProxyChain =
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -6635,6 +6638,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
 
   const auto kQuicProxyChain =
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -6791,6 +6795,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectNoReuseDifferentChains) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
 
   const ProxyServer kQuicProxyServer{ProxyServer::SCHEME_QUIC,
                                      HostPortPair("proxy.example.org", 443)};
@@ -6950,6 +6955,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectNoReuseDifferentChains) {
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectFailure) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -7004,6 +7010,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectFailure) {
 TEST_P(QuicNetworkTransactionTest, QuicProxyQuicConnectionError) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -7047,6 +7054,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyQuicConnectionError) {
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
 
   const auto kQuicProxyChain =
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -7181,6 +7189,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyUserAgent) {
   const char kConfiguredUserAgent[] = "Configured User-Agent";
   const char kRequestUserAgent[] = "Request User-Agent";
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -7234,6 +7243,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyUserAgent) {
 TEST_P(QuicNetworkTransactionTest, QuicProxyRequestPriority) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -7280,6 +7290,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyRequestPriority) {
 // HTTP/2 stream dependency and weights given the request priority.
 TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -7364,6 +7375,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
         false);
 
     session_params_.enable_quic = true;
+    session_params_.enable_quic_proxies_for_https_urls = true;
     proxy_resolution_service_ =
         ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
             {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -7800,6 +7812,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(

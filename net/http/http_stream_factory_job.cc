@@ -740,6 +740,13 @@ int HttpStreamFactory::Job::DoStart() {
     return ERR_UNSAFE_PORT;
   }
 
+  if (!session_->params().enable_quic_proxies_for_https_urls &&
+      !proxy_info_.is_empty() && !proxy_info_.is_direct() &&
+      proxy_info_.proxy_chain().Last().is_quic() &&
+      request_info_.url.SchemeIsCryptographic()) {
+    return ERR_NOT_IMPLEMENTED;
+  }
+
   next_state_ = STATE_WAIT;
   return OK;
 }
