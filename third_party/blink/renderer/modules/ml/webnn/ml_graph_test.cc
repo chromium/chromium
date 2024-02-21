@@ -875,8 +875,7 @@ struct Resample2dTester {
 };
 
 TEST_P(MLGraphTest, Resample2dTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test resample2d operator with axes = {1, 2}, sizes = {4, 4}.
     auto* options = MLResample2dOptions::Create();
@@ -943,18 +942,7 @@ struct ClampTester {
 };
 
 TEST_P(MLGraphTest, ClampTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
-  {
-    // Test clamp operator with default options that no minimum and maximum
-    // values are defined.
-    ClampTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .expected = {-10.0, -0.5, 0.5, 10.0}}
-        .Test(*this, scope);
-  }
+  MLGraphV8TestingScope scope;
   {
     // Test clamp operator with the minimum value defined.
     MLClampOptions* options = MLClampOptions::Create();
@@ -967,18 +955,7 @@ TEST_P(MLGraphTest, ClampTest) {
         .Test(*this, scope, options);
   }
   {
-    // Test clamp operator with the maximum value defined.
-    MLClampOptions* options = MLClampOptions::Create();
-    options->setMaxValue(6.0);
-    ClampTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .expected = {-10.0, -0.5, 0.5, 6.0}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test clamp operator with both the minimum and maximum values defined.
+    // Test clamp operator with the minimum = 0 and maximum = 6.
     MLClampOptions* options = MLClampOptions::Create();
     options->setMinValue(0.0);
     options->setMaxValue(6.0);
@@ -987,6 +964,18 @@ TEST_P(MLGraphTest, ClampTest) {
                   .dimensions = {1, 2, 2, 1},
                   .values = {-10.0, -0.5, 0.5, 10.0}},
         .expected = {0.0, 0.0, 0.5, 6.0}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test clamp operator with the minimum = -1 and maximum = 1.
+    MLClampOptions* options = MLClampOptions::Create();
+    options->setMinValue(-1.0);
+    options->setMaxValue(1.0);
+    ClampTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {-1, -0.5, 0.5, 1}}
         .Test(*this, scope, options);
   }
   {
@@ -999,6 +988,29 @@ TEST_P(MLGraphTest, ClampTest) {
                   .dimensions = {},
                   .values = {10.0}},
         .expected = {6.0}}
+        .Test(*this, scope, options);
+  }
+  // ModelLoader backend only supports Relu1 and Relu6 for clamp.
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
+  {
+    // Test clamp operator with default options that no minimum and maximum
+    // values are defined.
+    ClampTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {-10.0, -0.5, 0.5, 10.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test clamp operator with the maximum value defined.
+    MLClampOptions* options = MLClampOptions::Create();
+    options->setMaxValue(6.0);
+    ClampTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {-10.0, -0.5, 0.5, 6.0}}
         .Test(*this, scope, options);
   }
 }

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -165,38 +166,63 @@ base::expected<TfLitePadding, String> GetTfLitePaddingMode(
   NOTREACHED_NORETURN();
 }
 
+enum class ClampRange { kRelu, kRelu1, kRelu6 };
+
+base::expected<ClampRange, String> GetClampRange(const MLOperator* clamp) {
+  DCHECK(clamp);
+  const auto* options = static_cast<const MLClampOptions*>(clamp->Options());
+  DCHECK(options);
+  const float min =
+      options->getMinValueOr(-std::numeric_limits<float>::infinity());
+  const float max =
+      options->getMaxValueOr(+std::numeric_limits<float>::infinity());
+  // TODO(crbug.com/326156496): Use RELU_0_TO_1 to support min = 0.0f and max
+  // = 1.0f.
+  if (min == -1.0f && max == 1.0f) {
+    return ClampRange::kRelu1;
+  } else if (min == 0.0f && max == 6.0f) {
+    return ClampRange::kRelu6;
+  } else if (min == 0.0f && !options->hasMaxValue()) {
+    return ClampRange::kRelu;
+  }
+
+  // TODO(crbug.com/326156496): Support other range.
+  return base::unexpected(
+      "The range of clamp is not supported in tflite schema.");
+}
+
+base::expected<tflite::ActivationFunctionType, String>
+GetActivationTypeForClamp(const MLOperator* clamp) {
+  const auto range_result = GetClampRange(clamp);
+  RETURN_IF_ERROR(range_result);
+  switch (range_result.value()) {
+    case ClampRange::kRelu:
+      return tflite::ActivationFunctionType_RELU;
+    case ClampRange::kRelu1:
+      return tflite::ActivationFunctionType_RELU_N1_TO_1;
+    case ClampRange::kRelu6:
+      return tflite::ActivationFunctionType_RELU6;
+  }
+  NOTREACHED_NORETURN();
+}
+
 base::expected<tflite::ActivationFunctionType, String>
 GetActivationFunctionType(const MLActivation* ml_activation) {
   CHECK(ml_activation);
   const MLOperator* op = ml_activation->Operator();
   CHECK(op);
-  tflite::ActivationFunctionType activation =
-      tflite::ActivationFunctionType_NONE;
   switch (op->Kind()) {
     case MLOperator::OperatorKind::kClamp: {
-      const MLClampOptions* clamp_options =
-          static_cast<const MLClampOptions*>(op->Options());
-      CHECK(clamp_options);
-      const float min =
-          clamp_options->getMinValueOr(-std::numeric_limits<float>::infinity());
-      const float max =
-          clamp_options->getMaxValueOr(+std::numeric_limits<float>::infinity());
-      if (min == 0.0f && max == 6.0f) {
-        activation = tflite::ActivationFunctionType_RELU6;
-      } else {
-        return base::unexpected("Clamp activation is not supported.");
-      }
-      break;
+      const auto activation_result = GetActivationTypeForClamp(op);
+      RETURN_IF_ERROR(activation_result);
+      return activation_result.value();
     }
     case MLOperator::OperatorKind::kRelu:
-      activation = tflite::ActivationFunctionType_RELU;
-      break;
+      return tflite::ActivationFunctionType_RELU;
     default:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " activation is not supported.");
   }
-
-  return activation;
 }
 
 template <typename T>
@@ -882,6 +908,31 @@ OperatorOffset SerializeUnaryOperator(
                                 builder.CreateVector<int32_t>(op_outputs));
 }
 
+base::expected<OperatorOffset, String> SerializeClamp(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* clamp,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes) {
+  const auto range_result = GetClampRange(clamp);
+  RETURN_IF_ERROR(range_result);
+
+  tflite::BuiltinOperator code;
+  switch (range_result.value()) {
+    case ClampRange::kRelu:
+      code = tflite::BuiltinOperator_RELU;
+      break;
+    case ClampRange::kRelu1:
+      code = tflite::BuiltinOperator_RELU_N1_TO_1;
+      break;
+    case ClampRange::kRelu6:
+      code = tflite::BuiltinOperator_RELU6;
+      break;
+  }
+
+  return SerializeUnaryOperator(code, operand_to_index_map, clamp, builder,
+                                operator_codes);
+}
+
 base::expected<OperatorOffset, String> SerializeElu(
     const OperandToIndexMap& operand_to_index_map,
     const MLOperator* elu,
@@ -929,6 +980,87 @@ OperatorOffset SerializeLeakyRelu(const OperandToIndexMap& operand_to_index_map,
                                 builder.CreateVector<int32_t>(operator_outputs),
                                 tflite::BuiltinOptions_LeakyReluOptions,
                                 leaky_relu_options.Union());
+}
+
+base::expected<OperatorOffset, String> SerializeResample2d(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* resample2d,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
+  const int32_t input_index =
+      GetOperatorInputIndex(resample2d, operand_to_index_map);
+  const int32_t output_index =
+      GetOperatorOutputIndex(resample2d, operand_to_index_map);
+
+  const MLResample2dOptions* options =
+      static_cast<const MLResample2dOptions*>(resample2d->Options());
+  CHECK(options);
+  const Vector<uint32_t> default_axes({2, 3});
+  // TfLite resize bilinear node only supports axes = {1, 2}.
+  // TODO(crbug.com/1273291): Support axes = {2, 3} by transposing the input
+  // tensor.
+  if (!(options->getAxesOr(default_axes)[0] == 1 &&
+        options->getAxesOr(default_axes)[1] == 2)) {
+    return base::unexpected(
+        "Resample2d only supports axes = {1, 2} in tflite schema.");
+  }
+
+  // Create tflite builtin options for resize mode that is align_corner = false
+  // and half_pixel_center = true by default. WebNN will support coordinate
+  // transformation modes for Resample2d and it's tracked by the issue:
+  // https://github.com/webmachinelearning/webnn/issues/270.
+  tflite::BuiltinOperator operator_code;
+  tflite::BuiltinOptions builtin_options_type;
+  flatbuffers::Offset<void> builtin_options;
+  switch (options->mode().AsEnum()) {
+    case V8MLInterpolationMode::Enum::kLinear:
+      operator_code = tflite::BuiltinOperator_RESIZE_BILINEAR;
+      builtin_options_type = tflite::BuiltinOptions_ResizeBilinearOptions;
+      builtin_options =
+          tflite::CreateResizeBilinearOptions(builder, /*align_corners=*/false,
+                                              /*half_pixel_centers=*/true)
+              .Union();
+      break;
+    case V8MLInterpolationMode::Enum::kNearestNeighbor:
+      operator_code = tflite::BuiltinOperator_RESIZE_NEAREST_NEIGHBOR;
+      builtin_options_type =
+          tflite::BuiltinOptions_ResizeNearestNeighborOptions;
+      builtin_options = tflite::CreateResizeNearestNeighborOptions(
+                            builder, /*align_corners=*/false,
+                            /*half_pixel_centers=*/true)
+                            .Union();
+  }
+
+  // Serialize the target sizes for the dimensions [OutputHeight, OutputWidth].
+  const base::expected<Vector<int32_t>, String> output_dimensions =
+      ConvertDimensions(resample2d->Outputs()[0]->Dimensions());
+  RETURN_IF_ERROR(output_dimensions);
+  DCHECK_EQ(output_dimensions->size(), 4U);
+  const auto output_height = output_dimensions.value()[1];
+  const auto output_width = output_dimensions.value()[2];
+  const Vector<int32_t> resize_data = {output_height, output_width};
+  const Vector<int32_t> resize_shape = {
+      static_cast<int32_t>(resize_data.size())};
+  const TensorInfo<int32_t> resize_info = {
+      .type = tflite::TensorType_INT32,
+      .dimensions = std::move(resize_shape),
+      .values = std::move(resize_data)};
+  const int32_t resize_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      resize_info, builder, buffers, tensors);
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(operator_code, builder, operator_codes);
+  const std::array<int32_t, 2> op_inputs = {input_index, resize_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_index};
+  return tflite::CreateOperator(builder, operator_code_index,
+                                builder.CreateVector<int32_t>(op_inputs),
+                                builder.CreateVector<int32_t>(op_outputs),
+                                builtin_options_type, builtin_options);
 }
 
 OperatorOffset SerializeReshape(const OperandToIndexMap& operand_to_index_map,
@@ -1096,6 +1228,13 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
     const MLOperator* op) {
   OperatorOffset operator_offset;
   switch (op->Kind()) {
+    case MLOperator::OperatorKind::kClamp: {
+      const auto clamp_result =
+          SerializeClamp(operand_to_index_map, op, builder_, operator_codes_);
+      RETURN_IF_ERROR(clamp_result);
+      operator_offset = clamp_result.value();
+      break;
+    }
     case MLOperator::OperatorKind::kConcat:
       operator_offset =
           SerializeConcat(operand_to_index_map, op, builder_, operator_codes_);
@@ -1223,6 +1362,15 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset =
           SerializeReshape(operand_to_index_map, op, builder_, operator_codes_);
       break;
+    case MLOperator::OperatorKind::kResample2d: {
+      const auto resize_result =
+          SerializeResample2d(operand_to_index_map, op, builder_,
+                              operator_codes_, buffers_, tensors_);
+      // Resize operator in tflite schema only supports axes = {1, 2}.
+      RETURN_IF_ERROR(resize_result);
+      operator_offset = resize_result.value();
+      break;
+    }
     case MLOperator::OperatorKind::kSigmoid:
       operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_LOGISTIC,
                                                operand_to_index_map, op,
