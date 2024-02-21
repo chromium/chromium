@@ -646,14 +646,14 @@ TEST_F(KioskBrowserSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
 TEST_F(KioskBrowserSessionTest,
        DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
   const std::vector<Browser::Type> not_app_popup_browser_types = {
-      Browser::Type::TYPE_NORMAL,     Browser::Type::TYPE_POPUP,
-      Browser::Type::TYPE_APP,        Browser::Type::TYPE_DEVTOOLS,
+      Browser::Type::TYPE_NORMAL,
+      Browser::Type::TYPE_POPUP,
+      Browser::Type::TYPE_APP,
+      Browser::Type::TYPE_DEVTOOLS,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       Browser::Type::TYPE_CUSTOM_TAB,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-      // TODO(b/325453088): Bring back PICTURE_IN_PICTURE once we invoke
-      // browser.window.Close() again.
+      Browser::Type::TYPE_PICTURE_IN_PICTURE,
   };
 
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
@@ -1068,14 +1068,12 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
 TEST_P(KioskBrowserSessionTroubleshootingTest,
        OnlyAllowRegularBrowserAndDevToolsAsTroubleshootingBrowsers) {
   const std::vector<Browser::Type> should_be_closed_browser_types = {
-      Browser::Type::TYPE_POPUP, Browser::Type::TYPE_APP,
+      Browser::Type::TYPE_POPUP,        Browser::Type::TYPE_APP,
       Browser::Type::TYPE_APP_POPUP,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       Browser::Type::TYPE_CUSTOM_TAB,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-      // TODO(b/325453088): Bring back PICTURE_IN_PICTURE once we invoke
-      // browser.window.Close() again.
+      Browser::TYPE_PICTURE_IN_PICTURE,
   };
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
