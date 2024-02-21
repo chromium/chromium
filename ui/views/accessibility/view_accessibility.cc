@@ -281,22 +281,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (ViewAccessibility::IsAccessibilityFocusable())
     data->AddState(ax::mojom::State::kFocusable);
 
-  if (overriden_is_enabled_) {
-    if (*overriden_is_enabled_) {
-      // Take into account the possibility that the View is marked as readonly
-      // but enabled. In other words, we can't just remove all restrictions,
-      // unless the View is explicitly marked as disabled. Note that readonly is
-      // another restriction state in addition to enabled and disabled, (see
-      // ax::mojom::Restriction).
-      if (data->GetRestriction() == ax::mojom::Restriction::kDisabled)
-        data->SetRestriction(ax::mojom::Restriction::kNone);
-    } else {
-      data->SetRestriction(ax::mojom::Restriction::kDisabled);
-    }
-  } else if (!view_->GetEnabled()) {
-    data->SetRestriction(ax::mojom::Restriction::kDisabled);
-  }
-
   if (!view_->GetVisible() && data->role != ax::mojom::Role::kAlert)
     data->AddState(ax::mojom::State::kInvisible);
 
@@ -367,8 +351,7 @@ bool ViewAccessibility::IsAccessibilityFocusable() const {
   // be focusable, if there is test coverage, such a situation will cause a test
   // failure.
   return view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-         ViewAccessibility::IsAccessibilityEnabled() && view_->IsDrawn() &&
-         !is_ignored_;
+         GetIsEnabled() && view_->IsDrawn() && !is_ignored_;
 }
 
 bool ViewAccessibility::IsFocusedForTesting() const {
@@ -606,24 +589,6 @@ bool ViewAccessibility::IsIgnored() const {
   // GetAccessibleNodeData(&out_data);
   // return out_data.IsIgnored();
   return is_ignored_;
-}
-
-void ViewAccessibility::OverrideIsEnabled(bool enabled) {
-  // Cannot store this value in `override_data_` because
-  // `AXNodeData::AddIntAttribute` will DCHECK if you add an IntAttribute that
-  // is equal to kNone. Adding an IntAttribute that is equal to kNone is
-  // ambiguous, since it is unclear what would be the difference between doing
-  // this and not adding the attribute at all.
-  overriden_is_enabled_ = enabled;
-}
-
-bool ViewAccessibility::IsAccessibilityEnabled() const {
-  // TODO(javiercon): Remove once views are migrated to use the new setter.
-  if (overriden_is_enabled_) {
-    return *overriden_is_enabled_;
-  }
-
-  return view_->GetEnabled();
 }
 
 void ViewAccessibility::OverrideHasPopup(const ax::mojom::HasPopup has_popup) {

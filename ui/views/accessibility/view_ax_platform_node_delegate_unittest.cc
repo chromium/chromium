@@ -446,11 +446,11 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetFocus) {
   EXPECT_FALSE(SetFocused(button_accessibility(), true));
   button_->SetEnabled(true);
 
-  button_accessibility()->OverrideIsEnabled(false);
+  button_accessibility()->SetIsEnabled(false);
   EXPECT_FALSE(SetFocused(button_accessibility(), true));
 
   EXPECT_FALSE(button_accessibility()->IsAccessibilityFocusable());
-  button_accessibility()->OverrideIsEnabled(true);
+  button_accessibility()->SetIsEnabled(true);
   EXPECT_TRUE(button_accessibility()->IsAccessibilityFocusable());
 }
 
@@ -936,47 +936,47 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
             child_view_4->GetPreviousSibling());
 }
 
-TEST_F(ViewAXPlatformNodeDelegateTest, OverrideIsEnabled) {
+TEST_F(ViewAXPlatformNodeDelegateTest, SetIsEnabled) {
   // Initially, the button should be enabled.
-  EXPECT_TRUE(button_accessibility()->IsAccessibilityEnabled());
+  EXPECT_TRUE(button_accessibility()->GetIsEnabled());
   EXPECT_TRUE(button_accessibility()->IsAccessibilityFocusable());
 
   button_->SetEnabled(false);
-  EXPECT_FALSE(button_accessibility()->IsAccessibilityEnabled());
+  EXPECT_FALSE(button_accessibility()->GetIsEnabled());
   EXPECT_FALSE(button_accessibility()->IsAccessibilityFocusable());
 
   button_->SetEnabled(true);
-  EXPECT_TRUE(button_accessibility()->IsAccessibilityEnabled());
+  EXPECT_TRUE(button_accessibility()->GetIsEnabled());
   EXPECT_TRUE(button_accessibility()->IsAccessibilityFocusable());
 
-  // `ViewAccessibility::OverrideIsEnabled` should have priority over
+  // `ViewAccessibility::SetIsEnabled` should have priority over
   // `View::SetEnabled`.
-  button_accessibility()->OverrideIsEnabled(false);
-  EXPECT_FALSE(button_accessibility()->IsAccessibilityEnabled());
+  button_accessibility()->SetIsEnabled(false);
+  EXPECT_FALSE(button_accessibility()->GetIsEnabled());
   EXPECT_FALSE(button_accessibility()->IsAccessibilityFocusable());
 
   button_->SetEnabled(false);
-  EXPECT_FALSE(button_accessibility()->IsAccessibilityEnabled());
+  EXPECT_FALSE(button_accessibility()->GetIsEnabled());
   EXPECT_FALSE(button_accessibility()->IsAccessibilityFocusable());
-  button_accessibility()->OverrideIsEnabled(true);
-  EXPECT_TRUE(button_accessibility()->IsAccessibilityEnabled());
+  button_accessibility()->SetIsEnabled(true);
+  EXPECT_TRUE(button_accessibility()->GetIsEnabled());
   EXPECT_TRUE(button_accessibility()->IsAccessibilityFocusable());
 
   // Initially, the label should be enabled. It should never be focusable
   // because it is not an interactive control like the button.
-  EXPECT_TRUE(label_accessibility()->IsAccessibilityEnabled());
+  EXPECT_TRUE(label_accessibility()->GetIsEnabled());
   EXPECT_FALSE(label_accessibility()->IsAccessibilityFocusable());
 
   label_->SetEnabled(false);
-  EXPECT_FALSE(label_accessibility()->IsAccessibilityEnabled());
+  EXPECT_FALSE(label_accessibility()->GetIsEnabled());
   EXPECT_FALSE(label_accessibility()->IsAccessibilityFocusable());
 
-  label_accessibility()->OverrideIsEnabled(true);
-  EXPECT_TRUE(label_accessibility()->IsAccessibilityEnabled());
+  label_accessibility()->SetIsEnabled(true);
+  EXPECT_TRUE(label_accessibility()->GetIsEnabled());
   EXPECT_FALSE(label_accessibility()->IsAccessibilityFocusable());
 
-  label_accessibility()->OverrideIsEnabled(false);
-  EXPECT_FALSE(label_accessibility()->IsAccessibilityEnabled());
+  label_accessibility()->SetIsEnabled(false);
+  EXPECT_FALSE(label_accessibility()->GetIsEnabled());
   EXPECT_FALSE(label_accessibility()->IsAccessibilityFocusable());
 }
 

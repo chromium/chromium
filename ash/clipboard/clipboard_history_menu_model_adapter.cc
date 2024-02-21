@@ -534,7 +534,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
 
   // Disabling `item_view_to_delete` is more like implementation details.
   // So do not expose it to users.
-  view_accessibility.OverrideIsEnabled(true);
+  view_accessibility.SetIsEnabled(true);
 
   // Specify `item_view_to_delete`'s position in the set. Without updating the
   // position in set and set size, the menu's size after deletion may be

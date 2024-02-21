@@ -58,7 +58,6 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   void EndPopupFocusOverride() override;
   void FireFocusAfterMenuClose() override;
   bool IsIgnored() const override;
-  bool IsAccessibilityEnabled() const override;
   gfx::NativeViewAccessible GetNativeObject() const override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 #if BUILDFLAG(IS_MAC)

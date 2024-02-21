@@ -25,6 +25,7 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -257,6 +258,9 @@ void Button::SetState(ButtonState state) {
 
   ButtonState old_state = state_;
   state_ = state;
+
+  GetViewAccessibility().SetIsEnabled(state_ != STATE_DISABLED);
+
   StateChanged(old_state);
   OnPropertyChanged(&state_, kPropertyEffectsPaint);
 }
@@ -610,8 +614,6 @@ void Button::OnPaint(gfx::Canvas* canvas) {
 
 void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
-  if (!GetEnabled())
-    node_data->SetRestriction(ax::mojom::Restriction::kDisabled);
 
   switch (state_) {
     case STATE_HOVERED:
@@ -621,15 +623,14 @@ void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       node_data->SetCheckedState(ax::mojom::CheckedState::kTrue);
       break;
     case STATE_DISABLED:
-      node_data->SetRestriction(ax::mojom::Restriction::kDisabled);
-      break;
     case STATE_NORMAL:
     case STATE_COUNT:
       // No additional accessibility node_data set for this button node_data.
       break;
   }
-  if (GetEnabled())
+  if (GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kPress);
+  }
 
   button_controller_->UpdateAccessibleNodeData(node_data);
 }

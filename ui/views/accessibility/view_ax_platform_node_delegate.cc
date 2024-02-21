@@ -580,10 +580,6 @@ bool ViewAXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
   return IsIgnored() || GetData().IsInvisible();
 }
 
-bool ViewAXPlatformNodeDelegate::IsAccessibilityEnabled() const {
-  return GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
-}
-
 bool ViewAXPlatformNodeDelegate::IsFocused() const {
   return GetFocus() == GetNativeObject();
 }
