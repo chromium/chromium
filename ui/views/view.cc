@@ -868,9 +868,7 @@ int View::GetMirroredXWithWidthInView(int x, int w) const {
 // Layout ----------------------------------------------------------------------
 
 void View::DeprecatedLayoutImmediately() {
-  TRACE_EVENT1("ui", "View::DeprecatedLayoutImmediately", "view class",
-               GetClassName());
-  LayoutImmediately(false);
+  LayoutImmediately();
 }
 
 void View::Layout(PassKey) {
@@ -3443,24 +3441,16 @@ bool View::HasLayoutManager() const {
           layout_manager_);
 }
 
-void View::LayoutImmediately(bool collect_trace) {
+void View::LayoutImmediately() {
+  TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
   invalidates_during_layout_ = 0;
-
   ++layouts_since_last_paint_;
   base::AutoReset allow_layout(&layout_allowed_, true);
 
   ++current_layout_call_depth_;
   ++max_layout_call_depth_;
 
-  if (collect_trace) {
-    TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
-    // Layout run separately in if and else statement since we need to keep the
-    // trace event in the correct scope.
-    Layout(PassKey());
-  } else {
-    Layout(PassKey());
-  }
-
+  Layout(PassKey());
   UMA_HISTOGRAM_COUNTS_100("Views.InvalidatesDuringLayout",
                            invalidates_during_layout_);
   --current_layout_call_depth_;
