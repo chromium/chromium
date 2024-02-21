@@ -7040,7 +7040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.SwapWindowCount" units="count"
-    expires_after="2024-04-01">
+    expires_after="2024-10-01">
   <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
@@ -7052,7 +7052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.SwapWindowSource"
-    enum="SplitViewSwapWindowsSource" expires_after="2023-12-10">
+    enum="SplitViewSwapWindowsSource" expires_after="2024-10-01">
   <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -7285,43 +7285,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether or not to use the kmeans algorithm to determine the user's color
     palette. This metric is recorded once per UMA upload.
-  </summary>
-</histogram>
-
-<histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2023-06-30">
-  <owner>xdai@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <summary>
-    Maximum latency of the presentation timestamp while dragging a tab in tablet
-    mode.
-  </summary>
-</histogram>
-
-<histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.TabletMode" units="ms"
-    expires_after="2023-03-05">
-  <owner>xdai@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <summary>Presentation time while dragging a tab in tablet mode.</summary>
-</histogram>
-
-<histogram
-    name="Ash.SwipeDownDrag.Window.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2023-06-30">
-  <owner>xdai@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <summary>
-    Maximum latency of the presentation timestamp while dragging maximized
-    window in tablet mode.
-  </summary>
-</histogram>
-
-<histogram name="Ash.SwipeDownDrag.Window.PresentationTime.TabletMode"
-    units="ms" expires_after="2023-06-30">
-  <owner>xdai@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <summary>
-    Presentation time while dragging maximized window in tablet mode.
   </summary>
 </histogram>
 
