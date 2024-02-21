@@ -109,7 +109,7 @@ void TextFragmentHandler::RemoveFragments() {
 }
 
 // static
-bool TextFragmentHandler::IsOverTextFragment(HitTestResult result) {
+bool TextFragmentHandler::IsOverTextFragment(const HitTestResult& result) {
   if (!result.InnerNode() || !result.InnerNodeFrame()) {
     return false;
   }
