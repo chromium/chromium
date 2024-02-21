@@ -164,7 +164,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-    if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder) ||
+    if (base::FeatureList::IsEnabled(kV4L2FlatVideoDecoder) ||
         base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
       if (IsV4L2DecoderStateful()) {
         create_decoder_function_cb =
@@ -199,7 +199,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
 #if BUILDFLAG(USE_VAAPI)
   create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-  if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder) ||
+  if (base::FeatureList::IsEnabled(kV4L2FlatVideoDecoder) ||
       base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
     if (IsV4L2DecoderStateful()) {
       create_decoder_function_cb =

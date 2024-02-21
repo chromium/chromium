@@ -176,7 +176,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
         case V4L2_MPEG_VIDEO_VP9_PROFILE_0:
           return VP9PROFILE_PROFILE0;
         case V4L2_MPEG_VIDEO_VP9_PROFILE_2:
-          if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder)) {
+          if (base::FeatureList::IsEnabled(kV4L2FlatVideoDecoder)) {
             return VP9PROFILE_PROFILE2;
           } else {
             return VIDEO_CODEC_PROFILE_UNKNOWN;
