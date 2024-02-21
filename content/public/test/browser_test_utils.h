@@ -28,7 +28,6 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/quads/compositor_frame.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/global_routing_id.h"
@@ -41,7 +40,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
-#include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/test_utils.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -60,8 +58,6 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
-#include "third_party/blink/public/mojom/frame/remote_frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -77,9 +73,6 @@
 #include "base/win/scoped_handle.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "content/public/test/mock_captured_surface_controller.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace gfx {
 class Point;
@@ -121,7 +114,11 @@ typedef int PROPERTYID;
 
 namespace blink {
 class StorageKey;
-struct FrameVisualProperties;
+
+namespace mojom {
+class FrameWidget;
+}  // namespace mojom
+
 }  // namespace blink
 
 namespace storage {
@@ -129,6 +126,10 @@ class BlobUrlRegistry;
 }
 
 namespace content {
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+class MockCapturedSurfaceController;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if defined(USE_AURA)
 class SelectionBoundsWaiter;
@@ -139,7 +140,6 @@ class FileSystemAccessPermissionContext;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
-class RenderFrameHostImpl;
 class RenderFrameMetadataProviderImpl;
 class RenderFrameProxyHost;
 class RenderWidgetHost;
@@ -2012,73 +2012,6 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
-// This class intercepts for ShowContextMenu Mojo method called from a
-// renderer process, and allows observing the UntrustworthyContextMenuParams as
-// sent by the renderer.
-class ContextMenuInterceptor
-    : public blink::mojom::LocalFrameHostInterceptorForTesting {
- public:
-  // Whether or not the ContextMenu should be prevented from performing
-  // its default action, preventing the context menu from showing.
-  enum ShowBehavior { kShow, kPreventShow };
-
-  explicit ContextMenuInterceptor(content::RenderFrameHost* render_frame_host,
-                                  ShowBehavior behavior = ShowBehavior::kShow);
-  ContextMenuInterceptor(const ContextMenuInterceptor&) = delete;
-  ContextMenuInterceptor& operator=(const ContextMenuInterceptor&) = delete;
-  ~ContextMenuInterceptor() override;
-
-  blink::mojom::LocalFrameHost* GetForwardingInterface() override;
-
-  void ShowContextMenu(
-      mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
-          context_menu_client,
-      const blink::UntrustworthyContextMenuParams& params) override;
-
-  void Wait();
-  void Reset();
-
-  blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
-
- private:
-  raw_ptr<content::RenderFrameHostImpl> render_frame_host_impl_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>>
-      swapped_impl_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-  base::OnceClosure quit_closure_;
-  blink::UntrustworthyContextMenuParams last_params_;
-  const ShowBehavior show_behavior_;
-};
-
-class UpdateUserActivationStateInterceptor
-    : public blink::mojom::LocalFrameHostInterceptorForTesting {
- public:
-  explicit UpdateUserActivationStateInterceptor(
-      content::RenderFrameHost* render_frame_host);
-  UpdateUserActivationStateInterceptor(
-      const UpdateUserActivationStateInterceptor&) = delete;
-  UpdateUserActivationStateInterceptor& operator=(
-      const UpdateUserActivationStateInterceptor&) = delete;
-  ~UpdateUserActivationStateInterceptor() override;
-
-  void set_quit_handler(base::OnceClosure handler);
-  bool update_user_activation_state() { return update_user_activation_state_; }
-
-  blink::mojom::LocalFrameHost* GetForwardingInterface() override;
-  void UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType update_type,
-      blink::mojom::UserActivationNotificationType notification_type) override;
-
- private:
-  raw_ptr<content::RenderFrameHostImpl> render_frame_host_impl_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>>
-      swapped_impl_;
-  base::OnceClosure quit_handler_;
-  bool update_user_activation_state_ = false;
-};
-
 // Helper class to interpose on Blob URL registrations, replacing the URL
 // contained in incoming registration requests with the specified URL.
 class BlobURLStoreInterceptor
@@ -2137,65 +2070,6 @@ void EnsureCookiesFlushed(BrowserContext* browser_context);
 // single response messages back from the guest, with the expected values.
 bool TestGuestAutoresize(WebContents* embedder_web_contents,
                          RenderFrameHost* guest_main_frame);
-
-// Class to intercept SynchronizeVisualProperties method. This allows the
-// message to continue to the target child so that processing can be verified by
-// tests. It also monitors for GesturePinchBegin/End events.
-class SynchronizeVisualPropertiesInterceptor
-    : public blink::mojom::RemoteFrameHostInterceptorForTesting {
- public:
-  explicit SynchronizeVisualPropertiesInterceptor(
-      RenderFrameProxyHost* render_frame_proxy_host);
-
-  SynchronizeVisualPropertiesInterceptor(
-      const SynchronizeVisualPropertiesInterceptor&) = delete;
-  SynchronizeVisualPropertiesInterceptor& operator=(
-      const SynchronizeVisualPropertiesInterceptor&) = delete;
-
-  ~SynchronizeVisualPropertiesInterceptor() override;
-
-  blink::mojom::RemoteFrameHost* GetForwardingInterface() override;
-
-  void SynchronizeVisualProperties(
-      const blink::FrameVisualProperties& visual_properties) override;
-
-  gfx::Rect last_rect() const { return last_rect_; }
-
-  void WaitForRect();
-  void ResetRectRunLoop();
-
-  // Waits for the next viz::LocalSurfaceId be received and returns it.
-  viz::LocalSurfaceId WaitForSurfaceId();
-
-  void WaitForPinchGestureEnd();
-
- private:
-  // |rect| is in DIPs.
-  void OnUpdatedFrameRectOnUI(const gfx::Rect& rect);
-  void OnUpdatedFrameSinkIdOnUI();
-  void OnUpdatedSurfaceIdOnUI(viz::LocalSurfaceId surface_id);
-
-  base::RunLoop run_loop_;
-
-  raw_ptr<RenderFrameProxyHost> render_frame_proxy_host_;
-
-  std::unique_ptr<base::RunLoop> local_root_rect_run_loop_;
-  bool local_root_rect_received_ = false;
-  gfx::Rect last_rect_;
-
-  viz::LocalSurfaceId last_surface_id_;
-  std::unique_ptr<base::RunLoop> surface_id_run_loop_;
-
-  bool last_pinch_gesture_active_ = false;
-  base::RunLoop pinch_end_run_loop_;
-
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
-      swapped_impl_;
-
-  base::WeakPtrFactory<SynchronizeVisualPropertiesInterceptor> weak_factory_{
-      this};
-};
 
 // This class allows monitoring of mouse events received by a specific
 // RenderWidgetHost.

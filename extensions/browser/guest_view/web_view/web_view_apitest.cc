@@ -31,6 +31,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/context_menu_interceptor.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
