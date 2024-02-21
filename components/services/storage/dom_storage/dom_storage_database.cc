@@ -30,8 +30,7 @@ const char kInvalidDatabaseMessage[] = "DomStorageDatabase no longer valid.";
 
 class DomStorageDatabaseEnv : public leveldb_env::ChromiumEnv {
  public:
-  DomStorageDatabaseEnv()
-      : ChromiumEnv("ChromiumEnv.StorageService", CreateFilesystemProxy()) {}
+  DomStorageDatabaseEnv() : ChromiumEnv(CreateFilesystemProxy()) {}
 
   DomStorageDatabaseEnv(const DomStorageDatabaseEnv&) = delete;
   DomStorageDatabaseEnv& operator=(const DomStorageDatabaseEnv&) = delete;

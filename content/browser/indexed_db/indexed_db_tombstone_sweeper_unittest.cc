@@ -78,8 +78,7 @@ leveldb_env::Options GetLevelDBOptions() {
   options.write_buffer_size = 4 * 1024 * 1024;
   options.paranoid_checks = true;
 
-  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env(
-      "LevelDBEnv.IDB");
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env;
   options.env = g_leveldb_env.get();
 
   return options;

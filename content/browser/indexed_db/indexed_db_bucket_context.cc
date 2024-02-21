@@ -142,27 +142,38 @@ IndexedDBDatabaseError CreateDefaultError() {
 
 // Returns some configuration that is shared across leveldb DB instances. The
 // configuration is further tweaked in `CreateLevelDBState()`.
-// TODO(crbug.com/40279485): some shared/singleton objects may not be
-// thread-safe.
 leveldb_env::Options GetLevelDBOptions() {
-  static const leveldb::FilterPolicy* kIDBFilterPolicy =
-      leveldb::NewBloomFilterPolicy(10);
   leveldb_env::Options options;
-  options.comparator = indexed_db::GetDefaultLevelDBComparator();
   options.paranoid_checks = true;
-  options.filter_policy = kIDBFilterPolicy;
   options.compression = leveldb::kSnappyCompression;
   // For info about the troubles we've run into with this parameter, see:
   // https://crbug.com/227313#c11
   options.max_open_files = 80;
+
+  // Thread-safe: static local construction, and `LDBComparator` contains no
+  // state.
+  options.comparator = indexed_db::GetDefaultLevelDBComparator();
+
+  // Thread-safe: static local construction, and `leveldb::Cache` implements
+  // internal synchronization.
   options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
+
+  // Thread-safe: calls base histogram `FactoryGet()` methods, which are
+  // thread-safe.
   options.on_get_error = base::BindRepeating(
       indexed_db::ReportLevelDBError, "WebCore.IndexedDB.LevelDBReadErrors");
   options.on_write_error = base::BindRepeating(
       indexed_db::ReportLevelDBError, "WebCore.IndexedDB.LevelDBWriteErrors");
 
-  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env(
-      "LevelDBEnv.IDB");
+  // Thread-safe: static local construction, and `BloomFilterPolicy` state is
+  // read-only after construction.
+  static const leveldb::FilterPolicy* g_filter_policy =
+      leveldb::NewBloomFilterPolicy(10);
+  options.filter_policy = g_filter_policy;
+
+  // Thread-safe: static local construction, and `ChromiumEnv` implements
+  // internal synchronization.
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env;
   options.env = g_leveldb_env.get();
 
   return options;

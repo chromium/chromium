@@ -134,6 +134,11 @@ LEVELDB_EXPORT std::string DatabaseNameForRewriteDB(
 // space. A value of -1 will return leveldb's default write buffer size.
 LEVELDB_EXPORT extern size_t WriteBufferSize(int64_t disk_space);
 
+// Thread safety: `ChromiumEnv` is safe to use from multiple threads as long as
+// it's created and destroyed safely. In Chromium, ChromiumEnv is created via a
+// NoDestructor singleton, so as a function-local static, construction is
+// thread-safe as of C++11. The NoDestructor-wrapped instance is never
+// destroyed.
 class LEVELDB_EXPORT ChromiumEnv : public leveldb::Env {
  public:
   using ScheduleFunc = void(void*);
@@ -144,10 +149,6 @@ class LEVELDB_EXPORT ChromiumEnv : public leveldb::Env {
 
   // Constructs a ChromiumEnv instance with a custom FilesystemProxy instance.
   explicit ChromiumEnv(std::unique_ptr<storage::FilesystemProxy> filesystem);
-
-  // Constructs a ChromiumEnv instance with a local unrestricted FilesystemProxy
-  // instance that performs direct filesystem access.
-  explicit ChromiumEnv(const std::string& name);
 
   ~ChromiumEnv() override;
 
@@ -183,21 +184,18 @@ class LEVELDB_EXPORT ChromiumEnv : public leveldb::Env {
   void SetReadOnlyFileLimitForTesting(int max_open_files);
 
  protected:
-  // Constructs a ChromiumEnv instance with a custom FilesystemProxy instance.
-  ChromiumEnv(const std::string& name,
-              std::unique_ptr<storage::FilesystemProxy> filesystem);
-
   static const char* FileErrorString(base::File::Error error);
 
  private:
   void RemoveBackupFiles(const base::FilePath& dir);
 
+  // `FilesystemProxy` is thread-safe.
   const std::unique_ptr<storage::FilesystemProxy> filesystem_;
 
   base::Lock mu_;
   base::FilePath test_directory_ GUARDED_BY(mu_);
 
-  std::string name_;
+  // `leveldb::Cache` is thread-safe.
   std::unique_ptr<leveldb::Cache> file_cache_;
 };
 

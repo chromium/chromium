@@ -45,12 +45,6 @@ void ErrorCallback(leveldb::Status* status_out, leveldb::Status status) {
   *status_out = status;
 }
 
-// The leveldb::Env used by the Indexed DB backend.
-class LevelDBEnv : public leveldb_env::ChromiumEnv {
- public:
-  LevelDBEnv() : ChromiumEnv("LevelDBEnv.SessionStorageMetadataTest") {}
-};
-
 class SessionStorageMetadataTest : public testing::Test {
  public:
   SessionStorageMetadataTest()
@@ -458,7 +452,7 @@ class SessionStorageMetadataMigrationTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_path_;
-  LevelDBEnv leveldb_env_;
+  leveldb_env::ChromiumEnv leveldb_env_;
   std::string test_namespace1_id_;
   std::string test_namespace2_id_;
   blink::StorageKey test_storage_key1_;
