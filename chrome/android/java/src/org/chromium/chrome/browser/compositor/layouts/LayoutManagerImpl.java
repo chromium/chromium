@@ -800,13 +800,7 @@ public class LayoutManagerImpl
             float oldVisibleViewportTop = mCachedVisibleViewport.top;
             mHost.getWindowViewport(mCachedWindowViewport);
             mHost.getVisibleViewport(mCachedVisibleViewport);
-            getActiveLayout()
-                    .sizeChanged(
-                            mCachedVisibleViewport,
-                            mCachedWindowViewport,
-                            mHost.getTopControlsHeightPixels(),
-                            mHost.getBottomControlsHeightPixels(),
-                            getOrientation());
+            getActiveLayout().sizeChanged(mCachedWindowViewport, getOrientation());
 
             float width = mCachedWindowViewport.width() * mPxToDp;
             float height = mCachedWindowViewport.height() * mPxToDp;

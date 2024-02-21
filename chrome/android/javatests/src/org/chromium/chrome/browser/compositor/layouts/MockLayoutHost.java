@@ -82,16 +82,6 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     }
 
     @Override
-    public int getTopControlsHeightPixels() {
-        return 0;
-    }
-
-    @Override
-    public int getBottomControlsHeightPixels() {
-        return 0;
-    }
-
-    @Override
     public LayoutRenderHost getLayoutRenderHost() {
         return this;
     }

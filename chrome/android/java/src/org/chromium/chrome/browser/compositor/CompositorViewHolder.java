@@ -1412,12 +1412,10 @@ public class CompositorViewHolder extends FrameLayout
         onViewportChanged();
     }
 
-    @Override
     public int getTopControlsHeightPixels() {
         return mBrowserControlsManager != null ? mBrowserControlsManager.getTopControlsHeight() : 0;
     }
 
-    @Override
     public int getBottomControlsHeightPixels() {
         return mBrowserControlsManager != null
                 ? mBrowserControlsManager.getBottomControlsHeight()

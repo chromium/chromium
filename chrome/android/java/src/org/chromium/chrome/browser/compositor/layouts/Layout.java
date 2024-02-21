@@ -95,8 +95,6 @@ public abstract class Layout {
     // Drawing area properties.
     private float mWidthDp;
     private float mHeightDp;
-    private float mTopBrowserControlsHeightDp;
-    private float mBottomBrowserControlsHeightDp;
 
     /** A {@link Context} instance. */
     private Context mContext;
@@ -138,8 +136,6 @@ public abstract class Layout {
         // Invalid sizes
         mWidthDp = -1;
         mHeightDp = -1;
-        mTopBrowserControlsHeightDp = -1;
-        mBottomBrowserControlsHeightDp = -1;
 
         mCurrentOrientation = Orientation.UNSET;
         mDpToPx = context.getResources().getDisplayMetrics().density;
@@ -304,60 +300,15 @@ public abstract class Layout {
 
     /**
      * Called when the size of the viewport has changed.
-     * @param visibleViewportPx             The visible viewport that represents the area on the
-     *                                      screen this {@link Layout} gets to draw to in px
-     *                                      (potentially takes into account browser controls).
-     * @param screenViewportPx              The viewport of the screen in px.
-     * @param topBrowserControlsHeightPx    The top browser controls height in px.
-     * @param bottomBrowserControlsHeightPx The bottom browser controls height in px.
-     * @param orientation                   The new orientation.  Valid values are defined by
-     *                                      {@link Orientation}.
-     */
-    final void sizeChanged(
-            RectF visibleViewportPx,
-            RectF screenViewportPx,
-            int topBrowserControlsHeightPx,
-            int bottomBrowserControlsHeightPx,
-            @Orientation int orientation) {
-        // 1. Pull out this Layout's width and height properties based on the viewport.
-        float width = screenViewportPx.width() / mDpToPx;
-        float height = screenViewportPx.height() / mDpToPx;
-        float topBrowserControlsHeightDp = topBrowserControlsHeightPx / mDpToPx;
-        float bottomBrowserControlsHeightDp = bottomBrowserControlsHeightPx / mDpToPx;
-
-        // 2. Check if any Layout-specific properties have changed.
-        boolean layoutPropertiesChanged =
-                Float.compare(mWidthDp, width) != 0
-                        || Float.compare(mHeightDp, height) != 0
-                        || Float.compare(mTopBrowserControlsHeightDp, topBrowserControlsHeightDp)
-                                != 0
-                        || Float.compare(
-                                        mBottomBrowserControlsHeightDp,
-                                        bottomBrowserControlsHeightDp)
-                                != 0
-                        || mCurrentOrientation != orientation;
-
-        // 3. Update the internal sizing properties.
-        mWidthDp = width;
-        mHeightDp = height;
-        mTopBrowserControlsHeightDp = topBrowserControlsHeightDp;
-        mBottomBrowserControlsHeightDp = bottomBrowserControlsHeightDp;
-        mCurrentOrientation = orientation;
-
-        // 4. Notify the actual Layout if necessary.
-        if (layoutPropertiesChanged) {
-            notifySizeChanged(width, height, orientation);
-        }
-    }
-
-    /**
-     * Notifies when the size or the orientation of the view has actually changed.
      *
-     * @param width       The new width in dp.
-     * @param height      The new height in dp.
-     * @param orientation The new orientation.
+     * @param screenViewportPx The viewport of the screen in px.
+     * @param orientation The new orientation. Valid values are defined by {@link Orientation}.
      */
-    protected void notifySizeChanged(float width, float height, @Orientation int orientation) {}
+    final void sizeChanged(RectF screenViewportPx, @Orientation int orientation) {
+        mWidthDp = screenViewportPx.width() / mDpToPx;
+        mHeightDp = screenViewportPx.height() / mDpToPx;
+        mCurrentOrientation = orientation;
+    }
 
     /**
      * Sets the the {@link TabModelSelector} for the layout.
@@ -485,13 +436,6 @@ public abstract class Layout {
      */
     public float getHeight() {
         return mHeightDp;
-    }
-
-    /**
-     * @return The height of the bottom browser controls in dp.
-     */
-    public float getBottomBrowserControlsHeight() {
-        return mBottomBrowserControlsHeightDp;
     }
 
     /**
