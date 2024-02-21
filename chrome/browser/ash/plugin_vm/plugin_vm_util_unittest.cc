@@ -146,9 +146,9 @@ TEST_F(PluginVmUtilTest, DriveUrlNonMatches) {
   EXPECT_EQ(std::nullopt,
             GetIdFromDriveUrl(GURL(
                 "https://site.com/a/site.com/file/d/definitelyNotDrive/view")));
-  EXPECT_EQ(
-      std::nullopt,
-      GetIdFromDriveUrl(GURL("file:///home/chronos/user/Downloads/file.zip")));
+  EXPECT_EQ(std::nullopt,
+            GetIdFromDriveUrl(
+                GURL("file:///home/chronos/user/MyFiles/Downloads/file.zip")));
   EXPECT_EQ(std::nullopt,
             GetIdFromDriveUrl(GURL("http://drive.google.com/open?id=fancyId")));
 }
