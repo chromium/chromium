@@ -920,7 +920,7 @@ struct InvokeHelper<false, Traits, ReturnType, indices...> {
                                     BoundArgsTuple&& bound,
                                     RunArgs&&... args) {
     return Traits::Invoke(
-        std::forward<Functor>(functor),
+        Unwrap(std::forward<Functor>(functor)),
         Unwrap(std::get<indices>(std::forward<BoundArgsTuple>(bound)))...,
         std::forward<RunArgs>(args)...);
   }
@@ -944,7 +944,7 @@ struct InvokeHelper<true, Traits, ReturnType, index_target, index_tail...> {
       return;
     }
     Traits::Invoke(
-        std::forward<Functor>(functor), target,
+        Unwrap(std::forward<Functor>(functor)), target,
         Unwrap(std::get<index_tail>(std::forward<BoundArgsTuple>(bound)))...,
         std::forward<RunArgs>(args)...);
   }
@@ -1793,8 +1793,8 @@ struct BindHelper {
     //     using CallbackType = OnceCallback<double(const std::string&)>;
     //     ...
     // ```
-    using Traits =
-        FunctorTraits<Functor, TransformToUnwrappedType<kIsOnce, Args&&>...>;
+    using Traits = FunctorTraits<TransformToUnwrappedType<kIsOnce, Functor&&>,
+                                 TransformToUnwrappedType<kIsOnce, Args&&>...>;
     if constexpr (TraitsAreInstantiable<Traits>::value) {
       using ValidatedUnwrappedTypes =
           ValidateUnwrappedTypeList<kIsOnce, Traits::is_method, Args&&...>;

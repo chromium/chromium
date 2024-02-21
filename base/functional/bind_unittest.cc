@@ -1305,6 +1305,15 @@ TEST_F(BindTest, BindMoveOnlyVector) {
   VerifyVector(final_result);
 }
 
+// Using Passed() on a functor should not cause a compile error.
+TEST_F(BindTest, PassedFunctor) {
+  struct S {
+    void operator()() const {}
+  };
+
+  BindRepeating(Passed(S())).Run();
+}
+
 // Argument copy-constructor usage for non-reference copy-only parameters.
 //   - Bound arguments are only copied once.
 //   - Forwarded arguments are only copied once.
