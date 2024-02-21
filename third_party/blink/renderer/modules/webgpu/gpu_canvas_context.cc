@@ -416,18 +416,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       break;
 
     case WGPUTextureFormat_RGBA16Float:
-#if BUILDFLAG(IS_CHROMEOS)
-      // TODO(crbug.com/1317015): support RGBA16Float on ChromeOS.
-      device_->InjectError(
-          WGPUErrorType_Validation,
-          ("Support for canvas context format \"" +
-           std::string(FromDawnEnum(texture_descriptor_.format)) +
-           "\" has not been implemented.")
-              .c_str());
-      return;
-#else
       break;
-#endif
 
     default:
       device_->InjectError(
