@@ -123,7 +123,7 @@ const FontPlatformData* FontPlatformDataFromCTFont(
     ResolvedFontFeatures resolved_font_features,
     FontOrientation orientation,
     OpticalSizing optical_sizing,
-    FontVariationSettings* variation_settings) {
+    const FontVariationSettings* variation_settings) {
   DCHECK(ct_font);
 
   // fontd automatically issues a sandbox extension to permit reading

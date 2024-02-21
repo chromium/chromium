@@ -69,7 +69,7 @@ class CORE_EXPORT FontBuilder {
   void SetFamilyDescription(const FontDescription::FamilyDescription&);
   // font-family is a tree-scoped reference.
   void SetFamilyTreeScope(const TreeScope*);
-  void SetFeatureSettings(scoped_refptr<FontFeatureSettings>);
+  void SetFeatureSettings(scoped_refptr<const FontFeatureSettings>);
   void SetLocale(scoped_refptr<const LayoutLocale>);
   void SetVariantCaps(FontDescription::FontVariantCaps);
   void SetVariantEastAsian(const FontVariantEastAsian);
@@ -81,11 +81,11 @@ class CORE_EXPORT FontBuilder {
   void SetTextRendering(TextRenderingMode);
   void SetKerning(FontDescription::Kerning);
   void SetTextSpacingTrim(TextSpacingTrim);
-  void SetFontPalette(scoped_refptr<FontPalette>);
-  void SetFontVariantAlternates(scoped_refptr<FontVariantAlternates>);
+  void SetFontPalette(scoped_refptr<const FontPalette>);
+  void SetFontVariantAlternates(scoped_refptr<const FontVariantAlternates>);
   void SetFontOpticalSizing(OpticalSizing);
   void SetFontSmoothing(FontSmoothingMode);
-  void SetVariationSettings(scoped_refptr<FontVariationSettings>);
+  void SetVariationSettings(scoped_refptr<const FontVariationSettings>);
   void SetVariantPosition(FontDescription::FontVariantPosition);
 
   // FIXME: These need to just vend a Font object eventually.

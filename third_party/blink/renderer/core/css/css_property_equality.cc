@@ -372,7 +372,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GetFontDescription().FontOpticalSizing() ==
              b.GetFontDescription().FontOpticalSizing();
     case CSSPropertyID::kFontPalette:
-      return base::ValuesEquivalent(a.FontPalette(), b.FontPalette());
+      return base::ValuesEquivalent(a.GetFontPalette(), b.GetFontPalette());
     case CSSPropertyID::kFontFeatureSettings:
       return a.GetFontDescription().FeatureSettings() ==
              b.GetFontDescription().FeatureSettings();

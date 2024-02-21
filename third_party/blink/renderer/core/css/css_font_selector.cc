@@ -47,7 +47,7 @@ namespace blink {
 namespace {
 
 scoped_refptr<FontPalette> RetrieveFontPaletteFromStyleEngine(
-    scoped_refptr<FontPalette> request_palette,
+    scoped_refptr<const FontPalette> request_palette,
     StyleEngine& style_engine,
     const AtomicString& family_name) {
   AtomicString requested_palette_values =
@@ -71,8 +71,8 @@ scoped_refptr<FontPalette> RetrieveFontPaletteFromStyleEngine(
   return nullptr;
 }
 
-scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
-    scoped_refptr<FontPalette> font_palette,
+scoped_refptr<const FontPalette> ResolveInterpolableFontPalette(
+    scoped_refptr<const FontPalette> font_palette,
     StyleEngine& style_engine,
     const AtomicString& family_name) {
   if (!font_palette->IsInterpolablePalette()) {
@@ -85,9 +85,10 @@ scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
       return font_palette;
     }
   }
-  scoped_refptr<FontPalette> start_palette = ResolveInterpolableFontPalette(
-      font_palette->GetStart(), style_engine, family_name);
-  scoped_refptr<FontPalette> end_palette = ResolveInterpolableFontPalette(
+  scoped_refptr<const FontPalette> start_palette =
+      ResolveInterpolableFontPalette(font_palette->GetStart(), style_engine,
+                                     family_name);
+  scoped_refptr<const FontPalette> end_palette = ResolveInterpolableFontPalette(
       font_palette->GetEnd(), style_engine, family_name);
 
   // If two endpoints of the interpolation are equal, we can simplify the tree
@@ -168,7 +169,7 @@ const FontData* CSSFontSelector::GetFontData(
   Document& document = GetTreeScope()->GetDocument();
 
   FontDescription request_description(font_description);
-  FontPalette* request_palette = request_description.GetFontPalette();
+  const FontPalette* request_palette = request_description.GetFontPalette();
 
   if (request_palette && request_palette->IsCustomPalette()) {
     scoped_refptr<FontPalette> new_request_palette =
@@ -181,7 +182,7 @@ const FontData* CSSFontSelector::GetFontData(
 
   if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
       request_palette && request_palette->IsInterpolablePalette()) {
-    scoped_refptr<FontPalette> computed_interpolable_palette =
+    scoped_refptr<const FontPalette> computed_interpolable_palette =
         ResolveInterpolableFontPalette(request_palette,
                                        document.GetStyleEngine(), family_name);
     request_description.SetFontPalette(computed_interpolable_palette);

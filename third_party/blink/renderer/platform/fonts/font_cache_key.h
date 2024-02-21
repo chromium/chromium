@@ -57,15 +57,16 @@ struct FontCacheKey {
 
  public:
   FontCacheKey() = default;
-  FontCacheKey(FontFaceCreationParams creation_params,
-               float font_size,
-               unsigned options,
-               float device_scale_factor,
-               FontSizeAdjust size_adjust,
-               scoped_refptr<FontVariationSettings> variation_settings,
-               scoped_refptr<FontPalette> palette,
-               scoped_refptr<FontVariantAlternates> font_variant_alternates,
-               bool is_unique_match)
+  FontCacheKey(
+      FontFaceCreationParams creation_params,
+      float font_size,
+      unsigned options,
+      float device_scale_factor,
+      FontSizeAdjust size_adjust,
+      scoped_refptr<const FontVariationSettings> variation_settings,
+      scoped_refptr<const FontPalette> palette,
+      scoped_refptr<const FontVariantAlternates> font_variant_alternates,
+      bool is_unique_match)
       : creation_params_(creation_params),
         font_size_(base::saturated_cast<unsigned>(
             font_size * kFontSizePrecisionMultiplier)),
@@ -152,9 +153,9 @@ struct FontCacheKey {
   AtomicString locale_;
 #endif  // BUILDFLAG(IS_ANDROID)
   FontSizeAdjust size_adjust_;
-  scoped_refptr<FontVariationSettings> variation_settings_;
-  scoped_refptr<FontPalette> palette_;
-  scoped_refptr<FontVariantAlternates> font_variant_alternates_;
+  scoped_refptr<const FontVariationSettings> variation_settings_;
+  scoped_refptr<const FontPalette> palette_;
+  scoped_refptr<const FontVariantAlternates> font_variant_alternates_;
   bool is_unique_match_ = false;
 };
 

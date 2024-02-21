@@ -278,8 +278,8 @@ class PLATFORM_EXPORT FontDescription {
   OpticalSizing FontOpticalSizing() const {
     return static_cast<OpticalSizing>(fields_.font_optical_sizing_);
   }
-  FontPalette* GetFontPalette() const { return font_palette_.get(); }
-  FontVariantAlternates* GetFontVariantAlternates() const {
+  const FontPalette* GetFontPalette() const { return font_palette_.get(); }
+  const FontVariantAlternates* GetFontVariantAlternates() const {
     return font_variant_alternates_.get();
   }
   TextRenderingMode TextRendering() const {
@@ -334,10 +334,10 @@ class PLATFORM_EXPORT FontDescription {
   FontWidthVariant WidthVariant() const {
     return static_cast<FontWidthVariant>(fields_.width_variant_);
   }
-  FontFeatureSettings* FeatureSettings() const {
+  const FontFeatureSettings* FeatureSettings() const {
     return feature_settings_.get();
   }
-  FontVariationSettings* VariationSettings() const {
+  const FontVariationSettings* VariationSettings() const {
     return variation_settings_.get();
   }
   FontVariantPosition VariantPosition() const {
@@ -384,11 +384,11 @@ class PLATFORM_EXPORT FontDescription {
   void SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
     fields_.font_optical_sizing_ = font_optical_sizing;
   }
-  void SetFontPalette(scoped_refptr<FontPalette> palette) {
+  void SetFontPalette(scoped_refptr<const FontPalette> palette) {
     font_palette_ = std::move(palette);
   }
   void SetFontVariantAlternates(
-      scoped_refptr<FontVariantAlternates> alternates) {
+      scoped_refptr<const FontVariantAlternates> alternates) {
     font_variant_alternates_ = std::move(alternates);
   }
   void SetTextRendering(TextRenderingMode rendering) {
@@ -418,10 +418,11 @@ class PLATFORM_EXPORT FontDescription {
       FontSynthesisSmallCaps font_synthesis_small_caps) {
     fields_.font_synthesis_small_caps_ = font_synthesis_small_caps;
   }
-  void SetFeatureSettings(scoped_refptr<FontFeatureSettings> settings) {
+  void SetFeatureSettings(scoped_refptr<const FontFeatureSettings> settings) {
     feature_settings_ = std::move(settings);
   }
-  void SetVariationSettings(scoped_refptr<FontVariationSettings> settings) {
+  void SetVariationSettings(
+      scoped_refptr<const FontVariationSettings> settings) {
     variation_settings_ = std::move(settings);
   }
   void SetVariantPosition(FontVariantPosition variant_position) {
@@ -491,11 +492,11 @@ class PLATFORM_EXPORT FontDescription {
   void UpdateSyntheticOblique();
 
   FontFamily family_list_;  // The list of font families to be used.
-  scoped_refptr<FontFeatureSettings> feature_settings_;
-  scoped_refptr<FontVariationSettings> variation_settings_;
+  scoped_refptr<const FontFeatureSettings> feature_settings_;
+  scoped_refptr<const FontVariationSettings> variation_settings_;
   scoped_refptr<const LayoutLocale> locale_;
-  scoped_refptr<FontPalette> font_palette_;
-  scoped_refptr<FontVariantAlternates> font_variant_alternates_;
+  scoped_refptr<const FontPalette> font_palette_;
+  scoped_refptr<const FontVariantAlternates> font_variant_alternates_;
 
   void UpdateTypesettingFeatures();
 

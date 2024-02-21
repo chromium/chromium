@@ -1232,7 +1232,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantNumeric(
 
 CSSValue* ComputedStyleUtils::ValueForFontVariantAlternates(
     const ComputedStyle& style) {
-  FontVariantAlternates* variant_alternates =
+  const FontVariantAlternates* variant_alternates =
       style.GetFontDescription().GetFontVariantAlternates();
   if (!variant_alternates || variant_alternates->IsNormal()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
@@ -1245,7 +1245,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantAlternates(
   };
 
   CSSValueList* value_list = CSSValueList::CreateSpaceSeparated();
-  if (AtomicString* opt_stylistic = variant_alternates->Stylistic()) {
+  if (const AtomicString* opt_stylistic = variant_alternates->Stylistic()) {
     value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
         *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kStylistic),
         *make_single_ident_list(*opt_stylistic)));
@@ -1254,17 +1254,17 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantAlternates(
     value_list->Append(
         *CSSIdentifierValue::Create(CSSValueID::kHistoricalForms));
   }
-  if (AtomicString* opt_swash = variant_alternates->Swash()) {
+  if (const AtomicString* opt_swash = variant_alternates->Swash()) {
     value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
         *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kSwash),
         *make_single_ident_list(*opt_swash)));
   }
-  if (AtomicString* opt_ornaments = variant_alternates->Ornaments()) {
+  if (const AtomicString* opt_ornaments = variant_alternates->Ornaments()) {
     value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
         *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kOrnaments),
         *make_single_ident_list(*opt_ornaments)));
   }
-  if (AtomicString* opt_annotation = variant_alternates->Annotation()) {
+  if (const AtomicString* opt_annotation = variant_alternates->Annotation()) {
     value_list->Append(*MakeGarbageCollected<cssvalue::CSSAlternateValue>(
         *MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kAnnotation),
         *make_single_ident_list(*opt_annotation)));
@@ -1467,7 +1467,8 @@ CSSValue* ComputedStyleUtils::ValueForFontVariationSettings(
 }
 
 CSSValue* ComputedStyleUtils::ValueForFontPalette(const ComputedStyle& style) {
-  blink::FontPalette* palette = style.GetFontDescription().GetFontPalette();
+  const blink::FontPalette* palette =
+      style.GetFontDescription().GetFontPalette();
 
   if (!palette) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);

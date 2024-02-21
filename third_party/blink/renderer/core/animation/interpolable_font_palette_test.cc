@@ -33,7 +33,8 @@ TEST(InterpolableFontPaletteTest, SimpleEndpointsInterpolation) {
   interpolable_palette_from->Interpolate(*interpolable_palette_to, 0.3,
                                          *interpolable_value);
   const auto& result_palette = To<InterpolableFontPalette>(*interpolable_value);
-  scoped_refptr<FontPalette> font_palette = result_palette.GetFontPalette();
+  scoped_refptr<const FontPalette> font_palette =
+      result_palette.GetFontPalette();
 
   EXPECT_EQ("palette-mix(in oklab, light, dark 30%)", font_palette->ToString());
 }
@@ -57,7 +58,8 @@ TEST(InterpolableFontPaletteTest, NestedEndpointsInterpolation) {
   interpolable_palette_from->Interpolate(*interpolable_palette_to, 0.3,
                                          *interpolable_value);
   const auto& result_palette = To<InterpolableFontPalette>(*interpolable_value);
-  scoped_refptr<FontPalette> font_palette = result_palette.GetFontPalette();
+  scoped_refptr<const FontPalette> font_palette =
+      result_palette.GetFontPalette();
 
   EXPECT_EQ(
       "palette-mix(in oklab, light, palette-mix(in srgb, normal, dark 70%) "
@@ -82,7 +84,7 @@ TEST(InterpolableFontPaletteTest, TestScaleAndAdd) {
   interpolable_palette1->Scale(0.5);
   interpolable_palette1->Add(*interpolable_palette2);
 
-  scoped_refptr<FontPalette> font_palette =
+  scoped_refptr<const FontPalette> font_palette =
       interpolable_palette1->GetFontPalette();
 
   EXPECT_TRUE(base::ValuesEquivalent(font_palette,

@@ -33,14 +33,22 @@ class PLATFORM_EXPORT FontVariantAlternates
   void SetStyleset(Vector<AtomicString>);
   void SetCharacterVariant(Vector<AtomicString>);
 
-  AtomicString* Stylistic() { return stylistic_ ? &(*stylistic_) : nullptr; }
-  bool HistoricalForms() { return historical_forms_; }
-  AtomicString* Swash() { return swash_ ? &(*swash_) : nullptr; }
-  AtomicString* Ornaments() { return ornaments_ ? &(*ornaments_) : nullptr; }
-  AtomicString* Annotation() { return annotation_ ? &(*annotation_) : nullptr; }
+  const AtomicString* Stylistic() const {
+    return stylistic_ ? &(*stylistic_) : nullptr;
+  }
+  bool HistoricalForms() const { return historical_forms_; }
+  const AtomicString* Swash() const { return swash_ ? &(*swash_) : nullptr; }
+  const AtomicString* Ornaments() const {
+    return ornaments_ ? &(*ornaments_) : nullptr;
+  }
+  const AtomicString* Annotation() const {
+    return annotation_ ? &(*annotation_) : nullptr;
+  }
 
-  const Vector<AtomicString>& Styleset() { return styleset_; }
-  const Vector<AtomicString>& CharacterVariant() { return character_variant_; }
+  const Vector<AtomicString>& Styleset() const { return styleset_; }
+  const Vector<AtomicString>& CharacterVariant() const {
+    return character_variant_;
+  }
 
   using ResolverFunction = base::FunctionRef<Vector<uint32_t>(AtomicString)>;
   /* Resolves the internal feature configuration with aliases against resolution
@@ -61,7 +69,7 @@ class PLATFORM_EXPORT FontVariantAlternates
 
   unsigned GetHash() const;
 
-  bool IsNormal();
+  bool IsNormal() const;
 
   bool operator==(const FontVariantAlternates& other) const;
   bool operator!=(const FontVariantAlternates& other) const {

@@ -1423,7 +1423,7 @@ static CSSFontPaletteValuesRule* FindFontPaletteValuesRule(
 std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
 InspectorCSSAgent::FontPalettesForNode(Element& element) {
   const ComputedStyle* style = element.EnsureComputedStyle();
-  const FontPalette* palette = style ? style->FontPalette() : nullptr;
+  const FontPalette* palette = style ? style->GetFontPalette() : nullptr;
   if (!palette || !palette->IsCustomPalette()) {
     return {};
   }

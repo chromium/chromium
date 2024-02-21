@@ -67,7 +67,7 @@ const FontPlatformData* FontPlatformDataFromCTFont(
     ResolvedFontFeatures resolved_font_features,
     FontOrientation,
     OpticalSizing,
-    FontVariationSettings*);
+    const FontVariationSettings*);
 
 }  // namespace blink
 
