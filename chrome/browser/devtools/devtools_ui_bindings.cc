@@ -40,6 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -54,6 +55,7 @@
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search_engines/util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -159,6 +161,7 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   void InspectElementCompleted() override {}
   void SetIsDocked(bool is_docked) override {}
   void OpenInNewTab(const std::string& url) override;
+  void OpenSearchResultsInNewTab(const std::string& query) override;
   void SetWhitelistedShortcuts(const std::string& message) override {}
   void SetEyeDropperActive(bool active) override {}
   void OpenNodeFrontend() override {}
@@ -190,6 +193,20 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  browser->OpenURL(params);
+}
+
+void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
+    const std::string& query) {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  TemplateURLService* url_service =
+      TemplateURLServiceFactory::GetForProfile(browser->profile());
+  DCHECK(url_service);
+  GURL url =
+      GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
+  content::OpenURLParams params(GURL(url), content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
   browser->OpenURL(params);
 }
 
@@ -1091,6 +1108,10 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
 
 void DevToolsUIBindings::OpenInNewTab(const std::string& url) {
   delegate_->OpenInNewTab(url);
+}
+
+void DevToolsUIBindings::OpenSearchResultsInNewTab(const std::string& query) {
+  delegate_->OpenSearchResultsInNewTab(query);
 }
 
 void DevToolsUIBindings::ShowItemInFolder(const std::string& file_system_path) {

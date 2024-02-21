@@ -60,6 +60,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
     virtual void InspectElementCompleted() = 0;
     virtual void SetIsDocked(bool is_docked) = 0;
     virtual void OpenInNewTab(const std::string& url) = 0;
+    virtual void OpenSearchResultsInNewTab(const std::string& query) = 0;
     virtual void SetWhitelistedShortcuts(const std::string& message) = 0;
     virtual void SetEyeDropperActive(bool active) = 0;
     virtual void OpenNodeFrontend() = 0;
@@ -142,6 +143,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            int stream_id) override;
   void SetIsDocked(DispatchCallback callback, bool is_docked) override;
   void OpenInNewTab(const std::string& url) override;
+  void OpenSearchResultsInNewTab(const std::string& query) override;
   void ShowItemInFolder(const std::string& file_system_path) override;
   void SaveToFile(const std::string& url,
                   const std::string& content,

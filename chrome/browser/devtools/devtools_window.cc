@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -49,6 +50,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -1639,8 +1641,8 @@ int DevToolsWindow::GetClosedByForLogging() {
   return static_cast<int>(closed_by_);
 }
 
-void DevToolsWindow::OpenInNewTab(const std::string& url) {
-  GURL fixed_url(url);
+void DevToolsWindow::OpenInNewTab(const GURL& url) {
+  GURL fixed_url = url;
   WebContents* inspected_web_contents = GetInspectedWebContents();
   int child_id = content::ChildProcessHost::kInvalidUniqueID;
   if (inspected_web_contents) {
@@ -1654,7 +1656,6 @@ void DevToolsWindow::OpenInNewTab(const std::string& url) {
   if (!content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
           child_id, fixed_url))
     fixed_url = GURL(url::kAboutBlankURL);
-
   content::OpenURLParams params(fixed_url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
@@ -1663,6 +1664,19 @@ void DevToolsWindow::OpenInNewTab(const std::string& url) {
     chrome::AddSelectedTabWithURL(displayer.browser(), fixed_url,
                                   ui::PAGE_TRANSITION_LINK);
   }
+}
+
+void DevToolsWindow::OpenInNewTab(const std::string& url) {
+  OpenInNewTab(GURL(url));
+}
+
+void DevToolsWindow::OpenSearchResultsInNewTab(const std::string& query) {
+  TemplateURLService* url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  DCHECK(url_service);
+  GURL url =
+      GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
+  OpenInNewTab(url);
 }
 
 void DevToolsWindow::SetWhitelistedShortcuts(

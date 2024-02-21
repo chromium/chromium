@@ -46,6 +46,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void InspectedURLChanged(const std::string& url) = 0;
     virtual void SetIsDocked(DispatchCallback callback, bool is_docked) = 0;
     virtual void OpenInNewTab(const std::string& url) = 0;
+    virtual void OpenSearchResultsInNewTab(const std::string& query) = 0;
     virtual void ShowItemInFolder(const std::string& file_system_path) = 0;
     virtual void SaveToFile(const std::string& url,
                             const std::string& content,

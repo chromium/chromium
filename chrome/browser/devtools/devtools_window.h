@@ -422,6 +422,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void InspectElementCompleted() override;
   void SetIsDocked(bool is_docked) override;
   void OpenInNewTab(const std::string& url) override;
+  void OpenSearchResultsInNewTab(const std::string& url) override;
   void SetWhitelistedShortcuts(const std::string& message) override;
   void SetEyeDropperActive(bool active) override;
   void OpenNodeFrontend() override;
@@ -437,6 +438,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   int GetOpenedByForLogging() override;
   int GetClosedByForLogging() override;
 
+  void OpenInNewTab(const GURL& url);
   void ColorPickedInEyeDropper(int r, int g, int b, int a);
 
   // This method creates a new Browser object (if possible), and passes
