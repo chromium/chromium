@@ -1124,6 +1124,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             extras.putCharSequence(EXTRAS_KEY_URL, webContents.getVisibleUrl().getSpec());
         }
 
+        mHasFinishedLatestAccessibilitySnapshot = false;
+        long beforeSnapshotTimeMs = SystemClock.elapsedRealtime();
+
         // Stubbed.
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
             mNativeAssistDataObj =
@@ -1132,28 +1135,32 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                     WebContentsAccessibilityImpl.this,
                                     webContents,
                                     new AssistDataBuilder());
+
+            WebContentsAccessibilityImplJni.get()
+                    .requestAccessibilityTreeSnapshot(
+                            mNativeAssistDataObj,
+                            viewRoot,
+                            () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
         }
 
-        mHasFinishedLatestAccessibilitySnapshot = false;
-        long beforeSnapshotTimeMs = SystemClock.elapsedRealtime();
         mDelegate.requestAccessibilitySnapshot(
-                viewRoot,
-                () -> {
-                    viewRoot.asyncCommit();
-                    mHasFinishedLatestAccessibilitySnapshot = true;
+                viewRoot, () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
+    }
 
-                    if (AccessibilityFeaturesMap.isEnabled(
-                            AccessibilityFeatures.ACCESSIBILITY_SNAPSHOT_STRESS_TESTS)) {
-                        long snapshotRuntimeMs =
-                                SystemClock.elapsedRealtime() - beforeSnapshotTimeMs;
-                        RecordHistogram.recordLinearCountHistogram(
-                                "Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime",
-                                (int) snapshotRuntimeMs,
-                                1,
-                                5 * 1000,
-                                100);
-                    }
-                });
+    private void onSnapshotDoneCallback(ViewStructure viewRoot, long beforeSnapshotTimeMs) {
+        viewRoot.asyncCommit();
+        mHasFinishedLatestAccessibilitySnapshot = true;
+
+        if (AccessibilityFeaturesMap.isEnabled(
+                AccessibilityFeatures.ACCESSIBILITY_SNAPSHOT_STRESS_TESTS)) {
+            long snapshotRuntimeMs = SystemClock.elapsedRealtime() - beforeSnapshotTimeMs;
+            RecordHistogram.recordLinearCountHistogram(
+                    "Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime",
+                    (int) snapshotRuntimeMs,
+                    1,
+                    5 * 1000,
+                    100);
+        }
     }
 
     @Override
@@ -2191,10 +2198,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 long axTreePtr,
                 AccessibilityNodeInfoBuilder builder);
 
+        // These two methods are only used for one-off accessibility tree snapshots.
         long initForAssistData(
                 WebContentsAccessibilityImpl caller,
                 WebContents webContents,
                 AssistDataBuilder builder);
+
+        void requestAccessibilityTreeSnapshot(
+                long nativeWebContentsAccessibilityAndroid,
+                ViewStructure viewRoot,
+                Runnable onDoneCallback);
 
         void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
 
