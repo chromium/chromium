@@ -764,6 +764,43 @@ class UnitTest(unittest.TestCase):
     self.assertNotIn('../../filters/some_filter/foo', files)
     self.assertIn('../../filters/another_filter/hoo', files)
 
+  def test_gen_isolate_generated_dir(self):
+    files = {
+        '/tmp/swarming_targets':
+        'base_unittests\n',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'base_unittests': {"
+         "  'label': '//base:base_unittests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+    }
+
+    mbw = self.fake_mbw(files)
+
+    def fake_call(cmd, env=None, capture_output=True, input=''):
+      del cmd
+      del env
+      del capture_output
+      del input
+      mbw.files['/fake_src/out/Default/base_unittests.runtime_deps'] = (
+          'test_data/\n')
+      return 0, '', ''
+
+    mbw.Call = fake_call
+
+    self.check([
+        'gen', '-c', 'debug_goma', '--swarming-targets-file',
+        '/tmp/swarming_targets', '//out/Default'
+    ],
+               mbw=mbw,
+               ret=1)
+    files = mbw.files.get('/fake_src/out/Default/base_unittests.isolate')
+
+    expected_err = ('error: gn `data` items may not list generated directories;'
+                    ' list files in directory instead for:\n'
+                    '//out/Default/test_data/\n')
+    self.assertIn(expected_err, mbw.out)
+
   def test_isolate_dir(self):
     files = {
         '/fake_src/out/Default/toolchain.ninja':
