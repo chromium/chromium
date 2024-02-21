@@ -5290,7 +5290,7 @@
   {
     "name": "launcher-search-control",
     "owners": ["chenjih@chromium.org", "dgrebenyuk@chromium.org"],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "launcher-system-info-answer-cards",
