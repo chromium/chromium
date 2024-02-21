@@ -5,29 +5,19 @@
 #ifndef CONTENT_BROWSER_NAVIGATION_TRANSITIONS_BACK_FORWARD_TRANSITION_ANIMATOR_H_
 #define CONTENT_BROWSER_NAVIGATION_TRANSITIONS_BACK_FORWARD_TRANSITION_ANIMATOR_H_
 
-#include "cc/resources/ui_resource_client.h"
-#include "content/browser/navigation_transitions/physics_model.h"
-#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/events/back_gesture_event.h"
-#include "ui/gfx/animation/keyframe/keyframe_effect.h"
-
-namespace cc::slim {
-class UIResourceLayer;
-}
 
 namespace content {
 
 class NavigationControllerImpl;
-class NavigationEntryScreenshot;
 class WebContentsViewAndroid;
 class BackForwardTransitionAnimationManagerAndroid;
 class RenderWidgetHostImpl;
-class RenderFrameHostImpl;
 
 // This class listens to gesture events for navigating the session history and
 // updates the UI in response. It is 1:1 with a single gesture, i.e. each time
@@ -52,6 +42,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
         NavigationControllerImpl* controller,
         const ui::BackGestureEvent& gesture,
         BackForwardTransitionAnimationManager::NavigationType nav_type,
+        ui::BackGestureEventSwipeEdge edge,
         BackForwardTransitionAnimationManagerAndroid* animation_manager);
   };
 
@@ -64,10 +55,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void OnGestureProgressed(const ui::BackGestureEvent& gesture);
   void OnGestureCancelled();
   void OnGestureInvoked();
-  void OnDidNavigatePrimaryMainFramePreCommit(
-      const NavigationRequest& navigation_request,
-      RenderFrameHostImpl* old_host,
-      RenderFrameHostImpl* new_host);
+  void OnRenderWidgetHostViewSwapped(RenderWidgetHost* old_widget_host,
+                                     RenderWidgetHost* new_widget_host);
 
  protected:
   BackForwardTransitionAnimator(
@@ -75,6 +64,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationType nav_type,
+      ui::BackGestureEventSwipeEdge edge,
       BackForwardTransitionAnimationManagerAndroid* animation_manager);
 
   // `RenderFrameMetadataProvider::Observer`:
@@ -100,117 +90,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // `RenderWidgetHostObserver`:
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
 
-  // Called when each animation finishes. Advances `this` into the next state.
-  // Being virtual for testing.
-  virtual void OnCancelAnimationDisplayed();
-  virtual void OnInvokeAnimationDisplayed();
-  virtual void OnCrossFadeAnimationDisplayed();
-
-  // Identifies the different stages of the animation that this manager is in.
-  enum class State {
-    // Set when `OnGestureStarted` is called. Indicates that the user has
-    // started swiping from the edge of the screen. The manager remains in
-    // this state until the user has lifted the finger from the screen, to
-    // either start the history navigation or not start it.
-    kStarted = 0,
-
-    // No explicit state while the user swipes across the screen, since there
-    // is no stateful changes during the in-progress transition period.
-
-    // Set when `OnGestureCancelled` is called, signaling the user has decided
-    // to not start the history navigation. Also set when the gesture-initiated
-    // navigation is aborted or cancelled. In this state, an animation is being
-    // displayed to dismiss the screenshot and bring the old page back to the
-    // viewport.
-    kDisplayingCancelAnimation,
-
-    // TODO(https://crbug.com/1421009): We need a state for the beforeUnload
-    // handler since it is an async state.
-
-    // TODO(https://crbug.com/1421082): If we were to bring the active page back
-    // to let the user interact with the prompt (e.g., camera access), we need a
-    // state for that.
-
-    // Set when `OnGestureInvoked` is called, signaling the user has decided
-    // to start the history navigation. Animations are displayed to bring the
-    // screenshot to the center of the viewport, and to bring the old page
-    // completely out of the viewport.
-    //
-    // The gesture-initiated history navigation starts at the beginning of this
-    // state. The same navigation is finished in the browser at the end of this
-    // state.
-    //
-    // Internally, this state covers `PhysicsModel`'s commit-pending spring
-    // and invoke spring. We don't differentiate commit-pending vs invoke as
-    // commit-pending is designed to be a `PhysicsModel` internal state.
-    kDisplayingInvokeAnimation,
-
-    // An optional state only reachable from `kDisplayingInvokeAnimation`: at
-    // the end of the invoke animation, the screenshot is centered at the
-    // viewport. Before the new page is ready to be presented the user, the
-    // screenshot will persist at the viewport center. The screenshot is only
-    // crossfaded out after the new renderer is ready to be presented to the
-    // user, which is signalled via
-    // `OnRenderFrameMetadataChangedAfterActivation()`, meaning viz has
-    // processed a new compositor frame submitted by the new renderer.
-    //
-    // If `OnRenderFrameMetadataChangedAfterActivation()` is received before
-    // the end of `kDisplayingInvokeAnimation`, this state will be skipped
-    // completely.
-    kWaitingForNewRendererToDraw,
-
-    // Reachable from the end of `kDisplayingInvokeAnimation` or from
-    // `kWaitingForNewRendererToDraw`. Cross-fading from the screenshot to the
-    // new page.
-    kDisplayingCrossFadeAnimation,
-
-    // The terminal state of the animation manager. We reach this state when
-    // all the animations are finished in the UI. The manager remains in this
-    // state until it is destroyed.
-    kAnimationFinished,
-  };
-  State state() const { return state_; }
-
-  static bool CanAdvanceTo(State from, State to);
-  static std::string ToString(State state);
-
  private:
-  // Initializes `effect_` for the scrim and cross-fade animation.
-  void InitializeEffectForGestureProgressAnimation();
-  void InitializeEffectForCrossfadeAnimation();
-
-  // Advance current `state_` to `state`.
-  void AdvanceAndProcessState(State state);
-
-  // Let this manager respond to the current `state_`.
-  void ProcessState();
-
-  // Initializes the `ui_resource_layer_` and sets up the layer tree.
-  void SetupForScreenshotPreview(
-      std::unique_ptr<NavigationEntryScreenshot> screenshot);
-
-  // Start the session history navigation, and start tracking the created
-  // `NavigationRequests` by their IDs. Returns true if the requests are
-  // successfully created and false otherwise. The caller should play the invoke
-  // or cancel animation based on the return value.
-  bool StartNavigationAndTrackRequest();
-
-  // Forwards the calls to `CompositorImpl`.
-  cc::UIResourceId CreateUIResource(cc::UIResourceClient* client);
-  void RemoveWindowAndroidObserverAndDeleteUIResource(
-      cc::UIResourceId resource_id);
-
-  // Apply the `result` to the screenshot and the web page, and tick the
-  // animation effector.
-  void SetLayerTransformationAndTickEffect(const PhysicsModel::Result& result);
-
-  void CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver(
-      RenderFrameHostImpl* old_host,
-      RenderFrameHostImpl* new_host);
-
-  void UnregisterNewFrameActivationObserver();
-
   const BackForwardTransitionAnimationManager::NavigationType nav_type_;
+  const ui::BackGestureEventSwipeEdge edge_;
 
   // The manager back-pointer. Guaranteed to outlive the impl.
   const raw_ptr<BackForwardTransitionAnimationManagerAndroid>
@@ -221,38 +103,18 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   std::optional<int64_t>
       primary_main_frame_navigation_request_id_of_gesture_nav_;
 
-  // The unique id assigned to `screenshot_`.
-  cc::UIResourceId ui_resource_id_ =
-      cc::UIResourceClient::kUninitializedUIResourceId;
-
-  // New layer for `screenshot_`.
-  scoped_refptr<cc::slim::UIResourceLayer> ui_resource_layer_;
-
-  // The pre-captured screenshot used for previewing. The ownership of the
-  // screenshot is transferred from the cache to this manager when the gesture
-  // starts. If the user decides not to start the history navigation, or the
-  // gesture navigation starts but cancelled by another navigation, the
-  // screenshot will be placed back into the cache.
-  //
-  // Let this animation manager take ownership of the screenshot during the
-  // animation. This is to keep the cache from evicting the screenshot while
-  // it's being displayed in the UI.
-  std::unique_ptr<NavigationEntryScreenshot> screenshot_;
-
   enum class NavigationTerminalState {
     // Navigation has not begun, or not yet committed.
-    kNotStartedOrOngoing = 0,
+    kNotSet = 0,
     // The navigation has either committed to a new doc, or an error page.
     kCommitted,
-    // The navigation has been cancelled (cancelled by a secondary navigation,
-    // or
+    // The navigation has been cancelled (replaced by a secondary navigation, or
     // aborted by the user).
     kCancelled,
   };
-  // Set via `OnDidNavigatePrimaryMainFramePreCommit()`. Records if the
-  // navigation has successfully committed.
-  NavigationTerminalState navigation_terminal_state_ =
-      NavigationTerminalState::kNotStartedOrOngoing;
+  // Set via `DidFinishNavigation()`. Records if the navigation has successfully
+  // committed.
+  NavigationTerminalState navigation_state_ = NavigationTerminalState::kNotSet;
 
   // If viz has already activated a frame for the new page before the invoke
   // animation finishes, we set this bit so we can start the crossfade animation
@@ -270,17 +132,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // to null when the tracked `RenderWidgetHost` is destroyed.
   raw_ptr<RenderWidgetHostImpl> new_render_widget_host_;
 
-  // Responsible for the non-transformational animations (scrim and
-  // cross-fade).
-  gfx::KeyframeEffect effect_;
-
-  // Responsible for the transformational animations.
-  PhysicsModel physics_model_;
-
   // Set by the latest `OnGestureProgressed()`.
   ui::BackGestureEvent latest_progress_gesture_;
-
-  State state_;
 };
 
 }  // namespace content

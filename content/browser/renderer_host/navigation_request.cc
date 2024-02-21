@@ -8257,7 +8257,7 @@ bool NavigationRequest::HasPrefetchedAlternativeSubresourceSignedExchange() {
   return !commit_params_->prefetched_signed_exchanges.empty();
 }
 
-int64_t NavigationRequest::GetNavigationId() const {
+int64_t NavigationRequest::GetNavigationId() {
   return navigation_id_;
 }
 

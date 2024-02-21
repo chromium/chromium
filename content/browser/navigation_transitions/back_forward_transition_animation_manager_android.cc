@@ -5,9 +5,8 @@
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 
 #include "content/browser/renderer_host/navigation_controller_impl.h"
-#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
-#include "content/public/browser/navigation_entry.h"
+#include "ui/events/back_gesture_event.h"
 
 namespace content {
 
@@ -30,19 +29,15 @@ bool ShouldSkipDefaultNavTransitionForPendingUX(HistoryNavType nav_type,
 // fallback UX instead.
 bool ShouldSkipDefaultNavTransition(const gfx::Size& physical_backing_size,
                                     NavigationEntry* destination_entry) {
-  auto* data =
-      destination_entry->GetUserData(NavigationEntryScreenshot::kUserDataKey);
-  if (!data) {
-    // No screenshot at the destination.
-    //
-    // TODO(https://crbug.com/1424477): We should show the animation using the
-    // favicon and the background color of the destination page.
-    return true;
-  }
-  // TODO(https://crbug.com/1509888): We should skip if `physical_backing_size`
-  // != screenshot's dimension (except for Clank native views).
-
-  return false;
+  // TODO(https://crbug.com/1509888): Implement this method. We should skip if:
+  // - `destination_entry` doesn't have a screenshot.
+  // - `physical_backing_size` != screenshot's dimension (except for Clank
+  //    native views).
+  //
+  // TODO(crbug.com/1516956): We should also *explicitly* skip subframes navs
+  // before they are supported. Subframes are currently skipped implicitly as we
+  // don't capture screenshot for subframe navigations.
+  return true;
 }
 
 }  // namespace
@@ -95,10 +90,9 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     return;
   }
 
-  CHECK(animator_factory_);
   animator_ = animator_factory_->Create(web_contents_view_android_.get(),
                                         navigation_controller_.get(), gesture,
-                                        navigation_type, this);
+                                        navigation_type, edge, this);
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureProgressed(
@@ -127,18 +121,14 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
 }
 
 void BackForwardTransitionAnimationManagerAndroid::
-    OnDidNavigatePrimaryMainFramePreCommit(
-        const NavigationRequest& navigation_request,
-        RenderFrameHostImpl* old_host,
-        RenderFrameHostImpl* new_host) {
+    OnRenderWidgetHostViewSwapped(RenderWidgetHost* old_widget_host,
+                                  RenderWidgetHost* new_widget_host) {
   if (animator_) {
-    animator_->OnDidNavigatePrimaryMainFramePreCommit(navigation_request,
-                                                      old_host, new_host);
+    animator_->OnRenderWidgetHostViewSwapped(old_widget_host, new_widget_host);
   }
 }
 
-void BackForwardTransitionAnimationManagerAndroid::
-    SynchronouslyDestroyAnimator() {
+void BackForwardTransitionAnimationManagerAndroid::OnAnimationsFinished() {
   CHECK(animator_);
   animator_.reset();
 }

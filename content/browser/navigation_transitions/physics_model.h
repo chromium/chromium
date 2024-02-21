@@ -20,13 +20,6 @@ class Spring;
 // navigations. See `animation_driver_` for what this model is composed of.
 class CONTENT_EXPORT PhysicsModel {
  public:
-  // The live page of the current content will stop at 85% of the screen width
-  // while wait for the navigation to the new page to commit.
-  static constexpr float kTargetCommitPending = 0.85f;
-  // Initially the screenshot is placed at (-0.25W, 0) with respect to the
-  // viewport.
-  static constexpr float kScreenshotInitialPosition = 0.25f;
-
   // The calculated layer offsets by this physics model.
   struct Result {
     // The calculated offsets for the foreground and background layers. They are

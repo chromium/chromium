@@ -287,6 +287,13 @@ void WebContentsViewAndroid::RenderViewHostChanged(RenderViewHost* old_host,
       static_cast<RenderWidgetHostViewAndroid*>(rwhv)->UpdateNativeViewTree(
           /*parent_native_view=*/nullptr, /*parent_layer=*/nullptr);
     }
+
+    // Notify `manager` that it should listen to new frame submission
+    // notifications.
+    if (back_forward_animation_manager_) {
+      back_forward_animation_manager_->OnRenderWidgetHostViewSwapped(old_host->GetWidget(),
+                                             new_host->GetWidget());
+    }
   }
 
   auto* rwhv = new_host->GetWidget()->GetView();

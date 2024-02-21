@@ -67,10 +67,6 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   // submissions.
   void ReportAllFrameSubmissionsForTesting(bool enabled);
 
-  // Set |last_render_frame_metadata_| to the given |metadata| for testing
-  // purpose.
-  void SetLastRenderFrameMetadataForTest(cc::RenderFrameMetadata metadata);
-
  private:
   friend class FakeRenderWidgetHostViewAura;
   friend class DelegatedInkPointTest;
@@ -84,6 +80,10 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
       cc::RenderFrameMetadata metadata,
       base::TimeTicks activation_time);
   void OnFrameTokenFrameSubmissionForTesting(base::TimeTicks activation_time);
+
+  // Set |last_render_frame_metadata_| to the given |metadata| for testing
+  // purpose.
+  void SetLastRenderFrameMetadataForTest(cc::RenderFrameMetadata metadata);
 
   // cc::mojom::RenderFrameMetadataObserverClient:
   void OnRenderFrameMetadataChanged(

@@ -6487,11 +6487,8 @@ void WebContentsImpl::NotifyNavigationStateChangedFromController(
 }
 
 void WebContentsImpl::DidNavigateMainFramePreCommit(
-    NavigationHandle* navigation_handle,
+    FrameTreeNode* frame_tree_node,
     bool navigation_is_within_page) {
-  auto* request = static_cast<NavigationRequest*>(navigation_handle);
-  FrameTreeNode* frame_tree_node = request->frame_tree_node();
-
   // The `frame_tree_node` is always a main frame.
   DCHECK(frame_tree_node->IsMainFrame());
   TRACE_EVENT1("content,navigation",
@@ -6503,17 +6500,6 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
   if (!is_primary_mainframe) {
     return;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  auto* animation_manager =
-      static_cast<BackForwardTransitionAnimationManagerAndroid*>(
-          GetBackForwardTransitionAnimationManager());
-  if (animation_manager) {
-    animation_manager->OnDidNavigatePrimaryMainFramePreCommit(
-        *request, frame_tree_node->render_manager()->current_frame_host(),
-        request->GetRenderFrameHost());
-  }
-#endif
 
   // Ensure fullscreen mode is exited before committing the navigation to a
   // different page.  The next page will not start out assuming it is in
