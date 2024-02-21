@@ -52,6 +52,26 @@ export class OsSettingsMenuItemElement extends PolymerElement {
         value: '',
       },
 
+      /**
+       * Mirrors `label` to the `aria-label` attribute and is used solely for
+       * a11y purposes.
+       */
+      ariaLabel: {
+        type: String,
+        reflectToAttribute: true,
+        computed: 'computeAriaLabel_(label)',
+      },
+
+      /**
+       * Mirrors `sublabel` to the `aria-description` attribute and is used
+       * solely for a11y purposes.
+       */
+      ariaDescription: {
+        type: String,
+        reflectToAttribute: true,
+        computed: 'computeAriaDescription_(sublabel)',
+      },
+
       tooltipPosition: {
         type: String,
         value: 'right',
@@ -63,6 +83,7 @@ export class OsSettingsMenuItemElement extends PolymerElement {
   path: string;
   label: string;
   sublabel: string;
+  ariaDescription: string;
   tooltipPosition: 'right'|'bottom';
 
   override ready(): void {
@@ -71,6 +92,20 @@ export class OsSettingsMenuItemElement extends PolymerElement {
     this.setAttribute('role', 'link');
     this.setAttribute('tabindex', '0');
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
+  }
+
+  /**
+   * Mirrors `label` to `ariaLabel` for a11y purposes.
+   */
+  private computeAriaLabel_(): string {
+    return this.label;
+  }
+
+  /**
+   * Mirrors `sublabel` to `ariaDescription` for a11y purposes.
+   */
+  private computeAriaDescription_(): string {
+    return this.sublabel;
   }
 
   private onKeyDown_(event: KeyboardEvent): void {
