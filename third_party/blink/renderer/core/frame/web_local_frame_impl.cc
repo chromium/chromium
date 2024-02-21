@@ -3194,11 +3194,14 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
           mojom::blink::BFCacheBlockingDetailedReason::New();
       reason->name = WTF::String(reason_to_copy->name);
       if (reason_to_copy->source) {
-        mojom::blink::BlockingReasonSourceLocationPtr source_location =
-            mojom::blink::BlockingReasonSourceLocation::New();
-        source_location->url = WTF::String(reason_to_copy->source->url);
-        source_location->line_number = reason_to_copy->source->line_number;
-        source_location->column_number = reason_to_copy->source->column_number;
+        CHECK_GT(reason_to_copy->source->line_number, 0U);
+        CHECK_GT(reason_to_copy->source->column_number, 0U);
+        mojom::blink::ScriptSourceLocationPtr source_location =
+            mojom::blink::ScriptSourceLocation::New(
+                WTF::String(reason_to_copy->source->url),
+                WTF::String(reason_to_copy->source->function_name),
+                reason_to_copy->source->line_number,
+                reason_to_copy->source->column_number);
         reason->source = std::move(source_location);
       }
       not_restored_reasons->reasons.push_back(std::move(reason));

@@ -189,6 +189,7 @@ mojom("mojom_platform") {
     "renderer_preferences.mojom",
     "reporting/reporting.mojom",
     "safe_url_pattern.mojom",
+    "script_source_location.mojom",
     "scroll/scroll_enums.mojom",
     "scroll/scroll_into_view_params.mojom",
     "scroll/scrollbar_mode.mojom",

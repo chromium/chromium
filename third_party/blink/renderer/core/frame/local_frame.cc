@@ -57,6 +57,7 @@
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
+#include "third_party/blink/public/mojom/script_source_location.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -314,10 +316,16 @@ mojom::blink::BlockingDetailsPtr CreateBlockingDetailsMojom(
   auto feature_location_to_report = mojom::blink::BlockingDetails::New();
   feature_location_to_report->feature =
       static_cast<uint32_t>(blocking_details.Feature());
-  feature_location_to_report->line_number = blocking_details.LineNumber();
-  feature_location_to_report->column_number = blocking_details.ColumnNumber();
-  feature_location_to_report->url = blocking_details.Url();
-  feature_location_to_report->function_name = blocking_details.Function();
+  // Zero line number and column number means no source location found.
+  if (blocking_details.LineNumber() > 0 &&
+      blocking_details.ColumnNumber() > 0) {
+    // `Url()` and `Function()` may return nullptr.
+    auto source_location = mojom::blink::ScriptSourceLocation::New(
+        blocking_details.Url() ? blocking_details.Url() : "",
+        blocking_details.Function() ? blocking_details.Function() : "",
+        blocking_details.LineNumber(), blocking_details.ColumnNumber());
+    feature_location_to_report->source = std::move(source_location);
+  }
   return feature_location_to_report;
 }
 
@@ -3174,16 +3182,15 @@ void LocalFrame::EvictFromBackForwardCache(
   if (!GetPage()->GetPageScheduler()->IsInBackForwardCache())
     return;
   UMA_HISTOGRAM_ENUMERATION("BackForwardCache.Eviction.Renderer", reason);
-  mojom::blink::BlockingDetailsPtr details =
-      mojom::blink::BlockingDetails::New();
+  mojom::blink::ScriptSourceLocationPtr source = nullptr;
   if (source_location) {
-    details->url = source_location->Url();
-    details->function_name = source_location->Function();
-    details->line_number = source_location->LineNumber();
-    details->column_number = source_location->ColumnNumber();
+    source = mojom::blink::ScriptSourceLocation::New(
+        source_location->Url() ? source_location->Url() : "",
+        source_location->Function() ? source_location->Function() : "",
+        source_location->LineNumber(), source_location->ColumnNumber());
   }
   GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache(
-      std::move(reason), std::move(details));
+      std::move(reason), std::move(source));
 }
 
 void LocalFrame::DidBufferLoadWhileInBackForwardCache(

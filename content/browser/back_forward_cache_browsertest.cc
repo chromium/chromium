@@ -79,8 +79,11 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
+#include "third_party/blink/public/mojom/script_source_location.mojom.h"
 
 // This file has too many tests.
 //
@@ -506,7 +509,7 @@ SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
 BlockingDetailsReasonsMatcher
 BackForwardCacheBrowserTest::MatchesDetailedReason(
     const testing::Matcher<std::string>& name,
-    const std::optional<BlockingReasonLocationMatcher>& source) {
+    const std::optional<SourceLocationMatcher>& source) {
   // TODO(crbug.com/1523191) Make this matcher display human-friendly
   // messages.
   return testing::Pointee(testing::AllOf(
@@ -517,52 +520,39 @@ BackForwardCacheBrowserTest::MatchesDetailedReason(
           source.has_value()
               ? source.value()
               : testing::Property(
-                    "is_null",
-                    &blink::mojom::BlockingReasonSourceLocationPtr::is_null,
+                    "is_null", &blink::mojom::ScriptSourceLocationPtr::is_null,
                     true))));
 }
 
-BlockingReasonLocationMatcher
-BackForwardCacheBrowserTest::MatchesSourceLocation(
+BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
+    const std::optional<SourceLocationMatcher>& source) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
+  return testing::Pointee(testing::Field(
+      "source", &blink::mojom::BlockingDetails::source,
+      source.has_value()
+          ? source.value()
+          : testing::Property("is_null",
+                              &blink::mojom::ScriptSourceLocationPtr::is_null,
+                              true)));
+}
+
+SourceLocationMatcher BackForwardCacheBrowserTest::MatchesSourceLocation(
     const testing::Matcher<std::string>& url,
+    const testing::Matcher<std::string>& function_name,
     const testing::Matcher<uint64_t>& line_number,
     const testing::Matcher<uint64_t>& column_number) {
   // TODO(crbug.com/1523191) Make this matcher display human-friendly
   // messages.
   return testing::Pointee(testing::AllOf(
-      testing::Field("url", &blink::mojom::BlockingReasonSourceLocation::url,
-                     url),
+      testing::Field("url", &blink::mojom::ScriptSourceLocation::url, url),
+      testing::Field("function_name",
+                     &blink::mojom::ScriptSourceLocation::function_name,
+                     function_name),
       testing::Field("line_number",
-                     &blink::mojom::BlockingReasonSourceLocation::line_number,
+                     &blink::mojom::ScriptSourceLocation::line_number,
                      line_number),
       testing::Field("column_number",
-                     &blink::mojom::BlockingReasonSourceLocation::column_number,
-                     column_number)));
-}
-
-BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
-    const std::optional<testing::Matcher<std::string>>& url,
-    const std::optional<testing::Matcher<std::string>>& function_name,
-    const testing::Matcher<uint64_t>& line_number,
-    const testing::Matcher<uint64_t>& column_number) {
-  // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
-  return testing::Pointee(testing::AllOf(
-      url.has_value()
-          ? testing::Field("url", &blink::mojom::BlockingDetails::url,
-                           testing::Optional(url.value()))
-          : testing::Field("url", &blink::mojom::BlockingDetails::url,
-                           std::optional<std::string>(std::nullopt)),
-      function_name.has_value()
-          ? testing::Field("function_name",
-                           &blink::mojom::BlockingDetails::function_name,
-                           testing::Optional(function_name.value()))
-          : testing::Field("function_name",
-                           &blink::mojom::BlockingDetails::function_name,
-                           std::optional<std::string>(std::nullopt)),
-      testing::Field("line_number", &blink::mojom::BlockingDetails::line_number,
-                     line_number),
-      testing::Field("column_number",
-                     &blink::mojom::BlockingDetails::column_number,
+                     &blink::mojom::ScriptSourceLocation::column_number,
                      column_number)));
 }
 

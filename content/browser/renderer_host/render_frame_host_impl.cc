@@ -4847,10 +4847,8 @@ RenderFrameHostImpl::BackForwardCacheDisablingFeatures
 RenderFrameHostImpl::GetBackForwardCacheDisablingFeatures() const {
   BackForwardCacheDisablingFeatures features;
   for (const auto& details : GetBackForwardCacheBlockingDetails()) {
-    if (details->feature.has_value()) {
-      features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-          details->feature.value()));
-    }
+    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+        details->feature));
   }
   return features;
 }
@@ -7293,19 +7291,23 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivationForAXEvents(
 
 void RenderFrameHostImpl::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason,
-    blink::mojom::BlockingDetailsPtr details) {
-  if (reason == blink::mojom::RendererEvictionReason::kJavaScriptExecution) {
-    if (details.is_null()) {
+    blink::mojom::ScriptSourceLocationPtr source) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kCaptureJSExecutionLocation) &&
+      reason == blink::mojom::RendererEvictionReason::kJavaScriptExecution) {
+    if (source.is_null()) {
       mojo::ReportBadMessage(
-          "Details must be provided if it's JavaScript execution");
-    };
-    if (details->feature.has_value()) {
+          "Source location must be provided if it's JavaScript execution");
+    }
+  } else {
+    // If `kCaptureJSExecutionLocation` is disabled, the renderer side will
+    // never capture source location for any reason.
+    if (!source.is_null()) {
       mojo::ReportBadMessage(
-          "Feature for scheduler shouldn't be provided if it's JavaScript "
-          "execution");
+          "Source location must not be provided in this condition.");
     }
   }
-  // TODO(crbug.com/1513120): Use `details` to report the source location of
+  // TODO(crbug.com/1513120): Use `source` to report the source location of
   // JavaScript execution.
   EvictFromBackForwardCacheWithReason(
       RendererEvictionReasonToNotRestoredReason(reason));

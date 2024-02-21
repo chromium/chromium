@@ -533,7 +533,7 @@ void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
   // execution, `source_location` should always be null here.
   CHECK(!source_location);
   back_forward_cache_controller_host_->EvictFromBackForwardCache(
-      /*eviction_reason=*/std::move(reason), /*details=*/nullptr);
+      /*reason=*/std::move(reason), /*source=*/nullptr);
 }
 
 void DedicatedWorkerGlobalScope::DidBufferLoadWhileInBackForwardCache(

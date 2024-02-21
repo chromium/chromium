@@ -2269,8 +2269,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
   // Both socketA and socketB's JavaScript locations should be reported.
   EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
               testing::UnorderedElementsAre(
-                  MatchesBlockingDetails(url_js.spec(), std::nullopt, 10, 15),
-                  MatchesBlockingDetails(url_js.spec(), std::nullopt, 17, 15)));
+                  MatchesBlockingDetails(
+                      MatchesSourceLocation(url_js.spec(), "", 10, 15)),
+                  MatchesBlockingDetails(
+                      MatchesSourceLocation(url_js.spec(), "", 17, 15))));
 }
 
 // Use a blocklisted feature in multiple locations from an external JavaScript
@@ -2338,8 +2340,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
       map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket));
   // Only socketB's JavaScript locations should be reported.
   EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
-              testing::UnorderedElementsAre(
-                  MatchesBlockingDetails(url_js.spec(), std::nullopt, 17, 15)));
+              testing::UnorderedElementsAre(MatchesBlockingDetails(
+                  MatchesSourceLocation(url_js.spec(), "", 17, 15))));
 }
 
 // Use a blocklisted feature in multiple places from HTML file and make sure all
@@ -2399,8 +2401,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
   // Both socketA and socketB's JavaScript locations should be reported.
   EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
               testing::UnorderedElementsAre(
-                  MatchesBlockingDetails(url_a.spec(), std::nullopt, 11, 15),
-                  MatchesBlockingDetails(url_a.spec(), std::nullopt, 18, 15)));
+                  MatchesBlockingDetails(
+                      MatchesSourceLocation(url_a.spec(), "", 11, 15)),
+                  MatchesBlockingDetails(
+                      MatchesSourceLocation(url_a.spec(), "", 18, 15))));
 }
 
 // Use a blocklisted feature in multiple locations from HTML file but stop using
@@ -2464,8 +2468,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
       map.contains(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket));
   // Only socketB's JavaScript locations should be reported.
   EXPECT_THAT(map.at(blink::scheduler::WebSchedulerTrackedFeature::kWebSocket),
-              testing::UnorderedElementsAre(
-                  MatchesBlockingDetails(url_a.spec(), std::nullopt, 18, 15)));
+              testing::UnorderedElementsAre(MatchesBlockingDetails(
+                  MatchesSourceLocation(url_a.spec(), "", 18, 15))));
 }
 
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.

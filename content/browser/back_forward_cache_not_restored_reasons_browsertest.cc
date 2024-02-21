@@ -447,7 +447,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
       /*id=*/std::nullopt, /*name=*/std::nullopt,
       /*src=*/std::nullopt,
       /*reasons=*/
-      {MatchesDetailedReason(kBlockingReasonString, /*source=*/std::nullopt)},
+      {MatchesDetailedReason(kBlockingReasonString,
+                             /*source=*/std::nullopt)},
       MatchesSameOriginDetails(
           /*url=*/url_a.spec(),
           /*children=*/{}));
