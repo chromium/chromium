@@ -116,7 +116,7 @@ namespace {
 // Version 18 - 2022/04/19 - https://crrev.com/c/3594203
 //
 // Versions older than two years should be removed and marked as unsupported.
-// This was last done in January 2024. https://crrev.com/c/5225715
+// This was last done in February 2024. https://crrev.com/c/5300252
 // Be sure to update SQLitePersistentCookieStoreTest.TestInvalidVersionRecovery
 // to test the latest unsupported version number.
 //
