@@ -706,8 +706,11 @@ BOOL ShouldDismissKeyboardOnScroll() {
     // semantic content attribute reset before the cell is displayed (and before
     // this method is called).
     rowCell.omniboxSemanticContentAttribute = self.semanticContentAttribute;
-
     rowCell.accessibilityIdentifier = [OmniboxPopupAccessibilityIdentifierHelper
+        accessibilityIdentifierForRowAtIndexPath:indexPath];
+  } else if ([cell.contentConfiguration
+                 isKindOfClass:OmniboxPopupRowContentConfiguration.class]) {
+    cell.accessibilityIdentifier = [OmniboxPopupAccessibilityIdentifierHelper
         accessibilityIdentifierForRowAtIndexPath:indexPath];
   }
 }
