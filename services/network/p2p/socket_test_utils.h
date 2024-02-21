@@ -58,7 +58,7 @@ class FakeP2PSocketDelegate : public P2PSocket::Delegate {
 
 class FakeSocket : public net::StreamSocket {
  public:
-  FakeSocket(std::string* written_data);
+  explicit FakeSocket(std::string* written_data);
   ~FakeSocket() override;
 
   void set_async_write(bool async_write) { async_write_ = async_write; }

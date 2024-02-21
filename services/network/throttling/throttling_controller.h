@@ -13,12 +13,15 @@
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 
 namespace network {
 
 class NetworkConditions;
 class ScopedThrottlingToken;
 class ThrottlingNetworkInterceptor;
+class ThrottlingP2PNetworkInterceptor;
 
 // ThrottlingController manages interceptors identified by NetLog source ID and
 // profile ID and their throttling conditions.
@@ -34,6 +37,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
   // Returns the interceptor for the NetLog source ID.
   static ThrottlingNetworkInterceptor* GetInterceptor(
       uint32_t net_log_source_id);
+
+#if BUILDFLAG(IS_P2P_ENABLED)
+  static ThrottlingP2PNetworkInterceptor* GetP2PInterceptor(
+      uint32_t net_log_source_id);
+#endif
 
  private:
   friend class ScopedThrottlingToken;
@@ -74,6 +82,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
 
   InterceptorMap interceptors_;
   NetLogSourceProfileMap net_log_source_profile_map_;
+
+#if BUILDFLAG(IS_P2P_ENABLED)
+  using P2PInterceptorMap =
+      std::map<base::UnguessableToken,
+               std::unique_ptr<ThrottlingP2PNetworkInterceptor>>;
+
+  ThrottlingP2PNetworkInterceptor* FindP2PInterceptor(
+      uint32_t net_log_source_id);
+
+  P2PInterceptorMap p2p_interceptors_;
+#endif
+
   THREAD_CHECKER(thread_checker_);
 };
 

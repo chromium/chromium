@@ -253,6 +253,8 @@ component("network_service") {
       "p2p/socket_throttler.h",
       "p2p/socket_udp.cc",
       "p2p/socket_udp.h",
+      "throttling/throttling_p2p_network_interceptor.cc",
+      "throttling/throttling_p2p_network_interceptor.h",
     ]
   }
 
