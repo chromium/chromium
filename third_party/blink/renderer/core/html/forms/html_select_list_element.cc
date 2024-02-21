@@ -264,8 +264,7 @@ HTMLSelectListElement::HTMLSelectListElement(Document& document)
   DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
   UseCounter::Count(document, WebFeature::kSelectListElement);
 
-  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
-      SlotAssignmentMode::kManual);
+  EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
   select_mutation_callback_ =
       MakeGarbageCollected<HTMLSelectListElement::SelectMutationCallback>(
           *this);

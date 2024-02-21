@@ -49,8 +49,7 @@ namespace blink {
 HTMLDetailsElement::HTMLDetailsElement(Document& document)
     : HTMLElement(html_names::kDetailsTag, document) {
   UseCounter::Count(document, WebFeature::kDetailsElement);
-  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
-      SlotAssignmentMode::kManual);
+  EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
 }
 
 HTMLDetailsElement::~HTMLDetailsElement() = default;
@@ -203,8 +202,9 @@ void HTMLDetailsElement::ParseAttribute(
         WTF::BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
                       WrapPersistent(this), params.reason));
 
-    Element* content = EnsureUserAgentShadowRoot().getElementById(
-        shadow_element_names::kIdDetailsContent);
+    Element* content =
+        EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual)
+            .getElementById(shadow_element_names::kIdDetailsContent);
     DCHECK(content);
 
     if (is_open_) {

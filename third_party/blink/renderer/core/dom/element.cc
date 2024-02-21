@@ -4573,7 +4573,8 @@ void Element::UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal) {
   }
 }
 
-ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type) {
+ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
+                                               SlotAssignmentMode mode) {
 #if DCHECK_IS_ON()
   NestingLevelIncrementer slot_assignment_recalc_forbidden_scope(
       GetDocument().SlotAssignmentRecalcForbiddenRecursionDepth());
@@ -4584,7 +4585,8 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type) {
 
   DCHECK(!GetShadowRoot());
 
-  auto* shadow_root = MakeGarbageCollected<ShadowRoot>(GetDocument(), type);
+  auto* shadow_root =
+      MakeGarbageCollected<ShadowRoot>(GetDocument(), type, mode);
 
   if (InActiveDocument()) {
     // We need to call child.RemovedFromFlatTree() before setting a shadow
@@ -5310,10 +5312,10 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
   return true;
 }
 
-ShadowRoot& Element::CreateUserAgentShadowRoot() {
+ShadowRoot& Element::CreateUserAgentShadowRoot(SlotAssignmentMode mode) {
   DCHECK(!GetShadowRoot());
   GetDocument().SetContainsShadowRoot();
-  return CreateAndAttachShadowRoot(ShadowRootMode::kUserAgent);
+  return CreateAndAttachShadowRoot(ShadowRootMode::kUserAgent, mode);
 }
 
 ShadowRoot& Element::AttachShadowRootInternal(
@@ -5344,7 +5346,8 @@ ShadowRoot& Element::AttachShadowRootInternal(
 
   // 5. Let shadow be a new shadow root whose node document is this’s node
   // document, host is this, and mode is init’s mode.
-  ShadowRoot& shadow_root = CreateAndAttachShadowRoot(type);
+  ShadowRoot& shadow_root =
+      CreateAndAttachShadowRoot(type, slot_assignment_mode);
   // 6. Set shadow’s delegates focus to init’s delegatesFocus.
   shadow_root.SetDelegatesFocus(focus_delegation ==
                                 FocusDelegation::kDelegateFocus);
@@ -5362,7 +5365,6 @@ ShadowRoot& Element::AttachShadowRootInternal(
         GetCustomElementState() != CustomElementState::kCustom &&
         GetCustomElementState() != CustomElementState::kPreCustomized));
 
-  shadow_root.SetSlotAssignmentMode(slot_assignment_mode);
   // 8. Set this’s shadow root to shadow.
   return shadow_root;
 }
@@ -5394,12 +5396,13 @@ ShadowRoot* Element::UserAgentShadowRoot() const {
   return root;
 }
 
-ShadowRoot& Element::EnsureUserAgentShadowRoot() {
+ShadowRoot& Element::EnsureUserAgentShadowRoot(SlotAssignmentMode mode) {
   if (ShadowRoot* shadow_root = UserAgentShadowRoot()) {
-    DCHECK(shadow_root->GetMode() == ShadowRootMode::kUserAgent);
+    CHECK_EQ(shadow_root->GetMode(), ShadowRootMode::kUserAgent);
+    CHECK_EQ(shadow_root->GetSlotAssignmentMode(), mode);
     return *shadow_root;
   }
-  ShadowRoot& shadow_root = CreateUserAgentShadowRoot();
+  ShadowRoot& shadow_root = CreateUserAgentShadowRoot(mode);
   DidAddUserAgentShadowRoot(shadow_root);
   return shadow_root;
 }

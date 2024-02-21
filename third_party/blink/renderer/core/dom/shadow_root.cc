@@ -56,7 +56,9 @@ struct SameSizeAsShadowRoot : public DocumentFragment,
 
 ASSERT_SIZE(ShadowRoot, SameSizeAsShadowRoot);
 
-ShadowRoot::ShadowRoot(Document& document, ShadowRootMode mode)
+ShadowRoot::ShadowRoot(Document& document,
+                       ShadowRootMode mode,
+                       SlotAssignmentMode assignment_mode)
     : DocumentFragment(nullptr, kCreateShadowRoot),
       TreeScope(
           *this,
@@ -69,7 +71,7 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootMode mode)
       mode_(static_cast<unsigned>(mode)),
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
-      slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kNamed)),
+      slot_assignment_mode_(static_cast<unsigned>(assignment_mode)),
       has_focusgroup_attribute_on_descendant_(false) {}
 
 ShadowRoot::~ShadowRoot() = default;
@@ -103,10 +105,6 @@ Node* ShadowRoot::Clone(Document&,
                         ExceptionState&) const {
   NOTREACHED() << "ShadowRoot nodes are not clonable.";
   return nullptr;
-}
-
-void ShadowRoot::SetSlotAssignmentMode(SlotAssignmentMode assignment_mode) {
-  slot_assignment_mode_ = static_cast<unsigned>(assignment_mode);
 }
 
 String ShadowRoot::innerHTML() const {

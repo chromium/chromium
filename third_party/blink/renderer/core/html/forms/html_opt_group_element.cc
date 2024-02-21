@@ -51,8 +51,7 @@ bool CanAssignToOptGroupSlot(const Node& node) {
 
 HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
     : HTMLElement(html_names::kOptgroupTag, document) {
-  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
-      SlotAssignmentMode::kManual);
+  EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
 }
 
 // An explicit empty destructor should be in html_opt_group_element.cc, because

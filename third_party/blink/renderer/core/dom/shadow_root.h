@@ -55,7 +55,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ShadowRoot(Document&, ShadowRootMode);
+  ShadowRoot(Document&, ShadowRootMode, SlotAssignmentMode);
   ~ShadowRoot() override;
   ShadowRoot(const ShadowRoot&) = delete;
   ShadowRoot& operator=(const ShadowRoot&) = delete;
@@ -139,7 +139,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void SetDelegatesFocus(bool flag) { delegates_focus_ = flag; }
   bool delegatesFocus() const { return delegates_focus_; }
 
-  void SetSlotAssignmentMode(SlotAssignmentMode assignment);
   bool IsManualSlotting() const {
     return slot_assignment_mode_ ==
            static_cast<unsigned>(SlotAssignmentMode::kManual);

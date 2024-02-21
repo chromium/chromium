@@ -740,7 +740,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                    bool serializable,
                                    bool clonable);
 
-  ShadowRoot& CreateUserAgentShadowRoot();
+  ShadowRoot& CreateUserAgentShadowRoot(
+      SlotAssignmentMode = SlotAssignmentMode::kNamed);
   ShadowRoot& AttachShadowRootInternal(ShadowRootMode,
                                        FocusDelegation,
                                        SlotAssignmentMode,
@@ -764,7 +765,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ShadowRoot* AuthorShadowRoot() const;
   ShadowRoot* UserAgentShadowRoot() const;
 
-  ShadowRoot& EnsureUserAgentShadowRoot();
+  ShadowRoot& EnsureUserAgentShadowRoot(
+      SlotAssignmentMode = SlotAssignmentMode::kNamed);
 
   // Implements manual slot assignment for user agent shadow roots.
   virtual void ManuallyAssignSlots() { DCHECK(false); }
@@ -1627,7 +1629,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // ShouldAdjustDirectionalityForInsert().
   bool DoesChildTextNodesDirectionMatchThis(const Node& node) const;
 
-  ShadowRoot& CreateAndAttachShadowRoot(ShadowRootMode);
+  ShadowRoot& CreateAndAttachShadowRoot(
+      ShadowRootMode,
+      SlotAssignmentMode = SlotAssignmentMode::kNamed);
 
   // FIXME: Everyone should allow author shadows.
   virtual bool AreAuthorShadowsAllowed() const { return true; }
