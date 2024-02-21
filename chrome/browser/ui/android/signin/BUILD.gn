@@ -93,6 +93,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncUtils.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncViewBinder.java",
   ]

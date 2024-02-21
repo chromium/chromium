@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncUtils;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -63,21 +64,22 @@ public abstract class FirstRunFlowSequencer {
 
         /** Returns true if the sync consent promo page should be shown. */
         boolean shouldShowSyncConsentPage(boolean isChild) {
-            if (isChild) {
-                // Always show the sync consent page for child account.
-                return true;
-            }
             assert mProfileSupplier.get() != null;
             Profile profile = mProfileSupplier.get().getOriginalProfile();
-            // TODO(crbug.com/1520791): Review this logic for history sync for UNO.
-            final IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(profile);
-            if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
+            if (isChild) {
+                return !HistorySyncUtils.isHistorySyncDisabledByCustodian(profile);
+            }
+            if (HistorySyncUtils.isHistorySyncDisabledByPolicy(profile)) {
+                return false;
+            }
+            if (HistorySyncUtils.didAlreadyOptIn(profile) || !isSyncAllowed()) {
                 // No need to show the sync consent page if users already consented to sync or
                 // if sync is not allowed.
                 return false;
             }
-            // Show the sync consent page only to the signed-in users.
+            // Show the sync consent page only to signed-in users.
+            final IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(profile);
             return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
 
@@ -108,7 +110,6 @@ public abstract class FirstRunFlowSequencer {
                 OneshotSupplier<ProfileProvider> profileSupplier);
     }
 
-    private final Activity mActivity;
 
     /**
      * The delegate to be used by the Sequencer. By default, it's an instance of
@@ -132,10 +133,8 @@ public abstract class FirstRunFlowSequencer {
     public abstract void onFlowIsKnown(Bundle freProperties);
 
     public FirstRunFlowSequencer(
-            Activity activity,
             OneshotSupplier<ProfileProvider> profileSupplier,
             OneshotSupplier<Boolean> childAccountStatusSupplier) {
-        mActivity = activity;
 
         mDelegate =
                 sDelegateFactoryForTesting != null

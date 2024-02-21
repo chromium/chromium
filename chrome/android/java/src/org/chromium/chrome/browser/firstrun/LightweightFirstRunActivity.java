@@ -79,7 +79,7 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
 
         mFirstRunFlowSequencer =
                 new FirstRunFlowSequencer(
-                        this, getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
+                        getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
                     @Override
                     public void onFlowIsKnown(Bundle freProperties) {
                         if (freProperties == null) {

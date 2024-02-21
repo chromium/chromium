@@ -233,7 +233,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         mFirstRunFlowSequencer =
                 new FirstRunFlowSequencer(
-                        this, getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
+                        getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
                     @Override
                     public void onFlowIsKnown(Bundle freProperties) {
                         assert freProperties != null;
