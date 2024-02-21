@@ -129,6 +129,10 @@
             field_dependencies: ["StyleType"]
           },
           {
+            method: "UsesStandardScrollbarStyle()",
+            field_dependencies: ["StyleType"]
+          },
+          {
             method: "BoxDirection()",
             field_dependencies: ["-webkit-box-direction"]
           },
