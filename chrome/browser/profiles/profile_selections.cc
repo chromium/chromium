@@ -9,8 +9,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/profiles/profile_types_ash.h"
-#include "chrome/common/chrome_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool AreKeyedServicesDisabledForProfileByDefault(const Profile* profile) {
@@ -120,12 +119,12 @@ Profile* ProfileSelections::ApplyProfileSelection(Profile* profile) const {
 }
 
 ProfileSelection ProfileSelections::GetProfileSelection(
-    const Profile* profile) const {
+    Profile* profile) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // This check has to be performed before the check on
   // `profile->IsRegularProfile()` because profiles that are internal ASH
   // (non-user) profiles will also satisfy the later condition.
-  if (!IsUserProfile(profile)) {
+  if (!ash::IsUserBrowserContext(profile)) {
     // If the value for `ash_internals_profile_selection_` is not set, redirect
     // to the default behavior, which is the behavior given to the
     // RegularProfile.

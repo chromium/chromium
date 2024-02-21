@@ -22,8 +22,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_types_ash.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/prefs/pref_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -82,8 +82,7 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
                                      &dict);
       bool enable_printing = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      Profile* profile = Profile::FromBrowserContext(browser_context());
-      enable_printing = IsUserProfile(profile);
+      enable_printing = ash::IsUserBrowserContext(browser_context());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
       pdf_extension_util::AddAdditionalData(

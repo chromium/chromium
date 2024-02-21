@@ -32,7 +32,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/profiles/profile_types_ash.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
 // NOTE: Consider separating out UI-only features that are not consumed by the
@@ -113,8 +113,9 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1380828): Make the Media Router feature configurable via a
   // policy for non-user profiles, i.e. sign-in and lock screen profiles.
-  if (!IsUserProfile(Profile::FromBrowserContext(context)))
+  if (!ash::IsUserBrowserContext(context)) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // If the Media Router was already enabled or disabled for |context|, then it

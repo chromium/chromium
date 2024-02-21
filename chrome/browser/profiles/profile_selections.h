@@ -159,7 +159,7 @@ class ProfileSelections {
 
   // Returns the `ProfileSelection` based on the profile information through the
   // set mapping.
-  ProfileSelection GetProfileSelection(const Profile* profile) const;
+  ProfileSelection GetProfileSelection(Profile* profile) const;
 
   // Default value for the mapping of
   // Regular Profile -> `ProfileSelection::kOriginalOnly`

@@ -56,13 +56,6 @@ source_set("profile") {
     "refcounted_profile_keyed_service_factory.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "profile_types_ash.cc",
-      "profile_types_ash.h",
-    ]
-  }
-
   public_deps = [ "//base" ]
 
   # Cannot depend on //chrome/browser:browser.

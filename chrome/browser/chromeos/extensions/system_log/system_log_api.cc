@@ -15,23 +15,23 @@
 #include "extensions/common/features/feature_provider.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/profiles/profile_types_ash.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
 namespace extensions {
 
 namespace {
 
-bool IsSigninProfileCheck(const Profile* profile) {
+bool IsSigninProfileCheck(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return IsSigninProfile(profile);
+  return ash::IsSigninBrowserContext(profile);
 #else
   return false;
 #endif
 }
 
 std::string FormatLogMessage(const std::string& extension_id,
-                             const Profile* profile,
+                             Profile* profile,
                              const std::string& message) {
   return base::StringPrintf("[%s]%s: %s", extension_id.c_str(),
                             IsSigninProfileCheck(profile) ? "[signin]" : "",
@@ -54,7 +54,7 @@ ExtensionFunction::ResponseAction SystemLogAddFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parameters);
   const api::system_log::MessageOptions& options = parameters->options;
 
-  const Profile* profile = Profile::FromBrowserContext(browser_context());
+  Profile* profile = Profile::FromBrowserContext(browser_context());
 
   std::string device_event_log_message =
       FormatLogMessage(extension_id(), profile, options.message);

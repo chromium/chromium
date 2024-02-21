@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -57,6 +58,10 @@ static_library("media_router_feature") {
     "//media",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
+  }
 }
 
 static_library("router") {

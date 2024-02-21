@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/policy/messaging_layer",
   "+chrome/browser/policy/networking/user_network_configuration_updater_ash.h",
-  "+chrome/browser/profiles/profile_types_ash.h",
   "+chrome/browser/sharesheet",
   "+chrome/browser/ui/app_list",
   "+chrome/browser/ui/ash",
