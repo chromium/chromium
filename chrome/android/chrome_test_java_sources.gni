@@ -463,6 +463,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/sync/BookmarksTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/ExplicitPassphrasePlatformClientTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/GoogleServicesSettingsTest.java",
+  "javatests/src/org/chromium/chrome/browser/sync/IdentityErrorCardPreferenceTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/ManageSyncSettingsTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/ManageSyncSettingsWithFakeSyncServiceImplTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/OpenTabsTest.java",
