@@ -110,7 +110,6 @@ class NoVarySearchHelperTester final {
             blink::mojom::Referrer(),
             /*no_vary_search_expected=*/std::nullopt,
             /*prefetch_document_manager=*/nullptr);
-    prefetch_container->DisablePrecogLoggingForTest();
 
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");

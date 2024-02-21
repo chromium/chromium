@@ -157,7 +157,6 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
             main_rfh()->GetGlobalId());
@@ -183,7 +182,6 @@ TEST_P(PrefetchContainerTest, PrefetchStatus) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
 
   EXPECT_FALSE(prefetch_container.HasPrefetchStatus());
 
@@ -203,7 +201,6 @@ TEST_P(PrefetchContainerTest, IsDecoy) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
 
   EXPECT_FALSE(prefetch_container.IsDecoy());
 
@@ -220,7 +217,6 @@ TEST_P(PrefetchContainerTest, Servable) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
 
   MakeServableStreamingURLLoaderForTest(
       &prefetch_container, network::mojom::URLResponseHead::New(), "test body");
@@ -247,7 +243,6 @@ TEST_P(PrefetchContainerTest, CookieListener) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
   prefetch_container.MakeResourceRequest({});
   prefetch_container.RegisterCookieListener(cookie_manager());
 
@@ -324,7 +319,6 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
   prefetch_container.RegisterCookieListener(cookie_manager());
 
   auto reader = prefetch_container.CreateReader();
@@ -387,7 +381,6 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
   prefetch_container.MakeResourceRequest({});
   prefetch_container.RegisterCookieListener(cookie_manager());
 
@@ -518,7 +511,6 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/std::nullopt,
           /*prefetch_document_manager=*/nullptr);
-  prefetch_container->DisablePrecogLoggingForTest();
 
   network::URLLoaderCompletionStatus completion_status;
   completion_status.encoded_data_length = 100;
@@ -640,7 +632,6 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/std::nullopt,
           /*prefetch_document_manager=*/nullptr);
-  prefetch_container->DisablePrecogLoggingForTest();
   prefetch_container.reset();
 
   auto ukm_entries = ukm_recorder.GetEntries(
@@ -714,7 +705,6 @@ TEST_P(PrefetchContainerTest, EligibilityCheck) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       prefetch_document_manager->GetWeakPtr());
-  prefetch_container.DisablePrecogLoggingForTest();
   prefetch_container.MakeResourceRequest({});
 
   // Mark initial prefetch as eligible
@@ -755,7 +745,6 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       prefetch_document_manager->GetWeakPtr());
-  prefetch_container.DisablePrecogLoggingForTest();
   prefetch_container.MakeResourceRequest({});
 
   // Mark initial prefetch as eligible
@@ -805,7 +794,6 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
         blink::mojom::Referrer(),
         /*no_vary_search_expected=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr);
-    prefetch_container.DisablePrecogLoggingForTest();
 
     prefetch_container.OnGetPrefetchToServe(test_case.block_until_head);
     if (test_case.block_until_head) {
@@ -863,7 +851,6 @@ TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
   prefetch_container.MakeResourceRequest({});
 
   prefetch_container.SetPrefetchStatus(
@@ -888,7 +875,6 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(), /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
   prefetch_container.MakeResourceRequest({});
 
   EXPECT_FALSE(
@@ -937,7 +923,6 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container->DisablePrecogLoggingForTest();
   prefetch_container->MakeResourceRequest({});
 
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
@@ -1033,7 +1018,6 @@ TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.DisablePrecogLoggingForTest();
   prefetch_container.MakeResourceRequest({});
 
   auto pending_request =
@@ -1164,7 +1148,6 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container->DisablePrecogLoggingForTest();
 
   auto pending_request =
       MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());
