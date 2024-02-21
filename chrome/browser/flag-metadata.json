@@ -1799,7 +1799,7 @@
   {
     "name": "disable-dns-proxy",
     "owners": [ "cros-networking@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 140
   },
   {
     "name": "disable-explicit-dma-fences",
