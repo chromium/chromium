@@ -178,6 +178,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3635073343384702370">Chrome getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
 <translation id="3667616615096815454">Ekki tókst að setja upp, þjónninn þekkir ekki forritið.</translation>
 <translation id="3673813398384385993">Chrome komst að því að „<ph name="EXTENSION_NAME" />“ inniheldur spilliforrit</translation>
+<translation id="3697952514309507634">Aðrir Chrome-prófílar</translation>
 <translation id="3703994572283698466">ChromeOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex útgáfa</translation>
 <translation id="3718181793972440140">Þetta mun eyða einu atriði úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
@@ -432,6 +433,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8019103195866286235">Útgefandi þessarar viðbótar afturkallaði hana og hún kann að vera óörugg. Fjarlægðu hana úr Chrome svo hún geti ekki lengur séð og breytt gögnunum þínum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingunum þínum.</translation>
 <translation id="80471789339884597">Takk fyrir að setja upp. Þú þarft að endurræsa alla vafra áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
 <translation id="8086881907087796310">Uppsetning mistókst vegna þess að tölvan þín uppfyllir ekki lágmarksskilyrði um vélbúnað.</translation>
 <translation id="8129812357326543296">Um &amp;Google Chrome</translation>
 <translation id="813913629614996137">Frumstillir...</translation>

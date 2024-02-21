@@ -113,6 +113,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3032706164202344641">Chromium can't check your passwords. Try again later.</translation>
 <translation id="3032787606318309379">Adding to Chromium ...</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
+<translation id="3068187312562070417">Other Chromium profiles</translation>
 <translation id="3068515742935458733">Help make Chromium better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB device was being accessed by one or more Chromium extensions}=1{1 USB device is being accessed by one or more Chromium extensions}other{# USB devices are being accessed by one or more Chromium extensions}}</translation>
 <translation id="3101560983689755071">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chromium auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
@@ -230,6 +231,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5294316920224716406">When browsing in Incognito mode, Chromium will warn you before loading a site using an insecure connection</translation>
 <translation id="5296845517486664001">When trials are on and if Chromium has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chromium deletes your interests on a rolling basis each month.</translation>
 <translation id="5352264705793813212">Chromium found some safety recommendations for your review</translation>
+<translation id="5352361688875342522">Other Chromium profiles</translation>
 <translation id="5358375970380395591">You are signing in with a managed account and giving its administrator control over your Chromium profile. Your Chromium data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Learn why Chromium blocks some files</translation>

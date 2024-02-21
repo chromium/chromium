@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">隐藏降价卡片</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1192844206376121885">此操作会删除 <ph name="ORIGIN" /> 存储的全部数据和 Cookie。</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">帮助和反馈</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
+<translation id="2550801787432930915">降价卡片</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{已拦截 1 个 Cookie}other{已拦截 # 个 Cookie}}</translation>
 <translation id="2570922361219980984">此设备的位置信息使用权也已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="257931822824936280">已展开 - 点击此处即可收起。</translation>
@@ -401,6 +403,7 @@
 <translation id="7667547420449112975">绿野仙踪</translation>
 <translation id="7684642910516280563">不允许网站使用第三方 Cookie</translation>
 <translation id="7719367874908701697">网页缩放</translation>
+<translation id="7759147511335618829">MIDI 设备控制和重新编程</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{继续使用此标签页}other{继续使用这些标签页}}</translation>
@@ -480,6 +483,7 @@
 <translation id="8803526663383843427">处于开启状态时</translation>
 <translation id="8805385115381080995">由于网站要求您验证自己是真实用户的情况随之减少，浏览体验将变得更加流畅。</translation>
 <translation id="8816026460808729765">禁止网站使用传感器</translation>
+<translation id="8843699287283948910">隐藏其他设备上的标签页</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">尝试暂时允许使用第三方 Cookie，这意味着您将采用较低级别的浏览保护措施，但网站功能更有可能会按预期运行。</translation>
 <translation id="8889294078294184559">随着您继续浏览，所访问的网站可从 Chrome 中获取上一个网站提供的相关信息来验证您可能是真实的用户</translation>

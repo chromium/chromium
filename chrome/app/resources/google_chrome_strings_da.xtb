@@ -175,6 +175,7 @@
 <translation id="3635073343384702370">Chrome kan tjekke dine adgangskoder, når du gemmer dem</translation>
 <translation id="3667616615096815454">Appen kan ikke installeres. Serveren kender ikke appen.</translation>
 <translation id="3673813398384385993">Chrome har registreret malware i "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="3697952514309507634">Andre Chrome-profiler</translation>
 <translation id="3703994572283698466">ChromeOS leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-version</translation>
 <translation id="3718181793972440140">Denne handling sletter ét element på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
@@ -425,6 +426,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8019103195866286235">Udgivelsen af denne udvidelse blev fjernet af dens udvikler og er muligvis ikke sikker. Fjern den fra Chrome, så den ikke længere kan se og ændre dine data på de websites, du besøger, herunder dine personlige oplysninger.</translation>
 <translation id="80471789339884597">Tak for installationen. Du skal genstarte alle dine browsere, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen mislykkedes, fordi din computer ikke opfylder minimumskravene til hardware.</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialiserer...</translation>

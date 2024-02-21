@@ -2330,6 +2330,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2721695630904737430">Pengguna di bawah seliaan telah dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="2722540561488096675">Peranti anda akan dimatikan dalam masa <ph name="TIME_LEFT" />. Alih keluar USB sebelum menghidupkan semula peranti anda. Kemudian anda boleh mula menggunakan <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Buka Profil tetamu</translation>
 <translation id="2723819893410108315">Kuning Sitron</translation>
 <translation id="2724841811573117416">Log WebRTC</translation>
 <translation id="272488616838512378">Penukaran Unit</translation>
@@ -3123,6 +3124,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ingin mengalih keluar sambungan ini.</translation>
 <translation id="3345634917232014253">Semakan keselamatan dijalankan sesaat yang lalu</translation>
 <translation id="3345886924813989455">Tiada penyemak imbas disokong yang ditemui</translation>
+<translation id="3346306152660142597">Sesuaikan halaman ini dengan AI</translation>
 <translation id="3347086966102161372">S&amp;alin alamat imej</translation>
 <translation id="3348038390189153836">Peranti boleh tanggal dikesan</translation>
 <translation id="3348131053948466246">Emoji dicadangkan. Tekan ke atas atau ke bawah untuk menavigasi dan enter untuk memasukkan.</translation>
@@ -9019,6 +9021,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7940265372707990269">Isih mengikut <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Kesediaan Penambatan:</translation>
 <translation id="7942349550061667556">Merah</translation>
+<translation id="7942846369224063421">Pemapar UI Dipramuatkan</translation>
 <translation id="7943349879009553083">Tidak Tersedia dalam Mod Tetamu</translation>
 <translation id="7943368935008348579">Muat turun PDF</translation>
 <translation id="7943837619101191061">Tambah Lokasi...</translation>

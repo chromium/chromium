@@ -32,6 +32,7 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">O seu dispositivo é gerido por <ph name="DOMAIN" />. Os administradores conseguem aceder aos dados em qualquer perfil neste dispositivo.</translation>
+<translation id="1022719295563085177">Predefinição da rede</translation>
 <translation id="1026655690966755180">Adicionar porta</translation>
 <translation id="1026822031284433028">Carregar imagem</translation>
 <translation id="1026959648338730078">Windows Hello ou chave de segurança externa</translation>
@@ -319,6 +320,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="123578888592755962">Disco cheio</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{texto}other{# textos}}</translation>
 <translation id="1236009322878349843">Edite o telemóvel</translation>
+<translation id="1237950098253310325">Reordene o <ph name="BUTTON_NAME" /> com Ctrl mais seta para cima ou para baixo</translation>
 <translation id="1238293488628890871">Mudar de perfil?</translation>
 <translation id="1239594683407221485">Explore o conteúdo do dispositivo na aplicação Ficheiros.</translation>
 <translation id="1239841552505950173">Iniciar aplicação</translation>
@@ -1898,6 +1900,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2412015533711271895">Um dos teus pais ou o teu tutor tem de autorizar a utilização desta extensão</translation>
 <translation id="2412593942846481727">Atualização disponível</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Personalize ainda mais o seu navegador com extensões da <ph name="BEGIN_LINK1" />Web Store do Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Retomar navegação para <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2415117815770324983">A sua sessão é terminada na maioria dos sites. Mantém a sessão iniciada na sua Conta Google.</translation>
@@ -2312,6 +2315,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2721695630904737430">O gestor desativou os utilizadores supervisionados.</translation>
 <translation id="2722540561488096675">O dispositivo irá encerrar dentro de <ph name="TIME_LEFT" />. Remova o USB antes de voltar a ligar o dispositivo. Em seguida, pode começar a utilizar o <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Abrir perfil de convidado</translation>
 <translation id="2723819893410108315">Citrino</translation>
 <translation id="2724841811573117416">Registos de WebRTC</translation>
 <translation id="272488616838512378">Conversão de unidades</translation>
@@ -2823,6 +2827,7 @@ Quer pará-lo?</translation>
 <translation id="3101709781009526431">Data e hora</translation>
 <translation id="310297983047869047">Diapositivo anterior</translation>
 <translation id="3103451787721578293">Introduza um motivo para o carregamento destes dados:</translation>
+<translation id="3103512663951238230">Alt + clique</translation>
 <translation id="3105339775057145050">Última atualização sem êxito</translation>
 <translation id="3105796011181310544">Quer reverter para o Google?</translation>
 <translation id="3105820656234755131">Palavra-passe atualizada</translation>
@@ -3105,6 +3110,7 @@ Quer pará-lo?</translation>
 <translation id="3342361181740736773">A extensão "<ph name="TRIGGERING_EXTENSION_NAME" />" quer remover esta extensão.</translation>
 <translation id="3345634917232014253">A verificação de segurança foi efetuada há uns momentos.</translation>
 <translation id="3345886924813989455">Não encontrado um browser suportado</translation>
+<translation id="3346306152660142597">Personalizar esta página com IA</translation>
 <translation id="3347086966102161372">C&amp;opiar endereço da imagem</translation>
 <translation id="3348038390189153836">Detetado dispositivo removível</translation>
 <translation id="3348131053948466246">Emoji sugerido. Prima a seta para cima ou para baixo para navegar e Enter para inserir.</translation>
@@ -3218,6 +3224,7 @@ Quer pará-lo?</translation>
 <translation id="3440663250074896476">Mais ações para <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Ecrã</translation>
 <translation id="3441663102605358937">Inicie sessão na sua conta <ph name="ACCOUNT" /> novamente para validar esta conta.</translation>
+<translation id="3441824746233675597">Torne mais difícil a visualização dos sites que visita por parte das pessoas com acesso ao seu tráfego da Internet. O <ph name="PRODUCT_NAME" /> usa uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
 <translation id="3442674350323953953">Permitir que a Google utilize os dados do seu hardware para ajudar a melhorar o dispositivo <ph name="DEVICE_OS" />. Se recusar, estes dados ainda são enviados para a Google para determinar quais são as atualizações adequadas, mas não são armazenados nem utilizados em qualquer outro local.</translation>
 <translation id="3443744348829035122">O <ph name="BRAND" /> excedeu o tempo limite</translation>
 <translation id="3443754338602062261">Já tem palavras-passe para estas contas no <ph name="BRAND" />. Se optar por importar uma das palavras-passe abaixo, esta irá substituir a palavra-passe existente.</translation>
@@ -3397,6 +3404,7 @@ Quer pará-lo?</translation>
 <translation id="3584169441612580296">Ler e alterar fotos, música e outros elementos multimédia a partir do computador</translation>
 <translation id="3586806079541226322">Não é possível abrir este ficheiro</translation>
 <translation id="3586931643579894722">Ocultar detalhes</translation>
+<translation id="3587279952965197737">Tem de ter <ph name="MAX_CHARACTER_COUNT" /> carateres ou menos</translation>
 <translation id="3587438013689771191">Saber mais sobre: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3588790464166520201">Com autorização para instalar controladores de pagamentos</translation>
@@ -4583,6 +4591,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4490086832405043258">Usar as definições de proxy do ChromeOS para este perfil.</translation>
 <translation id="4490798467014431984">As extensões não são permitidas neste site</translation>
 <translation id="449126573531210296">Encriptar palavras-passe sincronizadas com a sua Conta Google</translation>
+<translation id="4492265221907525667">Para usar esta nova funcionalidade experimental, inicie sessão.</translation>
 <translation id="449232563137139956">Normalmente, os sites mostram imagens para fornecer ilustrações, como fotos de lojas online ou artigos de notícias.</translation>
 <translation id="4492698018379445570">Saiba o que adicionou aos carrinhos de compras e efetue o pagamento quando tiver tudo pronto.</translation>
 <translation id="4493167769966437077">Remover <ph name="LANGUAGE_NAME" /> dos idiomas da opção Nunca disponibilizar tradução</translation>
@@ -5148,6 +5157,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4929386379796360314">Destinos de impressão</translation>
 <translation id="4930447554870711875">Programadores</translation>
 <translation id="4930714375720679147">Ativar</translation>
+<translation id="4931347390544064118">As ligações seguras podem nem sempre estar disponíveis quando usa a predefinição da rede. Considere selecionar um fornecedor diferente para garantir que está sempre a usar uma ligação segura.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933484234309072027">incorporada em <ph name="URL" /></translation>
 <translation id="4936042273057045735">A sincronização das notificações não é suportada para telemóveis num perfil de trabalho.</translation>
@@ -6845,6 +6855,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6271824294945464304">A partilhar a palavra-passe</translation>
 <translation id="6273677812470008672">Qualidade</translation>
 <translation id="6274089201566806618">A ligar a <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">A personalização de um anúncio que lhe é mostrado pode depender de vários fatores, incluindo esta definição, os <ph name="BEGIN_LINK1" />anúncios sugeridos por sites<ph name="LINK_END1" />, as <ph name="BEGIN_LINK2" />definições de cookies<ph name="LINK_END2" /> e se o site que está a ver personaliza anúncios. Saiba mais sobre a <ph name="BEGIN_LINK3" />gestão da privacidade dos anúncios<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Gravação de ecrã</translation>
 <translation id="6276210637549544171">O proxy <ph name="PROXY_SERVER" /> necessita de um nome de utilizador e uma palavra-passe.</translation>
 <translation id="6277105963844135994">Limite de tempo da rede</translation>
@@ -8996,6 +9007,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Prontidão da ligação (à Internet) via telemóvel:</translation>
 <translation id="7942349550061667556">Vermelho</translation>
+<translation id="7942846369224063421">Renderizador da IU pré-carregado</translation>
 <translation id="7943349879009553083">Não disponível no Modo convidado</translation>
 <translation id="7943368935008348579">Transferir PDFs</translation>
 <translation id="7943837619101191061">Adicionar Localização...</translation>
@@ -9221,6 +9233,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8102139037507939978">Elimine informações de identificação pessoal do ficheiro system_logs.txt.</translation>
 <translation id="810362914482827094">Pesquisar chaves de acesso</translation>
 <translation id="8104088837833760645">Transferir perfil do eSIM</translation>
+<translation id="8105273883928376822">Inicie sessão para continuar.</translation>
 <translation id="8107015733319732394">A instalar a Google Play Store no <ph name="DEVICE_TYPE" />… Esta ação pode demorar alguns minutos.</translation>
 <translation id="810728361871746125">Resolução do ecrã</translation>
 <translation id="8109109153262930486">Avatar predefinido</translation>
@@ -10034,6 +10047,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8732030010853991079">Clique neste ícone para utilizar esta extensão.</translation>
 <translation id="8732212173949624846">Ler e alterar o histórico de navegação em todos os dispositivos com sessão iniciada</translation>
 <translation id="8732844209475700754">Mais definições relacionadas com privacidade, segurança e recolha de dados</translation>
+<translation id="8733779588180110397">⌥ + clique</translation>
 <translation id="8734073480934656039">A ativação desta definição permite que aplicações do quiosque sejam iniciadas automaticamente no arranque.</translation>
 <translation id="8734755021067981851">Não existem dispositivos USB ligados.</translation>
 <translation id="8736288397686080465">Este site foi atualizado em segundo plano.</translation>
@@ -10401,6 +10415,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9012585441087414258">Protege contra sites, transferências e extensões identificados como perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página são enviados para a Navegação segura do Google.</translation>
 <translation id="9013037634206938463">É necessário <ph name="INSTALL_SIZE" /> de espaço livre para instalar o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="9014206344398081366">Tutorial do ChromeVox</translation>
+<translation id="9014674417732091912">Movido para a linha <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">Faça uma cópia no Google Drive</translation>
 <translation id="9016827136585652292">botão do ecrã de privacidade</translation>
 <translation id="90181708067259747">Data de validade: <ph name="CARD" /></translation>

@@ -175,6 +175,7 @@
 <translation id="3635073343384702370">Chrome 可以檢查你儲存的密碼</translation>
 <translation id="3667616615096815454">伺服器無法辨識應用程式，因此無法安裝。</translation>
 <translation id="3673813398384385993">Chrome 偵測到「<ph name="EXTENSION_NAME" />」含有惡意軟體</translation>
+<translation id="3697952514309507634">其他 Chrome 設定檔</translation>
 <translation id="3703994572283698466">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
 <translation id="3718181793972440140">登出後，系統會將 1 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chrome。</translation>
@@ -427,6 +428,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8019103195866286235">這項擴充功能已由開發人員取消發布，可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
 <translation id="80471789339884597">感謝你安裝本服務。你必須重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="8086881907087796310">安裝失敗，因為電腦不符合最低硬體需求。</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化...</translation>

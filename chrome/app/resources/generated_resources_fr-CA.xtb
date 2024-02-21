@@ -1897,6 +1897,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2412015533711271895">Ton parent ou ton tuteur doit accepter que tu utilises cette extension</translation>
 <translation id="2412593942846481727">Mise à jour disponible</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Personnalisez votre navigateur davantage avec les extensions de la <ph name="BEGIN_LINK1" />boutique en ligne Chrome Web Store<ph name="END_LINK1" />.</translation>
 <translation id="2414159296888870200">Reprendre la navigation pour <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2415117815770324983">Cette option vous déconnectera de la plupart des sites. Vous resterez connecté à votre compte Google.</translation>
@@ -6837,6 +6838,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6271824294945464304">Partage du mot de passe en cours…</translation>
 <translation id="6273677812470008672">Qualité</translation>
 <translation id="6274089201566806618">Connexion à <ph name="HOST_DEVICE_NAME" /> en cours…</translation>
+<translation id="6274108044476515407">La personnalisation d'une annonce que vous voyez peut dépendre de nombreux éléments, notamment de ce paramètre, des <ph name="BEGIN_LINK1" />annonces suggérées par les sites<ph name="LINK_END1" />, de vos <ph name="BEGIN_LINK2" />paramètres des témoins<ph name="LINK_END2" /> et du fait que le site que vous consultez personnalise les annonces. Apprenez-en davantage sur la <ph name="BEGIN_LINK3" />gestion de la confidentialité de vos annonces<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Vidéocapture d'écran</translation>
 <translation id="6276210637549544171">Le serveur mandataire <ph name="PROXY_SERVER" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="6277105963844135994">Délai d'attente réseau dépassé</translation>

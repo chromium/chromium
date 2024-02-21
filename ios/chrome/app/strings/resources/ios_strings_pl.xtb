@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">Adres znaleziony</translation>
 <translation id="2286505070150039482">Zaznaczony tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia.}few{Te adresy zostaną usunięte z tego urządzenia.}many{Te adresy zostaną usunięte z tego urządzenia.}other{Te adresy zostaną usunięte z tego urządzenia.}}</translation>
-<translation id="2297822946037605517">Udostępnij tę stronę</translation>
 <translation id="2297989278479054870">Po wylogowaniu z tego urządzenia zostaną usunięte zakładki, hasła i inne ustawienia na koncie Google.</translation>
 <translation id="2299218006564889602">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Numer <ph name="PARCEL_IDENTIFIER" /></translation>
@@ -570,6 +569,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3922310737605261887">Wyszukaj skopiowany tekst</translation>
 <translation id="3928666092801078803">Połącz moje dane</translation>
 <translation id="3929457972718048006">Adresy</translation>
+<translation id="3939505428630887612">O tej stronie</translation>
 <translation id="3948600256434252210">Aby przeglądać treści w trybie incognito, możesz przesunąć palcem w prawo.</translation>
 <translation id="3955822496205734389">Masz słabe hasła.</translation>
 <translation id="3958312024468322930">Przeciągnij ją do Docka u dołu ekranu głównego</translation>
@@ -584,6 +584,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4002019827078931033">Przesuń pasek adresu na górę ekranu</translation>
 <translation id="4002066346123236978">Tytuł</translation>
 <translation id="4004204301268239848">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu.</translation>
+<translation id="4008355329784586136">Sprawdź ustawienia domyślnej przeglądarki</translation>
 <translation id="4018310736049373830">Zarządzaj aktywnością</translation>
 <translation id="4021931095789478915">Dodaj ${url} do listy Do przeczytania</translation>
 <translation id="4038354071007134711">Nie masz aplikacji, która może otworzyć ten plik.</translation>
@@ -632,6 +633,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4277990410970811858">Bezpieczne przeglądanie</translation>
 <translation id="4279431713294750185">Aby przejść dalej, możesz przesunąć palcem po krawędzi.</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
+<translation id="4282944936010261425">Nie ma żadnych problemów z bezpieczeństwem do rozwiązania.</translation>
 <translation id="4286718549648564014">Adres został przeniesiony na konto <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Szukaj</translation>
 <translation id="4302248187517737842">Brak nazwy użytkownika ••••••••</translation>
@@ -1281,6 +1283,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7557508262441527045">Wylogowano</translation>
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="7564917801238348224">ZAPISZ…</translation>
+<translation id="7569588934989281656">Aby przełączać się między kartami, możesz przesuwać pasek kart.</translation>
 <translation id="7582857256643797524">To ustawienie jest włączone na Twoim urządzeniu</translation>
 <translation id="7583004045319035904">Używaj <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> do odblokowywania kart incognito.</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
@@ -1416,6 +1419,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8248969482078657578">Sekcja Nieaktywne karty pomaga Ci się skupić</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8263336784344783289">Nazwij grupę</translation>
+<translation id="8263809106706527890">Być może zostały zmienione ustawienia domyślnej przeglądarki. Możesz to sprawdzić w ustawieniach.</translation>
 <translation id="8264966119170358612">Niektóre z Twoich zapisanych haseł zostały ujawnione w wyniku naruszenia bezpieczeństwa danych poza firmą Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">W ramach resetowania iPada nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
 <translation id="8271720166617117963">Zaakceptuj i zaloguj się</translation>

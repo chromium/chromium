@@ -810,6 +810,7 @@
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
 <translation id="250346157641628208">ເຈ້ຍ (Inkjet)</translation>
 <translation id="2505268675989099013">ປົກປ້ອງບັນຊີ</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (ມີຂໍ້ກຳນົດ)</translation>
 <translation id="2512101340618156538">ບໍ່ອະນຸຍາດ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="2512413427717747692">ປຸ່ມຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ, ກົດ Enter ເພື່ອຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບໃນການຕັ້ງຄ່າ iOS</translation>
 <translation id="2514548229949738417">ເຮືອນ ແລະ ສວນ</translation>
@@ -1158,6 +1159,7 @@
 <translation id="3229277193950731405">ສຳເນົາສະຕຣິງເວີຊັນ</translation>
 <translation id="323107829343500871">ປ້ອນ CVC ສຳລັບ <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">ກວດ​ຫາ​ເນື້ອ​ໃນ​ສຳ​ຄັນ​ຢູ່​ເທິງ​ເວັບ​ໄຊ​ທ໌​ນີ້​ທຸກ​ຄັ້ງ</translation>
+<translation id="3236212803136366317">ສິດທິປະໂຫຍດບັດ</translation>
 <translation id="3238395604961564389">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ tab ຈາກນັ້ນກົດ Enter ເພື່ອປັບແຕ່ງໜ້າຕາຂອງໂປຣແກຣມທ່ອງເວັບທ່ານ</translation>
 <translation id="3240791268468473923">ເປີດຊີດຂໍ້ມູນການເຂົ້າສູ່ລະບົບການຈ່າຍເງິນທີ່ປອດໄພທີ່ບໍ່ມີຂໍ້ມູນການເຂົ້າສູ່ລະບົບທີ່ກົງກັນແລ້ວ</translation>
@@ -1194,6 +1196,7 @@
 <translation id="33073482541490531">ພົບລະຫັດຜ່ານທີ່ທ່ານຫາກໍໃຊ້ນັ້ນໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານນີ້ດຽວນີ້.</translation>
 <translation id="3307649904964670439">ປຸ່ມປັບແຕ່ງ Chrome, ເປີດນຳໃຊ້ເພື່ອປັບແຕ່ງຮູບລັກຂອງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="3308006649705061278">ໜ່ວຍງານການຈັດຕັ້ງ (OU)</translation>
+<translation id="3310047144791481950">ເບິ່ງຂໍ້ມູນທີ່ຊ່ວຍທ່ານເລືອກວ່າຈະຈ່າຍດ້ວຍບັດໃດ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສິດທິປະໂຫຍດບັດ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">ລາຍການຕະຫຼົກທາງໂທລະທັດ</translation>
 <translation id="3324687287337751929">4 x 6 ນິ້ວ</translation>
 <translation id="3324983252691184275">ສີ​ແດງ​</translation>

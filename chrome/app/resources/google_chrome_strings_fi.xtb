@@ -74,7 +74,7 @@
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
 <translation id="2174917724755363426">Asennus ei ole valmis. Haluatko varmasti perua sen?</translation>
 <translation id="2190166659037789668">Virhe päivityksiä tarkistettaessa: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chromen avulla voit vaikuttaa enemmän näkemiisi mainoksiin ja rajoittaa, mitä sivustot saavat sinusta tietoa, kun ne näyttävät sinulle personoituja mainoksia</translation>
+<translation id="2199691482078155239">Chromen avulla voit vaikuttaa enemmän näkemiisi mainoksiin ja rajoittaa, mitä tietoa sivustot saavat sinusta, kun ne näyttävät sinulle personoituja mainoksia</translation>
 <translation id="223889379102603431">Tietoa siitä, miten Chrome hallinnoi juurivarmenteitaan</translation>
 <translation id="2258103955319320201">Jos haluat pääsyn Chromen selainsisältöön kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="2290014774651636340">Googlen sovellusliittymän avaimet puuttuvat. Jotkin Google Chromen toiminnoista poistetaan käytöstä.</translation>
@@ -175,6 +175,7 @@
 <translation id="3635073343384702370">Chrome voi tarkistaa salasanasi, kun tallennat niitä</translation>
 <translation id="3667616615096815454">Asennus ei onnistu, palvelin ei tunnista sovellusta.</translation>
 <translation id="3673813398384385993">Chrome havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
+<translation id="3697952514309507634">Muut Chrome-profiilit</translation>
 <translation id="3703994572283698466">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flexin versio</translation>
 <translation id="3718181793972440140">Yksi kohde poistetaan pysyvästi  tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
@@ -425,6 +426,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8019103195866286235">Kehittäjä on perunut laajennuksen julkaisun, joten se voi olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi sivustoilla, joilla vierailet, mukaan lukien henkilökohtaisia tietojasi.</translation>
 <translation id="80471789339884597">Kiitos asennuksesta. Kaikki selaimet pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Muut Chrome-profiilit</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
 <translation id="813913629614996137">Alustetaan…</translation>

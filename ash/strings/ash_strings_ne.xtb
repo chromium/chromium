@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">कुनै पनि नेटवर्क छैन</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1058009965971887428">प्रतिक्रियाका बारेमा रिपोर्ट गर्नुहोस्</translation>
+<translation id="1059120031266247284">तपाईंसँग सेयर गरिएको</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">बदल्नुहोस्</translation>
 <translation id="1073899992769346247">ब्याट्री बदल्नुहोस् वा उक्त ब्याट्री रिचार्ज गर्नुहोस्</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3580650856351781466">वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिँदै छन्</translation>
 <translation id="3585296979871889131">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया, सूचना तथा एपहरू हेर्नुहोस्</translation>
+<translation id="358832729276157756">ExpressKey १</translation>
 <translation id="3590441166907930941">साइड बटन</translation>
 <translation id="3593039967545720377">आफूले विगतमा क्लिपबोर्डमा कपी गरेका वस्तुहरू हेर्न <ph name="SHORTCUT_KEY_NAME" /> + V थिच्नुहोस्। सुरु गर्न कुनै वस्तु कपी गर्नुहोस्।</translation>
 <translation id="3593646411856133110">खुला रहेका एपहरू हेर्न माथितिर स्वाइप गरी थिचिरहनुहोस्</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">आगत</translation>
 <translation id="3621712662352432595">अडियो सेटिङहरू</translation>
 <translation id="3626281679859535460">चम्किलोपना</translation>
+<translation id="3628323833346754646">अगाडिको बटन</translation>
 <translation id="3630697955794050612">अफ छ</translation>
 <translation id="3631369015426612114">निम्न स्रोतहरूबाट सूचनाहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="3633097874324966332">आफ्नो डिभाइस कनेक्ट गर्न ब्लुटुथका सेटिङ खोल्नुहोस्</translation>
@@ -1284,6 +1287,7 @@
 <translation id="6052614013050385269">कुनै लिंकमा दायाँ क्लिक गर्नुहोस्‌</translation>
 <translation id="6054305421211936131">स्मार्ट कार्डमार्फत साइन इन गर्नुहोस्</translation>
 <translation id="6059276912018042191">Chrome का हालसालै खोलिएका ट्याबहरू</translation>
+<translation id="606147842285839995">ExpressKey ३</translation>
 <translation id="6062360702481658777">तपाइँ <ph name="LOGOUT_TIME_LEFT" /> मा स्वचालित रूपमा साइन आउट हुनुहुनेछ।</translation>
 <translation id="6064463340679478396">यो फाइल प्रयोग गरिसकेँ</translation>
 <translation id="6068258534237496331">भिडियो कलसम्बन्धी सेटिङ</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6309219492973062892">सेल्फमा भएका १ देखि ८ सम्मका आइकनहरूमा क्लिक वा ट्याप गर्नुहोस्</translation>
 <translation id="6315170314923504164">भ्वाइस</translation>
 <translation id="6319058840130157106">पुछारको दायाँ कुना, लन्चर, एड्रेस बार, बुकमार्क बार, खुला रहेको वेबसाइट र डाउनलोड गरिएका सामग्रीमध्ये एकबाट अर्कोमा जान पछाडि जानुहोस्</translation>
+<translation id="6319503618073410818">ब्राउजरमा गई विवरण हेर्नुहोस्</translation>
 <translation id="6324916366299863871">सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="6330012934079202188">सबै डेस्कमा रहेका विन्डोहरू देखाइँदै छन्, हालको डेस्कमा रहेका विन्डोहरू देखाउन अप एरो की थिच्नुहोस्</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> ले व्यवस्थापन गर्ने सत्र हो</translation>
@@ -1565,6 +1570,7 @@
 <translation id="7229029500464092426">कुल <ph name="TOTAL_MEMORY" /> मध्ये <ph name="AVAILABLE_MEMORY" /> मेमोरी प्रयोग गरिएको छ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ। आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। कुनै अद्यावधिक लागू गर्न यो Chromebook पुनः सुरु गर्नु पर्ने हुन्छ। यो प्रक्रिया पूरा हुन १ मिनेटसम्म लाग्न सक्छ।</translation>
+<translation id="7256057185598509352">ExpressKey २</translation>
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
 <translation id="7258828758145722155">हिजो सम्पादन गरिएको</translation>
 <translation id="726276584504105859">विभाजित स्क्रिनको प्रयोग गर्न यहाँ ड्र्याग गर्नुहोस्</translation>
@@ -1692,6 +1698,7 @@
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
 <translation id="7748275671948949022">सेल्फमा भएको लन्चर बटन हाइलाइट गर्नुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
+<translation id="7749958366403230681">ExpressKey ४</translation>
 <translation id="776344839111254542">अद्यावधिकसम्बन्धी विवरणहरू हेर्न क्लिक गर्नुहोस्</translation>
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7769299611924763557">तपाईंको GIF चाँडै नै तयार हुने छ</translation>
@@ -2019,6 +2026,7 @@
 <translation id="9098969848082897657">फोन साइलेन्ट राख्नुहोस्</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> वा <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">पछिल्लो कारबाही अन्डू गर्नुहोस्</translation>
+<translation id="9129245940793250979">पछाडिको बटन</translation>
 <translation id="9133335900048457298">संरक्षित सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="9139720510312328767">अर्को अक्षर मेटाउनुहोस्</translation>
 <translation id="9151906066336345901">इन्ड की</translation>

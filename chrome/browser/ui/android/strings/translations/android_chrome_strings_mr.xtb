@@ -339,7 +339,6 @@
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेज प्रीलोड करा</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> याला तुमच्याकडून या वेबसाइटची मंजुरी हवी आहे:</translation>
-<translation id="2876194821763651818"><ph name="USERNAME" /> वर सेव्ह केलेले पासवर्ड.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome तुमचा डेटा खाजगी कसा ठेवते<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या</translation>
 <translation id="2888126860611144412">Chrome बद्दल</translation>
 <translation id="2891154217021530873">पेज लोड करणे थांबवा</translation>
@@ -1436,6 +1435,7 @@
 <translation id="8354977102499939946">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड रिस्टोअर केले</translation>
 <translation id="8368001212524806591">किंमत ट्रॅक करणे</translation>
+<translation id="8378850197701296741">तुमच्याकडे <ph name="FROM_ACCOUNT" /> चे बुकमार्क, इतिहास आणि इतर सेटिंग्ज आहेत.</translation>
 <translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="8393700583063109961">संदेश पाठवा</translation>
 <translation id="8394720698884623075">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीसह URLs तपासते</translation>

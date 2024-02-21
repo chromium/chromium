@@ -111,6 +111,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="3032706164202344641">Chromium non può controllare le tue password. Riprova più tardi.</translation>
 <translation id="3032787606318309379">Aggiunta a Chromium in corso...</translation>
 <translation id="3038232873781883849">In attesa dell'installazione…</translation>
+<translation id="3068187312562070417">Altri profili Chromium</translation>
 <translation id="3068515742935458733">Aiutaci a migliorare Chromium inviando a Google report sugli arresti anomali e <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Una o più estensioni di Chromium stavano accedendo a 1 dispositivo USB}=1{Una o più estensioni di Chromium stanno accedendo a 1 dispositivo USB}other{Una o più estensioni di Chromium stanno accedendo a # dispositivi USB}}</translation>
 <translation id="3101560983689755071">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chromium elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
@@ -228,6 +229,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5294316920224716406">Quando navighi in modalità di navigazione in incognito, Chromium ti avvisa prima di caricare un sito utilizzando una connessione non sicura</translation>
 <translation id="5296845517486664001">Quando sono attive le prove e se Chromium ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chromium elimina i tuoi interessi ogni mese.</translation>
 <translation id="5352264705793813212">Chromium ha trovato alcuni consigli per la sicurezza da farti esaminare</translation>
+<translation id="5352361688875342522">Altri profili Chromium</translation>
 <translation id="5358375970380395591">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Chromium. I tuoi dati di Chromium, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Codice aggiuntivo: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Scopri perché Chromium blocca alcuni file</translation>

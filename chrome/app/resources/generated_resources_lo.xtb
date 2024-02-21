@@ -2329,6 +2329,7 @@
 <translation id="2721695630904737430">ຜູ້ເບິ່ງແຍງລະບົບໄດ້ປິດນຳໃຊ້ຜູ້ໃຊ້ທີ່ມີການຄວບຄຸມດູແລແລ້ວ.</translation>
 <translation id="2722540561488096675">ອຸປະກອນຂອງທ່ານຈະປິດເຄື່ອງໃນອີກ <ph name="TIME_LEFT" />. ກະລຸນາຖອດ USB ອອກກ່ອນເປີດອຸປະກອນຂອງທ່ານກັບມາ. ຈາກນັ້ນທ່ານຈະສາມາດເລີ່ມນຳໃຊ້ <ph name="DEVICE_OS" /> ໄດ້.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">ເປີດໂປຣໄຟລ໌ແຂກ</translation>
 <translation id="2723819893410108315">ໝາກນາວ</translation>
 <translation id="2724841811573117416">ບັນ​ທຶກ WebRTC</translation>
 <translation id="272488616838512378">ການປ່ຽນແປງຫົວໜ່ວຍ</translation>
@@ -3122,6 +3123,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ຕ້ອງການລຶບສ່ວນຂະຫຍາຍນີ້ອອກ.</translation>
 <translation id="3345634917232014253">ມີການດຳເນີນການກວດສອບຄວາມປອດໄພເມື່ອກີ້ນີ້</translation>
 <translation id="3345886924813989455">ບໍ່ພົບບຣາວ​ເຊີທີ່ຮອງຮັບ</translation>
+<translation id="3346306152660142597">ປັບແຕ່ງໜ້ານີ້ດ້ວຍ AI</translation>
 <translation id="3347086966102161372">ອັດ​ສຳ​ເນົາ​ທີ່​ຢູ່​ຮູບ</translation>
 <translation id="3348038390189153836">ກວດພົບອຸປະກອນທີ່​ສາມາດຖອດອອກໄດ້</translation>
 <translation id="3348131053948466246">ແນະນຳອີໂມຈິແລ້ວ. ກົດປຸ່ມລູກສອນຂຶ້ນ ຫຼື ລົງເພື່ອເລື່ອນໄປມາ, ກົດປຸ່ມ enter ເພື່ອແຊກໃສ່.</translation>
@@ -9014,6 +9016,7 @@
 <translation id="7940265372707990269">ຈັດຮຽງຕາມ <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">ຄວາມພ້ອມຂອງການປ່ອຍສັນຍານ:</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
+<translation id="7942846369224063421">ໂຫຼດ UI Renderer ໄວ້ລ່ວງໜ້າແລ້ວ</translation>
 <translation id="7943349879009553083">ບໍ່ພ້ອມໃຫ້ນຳໃຊ້ໃນໂໝດແຂກ</translation>
 <translation id="7943368935008348579">ດາວໂຫຼດ PDF</translation>
 <translation id="7943837619101191061">ເພີ່ມ​ທີ່ຕັ້ງ...</translation>

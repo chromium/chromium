@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">마이크와 카메라 사용</translation>
 <translation id="1005333234656240382">ADB 디버깅을 사용 설정하시겠습니까?</translation>
 <translation id="1005671386794704751">로즈</translation>
+<translation id="1006033052970139968">앱, 마이크 권한이 있는 웹사이트, 시스템 서비스의 마이크 액세스가 허용됩니다</translation>
 <translation id="1006557561787696884">Apple 기기에서 패스키 사용하기</translation>
 <translation id="1006873397406093306">이 확장 프로그램은 사이트에서 내 데이터를 읽고 변경할 수 있습니다. 사용자는 확장 프로그램에서 액세스할 수 있는 사이트를 제어할 수 있습니다.</translation>
 <translation id="1007057452468855774">Google Play 스토어 사용 설정</translation>
@@ -1288,6 +1289,7 @@
 <translation id="1944535645109964458">패스키 없음</translation>
 <translation id="1944921356641260203">사용 가능한 업데이트 있음</translation>
 <translation id="1947136734041527201">가지고 있는 ID 서비스 계정으로 웹사이트에 로그인할 수 있습니다.</translation>
+<translation id="1948528728718281125">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 카메라 액세스가 허용됩니다</translation>
 <translation id="1949332606889020901">비정상 종료 ID</translation>
 <translation id="1949584741547056205">빠른 답변</translation>
 <translation id="1949849604471335579">배경화면, 화면 보호기, 강조 색상 등 맞춤설정</translation>
@@ -1913,6 +1915,7 @@
 <translation id="2412015533711271895">이 확장 프로그램을 사용하려면 부모 또는 보호자의 동의가 필요합니다.</translation>
 <translation id="2412593942846481727">업데이트 가능</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome 웹 스토어<ph name="END_LINK1" />의 확장 프로그램을 사용해 브라우저를 더욱 맞춤설정하세요.</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> 둘러보기 재개</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2415117815770324983">대부분의 사이트에서 로그아웃됩니다. Google 계정에 로그인된 상태가 유지됩니다.</translation>
@@ -2484,6 +2487,7 @@
 <translation id="2822910719211888134">Linux 백업 중에 오류가 발생했습니다.</translation>
 <translation id="2823176412251649407">인터넷 연결을 변경하고 '다시 시도'를 선택하거나 '오프라인 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 관리자의 프록시 설정을 사용 중입니다.</translation>
+<translation id="2825151610926840364">카메라 권한이 있는 앱 및 웹사이트에 대한 액세스를 허용합니다. 카메라를 사용하려면 앱을 다시 시작하거나 페이지를 새로고침해야 할 수 있습니다.</translation>
 <translation id="2825758591930162672">대상의 공개 키</translation>
 <translation id="2828375943530438449">이전 페이지로 돌아가기</translation>
 <translation id="2828650939514476812">Wi-Fi 네트워크에 연결</translation>
@@ -3997,6 +4001,7 @@
 <translation id="4001540981461989979">이동 시 마우스 커서 강조표시</translation>
 <translation id="4002347779798688515">모바일 네트워크 제공업체가 잠겨 있으면 다운로드한 프로필을 사용하지 못할 수 있습니다. 제공업체에 문의하여 지원받으세요.</translation>
 <translation id="4002440992267487163">PIN 설정</translation>
+<translation id="4003647532210142956">현재 일정은 <ph name="SUNRISE" />~<ph name="SUNSET" />(으)로 설정되어 있습니다. 일몰 및 일출 일정을 자동으로 업데이트하려면 <ph name="BEGIN_LINK" />위치 액세스를 사용 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="4005817994523282006">시간대 감지 방법</translation>
 <translation id="4007856537951125667">바로가기 숨기기</translation>
 <translation id="4010746393007464819">Debian 12(Bookworm)로 업그레이드할 수 있습니다.</translation>
@@ -4035,6 +4040,7 @@
 <translation id="4036778507053569103">서버에서 다운로드한 정책이 올바르지 않습니다.</translation>
 <translation id="4037084878352560732">말</translation>
 <translation id="403725336528835653">먼저 사용해 보기</translation>
+<translation id="4039966970282098406">마이크, 카메라 등에 대한 액세스를 제어하여 개인 정보 보호를 관리하세요</translation>
 <translation id="4040041015953651705">출발 언어</translation>
 <translation id="4042660782729322247">화면 공유 중</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{페이지 나가기}other{페이지 나가기}}</translation>
@@ -4404,6 +4410,7 @@
 <translation id="434198521554309404">빠르고 안전하며 편리한 브라우저</translation>
 <translation id="4342417854108207000">기기의 파일 또는 폴더 수정이 허용되지 않음</translation>
 <translation id="4343250402091037179">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 단축키를 누르세요.</translation>
+<translation id="4343283008857332996">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 카메라 액세스가 허용됩니다. 카메라를 사용하려면 앱을 다시 시작하거나 페이지를 새로고침해야 할 수 있습니다.</translation>
 <translation id="4345457680916430965"><ph name="APP" />에서 열기(O)</translation>
 <translation id="4345587454538109430">설정...</translation>
 <translation id="4345732373643853732">서버에 알려지지 않은 사용자 이름</translation>
@@ -4710,6 +4717,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4576541033847873020">블루투스 기기 페어링</translation>
 <translation id="4576763597586015380">Google 계정에 계속 비밀번호를 저장하려면 본인 인증을 하세요</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - 비활성 탭</translation>
+<translation id="4577995939477504370">마이크 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 마이크를 사용할 수 있습니다</translation>
 <translation id="4579453506923101210">연결된 휴대전화 삭제</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" />을(를) 전송할 수 없습니다.</translation>
 <translation id="4579876313423027742">브라우저 알림의 경우 <ph name="LINK_BEGIN" />Chrome 브라우저 설정<ph name="LINK_END" />으로 이동하세요.</translation>
@@ -5703,6 +5711,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5385628342687007304">비밀번호는 이 기기에만 저장됩니다. 다른 기기에서도 이 비밀번호를 사용하려면 Google 계정에 저장하세요.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> 수정</translation>
 <translation id="538822246583124912">기업 정책이 변경되었습니다. 툴바에 실험 버튼이 추가되었습니다. 실험 사용 설정 대화상자를 열려면 버튼을 클릭하세요.</translation>
+<translation id="5388436023007579456">카메라 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 카메라를 사용할 수 있습니다. 카메라를 사용하려면 앱을 다시 시작하거나 페이지를 새로고침해야 할 수 있습니다.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{알림이 많은 사이트 1개를 찾음}other{알림이 많은 사이트 {NUM_SITES}개를 찾음}}</translation>
 <translation id="5388885445722491159">페어링됨</translation>
 <translation id="5389626883706033615">사이트에서 나에 관해 저장된 정보 사용을 요청하지 못하도록 차단</translation>
@@ -5803,6 +5812,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5458214261780477893">드보락</translation>
 <translation id="5458998536542739734">잠금 화면 메모</translation>
 <translation id="5459864179070366255">설치 계속</translation>
+<translation id="5460641065520325899">탐색 중에 사이트에서 나를 추적하는 데 사용할 수 있는 정보 유형을 관리합니다.</translation>
 <translation id="5460861858595506978">영감</translation>
 <translation id="5461050611724244538">휴대전화와 연결 끊김</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />의 색인</translation>
@@ -6850,6 +6860,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6271824294945464304">비밀번호 공유</translation>
 <translation id="6273677812470008672">품질</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />에 연결 중</translation>
+<translation id="6274108044476515407">이 설정, <ph name="BEGIN_LINK1" />사이트 추천 광고<ph name="LINK_END1" />, 내 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 보고 있는 사이트의 광고 맞춤설정 여부 등 다양한 요인에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라질 수 있습니다. <ph name="BEGIN_LINK3" />광고 개인 정보 보호 관리<ph name="LINK_END3" />에 관해 자세히 알아보세요.</translation>
 <translation id="6274202259872570803">스크린캐스트</translation>
 <translation id="6276210637549544171">프록시 <ph name="PROXY_SERVER" />에 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
 <translation id="6277105963844135994">네트워크 시간 초과</translation>
@@ -6887,6 +6898,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="630292539633944562">개인정보 추천</translation>
 <translation id="6305607932814307878">전체 정책:</translation>
 <translation id="6305702903308659374">ChromeVox 음성이 나올 때도 보통 볼륨으로 재생합니다.</translation>
+<translation id="6307268917612054609">카메라 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 카메라를 사용할 수 있습니다</translation>
 <translation id="6307990684951724544">시스템 사용 중</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" />에서 제공한 로그인</translation>
 <translation id="6308937455967653460">다른 이름으로 링크 저장(&amp;K)...</translation>
@@ -8213,6 +8225,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7367714965999718019">QR 코드 생성기</translation>
 <translation id="7368695150573390554">오프라인 데이터가 모두 삭제됩니다.</translation>
 <translation id="736877393389250337"><ph name="ALTERNATIVE_BROWSER_NAME" />에서 <ph name="URL" /> 페이지를 열 수 없습니다. 시스템 관리자에게 문의하세요.</translation>
+<translation id="7368927539449986686">사이트 검색 편집</translation>
 <translation id="7370592524170198497">이더넷 EAP:</translation>
 <translation id="7371490947952970241">이 기기에서 기본 위치 설정을 사용 중지하여 위치를 사용 중지할 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.</translation>
 <translation id="7371917887111892735">탭이 고정된 탭 폭으로 줄어듦</translation>
@@ -8478,6 +8491,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="756583107125124860">일부 기능은 열린 페이지 및 관련 최근 페이지의 콘텐츠를 사용하여 더 유용한 정보나 제안을 제공할 수 있습니다.</translation>
 <translation id="7566118625369982896">Play 앱 링크 관리</translation>
 <translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">키 조합 만들기</translation>
 <translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
 <translation id="756876171895853918">아바타 맞춤설정</translation>
 <translation id="7568790562536448087">업데이트</translation>
@@ -8739,6 +8753,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">디스플레이 경계를 조정합니다.</translation>
+<translation id="7758884017823246335">사이트 검색 추가</translation>
 <translation id="7759809451544302770">선택사항</translation>
 <translation id="7762024824096060040">이 계정을 사용할 수 없음</translation>
 <translation id="7762243782113123335">죄송합니다. 문제가 발생했습니다. 설명에 의견을 작성하고 #bruschetta라고 표시하여 제출해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
@@ -10603,6 +10618,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9153274276370926498">Lacros 시스템 정보</translation>
 <translation id="9153367754133725216">런처 및 검색 결과에서 새로운 앱 및 웹 콘텐츠 추천을 확인하세요. 비정상 종료 보고서, 진단, 사용 데이터를 ChromeOS로 전송하도록 선택한 경우에만 추천 기능 개선을 위해 통계를 전송합니다.</translation>
 <translation id="9154194610265714752">업데이트됨</translation>
+<translation id="915485121129452731">펜 태블릿</translation>
 <translation id="9155344700756733162">색상 선택 해제</translation>
 <translation id="9157096865782046368">0.8초</translation>
 <translation id="9157697743260533322">모든 사용자에 대해 자동 업데이트를 설정하지 못했습니다(프리플라이트 실행 오류: <ph name="ERROR_NUMBER" />).</translation>

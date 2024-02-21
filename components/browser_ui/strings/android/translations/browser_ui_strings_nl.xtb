@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
 <translation id="1073417869336441572">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Kaart met prijsdaling verbergen</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1192844206376121885">Hiermee verwijder je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" />.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Hulp en feedback</translation>
 <translation id="2501278716633472235">Terug</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
+<translation id="2550801787432930915">Kaart met prijsdaling</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie geblokkeerd}other{# cookies geblokkeerd}}</translation>
 <translation id="2570922361219980984">Locatietoegang staat ook uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Als dit aanstaat</translation>
 <translation id="8805385115381080995">Je kunt sneller browsen omdat een site je minder vaak vraagt te verifiëren dat je een echte persoon bent</translation>
 <translation id="8816026460808729765">Sites geen toegang tot sensoren geven</translation>
+<translation id="8843699287283948910">Tabbladen op andere apparaten verbergen</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
 <translation id="8889294078294184559">Terwijl je browst, kunnen sites via Chrome checken en met een eerder bezochte site verifiëren dat je waarschijnlijk een echte persoon bent</translation>

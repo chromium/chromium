@@ -174,6 +174,7 @@
 <translation id="3635073343384702370">Chrome îți poate verifica parolele dacă le salvezi</translation>
 <translation id="3667616615096815454">Nu se poate instala. Aplicația nu este cunoscută de server.</translation>
 <translation id="3673813398384385993">Chrome a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
+<translation id="3697952514309507634">Alte profiluri Chrome</translation>
 <translation id="3703994572283698466">ChromeOS este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versiunea sistemului de operare Chrome Flex</translation>
 <translation id="3718181793972440140">Astfel, se va șterge 1 element de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
@@ -424,6 +425,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8019103195866286235">Dezvoltatorul a anulat publicarea acestei extensii și ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="80471789339884597">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești toate browserele.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Alte profiluri Chrome</translation>
 <translation id="8086881907087796310">Nu s-a instalat deoarece computerul nu îndeplinește cerințele minime de hardware.</translation>
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
 <translation id="813913629614996137">Se inițializează...</translation>

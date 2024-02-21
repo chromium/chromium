@@ -179,6 +179,7 @@
 <translation id="3635073343384702370">Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້</translation>
 <translation id="3667616615096815454">ບໍ່ສາມາດຕິດຕັ້ງໄດ້, ເຊີບເວີບໍ່ຮູ້ຈັກແອັບພລິເຄຊັນ.</translation>
 <translation id="3673813398384385993">Chrome ພົບວ່າ "<ph name="EXTENSION_NAME" />" ມີເມົາແວ</translation>
+<translation id="3697952514309507634">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>
 <translation id="3703994572283698466">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ, ຮວມທັງ <ph name="BEGIN_LINK_LINUX_OSS" />ສະພາບແວດລ້ອມການພັດທະນາ Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ເວີຊັນ ChromeOS Flex</translation>
 <translation id="3718181793972440140">ນີ້ຈະລຶບ 1 ລາຍການອອກຈາກວິດີໂອນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" />.</translation>
@@ -433,6 +434,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8019103195866286235">ນັກພັດທະນາຍົກເລີກການເຜີຍແຜ່ສ່ວນຂະຫຍາຍນີ້ແລ້ວ ແລະ ອາດບໍ່ປອດໄພ. ລຶບສ່ວນຂະຫຍາຍດັ່ງກ່າວອອກຈາກ Chrome ເພື່ອບໍ່ໃຫ້ເບິ່ງ ແລະ ປ່ຽນຂໍ້ມູນຂອງທ່ານຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ, ເຊິ່ງຮວມເຖິງຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ.</translation>
 <translation id="80471789339884597">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານທັງໝົດກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>
 <translation id="8086881907087796310">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກຄອມພິວເຕີຂອງທ່ານບໍ່ເປັນໄປຕາມຂໍ້ກຳນົດຂັ້ນຕ່ຳສຳລັບຮາດແວ.</translation>
 <translation id="8129812357326543296">ກ່ຽວກັບ Google Chrome</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>

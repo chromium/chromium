@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">አድራሻው ተገኝቷል</translation>
 <translation id="2286505070150039482">የደመቀው ጽሁፍ</translation>
 <translation id="2287614783861766820">{count,plural, =1{ይህ አድራሻ ከዚህ መሣሪያ ይሰረዛል።}one{ይህ አድራሻ ከዚህ መሣሪያ ይሰረዛል።}other{እነዚህ አድራሻዎች ከዚህ መሣሪያ ይሰረዛሉ።}}</translation>
-<translation id="2297822946037605517">ይህንን ገፅ ያጋሩ</translation>
 <translation id="2297989278479054870">ዘግተው ከወጡ በኋላ በGoogle መለያዎ ውስጥ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎች ከዚህ መሣሪያ ላይ ይወገዳል።</translation>
 <translation id="2299218006564889602">የይለፍ ቃላትዎ ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት በመሳሪያዎ ላይ ይመሣጠራል።</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
@@ -571,6 +570,7 @@
 <translation id="3922310737605261887">የቀዱትን ጽሁፍ ይፈልጉ</translation>
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>
 <translation id="3929457972718048006">አድራሻዎች</translation>
+<translation id="3939505428630887612">ስለዚህ ገጽ</translation>
 <translation id="3948600256434252210">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ቀኝ ማንሸራተት ይችላሉ።</translation>
 <translation id="3955822496205734389">ደካማ የይለፍ ቃላት አሉዎት።</translation>
 <translation id="3958312024468322930">በመነሻ ማያዎ ግርጌ ላይ ወደሚገኘው መትከያ ይውሰዱት</translation>
@@ -586,6 +586,7 @@
 <translation id="4002019827078931033">የአድራሻ አሞሌን ወደ ላይ ይውሰዱ</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4004204301268239848">በማንኛውም መሣሪያ ላይ እርስዎ ሊጠቀሙባቸው እንዲችሉ የይለፍ ቃላት በGoogle መለያዎ ላይ ይቀመጣሉ።</translation>
+<translation id="4008355329784586136">የእርስዎን ነባሪ የአሳሽ ቅንብሮች ይፈትሹ</translation>
 <translation id="4018310736049373830">እንቅስቃሴን አቀናብር</translation>
 <translation id="4021931095789478915">${ዩአርኤል} ን ወደ የንባብ ዝርዝር ያክሉ</translation>
 <translation id="4038354071007134711">ፋይሉን መክፈት የሚችል መተግበሪያ በዚህ መሣሪያ ላይ የለም።</translation>
@@ -634,6 +635,7 @@
 <translation id="4277990410970811858">የጥንቃቄ አሰሳ</translation>
 <translation id="4279431713294750185">ወደ ፊት ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
+<translation id="4282944936010261425">እርስዎ ሊያስተካክሏቸው የሚገቡ የደህንነት ጉዳዮች የሉም</translation>
 <translation id="4286718549648564014">አድራሻው ወደ እርስዎ <ph name="USER_EMAIL" /> መለያ ተንቀሳቅሷል</translation>
 <translation id="428768789042547925">ምን አዲስ ነገር አለ</translation>
 <translation id="4293080268407233932">ፈልግ</translation>
@@ -1287,6 +1289,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7557508262441527045">ዘግተው ወጥተዋል</translation>
 <translation id="7561196759112975576">ሁልጊዜ</translation>
 <translation id="7564917801238348224">አስቀምጥ...</translation>
+<translation id="7569588934989281656">በትሮች መካከል ለመቀያየር የትር ድርድሩን ማንሸራተት ይችላሉ።</translation>
 <translation id="7582857256643797524">ይህ ቅንብር በመሣሪያዎ ላይ ነቅቷል</translation>
 <translation id="7583004045319035904">የእርስዎን ማንነት የማያሳውቁ ትሮችን ለመከፈት <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይጠቀሙ።</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>
@@ -1426,6 +1429,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8248969482078657578">ገቢር ያልሆኑ ትሮች ትኩረት እንዲያደርጉ ያግዙዎታል</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8263336784344783289">ይህን ቡድን ይሰይሙ</translation>
+<translation id="8263809106706527890">በነባሪ የአሳሽ ቅንብሮችዎ ላይ ለውጥ ተደርጎ ሊሆን ይችላል። ይህንን በቅንብሮች ውስጥ መፈተሽ ይችላሉ።</translation>
 <translation id="8264966119170358612">ከእርስዎ የተቀመጡ የይለፍ ቃላት መካከል አንዳንዶቹ የGoogle ባልሆነ የውሂብ ጥሰት ተጋልጠው ነበረ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">እንደ የእርስዎ iPad ዳግም ማስጀመር አንድ አካል ከመለያዎ <ph name="USER_NAME" /> ዘግተው ወጥተዋል። ተመልሰው በመለያ ለመግባት ከታች «ቀጥል»ን መታ ያድርጉ።</translation>
 <translation id="8271720166617117963">ተቀበል እና በመለያ ግባ</translation>
@@ -1580,6 +1584,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9000089900434778519">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE_NAME" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="9008201768610948239">ችላ በል</translation>
 <translation id="9012585441087414258">አደገኛ እንደሆኑ ከሚታወቁ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያደርጋል። አንድ ገጽ አጠራጣሪ የሆነ ነገር ካደረገ የገፁ ይዘት ዩአርኤሎች እና ቢቶች ወደ የGoogle ጥንቃቄ አሰሳ ይላካሉ።</translation>
+<translation id="9025203546212508704">የእርስዎን ምናሌ እንዴት ማበጀት እንደሚችሉ ለማወቅ ያንሸራትቱ</translation>
 <translation id="9029650858822697271">እርስዎ ዘግተው ወጥተዋል</translation>
 <translation id="9034759925968272072">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። የእርስዎ Google መለያ በ<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ውስጥ ሌሎች ዓይነቶች የአሰሳ ታሪኮች ሊኖሩት ይችላል።</translation>
 <translation id="9037965129289936994">የመጀመሪያውን አሳይ</translation>

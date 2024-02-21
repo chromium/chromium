@@ -15,6 +15,7 @@
 <translation id="1423007117030725713">เริ่มการค้นหาในแท็บใหม่ของ Chromium</translation>
 <translation id="1431818719585918472">ให้ Chromium ล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1472013873724362412">บัญชีของคุณไม่ทำงานใน Chromium โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
+<translation id="1503199973012840174">Chromium ของคุณเป็นเวอร์ชันเก่า โปรดอัปเดตเพื่อความปลอดภัย</translation>
 <translation id="1507010443238049608">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chromium</translation>
 <translation id="1513122820609681462">ตั้งค่า Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="1531155317299575425">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chromium</translation>
@@ -50,6 +51,7 @@
 <translation id="22313767259766852">บันทึกที่อยู่นี้ไว้ใน Chromium แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="2236584955986023187">ซึ่งหมายความว่า Chromium จะขอเว็บไซต์ในเดสก์ท็อปทุกครั้ง</translation>
 <translation id="2313870531055795960">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chromium หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chromium อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
+<translation id="231828342043114302">ลงชื่อเข้าใช้ Chromium เพื่อรับเนื้อหาที่ปรับเปลี่ยนตามความสนใจของคุณ</translation>
 <translation id="2374627437126809292">Chromium ใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่ของที่อยู่ที่ตรวจพบ</translation>
 <translation id="2386292341327187942">ในช่องวิดเจ็ต Search ให้ป้อน Chromium</translation>
 <translation id="2426113998523353159">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chromium</translation>

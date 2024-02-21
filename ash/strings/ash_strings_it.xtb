@@ -18,6 +18,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1056898198331236512">Avviso</translation>
 <translation id="1058009965971887428">Invia feedback</translation>
+<translation id="1059120031266247284">Condivisi con te</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1073899992769346247">Sostituisci o ricarica la batteria</translation>
@@ -627,6 +628,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3580650856351781466">Download dei file di contenuti vocali in corso…</translation>
 <translation id="3585296979871889131">Visualizza app, notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Tasto laterale</translation>
 <translation id="3593039967545720377">Accedi alla cronologia degli appunti premendo <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare gli appunti. Copia un elemento per iniziare.</translation>
 <translation id="3593646411856133110">Scorri verso l'alto e tieni premuto per vedere le app aperte</translation>
@@ -643,6 +645,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3621202678540785336">Ingresso</translation>
 <translation id="3621712662352432595">Impostazioni audio</translation>
 <translation id="3626281679859535460">Luminosità</translation>
+<translation id="3628323833346754646">Pulsante anteriore</translation>
 <translation id="3630697955794050612">off</translation>
 <translation id="3631369015426612114">Consenti notifiche da:</translation>
 <translation id="3633097874324966332">Apri le impostazioni Bluetooth per accoppiare il dispositivo</translation>
@@ -1281,6 +1284,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6052614013050385269">Consente di fare clic sul link con il pulsante destro del mouse</translation>
 <translation id="6054305421211936131">Accedi con la smart card</translation>
 <translation id="6059276912018042191">Schede Chrome recenti</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Verrai disconnesso automaticamente tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Ho finito di usare il file</translation>
 <translation id="6068258534237496331">Controlli per le videochiamate</translation>
@@ -1342,6 +1346,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6309219492973062892">Tocca o fai clic sulle icone 1-8 nella barra delle app</translation>
 <translation id="6315170314923504164">Voce</translation>
 <translation id="6319058840130157106">Spostati indietro tra l'angolo in basso a destra, Avvio app, la barra degli indirizzi, la barra dei preferiti, il sito web aperto e i download</translation>
+<translation id="6319503618073410818">Visualizza i dettagli nel browser</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
 <translation id="6330012934079202188">Dalla visualizzazione delle finestre di tutte le scrivanie, premi il tasto Freccia su per mostrare le finestre della scrivania corrente</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> è una sessione gestita da <ph name="MANAGER" /></translation>
@@ -1562,6 +1567,7 @@ Nuova installazione</translation>
 <translation id="7229029500464092426">Memoria usata: <ph name="AVAILABLE_MEMORY" /> | Totale: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Batteria rimanente: <ph name="PERCENTAGE" />%. Collega il dispositivo all'alimentazione.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. È richiesto il riavvio del Chromebook per installare un aggiornamento. L'operazione può richiedere fino a 1 minuto.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Microfono posteriore</translation>
 <translation id="7258828758145722155">Modificato ieri</translation>
 <translation id="726276584504105859">Trascina qui per utilizzare la modalità Schermo diviso</translation>
@@ -1689,6 +1695,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7742327441377685481">Nessuna notifica</translation>
 <translation id="7748275671948949022">Evidenzia il pulsante Avvio app nella barra delle app</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Fai clic per visualizzare i dettagli dell'aggiornamento</translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7769299611924763557">La tua GIF sarà pronta a breve</translation>
@@ -2015,6 +2022,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9098969848082897657">Disattiva audio</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> oppure <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Annulla ultima azione</translation>
+<translation id="9129245940793250979">Pulsante posteriore</translation>
 <translation id="9133335900048457298">Impossibile registrare contenuti protetti</translation>
 <translation id="9139720510312328767">Elimina la lettera successiva</translation>
 <translation id="9151906066336345901">fine</translation>

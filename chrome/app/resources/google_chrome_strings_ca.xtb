@@ -175,6 +175,7 @@
 <translation id="3635073343384702370">Chrome pot comprovar les teves contrasenyes quan les deses</translation>
 <translation id="3667616615096815454">No es pot instal·lar; el servidor no coneix l'aplicació.</translation>
 <translation id="3673813398384385993">Chrome ha detectat que l'extensió "<ph name="EXTENSION_NAME" />" conté programari maliciós</translation>
+<translation id="3697952514309507634">Altres perfils de Chrome</translation>
 <translation id="3703994572283698466">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versió de ChromeOS Flex</translation>
 <translation id="3718181793972440140">Amb aquesta acció, se suprimirà 1 element d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
@@ -425,6 +426,7 @@
 <translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>

@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Предварително зареждане на страници</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> иска да одобрите този уебсайт:</translation>
-<translation id="2876194821763651818">Пароли, запазени в(ъв) <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Научете повече за това <ph name="BEGIN_LINK" />как Chrome се грижи за поверителността на данните ви<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Всичко за Chrome</translation>
 <translation id="2891154217021530873">Спиране на зареждането на страницата</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">Бързо търсене с гласа ви. За да редактирате този пряк път, отворете настройките.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха възстановени</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
+<translation id="8378850197701296741">Имате отметки, история и други настройки от <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Потвърдете, че сте вие</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8394720698884623075">URL адресите се проверяват в съхраняван в Chrome списък с опасни сайтове</translation>

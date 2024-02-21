@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">ਸਾਈਟ</translation>
 <translation id="2871733351037274014">ਪੰਨੇ ਪ੍ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ਦੀ ਇੱਛਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸ ਵੈੱਬਸਾਈਟ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦਿਓ:</translation>
-<translation id="2876194821763651818"><ph name="USERNAME" /> 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ।</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਨਿੱਜੀ ਕਿਵੇਂ ਰੱਖਦਾ ਹੈ<ph name="END_LINK" /> ਇਸ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="2888126860611144412">Chrome ਬਾਰੇ</translation>
 <translation id="2891154217021530873">ਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਰੁਕੋ</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">ਤੁਰੰਤ ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਖੋਜੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ਡਾਊਨਲੋਡਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8368001212524806591">ਕੀਮਤ 'ਤੇ ਨਜ਼ਰ ਰੱਖੋ</translation>
+<translation id="8378850197701296741">ਤੁਹਾਡੇ ਕੋਲ <ph name="FROM_ACCOUNT" /> ਤੋਂ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਹਨ।</translation>
 <translation id="8387617938027387193">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8393700583063109961">ਸੁਨੇਹਾ ਭੇਜੋ</translation>
 <translation id="8394720698884623075">Chrome ਵਿੱਚ ਸਟੋਰ ਕੀਤੀਆਂ ਅਸੁਰੱਖਿਅਤ ਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਨਾਲ URL ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>

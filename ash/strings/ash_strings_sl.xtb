@@ -18,6 +18,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1056775291175587022">Ni omrežij</translation>
 <translation id="1056898198331236512">Opozorilo</translation>
 <translation id="1058009965971887428">Pošiljanje povratnih informacij</translation>
+<translation id="1059120031266247284">Deljeno z vami</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Zamenjaj</translation>
 <translation id="1073899992769346247">Zamenjajte ali napolnite baterijo.</translation>
@@ -627,6 +628,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="3580650856351781466">Prenos datotek za govor</translation>
 <translation id="3585296979871889131">Ogled nedavnih fotografij, predstavnosti, obvestil in aplikacij telefona</translation>
+<translation id="358832729276157756">Hitra tipka 1</translation>
 <translation id="3590441166907930941">Stranski gumb</translation>
 <translation id="3593039967545720377">Dostopajte do zgodovine odložišča, tako da pritisnete <ph name="SHORTCUT_KEY_NAME" /> + V za ogled odložišča. Kopirajte element, če želite začeti.</translation>
 <translation id="3593646411856133110">Povlecite navzgor in pridržite, če si želite ogledati odprte aplikacije</translation>
@@ -643,6 +645,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3621202678540785336">Vhod</translation>
 <translation id="3621712662352432595">Nastavitve zvoka</translation>
 <translation id="3626281679859535460">Svetlost</translation>
+<translation id="3628323833346754646">Gumb na sprednji</translation>
 <translation id="3630697955794050612">izklopljeno</translation>
 <translation id="3631369015426612114">Omogočanje obvestil teh virov</translation>
 <translation id="3633097874324966332">Odprite nastavitve Bluetootha, če želite seznaniti napravo.</translation>
@@ -1284,6 +1287,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6052614013050385269">Klik povezave z desno tipko miške</translation>
 <translation id="6054305421211936131">Prijava s pametno kartico</translation>
 <translation id="6059276912018042191">Nedavni Chromovi zavihki</translation>
+<translation id="606147842285839995">Hitra tipka 3</translation>
 <translation id="6062360702481658777">Samodejno boste odjavljeni čez <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">S to datoteko sem opravil(-a)</translation>
 <translation id="6068258534237496331">Kontrolniki za videoklice</translation>
@@ -1345,6 +1349,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6309219492973062892">Klik ali dotik ikone polic od 1 do 8</translation>
 <translation id="6315170314923504164">Glasovne nastavitve</translation>
 <translation id="6319058840130157106">Premikanje nazaj med spodnjim desnim kotom, zaganjalnikom, naslovno vrstico, vrstico z zaznamki, odprtim spletnim mestom in prenosi</translation>
+<translation id="6319503618073410818">Prikaži podrobnosti v brskalniku</translation>
 <translation id="6324916366299863871">Urejanje bližnjice</translation>
 <translation id="6330012934079202188">Prikaz oken z vseh namizij, pritisnite tipko s puščico gor, če želite prikazati okna s trenutnega namizja</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana seja, ki jo upravlja domena <ph name="MANAGER" />.</translation>
@@ -1565,6 +1570,7 @@ Nova namestitev</translation>
 <translation id="7229029500464092426">Pomnilnik <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (skupno)</translation>
 <translation id="7244725679040769470">Še približno <ph name="PERCENTAGE" /> % baterije. Priklopite napravo v vir napajanja.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ta Chromebook je treba znova zagnati, če želite uveljaviti posodobitev. Traja lahko največ eno minuto.</translation>
+<translation id="7256057185598509352">Hitra tipka 2</translation>
 <translation id="7256634071279256947">Zadnji mikrofon</translation>
 <translation id="7258828758145722155">Urejeno včeraj</translation>
 <translation id="726276584504105859">Povlecite sem za razdeljeni zaslon</translation>
@@ -1692,6 +1698,7 @@ Nova namestitev</translation>
 <translation id="7742327441377685481">Ni obvestil</translation>
 <translation id="7748275671948949022">Označevanje gumba za Zaganjalnik na polici</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
+<translation id="7749958366403230681">Hitra tipka 4</translation>
 <translation id="776344839111254542">Kliknite, če si želite ogledati podrobnosti o posodobitvi</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7769299611924763557">GIF bo kmalu pripravljen</translation>
@@ -2019,6 +2026,7 @@ Nova namestitev</translation>
 <translation id="9098969848082897657">Utišanje telefona</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ali <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Razveljavitev zadnjega dejanja</translation>
+<translation id="9129245940793250979">Guma na zadnji strani</translation>
 <translation id="9133335900048457298">Zaščitene vsebine ni mogoče posneti</translation>
 <translation id="9139720510312328767">Izbris naslednje črke</translation>
 <translation id="9151906066336345901">tipka end</translation>

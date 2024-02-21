@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1181366777303791449">در <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1183189057400844278">‏برای اطمینان از اینکه همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید، هویتتان را به‌تأیید برسانید</translation>
 <translation id="1193729455103054076">از گذرواژه قوی استفاده شود؟</translation>
 <translation id="1197267115302279827">انتقال نشانک‌ها</translation>
 <translation id="1197761954713363183">برگ تأیید گذرکلید بسته شد</translation>
@@ -210,6 +211,7 @@
 <translation id="2149973817440762519">ویرایش نشانک</translation>
 <translation id="2155214902713132423">این روشِ به‌تأیید رساندن برای این دستگاه دردسترس نیست. گزینه دیگری را در دستگاه دیگرتان انتخاب کنید.</translation>
 <translation id="2158408438301413340">‏Chrome نتوانست همه گذرواژه‌هایتان را بررسی کند</translation>
+<translation id="2163089732491971196">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، گذرعبارت خود را وارد کنید</translation>
 <translation id="2172688499998841696">توضیحات تصویر خاموش است</translation>
 <translation id="2172905120685242547">پنجره بسته شود؟</translation>
 <translation id="2173302385160625112">اتصال اینترنت را بررسی کنید</translation>
@@ -337,7 +339,6 @@
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2871733351037274014">پیش‌بارگیری صفحات</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> از شما می‌خواهد این وب‌سایت را تأیید کنید:</translation>
-<translation id="2876194821763651818">گذرواژه‌ها در <ph name="USERNAME" /> ذخیره شد.</translation>
 <translation id="2876628302275096482">‏درباره اینکه <ph name="BEGIN_LINK" />Chrome چگونه داده‌های شما را خصوصی نگه می‌دارد<ph name="END_LINK" /> بیشتر بدانید</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
 <translation id="2891154217021530873">توقف بارگیری صفحه</translation>
@@ -520,6 +521,7 @@
 <translation id="3847319713229060696">کمک به بهبود امنیت برای همه کاربران وب</translation>
 <translation id="3856096718352044181">لطفاً تأیید کنید این ارائه‌دهندهْ معتبر است یا بعداً دوباره امتحان کنید</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="3872520701277728051">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را پاک کنید<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="3894427358181296146">افزودن پوشه</translation>
 <translation id="3899682235662194879">بستن همه «برگه‌های ناشناس»</translation>
@@ -605,6 +607,7 @@
 <translation id="4307992518367153382">موارد اصلی</translation>
 <translation id="4311652497846705514">‏فایل PDF باز شود؟</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
+<translation id="4326079409704643112">‏برای ذخیره کردن داده‌های Chrome در «حساب Google» خود و استفاده از آن‌ها، هویتتان را به‌تأیید برسانید</translation>
 <translation id="433213510553688132">دنبال می‌کنید…</translation>
 <translation id="4335835283689002019">«مرور ایمن» خاموش است</translation>
 <translation id="4351244548802238354">بستن کادر گفتگو</translation>
@@ -656,6 +659,7 @@
 <translation id="4587589328781138893">سایت‌ها</translation>
 <translation id="4594952190837476234">این صفحه آفلاین مربوط به تاریخ <ph name="CREATION_TIME" /> است و ممکن است با نسخه آنلاین متفاوت باشد.</translation>
 <translation id="4601095002996233687">اسکن‌های عمیق برای شناسایی بارگیری‌های مشکوک.</translation>
+<translation id="4609429330876432068">‏فهرست گذرواژه‌های ذخیره‌شده شما برای Chrome و <ph name="CHROME_CHANNEL" /> ادغام شدند. همچنان می‌توانید همه گذرواژه‌های ذخیره‌شده‌تان را در هردو برنامه به‌طور خودکار تکمیل کنید.</translation>
 <translation id="4616150815774728855">باز کردن <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">تأیید کنید این شمایید</translation>
 <translation id="4634124774493850572">استفاده از گذرواژه</translation>
@@ -849,6 +853,8 @@
 <translation id="5590372121997663538">این رایانه را به‌خاطر بسپار</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5599455543593328020">حالت ناشناس</translation>
+<translation id="5605283439565877834">‏روش‌های پرداخت و نشانی‌های ذخیره‌شده در Google Pay رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.
+فقط شخصی که گذرعبارت شما را دراختیار داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google ارسال نمی‌شود یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را پاک کنید<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">گذرواژه‌ای ذخیره نشده است</translation>
 <translation id="5620928963363755975">با استفاده از دکمه «گزینه‌های بیشتر»، فایل‌ها و صفحه‌هایتان را در «بارگیری‌ها» پیدا کنید</translation>
 <translation id="562289928968387744">مدیریت واکنش‌ها</translation>
@@ -959,6 +965,7 @@
 <translation id="6140709049082532940">محافظت بهبودیافته:</translation>
 <translation id="6140912465461743537">کشور/منطقه</translation>
 <translation id="6150320133806434356">نشانک ذخیره شد</translation>
+<translation id="6150706324143004339">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، Chrome را به‌روزرسانی کنید</translation>
 <translation id="6154478581116148741">برای صادر کردن گذرواژه‌ها از این دستگاه، قفل صفحه را در تنظیمات روشن کنید.</translation>
 <translation id="6162892189396105610">‏صفحاتی که Chrome فکر می‌کند ممکن است بازدید کنید پیش‌بارگیری می‌شود.</translation>
 <translation id="6186394685773237175">گذرواژه لورفته‌ای پیدا نشد</translation>
@@ -1122,6 +1129,7 @@
 <translation id="688738109438487280">افزودن داده‌های موجود به <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">برای کپی کردن گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="6896758677409633944">کپی</translation>
+<translation id="6898797562238201317">‏استفاده از گذرعبارت خودتان برای رمزگذاری همه داده‌های Chrome در «حساب Google» شما</translation>
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
 <translation id="6903907808598579934">روشن کردن همگام‌سازی</translation>
 <translation id="6906448540340261898">‏مطمئن شوید همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
@@ -1247,6 +1255,7 @@
 <translation id="750228856503700085">به‌روزرسانی دردسترس نیست</translation>
 <translation id="7507207699631365376">به <ph name="BEGIN_LINK" />خط‌مشی رازداری<ph name="END_LINK" /> این ارائه‌دهنده بروید</translation>
 <translation id="7514365320538308">بارگیری</translation>
+<translation id="7517292544534877198">‏استفاده از رمزگذاری پیش‌فرض Google برای گذرواژه‌های موجود در «حساب Google» شما</translation>
 <translation id="7518079994230200553">این گزینه فعلاً دردسترس نیست.</translation>
 <translation id="751961395872307827">نمی‌توان به این سایت متصل شد</translation>
 <translation id="752220631458524187">وقتی کارتان تمام شد، اتصال را قطع کنید</translation>
@@ -1352,6 +1361,7 @@
 <translation id="8004582292198964060">مرورگر</translation>
 <translation id="8013372441983637696">‏داده‌های این Chrome هم از این دستگاه پاک شود</translation>
 <translation id="8015452622527143194">برگرداندن همه‌چیز در صفحه به‌اندازه پیش‌فرض</translation>
+<translation id="8026238112629815203">نحوه ذخیره شدن گذرواژه‌ها در این دستگاه را تغییر دادیم</translation>
 <translation id="8026334261755873520">پاک کردن داده‌های مرور</translation>
 <translation id="8027863900915310177">انتخاب مکان بارگیری</translation>
 <translation id="8030852056903932865">تأیید</translation>
@@ -1389,6 +1399,7 @@
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
 <translation id="8135406045838672858">‏فایل‌های PDF بارگیری‌شده به‌طور خودکار با <ph name="APP_NAME" /> باز می‌شود</translation>
 <translation id="8137562778192957619">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» ذخیره خواهد شد.</translation>
+<translation id="8163820386638255770">‏برای ذخیره کردن گذرواژه‌ها در «حساب Google» خود و استفاده از آن‌ها، هویتتان را به‌تأیید برسانید</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> فایل باقی مانده است</translation>
 <translation id="8190358571722158785">۱ روز باقی‌مانده است</translation>
@@ -1424,6 +1435,7 @@
 <translation id="8354977102499939946">به‌سرعت با صدایتان جستجو کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> بارگیری بازیابی شد</translation>
 <translation id="8368001212524806591">پیگیری قیمت</translation>
+<translation id="8378850197701296741">نشانک، سابقه، گذرواژه، و تنظیمات دیگری از <ph name="FROM_ACCOUNT" /> دارید.</translation>
 <translation id="8387617938027387193">تأیید کنید این شمایید</translation>
 <translation id="8393700583063109961">ارسال پیام</translation>
 <translation id="8394720698884623075">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chrome ذخیره شده است مقایسه می‌کند</translation>
@@ -1537,6 +1549,7 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_ONE" /> برگه دیگر بسته خواهند شد}one{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}other{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}}</translation>
 <translation id="8970887620466824814">مشکلی پیش آمد.</translation>
 <translation id="8972098258593396643">در پوشه پیش‌فرض بارگیری شود؟</translation>
+<translation id="8992769679401294069">‏داده‌هایتان بااستفاده از گذرعبارت شما رمزگذاری شده است. برای ذخیره کردن داده‌های Chrome در «حساب Google» خود و استفاده از آن‌ها، این گذرعبارت را وارد کنید.</translation>
 <translation id="8993760627012879038">باز کردن برگه جدیدی در حالت ناشناس</translation>
 <translation id="8996847606757455498">انتخاب ارائه‌دهنده دیگر</translation>
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>

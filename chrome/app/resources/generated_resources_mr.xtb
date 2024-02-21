@@ -619,7 +619,7 @@
 <translation id="1470946456740188591">कॅरेट ब्राउझिंग सुरू किंवा बंद करण्यासाठी Ctrl+Search+7 हा शॉर्टकट वापरा</translation>
 <translation id="1471034383866732283">वाचन मोड हा या पेजवरील मुख्य आशय शोधू शकत नाही</translation>
 <translation id="1472675084647422956">अधिक दर्शवा</translation>
-<translation id="1473223074251193484">टेदरिंग कॉंफिगरेशन सेट करा</translation>
+<translation id="1473223074251193484">टेदरिंग कॉन्फिगरेशन सेट करा</translation>
 <translation id="1474785664565228650">मायक्रोफोनच्या सेटिंगमधील बदलासाठी Parallels Desktop पुन्हा लाँच करणे आवश्यक आहे. Parallels Desktop वर पुढे सुरू ठेवण्यासाठी पुन्हा लाँच करा.</translation>
 <translation id="1474893630593443211">तुम्ही पाहता त्या जाहिरातींवर अधिक नियंत्रण</translation>
 <translation id="1475502736924165259">आपल्याकडे फाईलवर प्रमाणपत्रे आहेत जी अन्य कोणत्याही श्रेणींसाठी योग्य नाहीत</translation>
@@ -1592,7 +1592,7 @@
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2173801458090845390">या डीव्हाइसवर मागणी आयडी जोडा</translation>
 <translation id="2175384018164129879">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
-<translation id="217576141146192373">प्रिंटर जोडू शकत नाही. कृपया तुमच्या प्रिंटरचे कॉंफिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="217576141146192373">प्रिंटर जोडता आला नाही. कृपया तुमच्या प्रिंटरचे कॉन्फिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2177306523871626993">मजकूर रेकग्निशन फाइल डाउनलोड करत आहे… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">गुप्त टॅब: <ph name="TAB_NAME" /></translation>
@@ -1856,7 +1856,7 @@
 <translation id="236117173274098341">Optimize</translation>
 <translation id="2361340419970998028">फीडबॅक पाठवत आहे...</translation>
 <translation id="236141728043665931">मायक्रोफोन ॲक्सेस नेहमी ब्लॉक करा</translation>
-<translation id="2363475280045770326">कॉंफिगरेशन सेव्ह करताना एरर आली</translation>
+<translation id="2363475280045770326">कॉन्फिगरेशन सेव्ह करताना एरर आली</translation>
 <translation id="2363744066037724557">&amp;विंडो रिस्टोअर करा</translation>
 <translation id="2364498172489649528">पास झाले</translation>
 <translation id="2365507699358342471">या पेजवर क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज दिसू शकतात.</translation>
@@ -1912,6 +1912,7 @@
 <translation id="2412015533711271895">तुमच्या पालकांनी तुम्हाला हे एक्स्टेंशन वापरण्यास अनुमती द्यायला हवी</translation>
 <translation id="2412593942846481727">अपडेट उपलब्ध आहे</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome वेब स्टोअर<ph name="END_LINK1" /> वरील एक्स्टेंशनसह तुमचा ब्राउझर आणखी कस्टमाइझ करा</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> साठी ब्राउझिंग पुन्हा सुरू करा</translation>
 <translation id="2414886740292270097">गडद</translation>
 <translation id="2415117815770324983">तुम्हाला बहुतांश साइटवरून साइन आउट करते. तुम्ही तुमच्या Google खाते मध्ये साइन इन केलेले राहाल.</translation>
@@ -1943,7 +1944,7 @@
 <translation id="2433452467737464329">पेज ऑटो-रिफ्रेश करण्यासाठी URL मध्ये क्वेरी पॅरामीटर जोडा: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">स्वरूप</translation>
 <translation id="2433836460518180625">फक्त डिव्हाइस अनलॉक करा</translation>
-<translation id="2434449159125086437">प्रिंटर सेट करू शकलो नाही. कृपया कॉंफिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="2434449159125086437">प्रिंटर सेट करता आला नाही. कृपया कॉन्फिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2434758125294431199">तुमच्यासोबत कोण शेअर करू शकते ते निवडा</translation>
 <translation id="2434915728183570229">तुम्ही आता तुमच्या फोनमधील ॲप्स पाहू शकता</translation>
 <translation id="2435137177546457207">Google Chrome आणि ChromeOS Flex अतिरिक्त अटी</translation>
@@ -4322,7 +4323,7 @@
 <translation id="4275397969489577657">इव्हेंट स्ट्रीम लॉगिंग सुरू करा</translation>
 <translation id="4275788652681621337">साइड पॅनल बंद करा</translation>
 <translation id="4275830172053184480">तुमचा डिव्हाइस रीस्टार्ट करा</translation>
-<translation id="4277434192562187284">XML कॉंफिगरेशन स्रोत</translation>
+<translation id="4277434192562187284">XML कॉन्फिगरेशन स्रोत</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{१ साइट वरून परवानग्या काढून टाकल्या आहेत}other{{NUM_SITES} साइट वरून परवानग्या काढून टाकल्या}}</translation>
 <translation id="4278390842282768270">अनुमत</translation>
 <translation id="4278498748067682896">तुम्ही कियोस्क आणि सिन्येज अपग्रेड वापराल, जे डिव्हाइसला फक्त कियोस्क किंवा सिन्येज मोडमध्ये रन करण्याची परवानगी देते. तुम्हाला वापरकर्त्यांनी डिव्हाइसमध्ये साइन इन करावे असे वाटत असल्यास, कृपया मागे जा आणि Chrome Enterprise Upgrade वापरून नोंदणी करा.</translation>
@@ -4470,7 +4471,7 @@
 <translation id="4389091756366370506">वापरकर्ता <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, आणि आणखी <ph name="NUMBER_OF_OTHER_SWITCHES" /> स्विच</translation>
 <translation id="439266289085815679">ब्लूटूथ कॉन्फिगरेशन <ph name="USER_EMAIL" /> नियंत्रित करते.</translation>
-<translation id="4392896746540753732">कॉंफिगरेशन फाइल संपादित करा</translation>
+<translation id="4392896746540753732">कॉन्फिगरेशन फाइल संपादित करा</translation>
 <translation id="4393102500004843976">search + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4393713825278446281">जलद पेअरिंग डिव्हाइस ही <ph name="PRIMARY_EMAIL" /> मध्ये सेव्ह केली आहेत</translation>
 <translation id="4394049700291259645">अक्षम करा</translation>
@@ -5074,7 +5075,7 @@
 <translation id="4868284252360267853">हा डायलॉग सध्या फोकस केलेला नाही. हा डायलॉग फोकस करण्यासाठी, Command-Shift-Option A प्रेस करा.</translation>
 <translation id="4869170227080975044">ChromeOS नेटवर्कशी संबंधित सूचना वाचा</translation>
 <translation id="4870724079713069532">तुम्ही सपोर्ट असलेल्या फाइल या अ‍ॅपद्वारे File Explorer किंवा इतर अ‍ॅप्समध्ये उघडू शकता आणि संपादित करू शकता. या ॲपमध्ये कोणत्या फाइल बाय डीफॉल्ट उघडल्या जाव्यात हे नियंत्रित करण्यासाठी, <ph name="BEGIN_LINK" />Windows सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
-<translation id="4870758487381879312">कॉंफिगरेशन माहिती मिळवण्यासाठी ॲडमिनने पुरवलेला पासवर्ड एंटर करा</translation>
+<translation id="4870758487381879312">कॉन्फिगरेशन माहिती मिळवण्यासाठी ॲडमिनने पुरवलेला पासवर्ड एंटर करा</translation>
 <translation id="4870995365819149457">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> आणि आणखी एका अ‍ॅपमध्ये उघडतील.</translation>
 <translation id="4871308555310586478">Chrome वेब स्टोअरमधून नाही.</translation>
 <translation id="4871322859485617074">पिनमध्ये अवैध वर्ण आहेत</translation>
@@ -5577,7 +5578,7 @@
 <translation id="527605719918376753">टॅब म्यूट करा</translation>
 <translation id="527605982717517565"><ph name="HOST" /> वर JavaScript ला नेहमी परवानगी द्या</translation>
 <translation id="5276288422515364908"><ph name="MONTH_AND_YEAR" /> मध्ये तुम्हाला या Chromebook साठीची सुरक्षा आणि सॉफ्टवेअर अपडेट मिळणे थांबेल. सर्वोत्तम अनुभवासाठी तुमचे Chromebook अपग्रेड करा.</translation>
-<translation id="5276357196618041410">आधी लॉग इन केल्याशिवाय कॉंफिगरेशन सेव्ह करू शकत नाही</translation>
+<translation id="5276357196618041410">आधी लॉग इन केल्याशिवाय कॉन्फिगरेशन सेव्ह करू शकत नाही</translation>
 <translation id="5277127016695466621">साइड पॅनल दाखवा</translation>
 <translation id="5278823018825269962">स्थिती आयडी</translation>
 <translation id="5279600392753459966">सर्व अवरोधित करा</translation>
@@ -5606,7 +5607,7 @@
 <translation id="5295349205180144885">टॅब गटाचे नाव: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">वाचिक फीडबॅक ऐका, जेणेकरून तुम्हाला स्क्रीनकडे न पाहता तुमचे डिव्हाइस वापरता येईल. कनेक्ट केलेल्या डिव्हाइससह ब्रेल फीडबॅक उपलब्ध आहे.</translation>
 <translation id="5296536303670088158">तुमच्याकडे हानिकारक वेबसाइटच्या विरोधात Chrome ची सर्वात मजबूत सुरक्षा आहे</translation>
-<translation id="5297005732522718715">टेदरिंग कॉंफिगरेशन रिफ्रेश करा</translation>
+<translation id="5297005732522718715">टेदरिंग कॉन्फिगरेशन रिफ्रेश करा</translation>
 <translation id="5297082477358294722">पासवर्ड सेव्ह केलेले आहेत. तुमच्या <ph name="SAVED_PASSWORDS_STORE" /> मध्ये सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा.</translation>
 <translation id="5297946558563358707">तुमच्या स्क्रीनकडे कोणीतरी पाहते, तेव्हा तुमच्या स्क्रीनच्या तळाशी उजवीकडे प्रायव्हसी आय आयकॉन दाखवा</translation>
 <translation id="5297984209202974345"><ph name="STYLE" /> शैलीमध्ये, <ph name="SUBJECT" /> पैकी <ph name="INDEX" /> अलीकडील AI थीम</translation>
@@ -6364,7 +6365,7 @@
 <translation id="5895758411979561724"><ph name="APP_ORIGIN" /> हे तुमची स्क्रीन रेकॉर्ड करत आहे</translation>
 <translation id="5896436821193322561">अनुमती देऊ नका</translation>
 <translation id="5899860758576822363">ChromeVox बोलत असताना कमी व्हॉल्यूममध्ये प्ले करा</translation>
-<translation id="5900243355162006650">टेदरिंग कॉंफिगरेशन:</translation>
+<translation id="5900243355162006650">टेदरिंग कॉन्फिगरेशन:</translation>
 <translation id="5900302528761731119">Google प्रोफाइल फोटो</translation>
 <translation id="590036993063074298">मिररिंगच्या गुणवत्तेचे तपशील</translation>
 <translation id="5901069264981746702">तुमचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला आहे आणि तो तुमच्या <ph name="DEVICE_TYPE" /> मध्येच राहील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -6541,7 +6542,7 @@
 <translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />डिव्हाइसच्या स्थानाचा अंदाज लावण्यात मदत करण्यासाठी, Google ची स्थान सेवा तुमच्या वाय-फाय, मोबाइल नेटवर्क आणि सेंसरसारख्या स्रोतांचा वापर करते.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही या डिव्हाइसवरील मुख्य स्थान सेटिंग बंद करून स्थान बंद करू शकता. तुम्ही स्थान सेटिंग्जमध्ये स्थानासाठी वाय-फाय, मोबाइल नेटवर्क आणि सेंसरचा वापर देखील बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6042308850641462728">अधिक</translation>
-<translation id="604388835206766544">कॉंफिगरेशन पार्स करता आले नाही</translation>
+<translation id="604388835206766544">कॉन्फिगरेशन पार्स करता आले नाही</translation>
 <translation id="6043994281159824495">आता साइन आउट करा</translation>
 <translation id="6045114302329202345">प्राथमिक TrackPoint बटण</translation>
 <translation id="6047632800149092791">सिंक काम करत नाही. साइन आउट केल्यानंतर पुन्हा साइन इन करून पहा.</translation>
@@ -6857,6 +6858,7 @@
 <translation id="6271824294945464304">पासवर्ड शेअर करत आहे</translation>
 <translation id="6273677812470008672">गुणवत्ता</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> शी कनेक्ट करत आहे</translation>
+<translation id="6274108044476515407">हे सेटिंग, <ph name="BEGIN_LINK1" />साइटने सुचवलेल्या जाहिराती<ph name="LINK_END1" />, तुमची <ph name="BEGIN_LINK2" />कुकी सेटिंग्ज<ph name="LINK_END2" /> आणि तुम्ही पाहत असलेली साइट ही जाहिराती पर्सनलाइझ करते की नाही, यांसह अनेक गोष्टींवर तुम्ही पाहत असलेली जाहिरात ही पर्सनलाइझ केलेली आहे की नाही हे अवलंबून असू शकते. <ph name="BEGIN_LINK3" />तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करणे<ph name="LINK_END3" /> याबद्दल अधिक जाणून घ्या.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">प्रॉक्सी <ph name="PROXY_SERVER" /> ला वापरकर्ता नाव आणि पासवर्ड आवश्यक आहे.</translation>
 <translation id="6277105963844135994">नेटवर्क कालबाह्य</translation>
@@ -7844,7 +7846,7 @@
 <translation id="7047059339731138197">बॅकग्राउंड निवडा</translation>
 <translation id="7049293980323620022">फाईल ठेवायची?</translation>
 <translation id="7049524156282610342">ब्राउझिंग डेटा <ph name="DISPLAY_NAME" /></translation>
-<translation id="7050037487872780845">चुकीचे हॉटस्पॉट कॉंफिगरेशन</translation>
+<translation id="7050037487872780845">चुकीचे हॉटस्पॉट कॉन्फिगरेशन</translation>
 <translation id="7052237160939977163">कार्यप्रदर्शन ट्रेस डेटा पाठवा</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7055152154916055070">रीडिरेक्ट ब्लॉक केले:</translation>
@@ -8318,7 +8320,7 @@
 <translation id="7434100547946193426">इतर अ‍ॅप्स</translation>
 <translation id="7434509671034404296">डेव्हलपर</translation>
 <translation id="7434757724413878233">माउस अ‍ॅक्सिलरेशन</translation>
-<translation id="7434969625063495310">प्रिंट सर्व्हर जोडता आला नाही. कृपया सर्व्हरचे कॉंफिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="7434969625063495310">प्रिंट सर्व्हर जोडता आला नाही. कृपया सर्व्हरचे कॉन्फिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Chrome वेब स्टोअर वरून काढून टाकलेल्या १ एक्स्टेंशनचे पुनरावलोकन करा}other{Chrome वेब स्टोअर वरून काढून टाकलेल्या {NUM_EXTENSIONS} एक्स्टेंशनचे पुनरावलोकन करा}}</translation>
 <translation id="7436921188514130341">ओहो! नाव बदलताना एक एरर आली होती.</translation>
 <translation id="7439519621174723623">पुढे सुरू ठेवण्यासाठी डिव्हाइसचे नाव जोडा</translation>
@@ -9088,7 +9090,7 @@
 की फाइल: <ph name="KEY_FILE" />
 
 तुमची की फाइल एका सुरक्षित ठिकाणी ठेवा. तुमच्या एक्स्टेंशनच्या नवीन आवृत्या तयार करण्यासाठी तुम्हाला त्याची आवश्यकता असेल.</translation>
-<translation id="8002274832045662704">प्रगत प्रिंटर कॉंफिगरेशन</translation>
+<translation id="8002274832045662704">प्रगत प्रिंटर कॉन्फिगरेशन</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> यापुढे उपलब्ध असणार नाही</translation>
 <translation id="8004092996156083991">तुमचे पासवर्ड धोक्यात आले असल्यास, आम्ही तुम्हाला कळवू.</translation>
 <translation id="8004507136466386272">शब्द</translation>
@@ -9390,7 +9392,7 @@
 <translation id="8239032431519548577">एंटरप्राइझ नोंदणी पूर्ण झाली</translation>
 <translation id="8239932336306009582">सूचना पाठवण्याची अनुमती नाही</translation>
 <translation id="8241040075392580210">Shady</translation>
-<translation id="8241806945692107836">डिव्हाइस कॉंफिगरेशन निर्धारित करत आहे...</translation>
+<translation id="8241806945692107836">डिव्हाइस कॉन्फिगरेशन निर्धारित करत आहे...</translation>
 <translation id="8241868517363889229">तुमचे बुकमार्क वाचा आणि बदला</translation>
 <translation id="8242273718576931540">तुमचे डिव्हाइस या नेटवर्कशी कनेक्ट करू शकत नाही. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Play स्टोअर सुरू करा</translation>
@@ -10322,7 +10324,7 @@
 <translation id="895054485242522631">साइट मोशन सेन्सर वापरू शकतात</translation>
 <translation id="8951256747718668828">एररमुळे रिस्टोअर करणे पूर्ण करता आले नाही</translation>
 <translation id="8951465597020890363">अतिथी मोडमधून बाहेर पडायचे आहे का?</translation>
-<translation id="8952831374766033534">कॉंफिगरेशन पर्याय सपोर्ट करत नाही: <ph name="ERROR_LINE" /></translation>
+<translation id="8952831374766033534">कॉन्फिगरेशन पर्याय सपोर्ट करत नाही: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">चार्ज होत असताना</translation>
 <translation id="895347679606913382">सुरू करीत आहे...</translation>
 <translation id="8955174612586215829">थीम शोधा</translation>

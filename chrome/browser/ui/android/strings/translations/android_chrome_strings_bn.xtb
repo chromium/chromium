@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2871733351037274014">পৃষ্ঠা প্রিলোড করা</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> চায় যে আপনি এই ওয়েবসাইট অনুমোদন করুন:</translation>
-<translation id="2876194821763651818"><ph name="USERNAME" />-এর পাসওয়ার্ড সেভ করা হয়েছে।</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome কীভাবে আপনার ডেটা ব্যক্তিগত রাখে<ph name="END_LINK" /> সেই সম্পর্কে আরও জানুন</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
 <translation id="2891154217021530873">পৃষ্ঠা লোড করা বন্ধ করুন</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">আপনার ভয়েস ব্যবহার করে দ্রুত সার্চ করুন। এই শর্টকাট এডিট করতে, সেটিংসে যান।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" />টি ডাউনলোড ফিরিয়ে আনা হয়েছে</translation>
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
+<translation id="8378850197701296741">আপনার <ph name="FROM_ACCOUNT" /> আইডি থেকে বুকমার্ক, ইতিহাস ও অন্যান্য সেটিংসের ডেটা সিঙ্ক করা হয়েছে।</translation>
 <translation id="8387617938027387193">আপনার পরিচয় যাচাই করান</translation>
 <translation id="8393700583063109961">বার্তা পাঠান</translation>
 <translation id="8394720698884623075">Chrome-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সাইটগুলির URL পরীক্ষা করে দেখে</translation>

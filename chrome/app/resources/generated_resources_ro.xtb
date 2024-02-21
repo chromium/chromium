@@ -1897,6 +1897,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2412015533711271895">Părintele sau tutorele trebuie să își dea acordul ca să poți folosi extensia</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Personalizează-ți și mai mult browserul cu extensii din <ph name="BEGIN_LINK1" />Magazinul web Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Reia navigarea pentru <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Întunecat</translation>
 <translation id="2415117815770324983">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google.</translation>
@@ -6835,6 +6836,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6271824294945464304">Se permite accesul la parolă</translation>
 <translation id="6273677812470008672">Calitate</translation>
 <translation id="6274089201566806618">Se conectează la <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Personalizarea unui anunț afișat poate depinde de mai multe aspecte, printre care această setare, <ph name="BEGIN_LINK1" />anunțurile sugerate de site-uri<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />setările pentru cookie-uri<ph name="LINK_END2" /> și capacitatea site-ului pe care îl accesezi de a personaliza anunțurile. Află mai multe despre <ph name="BEGIN_LINK3" />gestionarea confidențialității anunțurilor<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Înregistrare de pe ecran</translation>
 <translation id="6276210637549544171">Pentru a accesa proxy-ul <ph name="PROXY_SERVER" />, trebuie să introduci un nume de utilizator și o parolă.</translation>
 <translation id="6277105963844135994">Conectarea la rețea a expirat</translation>

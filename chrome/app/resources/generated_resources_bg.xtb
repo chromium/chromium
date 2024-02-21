@@ -1907,6 +1907,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2412015533711271895">Родителят или настойникът ви трябва да одобрят използването на това разширение от ваша страна</translation>
 <translation id="2412593942846481727">Налице е актуализация</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Персонализирайте браузъра си допълнително с разширения от <ph name="BEGIN_LINK1" />уеб магазина на Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Възобновяване на сърфирането за „<ph name="MODULE_TITLE" />“</translation>
 <translation id="2414886740292270097">Тъмно</translation>
 <translation id="2415117815770324983">Ще излезете от повечето сайтове, но не и от профила си в Google.</translation>
@@ -6848,6 +6849,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6271824294945464304">Споделяне на паролата</translation>
 <translation id="6273677812470008672">Качество</translation>
 <translation id="6274089201566806618">Установява се връзка с(ъс) <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Рекламите, които виждате, могат да бъдат персонализирани. Това зависи от много неща, включително тази настройка, <ph name="BEGIN_LINK1" />предложените от сайтовете реклами<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />настройките ви за „бисквитките“<ph name="LINK_END2" />, както и от това дали сайтът, който преглеждате, персонализира рекламите. Научете повече за <ph name="BEGIN_LINK3" />управлението на поверителността при рекламите<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Изискват се потребителско име и парола за прокси сървъра <ph name="PROXY_SERVER" />.</translation>
 <translation id="6277105963844135994">Времето за изчакване на мрежата изтече</translation>

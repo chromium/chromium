@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">S'ha trobat l'adreça</translation>
 <translation id="2286505070150039482">Text marcat</translation>
 <translation id="2287614783861766820">{count,plural, =1{Aquesta adreça se suprimirà del dispositiu.}other{Aquestes adreces se suprimiran del dispositiu.}}</translation>
-<translation id="2297822946037605517">Comparteix aquesta pàgina</translation>
 <translation id="2297989278479054870">Quan tanquis la sessió, les adreces d'interès, les contrasenyes i altres elements del teu Compte de Google se suprimiran d'aquest dispositiu.</translation>
 <translation id="2299218006564889602">Les contrasenyes s'encripten al dispositiu abans de desar-les al gestor de contrasenyes de Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Núm. <ph name="PARCEL_IDENTIFIER" /></translation>
@@ -570,6 +569,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3922310737605261887">Cerca el text copiat</translation>
 <translation id="3928666092801078803">Combina les meves dades</translation>
 <translation id="3929457972718048006">Adreces</translation>
+<translation id="3939505428630887612">Sobre aquesta pàgina</translation>
 <translation id="3948600256434252210">Pots lliscar cap a la dreta per navegar d'incògnit.</translation>
 <translation id="3955822496205734389">Tens contrasenyes poc segures.</translation>
 <translation id="3958312024468322930">Arrossega-la a la base que hi ha a la part inferior de la pantalla d'inici</translation>
@@ -584,6 +584,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4002019827078931033">Mou la barra d'adreces a la part superior</translation>
 <translation id="4002066346123236978">Títol</translation>
 <translation id="4004204301268239848">Les contrasenyes es desen al Compte de Google perquè les puguis utilitzar en tots els dispositius.</translation>
+<translation id="4008355329784586136">Comprova la configuració predeterminada del navegador</translation>
 <translation id="4018310736049373830">Gestiona l'activitat</translation>
 <translation id="4021931095789478915">Afegeix ${url} a la llista de lectura</translation>
 <translation id="4038354071007134711">Cap aplicació del dispos. no pot obrir el fitxer.</translation>
@@ -632,6 +633,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4277990410970811858">Navegació segura</translation>
 <translation id="4279431713294750185">Pots fer lliscar la vora per anar endavant.</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
+<translation id="4282944936010261425">No hi ha cap problema de seguretat que hagis de corregir.</translation>
 <translation id="4286718549648564014">L'adreça s'ha mogut al compte <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Cerca</translation>
 <translation id="4302248187517737842">Sense nom d'usuari ••••••••</translation>
@@ -1281,6 +1283,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7557508262441527045">S'ha tancat la sessió</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7564917801238348224">DESA...</translation>
+<translation id="7569588934989281656">Pots fer lliscar la barra de pestanyes per canviar d'una pestanya a una altra.</translation>
 <translation id="7582857256643797524">Aquesta opció de configuració està activada al dispositiu</translation>
 <translation id="7583004045319035904">Utilitza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per desbloquejar les pestanyes d'incògnit.</translation>
 <translation id="7600965453749440009">No tradueixis mai de: <ph name="LANGUAGE" /></translation>
@@ -1416,6 +1419,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8248969482078657578">Les pestanyes inactives t'ajuden a concentrar-te</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8263336784344783289">Posa nom a aquest grup</translation>
+<translation id="8263809106706527890">És possible que s'hagi produït un canvi en la configuració del navegador predeterminat. Pots comprovar-ho a la configuració.</translation>
 <translation id="8264966119170358612">Algunes de les teves contrasenyes desades han estat exposades en haver-se produït una violació de les dades fora de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">S'ha tancat la sessió del teu compte, <ph name="USER_NAME" />, com a part del restabliment de l'iPad. Per tornar a iniciar la sessió, toca Continua més avall.</translation>
 <translation id="8271720166617117963">Accepta i inicia la sessió</translation>

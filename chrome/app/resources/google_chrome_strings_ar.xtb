@@ -177,6 +177,7 @@
 <translation id="3635073343384702370">‏لا يستطيع Chrome التحقّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="3667616615096815454">يتعذّر تثبيت التطبيق لأنّه غير معروف لدى الخادم.</translation>
 <translation id="3673813398384385993">‏رصد Chrome أنّ الإضافة "<ph name="EXTENSION_NAME" />" تحتوي على برامج ضارة.</translation>
+<translation id="3697952514309507634">‏الملفات الشخصية الأخرى على Chrome</translation>
 <translation id="3703994572283698466">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">‏إصدار نظام التشغيل ChromeOS Flex</translation>
 <translation id="3718181793972440140">‏سيعمل هذا على حذف عنصر واحد من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
@@ -427,6 +428,7 @@
 <translation id="8019103195866286235">‏ألغى المطوِّر نشر هذه الإضافة، علمًا بأنّها قد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chrome كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
 <translation id="80471789339884597">شكرًا على التثبيت. عليك إعادة تشغيل جميع المتصفِّحات قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">‏نظام التشغيل ChromeOS Flex</translation>
+<translation id="8077579734294125741">‏الملفات الشخصية الأخرى على Chrome</translation>
 <translation id="8086881907087796310">تعذّر تثبيت التطبيق لعدم استيفاء جهاز الكمبيوتر للحد الأدنى من متطلبات الأجهزة.</translation>
 <translation id="8129812357326543296">‏&amp;حول Google Chrome</translation>
 <translation id="813913629614996137">تجري التهيئة...</translation>

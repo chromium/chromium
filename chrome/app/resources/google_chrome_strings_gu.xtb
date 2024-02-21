@@ -179,6 +179,7 @@
 <translation id="3635073343384702370">જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chrome તેને ચેક કરી શકે છે</translation>
 <translation id="3667616615096815454">ઇન્સ્ટૉલ કરી શકતા નથી, સર્વર માટે આ ઍપ્લિકેશન અજાણી છે.</translation>
 <translation id="3673813398384385993">Chromeને "<ph name="EXTENSION_NAME" />"માં માલવેર હોવાનું જાણવા મળ્યું છે</translation>
+<translation id="3697952514309507634">અન્ય Chrome પ્રોફાઇલ</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromeOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
 <translation id="3716540481907974026">ChromeOS Flexનું વર્ઝન</translation>
 <translation id="3718181793972440140">આ, 1 આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
@@ -433,6 +434,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8019103195866286235">આ એક્સ્ટેન્શનને તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું અને તે અસુરક્ષિત હોઈ શકે છે. તેને Chromeમાંથી કાઢી નાખો જેથી હવેથી તે તમારી વ્યક્તિગત માહિતી સહિત તમે મુલાકાત લો તે સાઇટ પરનો તમારો ડેટા જોઈ કે બદલી શકે નહીં.</translation>
 <translation id="80471789339884597">ઇન્સ્ટૉલ કરવા બદલ આભાર. તમારે <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારા બધા બ્રાઉઝર ફરી શરૂ કરવા આવશ્યક છે.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">અન્ય Chrome પ્રોફાઇલ</translation>
 <translation id="8086881907087796310">તમારું કમ્પ્યૂટર, હાર્ડવેરની ઓછામાં ઓછી આવશ્યકતાઓ પૂર્ણ ન કરી શકવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome વિશે</translation>
 <translation id="813913629614996137">પ્રારંભ કરી રહ્યું છે...</translation>

@@ -1907,6 +1907,7 @@
 <translation id="2412015533711271895">Таны эцэг эх эсвэл асран хамгаалагч таныг энэ өргөтгөлийг ашиглаж БОЛНО гэж хэлэх ёстой</translation>
 <translation id="2412593942846481727">Шинэчлэх боломжтой</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Веб дэлгүүрийн<ph name="END_LINK1" /> илүү олон өргөтгөлөөр хөтчөө өөрчилнө үү</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" />-г үргэлжлүүлэн үзнэ үү</translation>
 <translation id="2414886740292270097">Хар</translation>
 <translation id="2415117815770324983">Таныг ихэнх сайтаас гаргана. Та Google Бүртгэлдээ нэвтэрсэн хэвээр үлдэнэ.</translation>
@@ -6845,6 +6846,7 @@
 <translation id="6271824294945464304">Нууц үг хуваалцаж байна</translation>
 <translation id="6273677812470008672">Чанар</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />-д холбогдож байна</translation>
+<translation id="6274108044476515407">Таны хардаг зарыг хувийн болгосон эсэх нь энэ тохиргоо, <ph name="BEGIN_LINK1" />сайтын санал болгосон зар<ph name="LINK_END1" />, таны <ph name="BEGIN_LINK2" />күүкиний тохиргоо<ph name="LINK_END2" /> болон таны үзэж буй сайт зарыг хувийн болгодог эсэх гэх мэт олон зүйлээс хамаарч болно. <ph name="BEGIN_LINK3" />Зарын нууцлалаа удирдах<ph name="LINK_END3" /> талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="6274202259872570803">Дэлгэцийн видео бичлэг</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> прокси нь хэрэглэгчийн нэр, нууц үг шаарддаг.</translation>
 <translation id="6277105963844135994">Сүлжээний завсарлагаа</translation>

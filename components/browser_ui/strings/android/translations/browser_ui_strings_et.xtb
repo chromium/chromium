@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1044891598689252897">Saidid töötavad tavapärasel moel</translation>
 <translation id="1073417869336441572">Aidake meil Chrome’i täiustada, andes teada, miks lubasite kolmanda osapoole küpsisefailid. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Hinnaalanduse kaardi peitmine</translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1192844206376121885">See kustutab kõik saidi <ph name="ORIGIN" /> salvestatud andmed ja küpsisefailid.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Abi ja tagasiside</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
 <translation id="2546283357679194313">Küpsised ja saidiandmed</translation>
+<translation id="2550801787432930915">Hinnaalanduse kaart</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 küpsisefail on blokeeritud}other{# küpsisefaili on blokeeritud}}</translation>
 <translation id="2570922361219980984">Ka juurdepääs asukohale on selle seadme puhul välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Laiendatud – ahendamiseks klõpsake.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Kui on sisse lülitatud</translation>
 <translation id="8805385115381080995">Sirvimine on kiirem, kuna sait ei palu teil nii tihti kinnitada seda, et olete päris inimene</translation>
 <translation id="8816026460808729765">Blokeeri saitide jaoks juurdepääs anduritele</translation>
+<translation id="8843699287283948910">Muudes seadmetes vahekaartide peitmine</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada. See vähendab sirvimiskaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega oodatud moel.</translation>
 <translation id="8889294078294184559">Kui jätkate sirvimist, saavad saidid Chrome’iga kontrollida ja teie eelmisel külastatud saidil kinnitada, et olete tõenäoliselt päris inimene</translation>

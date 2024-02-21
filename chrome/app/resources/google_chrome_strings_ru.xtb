@@ -174,6 +174,7 @@
 <translation id="3635073343384702370">Чтобы браузер Chrome мог проверять пароли, сохраните их</translation>
 <translation id="3667616615096815454">Не удалось выполнить установку из-за того, что сервер не распознал приложение.</translation>
 <translation id="3673813398384385993">Браузер Chrome обнаружил, что расширение "<ph name="EXTENSION_NAME" />" содержит вредоносное ПО.</translation>
+<translation id="3697952514309507634">Другие профили Chrome</translation>
 <translation id="3703994572283698466">Chrome OS, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Версия Chrome OS Flex</translation>
 <translation id="3718181793972440140">С устройства будет удален 1 объект. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
@@ -424,6 +425,7 @@
 <translation id="8019103195866286235">Разработчик отменил публикацию этого расширения, поэтому оно может быть опасным. Удалите его из Chrome, чтобы оно больше не могло читать и менять ваши данные с сайтов (включая личную информацию), которые вы посещаете.</translation>
 <translation id="80471789339884597">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите все открытые браузеры.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8077579734294125741">Другие профили Chrome</translation>
 <translation id="8086881907087796310">Установка не удалась, так как аппаратное обеспечение компьютера не соответствует минимальным требованиям.</translation>
 <translation id="8129812357326543296">О браузере &amp;Google Chrome</translation>
 <translation id="813913629614996137">Инициализация...</translation>

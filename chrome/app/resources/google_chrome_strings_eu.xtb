@@ -178,6 +178,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3635073343384702370">Gordetzen dituzun pasahitzak egiaztatzeko gai da Chrome</translation>
 <translation id="3667616615096815454">Ezin da instalatu, zerbitzariak ez duelako ezagutzen aplikazioa.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />" elementuak malwarea duela hauteman du Chrome-k</translation>
+<translation id="3697952514309507634">Chrome-ko beste profilak</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chrome OS; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-en bertsioa</translation>
 <translation id="3718181793972440140">Gailuko elementu bat ezabatuko da. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
@@ -432,6 +433,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8019103195866286235">Garatzaileak luzapena desargitaratu du, eta agian ez da segurua. Ken ezazu Chrome-tik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
 <translation id="80471789339884597">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzaile guztiak berrabiarazi behar dituzu.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Chrome-ko beste profilak</translation>
 <translation id="8086881907087796310">Instalazioak huts egin du, ordenagailuak hardwarearen gutxieneko eskakizunak betetzen ez dituelako.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome arakatzaileari buruz</translation>
 <translation id="813913629614996137">Hasieratzen…</translation>

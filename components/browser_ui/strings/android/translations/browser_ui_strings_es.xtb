@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
 <translation id="1073417869336441572">Ayúdanos a mejorar Chrome indicándonos por qué has permitido el uso de cookies de terceros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Ocultar tarjeta de bajada de precio</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1192844206376121885">Esta acción eliminará todos los datos y las cookies almacenados por <ph name="ORIGIN" />.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Ayuda y comentarios</translation>
 <translation id="2501278716633472235">Volver</translation>
 <translation id="2546283357679194313">Cookies y datos de sitios</translation>
+<translation id="2550801787432930915">Tarjeta de bajada de precio</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqueada}other{# cookies bloqueadas}}</translation>
 <translation id="2570922361219980984">El acceso a la ubicación también está desactivado en este dispositivo. Actívalo en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Ampliado (hacer clic para contraer)</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Cuando está activada</translation>
 <translation id="8805385115381080995">La navegación es más rápida porque es menos probable que un sitio te pida que verifiques que eres una persona real</translation>
 <translation id="8816026460808729765">No permitir que los sitios accedan a los sensores</translation>
+<translation id="8843699287283948910">Ocultar pestañas de otros dispositivos</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
 <translation id="8889294078294184559">A medida que sigas navegando, los sitios podrán realizar comprobaciones con Chrome y verificar, con un sitio que hayas visitado anteriormente, que es probable que seas una persona real</translation>

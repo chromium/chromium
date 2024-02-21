@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">ကွန်ရက် မရှိပါ</translation>
 <translation id="1056898198331236512">သတိပေးချက်</translation>
 <translation id="1058009965971887428">အကြံပြုချက် သတင်းပို့ရန်</translation>
+<translation id="1059120031266247284">သင်နှင့် မျှဝေထားသည်</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />− <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1073899992769346247">ဘက်ထရီ လဲပါ (သို့) အားသွင်းပါ</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">တစ်ခုခုမှားသွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3580650856351781466">စကားပြောဖိုင်များ ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="3585296979871889131">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များကို ကြည့်ရန်</translation>
+<translation id="358832729276157756">ExpressKey ၁</translation>
 <translation id="3590441166907930941">ဘေးဘက် ခလုတ်</translation>
 <translation id="3593039967545720377">သင်၏ကလစ်ဘုတ်ကိုကြည့်ရန် <ph name="SHORTCUT_KEY_NAME" /> + V နှိပ်ခြင်းဖြင့် သင့်ကလစ်ဘုတ်မှတ်တမ်းကို ဝင်ကြည့်ပါ။ စတင်ရန် အကြောင်းအရာတစ်ခုကို မိတ္တူကူးပါ။</translation>
 <translation id="3593646411856133110">ဖွင့်ထားသောအက်ပ်များ ကြည့်ရန် အပေါ်သို့ပွတ်ဆွဲပြီး ဖိထားပါ</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">ထည့်သွင်းမှု</translation>
 <translation id="3621712662352432595">အသံဆက်တင်များ</translation>
 <translation id="3626281679859535460">တောက်ပမှု</translation>
+<translation id="3628323833346754646">ရှေ့ခလုတ်</translation>
 <translation id="3630697955794050612">ပိတ်</translation>
 <translation id="3631369015426612114">အောက်ပါတို့ထံမှ အကြောင်းကြားချက်များကို ခွင့်ပြုရန်</translation>
 <translation id="3633097874324966332">သင်၏စက်နှင့် တွဲချိတ်ရန် ဘလူးတုသ်ဆက်တင်များ ဖွင့်ပါ</translation>
@@ -1284,6 +1287,7 @@
 <translation id="6052614013050385269">လင့်ခ်တစ်ခုကို ညာဘက်ကလစ်ဖြင့် နှိပ်ရန်</translation>
 <translation id="6054305421211936131">အဆင့်မြင့်ကတ်ဖြင့် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="6059276912018042191">လတ်တလော Chrome တဘ်များ</translation>
+<translation id="606147842285839995">ExpressKey ၃</translation>
 <translation id="6062360702481658777">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အကြာတွင် အလိုအလျောက် ထွက်ခွာမည်။</translation>
 <translation id="6064463340679478396">ဤဖိုင်ကို သုံးပြီးပါပြီ</translation>
 <translation id="6068258534237496331">ဗီဒီယိုခေါ်ဆိုမှု သတ်မှတ်ချက်များ</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6309219492973062892">စင်ပေါ်ရှိ သင်္ကေတ ၁-၈ ကို နှိပ်ရန် (သို့) တို့ရန်</translation>
 <translation id="6315170314923504164">အသံ</translation>
 <translation id="6319058840130157106">ညာဘက်အောက်ခြေထောင့်၊ Launcher၊ လိပ်စာဘား၊ လိပ်စာစာရင်းဘား၊ ဖွင့်ထားသည့်ဝဘ်ဆိုက်နှင့် ဒေါင်းလုဒ်များကြား နောက်သို့ရွှေ့ရန်</translation>
+<translation id="6319503618073410818">ဘရောင်ဇာတွင် အသေးစိတ်ကြည့်ရန်</translation>
 <translation id="6324916366299863871">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="6330012934079202188">မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြနေသည်၊ လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> သည် <ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည့် စက်ရှင်ဖြစ်သည်</translation>
@@ -1565,6 +1570,7 @@
 <translation id="7229029500464092426">မှတ်ဉာဏ် <ph name="AVAILABLE_MEMORY" /> | စုစုပေါင်း <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။ စက်ကို အားသွင်းပါ။</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />။ အပ်ဒိတ် အသုံးပြုနိုင်ရန်အတွက် ဤ Chromebook ကို ပြန်လည်စတင်ရန် လိုအပ်သည်။ ၎င်းက ၁ မိနစ်အထိ ကြာနိုင်သည်။</translation>
+<translation id="7256057185598509352">ExpressKey ၂</translation>
 <translation id="7256634071279256947">အနောက်မိုက်ခရိုဖုန်း</translation>
 <translation id="7258828758145722155">မနေ့က ပြင်ဆင်ထားသည်</translation>
 <translation id="726276584504105859">မျက်နှာပြင် ခွဲခြမ်းပြသခြင်းကို အသုံးပြုရန် ဤနေရာသို့ ဖိဆွဲပါ</translation>
@@ -1692,6 +1698,7 @@
 <translation id="7742327441377685481">အကြောင်းကြားချက် မရှိပါ</translation>
 <translation id="7748275671948949022">စင်ပေါ်တွင် Launcher ခလုတ်ကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
+<translation id="7749958366403230681">ExpressKey ၄</translation>
 <translation id="776344839111254542">အပ်ဒိတ်အသေးစိတ် အချက်အလက်များကို ကြည့်ရန် နှိပ်ပါ</translation>
 <translation id="7768784765476638775">စကားပြော-ရွေးရန်</translation>
 <translation id="7769299611924763557">သင်၏ GIF မကြာမီ အသင့်ဖြစ်ပါမည်</translation>
@@ -2020,6 +2027,7 @@
 <translation id="9098969848082897657">ဖုန်းအသံတိတ်ခြင်း</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> သို့မဟုတ် <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">နောက်ဆုံးလုပ်ဆောင်ချက်ကို နောက်ပြန်ရန်</translation>
+<translation id="9129245940793250979">နောက်ခလုတ်</translation>
 <translation id="9133335900048457298">ကာကွယ်ထားသော အကြောင်းအရာကို ရိုက်ကူး၍မရပါ</translation>
 <translation id="9139720510312328767">လာမည့်စာလုံးကို ဖျက်ရန်</translation>
 <translation id="9151906066336345901">End</translation>

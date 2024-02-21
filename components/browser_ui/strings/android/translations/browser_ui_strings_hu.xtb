@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1044891598689252897">A webhelyek a megszokott módon fognak működni</translation>
 <translation id="1073417869336441572">Segítsen a Chrome fejlesztésében. Mondja el, miért engedélyezte a harmadik féltől származó cookie-kat. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Árcsökkenést jelző kártya elrejtése</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1192844206376121885">Ezzel törli a(z) <ph name="ORIGIN" /> által tárolt összes adatot és cookie-t.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Súgó és visszajelzés</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
+<translation id="2550801787432930915">Árcsökkenést jelző kártya</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie letiltva}other{# cookie letiltva}}</translation>
 <translation id="2570922361219980984">A helyhozzáférés is ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Amikor be van kapcsolva</translation>
 <translation id="8805385115381080995">Így gyorsabb a böngészés, mert a webhelyek kisebb valószínűséggel kérik meg arra, hogy igazolja, Ön valódi személy.</translation>
 <translation id="8816026460808729765">Az érzékelőkhöz való hozzáférés tiltása a webhelyek számára</translation>
+<translation id="8843699287283948910">Lapok elrejtése más eszközök elől</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Próbálja meg átmenetileg engedélyezni a harmadik felektől származó cookie-kat, ami kisebb böngészési védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel működnek majd megfelelően.</translation>
 <translation id="8889294078294184559">Böngészési tevékenységei során a webhelyek egyeztethetnek a Chrome-mal, és az előzőleg felkeresett webhely segítségével meggyőződhetnek arról, hogy Ön valószínűleg valódi felhasználó.</translation>

@@ -179,6 +179,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3635073343384702370">Chrome može da proverava lozinke kada ih sačuvate</translation>
 <translation id="3667616615096815454">Instaliranje nije uspelo, aplikacije je nepoznata serveru.</translation>
 <translation id="3673813398384385993">Chrome je otkrio da <ph name="EXTENSION_NAME" /> sadrži malver</translation>
+<translation id="3697952514309507634">Drugi Chrome profili</translation>
 <translation id="3703994572283698466">Chrome OS je omogućen zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru sa otvorenim kodom<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linux okruženje za programiranje<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzija Chrome OS Flex-a</translation>
 <translation id="3718181793972440140">Ovim ćete izbrisati 1 stavku sa ovog uređaja. Da biste kasnije vratili podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
@@ -433,6 +434,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8019103195866286235">Programer je objavio ovaj dodatak i on možda nije bezbedan. Uklonite ga iz Chrome-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
 <translation id="80471789339884597">Hvala vam na instalaciji. Morate da restartujete sve pregledače pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8077579734294125741">Drugi Chrome profili</translation>
 <translation id="8086881907087796310">Instaliranje nije uspelo zato što računar ne ispunjava minimalne zahteve za hardver.</translation>
 <translation id="8129812357326543296">O &amp;Google Chrome-u</translation>
 <translation id="813913629614996137">Pokreće se…</translation>

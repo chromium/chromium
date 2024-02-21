@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजों को पहले से लोड करना</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ने आपसे इस वेबसाइट का ऐक्सेस देने का अनुरोध किया है:</translation>
-<translation id="2876194821763651818"><ph name="USERNAME" /> पर सेव किए गए पासवर्ड.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome आपके डेटा को निजी कैसे रखता है<ph name="END_LINK" />, इसके बारे में ज़्यादा जानें</translation>
 <translation id="2888126860611144412">Chrome के बारे में</translation>
 <translation id="2891154217021530873">पेज को लोड करना रोकें</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">बोलकर तेज़ी से खोजें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड वापस लाया गया</translation>
 <translation id="8368001212524806591">कीमत ट्रैक करें</translation>
+<translation id="8378850197701296741">आपके पास <ph name="FROM_ACCOUNT" /> के बुकमार्क, इतिहास, और अन्य सेटिंग हैं.</translation>
 <translation id="8387617938027387193">अपनी पहचान की पुष्टि करें</translation>
 <translation id="8393700583063109961">संदेश भेजें</translation>
 <translation id="8394720698884623075">Chrome में पहले से सेव की गई असुरक्षित साइटों की सूची का इस्तेमाल करके, यूआरएल की जांच की जाती है</translation>

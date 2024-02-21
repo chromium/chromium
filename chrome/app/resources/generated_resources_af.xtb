@@ -1911,6 +1911,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2412015533711271895">Jou ouer of voog moet sê dis aanvaarbaar dat jy hierdie uitbreiding gebruik</translation>
 <translation id="2412593942846481727">Opdatering is beskikbaar</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Pasmaak jou blaaier nóg meer met uitbreidings vanaf die <ph name="BEGIN_LINK1" />Chrome Webwinkel<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Hervat blaai vir <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2415117815770324983">Meld jou by die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly.</translation>
@@ -6851,6 +6852,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6271824294945464304">Deel wagwoord</translation>
 <translation id="6273677812470008672">Gehalte</translation>
 <translation id="6274089201566806618">Koppel tans aan <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Dit hang van baie dinge af of ’n advertensie wat jy sien, gepersonaliseer is, insluitend hierdie instelling, <ph name="BEGIN_LINK1" />webwerfvoorgestelde advertensies<ph name="LINK_END1" />, jou <ph name="BEGIN_LINK2" />webkoekie-instellings<ph name="LINK_END2" />, en of die werf waarna jy kyk advertensies personaliseer. Meer inligting oor <ph name="BEGIN_LINK3" />die bestuur van jou advertensieprivaatheid<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Skermopname</translation>
 <translation id="6276210637549544171">Die instaanbediener <ph name="PROXY_SERVER" /> vereis 'n gebruikernaam en wagwoord.</translation>
 <translation id="6277105963844135994">Netwerk-tyduittelling</translation>
@@ -7835,6 +7837,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7044606776288350625">Sinkroniseer data</translation>
 <translation id="7047059339731138197">Kies 'n agtergrond</translation>
 <translation id="7049293980323620022">Hou lêer?</translation>
+<translation id="7049524156282610342">Blaaierdata <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ongeldige warmkolopstelling</translation>
 <translation id="7052237160939977163">Stuur prestasienasporingdata</translation>
 <translation id="7053983685419859001">Blokkeer</translation>
@@ -8552,6 +8555,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7630426712700473382">Hierdie toestel word bestuur deur <ph name="MANAGER" /> en vereis dat jy elke keer aanmeld.</translation>
 <translation id="7631014249255418691">Linux-programme en -lêers is suksesvol gerugsteun</translation>
 <translation id="7631887513477658702">Maak altyd hierdie tipe lêers oop</translation>
+<translation id="7632437836497571618">Gebruik veilige verbindings om werwe op te soek</translation>
 <translation id="7632948528260659758">Die volgende kiosk-programme kon nie opgedateer word nie:</translation>
 <translation id="7633724038415831385">Dit is die enigste keer wat jy vir 'n opdatering sal wag. Op Chromebooks vind sagtewareopdaterings in die agtergrond plaas.</translation>
 <translation id="7634337648687970851">Plaaslike dataterugstelling word nie tans gesteun nie.</translation>
@@ -8814,6 +8818,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7803657407897251194">Koppel jou <ph name="DEVICE_TYPE" /> aan ’n netwerk om voort te gaan om met jou Android-toestel op te stel</translation>
 <translation id="7804072833593604762">Oortjie is toegemaak</translation>
 <translation id="780446144738273886">Skandeer PDF om teks vir die skermleser te onttrek. Net op Chrome-blaaier gesteun</translation>
+<translation id="7805371082115476536">Lig</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Maak wenk toe</translation>
 <translation id="7806722269368320106">’n App installeer tans</translation>

@@ -179,6 +179,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3635073343384702370">„Chrome“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
 <translation id="3667616615096815454">Nepavyko įdiegti, nes programa nežinoma serveriui.</translation>
 <translation id="3673813398384385993">„Chrome“ aptiko kenkėjišką programą plėtinyje „<ph name="EXTENSION_NAME" />“</translation>
+<translation id="3697952514309507634">Kiti „Chrome“ profiliai</translation>
 <translation id="3703994572283698466">„Chrome“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">„ChromeOS Flex“ versija</translation>
 <translation id="3718181793972440140">Atlikus šį veiksmą iš šio įrenginio bus ištrintas 1 elementas. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
@@ -433,6 +434,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8019103195866286235">Kūrėjas anuliavo šio plėtinio paskelbimą ir gali būti nesaugus. Pašalinkite jį iš „Chrome“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="80471789339884597">Dėkojame už diegimą. Turite iš naujo paleisti visas naršykles, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Kiti „Chrome“ profiliai</translation>
 <translation id="8086881907087796310">Įdiegti nepavyko, nes kompiuteris neatitinka minimalių aparatinės įrangos reikalavimų.</translation>
 <translation id="8129812357326543296">Apie „&amp;Google Chrome“</translation>
 <translation id="813913629614996137">Inicijuojama...</translation>

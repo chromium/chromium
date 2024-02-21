@@ -18,6 +18,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1056775291175587022">Brak sieci</translation>
 <translation id="1056898198331236512">Ostrzeżenie</translation>
 <translation id="1058009965971887428">Prześlij opinię</translation>
+<translation id="1059120031266247284">Udostępnione Tobie</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Zastąp</translation>
 <translation id="1073899992769346247">Wymień lub naładuj baterię</translation>
@@ -627,6 +628,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3577473026931028326">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="3580650856351781466">Pobieram pliki z mową</translation>
 <translation id="3585296979871889131">Wyświetlaj najnowsze zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Przycisk boczny</translation>
 <translation id="3593039967545720377">Aby wyświetlić schowek i jego historię, naciśnij <ph name="SHORTCUT_KEY_NAME" /> + V. Najpierw skopiuj element.</translation>
 <translation id="3593646411856133110">Aby zobaczyć otwarte aplikacje, przesuń palcem w górę i przytrzymaj</translation>
@@ -643,6 +645,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3621712662352432595">Ustawienia audio</translation>
 <translation id="3626281679859535460">Jasność</translation>
+<translation id="3628323833346754646">Przycisk z przodu</translation>
 <translation id="3630697955794050612">wyłączono</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
 <translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
@@ -1284,6 +1287,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6052614013050385269">Kliknij link prawym przyciskiem myszy</translation>
 <translation id="6054305421211936131">Zaloguj się, używając karty elektronicznej</translation>
 <translation id="6059276912018042191">Ostatnio przeglądane karty Chrome</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Zostaniesz automatycznie wylogowany za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Nie używam już tego pliku</translation>
 <translation id="6068258534237496331">Elementy sterujące rozmową wideo</translation>
@@ -1345,6 +1349,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6309219492973062892">Kliknij ikony 1–8 na półce</translation>
 <translation id="6315170314923504164">Głos</translation>
 <translation id="6319058840130157106">Przejdź wstecz między prawym dolnym rogiem, Menu z aplikacjami, paskiem adresu, paskiem zakładek, otwartą stroną internetową i pobranymi plikami</translation>
+<translation id="6319503618073410818">Wyświetl szczegóły w przeglądarce</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>
 <translation id="6330012934079202188">Pokazuję okna ze wszystkich biurek, naciśnij klawisz strzałki w górę, aby wyświetlić okna z aktualnego biurka</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="MANAGER" /></translation>
@@ -1564,6 +1569,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Bateria: pozostało <ph name="PERCENTAGE" />%. Podłącz urządzenie do zasilania.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>
 <translation id="7258828758145722155">Edytowane wczoraj</translation>
 <translation id="726276584504105859">Przeciągnij tutaj, by podzielić ekran</translation>
@@ -1691,6 +1697,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7742327441377685481">Brak powiadomień</translation>
 <translation id="7748275671948949022">Podświetl przycisk Menu z aplikacjami na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Kliknij, by wyświetlić szczegóły aktualizacji</translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
 <translation id="7769299611924763557">Twój GIF będzie wkrótce gotowy</translation>
@@ -2018,6 +2025,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9098969848082897657">Wycisz telefon</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> lub <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Cofnij ostatnią czynność</translation>
+<translation id="9129245940793250979">Przycisk z tyłu</translation>
 <translation id="9133335900048457298">Nie można nagrać treści chronionej</translation>
 <translation id="9139720510312328767">Usuń następną literę</translation>
 <translation id="9151906066336345901">End</translation>

@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">Adres Bulundu</translation>
 <translation id="2286505070150039482">Vurgulanan Metin</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu adres bu cihazdan silinecek.}other{Bu adresler bu cihazdan silinecek.}}</translation>
-<translation id="2297822946037605517">Bu sayfayı paylaş</translation>
 <translation id="2297989278479054870">Oturumunuzu kapattıktan sonra Google Hesabınızdaki yer işaretleri, şifreler ve diğer öğeler bu cihazdan kaldırılır.</translation>
 <translation id="2299218006564889602">Şifreleriniz Google Şifre Yöneticisi'ne kaydedilmeden önce cihazınızda şifrelenir.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
@@ -1474,7 +1473,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8533670235862049797">Güvenli Tarama açık</translation>
 <translation id="8534481786647257214">Google+ yayını tamamlandı.</translation>
 <translation id="8548878600947630424">Sayfada bul...</translation>
-<translation id="854938212724803178">Güvenliği ihlal edilmiş 1 şifreniz var. Güvenlik için sorunu giderin.</translation>
+<translation id="854938212724803178">Sızdırılmış 1 şifreniz var. Güvenlik için sorunu giderin.</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} uyarıyı kapattınız}other{{count} uyarıyı kapattınız}}</translation>
 <translation id="8560253818350321773">Sık kullanılan öğeleri üstte gösterir.</translation>
 <translation id="8569721750632860947">Okuma listenize hangi URL'yi eklemek istiyorsunuz?</translation>

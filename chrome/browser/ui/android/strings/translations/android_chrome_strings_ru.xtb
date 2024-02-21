@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Предзагрузка страниц</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> просит разрешить доступ к сайту:</translation>
-<translation id="2876194821763651818">Пароли, сохраненные в аккаунте <ph name="USERNAME" /></translation>
 <translation id="2876628302275096482">Подробнее о том, <ph name="BEGIN_LINK" />как Chrome обеспечивает конфиденциальность ваших данных<ph name="END_LINK" />…</translation>
 <translation id="2888126860611144412">О браузере Chrome</translation>
 <translation id="2891154217021530873">Остановить загрузку страницы</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
 <translation id="835847953965672673">Восстановлено объектов: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8368001212524806591">Отслеживание цен</translation>
+<translation id="8378850197701296741">В аккаунте <ph name="FROM_ACCOUNT" /> есть закладки, история и другие настройки.</translation>
 <translation id="8387617938027387193">Подтвердите личность</translation>
 <translation id="8393700583063109961">Отправить сообщение</translation>
 <translation id="8394720698884623075">Сверяет URL со списком небезопасных сайтов в Chrome.</translation>

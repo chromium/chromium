@@ -179,6 +179,7 @@
 <translation id="3635073343384702370">Chrome може да проверава лозинке када их сачувате</translation>
 <translation id="3667616615096815454">Инсталирање није успело, апликације је непозната серверу.</translation>
 <translation id="3673813398384385993">Chrome је открио да <ph name="EXTENSION_NAME" /> садржи малвер</translation>
+<translation id="3697952514309507634">Други Chrome профили</translation>
 <translation id="3703994572283698466">Chrome ОС је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />, као што је <ph name="BEGIN_LINK_LINUX_OSS" />Linux окружење за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Верзија Chrome OS Flex-а</translation>
 <translation id="3718181793972440140">Овим ћете избрисати 1 ставку са овог уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
@@ -433,6 +434,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8019103195866286235">Програмер је објавио овај додатак и он можда није безбедан. Уклоните га из Chrome-а да више не би могао да види и мења податке на сајтовима које посећујете, укључујући личне податке.</translation>
 <translation id="80471789339884597">Хвала вам на инсталацији. Морате да рестартујете све прегледаче пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8077579734294125741">Други Chrome профили</translation>
 <translation id="8086881907087796310">Инсталирање није успело зато што рачунар не испуњава минималне захтеве за хардвер.</translation>
 <translation id="8129812357326543296">О &amp;Google Chrome-у</translation>
 <translation id="813913629614996137">Покреће се…</translation>

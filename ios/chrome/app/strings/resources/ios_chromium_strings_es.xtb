@@ -15,6 +15,7 @@
 <translation id="1423007117030725713">Inicia una búsqueda en una nueva pestaña de Chromium.</translation>
 <translation id="1431818719585918472">Permite que Chromium bloquee tus pestañas de incógnito.</translation>
 <translation id="1472013873724362412">Tu cuenta no funciona en Chromium. Ponte en contacto con el administrador del dominio o utiliza una cuenta de Google normal para iniciar sesión.</translation>
+<translation id="1503199973012840174">Chromium no está actualizado. Actualízalo para protegerte.</translation>
 <translation id="1507010443238049608">Ayudar a mejorar las funciones y el rendimiento de Chromium</translation>
 <translation id="1513122820609681462">Establece Chromium como navegador predeterminado</translation>
 <translation id="1531155317299575425">Muestra solicitudes para iniciar sesión en Chromium.</translation>
@@ -50,6 +51,7 @@
 <translation id="22313767259766852">Actualmente, esta dirección está guardada en Chromium. Para usarla en los productos de Google, guárdala en tu cuenta de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Esto significa que Chromium siempre solicitará la vista del sitio web como ordenador.</translation>
 <translation id="2313870531055795960">Comprueba las URLs guardadas en Chromium con una lista de sitios que no son seguros. Si un sitio intenta robarte tu contraseña o si te descargas un archivo dañino, puede que Chromium también envíe URLs, así como fragmentos de contenido de la página, a Navegación segura.</translation>
+<translation id="231828342043114302">Para recibir contenido personalizado según tus intereses, inicia sesión en Chromium.</translation>
 <translation id="2374627437126809292">Chromium usa Google Maps para ofrecerte indicaciones e información local sobre direcciones detectadas.</translation>
 <translation id="2386292341327187942">En el cuadro de búsqueda de widgets, escribe Chromium</translation>
 <translation id="2426113998523353159">Tu organización requiere que inicies sesión para usar Chromium.</translation>

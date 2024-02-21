@@ -175,6 +175,7 @@
 <translation id="3635073343384702370">Chrome зможе перевірити ваші паролі, коли ви їх збережете</translation>
 <translation id="3667616615096815454">Не вдалося встановити, оскільки цей додаток невідомий для сервера.</translation>
 <translation id="3673813398384385993">Веб-переглядач Chrome виявив, що розширення "<ph name="EXTENSION_NAME" />" містить зловмисне програмне забезпечення</translation>
+<translation id="3697952514309507634">Інші профілі Chrome</translation>
 <translation id="3703994572283698466">ОС Chrome і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Версія ОС Chrome Flex</translation>
 <translation id="3718181793972440140">1 елемент буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
@@ -425,6 +426,7 @@
 <translation id="8019103195866286235">Розробник скасував публікацію цього розширення, і воно може бути небезпечним. Вилучіть його з Chrome, щоб розширення більше не могло переглядати й змінювати дані на сайтах, які ви відвідуєте (зокрема вашу особисту інформацію).</translation>
 <translation id="80471789339884597">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити всі веб-переглядачі.</translation>
 <translation id="8064015586118426197">ОС Chrome Flex</translation>
+<translation id="8077579734294125741">Інші профілі Chrome</translation>
 <translation id="8086881907087796310">Не вдалося встановити, оскільки ваш комп’ютер не відповідає мінімальним вимогам до апаратного забезпечення.</translation>
 <translation id="8129812357326543296">Про &amp;Google Chrome</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>

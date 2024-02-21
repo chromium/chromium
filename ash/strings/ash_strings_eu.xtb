@@ -18,6 +18,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1056898198331236512">Abisua</translation>
 <translation id="1058009965971887428">Eman iritzia</translation>
+<translation id="1059120031266247284">Zurekin partekatutakoa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Ordeztu</translation>
 <translation id="1073899992769346247">Aldatu edo kargatu bateria</translation>
@@ -627,6 +628,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3577473026931028326">Arazo bat izan da. Saiatu berriro.</translation>
 <translation id="3580650856351781466">Hizketa-fitxategiak deskargatzen</translation>
 <translation id="3585296979871889131">Ikusi telefonoko azken argazkiak, multimedia-elementuak, jakinarazpenak eta aplikazioak</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Alboko botoia</translation>
 <translation id="3593039967545720377">Arbeleko historia atzitzeko, sakatu <ph name="SHORTCUT_KEY_NAME" /> + V. Hasteko, kopiatu elementu bat.</translation>
 <translation id="3593646411856133110">Pasatu hatza gora eta eduki sakatuta irekitako aplikazioak ikusteko</translation>
@@ -643,6 +645,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3621202678540785336">Idazketa</translation>
 <translation id="3621712662352432595">Audio-ezarpenak</translation>
 <translation id="3626281679859535460">Distira</translation>
+<translation id="3628323833346754646">Aurreko botoia</translation>
 <translation id="3630697955794050612">desaktibatuta</translation>
 <translation id="3631369015426612114">Onartu hauen jakinarazpenak</translation>
 <translation id="3633097874324966332">Ireki Bluetootharen ezarpenak gailua parekatzeko</translation>
@@ -1285,6 +1288,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="6052614013050385269">Egin klik esteka batean eskuineko botoiarekin</translation>
 <translation id="6054305421211936131">Hasi saioa txartel adimendunarekin</translation>
 <translation id="6059276912018042191">Azkenaldian erabilitako Chrome-ko fitxak</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Saioa automatikoki amaituko da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan.</translation>
 <translation id="6064463340679478396">Fitxategia erabiltzen amaitu dut</translation>
 <translation id="6068258534237496331">Bideodeiak kontrolatzeko aukerak</translation>
@@ -1346,6 +1350,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="6309219492973062892">Sakatu apaleko 1-8 ikonoak</translation>
 <translation id="6315170314923504164">Ahotsa</translation>
 <translation id="6319058840130157106">Mugitu atzerantz beheko eskuinaldeko izkinaren, Exekutatzeko tresnaren, helbide-barraren, laster-marken barraren, irekitako webgunearen eta deskargen artean</translation>
+<translation id="6319503618073410818">Ikusi xehetasunak arakatzailean</translation>
 <translation id="6324916366299863871">Editatu lasterbidea</translation>
 <translation id="6330012934079202188">Lan-eremu guztietako leihoak daude ikusgai. Une honetako lan-eremuko leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> domeinuak kudeatutako saio kudeatua da <ph name="DISPLAY_NAME" /></translation>
@@ -1566,6 +1571,7 @@ Berriki instalatu da</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> guztira</translation>
 <translation id="7244725679040769470">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio. Konektatu gailua korrontera.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook hau berrabiarazi egin behar da eguneratzea aplikatzeko. Baliteke minutu bat behar izatea.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Atzeko mikrofonoa</translation>
 <translation id="7258828758145722155">Atzo editatu zen</translation>
 <translation id="726276584504105859">Arrastatu hona pantaila zatitzeko eginbidea erabiltzeko</translation>
@@ -1693,6 +1699,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7742327441377685481">Ez dago jakinarazpenik</translation>
 <translation id="7748275671948949022">Nabarmendu Exekutatzeko tresnaren botoia apalean</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Egin klik eguneratzearen xehetasunak ikusteko</translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7769299611924763557">GIFa laster egongo da prest</translation>
@@ -2020,6 +2027,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="9098969848082897657">Isilarazi telefonoa</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> edo <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desegin azken ekintza</translation>
+<translation id="9129245940793250979">Atzeko botoia</translation>
 <translation id="9133335900048457298">Ezin da kapturatu eduki babestua</translation>
 <translation id="9139720510312328767">Ezabatu hurrengo hizkia</translation>
 <translation id="9151906066336345901">amaiera tekla</translation>

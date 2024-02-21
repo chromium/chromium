@@ -111,6 +111,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="3032706164202344641">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno kasnije.</translation>
 <translation id="3032787606318309379">Dodavanje u preglednik Chromium...</translation>
 <translation id="3038232873781883849">Čekanje na instaliranje...</translation>
+<translation id="3068187312562070417">Ostali profili na Chromiumu</translation>
 <translation id="3068515742935458733">Pomognite nam poboljšati Chromium šaljući izvješća o rušenju programa i <ph name="UMA_LINK" /> Googleu</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Jedno ili više Chromiumovih proširenja pristupalo je jednom USB uređaju}=1{Jedno ili više Chromiumovih proširenja pristupa jednom USB uređaju}one{Jedno ili više Chromiumovih proširenja pristupa # USB uređaju}few{Jedno ili više Chromiumovih proširenja pristupa # USB uređaja}other{Jedno ili više Chromiumovih proširenja pristupa # USB uređaja}}</translation>
 <translation id="3101560983689755071">Vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chromium automatski kontinuirano briše vaše interese svakog mjeseca. Interesi se mogu osvježiti ako ih ne uklonite.</translation>
@@ -228,6 +229,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5294316920224716406">Kad pregledavate u anonimnom načinu, Chromium će vas upozoriti prije nego što učita web-lokaciju putem nesigurne veze</translation>
 <translation id="5296845517486664001">Tijekom eksperimenata i ako vas je Chromium nasumično rasporedio u aktivni eksperiment, vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chromium kontinuirano briše vaše interese svakog mjeseca.</translation>
 <translation id="5352264705793813212">Chromium je pronašao neke sigurnosne preporuke za vaš pregled</translation>
+<translation id="5352361688875342522">Ostali profili na Chromiumu</translation>
 <translation id="5358375970380395591">Prijavljujete se upravljanim računom i dajete administratoru kontrolu nad svojim profilom u sustavu Chromium. Vaši podaci u sustavu Chromium, primjerice, aplikacije, oznake, povijest, zaporke i ostale postavke, trajno će se povezati s korisnikom <ph name="USER_NAME" />. Moći ćete izbrisati te podatke putem Nadzorne ploče Google računa, ali ih nećete moći povezati s nekim drugim računom. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Dodatni kôd: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Saznajte zašto Chromium blokira neke datoteke</translation>

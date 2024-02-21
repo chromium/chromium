@@ -624,6 +624,14 @@ Se questo criterio viene attivato, il selettore di emoji supporterà le emoji in
 Se viene disattivato o se non viene configurato, il selettore di emoji non supporterà le emoji in formato GIF.
 Se non viene configurato, il selettore di emoji verrà attivato per gli utenti normali, ma sarà disattivato per gli utenti gestiti.</translation>
 <translation id="1494138678487405397">Disattiva l'alto contrasto nella schermata di accesso</translation>
+<translation id="1497797462580613666">Gestione dei download avrà un'opzione per salvare i file su <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="1498640472634891941">Questo criterio consente di elencare i pattern URL che specificano i siti a cui viene automaticamente negata l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting.
+
+Se il criterio non viene configurato, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
+
+I pattern URL non devono essere in conflitto con <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="1499129134689253257">Gestisci il nuovo comportamento di <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Applica in modo forzato gli accessi online soltanto nella schermata di accesso</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
@@ -1445,6 +1453,7 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 <translation id="2144236546337326489">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
 <translation id="2146103669166779785">Colore esadecimale che verrà utilizzato per generare e applicare un tema al browser.</translation>
+<translation id="2148733583160916305">Consenti l'API WebPrinting su questi siti</translation>
 <translation id="2148769554831004951">Forza l'attivazione di WebSQL.</translation>
 <translation id="214901426630414675">Limita la modalità di stampa fronte/retro</translation>
 <translation id="2149330464730004005">Attiva la stampa a colori</translation>
@@ -2011,6 +2020,16 @@ Se questo criterio viene impostato su False, la funzionalità di insiemi di siti
 <translation id="2570181623957732921">Attiva <ph name="DESK_API_NAME" /> per un elenco di domini di terze parti</translation>
 <translation id="2575198840408498393">Disattiva la creazione di profili di roaming</translation>
 <translation id="2576324725151524912">Consenti la modalità sviluppatore per app isolate</translation>
+<translation id="25765864042030871">I gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> sono in fase di ritiro. La loro attivazione dipende dal valore <ph name="UNLOAD_EVENT_NAME" /> del criterio <ph name="PERMISSIONS_POLICY_NAME" />. Attualmente sono consentiti per impostazione predefinita in base al criterio. In futuro passeranno gradualmente allo stato non consentito per impostazione predefinita e i siti dovranno attivarli in modo esplicito tramite le intestazioni <ph name="PERMISSIONS_POLICY_NAME" />. Questo criterio aziendale può essere utilizzato per disattivare questo ritiro graduale. Per farlo, è necessario mantenere attiva l'impostazione predefinita.
+ 
+Le pagine potrebbero dipendere dai gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> per salvare i dati o segnalare al server la fine di una sessione utente. Questo non è consigliato perché non è affidabile e influisce sulle prestazioni bloccando l'utilizzo di <ph name="PRODUCT_NAME" />. Esistono alternative consigliate, ma l'evento <ph name="UNLOAD_EVENT_NAME" /> è utilizzato da molto tempo. Alcune applicazioni potrebbero continuare a utilizzarli.
+
+Se questo criterio viene impostato su false o se non viene configurato, i gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> verranno gradualmente ritirati in linea con l'implementazione del ritiro e i siti per i quali non viene impostata l'intestazione <ph name="PERMISSIONS_POLICY_NAME" /> smetteranno di attivare gli eventi "unload".
+
+Se questo criterio viene impostato su true, i gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> continueranno a funzionare per impostazione predefinita.
+
+NOTA: questo criterio presentava un valore predefinito documentato erroneamente "true" nella versione M117. L'evento unload non è cambiato e non cambierà nella versione M117, quindi questo criterio non ha effetto in quella versione.
+</translation>
 <translation id="257788512393330403">Richiedi inserimento della password ogni sei ore</translation>
 <translation id="2580606791930800692">Consente di impostare un elenco di regole di controllo dei dati.</translation>
 <translation id="2580757713966614760">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" /> mettere a disposizione degli utenti.
@@ -2042,6 +2061,7 @@ Se questo criterio viene impostato su False, la funzionalità di insiemi di siti
       Se il criterio viene impostato su "UserOnly" (valore 1), gli utenti possono gestire i certificati a livello di utente, ma non quelli a livello di dispositivo.</translation>
 <translation id="2593762551209145088">Navigazione sicura non è mai attiva.</translation>
 <translation id="26023406105317310">Configura account Kerberos</translation>
+<translation id="2603237557651009842">Blocca l'API WebPrinting su questi siti</translation>
 <translation id="2603382859270873566">Attiva il supporto dell'API PPB_VideoDecoder(Dev).</translation>
 <translation id="2604182581880595781">Configura le norme relative alla funzione Condivisioni file di rete</translation>
 <translation id="2608039968712973520">Chiedi all'utente l'autorizzazione a eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto</translation>
@@ -2969,6 +2989,7 @@ Se il criterio viene impostato su false, all'utente non verrà concesso l'access
       Per un elenco di varianti che possono essere utilizzate, vai all'indirizzo https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Se il criterio non viene configurato, viene utilizzato il percorso del profilo predefinito e l'utente può ignorarlo con il flag della riga di comando "--user-data-dir".</translation>
+<translation id="3379326579027180941">Consenti ai siti di chiedere all'utente l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting</translation>
 <translation id="3379368498958498146">Attiva o disattiva la funzionalità di scrittura predittiva sulla tastiera fisica.
 
 Se questo criterio viene attivato o se non viene configurato, la funzionalità di scrittura predittiva sulla tastiera fisica sarà consentita.
@@ -3537,6 +3558,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
+<translation id="3842619997238271109">Non consente all'host di accesso remoto di usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate</translation>
 <translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3858658082795336534">Modalità di stampa fronte/retro predefinita</translation>
 <translation id="3859780406608282662">Consente di aggiungere un parametro al recupero del numero di inizializzazione delle varianti in <ph name="PRODUCT_OS_NAME" />.
@@ -3682,10 +3704,40 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
       Se il criterio viene impostato su Disattivato o se non viene configurato, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
 <translation id="3973371701361892765">Non nascondere mai automaticamente la barra delle app</translation>
 <translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
+<translation id="3977906634350977040">Se il criterio viene attivato, l'host di accesso remoto può usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate.
+
+Se viene disattivato, le autenticazioni con PIN o accoppiamento non sono consentite.
+
+Se non viene configurato, l'host può decidere se è possibile utilizzare le autenticazioni con PIN e/o accoppiamento.
+
+Nota: se l'impostazione non restituisce metodi di autenticazione supportati sia dall'host sia dal client, la connessione viene rifiutata.</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
 <translation id="3982322576186033243">Non consentire hash non sicuri in handshake TLS</translation>
 <translation id="3982465141749620677">Chiedi una nuova autorizzazione in una scheda</translation>
 <translation id="3983162212222338509">La risoluzione DNS di sistema può essere essere eseguita nel processo di rete, all'esterno del processo di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
+<translation id="3984773186203819634">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Se il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.
+
+      Quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />, il browser esegue le azioni configurate in questo criterio.
+
+      Se questo criterio è vuoto o se non viene configurato, il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
+
+      Le azioni supportate sono:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo. Azione non supportata su Android e iOS.
+
+      "<ph name="CLOSE_TABS_ACTION" />": vengono chiuse tutte le schede nelle finestre aperte. Azione supportata solo su iOS.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo. Azione non supportata su Android e iOS.
+
+      "<ph name="SIGN_OUT_ACTION" />": l'utente che ha attualmente eseguito l'accesso viene disconnesso. Azione supportata solo su iOS.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": vengono cancellati i dati di navigazione corrispondenti. Per maggiori informazioni, vedi il criterio <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />. I tipi di azione supportati su iOS sono: "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />" e "<ph name="CLEAR_AUTOFILL_ACTION" />"
+
+      "<ph name="RELOAD_PAGES_ACTION" />": vengono ricaricate tutte le pagine web. Per alcune pagine, all'utente potrebbe essere chiesto di confermare prima. Azione non supportata su iOS.
+
+      La configurazione delle azioni "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" e "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" comporta la disattivazione della sincronizzazione per i rispettivi tipi di dati se né il criterio "<ph name="CHROME_SYNC_NAME" />" viene disattivato impostando il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> né il criterio <ph name="BROWSER_SIGNIN_POLICY_NAME" /> viene disattivato.</translation>
 <translation id="3986700049001404598">Consenti agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
 
@@ -4605,6 +4657,7 @@ Questo criterio consente di mappare un ID estensione o un URL di aggiornamento s
 Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4739596156184678950">Consenti il salvataggio dei file direttamente su <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
 <translation id="4744467872051608680">A partire dalla versione M119, se questo criterio viene impostato su false o se non viene configurato, WebSQL è disattivato, ma può essere attivato tramite il flag di Chrome "web-sql-access". Se il criterio viene impostato su true, l'accesso a WebSQL viene attivato.</translation>
 <translation id="4745232963710538589">Attiva l'estensione Insights per segnalare le metriche di utilizzo</translation>
@@ -5247,6 +5300,7 @@ Se il criterio viene impostato su Disattivato, la cronologia di navigazione e qu
 <translation id="5330684698007383292">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuti</translation>
 <translation id="5331342092479819688">Consenti hash non sicuri in handshake TLS</translation>
 <translation id="5331746669335642668">La norma relativa al cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
+<translation id="5334404204520035180">Controlla l'utilizzo dell'API WebPrinting</translation>
 <translation id="5334501839642146593">Non inviare mai le metriche a Google</translation>
 <translation id="5335910979215357815">Attiva l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
 <translation id="5339096331970464266">Attiva la tastiera virtuale di accessibilità</translation>
@@ -5388,6 +5442,7 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
       <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> potrebbe anche essere utile per l'isolamento di origini specifiche a una granularità maggiore rispetto al sito (ad es. https://a.example.com).
 
       Nota: il supporto dell'isolamento verrà migliorato per tutti i siti su Android, ma al momento potrebbe causare problemi di prestazioni, specialmente sui dispositivi di fascia bassa. Questo criterio viene applicato solo a Chrome su dispositivi Android con più di 1 GB di RAM. Per isolare siti specifici limitando l'impatto sulle prestazioni per gli utenti, utilizza <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> con un elenco di siti che vuoi isolare.  Per applicare il criterio a piattaforme non Androd, utilizza <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
+<translation id="5443719869259235874">Estensioni a cui è consentito ignorare le finestre di dialogo di conferma durante l'accesso agli scanner tramite l'API chrome.documentScan</translation>
 <translation id="5445596354079213552">Questo criterio viene applicato soltanto se il dispositivo ha raggiunto la scadenza dell'aggiornamento automatico e non rispetta la versione minima consentita di <ph name="PRODUCT_OS_NAME" /> impostata tramite il criterio <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
       Se il criterio viene impostato su una stringa non vuota:
@@ -5457,6 +5512,9 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
       Se viene disattivata, gli utenti non possono usare questa funzionalità. Gli utenti non possono usare questa funzionalità anche se viene disattivato il criterio PhoneHubAllowed.
 
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
+<translation id="5488268615614906498">Questo criterio consente di stabilire se all'utente è consentito salvare file su <ph name="GOOGLE_DRIVE_NAME" /> direttamente da Gestione dei download.
+Se il criterio viene attivato o se non viene configurato, all'utente è consentito salvare file su <ph name="GOOGLE_DRIVE_NAME" /> da Gestione dei download. Se viene disattivato, gli utenti non visualizzano l'opzione in Gestione dei download.
+Questo criterio non impedisce agli utenti di salvare file su <ph name="GOOGLE_DRIVE_NAME" /> utilizzando metodi diversi da Gestione dei download.</translation>
 <translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
 
       Se viene selezionata l'opzione "Enabled" o se il criterio non viene impostato, è possibile aprire le pagine in modalità di navigazione in incognito.
@@ -5597,6 +5655,11 @@ Un dominio rimosso dal criterio non può accedere agli URL file:// nel Visualizz
 Se il criterio non viene configurato, tutti i domini non possono accedere agli URL file:// nel Visualizzatore PDF.</translation>
 <translation id="5586942249556966598">Non fare niente</translation>
 <translation id="5598417829613725146">Canvas (supportata dalla versione 90)</translation>
+<translation id="5598821717813911176">Questo criterio consente di specificare le estensioni a cui è consentito ignorare le finestre di dialogo di conferma quando utilizzano le funzioni <ph name="GET_SCANNER_LIST_FUNCTION" /> e <ph name="START_SCAN_FUNCTION" /> di <ph name="DOCUMENTSCAN_API" />.
+
+Se il criterio viene impostato un elenco non vuoto ed è presente un'estensione, le relative finestre di dialogo per la conferma della scansione, in genere mostrate all'utente quando vengono chiamate le funzioni <ph name="GET_SCANNER_LIST_FUNCTION" /> o <ph name="START_SCAN_FUNCTION" />, verranno soppresse.
+
+Se il criterio non viene configurato o se viene impostato un elenco vuoto, all'utente verranno mostrate finestre di dialogo per la conferma della scansione quando vengono chiamate le funzioni <ph name="GET_SCANNER_LIST_FUNCTION" /> o <ph name="START_SCAN_FUNCTION" />.</translation>
 <translation id="5599461642204007579">Impostazioni di gestione di <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Attiva i report sullo stato di archiviazione del dispositivo</translation>
@@ -5720,6 +5783,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
 
       Nota: separa i valori utilizzando le virgole.</translation>
 <translation id="5693469654327063861">Consenti migrazione dei dati</translation>
+<translation id="56936613186060503">In Gestione dei download non sarà disponibile un'opzione per salvare i file su <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5695209488612697377">Consente di attivare l'utilizzo di un provider di ricerca predefinito nel menu contestuale.
 
           Se il criterio viene disattivato, la voce del menu contestuale di ricerca che si basa sul tuo provider di ricerca predefinito non è disponibile.
@@ -6144,6 +6208,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
 <translation id="6091233616732024397">Forza gli utenti a eseguire l'accesso per usare il browser</translation>
 <translation id="6092073071805297119">Consenti l'uso del filtro delle prestazioni di accessibilità.</translation>
+<translation id="60925735895026302">Non consentire a nessun sito di richiedere l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting</translation>
 <translation id="6093156968240188330">Consente agli utenti remoti di interagire con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
 <translation id="6094314311474620462">Viene disattivata la stampa</translation>
 <translation id="6097601282776163274">Attiva la raccolta di dati anonimizzati con chiave URL</translation>
@@ -6749,6 +6814,23 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
 <translation id="6513453889192806240">Latenza HTTPS</translation>
 <translation id="6515357889978918016">Immagine <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Attendi che il canale di destinazione controlli il downgrade del canale</translation>
+<translation id="6518894783486860562">Per motivi di sicurezza, le API web
+<ph name="SHOW_SUBAPPS_APP_API_NAME" />,
+<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> e
+<ph name="SHOW_SUBAPPS_LIST_API_NAME" />
+richiedono che l'utente abbia eseguito un gesto precedentemente ("attivazione temporanea"), in caso contrario la chiamata all'API
+non andrà a buon fine. Inoltre, all'utente verrà chiesto di confermare
+l'operazione tramite una finestra di dialogo.
+
+Con questo criterio, gli amministratori possono specificare le origini da cui è possibile
+chiamare le API senza un gesto precedente dell'utente né la richiesta di conferma.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * non è
+un valore accettato per questo criterio.
+
+Se questo criterio non viene impostato, tutte le origini richiederanno un gesto precedente dell'utente per chiamare
+queste API e all'utente verrà mostrata una finestra di dialogo di conferma.</translation>
 <translation id="6520053715392444458">Se questo criterio viene attivato o non viene configurato, <ph name="PRODUCT_NAME" /> potrà inviare a Google download sospetti da utenti che hanno attivato Navigazione sicura per verificare la presenza di malware o chiedere agli utenti di fornire una password per gli archivi criptati.
 Se questo criterio viene disattivato, l'analisi non verrà eseguita.
 Questo criterio non influisce sull'analisi dei contenuti dei download configurata da Chrome Enterprise Connectors.</translation>
@@ -6988,6 +7070,7 @@ Se il criterio viene impostato su False, il port forwarding nei container Crosti
 
       Nota: anche se per il campo <ph name="ENTRIES_FIELD_NAME" /> del criterio sono accettati più valori, vengono ignorati tutti tranne il primo.
       Avviso: la configurazione di questo criterio potrebbe ritardare l'applicazione degli aggiornamenti software.</translation>
+<translation id="6695441448686167614">Impostazioni di WebPrinting</translation>
 <translation id="6698632841807204978">Attiva la stampa monocromatica</translation>
 <translation id="6699740789657890714">Consente di specificare se consentire ai siti web di effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro</translation>
 <translation id="6699880231565102694">Abilita autenticazione a due fattori per gli host di accesso remoto</translation>
@@ -7068,6 +7151,7 @@ Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</tran
 
       Se il criterio è impostato su False o non viene impostato, <ph name="PLUGIN_VM_NAME" /> non viene attivato per l'utente.
       Se è impostato su True, <ph name="PLUGIN_VM_NAME" /> viene attivato per l'utente, a condizione che anche le altre impostazioni lo permettano. Il valore dei criteri <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> deve essere True ed è necessario impostare i criteri <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="6749641778238480311">Consenti di chiamare le API subApps senza un gesto precedente dell'utente o senza richiedere la conferma.</translation>
 <translation id="6750902920405577210">L'elenco di dati di telemetria da segnalare per gli eventi di variazione dell'intensità del segnale.
 
       Ogni dato di telemetria specificato verrà segnalato soltanto se non è stato disattivato tramite il relativo criterio di controllo.
@@ -7206,6 +7290,11 @@ Se viene impostato su False o se non viene configurato, il layout non è disponi
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
+<translation id="6881397131210596522">Se il criterio viene impostato su 2, ai siti verrà automaticamente impedito di utilizzare l'API WebPrinting.
+
+Se il criterio viene impostato su 3, l'utente riceverà un avviso quando un sito vuole utilizzare l'API WebPrinting.
+
+Se non viene configurato, i siti web possono richiedere l'accesso alle stampanti locali, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="6881447940489194100">Hash SHA-256 esadecimale codificato dei dati.</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
 
@@ -7725,6 +7814,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       La ricerca e l'installazione automatiche dei plug-in mancanti non sono più supportate.</translation>
 <translation id="7267809745244694722">Per impostazione predefinita, i tasti multimediali si comportano come tasti funzione.</translation>
+<translation id="7268365133021434339">Chiudi schede</translation>
 <translation id="7269263983506766969">Viene usata la priorità predefinita per il processo audio</translation>
 <translation id="7270001383428188269">L'identificatore di questo certificato client.</translation>
 <translation id="7271085005502526897">Importazione della home page dal browser predefinito alla prima esecuzione</translation>
@@ -9160,6 +9250,7 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
       Avviso: è sconsigliato configurare delle limitazioni della versione, poiché potrebbero impedire agli utenti di ricevere aggiornamenti software e correzioni critiche per la sicurezza. Gli aggiornamenti con limitazioni a una versione specifica potrebbero esporre gli utenti a dei rischi.</translation>
 <translation id="8519617069657262768">Attiva la sincronizzazione Google Drive</translation>
 <translation id="8520064498689833152">Viene forzato l'uso almeno del livello medio di SafeSearch nella Ricerca Google e nella Modalità con restrizioni di YouTube</translation>
+<translation id="8520950040439618600">Consenti metodi di autenticazione con PIN e accoppiamento per gli host di accesso remoto</translation>
 <translation id="8524334245528364388">URL per un file JSON con un elenco di server di stampa.</translation>
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8526745614158856826">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione di accesso a tutti i dispositivi disponibili.
@@ -9188,6 +9279,7 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
 <translation id="8544375438507658205">Renderer HTML predefinito per <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Consente la sincronizzazione di messaggi SMS dal telefono al Chromebook</translation>
 <translation id="8549906780629620346">Attiva recupero dell'account</translation>
+<translation id="8553491595730354263">Consente all'host di accesso remoto di usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate</translation>
 <translation id="8553955290407912156">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a un dispositivo HID.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
@@ -9485,6 +9577,13 @@ lo schema HTTPS.</translation>
 <translation id="8789338675663014675">Consente di configurare i criteri relativi alle estensioni. L'utente non può installare estensioni bloccate, a meno che non vengano autorizzate. Puoi anche forzare <ph name="PRODUCT_NAME" /> a installare automaticamente le estensioni, specificandole nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Le estensioni con installazione forzata vengono installate indipendentemente dalla loro presenza nella lista bloccata.</translation>
 <translation id="879697755145469671">La finestra coperta non viene rilevata</translation>
 <translation id="8798099450830957504">Predefinito</translation>
+<translation id="879863472982972634">Questo criterio consente di elencare i pattern URL che specificano i siti a cui viene automaticamente concessa l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting.
+
+Se il criterio non viene configurato, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
+
+I pattern URL non devono essere in conflitto con <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="8799492680917278474">Se questo criterio viene configurato, le connessioni di accesso remoto si disconnettono automaticamente una volta trascorsi i minuti specificati nel criterio stesso. Questo non impedisce al client di riconnettersi una volta raggiunta la durata massima della sessione. Se il criterio viene impostato su un valore che non rientra nell'intervallo minimo/massimo, l'host potrebbe non essere avviato. Questo criterio non influisce sugli scenari di assistenza remota
 
           e non ha alcun effetto se non viene configurato. In questo caso, le connessioni di accesso remoto non hanno alcuna durata massima su questa macchina.</translation>

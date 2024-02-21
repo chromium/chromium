@@ -337,7 +337,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2871733351037274014">Precargar páxinas</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> quere que aprobes este sitio web:</translation>
-<translation id="2876194821763651818">Contrasinais gardados en <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Máis información sobre <ph name="BEGIN_LINK" />como protexe Chrome a privacidade dos teus datos<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
 <translation id="2891154217021530873">Detén a carga da páxina</translation>
@@ -1424,6 +1423,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8354977102499939946">Fai buscas rapidamente coa voz. Para editar este atallo, vai a Configuración.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> descargas restauradas</translation>
 <translation id="8368001212524806591">Facer seguimento do prezo</translation>
+<translation id="8378850197701296741">Tes os marcadores, o historial e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica que es ti</translation>
 <translation id="8393700583063109961">Enviar mensaxe</translation>
 <translation id="8394720698884623075">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome</translation>

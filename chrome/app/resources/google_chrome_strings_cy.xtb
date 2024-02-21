@@ -179,6 +179,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3635073343384702370">Gall Chrome wirio'ch cyfrineiriau pan fyddwch yn eu cadw</translation>
 <translation id="3667616615096815454">Methu â gosod, mae'r ap yn anhysbys i'r gweinydd.</translation>
 <translation id="3673813398384385993">Gwnaeth Chrome ganfod bod "<ph name="EXTENSION_NAME" />" yn cynnwys drwgwedd</translation>
+<translation id="3697952514309507634">Proffiliau Chrome eraill</translation>
 <translation id="3703994572283698466">Mae ChromeOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol, fel y mae <ph name="BEGIN_LINK_LINUX_OSS" />amgylchedd datblygu Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Fersiwn ChromeOS Flex</translation>
 <translation id="3718181793972440140">Bydd hyn yn dileu 1 eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
@@ -433,6 +434,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8019103195866286235">Nid oedd yr estyniad hwn wedi'i gyhoeddi gan ei ddatblygwr, a gallai fod yn anniogel. Tynnwch ef o Chrome fel na all weld a newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys eich gwybodaeth bersonol.</translation>
 <translation id="80471789339884597">Diolch am osod. Rhaid i chi ailgychwyn eich holl borwyr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Proffiliau Chrome Eraill</translation>
 <translation id="8086881907087796310">Wedi methu â gosod oherwydd nad yw'ch cyfrifiadur yn bodloni'r gofynion caledwedd sylfaenol.</translation>
 <translation id="8129812357326543296">Ynghylch &amp;Google Chrome</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>

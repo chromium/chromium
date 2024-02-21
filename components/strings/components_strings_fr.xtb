@@ -72,6 +72,7 @@
 <translation id="1131264053432022307">Image copiée</translation>
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1142846828089312304">Bloquer les cookies tiers en mode navigation privée</translation>
+<translation id="1144136880160289237">Vous n'avez pas encore de thèmes actifs</translation>
 <translation id="1149617035358809955">valider votre identité afin de pouvoir indiquer vos infos de paiement</translation>
 <translation id="1150565364351027703">Lunettes de soleil</translation>
 <translation id="1150979032973867961">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par le système d'exploitation de votre ordinateur. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
@@ -324,6 +325,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="160851722280695521">Jouer au jeu du dino dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">2e rouleau</translation>
+<translation id="1612199629998703524">Gérer les thèmes</translation>
 <translation id="1615178538289490617">Révoquer l'accès de <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Une règle définie par l'administrateur a désactivé la capture d'écran lorsqu'un contenu confidentiel est affiché</translation>
 <translation id="1617276713587758852">Crossovers</translation>
@@ -433,6 +435,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1812527064848182527">paysage</translation>
 <translation id="1812975699435941848">Éducation sanitaire et formation médicale</translation>
 <translation id="1813414402673211292">Effacer les données de navigation</translation>
+<translation id="1818522458013171885">Débloquer</translation>
 <translation id="182139138257690338">téléchargements automatiques</translation>
 <translation id="1821930232296380041">La demande ou ses paramètres ne sont pas valides.</translation>
 <translation id="1822540298136254167">Sites Web consultés et durée des visites</translation>
@@ -490,6 +493,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1945968466830820669">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'usurpation d'identité. L'équipe Chromium vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="1946849748901605102">12 x 15 pouces</translation>
 <translation id="1947454675006758438">Agrafe en haut à droite</translation>
+<translation id="1953729392594614704">Si vous bloquez <ph name="TOPIC" />, tous les thèmes associés seront aussi bloqués, même s'ils sont actifs</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">Trouvez, sécurisez ou effacez les données de votre appareil</translation>
 <translation id="1958218078413065209">Meilleur score : <ph name="SCORE" />.</translation>
@@ -550,6 +554,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2071156619270205202">Cette carte n'est pas éligible pour le numéro de carte virtuelle.</translation>
 <translation id="2071692954027939183">Notifications bloquées automatiquement, car vous les refusez d'habitude</translation>
 <translation id="2071852865256799872">Votre navigateur est géré par votre organisation et votre profil par <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="2074733626795553847">Débloquer <ph name="TOPIC" /></translation>
 <translation id="2075497153347571252">Votre administrateur a bloqué <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2080021694978766903">Cette règle ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées.</translation>
@@ -584,6 +589,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="213826338245044447">Favoris sur mobile</translation>
 <translation id="2141000681034340397">Modifier votre saisie</translation>
+<translation id="2144171668675205303">Aucun thème actif</translation>
 <translation id="214556005048008348">Annuler le paiement</translation>
 <translation id="2148613324460538318">Ajouter une carte</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
@@ -803,6 +809,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2596415276201385844">Afin d'établir une connexion sécurisée, votre horloge doit être réglée correctement. Les certificats permettant aux sites Web de s'identifier sont en effet valides pendant une période précise. Si l'horloge de votre appareil est incorrecte, Chrome n'est pas en mesure de vérifier la validité des certificats.</translation>
 <translation id="2597378329261239068">Ce document est protégé par mot de passe. Veuillez saisir ce dernier.</translation>
 <translation id="2606760465469169465">Validation automatique</translation>
+<translation id="2608019759319359258">Lorsqu'un thème est bloqué, il n'est plus utilisé pour personnaliser les annonces</translation>
 <translation id="2610561535971892504">Cliquer pour copier</translation>
 <translation id="2612993535136743634">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
 <translation id="2616412942031748191">Marketing et référencement naturel</translation>
@@ -1112,6 +1119,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3299720788264079132">Un problème est survenu lors de l'utilisation du <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 pouces</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
+<translation id="3303872874382375219">La personnalisation des annonces dépend de nombreux facteurs, y compris de ce paramètre, des <ph name="BEGIN_LINK1" />thèmes des annonces<ph name="LINK_END1" />, des <ph name="BEGIN_LINK2" />paramètres des cookies<ph name="LINK_END2" /> et du fait que le site que vous consultez personnalise ou non les annonces. Découvrez comment <ph name="BEGIN_LINK3" />gérer la confidentialité des annonces<ph name="LINK_END3" />.</translation>
 <translation id="3304073249511302126">Recherche Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Le Gestionnaire de mots de passe vous recommande de le modifier immédiatement.</translation>
@@ -1144,6 +1152,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3377144306166885718">Le serveur utilisait une version obsolète de TLS.</translation>
 <translation id="3377188786107721145">Erreur d'analyse de la règle.</translation>
 <translation id="3377736046129930310">Utiliser le verrouillage de l'écran pour confirmer les cartes plus rapidement</translation>
+<translation id="3378612801784846695">Les thèmes sont basés sur votre historique de navigation récent et utilisés par les sites pour vous présenter des annonces personnalisées tout en protégeant votre identité</translation>
 <translation id="3380365263193509176">Erreur inconnue.</translation>
 <translation id="3380864720620200369">ID client : </translation>
 <translation id="3381668585148405088">Valider votre achat</translation>
@@ -1174,6 +1183,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3433111389595862568">Logiciels de collaboration et de conférence</translation>
 <translation id="3433144818443565002">Chat audio et vidéo</translation>
 <translation id="3434025015623587566">Le Gestionnaire de mots de passe de Google a besoin d'un accès plus étendu</translation>
+<translation id="3434346831962601311">Aucun thème bloqué</translation>
 <translation id="343474037147570563">Les fichiers que vous importez ou joignez sont envoyés à Google Cloud ou à des tiers pour analyse. Ils peuvent par exemple être analysés pour rechercher des données sensibles ou des logiciels malveillants, être stockés conformément aux règles de l'entreprise et être visibles par votre administrateur.</translation>
 <translation id="3435557549311968410">Continu (court)</translation>
 <translation id="3435738964857648380">Sécurité</translation>
@@ -1296,6 +1306,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3659521826520353662">Historique de consultation des sites Web définis par l'administrateur : <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Mots-clés :</translation>
 <translation id="3665100783276035932">La plupart des sites devraient fonctionner comme prévu</translation>
+<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />En savoir plus<ph name="LINK_END1" /></translation>
 <translation id="3671117652518853176">Lorsque cette option est désactivée, vous pouvez parfois être invité à procéder à une validation pour des raisons de sécurité</translation>
 <translation id="3671540257457995106">Autoriser le redimensionnement ?</translation>
 <translation id="3672568546897166916">Erreur au niveau de <ph name="ERROR_PATH" /> : <ph name="ERROR_MESSAGE" /></translation>
@@ -1881,6 +1892,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4895019427244614047">Supprimer l'adresse</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jeux olympiques</translation>
+<translation id="4898742041545089450">Ce thème est débloqué et peut devenir actif en fonction de votre historique de navigation</translation>
 <translation id="4900217275619098670">9e rouleau</translation>
 <translation id="4901052769830245369">Étiquettes (semi-brillance)</translation>
 <translation id="4901162432287938633">Hygiène et toilette</translation>
@@ -1955,6 +1967,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="5043480802608081735">Lien copié</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
+<translation id="5052517576853118371">Thèmes actifs</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pour partager ce fichier à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour partager ce fichier à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour partager ces fichiers à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
 <translation id="505757197798929356">Indiquez le motif de l'ouverture (obligatoire)</translation>
 <translation id="5060419232449737386">Paramètres des sous-titres</translation>
@@ -2029,6 +2042,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5205222826937269299">Veuillez saisir un nom</translation>
 <translation id="5206392433295093945">Chambre</translation>
 <translation id="5209670883520018268">Bac 20</translation>
+<translation id="5214542134842513912">Sélectionnez les grandes catégories de thèmes à utiliser pour personnaliser les annonces. Si vous désactivez une catégorie plus grande, les thèmes associés seront aussi bloqués.</translation>
 <translation id="521659676233207110">Bac 13</translation>
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
 <translation id="5217759126664161410">Format de protocole non valide.</translation>
@@ -2246,6 +2260,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="568292603005599551">Position X de l'image</translation>
 <translation id="5684277895745049190">Liste</translation>
 <translation id="5684874026226664614">Petit problème… Impossible de traduire cette page.</translation>
+<translation id="568489534660743582">Les annonces suggérées par les sites ne sont que l'une des nombreuses options qu'un site peut utiliser pour personnaliser les annonces. Même sans ces annonces suggérées, les sites peuvent toujours vous présenter des annonces, lesquelles pourraient toutefois être moins intéressantes.</translation>
 <translation id="5687340364605915800">La réponse apportée par les sites à cette demande est à leur discrétion</translation>
 <translation id="5688137257686092846">Cosmétique et professionnels de la beauté</translation>
 <translation id="5689199277474810259">Exporter au format JSON</translation>
@@ -3311,6 +3326,7 @@ Informations supplémentaires :
 <translation id="7878562273885520351">Votre mot de passe a peut-être été piraté</translation>
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
 <translation id="7882421473871500483">Marron</translation>
+<translation id="7886897188117641322">Sélectionnez les grandes catégories de thèmes à utiliser pour personnaliser les annonces</translation>
 <translation id="7887683347370398519">Veuillez vérifier votre code CVC et réessayer.</translation>
 <translation id="7887885240995164102">Utiliser le mode Picture-in-picture</translation>
 <translation id="7888575728750733395">Intent de rendu d'impression</translation>
@@ -3389,6 +3405,7 @@ Informations supplémentaires :
 <translation id="8043255123207491407">Voir les conditions d'utilisation du vendeur</translation>
 <translation id="8046360364391076336">Équipements et matériaux industriels</translation>
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
+<translation id="805766869470867930">Vous n'avez bloqué aucun thème</translation>
 <translation id="8057711352706143257">Le logiciel "<ph name="SOFTWARE_NAME" />" n'est pas configuré correctement. En général, la désinstallation de "<ph name="SOFTWARE_NAME" />" permet de remédier à la situation. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Non demandée</translation>
 <translation id="8063875539456488183">Enregistrer et suivre le prix</translation>
@@ -3465,6 +3482,7 @@ Informations supplémentaires :
 <translation id="8216640997712497593">14 x 18 pouces</translation>
 <translation id="8217240300496046857">Les sites ne peuvent pas utiliser de cookies pour suivre votre activité sur le Web. Les fonctionnalités de certains sites peuvent être bloquées.</translation>
 <translation id="8218327578424803826">Position attribuée : </translation>
+<translation id="8220602974062798186">Bloquer <ph name="TOPIC" /> et tous les thèmes associés ?</translation>
 <translation id="8220833680085771143">La protection contre le suivi est temporairement indisponible</translation>
 <translation id="8228419419708659934">Vue sur deux pages</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> souhaite accéder à un appareil sur votre réseau :</translation>
@@ -3596,6 +3614,7 @@ Informations supplémentaires :
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carte de paiement}one{# carte de paiement}other{# cartes de paiement}}</translation>
 <translation id="8467494337615822642">Accéder à la page de contrôle de sécurité de Chrome dans les paramètres</translation>
 <translation id="8468358362970107653">Enveloppe C3</translation>
+<translation id="8472700501934242014">Thèmes bloqués</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474910779563686872">Afficher les informations destinées aux développeurs</translation>
@@ -3934,6 +3953,7 @@ Informations supplémentaires :
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utilise un protocole incompatible.</translation>
 <translation id="918454845714257218">Vérifiez le code indiqué à l'<ph name="SIDE_OF_CARD" />, puis réessayez</translation>
 <translation id="9186203289258525843">Bouton "Définir Chrome comme navigateur par défaut" à activer pour définir Chrome comme navigateur par défaut du système</translation>
+<translation id="9190557999028587593">Les thèmes datant de plus de quatre semaines sont supprimés automatiquement</translation>
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9199905725844810519">Impression bloquée</translation>

@@ -1897,6 +1897,7 @@
 <translation id="2412015533711271895">Каб выкарыстоўваць гэта пашырэнне, трэба атрымаць дазвол аднаго з бацькоў або апекуна</translation>
 <translation id="2412593942846481727">Ёсць абнаўленне</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Зрабіце свой браўзер яшчэ больш персаналізаваным з дапамогай пашырэнняў з <ph name="BEGIN_LINK1" />Вэб-крамы Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Узнавіць прагляд: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Цёмная</translation>
 <translation id="2415117815770324983">Вы выйдзеце з сістэмы на большасці сайтаў, але застаняцеся ва Уліковым запісе Google.</translation>
@@ -6831,6 +6832,7 @@
 <translation id="6271824294945464304">Ідзе абагульванне пароля</translation>
 <translation id="6273677812470008672">Якасць</translation>
 <translation id="6274089201566806618">Ідзе падключэнне да прылады "<ph name="HOST_DEVICE_NAME" />"</translation>
+<translation id="6274108044476515407">Ці будзе ажыццяўляцца персаналізацыя рэкламы, якая вам паказваецца, залежыць шмат ад чаго, у тым ліку ад гэтай налады, <ph name="BEGIN_LINK1" />рэкламы, якая прапануецца сайтамі<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />налад файлаў cookie<ph name="LINK_END2" />, а таксама ад таго, ці персаналізуе рэкламу сам сайт, які вы наведваеце. <ph name="BEGIN_LINK3" />Даведацца больш пра кіраванне прыватнасцю ў рэкламе.<ph name="LINK_END3" /></translation>
 <translation id="6274202259872570803">Скрынкаст</translation>
 <translation id="6276210637549544171">Проксі-сервер <ph name="PROXY_SERVER" /> патрабуе імя карыстальніка і пароль.</translation>
 <translation id="6277105963844135994">Час чакання сеткі</translation>
@@ -7821,6 +7823,7 @@
 <translation id="7044606776288350625">Сінхранізацыя даных</translation>
 <translation id="7047059339731138197">Выбар фону</translation>
 <translation id="7049293980323620022">Захаваць файл?</translation>
+<translation id="7049524156282610342">Даныя пра работу ў браўзеры: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Няправільная канфігурацыя хот-спота</translation>
 <translation id="7052237160939977163">Адпраўляць даныя трасіроўкі прадукцыйнасці</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
@@ -8538,6 +8541,7 @@
 <translation id="7630426712700473382">Прыладай кіруе <ph name="MANAGER" />. Вам трэба кожны раз уваходзіць ва ўліковы запіс.</translation>
 <translation id="7631014249255418691">Рэзервовая копія файлаў і праграм Linux створана</translation>
 <translation id="7631887513477658702">&amp;Заўсёды адкрываць файлы гэтага тыпу</translation>
+<translation id="7632437836497571618">Выкарыстоўваць бяспечнае падключэнне для пошуку адрасоў сайтаў</translation>
 <translation id="7632948528260659758">Наступныя праграмы-кіёскі абнавіць не ўдалося:</translation>
 <translation id="7633724038415831385">Гэта адзіны раз, калі вам трэба пачакаць, пакуль спампуецца абнаўленне. На прыладах Chromebook абнаўленні праграмнага забеспячэння ўсталёўваюцца ў фонавым рэжыме.</translation>
 <translation id="7634337648687970851">Аднаўленне лакальных даных зараз не падтрымліваецца.</translation>
@@ -8800,6 +8804,7 @@
 <translation id="7803657407897251194">Каб працягнуць наладжванне з дапамогай прылады Android, падключыце <ph name="DEVICE_TYPE" /> да сеткі</translation>
 <translation id="7804072833593604762">Укладка закрыта</translation>
 <translation id="780446144738273886">Сканіруйце PDF, каб вымаць тэкст для праграмы чытання з экрана. Функцыя падтрымліваецца толькі ў браўзеры Chrome.</translation>
+<translation id="7805371082115476536">Слабая</translation>
 <translation id="7805768142964895445">Стан</translation>
 <translation id="7805906048382884326">Закрыць параду</translation>
 <translation id="7806722269368320106">Праграма, ідзе ўсталяванне</translation>

@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
 <translation id="1056898198331236512">ਚਿਤਾਵਨੀ</translation>
 <translation id="1058009965971887428">ਵਿਚਾਰ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
+<translation id="1059120031266247284">ਤੁਹਾਡੇ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">ਬਦਲੋ</translation>
 <translation id="1073899992769346247">ਬੈਟਰੀ ਬਦਲੋ ਜਾਂ ਉਸਨੂੰ ਰੀਚਾਰਜ ਕਰੋ</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3580650856351781466">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3585296979871889131">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖੋ</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">ਸਾਈਡ ਬਟਨ</translation>
 <translation id="3593039967545720377">ਆਪਣਾ ਕਲਿੱਪਬੋਰਡ ਦੇਖਣ ਲਈ <ph name="SHORTCUT_KEY_NAME" /> + V ਦਬਾ ਕੇ ਆਪਣੇ ਕਲਿੱਪਬੋਰਡ ਦੇ ਇਤਿਹਾਸ ਤੱਕ ਪਹੁੰਚ ਕਰੋ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਕੋਈ ਆਈਟਮ ਕਾਪੀ ਕਰੋ।</translation>
 <translation id="3593646411856133110">ਖੁੱਲ੍ਹੀਆਂ ਐਪਾਂ ਦੇਖਣ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰਕੇ ਦਬਾਈ ਰੱਖੋ</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">ਇਨਪੁਟ</translation>
 <translation id="3621712662352432595"> ਆਡੀਓ  ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3626281679859535460">ਚਮਕ</translation>
+<translation id="3628323833346754646">ਅਗਲਾ ਬਟਨ</translation>
 <translation id="3630697955794050612">ਬੰਦ</translation>
 <translation id="3631369015426612114">ਇਹਨਾਂ ਤੋਂ ਸੂਚਨਾਵਾਂ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3633097874324966332">ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਜੋੜਾਬੱਧ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -1285,6 +1288,7 @@
 <translation id="6052614013050385269">ਕਿਸੇ ਲਿੰਕ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6054305421211936131">ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6059276912018042191">ਹਾਲੀਆ Chrome ਟੈਬਾਂ</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">ਤੁਹਾਨੂੰ <ph name="LOGOUT_TIME_LEFT" /> ਆਟੋਮੈਟਿਕਲੀ ਸਾਈਨ ਆਉਟ ਕੀਤਾ ਜਾਏਗਾ।</translation>
 <translation id="6064463340679478396">ਫ਼ਾਈਲ ਦੀ ਵਰਤੋਂ ਪੂਰੀ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="6068258534237496331">ਵੀਡੀਓ ਕਾਲ ਦੇ ਕੰਟਰੋਲ</translation>
@@ -1346,6 +1350,7 @@
 <translation id="6309219492973062892">ਸ਼ੈਲਫ ਪ੍ਰਤੀਕ 1-8 'ਤੇ ਕਲਿੱਕ ਜਾਂ ਟੈਪ ਕਰੋ</translation>
 <translation id="6315170314923504164">ਅਵਾਜ਼</translation>
 <translation id="6319058840130157106">ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ, ਲਾਂਚਰ, ਪਤਾ ਬਾਰ, ਬੁੱਕਮਾਰਕ ਬਾਰ, ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਵਿਚਾਲੇ ਪਿੱਛੇ ਵੱਲ ਜਾਓ</translation>
+<translation id="6319503618073410818">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਵੇਰਵੇ ਦੇਖੋ</translation>
 <translation id="6324916366299863871">ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="6330012934079202188">ਸਾਰੇ ਡੈਸਕਾਂ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ, ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਉਣ ਲਈ ਉੱਪਰ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਸੈਸ਼ਨ ਹੈ</translation>
@@ -1566,6 +1571,7 @@
 <translation id="7229029500464092426">ਮੈਮੋਰੀ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ਕੁੱਲ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ਇਸ Chromebook ਨੂੰ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਣ ਦੀ ਲੋੜ ਹੈ। ਇਸ ਵਿੱਚ 1 ਮਿੰਟ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">ਪਿਛਲਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="7258828758145722155">ਬੀਤੇ ਕੱਲ੍ਹ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="726276584504105859">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਇੱਥੇ ਘਸੀਟੋ</translation>
@@ -1693,6 +1699,7 @@
 <translation id="7742327441377685481">ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ</translation>
 <translation id="7748275671948949022">ਸ਼ੈਲਫ 'ਤੇ ਲਾਂਚਰ ਬਟਨ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="7749443890790263709">ਡੈਸਕਾਂ ਦੀ ਅਧਿਕਤਮ ਸੰਖਿਆ ਪੂਰੀ ਹੋ ਗਈ।</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">ਅੱਪਡੇਟ ਵੇਰਵਿਆਂ ਨੂੰ ਦੇਖਣ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="7768784765476638775">ਚੁਣੋ ਅਤੇ ਸੁਣੋ</translation>
 <translation id="7769299611924763557">ਤੁਹਾਡੇ GIF ਨੂੰ ਜਲਦ ਹੀ ਤਿਆਰ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
@@ -2020,6 +2027,7 @@
 <translation id="9098969848082897657">ਫ਼ੋਨ ਖਮੋਸ਼ ਕਰੋ</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ਜਾਂ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ਪਿਛਲੀ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="9129245940793250979">ਪਿਛਲਾ ਬਟਨ</translation>
 <translation id="9133335900048457298">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਨੂੰ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="9139720510312328767">ਅਗਲਾ ਅੱਖਰ ਮਿਟਾਓ</translation>
 <translation id="9151906066336345901">ਸਮਾਪਤ</translation>

@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
 <translation id="1073417869336441572">Palīdziet mums uzlabot pārlūku Chrome, pastāstot, kāpēc atļāvāt trešo pušu sīkfailus. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Paslēpt cenas krituma kartīti</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1192844206376121885">Tiks izdzēsti visi dati un sīkfaili, ko glabā <ph name="ORIGIN" />.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Palīdzība un atsauksmes</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
+<translation id="2550801787432930915">Cenas krituma kartīte</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Bloķēts 1 sīkfails.}zero{Bloķēti # sīkfaili.}one{Bloķēts # sīkfails.}other{Bloķēti # sīkfaili.}}</translation>
 <translation id="2570922361219980984">Arī piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Izvērsts — noklikšķiniet, lai sakļautu.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Ja ieslēgta</translation>
 <translation id="8805385115381080995">Pārlūkošana ir ātrāka, jo vietnē, visticamāk, netiks lūgts apstiprināt, ka esat īsts cilvēks</translation>
 <translation id="8816026460808729765">Bloķēt vietņu piekļuvi sensoriem</translation>
+<translation id="8843699287283948910">Paslēpt cilnes no citām ierīcēm</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Īslaicīgi atļaujiet izmantot trešo pušu sīkfailus. Tas nozīmē, ka pārlūkošanas aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka vietnes funkcijas darbosies, kā paredzēts.</translation>
 <translation id="8889294078294184559">Kad turpināsiet pārlūkošanu, vietnes var pieprasīt šo informāciju pārlūkam Chrome un saņemt apstiprinājumu no iepriekš apmeklētās vietnes, ka, visticamāk, esat īsts cilvēks.</translation>

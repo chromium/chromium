@@ -1895,6 +1895,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2412015533711271895">Necesitas o permiso do teu pai ou nai (titor ou titora) para usar esta extensión</translation>
 <translation id="2412593942846481727">Hai unha actualización dispoñible</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Personaliza o navegador máis con extensións de <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Retomar a navegación de <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2415117815770324983">Pecha a túa sesión na maioría dos sitios. Seguirás tendo a sesión iniciada na túa Conta de Google.</translation>
@@ -6833,6 +6834,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6271824294945464304">Vaise compartir o contrasinal</translation>
 <translation id="6273677812470008672">Calidade</translation>
 <translation id="6274089201566806618">Establecendo conexión co dispositivo <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">A personalización dos anuncios que se che mostran depende de moitos factores, como, por exemplo, desta opción de configuración, dos <ph name="BEGIN_LINK1" />anuncios suxeridos polos sitios<ph name="LINK_END1" />, da <ph name="BEGIN_LINK2" />configuración de cookies<ph name="LINK_END2" /> ou de se o sitio que estás vendo personaliza ou non os anuncios. Máis información sobre <ph name="BEGIN_LINK3" />como xestionar a privacidade nos anuncios<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Gravación da pantalla</translation>
 <translation id="6276210637549544171">O proxy <ph name="PROXY_SERVER" /> require un nome de usuario e un contrasinal.</translation>
 <translation id="6277105963844135994">Tempo de espera da rede</translation>

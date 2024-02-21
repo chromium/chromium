@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">કોઈ નેટવર્ક નથી</translation>
 <translation id="1056898198331236512">ચેતવણી</translation>
 <translation id="1058009965971887428">પ્રતિસાદની જાણ કરો</translation>
+<translation id="1059120031266247284">તમારી સાથે શેર કર્યું</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">બદલો</translation>
 <translation id="1073899992769346247">બૅટરી બદલો અથવા તેને રિચાર્જ કરો</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="3580650856351781466">સ્પીચ ફાઇલો ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="3585296979871889131">તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જુઓ</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">બાજુનું બટન</translation>
 <translation id="3593039967545720377">તમારું ક્લિપબોર્ડ જોવા માટે <ph name="SHORTCUT_KEY_NAME" /> + V દબાવીને તમારા ક્લિપબોર્ડનો ઇતિહાસ ઍક્સેસ કરો. શરૂ કરવા માટે કોઈ આઇટમ કૉપિ કરો.</translation>
 <translation id="3593646411856133110">ખુલ્લી ઍપ જોવા માટે ઉપર સ્વાઇપ કરો અને હોલ્ડ કરો</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">ઇનપુટ</translation>
 <translation id="3621712662352432595">ઑડિયો સેટિંગ</translation>
 <translation id="3626281679859535460">તેજ</translation>
+<translation id="3628323833346754646">આગળનું બટન</translation>
 <translation id="3630697955794050612">બંધ</translation>
 <translation id="3631369015426612114">નીચેના પરથી સૂચનાઓને મંજૂરી આપો</translation>
 <translation id="3633097874324966332">ડિવાઇસનું જોડાણ કરવા માટે બ્લૂટૂથના સેટિંગ ખોલો</translation>
@@ -1284,6 +1287,7 @@
 <translation id="6052614013050385269">લિંક પર રાઇટ-ક્લિક કરો</translation>
 <translation id="6054305421211936131">સ્માર્ટ કાર્ડ વડે સાઇન ઇન કરો</translation>
 <translation id="6059276912018042191">તાજેતરની Chrome ટૅબ</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">તમે ઑટોમૅટિક રીતે <ph name="LOGOUT_TIME_LEFT" /> માં સાઇન આઉટ થઈ જશો.</translation>
 <translation id="6064463340679478396">ફાઇલનો વપરાશ પૂર્ણ થયો</translation>
 <translation id="6068258534237496331">વીડિયો કૉલના નિયંત્રણો</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6309219492973062892">શેલ્ફ આઇકન 1-8 પર ક્લિક અથવા ટૅપ કરો</translation>
 <translation id="6315170314923504164">અવાજ</translation>
 <translation id="6319058840130157106">સૌથી નીચેના જમણા ખૂણા, લૉન્ચર, ઍડ્રેસ બાર, બુકમાર્ક બાર, ખુલ્લી હોય તે વેબસાઇટ અને ડાઉનલોડ વચ્ચે સ્વિચ કરવા માટે, પાછળની તરફ ખસેડો</translation>
+<translation id="6319503618073410818">બ્રાઉઝરમાં વિગતો જુઓ</translation>
 <translation id="6324916366299863871">શૉર્ટકટમાંમાં ફેરફાર કરો</translation>
 <translation id="6330012934079202188">બધી ડેસ્ક પરથી વિન્ડો બતાવી રહ્યાં છીએ, વર્તમાન ડેસ્ક પરની વિન્ડો બતાવવા માટે ઉપરની ઍરો કી દબાવો</translation>
 <translation id="6338485349199627913">મેનેજ કરાયેલું સત્ર <ph name="DISPLAY_NAME" />ને <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -1565,6 +1570,7 @@
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> મેમરી | કુલ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% બૅટરી બાકી છે. તમારા ડિવાઇસને પાવર સૉર્સ સાથે કનેક્ટ કરો.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. અપડેટ લાગુ કરવા માટે આ Chromebookને ફરી શરૂ કરવાની જરૂર છે. આમાં 1 મિનિટ જેટલો સમય લાગી શકે છે.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">પાછળનો માઇક્રોફોન</translation>
 <translation id="7258828758145722155">ગઈકાલે ફેરફાર કરવામાં આવ્યો હતો</translation>
 <translation id="726276584504105859">વિભાજિત સ્ક્રીનનો ઉપયોગ કરવા માટે અહીં ખેંચો</translation>
@@ -1692,6 +1698,7 @@
 <translation id="7742327441377685481">કોઈ નોટિફિકેશન નથી</translation>
 <translation id="7748275671948949022">શેલ્ફ પર લૉન્ચર બટનને હાઇલાઇટ કરો</translation>
 <translation id="7749443890790263709">ડેસ્કની મહત્તમ સંખ્યા પર પહોંચી ગયા.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">અપડેટની વિગતો જોવા માટે ક્લિક કરો</translation>
 <translation id="7768784765476638775">સાંભળવા માટે પસંદ કરો</translation>
 <translation id="7769299611924763557">તમારું GIF ટૂંક સમયમાં તૈયાર થઈ જશે</translation>
@@ -2019,6 +2026,7 @@
 <translation id="9098969848082897657">ફોન સાઇલન્ટ રાખો</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> અથવા <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ક્રિયામાં કરેલો છેલ્લો ફેરફાર રદ કરો</translation>
+<translation id="9129245940793250979">પાછળનું બટન</translation>
 <translation id="9133335900048457298">સંરક્ષિત કન્ટેન્ટ રેકોર્ડ કરી શકાતું નથી</translation>
 <translation id="9139720510312328767">આગલો અક્ષર ડિલીટ કરો</translation>
 <translation id="9151906066336345901">end</translation>

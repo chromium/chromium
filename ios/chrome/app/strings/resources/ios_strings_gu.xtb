@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">સરનામું મળ્યું</translation>
 <translation id="2286505070150039482">હાઇલાઇટ કરેલી ટેક્સ્ટ</translation>
 <translation id="2287614783861766820">{count,plural, =1{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}one{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}other{આ ડિવાઇસમાંથી આ સરનામા ડિલીટ કરવામાં આવશે.}}</translation>
-<translation id="2297822946037605517">આ પેજ શેર કરો</translation>
 <translation id="2297989278479054870">તમે સાઇન આઉટ કરો ત્યારબાદ તમારા Google એકાઉન્ટમાંના બુકમાર્ક, પાસવર્ડ વગેરેને આ ડિવાઇસમાંથીકાઢી નાખવામાં આવશે.</translation>
 <translation id="2299218006564889602">તમારા પાસવર્ડને Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં તેમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
@@ -570,6 +569,7 @@
 <translation id="3922310737605261887">કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
 <translation id="3928666092801078803">મારા ડેટાને સંયોજિત કરો</translation>
 <translation id="3929457972718048006">સરનામાં</translation>
+<translation id="3939505428630887612">આ પેજ વિશે</translation>
 <translation id="3948600256434252210">છૂપા મોડમાં બ્રાઉઝ કરવા માટે તમે જમણી તરફ સ્વાઇપ કરી શકો છો.</translation>
 <translation id="3955822496205734389">તમારી પાસે નબળા પાસવર્ડ છે.</translation>
 <translation id="3958312024468322930">તમારી હોમ સ્ક્રીનની એકદમ નીચે તેને ડૉક પર ખેંચો</translation>
@@ -584,6 +584,7 @@
 <translation id="4002019827078931033">ઍડ્રેસ બારને સૌથી ઉપર ખસેડો</translation>
 <translation id="4002066346123236978">શીર્ષક</translation>
 <translation id="4004204301268239848">પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે, જેથી તમે કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરી શકો.</translation>
+<translation id="4008355329784586136">તમારા ડિફૉલ્ટ બ્રાઉઝર સેટિંગ ચેક કરો</translation>
 <translation id="4018310736049373830">પ્રવૃત્તિને મેનેજ કરો</translation>
 <translation id="4021931095789478915">વાંચન સૂચિમાં ${url} ઉમેરો</translation>
 <translation id="4038354071007134711">આ ઉપકરણ પર કોઈ ઍપ્લિકેશન ફાઇલને ખોલી શકતી નથી.</translation>
@@ -632,6 +633,7 @@
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4279431713294750185">તમે આગળ જવા માટે, કિનારીને સ્વાઇપ કરી શકો છો.</translation>
 <translation id="4281844954008187215">સેવાની શરતો</translation>
+<translation id="4282944936010261425">તમારે ઠીક કરવી પડે એવી કોઈ સુરક્ષા સંબંધિત સમસ્યા નથી.</translation>
 <translation id="4286718549648564014">સરનામું તમારા એકાઉન્ટ <ph name="USER_EMAIL" /> પર ખસેડવામાં આવ્યું</translation>
 <translation id="4293080268407233932">શોધો</translation>
 <translation id="4302248187517737842">કોઈ વપરાશકર્તાનું નામ નથી ••••••••</translation>
@@ -1281,6 +1283,7 @@
 <translation id="7557508262441527045">સાઇન આઉટ કર્યું</translation>
 <translation id="7561196759112975576">હંમેશાં</translation>
 <translation id="7564917801238348224">સાચવો...</translation>
+<translation id="7569588934989281656">એક ટૅબ પરથી બીજા પર સ્વિચ કરવા માટે, તમે ટૅબ સ્ટ્રિપ સ્વાઇપ કરી શકો છો.</translation>
 <translation id="7582857256643797524">આ સેટિંગ તમારા ડિવાઇસ પર ચાલુ કરેલું છે</translation>
 <translation id="7583004045319035904">તમારી છૂપી ટૅબને અનલૉક કરવા માટે <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />નો ઉપયોગ કરો.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
@@ -1416,6 +1419,7 @@
 <translation id="8248969482078657578">નિષ્ક્રિય ટૅબ તમને ફોકસમાં રહેવામાં સહાય કરે છે</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8263336784344783289">આ ગ્રૂપને નામ આપો</translation>
+<translation id="8263809106706527890">તમારી ડિફૉલ્ટ બ્રાઉઝર સેટિંગમાં ફેરફાર થયો હોઈ શકે છે. તમે આને સેટિંગમાં જઈને ચેક કરી શકો છો.</translation>
 <translation id="8264966119170358612">તમારા અમુક સાચવેલા પાસવર્ડ બિન-Google ડેટા ઉલ્લંઘનમાં જાહેર કરવામાં આવ્યા હતા. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">તમારી iPad રીસેટ પ્રક્રિયાના ભાગ તરીકે, તમારા એકાઉન્ટ <ph name="USER_NAME" />માંથી તમને સાઇન આઉટ કરવામાં આવ્યા. ફરીથી સાઇન ઇન કરવા માટે, "ચાલુ રાખો" પર ટૅપ કરો.</translation>
 <translation id="8271720166617117963">સ્વીકારો અને સાઇન ઇન કરો</translation>

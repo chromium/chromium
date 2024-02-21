@@ -72,6 +72,7 @@
 <translation id="1131264053432022307">תמונה שהעתקת</translation>
 <translation id="1142713751288681188">סוג הנייר</translation>
 <translation id="1142846828089312304">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
+<translation id="1144136880160289237">עוד אין נושאים פעילים</translation>
 <translation id="1149617035358809955">לאמת את זהותך לצורך מילוי פרטי התשלום שלך</translation>
 <translation id="1150565364351027703">משקפי שמש</translation>
 <translation id="1150979032973867961">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי מערכת ההפעלה של המחשב. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
@@ -324,6 +325,7 @@
 <translation id="160851722280695521">‏הפעלת המשחק Dino Run ב-Chrome</translation>
 <translation id="161042844686301425">ציאן</translation>
 <translation id="1611101756749861742">גליל שני</translation>
+<translation id="1612199629998703524">עריכת ההגדרות של הנושאים</translation>
 <translation id="1615178538289490617">ביטול הגישה אל <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
 <translation id="1617276713587758852">רכבי קרוסאובר</translation>
@@ -433,6 +435,7 @@
 <translation id="1812527064848182527">לרוחב</translation>
 <translation id="1812975699435941848">לימודי בריאות והכשרה רפואית</translation>
 <translation id="1813414402673211292">ניקוי נתוני גלישה</translation>
+<translation id="1818522458013171885">ביטול החסימה</translation>
 <translation id="182139138257690338">הורדות אוטומטיות</translation>
 <translation id="1821930232296380041">הבקשה או הפרמטרים של הבקשה אינם חוקיים</translation>
 <translation id="1822540298136254167">אתרים שנכנסת אליהם וזמני השהייה באתרים האלה</translation>
@@ -490,6 +493,7 @@
 <translation id="1945968466830820669">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chromium, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="1946849748901605102">‏12x15 אינץ'</translation>
 <translation id="1947454675006758438">סיכת הידוק בפינה הימנית העליונה</translation>
+<translation id="1953729392594614704">אחרי החסימה של <ph name="TOPIC" /> ייחסמו גם כל הנושאים הקשורים, אפילו אם הם פעילים</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">איתור המכשיר, הגנה עליו או מחיקת הנתונים שבו</translation>
 <translation id="1958218078413065209">הניקוד הכי גבוה שלך הוא <ph name="SCORE" />.</translation>
@@ -550,6 +554,7 @@
 <translation id="2071156619270205202">הכרטיס הזה לא עומד בדרישות לקבלת מספר כרטיס וירטואלי.</translation>
 <translation id="2071692954027939183">ההתראות נחסמו באופן אוטומטי כי ברוב המקרים לא נתת הרשאה להציג אותן</translation>
 <translation id="2071852865256799872">הדפדפן מנוהל על ידי הארגון שלך והפרופיל שלך מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="2074733626795553847">ביטול החסימה של <ph name="TOPIC" /></translation>
 <translation id="2075497153347571252">ההרשאה '<ph name="PERMISSION" />' חסומה לפי הגדרת האדמין ב-<ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2080021694978766903">המדיניות הזו יכולה לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות.</translation>
@@ -584,6 +589,7 @@
 <translation id="2137891579555018930">בהמתנה לאישור…</translation>
 <translation id="213826338245044447">סימניות לנייד</translation>
 <translation id="2141000681034340397">עריכת הקלט</translation>
+<translation id="2144171668675205303">אין נושאים פעילים</translation>
 <translation id="214556005048008348">ביטול תשלום</translation>
 <translation id="2148613324460538318">הוספת כרטיס</translation>
 <translation id="2148716181193084225">היום</translation>
@@ -803,6 +809,7 @@
 <translation id="2596415276201385844">‏כדי ליצור חיבור מאובטח, השעון צריך להיות מוגדר כהלכה. הסיבה לכך היא שהאישורים שבהם אתרים משתמשים כדי לזהות את עצמם תקפים רק למשך פרקי זמן מסוימים. מאחר שהשעון במכשיר שלך שגוי, Chrome לא יכול לאמת את האישורים האלו.</translation>
 <translation id="2597378329261239068">מסמך זה מוגן באמצעות סיסמה. יש להזין סיסמה.</translation>
 <translation id="2606760465469169465">אימות אוטומטי</translation>
+<translation id="2608019759319359258">כשחוסמים נושא מסוים, הוא מפסיק לשמש להתאמה אישית של מודעות</translation>
 <translation id="2610561535971892504">לחיצה להעתקה</translation>
 <translation id="2612993535136743634">‏כל קודי האבטחה שנשמרו במכשיר ובחשבון ה-Google יימחקו</translation>
 <translation id="2616412942031748191">שיווק ואופטימיזציה למנועי חיפוש</translation>
@@ -1112,6 +1119,7 @@
 <translation id="3299720788264079132">משהו השתבש במהלך השימוש ב<ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">‏30x42 אינץ'</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
+<translation id="3303872874382375219">‏יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK1" />נושאי המודעות<ph name="LINK_END1" />, ל<ph name="BEGIN_LINK2" />הגדרות קובצי ה-Cookie<ph name="LINK_END2" />, למצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת) ולגורמים נוספים. <ph name="BEGIN_LINK3" />מידע נוסף על קביעת ההגדרות לפרטיות בפרסום<ph name="LINK_END3" /></translation>
 <translation id="3304073249511302126">‏סריקת Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. לפי מנהל הסיסמאות, מומלץ לשנות את הסיסמה הזו עכשיו.</translation>
@@ -1144,6 +1152,7 @@
 <translation id="3377144306166885718">‏בשרת נעשה שימוש בגרסה מיושנת של TLS.</translation>
 <translation id="3377188786107721145">שגיאה בניתוח המדיניות</translation>
 <translation id="3377736046129930310">נעילת המסך מאפשרת לך לאשר כרטיסים מהר יותר</translation>
+<translation id="3378612801784846695">הנושאים מבוססים על היסטוריית הגלישה שלך מהזמן האחרון, ואתרים נעזרים בנושאים האלה כדי להציג לך מודעות בהתאמה אישית תוך כדי הגנה על הפרטים המזהים שלך</translation>
 <translation id="3380365263193509176">שגיאה לא ידועה</translation>
 <translation id="3380864720620200369">מספר לקוח:</translation>
 <translation id="3381668585148405088">אימות הרכישה</translation>
@@ -1174,6 +1183,7 @@
 <translation id="3433111389595862568">תוכנות לעבודה משותפת ולשיחות ועידה</translation>
 <translation id="3433144818443565002">צ'אט קולי ווידאו צ'אט</translation>
 <translation id="3434025015623587566">‏למנהל הסיסמאות של Google נדרשת עוד גישה</translation>
+<translation id="3434346831962601311">אין נושאים חסומים</translation>
 <translation id="343474037147570563">‏קבצים שמעלים או מצרפים נשלחים ל-Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="3435557549311968410">Continuous (Short)</translation>
 <translation id="3435738964857648380">אבטחה</translation>
@@ -1296,6 +1306,7 @@
 <translation id="3659521826520353662">אתרים בהגדרת האדמין שבהם מבקרים, וזמני הביקורים: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">מילות מפתח:</translation>
 <translation id="3665100783276035932">רוב האתרים אמורים לפעול כצפוי</translation>
+<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />מידע נוסף<ph name="LINK_END1" /></translation>
 <translation id="3671117652518853176">כשההגדרה מושבתת, מדי פעם עשויה להופיע בקשה לאימות מטעמי אבטחה</translation>
 <translation id="3671540257457995106">לאפשר את שינוי הגודל?</translation>
 <translation id="3672568546897166916">שגיאה ב-<ph name="ERROR_PATH" />: ‏<ph name="ERROR_MESSAGE" /></translation>
@@ -1885,6 +1896,7 @@ Del</translation>
 <translation id="4895019427244614047">מחיקת הכתובת</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">אולימפיאדה</translation>
+<translation id="4898742041545089450">בוטלה חסימת הנושא הזה ויכול להיות שהוא יהיה פעיל, בהתאם להיסטוריית הגלישה שלך</translation>
 <translation id="4900217275619098670">הגליל התשיעי</translation>
 <translation id="4901052769830245369">Labels (Semi-Gloss)</translation>
 <translation id="4901162432287938633">היגיינה ותמרוקים</translation>
@@ -1959,6 +1971,7 @@ Del</translation>
 <translation id="5040262127954254034">פרטיות</translation>
 <translation id="5043480802608081735">קישור שהעתקת</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
+<translation id="5052517576853118371">נושאים פעילים</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}one{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}two{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}other{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}}</translation>
 <translation id="505757197798929356">יש לציין את הסיבה לפתיחה (חובה)</translation>
 <translation id="5060419232449737386">הגדרות לכתוביות</translation>
@@ -2033,6 +2046,7 @@ Del</translation>
 <translation id="5205222826937269299">שם (חובה)</translation>
 <translation id="5206392433295093945">חדר שינה</translation>
 <translation id="5209670883520018268">מגש 20</translation>
+<translation id="5214542134842513912">אפשר לבחור קטגוריות רחבות של נושאים שיוכלו לשמש להתאמה אישית של מודעות. אם קטגוריה רחבה יותר תושבת, גם הנושאים שקשורים אליה ייחסמו.</translation>
 <translation id="521659676233207110">מגש 13</translation>
 <translation id="5216942107514965959">הכניסה האחרונה בוצעה היום</translation>
 <translation id="5217759126664161410">פורמט הפרוטוקול לא תקין.</translation>
@@ -2251,6 +2265,7 @@ Del</translation>
 <translation id="568292603005599551">‏מיקום תמונה על ציר X</translation>
 <translation id="5684277895745049190">רשימה</translation>
 <translation id="5684874026226664614">אופס. לא ניתן היה לתרגם את הדף הזה.</translation>
+<translation id="568489534660743582">השימוש במודעות שאתרים מציעים נותן לאתרים דרך להתאמה אישית של מודעות, ויש עוד מגוון דרכים אחרות. בלי השימוש במודעות שאתרים מציעים, עדיין יוצגו לך מודעות באתרים, אבל אולי הן יהיו פחות רלוונטיות לך.</translation>
 <translation id="5687340364605915800">לכל אתר יש דרך ושיקולים משלו בתגובה לבקשה הזו</translation>
 <translation id="5688137257686092846">לימודי קוסמטיקה וטיפוח</translation>
 <translation id="5689199277474810259">‏ייצוא אל JSON</translation>
@@ -3315,6 +3330,7 @@ Del</translation>
 <translation id="7878562273885520351">ייתכן שאבטחת הסיסמה שלך נפגעה</translation>
 <translation id="7880146494886811634">שמירת הכתובת</translation>
 <translation id="7882421473871500483">חום</translation>
+<translation id="7886897188117641322">אפשר לבחור קטגוריות רחבות של נושאים שיוכלו לשמש להתאמה אישית של מודעות</translation>
 <translation id="7887683347370398519">‏יש לבדוק את ה-CVC ולנסות שוב</translation>
 <translation id="7887885240995164102">מעבר אל מצב 'תמונה בתוך תמונה'</translation>
 <translation id="7888575728750733395">‏Rendering Intent בהדפסה</translation>
@@ -3393,6 +3409,7 @@ Del</translation>
 <translation id="8043255123207491407">הצגת התנאים וההגבלות של בית העסק</translation>
 <translation id="8046360364391076336">חומרים וציוד תעשייתי</translation>
 <translation id="8052898407431791827">הועתק ללוח</translation>
+<translation id="805766869470867930">לא חסמת אף נושא</translation>
 <translation id="8057711352706143257">יש בעיה בהגדרה של "<ph name="SOFTWARE_NAME" />". בדרך כלל, הסרת ההתקנה של "<ph name="SOFTWARE_NAME" />" פותרת את הבעיה. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">לא נדרש</translation>
 <translation id="8063875539456488183">שמירה ומעקב אחר המחירים</translation>
@@ -3469,6 +3486,7 @@ Del</translation>
 <translation id="8216640997712497593">‏14x18 אינץ'</translation>
 <translation id="8217240300496046857">‏אתרים לא יכולים להשתמש בקובצי cookie שעוקבים אחריך באינטרנט. ייתכן שתכונות באתרים מסוימים לא יפעלו כראוי.</translation>
 <translation id="8218327578424803826">מיקום מוקצה:</translation>
+<translation id="8220602974062798186">לחסום את <ph name="TOPIC" /> ואת כל הנושאים הקשורים?</translation>
 <translation id="8220833680085771143">חסימת המעקב לא זמינה באופן זמני</translation>
 <translation id="8228419419708659934">תצוגת 2 עמודים</translation>
 <translation id="8228477714872026922">האתר <ph name="ORIGIN" /> מבקש גישה למכשיר ברשת שלך:</translation>
@@ -3600,6 +3618,7 @@ Del</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{כרטיס אשראי אחד}one{# כרטיסי אשראי}two{שני כרטיסי אשראי}other{# כרטיסי אשראי}}</translation>
 <translation id="8467494337615822642">‏מעבר לדף בדיקת האבטחה ב-Chrome בהגדרות</translation>
 <translation id="8468358362970107653">‏מעטפה – C3</translation>
+<translation id="8472700501934242014">נושאים חסומים</translation>
 <translation id="8473626140772740486">‏300x450 מ"מ</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474910779563686872">הצגת פרטי המפתח</translation>
@@ -3939,6 +3958,7 @@ Del</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> משתמש בפרוטוקול שאינו נתמך.</translation>
 <translation id="918454845714257218">יש לבדוק את הקוד ב<ph name="SIDE_OF_CARD" /> ולנסות שוב</translation>
 <translation id="9186203289258525843">‏הלחצן להגדרת Chrome כדפדפן ברירת המחדל, מפעילים אותו כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת</translation>
+<translation id="9190557999028587593">נושאים מלפני יותר מ-4 שבועות נמחקים באופן אוטומטי</translation>
 <translation id="9191834167571392248">ניקוב בפינה השמאלית התחתונה</translation>
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9199905725844810519">ההדפסה חסומה</translation>

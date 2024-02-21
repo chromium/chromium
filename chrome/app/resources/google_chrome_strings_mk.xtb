@@ -179,6 +179,7 @@
 <translation id="3635073343384702370">Chrome може да ги проверува вашите лозинки кога ги зачувувате</translation>
 <translation id="3667616615096815454">Не можеше да се инсталира. Апликацијата е непозната за серверот.</translation>
 <translation id="3673813398384385993">Chrome откри дека „<ph name="EXTENSION_NAME" />“ содржи злонамерен софтвер</translation>
+<translation id="3697952514309507634">Други профили на Chrome</translation>
 <translation id="3703994572283698466">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Верзија на ChromeOS Flex</translation>
 <translation id="3718181793972440140">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
@@ -433,6 +434,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8019103195866286235">Програмерот го поништи објавувањето на екстензијава, па можеби не е безбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
 <translation id="80471789339884597">Фала за инсталирањето. Мора да ги рестартирате сите ваши прелистувачи пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Други профили на Chrome</translation>
 <translation id="8086881907087796310">Инсталацијата не успеа бидејќи вашиот компјутер не ги исполнува минималните барања за хардвер.</translation>
 <translation id="8129812357326543296">За &amp;Google Chrome</translation>
 <translation id="813913629614996137">Се иницијализира…</translation>

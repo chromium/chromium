@@ -179,6 +179,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3635073343384702370">Chrome lahko preveri gesla, če jih shranite</translation>
 <translation id="3667616615096815454">Namestitev ni mogoča, ker strežnik ne pozna aplikacije.</translation>
 <translation id="3673813398384385993">Chrome je ugotovil, da razširitev »<ph name="EXTENSION_NAME" />« vsebuje zlonamerno programsko opremo.</translation>
+<translation id="3697952514309507634">Drugi profili v Chromu</translation>
 <translation id="3703994572283698466">Chrome OS omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />, enako kot <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okolje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Različica sistema ChromeOS Flex</translation>
 <translation id="3718181793972440140">S tem bo iz te naprave izbrisan 1 element. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
@@ -433,6 +434,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8019103195866286235">Razvijalec je preklical objavo te razširitve in morda ni varna. Odstranite jo iz Chroma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
 <translation id="80471789339884597">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati vse brskalnike.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Drugi profili v Chromu</translation>
 <translation id="8086881907087796310">Namestitev ni uspela, ker računalnik ne izpolnjuje najnižjih zahtev za strojno opremo.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromu</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>

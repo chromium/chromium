@@ -175,6 +175,7 @@
 <translation id="3635073343384702370">Chrome dapat memeriksa sandi jika Anda menyimpannya</translation>
 <translation id="3667616615096815454">Tidak dapat menginstal, aplikasi tidak dikenali oleh server.</translation>
 <translation id="3673813398384385993">Chrome menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
+<translation id="3697952514309507634">Profil Chrome lainnya</translation>
 <translation id="3703994572283698466">ChromeOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />lingkungan pengembangan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versi ChromeOS Flex</translation>
 <translation id="3718181793972440140">Tindakan ini akan menghapus 1 item dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
@@ -425,6 +426,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8019103195866286235">Ekstensi ini dibatalkan publikasinya oleh developer, dan mungkin tidak aman. Hapus dari Chrome agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Profil Chrome lainnya</translation>
 <translation id="8086881907087796310">Penginstalan gagal karena komputer Anda tidak memenuhi persyaratan hardware minimum.</translation>
 <translation id="8129812357326543296">Tentang &amp;Google Chrome</translation>
 <translation id="813913629614996137">Memulai...</translation>

@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1044891598689252897">เว็บไซต์จะทำงานตามปกติ</translation>
 <translation id="1073417869336441572">ช่วยปรับปรุง Chrome โดยแจ้งให้เราทราบถึงเหตุผลที่คุณอนุญาตคุกกี้ของบุคคลที่สาม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">ซ่อนการ์ดราคาต่ำลง</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1192844206376121885">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN" /> จัดเก็บไว้</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">ความช่วยเหลือและความคิดเห็น</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
+<translation id="2550801787432930915">การ์ดราคาต่ำลง</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{บล็อกคุกกี้ 1 รายการ}other{บล็อกคุกกี้ # รายการ}}</translation>
 <translation id="2570922361219980984">การเข้าถึงตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดการเข้าถึงได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="257931822824936280">ขยาย - คลิกเพื่อยุบ</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">เมื่อเปิด</translation>
 <translation id="8805385115381080995">การท่องเว็บจะรวดเร็วขึ้นเนื่องจากเว็บไซต์อาจขอให้ยืนยันว่าคุณเป็นคนจริงๆ น้อยลง</translation>
 <translation id="8816026460808729765">บล็อกไม่ให้เว็บไซต์เข้าถึงเซ็นเซอร์</translation>
+<translation id="8843699287283948910">ซ่อนแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว ซึ่งหมายความว่าการปกป้องขณะท่องเว็บจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทํางานตามที่คาดได้มากกว่า</translation>
 <translation id="8889294078294184559">ขณะท่องเว็บ เว็บไซต์ต่างๆ สามารถตรวจสอบกับ Chrome และยืนยันด้วยเว็บไซต์ที่เข้าชมก่อนหน้าได้ว่าคุณเป็นคนจริงๆ</translation>

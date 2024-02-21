@@ -13,6 +13,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1180362651362502943">Fortsett å bruke Chrome-dataene i Google-kontoen din.</translation>
 <translation id="1200396280085622191">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
 <translation id="1229222343402087523">Søk etter ${searchPhrase} i Chrome</translation>
+<translation id="124228879633599436">Chrome er utdatert. Oppdater den for å holde deg trygg.</translation>
 <translation id="1282031177488366470">Bidra til å gjøre Chrome bedre og raskere</translation>
 <translation id="1320619893013575407">Du har slått av Chrome-pålogging.</translation>
 <translation id="1333745675627230582">Spill Chrome Dino-spillet</translation>
@@ -293,6 +294,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="878917453316810648">Chrome-tips: Bruk Chrome som standard</translation>
 <translation id="8808828119384186784">Chrome-innstillinger</translation>
+<translation id="8850736900032787670">For å få personlig tilpasset innhold basert på interessene dine, logg på Chrome.</translation>
 <translation id="8855781063981781621">For å deaktivere låsingsmodus i Chrome, slå den av på iPad.</translation>
 <translation id="8856877214925961642">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser.
 

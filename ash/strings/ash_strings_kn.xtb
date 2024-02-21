@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">ನೆಟ್ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="1056898198331236512">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="1058009965971887428">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ವರದಿ ಮಾಡಿ</translation>
+<translation id="1059120031266247284">ನಿಮ್ಮ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">ಸ್ಥಾನಾಂತರಿಸು</translation>
 <translation id="1073899992769346247">ಬ್ಯಾಟರಿಯನ್ನು ಬದಲಾಯಿಸಿ ಅಥವಾ ರೀಚಾರ್ಜ್ ಮಾಡಿ</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3580650856351781466">ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3585296979871889131">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮ, ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">ಪಕ್ಕದ ಬಟನ್</translation>
 <translation id="3593039967545720377">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ವೀಕ್ಷಿಸಲು <ph name="SHORTCUT_KEY_NAME" /> + V ಅನ್ನು ಒತ್ತುವ ಮೂಲಕ ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಇತಿಹಾಸವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು. ಪ್ರಾರಂಭಿಸಲು, ಐಟಂ ಅನ್ನು ನಕಲಿಸಿ.</translation>
 <translation id="3593646411856133110">ತೆರೆದಿರುವ ಆ್ಯಪ್‌ಗಳನ್ನು ನೋಡಲು, ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ, ಒತ್ತಿಹಿಡಿಯಿರಿ</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">ಇನ್‌ಪುಟ್</translation>
 <translation id="3621712662352432595">ಆಡಿಯೋ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3626281679859535460">ಪ್ರಕಾಶಮಾನ</translation>
+<translation id="3628323833346754646">ಮುಂದೆ ಬಟನ್</translation>
 <translation id="3630697955794050612">ಆಫ್</translation>
 <translation id="3631369015426612114">ಕೆಳಗಿನವುಗಳಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="3633097874324966332">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಜೋಡಿಸಲು ಬ್ಲೂಟೂತ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1284,6 +1287,7 @@
 <translation id="6052614013050385269">ಲಿಂಕ್‌ ಅನ್ನು ರೈಟ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="6054305421211936131">ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6059276912018042191">ಇತ್ತೀಚಿನ Chrome ಟ್ಯಾಬ್‌ಗಳು</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್‌ಔಟ್‌ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="6064463340679478396">ಫೈಲ್‌ನ ಬಳಕೆ ಮುಗಿದಿದೆ</translation>
 <translation id="6068258534237496331">ವೀಡಿಯೊ ಕರೆ ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6309219492973062892">ಶೆಲ್ಫ್ ಐಕಾನ್‌ಗಳು 1-8 ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ ಅಥವಾ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6315170314923504164">ಧ್ವನಿ</translation>
 <translation id="6319058840130157106">ಕೆಳಗಿನ ಬಲ ಮೂಲೆ, ಲಾಂಚರ್, ವಿಳಾಸ ಪಟ್ಟಿ, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿ, ತೆರೆದಿರುವ ವೆಬ್‌ಸೈಟ್ ಮತ್ತು ಡೌನ್‌ಲೋಡ್‌ಗಳ ನಡುವೆ ಹಿಂದಕ್ಕೆ ಸರಿಸಿ</translation>
+<translation id="6319503618073410818">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6324916366299863871">ಶಾರ್ಟ್‌ಕಟ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6330012934079202188">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ, ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್‌ನಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ಎಂಬುದು <ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾದ ಒಂದು ನಿರ್ವಹಿಸಿದ ಸೆಶನ್ ಆಗಿದೆ</translation>
@@ -1565,6 +1570,7 @@
 <translation id="7229029500464092426">ಬಳಸಲಾದ ಮೆಮೊರಿ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ಒಟ್ಟು ಮೆಮೊರಿ</translation>
 <translation id="7244725679040769470">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />% ರಷ್ಟಿದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಚಾರ್ಜ್ ಮಾಡಿ.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. ಅಪ್‌ಡೇಟ್ ಅನ್ವಯಿಸಲು, ಈ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. ಇದು 1 ನಿಮಿಷದವರೆಗೆ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">ಹಿಂಭಾಗದ ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="7258828758145722155">ನಿನ್ನೆ ಎಡಿಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="726276584504105859">ವಿಭಜಿತ ಪರದೆಯನ್ನು ಬಳಸಲು ಇಲ್ಲಿ ಡ್ರ್ಯಾಗ್‌ ಮಾಡಿ</translation>
@@ -1692,6 +1698,7 @@
 <translation id="7742327441377685481">ಯಾವುದೇ ಅಧಿಸೂಚನೆಗಳಿಲ್ಲ</translation>
 <translation id="7748275671948949022">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಲಾಂಚರ್ ಬಟನ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="7749443890790263709">ಗರಿಷ್ಠ ಸಂಖ್ಯೆಯ ಡೆಸ್ಕ್‌ಗಳನ್ನು ತಲುಪಲಾಗಿದೆ.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">ಅಪ್‌ಡೇಟ್‌ ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="7768784765476638775">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ</translation>
 <translation id="7769299611924763557">ನಿಮ್ಮ GIF ಶೀಘ್ರದಲ್ಲೇ ಸಿದ್ಧವಾಗಲಿದೆ</translation>
@@ -2019,6 +2026,7 @@
 <translation id="9098969848082897657">ಫೋನ್ ನಿಶ್ಯಬ್ದಗೊಳಿಸಿ</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ಅಥವಾ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ಹಿಂದಿನ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="9129245940793250979">ಹಿಂದೆ ಬಟನ್</translation>
 <translation id="9133335900048457298">ಸುರಕ್ಷಿತ ವಿಷಯವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="9139720510312328767">ಮುಂದಿನ ಅಕ್ಷರವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="9151906066336345901">end</translation>

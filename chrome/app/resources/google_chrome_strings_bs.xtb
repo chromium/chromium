@@ -179,6 +179,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3635073343384702370">Chrome može provjeravati vaše lozinke kada ih sačuvate</translation>
 <translation id="3667616615096815454">Nije moguće instalirati jer aplikacija nije poznata serveru.</translation>
 <translation id="3673813398384385993">Chrome je otkrio da ekstenzija "<ph name="EXTENSION_NAME" />" sadržava zlonamjerni softver</translation>
+<translation id="3697952514309507634">Drugi profili u Chromeu</translation>
 <translation id="3703994572283698466">ChromeOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzija ChromeOS Flexa</translation>
 <translation id="3718181793972440140">Ovim će se izbrisati 1 stavka s ovog uređaja. Da preuzmete svoje podatke kasnije, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
@@ -433,6 +434,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8019103195866286235">Programer je opozvao objavljivanje ove ekstenzije i može biti nesigurna. Uklonite je s Chromea kako više ne bi mogla vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući vaše lične informacije.</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Drugi profili u Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaš računar ne ispunjava minimalne hardverske zahtjeve.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
 <translation id="813913629614996137">Pokretanje…</translation>

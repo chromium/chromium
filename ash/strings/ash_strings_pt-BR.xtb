@@ -18,6 +18,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1058009965971887428">Fornecer feedback</translation>
+<translation id="1059120031266247284">Compartilhado com você</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1073899992769346247">Substitua ou recarregue a bateria</translation>
@@ -627,6 +628,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="3580650856351781466">Fazendo o download de arquivos de fala</translation>
 <translation id="3585296979871889131">Visualize arquivos de fotos, mídia, notificações e apps do smartphone</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Botão lateral</translation>
 <translation id="3593039967545720377">Para acessar o histórico da área de transferência, pressione <ph name="SHORTCUT_KEY_NAME" /> + V. Copie um item para começar.</translation>
 <translation id="3593646411856133110">Deslize para cima e mantenha a tela pressionada para ver os apps abertos</translation>
@@ -643,6 +645,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Configurações de áudio</translation>
 <translation id="3626281679859535460">Brilho</translation>
+<translation id="3628323833346754646">Botão frontal</translation>
 <translation id="3630697955794050612">desativada</translation>
 <translation id="3631369015426612114">Permitir as seguintes notificações</translation>
 <translation id="3633097874324966332">Abra as configurações do Bluetooth se quiser parear o dispositivo</translation>
@@ -1284,6 +1287,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="6052614013050385269">Clicar com o botão direito do mouse em um link</translation>
 <translation id="6054305421211936131">Fazer login com cartão inteligente</translation>
 <translation id="6059276912018042191">Guias recentes do Chrome</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Você sairá automaticamente em <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Terminei de usar o arquivo</translation>
 <translation id="6068258534237496331">Controles de videochamada</translation>
@@ -1345,6 +1349,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="6309219492973062892">Clicar ou tocar nos ícones de estante 1 a 8</translation>
 <translation id="6315170314923504164">Voz</translation>
 <translation id="6319058840130157106">Navegue para trás, passando pelo canto inferior direito, o acesso rápido, a barra de endereço, a barra de favoritos, o site aberto e os downloads</translation>
+<translation id="6319503618073410818">Mais detalhes no navegador</translation>
 <translation id="6324916366299863871">Editar atalho</translation>
 <translation id="6330012934079202188">Mostrando janelas de todos os espaços de trabalho. Pressione a tecla de seta para cima para mostrar as do espaço de trabalho atual</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerenciada por <ph name="MANAGER" /></translation>
@@ -1565,6 +1570,7 @@ Nova instalação</translation>
 <translation id="7229029500464092426">Memória usada: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Tempo restante: cerca de <ph name="PERCENTAGE" /> (%). Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este Chromebook precisa ser reiniciado para que uma atualização seja aplicada. Isso pode demorar até um minuto.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Microfone traseiro</translation>
 <translation id="7258828758145722155">Editado ontem</translation>
 <translation id="726276584504105859">Arraste aqui para usar a tela dividida</translation>
@@ -1692,6 +1698,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7742327441377685481">Sem notificações</translation>
 <translation id="7748275671948949022">Destacar o botão do acesso rápido na estante</translation>
 <translation id="7749443890790263709">O número máximo de áreas de trabalho foi atingido.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Clique para ver detalhes da atualização</translation>
 <translation id="7768784765476638775">Selecionar para ouvir</translation>
 <translation id="7769299611924763557">Seu GIF estará pronto em breve</translation>
@@ -2019,6 +2026,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9098969848082897657">Silenciar smartphone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desfazer a última ação</translation>
+<translation id="9129245940793250979">Botão traseiro</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9139720510312328767">Excluir a próxima letra</translation>
 <translation id="9151906066336345901">end</translation>

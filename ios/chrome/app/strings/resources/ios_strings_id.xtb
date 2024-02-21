@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">Alamat Ditemukan</translation>
 <translation id="2286505070150039482">Teks yang Ditandai</translation>
 <translation id="2287614783861766820">{count,plural, =1{Alamat ini akan dihapus dari perangkat ini.}other{Alamat ini akan dihapus dari perangkat ini.}}</translation>
-<translation id="2297822946037605517">Bagikan halaman ini</translation>
 <translation id="2297989278479054870">Setelah Anda logout, bookmark, sandi, dan data lainnya di Akun Google Anda akan dihapus dari perangkat ini.</translation>
 <translation id="2299218006564889602">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
@@ -570,6 +569,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3922310737605261887">Telusuri Teks yang Disalin</translation>
 <translation id="3928666092801078803">Gabungkan data saya</translation>
 <translation id="3929457972718048006">Alamat</translation>
+<translation id="3939505428630887612">Info Tentang Halaman Ini</translation>
 <translation id="3948600256434252210">Anda dapat menggeser ke kanan untuk menjelajah dalam mode Samaran.</translation>
 <translation id="3955822496205734389">Anda memiliki sandi lemah.</translation>
 <translation id="3958312024468322930">Tarik ikon aplikasi ke dock di bagian bawah Layar Utama</translation>
@@ -584,6 +584,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4002019827078931033">Pindahkan Kolom URL ke Atas</translation>
 <translation id="4002066346123236978">Judul</translation>
 <translation id="4004204301268239848">Sandi disimpan di Akun Google Anda agar Anda dapat menggunakannya di perangkat mana pun.</translation>
+<translation id="4008355329784586136">Periksa Setelan Browser Default Anda</translation>
 <translation id="4018310736049373830">Kelola Aktivitas</translation>
 <translation id="4021931095789478915">Tambahkan ${url} ke daftar bacaan</translation>
 <translation id="4038354071007134711">Tidak ada aplikasi di perangkat ini yang dapat membuka file.</translation>
@@ -632,6 +633,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4279431713294750185">Anda dapat menggeser tepi untuk maju.</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
+<translation id="4282944936010261425">Tidak ada masalah keamanan yang harus Anda perbaiki.</translation>
 <translation id="4286718549648564014">Alamat dipindahkan ke akun <ph name="USER_EMAIL" /> Anda</translation>
 <translation id="4293080268407233932">Telusuri</translation>
 <translation id="4302248187517737842">Tidak Ada Nama Pengguna ••••••••</translation>
@@ -1281,6 +1283,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7557508262441527045">Telah logout</translation>
 <translation id="7561196759112975576">Selalu</translation>
 <translation id="7564917801238348224">SIMPAN...</translation>
+<translation id="7569588934989281656">Anda dapat menggeser kolom tab untuk berpindah-pindah tab.</translation>
 <translation id="7582857256643797524">Setelan ini diaktifkan di perangkat Anda</translation>
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Samaran.</translation>
 <translation id="7600965453749440009">Jangan pernah terjemahkan bahasa <ph name="LANGUAGE" /></translation>
@@ -1416,6 +1419,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8248969482078657578">Tab Tidak Aktif Membantu Anda Tetap Fokus</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8263336784344783289">Beri Nama Grup Ini</translation>
+<translation id="8263809106706527890">Mungkin ada perubahan pada setelan browser default Anda. Anda dapat memeriksanya di setelan.</translation>
 <translation id="8264966119170358612">Beberapa sandi tersimpan Anda terekspos dalam pelanggaran data non-Google. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Anda telah logout dari akun, <ph name="USER_NAME" />, sebagai bagian dari proses reset iPad. Untuk login kembali, ketuk "Lanjutkan" di bawah.</translation>
 <translation id="8271720166617117963">Terima dan Login</translation>

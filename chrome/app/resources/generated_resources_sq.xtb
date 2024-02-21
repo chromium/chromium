@@ -1894,6 +1894,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2412015533711271895">Prindi ose kujdestari yt duhet të pranojë që të përdorësh këtë shtesë</translation>
 <translation id="2412593942846481727">Ka përditësim</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Personalizoje edhe më shumë shfletuesin tënd me shtesat nga <ph name="BEGIN_LINK1" />Dyqani i uebit i Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Vazhdo të shfletosh për: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">E errët</translation>
 <translation id="2415117815770324983">Bën që të dalësh nga llogaria nga shumica e sajteve. Do të qëndrosh i identifikuar në "Llogarinë tënde të Google".</translation>
@@ -6832,6 +6833,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6271824294945464304">Fjalëkalimi po ndahet</translation>
 <translation id="6273677812470008672">Cilësia</translation>
 <translation id="6274089201566806618">Po lidhet me <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Nëse një reklamë që shikon është e personalizuar, kjo mund të varet nga shumë gjëra, duke përfshirë këtë cilësim, <ph name="BEGIN_LINK1" />reklamat e sugjeruara nga sajtet<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cilësimet e kukive<ph name="LINK_END2" /> dhe nëse sajti që po shikon i personalizon reklamat. Mëso më shumë rreth <ph name="BEGIN_LINK3" />menaxhimit të privatësisë së reklamave<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Transmetimi i ekranit</translation>
 <translation id="6276210637549544171">Përfaqësuesi <ph name="PROXY_SERVER" /> kërkon një emër përdoruesi dhe një fjalëkalim.</translation>
 <translation id="6277105963844135994">Rrjetit i kaloi afati</translation>
@@ -7816,6 +7818,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7044606776288350625">Sinkronizo të dhënat</translation>
 <translation id="7047059339731138197">Zgjidh një sfond</translation>
 <translation id="7049293980323620022">Të mbahet skedari?</translation>
+<translation id="7049524156282610342">Të dhënat e shfletimit: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Konfigurimi i zonës së qasje për internet është i pavlefshëm</translation>
 <translation id="7052237160939977163">Dërgo të dhënat e gjurmimit të performancës</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
@@ -8533,6 +8536,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7630426712700473382">Kjo pajisje menaxhohet nga <ph name="MANAGER" /> dhe të kërkon të identifikohesh çdo herë.</translation>
 <translation id="7631014249255418691">Aplikacionet dhe skedarët e Linux janë rezervuar me sukses</translation>
 <translation id="7631887513477658702">&amp;Hapi gjithmonë skedarët e këtij lloji</translation>
+<translation id="7632437836497571618">Përdor lidhjet e sigurta për të kërkuar për sajtet</translation>
 <translation id="7632948528260659758">Aplikacionet e mëposhtme të kioskës kanë dështuar me përditësimin:</translation>
 <translation id="7633724038415831385">Kjo është hera e vetme që do të presësh për përditësime. Në pajisjet Chromebook, përditësimet e softuerëve kryhen në sfond.</translation>
 <translation id="7634337648687970851">Rikuperimi i të dhënave lokale nuk mbështetet aktualisht.</translation>
@@ -8794,6 +8798,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7803657407897251194">Për të vazhduar konfigurimin me pajisjen tënde Android, lidhe <ph name="DEVICE_TYPE" /> me një rrjet</translation>
 <translation id="7804072833593604762">Skeda u mbyll</translation>
 <translation id="780446144738273886">Skano skedarin PDF për të nxjerrë tekstin nga lexuesi i ekranit. Mbështetet vetëm në shfletuesin Chrome</translation>
+<translation id="7805371082115476536">E lehtë</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7805906048382884326">Mbylle këshillën</translation>
 <translation id="7806722269368320106">Një aplikacion, po instalohet</translation>

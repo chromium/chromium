@@ -337,7 +337,6 @@
 <translation id="2870560284913253234">Ιστότοπος</translation>
 <translation id="2871733351037274014">Προφόρτωση σελίδων</translation>
 <translation id="2876136027428473467">Ο χρήστης <ph name="CHILD_NAME" /> θέλει να εγκρίνετε αυτόν τον ιστότοπο:</translation>
-<translation id="2876194821763651818">Οι κωδικοί πρόσβασης αποθηκεύτηκαν στον λογαριασμό <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Μάθετε περισσότερα σχετικά με το <ph name="BEGIN_LINK" />πώς το Chrome διατηρεί ιδιωτικά τα δεδομένα σας<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Σχετικά με το Chrome</translation>
 <translation id="2891154217021530873">Διακοπή φόρτωσης σελίδας</translation>
@@ -1424,6 +1423,7 @@
 <translation id="8354977102499939946">Κάντε γρήγορη αναζήτηση με φωνητικές εντολές. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="835847953965672673">Έγινε επαναφορά <ph name="NUMBER_OF_DOWNLOADS" /> λήψεων.</translation>
 <translation id="8368001212524806591">Παρακολούθηση τιμής</translation>
+<translation id="8378850197701296741">Έχετε σελιδοδείκτες, ιστορικό και άλλες ρυθμίσεις από τον λογαριασμό <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Επαλήθευση ταυτότητας</translation>
 <translation id="8393700583063109961">Αποστολή μηνύματος</translation>
 <translation id="8394720698884623075">Ελέγχει εάν τα URL περιλαμβάνονται στην λίστα μη ασφαλών ιστοτόπων που είναι αποθηκευμένη στο Chrome</translation>

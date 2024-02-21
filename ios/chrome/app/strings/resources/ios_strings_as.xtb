@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">ঠিকনা বিচাৰি পোৱা গৈছে</translation>
 <translation id="2286505070150039482">হাইলাইট কৰা পাঠ</translation>
 <translation id="2287614783861766820">{count,plural, =1{এই ঠিকনাটো এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}one{এই ঠিকনাসমূহ এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}other{এই ঠিকনাসমূহ এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}}</translation>
-<translation id="2297822946037605517">এই পৃষ্ঠাখন শ্বেয়াৰ কৰক</translation>
 <translation id="2297989278479054870">আপুনি ছাইন আউট কৰাৰ পাছত, আপোনাৰ Google একাউণ্টৰ বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক এই ডিভাইচৰ পৰা আঁতৰোৱা হ'ব।</translation>
 <translation id="2299218006564889602">Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হয়।</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
@@ -571,6 +570,7 @@
 <translation id="3922310737605261887">প্ৰতিলিপি কৰা পাঠৰ সন্ধান কৰক</translation>
 <translation id="3928666092801078803">মোৰ ডেটা সংযুক্ত কৰক</translation>
 <translation id="3929457972718048006">ঠিকনা</translation>
+<translation id="3939505428630887612">এই পৃষ্ঠাখনৰ বিষয়ে</translation>
 <translation id="3948600256434252210">আপুনি ইনক’গনিট’ত ব্ৰাউজ কৰিবলৈ সোঁফালে ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="3955822496205734389">আপোনাৰ অবিশ্বস্ত পাছৱৰ্ড আছে।</translation>
 <translation id="3958312024468322930">ইয়াক টানি আনি আপোনাৰ গৃহ স্ক্ৰীন একেবাৰে তলত থকা ড’কত ৰাখক</translation>
@@ -586,6 +586,7 @@
 <translation id="4002019827078931033">ঠিকনাৰ বাৰ ওপৰলৈ লৈ যাওক</translation>
 <translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="4004204301268239848">পাছৱৰ্ডবোৰ আপোনাৰ Google একাউণ্টত ছেভ কৰি ৰখা হয় সেইবাবে আপুনি যিকোনো ডিভাইচতে এইবোৰ ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="4008355329784586136">আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰৰ ছেটিং পৰীক্ষা কৰক</translation>
 <translation id="4018310736049373830">কার্যকলাপ পৰিচালনা কৰক</translation>
 <translation id="4021931095789478915">পঢ়াৰ সূচীত ${url} যোগ দিয়ক</translation>
 <translation id="4038354071007134711">এই ডিভাইচটোত থকা কোনো এপ্লিকেশ্বনে ফাইলটো খুলিব নোৱাৰে।</translation>
@@ -634,6 +635,7 @@
 <translation id="4277990410970811858">সুৰক্ষিত ব্ৰাউজিং</translation>
 <translation id="4279431713294750185">আগলৈ যাবলৈ আপুনি কাষৰ পৰা ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="4281844954008187215">সেৱাৰ চৰ্তাৱলী</translation>
+<translation id="4282944936010261425">আপুনি সমাধান কৰিবলগীয়া কোনো সুৰক্ষা সমস্যা নাই।</translation>
 <translation id="4286718549648564014">আপোনাৰ একাউণ্ট <ph name="USER_EMAIL" />লৈ ঠিকনা স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="428768789042547925">নতুন কি আছে</translation>
 <translation id="4293080268407233932">সন্ধান কৰক</translation>
@@ -1287,6 +1289,7 @@
 <translation id="7557508262441527045">ছাইন আউট কৰা আছে</translation>
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="7564917801238348224">ছেভ কৰক...</translation>
+<translation id="7569588934989281656">আপুনি টেবসমূহৰ মাজত সালসলনি কৰিবলৈ টেবৰ ষ্ট্রিপটো ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="7582857256643797524">এই ছেটিংটো আপোনাৰ ডিভাইচত সক্ষম কৰা আছে</translation>
 <translation id="7583004045319035904">আপোনাৰ ইনক’গনিট’ টেবসমূহ আনলক কৰিবলৈ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কেতিয়াও অনুবাদ নকৰিব</translation>
@@ -1426,6 +1429,7 @@
 <translation id="8248969482078657578">নিষ্ক্ৰিয় টেবসমূহে আপোনাক মনোযোগ দিয়াত সহায় কৰে</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8263336784344783289">এই গোটটোৰ নাম দিয়ক</translation>
+<translation id="8263809106706527890">আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰৰ ছেটিঙত কোনো সালসলনি হ'ব পাৰে। আপুনি ছেটিঙত এইটো চাব পাৰে।</translation>
 <translation id="8264966119170358612">আপোনাৰ ছেভ কৰি থোৱা কিছুমান পাছৱৰ্ড Googleৰ বাহিৰৰ এটা ডেটা উলংঘনত ফাদিল হৈছে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">আপোনাৰ iPad ৰিছেট কৰাৰ অংশ হিচাপে আপোনাক আপোনাৰ একাউণ্ট <ph name="USER_NAME" />ৰ পৰা ছাইন আউট কৰা হৈছে। পুনৰ ছাইন ইন কৰিবলৈ তলত "অব্যাহত ৰাখক"ত টিপক।</translation>
 <translation id="8271720166617117963">গ্ৰহণ কৰি ছাইন ইন কৰক</translation>

@@ -1912,6 +1912,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2412015533711271895">Din forælder eller værge skal give dig lov til at bruge denne udvidelse</translation>
 <translation id="2412593942846481727">Der er en tilgængelig opdatering</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Tilpas din browser endnu mere med udvidelser fra <ph name="BEGIN_LINK1" />Chrome Webshop<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Genoptag søgningen efter <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2415117815770324983">Dette logger dig ud af de fleste websites. Du forbliver logget ind på din Google-konto.</translation>
@@ -6851,6 +6852,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6271824294945464304">Deler adgangskode</translation>
 <translation id="6273677812470008672">Kvalitet</translation>
 <translation id="6274089201566806618">Der oprettes forbindelse til <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Om en annonce, du ser, er personligt tilpasset, kan afhænge af mange ting, herunder denne indstilling, <ph name="BEGIN_LINK1" />foreslåede annoncer fra websites<ph name="LINK_END1" />, dine <ph name="BEGIN_LINK2" />cookieindstillinger<ph name="LINK_END2" />, og om det website, du besøger, foretager personlig tilpasning af annoncer. Se, hvordan du <ph name="BEGIN_LINK3" />administrerer privatliv vedrørende annoncering<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Proxyserveren <ph name="PROXY_SERVER" /> kræver et brugernavn og en adgangskode.</translation>
 <translation id="6277105963844135994">Netværkstimeout</translation>

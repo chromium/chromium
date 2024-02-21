@@ -13,6 +13,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1180362651362502943">Nastavite upotrebljavati podatke iz Chromea na svom Google računu.</translation>
 <translation id="1200396280085622191">Upotrebljavajte Chrome svaki put kad dodirnete veze u porukama i drugim aplikacijama.</translation>
 <translation id="1229222343402087523">Pretraži ${searchPhrase} u Chromeu</translation>
+<translation id="124228879633599436">Chrome je zastario. Ažurirajte ga da biste se zaštitili.</translation>
 <translation id="1282031177488366470">Pomozite poboljšati Chromeove značajke i izvedbu</translation>
 <translation id="1320619893013575407">Isključili ste prijavu u Chrome.</translation>
 <translation id="1333745675627230582">Igraj igru Dinosaur na Chromeu</translation>
@@ -293,6 +294,7 @@ Vaši su podaci šifrirani vašom šifrom <ph name="TIME" /> Unesite je da biste
 <translation id="8788269841521769222">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki za <ph name="EMAIL" /></translation>
 <translation id="878917453316810648">Savjet za Chrome: upotrebljavajte Chrome prema zadanim postavkama</translation>
 <translation id="8808828119384186784">Postavke preglednika Chrome</translation>
+<translation id="8850736900032787670">Da biste primali personalizirani sadržaj na temelju svojih interesa, prijavite se na Chrome.</translation>
 <translation id="8855781063981781621">Da biste onemogućili način zaključavanja u Chromeu, isključite ga na iPadu.</translation>
 <translation id="8856877214925961642">Šifriranje šifre ne uključuje načine plaćanja i adrese.
 

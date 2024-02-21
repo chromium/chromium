@@ -36,6 +36,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1181366777303791449">op <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1183189057400844278">Bevestig dat jij het bent zodat je de wachtwoorden in je Google-account altijd kunt gebruiken</translation>
 <translation id="1193729455103054076">Sterk wachtwoord gebruiken?</translation>
 <translation id="1197267115302279827">Bookmarks verplaatsen</translation>
 <translation id="1197761954713363183">Bevestigingsblad voor toegangssleutel gesloten</translation>
@@ -210,6 +211,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2149973817440762519">Bookmark bewerken</translation>
 <translation id="2155214902713132423">Deze verificatiemethode is niet beschikbaar voor dit apparaat. Kies een andere optie op je andere apparaat.</translation>
 <translation id="2158408438301413340">Chrome kan niet alle wachtwoorden checken</translation>
+<translation id="2163089732491971196">Voer je wachtwoordzin in als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account</translation>
 <translation id="2172688499998841696">Afbeeldingsbeschrijvingen staan uit</translation>
 <translation id="2172905120685242547">Venster sluiten?</translation>
 <translation id="2173302385160625112">Controleer je internetverbinding</translation>
@@ -274,6 +276,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items verwijderd</translation>
 <translation id="2536728043171574184">Een offline exemplaar van deze pagina bekijken</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
+<translation id="254973855621628293">Wachtwoorden opgeslagen op dit apparaat</translation>
 <translation id="2567385386134582609">AFBEELDING</translation>
 <translation id="2567545343356994513">Snellere, proactieve beveiliging tegen gevaarlijke websites, downloads en extensies</translation>
 <translation id="2569733278091928697">Je kunt makkelijk onder andere je mediabediening, incognitosessies en downloads beheren</translation>
@@ -337,7 +340,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Pagina's vooraf laden</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vraagt of je deze website wilt goedkeuren:</translation>
-<translation id="2876194821763651818">Wachtwoorden opgeslagen in <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Meer informatie over <ph name="BEGIN_LINK" />hoe Chrome je gegevens privé houdt<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Over Chrome</translation>
 <translation id="2891154217021530873">Stoppen met het laden van de pagina</translation>
@@ -520,6 +522,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="3847319713229060696">Helpen om het internet voor iedereen veiliger te maken</translation>
 <translation id="3856096718352044181">Controleer of dit een geldige provider is of probeer het later opnieuw</translation>
 <translation id="3858860766373142691">Naam</translation>
+<translation id="3872520701277728051">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="3894427358181296146">Map toevoegen</translation>
 <translation id="3899682235662194879">Alle incognitotabbladen sluiten</translation>
@@ -605,6 +608,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="4307992518367153382">Basisinstellingen</translation>
 <translation id="4311652497846705514">Pdf openen?</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
+<translation id="4326079409704643112">Bevestig dat jij het bent om Chrome-gegevens te gebruiken en op te slaan in je Google-account</translation>
 <translation id="433213510553688132">Volgen…</translation>
 <translation id="4335835283689002019">Safe Browsing staat uit</translation>
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
@@ -656,6 +660,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Deze offline pagina is van <ph name="CREATION_TIME" /> en kan afwijken van de online versie.</translation>
 <translation id="4601095002996233687">Uitgebreide scans voor verdachte downloads.</translation>
+<translation id="4609429330876432068">Je lijsten met opgeslagen wachtwoorden voor Chrome en <ph name="CHROME_CHANNEL" /> zijn samengevoegd. Je kunt al je opgeslagen wachtwoorden nog steeds automatisch laten invullen in beide apps.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> openen</translation>
 <translation id="4619564267100705184">Bevestigen dat jij het bent</translation>
 <translation id="4634124774493850572">Wachtwoord gebruiken</translation>
@@ -849,6 +854,8 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5590372121997663538">Deze computer onthouden</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5599455543593328020">Incognitomodus</translation>
+<translation id="5605283439565877834">Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
+Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Geen opgeslagen wachtwoorden</translation>
 <translation id="5620928963363755975">Vind je bestanden en pagina's in 'Downloads' via de knop 'Meer opties'</translation>
 <translation id="562289928968387744">Reacties beheren</translation>
@@ -959,6 +966,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6140709049082532940">Geoptimaliseerde beveiliging:</translation>
 <translation id="6140912465461743537">Land/regio</translation>
 <translation id="6150320133806434356">Bookmark opgeslagen</translation>
+<translation id="6150706324143004339">Update Chrome om Chrome-gegevens te gebruiken en op te slaan in je Google-account</translation>
 <translation id="6154478581116148741">Zet de schermvergrendeling aan via Instellingen om je wachtwoorden te exporteren vanaf dit apparaat</translation>
 <translation id="6162892189396105610">Pagina's waarvan Chrome denkt dat je ze waarschijnlijk gaat bezoeken, worden vooraf geladen.</translation>
 <translation id="6186394685773237175">Geen gehackte wachtwoorden gevonden</translation>
@@ -1122,6 +1130,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="688738109438487280">Bestaande gegevens toevoegen aan <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Ontgrendelen om je wachtwoord te kopiëren</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
+<translation id="6898797562238201317">Je eigen wachtwoordzin gebruiken om alle Chrome-gegevens in je Google-account te versleutelen</translation>
 <translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
 <translation id="6903907808598579934">Synchronisatie aanzetten</translation>
 <translation id="6906448540340261898">Zorg dat je de wachtwoorden in je Google-account altijd kunt gebruiken</translation>
@@ -1247,6 +1256,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="750228856503700085">Updates niet beschikbaar</translation>
 <translation id="7507207699631365376">Het <ph name="BEGIN_LINK" />privacybeleid<ph name="END_LINK" /> van deze provider bekijken</translation>
 <translation id="7514365320538308">Downloaden</translation>
+<translation id="7517292544534877198">De standaardversleuteling van Google gebruiken voor de wachtwoorden in je Google-account</translation>
 <translation id="7518079994230200553">Deze optie is op dit moment niet beschikbaar.</translation>
 <translation id="751961395872307827">Kan geen verbinding maken met de site</translation>
 <translation id="752220631458524187">Koppel je telefoon los als je klaar bent</translation>
@@ -1278,6 +1288,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7665369617277396874">Account toevoegen</translation>
 <translation id="766587987807204883">Hier zie je artikelen die je zelfs kunt lezen wanneer je offline bent</translation>
+<translation id="7670101447063278728">Wachtwoorden opgeslagen in <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Probeer de volgende tips: zorg dat er voldoende ruimte op je apparaat beschikbaar is, probeer opnieuw te exporteren.</translation>
 <translation id="7686086654630106285">Meer informatie over door de site voorgestelde advertenties</translation>
 <translation id="768618399695552958">Sommige pagina's die je bezoekt, zijn vooraf geladen. Pagina's kunnen vooraf worden geladen via Google-servers als ernaar wordt gelinkt vanaf een Google-site.</translation>
@@ -1352,6 +1363,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Je Chrome-gegevens ook wissen op dit apparaat</translation>
 <translation id="8015452622527143194">Standaardgrootte van alles op de pagina herstellen</translation>
+<translation id="8026238112629815203">We hebben de manier gewijzigd waarop wachtwoorden worden opgeslagen op dit apparaat</translation>
 <translation id="8026334261755873520">Browsegegevens wissen</translation>
 <translation id="8027863900915310177">Kies waar je wilt downloaden</translation>
 <translation id="8030852056903932865">Goedkeuren</translation>
@@ -1389,6 +1401,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8135406045838672858">Gedownloade pdf's worden automatisch geopend met <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Google Wachtwoordmanager.</translation>
+<translation id="8163820386638255770">Bevestig dat jij het bent om wachtwoorden in je Google-account te gebruiken en op te slaan</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> bestanden over</translation>
 <translation id="8190358571722158785">1 dag resterend</translation>
@@ -1538,6 +1551,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_ONE" /> tabblad worden gesloten}other{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_MANY" /> tabbladen worden gesloten}}</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8972098258593396643">Downloaden naar standaardmap?</translation>
+<translation id="8992769679401294069">Je gegevens zijn versleuteld met je wachtwoordzin. Voer deze in om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
 <translation id="8993760627012879038">Een nieuw venster openen in de incognitomodus</translation>
 <translation id="8996847606757455498">Een andere provider kiezen</translation>
 <translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>

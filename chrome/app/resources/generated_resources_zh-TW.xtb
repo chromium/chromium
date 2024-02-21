@@ -460,7 +460,7 @@
 <translation id="1348966090521113558">滑鼠無障礙設定</translation>
 <translation id="1350962700620017446">「<ph name="EXTENSION_NAME" />」想尋找並存取文件掃描器。</translation>
 <translation id="1352834119074414157">這個套件可能已毀損或遭到入侵。請關閉這個視窗並重新下載</translation>
-<translation id="1353275871123211385">如要使用應用程式核准設定、裝置使用時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
+<translation id="1353275871123211385">如要使用應用程式核准設定、螢幕時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
 <translation id="135389172849514421">可離線使用</translation>
 <translation id="1353980523955420967">找不到 PPD。請確認 Chromebook 已連上網路，然後再試一次。</translation>
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用及調整攝影機</translation>
@@ -1896,6 +1896,7 @@
 <translation id="2412015533711271895">你必須取得家長或監護人允許，才能使用這個擴充功能</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">如要進一步自訂瀏覽器，可以使用 <ph name="BEGIN_LINK1" />Chrome 線上應用程式商店<ph name="END_LINK1" />中的擴充功能</translation>
 <translation id="2414159296888870200">繼續瀏覽<ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">深色</translation>
 <translation id="2415117815770324983">刪除 Cookie 後，大多數網站都會將你登出，但 Google 帳戶會保持登入狀態。</translation>
@@ -3078,7 +3079,7 @@
 <translation id="3321460131042519426">允許自動換行</translation>
 <translation id="3321494112580110651">沒看到你的印表機嗎？</translation>
 <translation id="3321776060736518525">來源：<ph name="APP_URL" /></translation>
-<translation id="3323521181261657960">恭喜！你的裝置使用時間增加了</translation>
+<translation id="3323521181261657960">恭喜！你的螢幕時間增加了</translation>
 <translation id="3325804108816646710">正在尋找可用的設定檔…</translation>
 <translation id="3325910708063135066">已關閉 Mac 系統偏好設定中的攝影機和麥克風</translation>
 <translation id="3325930488268995856">已連線至 Microsoft OneDrive</translation>
@@ -3360,7 +3361,7 @@
 <translation id="3552780134252864554">結束時將遭到清除</translation>
 <translation id="3554493885489666172">你的裝置是由 <ph name="PROFILE_NAME" /> 管理。管理員可以存取此裝置上任一設定檔中的資料。</translation>
 <translation id="3555812735919707620">移除擴充功能</translation>
-<translation id="3557101512409028104">透過 Family Link 設定網站限制和裝置使用時間限制</translation>
+<translation id="3557101512409028104">透過 Family Link 設定網站限制和螢幕時間限制</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，可以協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可以在孩子的 ChromeOS 裝置設定中允許或禁止傳送這類報告。如果你是網域管理員，可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559079791149580653">停止將畫面投放到「<ph name="DEVICE_NAME" />」</translation>
@@ -4098,7 +4099,7 @@
 <translation id="4099874310852108874">網路發生錯誤。</translation>
 <translation id="4100020874626534113">允許彈性指定變音符號。例如，無論輸入「anhs」或「asnh」，都能打出「ánh」這個字。</translation>
 <translation id="4100733287846229632">裝置空間嚴重不足</translation>
-<translation id="4100853287411968461">新的裝置使用時間限制</translation>
+<translation id="4100853287411968461">新的螢幕時間限制</translation>
 <translation id="4101352914005291489">隱藏的 SSID</translation>
 <translation id="4102906002417106771">重新啟動以執行 Powerwash</translation>
 <translation id="4103644672850109428">螢幕閱讀器、放大</translation>
@@ -6829,6 +6830,7 @@
 <translation id="6271824294945464304">即將分享密碼</translation>
 <translation id="6273677812470008672">品質</translation>
 <translation id="6274089201566806618">正在連線至「<ph name="HOST_DEVICE_NAME" />」</translation>
+<translation id="6274108044476515407">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK1" />網站建議廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否會放送個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK3" />管理廣告隱私權<ph name="LINK_END3" />。</translation>
 <translation id="6274202259872570803">螢幕側錄</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求你提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網路逾時</translation>

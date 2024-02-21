@@ -1893,6 +1893,7 @@
 <translation id="2412015533711271895">Ата-анаңыз немесе қамқоршыңыз бұл кеңейтімді пайдалануыңызға рұқсат беруі керек</translation>
 <translation id="2412593942846481727">Жаңартылған нұсқа қолжетімді</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Браузерді <ph name="BEGIN_LINK1" />Chrome Web Store-дағы<ph name="END_LINK1" /> кеңейтімдермен одан әрі бейімдеңіз.</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> модулін шолуды жалғастыру</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
 <translation id="2415117815770324983">Көп сайттан шығарыласыз. Бірақ Google аккаунтыңыздан шығарылмайсыз.</translation>
@@ -6828,6 +6829,7 @@
 <translation id="6271824294945464304">Құпия сөзді бөлісу</translation>
 <translation id="6273677812470008672">Сапа</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> құрылғысына қосылып жатыр</translation>
+<translation id="6274108044476515407">Сізге көрсетілетін жарнаманың жекелендірілетіні осы параметр, <ph name="BEGIN_LINK1" />сайт ұсынған жарнамалар<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cookie файлдарының параметрлері<ph name="LINK_END2" /> және сіз көретін сайттың жарнамаларды жекелендіруі сияқты көптеген факторға байланысты. <ph name="BEGIN_LINK3" />Жарнамадағы құпиялықты басқару<ph name="LINK_END3" /> туралы толық ақпарат алыңыз.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> прокси-серверіне пайдаланушы аты мен құпия сөз керек.</translation>
 <translation id="6277105963844135994">Желіні күту уақыты</translation>

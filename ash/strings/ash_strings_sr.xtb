@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">Нема мрежа</translation>
 <translation id="1056898198331236512">Упозорење</translation>
 <translation id="1058009965971887428">Пошаљи повратне информације</translation>
+<translation id="1059120031266247284">Дељено са вама</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1073899992769346247">Замените или напуните батерију</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="3580650856351781466">Преузимају се фајлови говора</translation>
 <translation id="3585296979871889131">Прегледајте недавне слике, медије, обавештења и апликације на телефону</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Бочно дугме</translation>
 <translation id="3593039967545720377">Притисните <ph name="SHORTCUT_KEY_NAME" /> + V да бисте приступили историји привремене меморије. Копирајте неку ставку да бисте започели.</translation>
 <translation id="3593646411856133110">Превуците нагоре и задржите да бисте видели отворене апликације</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">Улаз</translation>
 <translation id="3621712662352432595">Подешавања звука</translation>
 <translation id="3626281679859535460">Осветљеност</translation>
+<translation id="3628323833346754646">Предње дугме</translation>
 <translation id="3630697955794050612">искључено</translation>
 <translation id="3631369015426612114">Дозволи обавештења из следећих извора</translation>
 <translation id="3633097874324966332">Отворите подешавања Bluetooth-а да бисте упарили уређај</translation>
@@ -1285,6 +1288,7 @@
 <translation id="6052614013050385269">Десни клик на линк</translation>
 <translation id="6054305421211936131">Пријавите се помоћу паметне картице</translation>
 <translation id="6059276912018042191">Недавне Chrome картице</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Аутоматски ћете бити одјављени за <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Не желим више да користим овај фајл</translation>
 <translation id="6068258534237496331">Контроле видео позива</translation>
@@ -1346,6 +1350,7 @@
 <translation id="6309219492973062892">Кликните на иконе полице од 1 до 8 или их додирните</translation>
 <translation id="6315170314923504164">Глас</translation>
 <translation id="6319058840130157106">Крећите се уназад из доњег десног угла на покретач, траку за адресу, траку са обележивачима, веб-сајт који је отворен и преузимања</translation>
+<translation id="6319503618073410818">Прикажи детаље у прегледачу</translation>
 <translation id="6324916366299863871">Измени пречицу</translation>
 <translation id="6330012934079202188">Приказују се прозори са свих радних површина. Притисните тастер са стрелицом нагоре да би се приказивали прозори са актуелне радне површине.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> је сесија којом управља <ph name="MANAGER" /></translation>
@@ -1567,6 +1572,7 @@
 <translation id="7244725679040769470">Преостало је <ph name="PERCENTAGE" /> % батерије.
 Прикључите уређај на напајање.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Овај Chromebook мора да се растартује ради примене ажурирања. Ово може да потраје највише 1 минут.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Задњи микрофон</translation>
 <translation id="7258828758145722155">Измењено јуче</translation>
 <translation id="726276584504105859">Превуците овде да бисте користили подељени екран</translation>
@@ -1694,6 +1700,7 @@
 <translation id="7742327441377685481">Нема обавештења</translation>
 <translation id="7748275671948949022">Истакни дугме покретача на полици</translation>
 <translation id="7749443890790263709">Достигли сте максималан број радних површина.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Кликните за приказ детаља ажурирања</translation>
 <translation id="7768784765476638775">Изаберите за говор</translation>
 <translation id="7769299611924763557">GIF ће ускоро бити спреман</translation>
@@ -2021,6 +2028,7 @@
 <translation id="9098969848082897657">Искључи звук телефона</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Опозови последњу радњу</translation>
+<translation id="9129245940793250979">Задње дугме</translation>
 <translation id="9133335900048457298">Снимање заштићеног садржаја није успело</translation>
 <translation id="9139720510312328767">Избриши следеће слово</translation>
 <translation id="9151906066336345901">end</translation>

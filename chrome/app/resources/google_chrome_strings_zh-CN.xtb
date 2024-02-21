@@ -73,7 +73,7 @@
 <translation id="2151406531797534936">请立即重启 Chrome</translation>
 <translation id="2174917724755363426">尚未完成安装，确定要取消吗？</translation>
 <translation id="2190166659037789668">更新检查错误：<ph name="UPDATE_CHECK_ERROR" />。</translation>
-<translation id="2199691482078155239">在 Chrome 中，您可以进一步控制自己看到的广告，并限制网站能根据哪些个人信息向您展示个性化广告</translation>
+<translation id="2199691482078155239">在 Chrome 中，您可以更有效地控制自己看到的广告，并限制网站能根据哪些个人信息向您展示个性化广告</translation>
 <translation id="223889379102603431">与 Chrome 如何管理其根证书有关的信息</translation>
 <translation id="2258103955319320201">如需在您的所有设备上访问自己的 Chrome 浏览器信息，请登录您的账号，然后开启同步功能</translation>
 <translation id="2290014774651636340">缺少 Google API 密钥，因此 Google Chrome 的部分功能将无法使用。</translation>
@@ -174,6 +174,7 @@
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
 <translation id="3667616615096815454">无法安装，服务器无法识别该应用。</translation>
 <translation id="3673813398384385993">Chrome 发现“<ph name="EXTENSION_NAME" />”包含恶意软件</translation>
+<translation id="3697952514309507634">其他 Chrome 个人资料</translation>
 <translation id="3703994572283698466">与 <ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />一样，Chrome 操作系统也是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
 <translation id="3718181793972440140">这会从这台设备上删除 1 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
@@ -424,6 +425,7 @@
 <translation id="8019103195866286235">此扩展程序已被其开发者取消发布，可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="80471789339884597">感谢您完成安装。您必须重启所有浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">其他 Chrome 个人资料</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>
 <translation id="8129812357326543296">关于 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>

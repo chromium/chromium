@@ -18,6 +18,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1056775291175587022">Geen netwerken</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1058009965971887428">Feedback melden</translation>
+<translation id="1059120031266247284">Met jou gedeeld</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1073899992769346247">Vervang de batterij of laad hem op</translation>
@@ -627,6 +628,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3577473026931028326">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="3580650856351781466">Spraakbestanden downloaden</translation>
 <translation id="3585296979871889131">Recente foto's, media, meldingen en apps van je telefoon bekijken</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Zijknop</translation>
 <translation id="3593039967545720377">Je opent je klembordgeschiedenis door op <ph name="SHORTCUT_KEY_NAME" /> + V te drukken. Daarna kun je kopiëren wat je nodig hebt.</translation>
 <translation id="3593646411856133110">Swipe omhoog en houd vast om apps te openen</translation>
@@ -643,6 +645,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3621712662352432595">Audio-instellingen</translation>
 <translation id="3626281679859535460">Helderheid</translation>
+<translation id="3628323833346754646">Knop Voor</translation>
 <translation id="3630697955794050612">uit</translation>
 <translation id="3631369015426612114">Meldingen toestaan van het volgende</translation>
 <translation id="3633097874324966332">Open de bluetooth-instellingen om je apparaat te koppelen</translation>
@@ -1284,6 +1287,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6052614013050385269">Rechtsklikken op een link</translation>
 <translation id="6054305421211936131">Inloggen met smartkaart</translation>
 <translation id="6059276912018042191">Recente Chrome-tabbladen</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Je wordt automatisch uitgelogd over <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Klaar met gebruik van het bestand</translation>
 <translation id="6068258534237496331">Bedieningselementen voor videogesprekken</translation>
@@ -1345,6 +1349,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6309219492973062892">Klik of tik op icoon 1-8 op de plank</translation>
 <translation id="6315170314923504164">Spraak</translation>
 <translation id="6319058840130157106">Terugschakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
+<translation id="6319503618073410818">Details in browser bekijken</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
 <translation id="6330012934079202188">Er worden vensters van alle bureaus getoond, druk op de pijl-omhoog om vensters van het huidige bureau te bekijken</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
@@ -1565,6 +1570,7 @@ Nieuwe installatie</translation>
 <translation id="7229029500464092426">Geheugen <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (totaal)</translation>
 <translation id="7244725679040769470">Nog <ph name="PERCENTAGE" />% batterijlading. Sluit je apparaat aan op een voeding.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Deze Chromebook moet opnieuw worden opgestart om een update uit te voeren. Dit kan ongeveer één minuut duren.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Microfoon aan achterzijde</translation>
 <translation id="7258828758145722155">Gisteren bewerkt</translation>
 <translation id="726276584504105859">Sleep hier naartoe om het scherm te splitsen</translation>
@@ -1692,6 +1698,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7742327441377685481">Geen meldingen</translation>
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Klik om updategegevens te bekijken</translation>
 <translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769299611924763557">Je gif is bijna klaar</translation>
@@ -2019,6 +2026,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9098969848082897657">Telefoon dempen</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> of <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Laatste actie ongedaan maken</translation>
+<translation id="9129245940793250979">Knop Achter</translation>
 <translation id="9133335900048457298">Kan geen beschermde content opnemen</translation>
 <translation id="9139720510312328767">Volgende letter verwijderen</translation>
 <translation id="9151906066336345901">end</translation>

@@ -1910,6 +1910,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2412015533711271895">Vanhemman tai huoltajan täytyy vahvistaa, että sinulla on lupa käyttää tätä laajennusta</translation>
 <translation id="2412593942846481727">Päivitys saatavilla</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Yksilöi selaintasi entistä enemmän <ph name="BEGIN_LINK1" />Chrome Web Storen<ph name="END_LINK1" /> laajennuksilla</translation>
 <translation id="2414159296888870200">Jatka selaamista: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tumma</translation>
 <translation id="2415117815770324983">Kirjaa sinut ulos useimmilta sivustoilta. Pysyt kirjautuneena Google-tilillesi.</translation>
@@ -6846,6 +6847,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6271824294945464304">Salasanan jakaminen</translation>
 <translation id="6273677812470008672">Laatu</translation>
 <translation id="6274089201566806618">Yhdistetään: <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Näkemiesi mainosten personointi voi riippua tästä asetuksesta, <ph name="BEGIN_LINK1" />sivuston ehdottamista mainoksista<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />evästeasetuksista<ph name="LINK_END2" /> ja siitä, personoiko katsomasi sivusto mainoksia. Lue lisää <ph name="BEGIN_LINK3" />mainosyksityisyysden ylläpidosta<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Ruutukaappausvideo</translation>
 <translation id="6276210637549544171">Välityspalvelin <ph name="PROXY_SERVER" /> edellyttää käyttäjänimeä ja salasanaa.</translation>
 <translation id="6277105963844135994">Verkon aikakatkaisu</translation>

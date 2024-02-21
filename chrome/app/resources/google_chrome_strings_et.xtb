@@ -176,6 +176,7 @@
 <translation id="3635073343384702370">Chrome saab teie paroole kontrollida, kui olete need salvestanud</translation>
 <translation id="3667616615096815454">Ei saa installida, rakendus on serverile tundmatu.</translation>
 <translation id="3673813398384385993">Chrome leidis, et laiendus „<ph name="EXTENSION_NAME" />“ sisaldab pahavara</translation>
+<translation id="3697952514309507634">Muud Chrome'i profiilid</translation>
 <translation id="3703994572283698466">Chrome OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flexi versioon</translation>
 <translation id="3718181793972440140">See kustutab seadmest ühe üksuse. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
@@ -428,6 +429,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8019103195866286235">Arendaja tühistas selle laienduse avaldamise ja see võib olla ebaturvaline. Eemaldage see Chrome'ist, et see ei saaks enam näha ja muuta teie andmeid saitidel, mida külastate, sealhulgas teie isiklikku teavet.</translation>
 <translation id="80471789339884597">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate taaskäivitama kõik brauserid.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8077579734294125741">Muud Chrome'i profiilid</translation>
 <translation id="8086881907087796310">Installimine ebaõnnestus, kuna arvuti ei vasta riistvara miinimumnõuetele.</translation>
 <translation id="8129812357326543296">Teave &amp;Google Chrome'i kohta</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>

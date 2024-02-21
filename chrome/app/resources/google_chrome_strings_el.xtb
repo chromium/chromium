@@ -177,6 +177,7 @@
 <translation id="3635073343384702370">Το Chrome μπορεί να ελέγξει τους κωδικούς πρόσβασής σας όταν τους αποθηκεύετε</translation>
 <translation id="3667616615096815454">Δεν είναι δυνατή η εγκατάσταση, ο διακομιστής δεν γνωρίζει την εφαρμογή.</translation>
 <translation id="3673813398384385993">Το Chrome εντόπισε κακόβουλο πρόγραμμα στην επέκταση "<ph name="EXTENSION_NAME" />".</translation>
+<translation id="3697952514309507634">Άλλα προφίλ Chrome</translation>
 <translation id="3703994572283698466">Το Chrome OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Έκδοση ChromeOS Flex</translation>
 <translation id="3718181793972440140">Με αυτή την ενέργεια θα διαγραφεί 1 στοιχείο από αυτήν τη συσκευή. Για να ανακτήσετε τα δεδομένα σας αργότερα, συνδεθείτε στο Chrome ως <ph name="USER_EMAIL" />.</translation>
@@ -429,6 +430,7 @@
 <translation id="8019103195866286235">Η δημοσίευση αυτής της επέκτασης καταργήθηκε από τον προγραμματιστή της και ενδέχεται να μην είναι ασφαλής. Καταργήστε την από το Chrome, ώστε να μην μπορεί πλέον να βλέπει και να αλλάζει τα δεδομένα σας σε ιστοτόπους που επισκέπτεστε, συμπεριλαμβανομένων των προσωπικών στοιχείων σας.</translation>
 <translation id="80471789339884597">Ευχαριστούμε για την εγκατάσταση. Πρέπει να επανεκκινήσετε όλα τα προγράμματα περιήγησής σας πριν από τη χρήση του <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8077579734294125741">Άλλα προφίλ Chrome</translation>
 <translation id="8086881907087796310">Η εγκατάσταση απέτυχε επειδή ο υπολογιστής σας δεν πληροί τις ελάχιστες απαιτήσεις εξοπλισμού.</translation>
 <translation id="8129812357326543296">Σχετικά με &amp;το Google Chrome</translation>
 <translation id="813913629614996137">Εκκίνηση…</translation>

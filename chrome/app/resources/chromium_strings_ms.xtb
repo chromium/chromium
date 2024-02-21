@@ -111,6 +111,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="3032706164202344641">Chromium tidak dapat menyemak kata laluan anda. Cuba lagi nanti.</translation>
 <translation id="3032787606318309379">Menambah ke Chromium...</translation>
 <translation id="3038232873781883849">Menunggu untuk memasang...</translation>
+<translation id="3068187312562070417">Profil Chromium lain</translation>
 <translation id="3068515742935458733">Bantu jadikan Chromium lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 peranti USB telah diakses oleh satu atau beberapa sambungan Chromium}=1{1 peranti USB sedang diakses oleh satu atau beberapa sambungan Chromium}other{# peranti USB sedang diakses oleh satu atau beberapa sambungan Chromium}}</translation>
 <translation id="3101560983689755071">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chromium memadamkan minat anda secara automatik secara bergilir setiap bulan. Minat akan dimuat semula melainkan anda mengalih keluar minat anda.</translation>
@@ -228,6 +229,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5294316920224716406">Apabila menyemak imbas dalam Mod Inkognito, Chromium akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="5296845517486664001">Semasa percubaan dihidupkan dan jika Chromium telah meletakkan anda secara rawak dalam percubaan aktif, sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chromium memadamkan minat anda secara bergilir setiap bulan.</translation>
 <translation id="5352264705793813212">Chromium menemukan beberapa syor keselamatan untuk semakan anda</translation>
+<translation id="5352361688875342522">Profil Chromium Lain</translation>
 <translation id="5358375970380395591">Anda log masuk menggunakan akaun yang terurus dan memberikan pentadbirnya kawalan ke atas profil Chromium anda. Data Chromium anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Google Account, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Kod tambahan: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Ketahui sebab Chromium menyekat sesetengah fail</translation>

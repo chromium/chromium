@@ -13,6 +13,7 @@
 <translation id="1180362651362502943">‏يمكنك مواصلة استخدام بيانات Chrome في حسابك على Google.</translation>
 <translation id="1200396280085622191">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
 <translation id="1229222343402087523">‏البحث عن ${searchPhrase} في متصفِّح Chrome</translation>
+<translation id="124228879633599436">‏إصدار Chrome الحالي قديم. يُرجى تحديثه للحفاظ على أمان بياناتك.</translation>
 <translation id="1282031177488366470">‏المساعدة على تحسين ميزات Chrome وأدائه</translation>
 <translation id="1320619893013575407">‏لقد أوقفت ميزة تسجيل الدخول إلى Chrome.</translation>
 <translation id="1333745675627230582">‏تشغيل لعبة الديناصور في Chrome</translation>
@@ -293,6 +294,7 @@
 <translation id="8788269841521769222">‏لن تضطر إلى تذكُّر كلمة المرور هذه. سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google على عنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="878917453316810648">‏نصيحة من Chromium: اضبط Chrome كمتصفِّح تلقائي</translation>
 <translation id="8808828119384186784">‏إعدادات Chrome</translation>
+<translation id="8850736900032787670">‏لتلقّي محتوى مخصَّص استنادًا إلى اهتماماتك، عليك تسجيل الدخول إلى متصفِّح Chrome.</translation>
 <translation id="8855781063981781621">‏لإيقاف "وضع التأمين" (Lockdown Mode) في Chrome، عليك إيقافه على جهاز iPad.</translation>
 <translation id="8856877214925961642">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين.
 

@@ -337,7 +337,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2871733351037274014">Läs in sidor i förväg</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vill att du godkänner följande webbplats:</translation>
-<translation id="2876194821763651818">Lösenorden har sparats i <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Avbryt inläsningen av sidan</translation>
@@ -1425,6 +1424,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8354977102499939946">Gör en röstsökning snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har återställts</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>
+<translation id="8378850197701296741">Du har bokmärken, historik och andra inställningar från <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifiera din identitet</translation>
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8394720698884623075">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome</translation>

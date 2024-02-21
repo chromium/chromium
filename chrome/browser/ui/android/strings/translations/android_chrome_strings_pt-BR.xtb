@@ -337,7 +337,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Páginas pré-carregadas</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> quer que você aprove este site:</translation>
-<translation id="2876194821763651818">Senhas salvas em <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Sobre o Google Chrome</translation>
 <translation id="2891154217021530873">Para de carregar a página</translation>
@@ -1425,6 +1424,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8354977102499939946">Pesquisar rapidamente usando sua voz. Para editar esse atalho, acesse as Configurações.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restaurados</translation>
 <translation id="8368001212524806591">Monitorar preço</translation>
+<translation id="8378850197701296741">Você tem dados de favoritos, histórico e outras configurações da conta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Confirme que é você</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8394720698884623075">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chrome</translation>
