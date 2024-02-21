@@ -22185,6 +22185,7 @@ from previous Chrome versions.
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
   <int value="675427884" label="EnableFakeMouseHeuristic:enabled"/>
+  <int value="675963233" label="EsbDownloadRowPromo:disabled"/>
   <int value="676353150" label="OmniboxRetainSuggestionsWithHeaders:disabled"/>
   <int value="676922235" label="SeparateUserDisplayModeForCrOS:disabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
@@ -24830,6 +24831,7 @@ from previous Chrome versions.
   <int value="1883558610" label="GalleryAppPdfEditNotification:disabled"/>
   <int value="1883856892" label="SupportToolCopyTokenButton:disabled"/>
   <int value="1883998150" label="WebAppsCrosapi:disabled"/>
+  <int value="1885566305" label="EsbDownloadRowPromo:enabled"/>
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887085478" label="WallpaperGooglePhotosSharedAlbums:enabled"/>
   <int value="1887882558" label="RTCUnifiedPlanByDefault:enabled"/>

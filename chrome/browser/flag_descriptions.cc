@@ -4756,6 +4756,12 @@ const char kEnableMantaServiceName[] = "Enable Manta Service";
 const char kEnableMantaServiceDescription[] =
     "Enables the profile keyed Manta service at startup.";
 
+const char kEsbDownloadRowPromoName[] = "Enable ESB Download Row promotion";
+const char kEsbDownloadRowPromoDescription[] =
+    "Promotes Enhanced Safe Browsing (ESB) on a user's most recent "
+    "dangerous/suspicious download by adding an extra row under the download "
+    "that links to the chrome://settings/security page.";
+
 const char kForceSigninFlowInProfilePickerName[] =
     "Force Signin Flows in Profile Picker";
 const char kForceSigninFlowInProfilePickerDescription[] =

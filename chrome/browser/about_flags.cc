@@ -10572,6 +10572,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(manta::features::kMantaService)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"esb-download-row-promo", flag_descriptions::kEsbDownloadRowPromoName,
+     flag_descriptions::kEsbDownloadRowPromoDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(safe_browsing::kEsbDownloadRowPromo)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"advanced-documentscan-api",
      flag_descriptions::kAdvancedDocumentScanApiName,

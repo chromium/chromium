@@ -2760,6 +2760,9 @@ extern const char kEnableAccessibilityLiveCaptionDescription[];
 extern const char kEnableMantaServiceName[];
 extern const char kEnableMantaServiceDescription[];
 
+extern const char kEsbDownloadRowPromoName[];
+extern const char kEsbDownloadRowPromoDescription[];
+
 extern const char kForceSigninFlowInProfilePickerName[];
 extern const char kForceSigninFlowInProfilePickerDescription[];
 
