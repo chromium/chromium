@@ -35,11 +35,11 @@ class MediaProgressViewTest : public views::ViewsTestBase {
     // what specific color IDs are used, so just use an arbitrary value.
     ui::ColorId id = ui::kUiColorsStart;
     view_ = widget_->SetContentsView(std::make_unique<MediaProgressView>(
-            id, id, id, id, id,
-            base::BindRepeating(&MediaProgressViewTest::OnProgressDragging,
-                base::Unretained(this)),
-            base::BindRepeating(&MediaProgressViewTest::SeekTo,
-                                base::Unretained(this))));
+        true, id, id, id, id, id,
+        base::BindRepeating(&MediaProgressViewTest::OnProgressDragging,
+                            base::Unretained(this)),
+        base::BindRepeating(&MediaProgressViewTest::SeekTo,
+                            base::Unretained(this))));
 
     widget_->SetBounds(gfx::Rect(500, 500));
     widget_->Show();

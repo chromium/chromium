@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
 
  public:
   explicit MediaProgressView(
+      bool use_squiggly_line,
       ui::ColorId playing_foreground_color_id,
       ui::ColorId playing_background_color_id,
       ui::ColorId paused_foreground_color_id,
@@ -82,6 +83,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   bool IsValidSeekPosition(int x, int y);
 
   // Init parameters.
+  bool use_squiggly_line_;
   ui::ColorId playing_foreground_color_id_;
   ui::ColorId playing_background_color_id_;
   ui::ColorId paused_foreground_color_id_;

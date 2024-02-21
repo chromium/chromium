@@ -317,6 +317,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   // Create the progress view.
   progress_view_ =
       controls_row->AddChildView(std::make_unique<MediaProgressView>(
+          (media_display_page_ != MediaDisplayPage::kMediaDialogView),
           theme_.playing_progress_foreground_color_id,
           theme_.playing_progress_background_color_id,
           theme_.paused_progress_foreground_color_id,

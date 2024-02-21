@@ -70,6 +70,7 @@ int RoundToPercent(double fractional_value) {
 }  // namespace
 
 MediaProgressView::MediaProgressView(
+    bool use_squiggly_line,
     ui::ColorId playing_foreground_color_id,
     ui::ColorId playing_background_color_id,
     ui::ColorId paused_foreground_color_id,
@@ -77,7 +78,8 @@ MediaProgressView::MediaProgressView(
     ui::ColorId focus_ring_color_id,
     base::RepeatingCallback<void(bool)> dragging_callback,
     base::RepeatingCallback<void(double)> seek_callback)
-    : playing_foreground_color_id_(playing_foreground_color_id),
+    : use_squiggly_line_(use_squiggly_line),
+      playing_foreground_color_id_(playing_foreground_color_id),
       playing_background_color_id_(playing_background_color_id),
       paused_foreground_color_id_(paused_foreground_color_id),
       paused_background_color_id_(paused_background_color_id),
@@ -165,29 +167,35 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
   canvas->Save();
   canvas->Translate(gfx::Vector2d(kWidthInset, 0));
 
-  // Create a foreground squiggly progress path longer than the required length
-  // and truncate it later in canvas. If the media is paused, this will become
-  // a straight line.
-  SkPath progress_path;
-  int current_x = -phase_offset_ - kProgressWavelength / 2;
-  int current_amp =
-      static_cast<int>(kProgressAmplitude * progress_amp_fraction_);
-  progress_path.moveTo(current_x, 0);
-  while (current_x <= progress_width) {
-    int mid_x = current_x + kProgressWavelength / 4;
-    int next_x = current_x + kProgressWavelength / 2;
-    int next_amp = -current_amp;
-    progress_path.cubicTo(mid_x, current_amp, mid_x, next_amp, next_x,
-                          next_amp);
-    current_x = next_x;
-    current_amp = next_amp;
-  }
-  progress_path.offset(0, view_height / 2);
-
-  // Paint the foreground squiggly progress in a clipped rect.
   canvas->Save();
-  canvas->ClipRect(gfx::Rect(0, 0, progress_width, view_height));
-  canvas->DrawPath(progress_path, flags);
+  if (use_squiggly_line_) {
+    // Create a foreground squiggly progress path longer than the required
+    // length and truncate it later in canvas. If the media is paused, this will
+    // become a straight line.
+    SkPath progress_path;
+    int current_x = -phase_offset_ - kProgressWavelength / 2;
+    int current_amp =
+        static_cast<int>(kProgressAmplitude * progress_amp_fraction_);
+    progress_path.moveTo(current_x, 0);
+    while (current_x <= progress_width) {
+      int mid_x = current_x + kProgressWavelength / 4;
+      int next_x = current_x + kProgressWavelength / 2;
+      int next_amp = -current_amp;
+      progress_path.cubicTo(mid_x, current_amp, mid_x, next_amp, next_x,
+                            next_amp);
+      current_x = next_x;
+      current_amp = next_amp;
+    }
+    progress_path.offset(0, view_height / 2);
+
+    // Paint the foreground squiggly progress in a clipped rect.
+    canvas->ClipRect(gfx::Rect(0, 0, progress_width, view_height));
+    canvas->DrawPath(progress_path, flags);
+  } else {
+    // Paint a foreground straight progress line.
+    canvas->DrawLine(gfx::PointF(0, view_height / 2),
+                     gfx::PointF(progress_width, view_height / 2), flags);
+  }
   canvas->Restore();
 
   // Paint the progress rectangle indicator.
