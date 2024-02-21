@@ -364,6 +364,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('move passwords label shown', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -391,6 +392,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('move passwords label hidden if no passwords to move', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -477,6 +479,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('clicking move passwords opens move passwords dialog', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -530,6 +533,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Move passwords is hidden during search', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',

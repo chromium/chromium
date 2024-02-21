@@ -412,6 +412,7 @@ class PasswordManagerSyncTest : public SyncTest {
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   content::WebContents* web_contents = nullptr;
@@ -461,15 +462,30 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
 
     // Save the password and check the store.
     BubbleObserver bubble_observer(web_contents);
-    ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
-    bubble_observer.AcceptSavePrompt();
+    // TODO: crbug.com/40943570 - Remove this flag check after feature is fully rolled out.
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kButterOnDesktopFollowup)) {
+      EXPECT_TRUE(
+          bubble_observer.IsDefaultStoreChangedPromptShownAutomatically());
+      bubble_observer.AcknowledgeDefaultStoreChange();
 
-    std::vector<std::unique_ptr<password_manager::PasswordForm>>
-        profile_credentials = GetAllLoginsFromProfilePasswordStore();
-    EXPECT_THAT(profile_credentials,
-                ElementsAre(MatchesLogin("localuser", "localpass")));
+      ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
+      bubble_observer.AcceptSavePrompt();
+
+      EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(),
+                  testing::Contains(MatchesLogin("localuser", "localpass")));
+    } else {
+      ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
+      bubble_observer.AcceptSavePrompt();
+
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          profile_credentials = GetAllLoginsFromProfilePasswordStore();
+      EXPECT_THAT(profile_credentials,
+                  ElementsAre(MatchesLogin("localuser", "localpass")));
+    }
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInProfileStore) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
