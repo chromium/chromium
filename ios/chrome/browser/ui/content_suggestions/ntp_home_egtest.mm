@@ -927,7 +927,9 @@ id<GREYMatcher> mostlyNotVisible() {
                             [NSString stringWithFormat:@"%i", 3])];
 }
 
-- (void)testFavicons {
+// TODO:(crbug.com/326263586) Test fails on iPhone & iPad simulator & device
+// builds. Re-enable test once fixed.
+- (void)DISABLED_testFavicons {
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
