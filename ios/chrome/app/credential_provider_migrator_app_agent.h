@@ -9,6 +9,8 @@
 
 // The agent that kicks off the migration of passwords created in the credential
 // provider to the password manager.
+// TODO(crbug.com/326036404): Match the name of the class to the file. Does this
+// class still need to exist?
 @interface CredentialProviderAppAgent : SceneObservingAppAgent
 @end
 

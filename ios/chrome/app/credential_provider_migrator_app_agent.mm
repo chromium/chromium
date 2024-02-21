@@ -37,6 +37,8 @@
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
   SceneState* anyScene = self.appState.foregroundScenes.firstObject;
   DCHECK(anyScene);
+  // TODO(crbug.com/326036404): Clean this up for multiple browser states -- run
+  // the migration for every browser state.
   ChromeBrowserState* browserState =
       anyScene.browserProviderInterface.mainBrowserProvider.browser
           ->GetBrowserState();
