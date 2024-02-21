@@ -20902,7 +20902,7 @@
             "experiments": [
                 {
                     "//0": "Refers to the combined Chrome + Full Device MDL",
-                    "name": "TrafficSizingExperimentEnabled",
+                    "name": "mdl_3_2024-02-21",
                     "params": {
                         "MaskedDomainListExperimentGroup": "3"
                     },
