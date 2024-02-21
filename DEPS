@@ -936,8 +936,15 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/accessibility_test_framework/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/Accessibility-Test-Framework-for-Android.git' + '@' + '4a764c690353ea136c82f1a696a70bf38d1ef5fe',
+  'src/third_party/accessibility_test_framework': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/accessibility-test-framework',
+              'version': 'b5ec1e56e58e56bc1a0c77d43111c37f9b512c8a',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
   },
 
   'src/third_party/android_protobuf/src': {
@@ -2391,7 +2398,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework',
-              'version': 'version:2@4.0.0.cr1',
+              'version': 'version:2@4.1.0.cr1',
           },
       ],
       'condition': 'checkout_android',

@@ -757,14 +757,6 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
                 sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
                 break
-            case 'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
-                sb.append('  # These are included locally in third_party/accessibility_test_framework.\n')
-                sb.append('  jar_excluded_patterns = [\n')
-                sb.append('    "com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult\\$AccessibilityCheckResultType.class",\n')
-                sb.append('    "com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult.class",\n')
-                sb.append('    "com/google/android/apps/common/testing/accessibility/framework/integrations/espresso/AccessibilityValidator*",\n')
-                sb.append('  ]\n')
-                break
             case 'com_google_android_gms_play_services_basement':
                 sb.append('  # https://crbug.com/989505\n')
                 sb.append('  jar_excluded_patterns += ["META-INF/proguard/*"]\n')

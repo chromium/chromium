@@ -14,6 +14,7 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.thatMatchesFirst;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -338,7 +339,7 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
 
         assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
-        onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(doesNotExist());
+        onView(thatMatchesFirst(withId(R.id.alert_icon))).check(matches(not(isDisplayed())));
     }
 
     // Tests that no alert icon is shown on the account row for syncing users, even if there exists
@@ -361,7 +362,7 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
 
         assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
-        onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(doesNotExist());
+        onView(thatMatchesFirst(withId(R.id.alert_icon))).check(matches(not(isDisplayed())));
     }
 
     // Tests that an alert icon is shown on the account row in case of an identity error for a
@@ -384,7 +385,8 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
 
         assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
-        onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(matches(isDisplayed()));
+        // Check for the alert icon.
+        onView(thatMatchesFirst(withId(R.id.alert_icon))).check(matches(isDisplayed()));
     }
 
     @Test
@@ -550,8 +552,7 @@ public class MainSettingsFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        onView(allOf(withText(accountInfo.getFullName()), isDisplayed()))
-                .check(matches(isDisplayed()));
+        onView(thatMatchesFirst(withText(accountInfo.getFullName()))).check(matches(isDisplayed()));
         onView(withText(accountInfo.getEmail())).check(matches(not(isDisplayed())));
     }
 
@@ -587,7 +588,7 @@ public class MainSettingsFragmentTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(accountInfo.getEmail())).check(matches(not(isDisplayed())));
-        onView(allOf(withText(R.string.default_google_account_username), isDisplayed()))
+        onView(thatMatchesFirst(withText(R.string.default_google_account_username)))
                 .check(matches(isDisplayed()));
     }
 
