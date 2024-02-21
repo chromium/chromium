@@ -26,6 +26,8 @@ public class TabResumptionModuleMediator {
     protected final UrlImageProvider mUrlImageProvider;
     protected final SuggestionClickCallback mSuggestionClickCallback;
 
+    private boolean mHasPreviousLoad;
+
     public TabResumptionModuleMediator(
             Context context,
             ModuleDelegate moduleDelegate,
@@ -66,6 +68,17 @@ public class TabResumptionModuleMediator {
                             bundle = makeSuggestionBundle(suggestions);
                         }
                     }
+                    // On first load, send load status to Magic Stack to help it decide whether to
+                    // show or to hide the module.
+                    if (!mHasPreviousLoad) {
+                        if (bundle != null) {
+                            mModuleDelegate.onDataReady(getModuleType(), mModel);
+                        } else {
+                            mModuleDelegate.onDataFetchFailed(getModuleType());
+                        }
+                        mHasPreviousLoad = true;
+                    }
+
                     mModel.set(
                             TabResumptionModuleProperties.SUGGESTION_BUNDLE,
                             bundle); // Triggers render.
@@ -78,10 +91,8 @@ public class TabResumptionModuleMediator {
                                         R.plurals.home_modules_tab_resumption_title,
                                         bundle.entries.size());
                         mModel.set(TabResumptionModuleProperties.TITLE, title);
-                        mModuleDelegate.onDataReady(getModuleType(), mModel);
                     } else {
                         mModel.set(TabResumptionModuleProperties.TITLE, null);
-                        mModuleDelegate.onDataFetchFailed(getModuleType());
                     }
                 });
     }

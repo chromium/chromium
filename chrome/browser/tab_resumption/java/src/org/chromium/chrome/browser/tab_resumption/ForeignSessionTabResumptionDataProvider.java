@@ -127,10 +127,6 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
             return;
         }
 
-        mForeignSessionHelper.setOnForeignSessionCallback(
-                () -> {
-                    updateFromForeignSessions(suggestionsCallback);
-                });
         mForeignSessionHelper.triggerSessionSync();
         updateFromForeignSessions(suggestionsCallback);
     }
