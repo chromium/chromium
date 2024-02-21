@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/content_settings/core/browser/content_settings_origin_value_map.h"
@@ -21,6 +22,7 @@ class GURL;
 namespace base {
 class Lock;
 class Value;
+class Clock;
 }  // namespace base
 
 namespace content_settings {
@@ -100,10 +102,14 @@ class PartitionedOriginValueMap {
   // Clears all values.
   void clear() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  void SetClockForTesting(base::Clock* clock);
+
  private:
   mutable base::Lock lock_;
   std::map<PartitionKey, OriginValueMap> partitions_
       GUARDED_BY(lock_);
+
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace content_settings

@@ -25,6 +25,10 @@
 class PrefService;
 class PrefChangeRegistrar;
 
+namespace base {
+class Clock;
+}
+
 namespace prefs {
 class DictionaryValueUpdate;
 }  // namespace prefs
@@ -81,6 +85,8 @@ class ContentSettingsPref {
 
   // Tries to lock |lock_|. If successful, returns true and releases the lock.
   bool TryLockForTesting() const;
+
+  void SetClockForTesting(base::Clock* clock);
 
  private:
   // Reads all content settings exceptions from the preference and loads them
@@ -153,6 +159,8 @@ class ContentSettingsPref {
   NotifyObserversCallback notify_callback_;
 
   base::ThreadChecker thread_checker_;
+
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace content_settings

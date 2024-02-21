@@ -15,6 +15,8 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -62,13 +64,14 @@ bool EraseValue(HostIndexedContentSettings::HostToContentSettings& index,
 
 const RuleEntry* FindContentSetting(const GURL& primary_url,
                                     const GURL& secondary_url,
-                                    const Rules& settings) {
+                                    const Rules& settings,
+                                    base::Clock* clock) {
   const auto it = base::ranges::find_if(settings, [&](const auto& entry) {
     return entry.first.primary_pattern.Matches(primary_url) &&
            entry.first.secondary_pattern.Matches(secondary_url) &&
            (base::FeatureList::IsEnabled(
                 content_settings::features::kActiveContentSettingExpiry) ||
-            !entry.second.metadata.IsExpired());
+            !entry.second.metadata.IsExpired(clock));
   });
   return it == settings.end() ? nullptr : &*it;
 }
@@ -76,11 +79,11 @@ const RuleEntry* FindContentSetting(const GURL& primary_url,
 const RuleEntry* FindInHostToContentSettings(
     const GURL& primary_url,
     const GURL& secondary_url,
-    std::reference_wrapper<
-        const HostIndexedContentSettings::HostToContentSettings>
+    const HostIndexedContentSettings::HostToContentSettings&
         indexed_content_setting,
-    std::string_view host) {
-  if (host.empty() || indexed_content_setting.get().empty()) {
+    std::string_view host,
+    base::Clock* clock) {
+  if (host.empty() || indexed_content_setting.empty()) {
     return nullptr;
   }
 
@@ -89,9 +92,10 @@ const RuleEntry* FindInHostToContentSettings(
     host.remove_suffix(1);
   }
   if (primary_url.HostIsIPAddress()) {
-    auto it = indexed_content_setting.get().find(host);
-    if (it != indexed_content_setting.get().end()) {
-      auto* result = FindContentSetting(primary_url, secondary_url, it->second);
+    auto it = indexed_content_setting.find(host);
+    if (it != indexed_content_setting.end()) {
+      auto* result =
+          FindContentSetting(primary_url, secondary_url, it->second, clock);
       if (result) {
         return result;
       }
@@ -99,10 +103,10 @@ const RuleEntry* FindInHostToContentSettings(
   } else {
     std::string_view subdomain(host);
     while (!subdomain.empty()) {
-      auto it = indexed_content_setting.get().find(subdomain);
-      if (it != indexed_content_setting.get().end()) {
+      auto it = indexed_content_setting.find(subdomain);
+      if (it != indexed_content_setting.end()) {
         auto* result =
-            FindContentSetting(primary_url, secondary_url, it->second);
+            FindContentSetting(primary_url, secondary_url, it->second, clock);
         if (result) {
           return result;
         }
@@ -245,11 +249,19 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
   }
 }
 
-HostIndexedContentSettings::HostIndexedContentSettings() = default;
+HostIndexedContentSettings::HostIndexedContentSettings()
+    : HostIndexedContentSettings(base::DefaultClock::GetInstance()) {}
+
+HostIndexedContentSettings::HostIndexedContentSettings(base::Clock* clock)
+    : clock_(clock) {
+  DCHECK(clock);
+}
 
 HostIndexedContentSettings::HostIndexedContentSettings(std::string source,
                                                        bool off_the_record)
-    : source_(std::move(source)), off_the_record_(off_the_record) {}
+    : source_(std::move(source)),
+      off_the_record_(off_the_record),
+      clock_(base::DefaultClock::GetInstance()) {}
 
 HostIndexedContentSettings::HostIndexedContentSettings(
     HostIndexedContentSettings&& other) = default;
@@ -290,17 +302,18 @@ const RuleEntry* HostIndexedContentSettings::Find(
     const GURL& secondary_url) const {
   const RuleEntry* found = FindInHostToContentSettings(
       primary_url, secondary_url, primary_host_indexed_,
-      primary_url.host_piece());
+      primary_url.host_piece(), clock_);
   if (found) {
     return found;
   }
   found = FindInHostToContentSettings(primary_url, secondary_url,
                                       secondary_host_indexed_,
-                                      secondary_url.host_piece());
+                                      secondary_url.host_piece(), clock_);
   if (found) {
     return found;
   }
-  return FindContentSetting(primary_url, secondary_url, wildcard_settings_);
+  return FindContentSetting(primary_url, secondary_url, wildcard_settings_,
+                            clock_);
 }
 
 bool HostIndexedContentSettings::SetValue(
@@ -326,8 +339,8 @@ bool HostIndexedContentSettings::SetValue(
 bool HostIndexedContentSettings::DeleteValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
-  const std::string& primary_host = primary_pattern.GetHost();
   DCHECK_EQ(iterating_, 0);
+  const std::string& primary_host = primary_pattern.GetHost();
   if (!primary_host.empty()) {
     return EraseValue(primary_host_indexed_, primary_host, primary_pattern,
                       secondary_pattern);
@@ -359,6 +372,15 @@ size_t HostIndexedContentSettings::size() const {
   }
   size += wildcard_settings_.size();
   return size;
+}
+
+bool HostIndexedContentSettings::empty() const {
+  return primary_host_indexed_.empty() && secondary_host_indexed_.empty() &&
+         wildcard_settings_.empty();
+}
+
+void HostIndexedContentSettings::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
 }
 
 }  // namespace content_settings

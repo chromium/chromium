@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/time/default_clock.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -80,8 +81,8 @@ size_t PartitionedOriginValueMap::size() const {
   return size;
 }
 
-PartitionedOriginValueMap::PartitionedOriginValueMap() =
-    default;
+PartitionedOriginValueMap::PartitionedOriginValueMap()
+    : clock_(base::DefaultClock::GetInstance()) {}
 
 PartitionedOriginValueMap::~PartitionedOriginValueMap() =
     default;
@@ -109,10 +110,10 @@ bool PartitionedOriginValueMap::SetValue(
     base::Value value,
     const RuleMetaData& metadata,
     const PartitionKey& partition_key) {
-  auto& partition = partitions_[partition_key];
-  base::AutoLock auto_lock(partition.GetLock());
-  return partition.SetValue(primary_pattern, secondary_pattern, content_type,
-                            std::move(value), metadata);
+  auto [it, is_new] = partitions_.try_emplace(partition_key, clock_);
+  base::AutoLock auto_lock(it->second.GetLock());
+  return it->second.SetValue(primary_pattern, secondary_pattern, content_type,
+                             std::move(value), metadata);
 }
 
 bool PartitionedOriginValueMap::DeleteValue(
@@ -159,6 +160,14 @@ void PartitionedOriginValueMap::DeleteValues(
 
 void PartitionedOriginValueMap::clear() {
   partitions_.clear();
+}
+
+void PartitionedOriginValueMap::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
+  base::AutoLock lock(lock_);
+  for (auto& partition : partitions_) {
+    partition.second.SetClockForTesting(clock);  // IN-TEST
+  }
 }
 
 }  // namespace content_settings

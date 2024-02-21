@@ -9,6 +9,10 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_enums.mojom.h"
 
+namespace base {
+class Clock;
+}
+
 namespace mojo {
 template <typename DataViewType, typename T>
 struct StructTraits;
@@ -66,7 +70,7 @@ class RuleMetaData {
   // Returns whether the Rule is expired. Expiration is handled by
   // HostContentSettingsMap automatically, clients do not have to check this
   // attribute manually.
-  bool IsExpired() const;
+  bool IsExpired(base::Clock* clock) const;
 
   // Computes the setting's lifetime, based on the lifetime and expiration that
   // were read from persistent storage.

@@ -431,6 +431,9 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
 
 void PrefProvider::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
+  for (auto& pref : content_settings_prefs_) {
+    pref.second->SetClockForTesting(clock);  // IN-TEST
+  }
 }
 
 }  // namespace content_settings

@@ -17,6 +17,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -127,14 +129,16 @@ content_settings::SessionModel GetSessionModel(
 bool ShouldRemoveSetting(bool off_the_record,
                          base::Time expiration,
                          bool restore_session,
-                         content_settings::SessionModel session_model) {
+                         content_settings::SessionModel session_model,
+                         base::Clock* clock) {
   if (base::FeatureList::IsEnabled(
           content_settings::features::kActiveContentSettingExpiry)) {
     return false;
   }
   // Delete if an expriation date is set and in the past.
-  if (!expiration.is_null() && (expiration < base::Time::Now()))
+  if (!expiration.is_null() && (expiration < clock->Now())) {
     return true;
+  }
 
   // Off the Record preferences are inherited from the parent profile, which
   // has already been culled.
@@ -175,9 +179,9 @@ ContentSettingsPref::ContentSettingsPref(
       off_the_record_(off_the_record),
       restore_session_(restore_session),
       updating_preferences_(false),
-      notify_callback_(notify_callback) {
+      notify_callback_(notify_callback),
+      clock_(base::DefaultClock::GetInstance()) {
   DCHECK(prefs_);
-
   ReadContentSettingsFromPref();
 
   for (const auto& path : {pref_name_, partitioned_pref_name_}) {
@@ -431,7 +435,7 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
     base::Time expiration = GetExpiration(settings_dictionary);
     SessionModel session_model = GetSessionModel(settings_dictionary);
     if (ShouldRemoveSetting(off_the_record_, expiration, restore_session_,
-                            session_model)) {
+                            session_model, clock_)) {
       expired_patterns_to_remove.push_back(pattern_str);
       continue;
     }
@@ -453,7 +457,7 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
         last_modified = GetLastModified(settings_dictionary);
         last_used = GetLastUsed(settings_dictionary);
         if (last_used != base::Time() &&
-            base::Time::Now() - last_used >= kLastUsedPermissionExpiration) {
+            clock_->Now() - last_used >= kLastUsedPermissionExpiration) {
           expired_permission_usage_to_remove.push_back(pattern_str);
           last_used = base::Time();
         }
@@ -629,6 +633,12 @@ void ContentSettingsPref::AssertLockNotHeld() const {
   value_map_.GetLock().Acquire();
   value_map_.GetLock().Release();
 #endif
+}
+
+void ContentSettingsPref::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
+  value_map_.SetClockForTesting(clock);                 // IN-TEST
+  off_the_record_value_map_.SetClockForTesting(clock);  // IN-TEST
 }
 
 }  // namespace content_settings
