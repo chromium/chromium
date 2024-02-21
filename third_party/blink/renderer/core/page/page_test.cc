@@ -103,4 +103,59 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   ASSERT_FALSE(page2->Paused());
 }
 
+TEST(PageTest, CreateOrdinaryColorProviders) {
+  test::TaskEnvironment task_environment;
+  EmptyChromeClient client;
+  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+  auto bcg_info = BrowsingContextGroupInfo::CreateUnique();
+  auto color_provider_colors = ColorProviderColorMaps::CreateDefault();
+
+  Page* page = Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler,
+                                    bcg_info, &color_provider_colors);
+
+  const ui::ColorProvider* light_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+          /*in_forced_colors=*/false);
+  const ui::ColorProvider* dark_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kDark,
+          /*in_forced_colors=*/false);
+  const ui::ColorProvider* forced_colors_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+          /*in_forced_colors=*/true);
+
+  // All color provider instances should be non-null.
+  ASSERT_TRUE(light_color_provider);
+  ASSERT_TRUE(dark_color_provider);
+  ASSERT_TRUE(forced_colors_color_provider);
+}
+
+TEST(PageTest, CreateNonOrdinaryColorProviders) {
+  test::TaskEnvironment task_environment;
+  EmptyChromeClient client;
+  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+
+  Page* page = Page::CreateNonOrdinary(client, *scheduler);
+
+  const ui::ColorProvider* light_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+          /*in_forced_colors=*/false);
+  const ui::ColorProvider* dark_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kDark,
+          /*in_forced_colors=*/false);
+  const ui::ColorProvider* forced_colors_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+          /*in_forced_colors=*/true);
+
+  // All color provider instances should be non-null.
+  ASSERT_TRUE(light_color_provider);
+  ASSERT_TRUE(dark_color_provider);
+  ASSERT_TRUE(forced_colors_color_provider);
+}
+
 }  // namespace blink

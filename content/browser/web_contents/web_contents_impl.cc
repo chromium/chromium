@@ -10192,7 +10192,7 @@ void WebContentsImpl::OnColorProviderChanged() {
   }
 
   blink::ColorProviderColorMaps color_map = GetColorProviderColorMaps();
-  ExecutePageBroadcastMethod(base::BindRepeating(
+  ExecutePageBroadcastMethodForAllPages(base::BindRepeating(
       [](const blink::ColorProviderColorMaps& color_map,
          RenderViewHostImpl* rvh) {
         if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {

@@ -162,7 +162,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   static void UsesOverlayScrollbarsChanged();
   static void PlatformColorsChanged();
   static void ColorSchemeChanged();
-  static void ColorProvidersChanged();
 
   void EmulateForcedColors(bool is_dark_theme);
   void DisableEmulatedForcedColors();

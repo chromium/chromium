@@ -80,14 +80,14 @@ TEST_F(ColorProviderUtilsTest, ColorProviderRendererColorMapEquivalence) {
   ui::RendererColorMap renderer_color_map =
       ui::CreateRendererColorMap(color_provider);
   EXPECT_TRUE(
-      IsRendererColorMappingEquivalent(color_provider, renderer_color_map));
+      IsRendererColorMappingEquivalent(&color_provider, renderer_color_map));
 
   // Providers with different renderer color mappings should not be flagged as
   // equivalent.
   ui::ColorProvider new_color_provider;
   new_color_provider.GenerateColorMap();
-  EXPECT_FALSE(
-      IsRendererColorMappingEquivalent(new_color_provider, renderer_color_map));
+  EXPECT_FALSE(IsRendererColorMappingEquivalent(&new_color_provider,
+                                                renderer_color_map));
 }
 
 TEST_F(ColorProviderUtilsTest, DefaultBlinkColorProviderColorMapsValidity) {
