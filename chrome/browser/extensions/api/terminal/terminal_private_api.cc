@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -730,10 +731,21 @@ TerminalPrivateOpenSettingsSubpageFunction::
 
 ExtensionFunction::ResponseAction
 TerminalPrivateOpenSettingsSubpageFunction::Run() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
   // Ignore params->subpage for now, and always open crostini.
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kCrostiniSectionPath);
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kCrostiniDetailsSubpagePath);
+    } else {
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kAboutChromeOsSectionPath,
+          chromeos::settings::mojom::Setting::kSetUpCrostini);
+    }
+  } else {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile, chromeos::settings::mojom::kCrostiniSectionPath);
+  }
   return RespondNow(NoArguments());
 }
 
