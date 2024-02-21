@@ -4196,12 +4196,6 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
         if (const ComputedStyle* cached =
                 first_line_block->GetCachedPseudoElementStyle(
                     kPseudoIdFirstLine)) {
-          // TODO(crbug.com/1501719): See
-          // LayoutObject::BehavesLikeBlockContainer().
-          if (IsRubyText() && GetNode() &&
-              GetNode()->HasTagName(html_names::kRtTag)) {
-            UseCounter::Count(GetDocument(), WebFeature::kPseudoFirstLineOnRt);
-          }
           return cached;
         }
         continue;

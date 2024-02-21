@@ -3205,6 +3205,11 @@
       status: "stable",
     },
     {
+      // crbug.com/40942025
+      name: "RtNoFirstLetterFirstLine",
+      status: "stable",
+    },
+    {
       // crbug.com/1493273
       name: "RubyInlinify",
       status: "stable",

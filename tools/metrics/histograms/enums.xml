@@ -11104,8 +11104,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4745" label="SubtleCryptoDeriveBitsZeroLength"/>
   <int value="4746" label="SubtleCryptoDeriveBitsTruncation"/>
   <int value="4747" label="TextDirectiveInShadowDOM"/>
-  <int value="4748" label="PseudoFirstLetterOnRt"/>
-  <int value="4749" label="PseudoFirstLineOnRt"/>
+  <int value="4748" label="OBSOLETE_PseudoFirstLetterOnRt"/>
+  <int value="4749" label="OBSOLETE_PseudoFirstLineOnRt"/>
   <int value="4750" label="AutoSizesLazy"/>
   <int value="4751" label="AutoSizesNonLazy"/>
   <int value="4752" label="OBSOLETE_TrustedTypesIntrospection"/>

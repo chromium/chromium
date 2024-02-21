@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -262,14 +261,6 @@ LayoutText* FirstLetterTextLayoutObjectLegacy(const Element& element) {
       IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
     return nullptr;
 
-  // TODO(crbug.com/1501719): See LayoutObject::BehavesLikeBlockContainer().
-  if (parent_layout_object->IsRubyText()) {
-    const Node* parent_node = parent_layout_object->GetNode();
-    if (parent_node && parent_node->HasTagName(html_names::kRtTag)) {
-      UseCounter::Count(element.GetDocument(),
-                        WebFeature::kPseudoFirstLetterOnRt);
-    }
-  }
   return To<LayoutText>(first_letter_text_layout_object);
 }
 
@@ -473,15 +464,6 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
               punctuation_text = layout_text;
             }
           } else {
-            // TODO(crbug.com/1501719): See
-            // LayoutObject::BehavesLikeBlockContainer().
-            if (parent_layout_object->IsRubyText()) {
-              const Node* parent_node = parent_layout_object->GetNode();
-              if (parent_node && parent_node->HasTagName(html_names::kRtTag)) {
-                UseCounter::Count(element.GetDocument(),
-                                  WebFeature::kPseudoFirstLetterOnRt);
-              }
-            }
             // We have found valid ::first-letter text. When the ::first-letter
             // text spans multiple elements, the UA is free to style only one of
             // the elements, all of the elements, or none of the elements. Here
