@@ -14334,9 +14334,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240220",
                     "enable_features": [
-                        "ReadAloud"
+                        "ReadAloud",
+                        "ReadAloudInMultiWindow",
+                        "ReadAloudInOverflowMenuInCCT",
+                        "ReadAloudPlayback"
                     ]
                 }
             ]
