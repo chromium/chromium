@@ -2119,14 +2119,10 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
     // Start the opacity at zero for continuous enter. Its opacity will change
     // with the trackpad events as they come.
     no_windows_widget_->SetOpacity(is_continuous_enter ? 0.f : 1.f);
+    // When initializing the widget, no need to re-layout and animate again in
+    // `RoundedLabelWidget::SetBoundsCenteredIn()`.
+    animate = false;
   }
-
-  RefreshNoWindowsWidgetBounds(/*animate=*/false);
-}
-
-void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
-  if (!no_windows_widget_)
-    return;
 
   const gfx::Rect grid_bounds(GetGridEffectiveBounds());
   no_windows_widget_->SetBoundsCenteredIn(grid_bounds, animate);

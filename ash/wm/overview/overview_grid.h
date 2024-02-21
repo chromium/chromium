@@ -370,10 +370,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                              bool animate,
                              bool is_continuous_enter);
 
-  // Refreshes the bounds of `no_windows_widget_`, animating if `animate` is
-  // true.
-  void RefreshNoWindowsWidgetBounds(bool animate);
-
   // Refreshes this grid's bounds. This will set bounds and update the overview
   // item positions depending on the current split view state.
   void RefreshGridBounds(bool animate);
