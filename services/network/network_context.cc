@@ -2364,12 +2364,16 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // Decide which ProxyDelegate to create. At most one of these will be the
   // case for any given NetworkContext: either PrefetchProxy, handling its
   // custom proxy configs, or IpProtection, using the proxy allowlist.
+  // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
+  // done, we should only create an IpProtectionProxyDelegate when
+  // `params_->ip_protection_config_getter` is set (to avoid creating proxy
+  // delegates for network contexts that don't participate in IP Protection, or
+  // for any network context when the IP Protection feature is disabled).
   auto* nspal = network_service_->network_service_proxy_allow_list();
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
     auto ipp_config_cache = std::make_unique<IpProtectionConfigCacheImpl>(
         std::move(params_->ip_protection_config_getter));
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
-
         std::make_unique<IpProtectionProxyDelegate>(
             nspal, std::move(ipp_config_cache), params_->enable_ip_protection);
     proxy_delegate->SetReceiver(

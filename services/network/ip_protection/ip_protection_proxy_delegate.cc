@@ -86,7 +86,7 @@ void IpProtectionProxyDelegate::OnResolveProxy(
              << ") - " << message;
   };
   // Note: We do not proxy requests if:
-  // - The allow list is not available or is not enabled.
+  // - The allow list has not been populated.
   // - The request doesn't match the allow list.
   // - The token cache is not available.
   // - The token cache does not have tokens.
@@ -105,6 +105,9 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   }
   result->set_is_mdl_match(true);
 
+  // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
+  // done and IpProtectionProxyDelegate is only created in cases where IP
+  // Protection should be used, remove this check.
   if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
     dvlog("ip protection proxy cannot be enabled");
     return;
@@ -126,15 +129,10 @@ void IpProtectionProxyDelegate::OnResolveProxy(
     const std::vector<net::ProxyChain>& proxy_chain_list =
         ipp_config_cache_->GetProxyChainList();
     for (const auto& proxy_chain : proxy_chain_list) {
-      if (proxy_chain.is_single_proxy() && url.SchemeIs(url::kHttpScheme)) {
-        // Proxying HTTP traffic correctly for IP Protection requires
-        // multi-proxy chains to be used, so if a single-proxy chain is
-        // encountered here then just fail.
-        // TODO(https://crbug.com/1474932): Once chains are guaranteed to be
-        // multi-proxy here, turn this into a CHECK.
-        dvlog("can't proxy HTTP URL through a single-proxy chain");
-        return;
-      }
+      // Proxying HTTP traffic over HTTPS/SPDY proxies requires multi-proxy
+      // chains.
+      CHECK(proxy_chain.is_multi_proxy());
+
       proxy_list.AddProxyChain(std::move(proxy_chain));
     }
   }
