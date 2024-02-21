@@ -716,8 +716,12 @@ void LogCopyPasteInOmniboxForDefaultBrowserPromo() {
   StoreCurrentTimestampForKey(kOmniboxUseCount);
 }
 
-void LogBookmarkUseForDefaultBrowserPromo() {
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+void LogBookmarkUseForCriteriaExperiment() {
+  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    CleanupStorageForTriggerExperiment();
+    return;
+  }
+
   StoreCurrentTimestampForKey(kBookmarkUseCount);
 }
 

@@ -106,7 +106,6 @@ source_set("shortcuts") {
     "//components/feature_engagement/public",
     "//components/reading_list/core",
     "//components/reading_list/ios",
-    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

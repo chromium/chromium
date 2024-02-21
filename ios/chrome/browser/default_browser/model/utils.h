@@ -211,7 +211,7 @@ void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);
 void LogCopyPasteInOmniboxForDefaultBrowserPromo();
 
 // Logs in NSUserDefaults that user used bookmarks or bookmark manager.
-void LogBookmarkUseForDefaultBrowserPromo();
+void LogBookmarkUseForCriteriaExperiment();
 
 // Logs in NSUserDefaults that user used autofill suggestions
 void LogAutofillUseForCriteriaExperiment();

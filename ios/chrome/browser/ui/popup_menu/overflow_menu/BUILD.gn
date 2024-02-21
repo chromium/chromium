@@ -44,6 +44,7 @@ source_set("overflow_menu") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model/push_notification",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/follow/model:browser_agent",

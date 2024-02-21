@@ -8,7 +8,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -105,7 +104,6 @@
       recordShortcutTileTapped:shortcutsItem.collectionShortcutType];
   switch (shortcutsItem.collectionShortcutType) {
     case NTPCollectionShortcutTypeBookmark:
-      LogBookmarkUseForDefaultBrowserPromo();
       [self.dispatcher showBookmarksManager];
       break;
     case NTPCollectionShortcutTypeReadingList:

@@ -49,4 +49,33 @@ void NotifyRemoteTabsGridViewed() {
 
   LogRemoteTabsUseForCriteriaExperiment();
 }
+
+void NotifyBookmarkAddOrEdit() {
+  // TODO(b/322358517): Migrate to FET.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
+  LogBookmarkUseForCriteriaExperiment();
+}
+
+void NotifyBookmarkManagerOpened() {
+  // TODO(b/322358517): Migrate to FET.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
+  LogBookmarkUseForCriteriaExperiment();
+}
+
+void NotifyBookmarkManagerClosed() {
+  // TODO(b/322358517): Migrate to FET.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
+  LogBookmarkUseForCriteriaExperiment();
+}
+
+void NotifyURLFromBookmarkOpened() {
+  // TODO(b/322358517): Migrate to FET.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
+  LogBookmarkUseForCriteriaExperiment();
+}
+
 }  // namespace default_browser

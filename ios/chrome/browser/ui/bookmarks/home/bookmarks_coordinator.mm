@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -258,6 +258,7 @@ enum class PresentedState {
       showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
                                                           URL:bookmarkedURL
                                                    editAction:editAction]];
+  default_browser::NotifyBookmarkAddOrEdit();
 }
 
 - (void)presentBookmarkEditorForURL:(const GURL&)URL {
@@ -273,12 +274,16 @@ enum class PresentedState {
     return;
   }
   [self presentEditorForURLNode:bookmark];
+
+  default_browser::NotifyBookmarkAddOrEdit();
 }
 
 - (void)presentBookmarks {
   [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
                                                   ->root_node()
                             selectingBookmark:nil];
+
+  default_browser::NotifyBookmarkManagerOpened();
 }
 
 - (void)presentFolderChooser {
@@ -507,6 +512,8 @@ enum class PresentedState {
   [self.snackbarCommandsHandler
       showSnackbarMessage:[self.mediator addBookmarks:_URLs toFolder:folder]];
   _URLs = nil;
+
+  default_browser::NotifyBookmarkAddOrEdit();
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
@@ -561,7 +568,7 @@ enum class PresentedState {
           new_tab_page_uma::ACTION_OPENED_BOOKMARK);
       base::RecordAction(
           base::UserMetricsAction("MobileBookmarkManagerEntryOpened"));
-      LogBookmarkUseForDefaultBrowserPromo();
+      default_browser::NotifyURLFromBookmarkOpened();
 
       if (newTab ||
           ((!!inIncognito) != _currentBrowserState->IsOffTheRecord())) {

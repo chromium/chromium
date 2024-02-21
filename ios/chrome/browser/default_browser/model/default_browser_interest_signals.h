@@ -30,6 +30,19 @@ void NotifyPasswordSavedOrUpdated();
 // Records all necessary information when remote tabs grid is selected.
 void NotifyRemoteTabsGridViewed();
 
+// Records all necessary information when user added or edited a bookmark.
+void NotifyBookmarkAddOrEdit();
+
+// Records all necessary information when user opens bookmark manager.
+void NotifyBookmarkManagerOpened();
+
+// Records all necessary information when user closes bookmark manager.
+// TODO(b/315330160): Consider not tracking Bookmark manager close events.
+void NotifyBookmarkManagerClosed();
+
+// Records all necessary information when user opens a URL from bookmarks.
+void NotifyURLFromBookmarkOpened();
+
 }  // namespace default_browser
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_INTEREST_SIGNALS_H_

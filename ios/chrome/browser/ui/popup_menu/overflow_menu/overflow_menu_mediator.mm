@@ -31,6 +31,7 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
@@ -1969,7 +1970,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   // there.
   web::WebState* currentWebState = self.webState;
   [self dismissMenu];
-  LogBookmarkUseForDefaultBrowserPromo();
   if (!currentWebState) {
     return;
   }
@@ -2083,7 +2083,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens bookmarks.
 - (void)openBookmarks {
   [self dismissMenu];
-  LogBookmarkUseForDefaultBrowserPromo();
   [self.browserCoordinatorHandler showBookmarksManager];
 }
 

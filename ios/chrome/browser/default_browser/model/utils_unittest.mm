@@ -713,7 +713,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_BookmarkUseCount) {
   }
 
   // Adding current timestamp should be counted.
-  LogBookmarkUseForDefaultBrowserPromo();
+  LogBookmarkUseForCriteriaExperiment();
 
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
