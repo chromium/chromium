@@ -1083,7 +1083,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/SyncErrorNotifier.java",
   "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",
   "java/src/org/chromium/chrome/browser/sync/settings/AccountManagementFragment.java",
-  "java/src/org/chromium/chrome/browser/sync/settings/ClearDataProgressDialog.java",
   "java/src/org/chromium/chrome/browser/sync/settings/GoogleServicesSettings.java",
   "java/src/org/chromium/chrome/browser/sync/settings/IdentityErrorCardPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java",

@@ -5,14 +5,12 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,16 +32,12 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.ActionType;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -71,9 +65,9 @@ public class SignOutDialogRenderTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
-
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
 
     @Mock private SigninManager mSigninManagerMock;
 
@@ -85,31 +79,17 @@ public class SignOutDialogRenderTest {
 
     @Mock private PrefService mPrefService;
 
-    @Mock private Listener mListenerMock;
-
     private SignOutDialogCoordinator mSignOutDialogCoordinator;
 
     @Before
     public void setUp() {
-        mocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
         mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsMock);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getSigninManager(any())).thenReturn(mSigninManagerMock);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
         mActivityTestRule.launchActivity(null);
-    }
-
-    @After
-    public void tearDown() {
-        // Since the Dialog dismiss calls native method, we need to close the dialog before the
-        // Native mock SigninMetricsUtils.Natives gets removed.
-        if (mSignOutDialogCoordinator != null) {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    mSignOutDialogCoordinator::dismissDialogForTesting);
-        }
     }
 
     @Test
@@ -125,21 +105,24 @@ public class SignOutDialogRenderTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testSignOutDialogForNonSyncingManagedAccount() throws Exception {
+    public void testTurnOffSyncDialogForNonSyncingAccount() throws Exception {
         mockAllowDeletingBrowserHistoryPref(true);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
 
-        mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_syncing_account");
+        mRenderTestRule.render(
+                showTurnOffSyncDialog(), "turn_off_sync_dialog_for_non_syncing_account");
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testTurnOffSyncDialogForNonSyncingAccount() throws Exception {
+    public void testSignOutDialogForNonSyncingManagedAccount() throws Exception {
         mockAllowDeletingBrowserHistoryPref(true);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+        when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
 
-        mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_syncing_account");
+        mRenderTestRule.render(
+                showSignOutDialog(), "signout_dialog_for_non_syncing_managed_account");
     }
 
     @Test
@@ -157,10 +140,10 @@ public class SignOutDialogRenderTest {
     @Feature("RenderTest")
     public void testSignOutDialogForManagedAccountCannotDeleteHistory() throws Exception {
         mockAllowDeletingBrowserHistoryPref(false);
+        when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
 
         mRenderTestRule.render(
-                showTurnOffSyncDialog(),
-                "signout_dialog_for_managed_account_cannot_delete_history");
+                showSignOutDialog(), "signout_dialog_for_managed_account_cannot_delete_history");
     }
 
     @Test
@@ -194,16 +177,17 @@ public class SignOutDialogRenderTest {
     }
 
     private View showTurnOffSyncDialog() throws Exception {
+        when(mProfile.isChild()).thenReturn(true);
         return TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSignOutDialogCoordinator =
                             new SignOutDialogCoordinator(
                                     mActivityTestRule.getActivity(),
                                     mProfile,
+                                    mActivityTestRule.getActivity().getSupportFragmentManager(),
                                     mActivityTestRule.getActivity().getModalDialogManager(),
-                                    mListenerMock,
-                                    ActionType.REVOKE_SYNC_CONSENT,
-                                    GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+                                    SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
+                                    null);
                     return mSignOutDialogCoordinator.getDialogViewForTesting();
                 });
     }
@@ -215,10 +199,10 @@ public class SignOutDialogRenderTest {
                             new SignOutDialogCoordinator(
                                     mActivityTestRule.getActivity(),
                                     mProfile,
+                                    mActivityTestRule.getActivity().getSupportFragmentManager(),
                                     mActivityTestRule.getActivity().getModalDialogManager(),
-                                    mListenerMock,
-                                    ActionType.CLEAR_PRIMARY_ACCOUNT,
-                                    GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+                                    SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                                    null);
                     return mSignOutDialogCoordinator.getDialogViewForTesting();
                 });
     }

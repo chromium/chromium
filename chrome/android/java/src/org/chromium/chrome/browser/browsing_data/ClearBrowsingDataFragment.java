@@ -26,7 +26,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -47,17 +46,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.settings.ClearDataProgressDialog;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.ActionType;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
-import org.chromium.components.signin.GAIAServiceType;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -79,15 +75,12 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         implements BrowsingDataBridge.OnClearBrowsingDataListener,
                 Preference.OnPreferenceClickListener,
                 Preference.OnPreferenceChangeListener,
-                SignOutDialogCoordinator.Listener,
                 SigninManager.SignInStateObserver,
                 CustomDividerFragment,
                 ProfileDependentSetting,
                 FragmentHelpAndFeedbackLauncher {
     static final String FETCHER_SUPPLIED_FROM_OUTSIDE =
             "ClearBrowsingDataFetcherSuppliedFromOutside";
-
-    private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
     /** Represents a single item in the dialog. */
     private static class Item
@@ -753,10 +746,10 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 SignOutDialogCoordinator.show(
                         requireContext(),
                         mProfile,
+                        getFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                        this,
-                        ActionType.CLEAR_PRIMARY_ACCOUNT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+                        SignoutReason.USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
+                        /* onSignOut= */ null);
     }
 
     /**
@@ -835,42 +828,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                     ignoredDomains,
                     ignoredDomainReasons);
         }
-    }
-
-    /** {@link SignOutDialogCoordinator.Listener} implementation */
-    @Override
-    public void onSignOutClicked(boolean forceWipeUserData) {
-        // In case the user is not signed in, we guard the sign out so we do not hit a native crash.
-        if (!mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            return;
-        }
-        mSigninManager.runAfterOperationInProgress(
-                () -> {
-                    // In case supervised users reach this flow, remove the preference and guard
-                    // against signing out.
-                    if (!mSigninManager.isSignOutAllowed()) {
-                        updateSignOutOfChromeText();
-                        return;
-                    }
-                    final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
-                    mSigninManager.signOut(
-                            org.chromium.components.signin.metrics.SignoutReason
-                                    .USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
-                            new SigninManager.SignOutCallback() {
-                                @Override
-                                public void preWipeData() {
-                                    clearDataProgressDialog.show(
-                                            getChildFragmentManager(),
-                                            CLEAR_DATA_PROGRESS_DIALOG_TAG);
-                                }
-
-                                @Override
-                                public void signOutComplete() {
-                                    clearDataProgressDialog.dismissAllowingStateLoss();
-                                }
-                            },
-                            forceWipeUserData);
-                });
     }
 
     /** {@link SigninManager.SignInStateObserver} implementation. */

@@ -12,7 +12,6 @@ import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 
@@ -29,16 +28,13 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -50,14 +46,12 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  * search autocomplete and the automatic upload of crash reports.
  */
 public class GoogleServicesSettings extends ChromeBaseSettingsFragment
-        implements Preference.OnPreferenceChangeListener, Listener {
+        implements Preference.OnPreferenceChangeListener {
     // No longer used. Do not delete. Do not reuse these same strings.
     // private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
     // public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
     // public static final String PREF_AUTOFILL_ASSISTANT_SUBSECTION =
     // "autofill_assistant_subsection";
-
-    private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
     @VisibleForTesting public static final String PREF_ALLOW_SIGNIN = "allow_signin";
     private static final String PREF_SEARCH_SUGGESTIONS = "search_suggestions";
@@ -205,11 +199,14 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
             SignOutDialogCoordinator.show(
                     requireContext(),
                     getProfile(),
+                    getChildFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                    this,
-                    SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
-                    GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-            // Don't change the preference state yet, it will be updated by onSignOutClicked
+                    SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                    () -> {
+                        mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
+                        updatePreferences();
+                    });
+            // Don't change the preference state yet, it will be updated by SignOutDialogCoordinator
             // if the user actually confirms the sign-out.
             return false;
         } else if (PREF_SEARCH_SUGGESTIONS.equals(key)) {
@@ -294,37 +291,5 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 return false;
             }
         };
-    }
-
-    // SignOutDialogListener implementation:
-    @Override
-    public void onSignOutClicked(boolean forceWipeUserData) {
-        // In case the user reached this fragment without being signed in, we guard the sign out so
-        // we do not hit a native crash.
-        if (!IdentityServicesProvider.get()
-                .getIdentityManager(getProfile())
-                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            return;
-        }
-        final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
-        IdentityServicesProvider.get()
-                .getSigninManager(getProfile())
-                .signOut(
-                        SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                        new SigninManager.SignOutCallback() {
-                            @Override
-                            public void preWipeData() {
-                                clearDataProgressDialog.show(
-                                        getFragmentManager(), CLEAR_DATA_PROGRESS_DIALOG_TAG);
-                            }
-
-                            @Override
-                            public void signOutComplete() {
-                                clearDataProgressDialog.dismissAllowingStateLoss();
-                            }
-                        },
-                        forceWipeUserData);
-        mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
-        updatePreferences();
     }
 }

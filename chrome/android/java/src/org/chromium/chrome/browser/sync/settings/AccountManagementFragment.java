@@ -29,14 +29,12 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -67,13 +65,11 @@ import java.util.List;
  * <p>Note: This can be triggered from a web page, e.g. a GAIA sign-in page.
  */
 public class AccountManagementFragment extends ChromeBaseSettingsFragment
-        implements Listener,
-                SignInStateObserver,
+        implements SignInStateObserver,
                 ProfileDataCache.Observer,
                 CustomDividerFragment,
                 IdentityErrorCardPreference.Listener,
                 PassphraseDialogFragment.Listener {
-    private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
 
@@ -238,11 +234,11 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             SignOutDialogCoordinator.show(
                                     requireContext(),
                                     getProfile(),
+                                    getChildFragmentManager(),
                                     ((ModalDialogManagerHolder) getActivity())
                                             .getModalDialogManager(),
-                                    this,
-                                    SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
-                                    mGaiaServiceType);
+                                    SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                                    /* onSignOut= */ null);
                         } else {
                             IdentityServicesProvider.get()
                                     .getSigninManager(getProfile())
@@ -428,40 +424,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                 .then(this::updateAccountsList);
     }
 
-    // SignOutDialogListener implementation:
-    @Override
-    public void onSignOutClicked(boolean forceWipeUserData) {
-        // In case the user reached this fragment without being signed in, we guard the sign out so
-        // we do not hit a native crash.
-        if (!IdentityServicesProvider.get()
-                .getIdentityManager(getProfile())
-                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            return;
-        }
-        final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
-        IdentityServicesProvider.get()
-                .getSigninManager(getProfile())
-                .signOut(
-                        SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                        new SigninManager.SignOutCallback() {
-                            @Override
-                            public void preWipeData() {
-                                clearDataProgressDialog.show(
-                                        getFragmentManager(), CLEAR_DATA_PROGRESS_DIALOG_TAG);
-                            }
-
-                            @Override
-                            public void signOutComplete() {
-                                if (clearDataProgressDialog.isAdded()) {
-                                    clearDataProgressDialog.dismissAllowingStateLoss();
-                                }
-                            }
-                        },
-                        forceWipeUserData);
-    }
-
     // SignInStateObserver implementation:
-
     @Override
     public void onSignedIn() {
         update();
