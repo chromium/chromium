@@ -13,6 +13,7 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_task_view_v2.h"
+#include "ash/glanceables/tasks/test/glanceables_tasks_test_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
@@ -108,7 +109,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     base::Time date;
     ASSERT_TRUE(base::Time::FromString(kDueDate, &date));
     fake_glanceables_tasks_client_ =
-        std::make_unique<api::FakeTasksClient>(date);
+        glanceables_tasks_test_util::InitializeFakeTasksClient(date);
     fake_glanceables_classroom_client_ =
         std::make_unique<FakeGlanceablesClassroomClient>();
 

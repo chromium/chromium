@@ -22,7 +22,7 @@ struct TaskList;
 
 class ASH_EXPORT FakeTasksClient : public TasksClient {
  public:
-  explicit FakeTasksClient(base::Time tasks_due_time);
+  FakeTasksClient();
   FakeTasksClient(const FakeTasksClient&) = delete;
   FakeTasksClient& operator=(const FakeTasksClient&) = delete;
   ~FakeTasksClient() override;
@@ -52,6 +52,13 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   void InvalidateCache() override {}
   void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
                                      callback = base::DoNothing()) override;
+
+  // Helper function for loading in pre-built `TaskList` objects.
+  void AddTaskList(std::unique_ptr<TaskList> task_list_data);
+
+  // Helper function for loading in pre-built `Task` objects.
+  void AddTask(const std::string& task_list_id,
+               std::unique_ptr<Task> task_data);
 
   // Returns `bubble_closed_count_`, while also resetting the counter.
   int GetAndResetBubbleClosedCount();
@@ -84,9 +91,6 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
                       const std::string& title,
                       bool completed,
                       TasksClient::OnTaskSavedCallback callback);
-
-  void PopulateTasks(base::Time tasks_due_time);
-  void PopulateTaskLists(base::Time tasks_due_time);
 
   // All available task lists.
   std::unique_ptr<ui::ListModel<TaskList>> task_lists_;

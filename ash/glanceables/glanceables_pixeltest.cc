@@ -9,6 +9,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
+#include "ash/glanceables/tasks/test/glanceables_tasks_test_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
@@ -52,7 +53,7 @@ class GlanceablesPixelTest : public AshTestBase {
     base::Time date;
     ASSERT_TRUE(base::Time::FromString(due_date, &date));
     fake_glanceables_tasks_client_ =
-        std::make_unique<api::FakeTasksClient>(date);
+        glanceables_tasks_test_util::InitializeFakeTasksClient(date);
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesController::ClientsRegistration{
                          .tasks_client = fake_glanceables_tasks_client_.get()});

@@ -14,6 +14,7 @@
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/tasks/test/glanceables_tasks_test_util.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
@@ -183,7 +184,8 @@ class DateTrayTest
       glanceables_classroom_client_ =
           std::make_unique<TestGlanceablesClassroomClient>();
       fake_glanceables_tasks_client_ =
-          std::make_unique<api::FakeTasksClient>(base::Time::Now());
+          glanceables_tasks_test_util::InitializeFakeTasksClient(
+              base::Time::Now());
       Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
           account_id_,
           GlanceablesController::ClientsRegistration{

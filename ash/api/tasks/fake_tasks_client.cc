@@ -11,6 +11,7 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -34,10 +35,8 @@ size_t RunPendingCallbacks(std::list<base::OnceClosure>& pending_callbacks) {
 
 }  // namespace
 
-FakeTasksClient::FakeTasksClient(base::Time tasks_due_time) {
-  PopulateTasks(tasks_due_time);
-  PopulateTaskLists(tasks_due_time);
-}
+FakeTasksClient::FakeTasksClient()
+    : task_lists_(std::make_unique<ui::ListModel<TaskList>>()) {}
 
 FakeTasksClient::~FakeTasksClient() = default;
 
@@ -123,6 +122,23 @@ void FakeTasksClient::OnGlanceablesBubbleClosed(
   std::move(callback).Run();
 }
 
+void FakeTasksClient::AddTaskList(std::unique_ptr<TaskList> task_list_data) {
+  CHECK(!base::Contains(*task_lists_, task_list_data->id, &TaskList::id));
+  tasks_in_task_lists_.emplace(task_list_data->id,
+                               std::make_unique<ui::ListModel<Task>>());
+  task_lists_->Add(std::move(task_list_data));
+}
+
+void FakeTasksClient::AddTask(const std::string& task_list_id,
+                              std::unique_ptr<Task> task_data) {
+  auto task_list_iter = tasks_in_task_lists_.find(task_list_id);
+  CHECK(task_list_iter != tasks_in_task_lists_.end());
+
+  auto& tasks = task_list_iter->second;
+  CHECK(!base::Contains(*tasks, task_data->id, &Task::id));
+  tasks->Add(std::move(task_data));
+}
+
 int FakeTasksClient::GetAndResetBubbleClosedCount() {
   int result = bubble_closed_count_;
   bubble_closed_count_ = 0;
@@ -191,69 +207,6 @@ void FakeTasksClient::UpdateTaskImpl(
   task->title = title;
   task->completed = completed;
   std::move(callback).Run(task);
-}
-
-void FakeTasksClient::PopulateTasks(base::Time tasks_due_time) {
-  task_lists_ = std::make_unique<ui::ListModel<TaskList>>();
-
-  task_lists_->Add(std::make_unique<TaskList>(
-      "TaskListID1", "Task List 1 Title", /*updated=*/tasks_due_time));
-  task_lists_->Add(std::make_unique<TaskList>(
-      "TaskListID2", "Task List 2 Title", /*updated=*/tasks_due_time));
-  task_lists_->Add(std::make_unique<TaskList>("TaskListID3",
-                                              "Task List 3 Title (empty)",
-                                              /*updated=*/tasks_due_time));
-  task_lists_->Add(std::make_unique<TaskList>("TaskListID4",
-                                              "Task List 4 Title (empty)",
-                                              /*updated=*/tasks_due_time));
-  task_lists_->Add(std::make_unique<TaskList>("TaskListID5",
-                                              "Task List 5 Title (empty)",
-                                              /*updated=*/tasks_due_time));
-  task_lists_->Add(std::make_unique<TaskList>("TaskListID6",
-                                              "Task List 6 Title (empty)",
-                                              /*updated=*/tasks_due_time));
-}
-
-void FakeTasksClient::PopulateTaskLists(base::Time tasks_due_time) {
-  std::unique_ptr<ui::ListModel<Task>> task_list_1 =
-      std::make_unique<ui::ListModel<Task>>();
-  task_list_1->Add(std::make_unique<Task>(
-      "TaskListItem1", "Task List 1 Item 1 Title",
-      /*due=*/tasks_due_time, /*completed=*/false,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
-      /*updated=*/tasks_due_time));
-  task_list_1->Add(std::make_unique<Task>(
-      "TaskListItem2", "Task List 1 Item 2 Title",
-      /*due=*/tasks_due_time, /*completed=*/false,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
-      /*updated=*/tasks_due_time));
-  std::unique_ptr<ui::ListModel<Task>> task_list_2 =
-      std::make_unique<ui::ListModel<Task>>();
-  task_list_2->Add(std::make_unique<Task>(
-      "TaskListItem3", "Task List 2 Item 1 Title",
-      /*due=*/tasks_due_time, /*completed=*/false,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
-      /*updated=*/tasks_due_time));
-  task_list_2->Add(std::make_unique<Task>(
-      "TaskListItem4", "Task List 2 Item 2 Title",
-      /*due=*/tasks_due_time, /*completed=*/false,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
-      /*updated=*/tasks_due_time));
-  task_list_2->Add(std::make_unique<Task>(
-      "TaskListItem5", "Task List 2 Item 3 Title",
-      /*due=*/tasks_due_time, /*completed=*/false,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
-      /*updated=*/tasks_due_time));
-  tasks_in_task_lists_.emplace("TaskListID1", std::move(task_list_1));
-  tasks_in_task_lists_.emplace("TaskListID2", std::move(task_list_2));
-  tasks_in_task_lists_.emplace("TaskListID3",
-                               std::make_unique<ui::ListModel<Task>>());
-  tasks_in_task_lists_.emplace("TaskListID4",
-                               std::make_unique<ui::ListModel<Task>>());
-  tasks_in_task_lists_.emplace("TaskListID5",
-                               std::make_unique<ui::ListModel<Task>>());
-  tasks_in_task_lists_.emplace("TaskListID6",
-                               std::make_unique<ui::ListModel<Task>>());
 }
 
 }  // namespace ash::api
