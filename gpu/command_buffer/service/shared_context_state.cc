@@ -511,8 +511,8 @@ bool SharedContextState::InitializeGraphite(
       GetDefaultGraphiteContextOptions(workarounds);
   if (gr_context_type_ == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    if (dawn_context_provider_ &&
-        dawn_context_provider_->InitializeGraphiteContext(context_options)) {
+    CHECK(dawn_context_provider_);
+    if (dawn_context_provider_->InitializeGraphiteContext(context_options)) {
       graphite_context_ = dawn_context_provider_->GetGraphiteContext();
     } else {
       // There is currently no way for the GPU process to gracefully handle
