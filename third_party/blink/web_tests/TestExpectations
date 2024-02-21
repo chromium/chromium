@@ -6798,6 +6798,9 @@ crbug.com/325255315 [ Linux ] http/tests/misc/resource-timing-iframe-restored-fr
 # Flaky test
 crbug.com/40275364 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/text-track-duplicate-label.html [ Failure Pass ]
 
+# Temporarily disable until the test is made faster to fit in 30 sec timeout
+crbug.com/325960326 external/wpt/webrtc-extensions/RTCRtpReceiver-jitterBufferTarget-stats.html [ Failure Pass Timeout ] # Flaky
+
 # Flaky tests on Win11-arm64
 crbug.com/325634737 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-fetch.https.html [ Failure Pass Timeout ]
 crbug.com/40263840 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Failure Pass Timeout ] # Flaky
@@ -6807,7 +6810,6 @@ crbug.com/326065719 [ Win11-arm64 ] http/tests/xmlhttprequest/simple-cross-origi
 crbug.com/326065568 [ Win11-arm64 ] external/wpt/credential-management/fedcm-disconnect-iframe.sub.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326065727 [ Win11-arm64 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission-worker.https.window.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326065972 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ] # Flaky
-crbug.com/326066997 [ Win11-arm64 ] external/wpt/webrtc-extensions/RTCRtpReceiver-jitterBufferTarget-stats.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326067001 [ Win11-arm64 ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-userinfo-after-resolve.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326067598 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/set-automatic-beacon.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326067978 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Failure Pass Timeout ] # Flaky
