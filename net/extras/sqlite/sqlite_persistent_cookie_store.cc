@@ -562,14 +562,7 @@ bool CreateV20Schema(sql::Database* db) {
       "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
       "source_port)";
 
-  if (!db->Execute(kCreateTableQuery)) {
-    return false;
-  }
-  if (!db->Execute(kCreateIndexQuery)) {
-    return false;
-  }
-
-  return true;
+  return db->Execute(kCreateTableQuery) && db->Execute(kCreateIndexQuery);
 }
 
 bool CreateV21Schema(sql::Database* db) {
@@ -601,14 +594,7 @@ bool CreateV21Schema(sql::Database* db) {
       "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
       "source_port)";
 
-  if (!db->Execute(kCreateTableQuery)) {
-    return false;
-  }
-  if (!db->Execute(kCreateIndexQuery)) {
-    return false;
-  }
-
-  return true;
+  return db->Execute(kCreateTableQuery) && db->Execute(kCreateIndexQuery);
 }
 
 }  // namespace
@@ -680,10 +666,7 @@ void SQLitePersistentCookieStore::Backend::NotifyLoadCompleteInForeground(
 bool SQLitePersistentCookieStore::Backend::CreateDatabaseSchema() {
   DCHECK(db());
 
-  if (db()->DoesTableExist("cookies"))
-    return true;
-
-  return CreateV21Schema(db());
+  return db()->DoesTableExist("cookies") || CreateV21Schema(db());
 }
 
 bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {

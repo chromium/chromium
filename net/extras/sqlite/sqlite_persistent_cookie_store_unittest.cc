@@ -1539,15 +1539,7 @@ bool CreateV18Schema(sql::Database* db) {
       "CREATE UNIQUE INDEX cookies_unique_index "
       "ON cookies(host_key, top_frame_site_key, name, path)";
 
-  if (!db->Execute(kCreateSql)) {
-    return false;
-  }
-
-  if (!db->Execute(kCreateIndexSql)) {
-    return false;
-  }
-
-  return true;
+  return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
 }
 
 bool CreateV20Schema(sql::Database* db) {
@@ -1586,15 +1578,7 @@ bool CreateV20Schema(sql::Database* db) {
       "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
       "source_port)";
 
-  if (!db->Execute(kCreateSql)) {
-    return false;
-  }
-
-  if (!db->Execute(kCreateIndexSql)) {
-    return false;
-  }
-
-  return true;
+  return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
 }
 
 int GetDBCurrentVersionNumber(sql::Database* db) {
@@ -1691,11 +1675,7 @@ bool AddV18CookiesToDB(sql::Database* db,
       return false;
     }
   }
-  if (!transaction.Commit()) {
-    return false;
-  }
-
-  return true;
+  return transaction.Commit();
 }
 
 bool AddV20CookiesToDB(sql::Database* db) {
