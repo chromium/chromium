@@ -316,25 +316,52 @@ static const CodecInfo* const kVideoMP4Codecs[] = {&kMPEG4FLACCodecInfo,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
                                                    &kHEVCHEV1CodecInfo,
                                                    &kHEVCHVC1CodecInfo,
-#endif
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
                                                    &kDolbyVisionAVCCodecInfo1,
                                                    &kDolbyVisionAVCCodecInfo2,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
                                                    &kDolbyVisionHEVCCodecInfo1,
                                                    &kDolbyVisionHEVCCodecInfo2,
-#endif
-#endif
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
                                                    &kMPEG4AACCodecInfo,
                                                    &kMPEG2AACLCCodecInfo,
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
                                                    &kMpegHAudioCodecInfo1,
                                                    &kMpegHAudioCodecInfo2,
-#endif
+#endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+                                                   &kAC3CodecInfo1,
+                                                   &kAC3CodecInfo2,
+                                                   &kAC3CodecInfo3,
+                                                   &kEAC3CodecInfo1,
+                                                   &kEAC3CodecInfo2,
+                                                   &kEAC3CodecInfo3,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+                                                   &kAC4CodecInfo1,
+                                                   &kAC4CodecInfo2,
+                                                   &kAC4CodecInfo3,
+                                                   &kAC4CodecInfo4,
+                                                   &kAC4CodecInfo5,
+                                                   &kAC4CodecInfo6,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+                                                   &kDTSCodecInfo1,
+                                                   &kDTSCodecInfo2,
+                                                   &kDTSCodecInfo3,
+                                                   &kDTSXCodecInfo1,
+                                                   &kDTSXCodecInfo2,
+                                                   &kDTSXCodecInfo3,
+                                                   &kDTSECodecInfo1,
+                                                   &kDTSECodecInfo2,
+                                                   &kDTSECodecInfo3,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_AV1_DECODER)
                                                    &kAV1CodecInfo,
-#endif
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
                                                    &kIAMFCodecInfo1,
                                                    &kIAMFCodecInfo2,
@@ -351,7 +378,7 @@ static const CodecInfo* const kAudioMP4Codecs[] = {&kMPEG4FLACCodecInfo,
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
                                                    &kMpegHAudioCodecInfo1,
                                                    &kMpegHAudioCodecInfo2,
-#endif
+#endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
                                                    &kAC3CodecInfo1,
                                                    &kAC3CodecInfo2,
