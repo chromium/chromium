@@ -128,6 +128,9 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   // TODO(crbug.com/1399912): Remove this when saml_password_attributes.js is
   // made TrustedTypes compliant.
   source->DisableTrustedTypesCSP();
+  // Necessary since this UI sends XML Http requests.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc, "connect-src *;");
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddResourcePaths(base::make_span(kArcAccountPickerResources,

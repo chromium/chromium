@@ -45,10 +45,43 @@ void SetJSModuleDefaults(content::WebUIDataSource* source) {
       base::StartsWith(source->GetSource(), content::kChromeUIUntrustedScheme)
           ? content::kChromeUIUntrustedScheme
           : content::kChromeUIScheme;
+  // Set the default src to 'self' only. Generally necessary overrides are set
+  // below. Additional overrides should generally be added for individual
+  // data sources only.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::DefaultSrc, "default-src 'self';");
+  // Allow connecting to chrome://resources for trusted UIs and images from
+  // chrome://image, chrome://theme, chrome://favicon2, chrome://resources and
+  // data URLs.
+  // TODO: Both of these are needed by only a smaller subset of UIs. Should
+  // the overrides be moved to those UIs only?
+  if (scheme == content::kChromeUIScheme) {
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ConnectSrc,
+        "connect-src chrome://resources 'self';");
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ImgSrc,
+        "img-src chrome://resources chrome://theme chrome://image "
+        "chrome://favicon2 data: 'self';");
+  }
+
+  // webui-test is required for tests. Scripts from //resources are allowed
+  // for all UIs.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       base::StringPrintf("script-src %s://resources %s://webui-test 'self';",
                          scheme.c_str(), scheme.c_str()));
+  // Allow loading fonts from //resources.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FontSrc,
+      base::StringPrintf("font-src %s://resources 'self';", scheme.c_str()));
+  // unsafe-inline is required for Polymer. Allow styles to be imported from
+  // //resources and //theme.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      base::StringPrintf(
+          "style-src %s://resources %s://theme 'self' 'unsafe-inline';",
+          scheme.c_str(), scheme.c_str()));
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
