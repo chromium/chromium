@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -47,6 +48,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
                                         getContext(), this::onLearnMoreClicked))));
 
         populateTopics();
+        RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.PageOpened");
     }
 
     private void populateTopics() {
@@ -67,6 +69,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
             return handleBlockTopic(topicPreference);
         }
         PrivacySandboxBridge.setTopicAllowed(topicPreference.getTopic(), true);
+        RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.TopicEnabled");
         // When a topic is unblocked, display the snackbar if it's not in active topics.
         maybeDisplaySnackbar(topicPreference.getTopic());
         return true;
@@ -78,6 +81,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
         List<Topic> childTopics = PrivacySandboxBridge.getChildTopicsCurrentlyAssigned(topic);
         if (childTopics.isEmpty()) {
             PrivacySandboxBridge.setTopicAllowed(topic, false);
+            RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.TopicBlocked");
             return true;
         }
         // There are assigned child topics - display a confirmation prompt.
@@ -95,12 +99,16 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
                                 R.string.continue_button,
                                 (dialog, which) -> {
                                     PrivacySandboxBridge.setTopicAllowed(topic, false);
+                                    RecordUserAction.record(
+                                            "Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed");
                                 })
                         .setNegativeButton(
                                 R.string.cancel,
                                 (dialog, which) -> {
                                     preference.setChecked(true);
                                     mConfirmationDialog = null;
+                                    RecordUserAction.record(
+                                            "Settings.PrivacySandbox.Topics.Manage.TopicBlockingCanceled");
                                 })
                         .show();
         return true;
@@ -119,6 +127,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     }
 
     private void onLearnMoreClicked(View view) {
+        RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked");
         openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 }
