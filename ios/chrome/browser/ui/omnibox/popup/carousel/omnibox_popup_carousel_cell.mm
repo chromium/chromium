@@ -21,6 +21,8 @@ namespace {
 const NSUInteger kCarouselCapacity = 10;
 /// Margin of the StackView.
 const CGFloat kStackMargin = 8.0f;
+/// Leading margin of the popout StackView.
+const CGFloat kStackLeadingMargin = 16.0f;
 /// Minimum spacing between items in the StackView.
 const CGFloat kMinStackSpacing = 8.0f;
 /// Width of the gradient applied on the leading and trailing edge of the
@@ -123,7 +125,7 @@ CAGradientLayer* CarouselGradientLayer() {
 }
 
 - (void)layoutSubviews {
-  if (self.shouldApplyLayoutMarginsGuide && !IsIpadPopoutOmniboxEnabled()) {
+  if (self.shouldApplyLayoutMarginsGuide) {
     [self updateGradient];
   }
   if (base::i18n::IsRTL()) {
@@ -138,27 +140,21 @@ CAGradientLayer* CarouselGradientLayer() {
   [self.contentView addSubview:_scrollView];
   [_scrollView addSubview:_suggestionsStackView];
 
-  if (self.shouldApplyLayoutMarginsGuide && !IsIpadPopoutOmniboxEnabled()) {
+  if (self.shouldApplyLayoutMarginsGuide) {
     self.contentView.layer.mask = self.gradientLayer;
   }
 
   AddSameConstraintsWithInsets(
       _suggestionsStackView, _scrollView,
-      NSDirectionalEdgeInsetsMake(kStackMargin, kStackMargin, kStackMargin,
-                                  kStackMargin));
+      NSDirectionalEdgeInsetsMake(
+          kStackMargin,
+          IsIpadPopoutOmniboxEnabled() ? kStackLeadingMargin : kStackMargin,
+          kStackMargin, kStackMargin));
 
   id<LayoutGuideProvider> contentGuide =
       self.shouldApplyLayoutMarginsGuide ? self.contentView.layoutMarginsGuide
                                          : self.contentView;
   AddSameCenterConstraints(_scrollView, contentGuide);
-
-  NSLayoutConstraint* widthConstraint = [contentGuide.widthAnchor
-      constraintEqualToAnchor:_scrollView.widthAnchor];
-
-  if (IsIpadPopoutOmniboxEnabled()) {
-    widthConstraint = [_scrollView.widthAnchor
-        constraintEqualToAnchor:self.contentView.widthAnchor];
-  }
 
   [NSLayoutConstraint activateConstraints:@[
     [contentGuide.heightAnchor
@@ -166,7 +162,7 @@ CAGradientLayer* CarouselGradientLayer() {
     [_scrollView.heightAnchor
         constraintEqualToAnchor:_suggestionsStackView.heightAnchor
                        constant:kStackMargin * 2],
-    widthConstraint
+    [contentGuide.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor]
   ]];
 }
 
@@ -177,6 +173,9 @@ CAGradientLayer* CarouselGradientLayer() {
 }
 
 - (BOOL)shouldApplyLayoutMarginsGuide {
+  if (IsIpadPopoutOmniboxEnabled()) {
+    return NO;
+  }
   // Apply layoutMarginsGuide in Visual Treatment 1 only on Tablet because there
   // is a minimum layoutMargin of 8 that we don't want on phones.
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
@@ -376,10 +375,14 @@ CAGradientLayer* CarouselGradientLayer() {
   CGFloat availableWidth = self.bounds.size.width - 2 * kStackMargin;
   if (self.shouldApplyLayoutMarginsGuide) {
     availableWidth -= self.contentView.layoutMargins.left +
-                      self.contentView.layoutMargins.right +
-                      (IsIpadPopoutOmniboxEnabled() ? 0 : kGradientWidth);
+                      self.contentView.layoutMargins.right + kGradientWidth;
   }
   CGFloat tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing / 2;
+
+  if (IsIpadPopoutOmniboxEnabled()) {
+    availableWidth = self.bounds.size.width - kStackLeadingMargin;
+    tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing;
+  }
 
   CGFloat maxVisibleTiles = availableWidth / tileWidth;
   CGFloat nearestHalfTile = maxVisibleTiles - 0.5;
