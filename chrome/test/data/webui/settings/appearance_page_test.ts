@@ -403,11 +403,50 @@ suite('HomeUrlInput', function() {
 suite('HoverCardSettings', function() {
   const HOVER_CARD_IMAGES_PREF = 'browser.hovercard.image_previews_enabled';
 
-  setup(function() {
+  function getMemoryUsageToggle(): SettingsToggleButtonElement|null {
+    return appearancePage.shadowRoot!
+        .querySelector<SettingsToggleButtonElement>(
+            '#hoverCardMemoryUsageToggle');
+  }
+
+  function getPreviewImageToggle(): SettingsToggleButtonElement|null {
+    return appearancePage.shadowRoot!
+        .querySelector<SettingsToggleButtonElement>('#hoverCardImagesToggle');
+  }
+
+  test('hover card section not visible in guest mode', function() {
+    loadTimeData.overrideValues({
+      isGuest: true,
+      showHoverCardImagesOption: true,
+    });
+    createAppearancePage();
+
+    const memoryUsageToggle = getMemoryUsageToggle();
+    assertTrue(!!memoryUsageToggle);
+    assertFalse(isVisible(memoryUsageToggle));
+
+    const previewImageToggle = getPreviewImageToggle();
+    assertTrue(!!previewImageToggle);
+    assertFalse(isVisible(previewImageToggle));
+  });
+
+  test('hide hover card image option', function() {
+    loadTimeData.overrideValues({
+      showHoverCardImagesOption: false,
+    });
+    createAppearancePage();
+
+    const memoryUsageToggle = getMemoryUsageToggle();
+    assertTrue(!!memoryUsageToggle);
+
+    const previewImageToggle = getPreviewImageToggle();
+    assertFalse(!!previewImageToggle);
+  });
+
+  test('show hover card image option', async function() {
     loadTimeData.overrideValues({
       showHoverCardImagesOption: true,
     });
-
     createAppearancePage();
     appearancePage.set('prefs.browser', {
       hovercard: {
@@ -416,24 +455,23 @@ suite('HoverCardSettings', function() {
         },
       },
     });
-  });
 
-  test('hover card image preview toggle', async function() {
-    const toggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#hoverCardImagesToggle');
-    assertTrue(!!toggle);
-    assertFalse(toggle.checked);
+    const memoryUsageToggle = getMemoryUsageToggle();
+    assertTrue(!!memoryUsageToggle);
 
-    toggle.click();
-    assertTrue(toggle.checked);
+    const previewImageToggle = getPreviewImageToggle();
+    assertTrue(!!previewImageToggle);
+    assertFalse(previewImageToggle.checked);
+
+    previewImageToggle.click();
+    assertTrue(previewImageToggle.checked);
     assertTrue(appearancePage.getPref(HOVER_CARD_IMAGES_PREF).value);
     assertTrue(await appearanceBrowserProxy.whenCalled(
         'recordHoverCardImagesEnabledChanged'));
 
     appearanceBrowserProxy.reset();
-    toggle.click();
-    assertFalse(toggle.checked);
+    previewImageToggle.click();
+    assertFalse(previewImageToggle.checked);
     assertFalse(appearancePage.getPref(HOVER_CARD_IMAGES_PREF).value);
     assertFalse(await appearanceBrowserProxy.whenCalled(
         'recordHoverCardImagesEnabledChanged'));

@@ -246,6 +246,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[prefs::kHoverCardImagesEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[prefs::kHoverCardMemoryUsageEnabled] =
+      settings_api::PrefType::kBoolean;
 
   // On startup.
   (*s_allowlist)[::prefs::kRestoreOnStartup] = settings_api::PrefType::kNumber;

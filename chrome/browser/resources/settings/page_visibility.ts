@@ -31,7 +31,7 @@ export interface PageVisibility {
 export interface AppearancePageVisibility {
   bookmarksBar: boolean;
   homeButton: boolean;
-  hoverCardImages: boolean;
+  hoverCard: boolean;
   pageZoom: boolean;
   setTheme: boolean;
   sidePanel: boolean;
@@ -84,7 +84,7 @@ if (loadTimeData.getBoolean('isGuest')) {
     appearance: {
       setTheme: false,
       homeButton: false,
-      hoverCardImages: false,
+      hoverCard: false,
       bookmarksBar: false,
       pageZoom: false,
       sidePanel: false,
