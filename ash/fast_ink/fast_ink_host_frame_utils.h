@@ -19,7 +19,6 @@ class CompositorFrame;
 }  // namespace viz
 
 namespace gfx {
-class GpuMemoryBuffer;
 class Size;
 }  // namespace gfx
 
@@ -50,12 +49,6 @@ ASH_EXPORT gfx::Rect BufferRectFromWindowRect(
     const gfx::Size& buffer_size,
     const gfx::Rect& window_rect);
 
-// Creates a gpu buffer of given `size` and of given usage and format defined in
-// `usage_and_format`.
-ASH_EXPORT std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
-    const gfx::Size& size,
-    const gfx::BufferUsageAndFormat& usage_and_format);
-
 // Creates a Mappable SharedImage of given `size`, `shared_image_usage`, and
 // `buffer_usage`. The returned ClientSharedImage will be null if creation
 // failed.
@@ -71,7 +64,6 @@ ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token);
 
@@ -85,7 +77,6 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     bool auto_update,
     const aura::Window& host_window,
     const gfx::Size& buffer_size,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);

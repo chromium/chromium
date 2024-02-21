@@ -13,7 +13,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/aura/env.h"
@@ -27,7 +26,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace ash {
 namespace fast_ink_internal {
@@ -38,7 +36,6 @@ namespace {
 std::unique_ptr<UiResource> AcquireUiResource(
     const gfx::Size& size,
     bool is_overlay_candidate,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token) {
@@ -51,7 +48,7 @@ std::unique_ptr<UiResource> AcquireUiResource(
     CHECK(mailbox == resource->mailbox());
   } else {
     resource = CreateUiResource(size, kFastInkUiSourceId, is_overlay_candidate,
-                                gpu_memory_buffer, mailbox, sync_token);
+                                mailbox, sync_token);
   }
 
   return resource;
@@ -108,17 +105,6 @@ gfx::Rect BufferRectFromWindowRect(
   return buffer_rect;
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
-    const gfx::Size& size,
-    const gfx::BufferUsageAndFormat& usage_and_format) {
-  return aura::Env::GetInstance()
-      ->context_factory()
-      ->GetGpuMemoryBufferManager()
-      ->CreateGpuMemoryBuffer(size, usage_and_format.format,
-                              usage_and_format.usage, gpu::kNullSurfaceHandle,
-                              nullptr);
-}
-
 scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     const gfx::Size& size,
     uint32_t shared_image_usage,
@@ -133,7 +119,6 @@ std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token) {
   DCHECK(!size.IsEmpty());
@@ -168,7 +153,6 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     bool auto_update,
     const aura::Window& host_window,
     const gfx::Size& buffer_size,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
@@ -181,10 +165,6 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   const gfx::Size window_size_in_pixel = gfx::ToFlooredSize(
       gfx::ConvertSizeToPixels(window_size_in_dip, device_scale_factor));
 
-  if (gpu_memory_buffer) {
-    CHECK_EQ(gpu_memory_buffer->GetSize(), buffer_size);
-  }
-
   // NOTE: `shared_image` is guaranteed to be non-null by contract of this
   // method, and ClientSharedImage::mailbox() is guaranteed to be non-zero by
   // contract of *that* method.
@@ -192,8 +172,8 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   auto mailbox = shared_image->mailbox();
 
   // In auto_update mode, we use hardware overlays to render the content.
-  auto resource = AcquireUiResource(buffer_size, auto_update, gpu_memory_buffer,
-                                    resource_manager, mailbox, sync_token);
+  auto resource = AcquireUiResource(buffer_size, auto_update, resource_manager,
+                                    mailbox, sync_token);
 
   if (!resource) {
     return nullptr;
