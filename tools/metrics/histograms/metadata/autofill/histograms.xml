@@ -1840,6 +1840,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ExtractForm{OwnershipType}.FieldCount" units="fields"
+    expires_after="2024-09-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of FormFieldData contained in FormData::fields. Emitted whenever
+    a FormData is extracted in the renderer.
+  </summary>
+  <token key="OwnershipType">
+    <variant name="Owned"
+        summary="FormDatas for form controls inside HTML form tags."/>
+    <variant name="Unowned" summary="FormDatas for unowned form controls."/>
+  </token>
+</histogram>
+
 <histogram
     name="Autofill.FastCheckout.CapabilitiesFetcher.CacheStateForIsTriggerFormSupported"
     enum="FastCheckoutCacheStateForIsTriggerFormSupported"

@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -2021,6 +2022,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableFailures) {
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {
+  base::HistogramTester histogram_tester;
   LoadHTML(R"(
       <html><title>Checkout</title></head>
       <form id=form_of_interest>
@@ -2043,9 +2045,14 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {
                               Field(&FormFieldData::name, u"check_input"),
                               Field(&FormFieldData::name, u"number_input"),
                               Field(&FormFieldData::name, u"select_input")))));
+  histogram_tester.ExpectTotalCount("Autofill.ExtractFormUnowned.FieldCount",
+                                    0);
+  histogram_tester.ExpectUniqueSample("Autofill.ExtractFormOwned.FieldCount", 4,
+                                      1);
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
+  base::HistogramTester histogram_tester;
   LoadHTML(R"(
       <html><title>Checkout</title></head>
       <input type=text name=text_input>
@@ -2065,6 +2072,9 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
                               Field(&FormFieldData::name, u"check_input"),
                               Field(&FormFieldData::name, u"number_input"),
                               Field(&FormFieldData::name, u"select_input")))));
+  histogram_tester.ExpectTotalCount("Autofill.ExtractFormOwned.FieldCount", 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ExtractFormUnowned.FieldCount",
+                                      4, 1);
 }
 
 // Tests that the owning form of a form control element in light DOM is its

@@ -24,7 +24,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -1490,6 +1489,11 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   if (!success) {
     return std::nullopt;
   }
+
+  base::UmaHistogramCounts100(form_element.IsNull()
+                                  ? "Autofill.ExtractFormUnowned.FieldCount"
+                                  : "Autofill.ExtractFormOwned.FieldCount",
+                              form.fields.size());
   return form;
 }
 
