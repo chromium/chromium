@@ -60,7 +60,7 @@ class NavigatorDelegate {
   // Handles post-navigation tasks in navigation BEFORE the entry has been
   // committed to the NavigationController.
   virtual void DidNavigateMainFramePreCommit(
-      FrameTreeNode* frame_tree_node,
+      NavigationHandle* navigation_handle,
       bool navigation_is_within_page) = 0;
 
   // Handles post-navigation tasks in navigation AFTER the entry has been

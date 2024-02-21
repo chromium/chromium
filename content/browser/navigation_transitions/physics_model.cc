@@ -51,18 +51,14 @@ constexpr int kSpringAtRestThreshold = 10;
 
 // Physics model.
 //
-// The live page of the current content will stop at 85% of the screen width
-// while wait for the navigation to the new page to commit.
-constexpr float kTargetCommitPending = 0.85f;
-
 // The size of the touch points store in `PhysicsModel`. Used to interpolate
 // the finger's terminal velocity when the model switches from the finger drag
 // curve driven to spring driven.
 constexpr int kPhysicsModelHistorySize = 10;
 
-bool IsInvalidVelocity(float velocity) {
-  return base::IsApproximatelyEqual(velocity, kInvalidVelocity,
-                                    kFloatTolerance);
+bool IsValidVelocity(float velocity) {
+  return !base::IsApproximatelyEqual(velocity, kInvalidVelocity,
+                                     kFloatTolerance);
 }
 
 // Solves `positions`=`slope`*`timestamps`+ displacement(not calculated).
@@ -387,8 +383,12 @@ float PhysicsModel::ForegroundToBackGroundOffset(float fg_offset) {
     // spring.
     return 0.f;
   }
+  // TODO(https://crbug.com/325541315): The initial position of the screenshot
+  // layer isn't correct. It should be (-W*kScreenshotInitialPosition, 0)
+  // instead of (-W*kScreenshotInitialPosition*kTargetCommitPending, 0).
   return std::min(0.f,
-                  0.25f * (fg_offset - viewport_width_ * kTargetCommitPending));
+                  kScreenshotInitialPosition *
+                      (fg_offset - viewport_width_ * kTargetCommitPending));
 }
 
 float PhysicsModel::FingerDragCurve(float movement_viewport) {
@@ -424,7 +424,8 @@ void PhysicsModel::RecordCommitPendingAccelerationStartIfNeeded(
     base::TimeTicks request_animation_frame) {
   if (animation_driver_ == Driver::kSpringCommitPending &&
       navigation_state_ == NavigationTerminalState::kCommitted) {
-    if (spring_commit_pending_->ComputeVelocity() > 0.f) {
+    float vel = spring_commit_pending_->ComputeVelocity();
+    if (IsValidVelocity(vel) && vel > kFloatTolerance) {
       // If the navigation is committed and `spring_commit_pending_` is moving
       // at the opposite direction of the invoke animation, record the first
       // requested frame's timestamp. This timestamp will be used to speed up
@@ -509,13 +510,13 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
       return;
   }
 
-  if (IsInvalidVelocity(spring_invoke_->initial_velocity())) {
+  if (!IsValidVelocity(spring_invoke_->initial_velocity())) {
     spring_invoke_->set_initial_velocity(-2.0);
   }
-  if (IsInvalidVelocity(spring_commit_pending_->initial_velocity())) {
+  if (!IsValidVelocity(spring_commit_pending_->initial_velocity())) {
     spring_commit_pending_->set_initial_velocity(0.f);
   }
-  if (IsInvalidVelocity(spring_cancel_->initial_velocity())) {
+  if (!IsValidVelocity(spring_cancel_->initial_velocity())) {
     spring_cancel_->set_initial_velocity(1.f);
   }
 }

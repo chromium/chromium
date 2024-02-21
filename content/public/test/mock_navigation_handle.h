@@ -39,7 +39,7 @@ class MockNavigationHandle : public NavigationHandle {
   ~MockNavigationHandle() override;
 
   // NavigationHandle implementation:
-  int64_t GetNavigationId() override { return navigation_id_; }
+  int64_t GetNavigationId() const override { return navigation_id_; }
   ukm::SourceId GetNextPageUkmSourceId() override {
     return ukm::ConvertToSourceId(navigation_id_,
                                   ukm::SourceIdObj::Type::NAVIGATION_ID);
