@@ -71,7 +71,7 @@ void FlatTreeTraversalTest::AttachOpenShadowRoot(
     Element& shadow_host,
     std::string_view shadow_inner_html) {
   ShadowRoot& shadow_root =
-      shadow_host.AttachShadowRootForTesting(ShadowRootType::kOpen);
+      shadow_host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8(shadow_inner_html));
 }
 

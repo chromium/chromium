@@ -1168,7 +1168,7 @@ ShadowRoot* Internals::shadowRoot(Element* host) {
   return host->GetShadowRoot();
 }
 
-String Internals::shadowRootType(const Node* root,
+String Internals::ShadowRootMode(const Node* root,
                                  ExceptionState& exception_state) const {
   DCHECK(root);
   auto* shadow_root = DynamicTo<ShadowRoot>(root);
@@ -1179,12 +1179,12 @@ String Internals::shadowRootType(const Node* root,
     return String();
   }
 
-  switch (shadow_root->GetType()) {
-    case ShadowRootType::kUserAgent:
+  switch (shadow_root->GetMode()) {
+    case ShadowRootMode::kUserAgent:
       return String("UserAgentShadowRoot");
-    case ShadowRootType::kOpen:
+    case ShadowRootMode::kOpen:
       return String("OpenShadowRoot");
-    case ShadowRootType::kClosed:
+    case ShadowRootMode::kClosed:
       return String("ClosedShadowRoot");
     default:
       NOTREACHED();

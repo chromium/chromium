@@ -42,7 +42,7 @@ void ConvertTemplatesToShadowRoots(HTMLElement& element) {
 
     Document* const document = element.ownerDocument();
     ShadowRoot& shadow_root =
-        parent->AttachShadowRootForTesting(ShadowRootType::kOpen);
+        parent->AttachShadowRootForTesting(ShadowRootMode::kOpen);
     Node* const fragment = document->importNode(
         To<HTMLTemplateElement>(template_element)->content(), true,
         ASSERT_NO_EXCEPTION);

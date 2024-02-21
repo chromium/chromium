@@ -47,7 +47,7 @@ class SlotAssignment;
 class V8ObservableArrayCSSStyleSheet;
 class WhitespaceAttacher;
 
-enum class ShadowRootType { kOpen, kClosed, kUserAgent };
+enum class ShadowRootMode { kOpen, kClosed, kUserAgent };
 
 class CORE_EXPORT ShadowRoot final : public DocumentFragment,
                                      public TreeScope,
@@ -55,7 +55,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ShadowRoot(Document&, ShadowRootType);
+  ShadowRoot(Document&, ShadowRootMode);
   ~ShadowRoot() override;
   ShadowRoot(const ShadowRoot&) = delete;
   ShadowRoot& operator=(const ShadowRoot&) = delete;
@@ -75,16 +75,16 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     DCHECK(ParentOrShadowHostNode());
     return *To<Element>(ParentOrShadowHostNode());
   }
-  ShadowRootType GetType() const { return static_cast<ShadowRootType>(type_); }
+  ShadowRootMode GetMode() const { return static_cast<ShadowRootMode>(mode_); }
   String mode() const {
-    switch (GetType()) {
-      case ShadowRootType::kUserAgent:
+    switch (GetMode()) {
+      case ShadowRootMode::kUserAgent:
         // UA ShadowRoot should not be exposed to the Web.
         DUMP_WILL_BE_NOTREACHED_NORETURN();
         return "";
-      case ShadowRootType::kOpen:
+      case ShadowRootMode::kOpen:
         return "open";
-      case ShadowRootType::kClosed:
+      case ShadowRootMode::kClosed:
         return "closed";
       default:
         NOTREACHED();
@@ -92,8 +92,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     }
   }
 
-  bool IsOpen() const { return GetType() == ShadowRootType::kOpen; }
-  bool IsUserAgent() const { return GetType() == ShadowRootType::kUserAgent; }
+  bool IsOpen() const { return GetMode() == ShadowRootMode::kOpen; }
+  bool IsUserAgent() const { return GetMode() == ShadowRootMode::kUserAgent; }
 
   bool serializable() const { return serializable_; }
   void setSerializable(bool serializable) { serializable_ = serializable; }
@@ -159,15 +159,15 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   }
 
   void SetIsDeclarativeShadowRoot(bool flag) {
-    DCHECK(!flag || GetType() == ShadowRootType::kOpen ||
-           GetType() == ShadowRootType::kClosed);
+    DCHECK(!flag || GetMode() == ShadowRootMode::kOpen ||
+           GetMode() == ShadowRootMode::kClosed);
     is_declarative_shadow_root_ = flag;
   }
   bool IsDeclarativeShadowRoot() const { return is_declarative_shadow_root_; }
 
   void SetAvailableToElementInternals(bool flag) {
-    DCHECK(!flag || GetType() == ShadowRootType::kOpen ||
-           GetType() == ShadowRootType::kClosed);
+    DCHECK(!flag || GetMode() == ShadowRootMode::kOpen ||
+           GetMode() == ShadowRootMode::kClosed);
     available_to_element_internals_ = flag;
   }
   bool IsAvailableToElementInternals() const {
@@ -213,7 +213,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   Member<SlotAssignment> slot_assignment_;
   Member<CustomElementRegistry> registry_;
   unsigned child_shadow_root_count_ : 16;
-  unsigned type_ : 2;
+  unsigned mode_ : 2;
   unsigned registered_with_parent_shadow_root_ : 1;
   unsigned delegates_focus_ : 1;
   unsigned slot_assignment_mode_ : 1;
@@ -244,7 +244,7 @@ struct DowncastTraits<ShadowRoot> {
   }
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const ShadowRootType&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const ShadowRootMode&);
 
 }  // namespace blink
 

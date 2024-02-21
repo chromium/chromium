@@ -233,8 +233,8 @@ TEST_F(MatchResultTest, ResetTreeScope) {
   Element* host2 = GetElementById("host2");
   ASSERT_TRUE(host1);
   ASSERT_TRUE(host2);
-  TreeScope& scope1 = host1->AttachShadowRootForTesting(ShadowRootType::kOpen);
-  TreeScope& scope2 = host2->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  TreeScope& scope1 = host1->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  TreeScope& scope2 = host2->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   MatchResult result;
   result.BeginAddingAuthorRulesForTreeScope(scope1);

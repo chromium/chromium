@@ -56,7 +56,7 @@ struct SameSizeAsShadowRoot : public DocumentFragment,
 
 ASSERT_SIZE(ShadowRoot, SameSizeAsShadowRoot);
 
-ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
+ShadowRoot::ShadowRoot(Document& document, ShadowRootMode mode)
     : DocumentFragment(nullptr, kCreateShadowRoot),
       TreeScope(
           *this,
@@ -66,7 +66,7 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
           static_cast<V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback>(
               &ShadowRoot::OnAdoptedStyleSheetDelete)),
       child_shadow_root_count_(0),
-      type_(static_cast<unsigned>(type)),
+      mode_(static_cast<unsigned>(mode)),
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
       slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kNamed)),
@@ -276,15 +276,15 @@ void ShadowRoot::Trace(Visitor* visitor) const {
   DocumentFragment::Trace(visitor);
 }
 
-std::ostream& operator<<(std::ostream& ostream, const ShadowRootType& type) {
-  switch (type) {
-    case ShadowRootType::kUserAgent:
+std::ostream& operator<<(std::ostream& ostream, const ShadowRootMode& mode) {
+  switch (mode) {
+    case ShadowRootMode::kUserAgent:
       ostream << "UserAgent";
       break;
-    case ShadowRootType::kOpen:
+    case ShadowRootMode::kOpen:
       ostream << "Open";
       break;
-    case ShadowRootType::kClosed:
+    case ShadowRootMode::kClosed:
       ostream << "Closed";
       break;
   }

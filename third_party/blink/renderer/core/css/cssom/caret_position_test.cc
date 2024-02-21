@@ -37,7 +37,7 @@ TEST_F(CaretPositionTest, offsetNodeAndOffsetInShadowDom) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   shadow_root.setInnerHTML("<div>div inside Shadow DOM.</div>");
   Node* text_in_shadow = shadow_root.childNodes()->item(0)->firstChild();
@@ -53,7 +53,7 @@ TEST_F(CaretPositionTest, offsetNodeAndOffsetInClosedShadowTree) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kClosed);
+      host->AttachShadowRootForTesting(ShadowRootMode::kClosed);
 
   shadow_root.setInnerHTML("<div>div inside closed Shadow DOM.</div>");
   Node* text_in_shadow = shadow_root.childNodes()->item(0)->firstChild();

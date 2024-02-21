@@ -258,7 +258,7 @@ TEST(SelectorQueryTest, FastPathScoped) {
   Element* scope = document->getElementById(AtomicString("first"));
   ASSERT_NE(nullptr, scope);
   ShadowRoot& shadowRoot =
-      scope->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      scope->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   // Make the inside the shadow root be identical to that of the outer document.
   shadowRoot.appendChild(document->documentElement()->cloneNode(/*deep*/ true));
   static const struct QueryTest kTestCases[] = {
@@ -377,7 +377,7 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   Element* host = document->CreateRawElement(html_names::kDivTag);
   ShadowRoot& shadowRoot =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadowRoot.setInnerHTML(R"HTML(
     <section>
       <span id=first>

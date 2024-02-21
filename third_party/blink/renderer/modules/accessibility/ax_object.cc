@@ -4028,7 +4028,7 @@ const AXObject* AXObject::GetAtomicTextFieldAncestor(
 
 const AXObject* AXObject::DatetimeAncestor() const {
   ShadowRoot* shadow_root = GetNode()->ContainingShadowRoot();
-  if (!shadow_root || shadow_root->GetType() != ShadowRootType::kUserAgent) {
+  if (!shadow_root || shadow_root->GetMode() != ShadowRootMode::kUserAgent) {
     return nullptr;
   }
   auto* input = DynamicTo<HTMLInputElement>(&shadow_root->host());

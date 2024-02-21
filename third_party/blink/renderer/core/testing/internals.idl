@@ -57,7 +57,7 @@ interface Internals {
 
     Node effectiveRootScroller(Document document);
 
-    [RaisesException] DOMString shadowRootType(Node root);
+    [RaisesException] DOMString ShadowRootMode(Node root);
     [RaisesException] unsigned long countElementShadow(Node Root);
     DOMString shadowPseudoId(Element element);
     Node treeScopeRootNode(Node node);

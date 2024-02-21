@@ -477,7 +477,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
             // to the host.
             // TODO(kochi): Make sure we treat closed shadow as user agent
             // shadow here.
-            DCHECK(shadow_root->GetType() == ShadowRootType::kClosed ||
+            DCHECK(shadow_root->GetMode() == ShadowRootMode::kClosed ||
                    shadow_root->IsUserAgent());
             node_ = &shadow_root->host();
             iteration_progress_ = kHandledUserAgentShadowRoot;

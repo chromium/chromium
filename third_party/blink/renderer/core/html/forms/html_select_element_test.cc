@@ -675,7 +675,7 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingCrash3) {
   auto* green = GetDocument().getElementById(AtomicString("green"));
 
   // Make sure the select is outside the flat tree.
-  host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Changing the select rendering should not clear the style recalc root set by

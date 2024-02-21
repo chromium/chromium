@@ -807,7 +807,7 @@ TEST_F(ScrollAnchorTest, SerializeAnchorFailsForShadowDOMElement) {
       <div></div>
       <div></div>)HTML");
   auto* host = GetDocument().getElementById(AtomicString("host"));
-  auto& shadow_root = host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  auto& shadow_root = host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(R"HTML(
       <style>
         div { height: 100px; }

@@ -290,13 +290,13 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
     if (include_shadow_tree == kNone) {
       include_children = false;
     } else if (include_shadow_tree == kOpen &&
-               shadow_root->GetType() != ShadowRootType::kOpen) {
+               shadow_root->GetMode() != ShadowRootMode::kOpen) {
       include_children = false;
     }
 
     serialized_value_keys.push_back(V8String(isolate, kShadowRootMode));
     serialized_value_values.push_back(
-        V8String(isolate, shadow_root->GetType() == ShadowRootType::kOpen
+        V8String(isolate, shadow_root->GetMode() == ShadowRootMode::kOpen
                               ? kShadowRootOpen
                               : kShadowRootClosed));
   }

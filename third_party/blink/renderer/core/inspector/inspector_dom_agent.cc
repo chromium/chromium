@@ -1765,12 +1765,12 @@ String InspectorDOMAgent::DocumentBaseURLString(Document* document) {
 // static
 protocol::DOM::ShadowRootType InspectorDOMAgent::GetShadowRootType(
     ShadowRoot* shadow_root) {
-  switch (shadow_root->GetType()) {
-    case ShadowRootType::kUserAgent:
+  switch (shadow_root->GetMode()) {
+    case ShadowRootMode::kUserAgent:
       return protocol::DOM::ShadowRootTypeEnum::UserAgent;
-    case ShadowRootType::kOpen:
+    case ShadowRootMode::kOpen:
       return protocol::DOM::ShadowRootTypeEnum::Open;
-    case ShadowRootType::kClosed:
+    case ShadowRootMode::kClosed:
       return protocol::DOM::ShadowRootTypeEnum::Closed;
   }
   NOTREACHED();

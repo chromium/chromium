@@ -1798,7 +1798,7 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
 TEST_F(UnassociatedListedElementTest,
        GetUnassociatedListedElementsFromShadowTree) {
   ShadowRoot& shadow_root =
-      GetDocument().body()->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      GetDocument().body()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   HTMLInputElement* input =
       MakeGarbageCollected<HTMLInputElement>(GetDocument());
   input->SetIdAttribute(AtomicString("unassociated_input"));

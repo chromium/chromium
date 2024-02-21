@@ -1007,22 +1007,22 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
 }
 
 namespace {
-DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
+DeclarativeShadowRootMode DeclarativeShadowRootModeFromToken(
     AtomicHTMLToken* token,
     const Document& document,
     bool include_shadow_roots) {
   Attribute* type_attribute =
       token->GetAttributeItem(html_names::kShadowrootmodeAttr);
   if (!type_attribute) {
-    return DeclarativeShadowRootType::kNone;
+    return DeclarativeShadowRootMode::kNone;
   }
   String shadow_mode = type_attribute->Value();
 
   if (include_shadow_roots) {
     if (EqualIgnoringASCIICase(shadow_mode, "open")) {
-      return DeclarativeShadowRootType::kOpen;
+      return DeclarativeShadowRootMode::kOpen;
     } else if (EqualIgnoringASCIICase(shadow_mode, "closed")) {
-      return DeclarativeShadowRootType::kClosed;
+      return DeclarativeShadowRootMode::kClosed;
     }
   }
   if (!include_shadow_roots) {
@@ -1038,7 +1038,7 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
         "Invalid declarative shadowrootmode attribute value \"" + shadow_mode +
             "\". Valid values include \"open\" and \"closed\"."));
   }
-  return DeclarativeShadowRootType::kNone;
+  return DeclarativeShadowRootMode::kNone;
 }
 }  // namespace
 
@@ -1046,7 +1046,7 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   tree_.ActiveFormattingElements()->AppendMarker();
   tree_.InsertHTMLTemplateElement(
       token,
-      DeclarativeShadowRootTypeFromToken(
+      DeclarativeShadowRootModeFromToken(
           token, tree_.OwnerDocumentForCurrentNode(), include_shadow_roots_));
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);

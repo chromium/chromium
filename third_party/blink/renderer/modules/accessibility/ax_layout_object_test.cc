@@ -122,7 +122,7 @@ TEST_F(AXLayoutObjectTest, AccessibilityHitTest) {
 // shadow Node under the given point (as opposed to taking the host Element,
 // which is the case for user-agent shadow DOM).
 TEST_F(AXLayoutObjectTest, AccessibilityHitTestShadowDOM) {
-  auto run_test = [&](ShadowRootType root_type) {
+  auto run_test = [&](ShadowRootMode root_type) {
     SetBodyInnerHTML(
         "<style>"
         "#host_a{position:absolute;}"
@@ -161,8 +161,8 @@ TEST_F(AXLayoutObjectTest, AccessibilityHitTestShadowDOM) {
     EXPECT_EQ(hit_test_result->RoleValue(), ax::mojom::Role::kRadioButton);
   };
 
-  run_test(ShadowRootType::kOpen);
-  run_test(ShadowRootType::kClosed);
+  run_test(ShadowRootMode::kOpen);
+  run_test(ShadowRootMode::kClosed);
 }
 
 // https://crbug.com/1167596

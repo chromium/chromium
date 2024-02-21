@@ -2300,7 +2300,7 @@ String Node::ToString() const {
     // nodeName of ShadowRoot is #document-fragment.  It's confused with
     // DocumentFragment.
     std::stringstream shadow_root_type;
-    shadow_root_type << shadow_root->GetType();
+    shadow_root_type << shadow_root->GetMode();
     String shadow_root_type_str(shadow_root_type.str().c_str());
     return "#shadow-root(" + shadow_root_type_str + ")";
   }
@@ -3069,8 +3069,9 @@ HTMLSlotElement* Node::AssignedSlotWithoutRecalc() const {
 HTMLSlotElement* Node::assignedSlotForBinding() {
   // assignedSlot doesn't need to recalc slot assignment
   if (ShadowRoot* root = ShadowRootOfParent()) {
-    if (root->GetType() == ShadowRootType::kOpen)
+    if (root->GetMode() == ShadowRootMode::kOpen) {
       return AssignedSlot();
+    }
   }
   return nullptr;
 }

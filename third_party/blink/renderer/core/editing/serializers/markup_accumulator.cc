@@ -564,14 +564,14 @@ using Behavior = ShadowRootInclusion::Behavior;
 std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
     const Element& element) const {
   ShadowRoot* shadow_root = element.GetShadowRoot();
-  if (!shadow_root || shadow_root->GetType() == ShadowRootType::kUserAgent) {
+  if (!shadow_root || shadow_root->GetMode() == ShadowRootMode::kUserAgent) {
     // User agent shadow roots are never serialized.
     return std::pair<ShadowRoot*, HTMLTemplateElement*>();
   }
   const bool explicitly_included =
       shadow_root_inclusion_.include_shadow_roots.Contains(shadow_root);
   if (!explicitly_included) {
-    const bool closed_root = shadow_root->GetType() == ShadowRootType::kClosed;
+    const bool closed_root = shadow_root->GetMode() == ShadowRootMode::kClosed;
     const bool only_if_explicitly_included =
         shadow_root_inclusion_.behavior == Behavior::kOnlyProvidedShadowRoots;
     const bool not_serializable =
@@ -588,7 +588,7 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
   HTMLTemplateElement* template_element =
       MakeGarbageCollected<HTMLTemplateElement>(element.GetDocument());
   template_element->setAttribute(html_names::kShadowrootmodeAttr,
-                                 shadow_root->GetType() == ShadowRootType::kOpen
+                                 shadow_root->GetMode() == ShadowRootMode::kOpen
                                      ? keywords::kOpen
                                      : keywords::kClosed);
   if (shadow_root->delegatesFocus()) {

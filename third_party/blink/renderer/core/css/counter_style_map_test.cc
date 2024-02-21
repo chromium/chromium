@@ -14,7 +14,7 @@ class CounterStyleMapTest : public PageTestBase {
  public:
   ShadowRoot& AttachShadowTo(const char* host_id) {
     Element* host = GetElementById(host_id);
-    return host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+    return host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   }
 
   const CounterStyle& GetCounterStyle(const TreeScope& scope,

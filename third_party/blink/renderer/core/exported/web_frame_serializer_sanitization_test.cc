@@ -96,7 +96,7 @@ class WebFrameSerializerSanitizationTest : public testing::Test {
   ShadowRoot* SetShadowContent(
       TreeScope& scope,
       const char* host,
-      ShadowRootType shadow_type,
+      ShadowRootMode shadow_type,
       const char* shadow_content,
       FocusDelegation focus_delegation = FocusDelegation::kNone) {
     Element* host_element = scope.getElementById(AtomicString::FromUTF8(host));
@@ -333,9 +333,9 @@ TEST_F(WebFrameSerializerSanitizationTest, ShadowDOM) {
   LoadFrame("http://www.test.com", "shadow_dom.html", "text/html");
   Document* document = MainFrameImpl()->GetFrame()->GetDocument();
   ShadowRoot* shadowRoot = SetShadowContent(
-      *document, "h2", ShadowRootType::kOpen,
+      *document, "h2", ShadowRootMode::kOpen,
       "Parent shadow\n<p id=\"h3\">Foo</p>", FocusDelegation::kDelegateFocus);
-  SetShadowContent(*shadowRoot, "h3", ShadowRootType::kClosed, "Nested shadow");
+  SetShadowContent(*shadowRoot, "h3", ShadowRootMode::kClosed, "Nested shadow");
   String mhtml = WebFrameSerializerTestHelper::GenerateMHTML(MainFrameImpl());
 
   // Template with special attribute should be created for each shadow DOM tree.

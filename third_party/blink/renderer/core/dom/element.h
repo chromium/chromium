@@ -158,7 +158,7 @@ enum class ElementFlags {
   kNumberOfElementFlags = 8,  // Size of bitfield used to store the flags.
 };
 
-enum class ShadowRootType;
+enum class ShadowRootMode;
 
 enum class SlotAssignmentMode { kManual, kNamed };
 enum class FocusDelegation { kNone, kDelegateFocus };
@@ -733,14 +733,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Returns true if the attachment was successful.
   bool AttachDeclarativeShadowRoot(HTMLTemplateElement&,
-                                   ShadowRootType,
+                                   ShadowRootMode,
                                    FocusDelegation,
                                    SlotAssignmentMode,
                                    bool serializable,
                                    bool clonable);
 
   ShadowRoot& CreateUserAgentShadowRoot();
-  ShadowRoot& AttachShadowRootInternal(ShadowRootType,
+  ShadowRoot& AttachShadowRootInternal(ShadowRootMode,
                                        FocusDelegation,
                                        SlotAssignmentMode,
                                        CustomElementRegistry*,
@@ -748,7 +748,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                        bool clonable);
   // This version is for testing only, and allows easy attachment of a shadow
   // root, specifying only the type and none of the other arguments.
-  ShadowRoot& AttachShadowRootForTesting(ShadowRootType type) {
+  ShadowRoot& AttachShadowRootForTesting(ShadowRootMode type) {
     return AttachShadowRootInternal(type, FocusDelegation::kNone,
                                     SlotAssignmentMode::kNamed,
                                     /*registry*/ nullptr,
@@ -1619,7 +1619,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // ShouldAdjustDirectionalityForInsert().
   bool DoesChildTextNodesDirectionMatchThis(const Node& node) const;
 
-  ShadowRoot& CreateAndAttachShadowRoot(ShadowRootType);
+  ShadowRoot& CreateAndAttachShadowRoot(ShadowRootMode);
 
   // FIXME: Everyone should allow author shadows.
   virtual bool AreAuthorShadowsAllowed() const { return true; }

@@ -57,9 +57,9 @@ TEST_F(CSSStyleSheetTest,
        GarbageCollectedShadowRootsRemovedFromAdoptedTreeScopes) {
   SetBodyInnerHTML("<div id='host_a'></div><div id='host_b'></div>");
   auto* host_a = GetElementById("host_a");
-  auto& shadow_a = host_a->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  auto& shadow_a = host_a->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   auto* host_b = GetElementById("host_b");
-  auto& shadow_b = host_b->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  auto& shadow_b = host_b->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   DummyExceptionStateForTesting exception_state;
   CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
   CSSStyleSheet* sheet =

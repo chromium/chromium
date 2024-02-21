@@ -41,7 +41,7 @@ TEST_F(FocusControllerTest, DoNotCrash1) {
       "tabindex='0'></p>");
   // <div> with shadow root
   auto* host = To<Element>(GetDocument().body()->firstChild());
-  host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   // "This test is for crbug.com/609012"
   Node* text = host->nextSibling();
   // <p>
@@ -65,7 +65,7 @@ TEST_F(FocusControllerTest, DoNotCrash2) {
   Node* text = target->nextSibling();
   // <div> with shadow root
   auto* host = To<Element>(text->nextSibling());
-  host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   // Set sequential focus navigation point at text node.
   GetDocument().SetSequentialFocusNavigationStartingPoint(text);
@@ -304,7 +304,7 @@ TEST_F(FocusControllerTest, FindScopeOwnerSlot) {
   GetDocument().body()->setInnerHTML(String::FromUTF8(main_html));
   auto* host = To<Element>(GetDocument().body()->firstChild());
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8("<slot></slot>"));
 
   Element* inner1 = GetDocument().QuerySelector(AtomicString("#inner1"));
@@ -328,7 +328,7 @@ TEST_F(FocusControllerTest, FocusHasChangedShouldInvalidateFocusStyle) {
 
   auto* host = GetElementById("host");
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<div tabindex=0></div>");
   To<Element>(shadow_root.firstChild())->Focus();
 

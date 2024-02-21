@@ -692,15 +692,15 @@ Node* Element::Clone(Document& factory,
        shadow_root->clonable()) ||
       (!RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
        data.Has(CloneOption::kIncludeAllShadowRoots))) {
-    if (shadow_root->GetType() == ShadowRootType::kOpen ||
-        shadow_root->GetType() == ShadowRootType::kClosed) {
+    if (shadow_root->GetMode() == ShadowRootMode::kOpen ||
+        shadow_root->GetMode() == ShadowRootMode::kClosed) {
       // 7.1 Run attach a shadow root with copy, node’s shadow root’s mode,
       // true, node’s shadow root’s delegates focus, and node’s shadow root’s
       // slot assignment.
       // TODO(crbug.com/1523816): it seems like the `registry` parameter should
       // not always be nullptr.
       ShadowRoot& cloned_shadow_root = copy->AttachShadowRootInternal(
-          shadow_root->GetType(),
+          shadow_root->GetMode(),
           shadow_root->delegatesFocus() ? FocusDelegation::kDelegateFocus
                                         : FocusDelegation::kNone,
           shadow_root->GetSlotAssignmentMode(), /*registry*/ nullptr,
@@ -4573,7 +4573,7 @@ void Element::UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal) {
   }
 }
 
-ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootType type) {
+ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type) {
 #if DCHECK_IS_ON()
   NestingLevelIncrementer slot_assignment_recalc_forbidden_scope(
       GetDocument().SlotAssignmentRecalcForbiddenRecursionDepth());
@@ -5215,10 +5215,10 @@ const char* Element::ErrorMessageForAttachShadow(bool for_declarative) const {
 ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
                                   ExceptionState& exception_state) {
   DCHECK(shadow_root_init_dict->hasMode());
-  ShadowRootType type = shadow_root_init_dict->mode() == "open"
-                            ? ShadowRootType::kOpen
-                            : ShadowRootType::kClosed;
-  if (type == ShadowRootType::kOpen) {
+  ShadowRootMode type = shadow_root_init_dict->mode() == "open"
+                            ? ShadowRootMode::kOpen
+                            : ShadowRootMode::kClosed;
+  if (type == ShadowRootMode::kOpen) {
     UseCounter::Count(GetDocument(), WebFeature::kElementAttachShadowOpen);
   } else {
     UseCounter::Count(GetDocument(), WebFeature::kElementAttachShadowClosed);
@@ -5253,7 +5253,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   if (RuntimeEnabledFeatures::ShadowRootAttachmentNewBehaviorEnabled()) {
     if (auto* existing_shadow = GetShadowRoot()) {
       CHECK(existing_shadow->IsDeclarativeShadowRoot());
-      if (existing_shadow->GetType() != type) {
+      if (existing_shadow->GetMode() != type) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kNotSupportedError,
             "The requested mode does not match the existing declarative shadow "
@@ -5275,12 +5275,12 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 }
 
 bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
-                                          ShadowRootType type,
+                                          ShadowRootMode type,
                                           FocusDelegation focus_delegation,
                                           SlotAssignmentMode slot_assignment,
                                           bool serializable,
                                           bool clonable) {
-  CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
+  CHECK(type == ShadowRootMode::kOpen || type == ShadowRootMode::kClosed);
   CHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() ||
         !serializable);
 
@@ -5313,11 +5313,11 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
 ShadowRoot& Element::CreateUserAgentShadowRoot() {
   DCHECK(!GetShadowRoot());
   GetDocument().SetContainsShadowRoot();
-  return CreateAndAttachShadowRoot(ShadowRootType::kUserAgent);
+  return CreateAndAttachShadowRoot(ShadowRootMode::kUserAgent);
 }
 
 ShadowRoot& Element::AttachShadowRootInternal(
-    ShadowRootType type,
+    ShadowRootMode type,
     FocusDelegation focus_delegation,
     SlotAssignmentMode slot_assignment_mode,
     CustomElementRegistry* registry,
@@ -5326,7 +5326,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
   // SVG <use> is a special case for using this API to create a closed shadow
   // root.
   DCHECK(CanAttachShadowRoot() || IsA<SVGUseElement>(*this));
-  DCHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed)
+  DCHECK(type == ShadowRootMode::kOpen || type == ShadowRootMode::kClosed)
       << type;
   DCHECK(!AlwaysCreateUserAgentShadowRoot());
   CHECK(!serializable || RuntimeEnabledFeatures::ElementGetHTMLEnabled());
@@ -5369,7 +5369,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
 
 ShadowRoot* Element::OpenShadowRoot() const {
   ShadowRoot* root = GetShadowRoot();
-  return root && root->GetType() == ShadowRootType::kOpen ? root : nullptr;
+  return root && root->GetMode() == ShadowRootMode::kOpen ? root : nullptr;
 }
 
 ShadowRoot* Element::ClosedShadowRoot() const {
@@ -5377,7 +5377,7 @@ ShadowRoot* Element::ClosedShadowRoot() const {
   if (!root) {
     return nullptr;
   }
-  return root->GetType() == ShadowRootType::kClosed ? root : nullptr;
+  return root->GetMode() == ShadowRootMode::kClosed ? root : nullptr;
 }
 
 ShadowRoot* Element::AuthorShadowRoot() const {
@@ -5396,7 +5396,7 @@ ShadowRoot* Element::UserAgentShadowRoot() const {
 
 ShadowRoot& Element::EnsureUserAgentShadowRoot() {
   if (ShadowRoot* shadow_root = UserAgentShadowRoot()) {
-    DCHECK(shadow_root->GetType() == ShadowRootType::kUserAgent);
+    DCHECK(shadow_root->GetMode() == ShadowRootMode::kUserAgent);
     return *shadow_root;
   }
   ShadowRoot& shadow_root = CreateUserAgentShadowRoot();

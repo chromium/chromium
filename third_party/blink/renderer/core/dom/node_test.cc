@@ -266,7 +266,7 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_Slotted) {
   ShadowRoot& shadow_root =
       GetDocument()
           .getElementById(AtomicString("host"))
-          ->AttachShadowRootForTesting(ShadowRootType::kOpen);
+          ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(
       "<div id=root style='display:contents'><span></span><slot></slot></div>");
   UpdateAllLifecyclePhasesForTest();
@@ -320,7 +320,7 @@ TEST_F(NodeTest, MutationOutsideFlatTreeStyleDirty) {
   SetBodyContent("<div id=host><span id=nonslotted></span></div>");
   GetDocument()
       .getElementById(AtomicString("host"))
-      ->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
@@ -334,7 +334,7 @@ TEST_F(NodeTest, SkipStyleDirtyHostChild) {
   SetBodyContent("<div id=host><span></span></div>");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<div style='display:none'><slot></slot></div>");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
@@ -374,7 +374,7 @@ TEST_F(NodeTest, SkipForceReattachDisplayNone) {
   SetBodyContent("<div id=host><span style='display:none'></span></div>");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<slot name='target'></slot>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -393,7 +393,7 @@ TEST_F(NodeTest, UpdateChildDirtyAncestorsOnSlotAssignment) {
   SetBodyContent("<div id=host><span></span></div>");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(
       "<div><slot></slot></div><div id='child-dirty'><slot "
       "name='target'></slot></div>");
@@ -419,7 +419,7 @@ TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
   )HTML");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<slot></slot>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -451,7 +451,7 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {
   )HTML");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<div><slot></slot></div>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -487,7 +487,7 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlottingDirtyNode) {
   auto* span = To<Element>(host->firstChild());
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<div><slot name=x></slot></div>");
   UpdateAllLifecyclePhasesForTest();
 

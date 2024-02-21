@@ -912,7 +912,7 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
 
 void HTMLConstructionSite::InsertHTMLTemplateElement(
     AtomicHTMLToken* token,
-    DeclarativeShadowRootType declarative_shadow_root_type) {
+    DeclarativeShadowRootMode declarative_shadow_root_type) {
   // Regardless of whether a declarative shadow root is being attached, the
   // template element is always created. If the template is a valid declarative
   // Shadow Root (has a valid attribute value and parent element), then the
@@ -923,10 +923,10 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   HTMLStackItem* template_stack_item =
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
-  if (declarative_shadow_root_type != DeclarativeShadowRootType::kNone &&
+  if (declarative_shadow_root_type != DeclarativeShadowRootMode::kNone &&
       IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
-    CHECK(declarative_shadow_root_type == DeclarativeShadowRootType::kOpen ||
-          declarative_shadow_root_type == DeclarativeShadowRootType::kClosed);
+    CHECK(declarative_shadow_root_type == DeclarativeShadowRootMode::kOpen ||
+          declarative_shadow_root_type == DeclarativeShadowRootMode::kClosed);
     // Attach the shadow root now
     auto focus_delegation = template_stack_item->GetAttributeItem(
                                 html_names::kShadowrootdelegatesfocusAttr)
@@ -950,10 +950,10 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     HTMLStackItem* shadow_host_stack_item = open_elements_.TopStackItem();
     Element* host = shadow_host_stack_item->GetElement();
 
-    ShadowRootType type =
-        declarative_shadow_root_type == DeclarativeShadowRootType::kOpen
-            ? ShadowRootType::kOpen
-            : ShadowRootType::kClosed;
+    ShadowRootMode type =
+        declarative_shadow_root_type == DeclarativeShadowRootMode::kOpen
+            ? ShadowRootMode::kOpen
+            : ShadowRootMode::kClosed;
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, type, focus_delegation, slot_assignment_mode,
         serializable, clonable);

@@ -41,7 +41,7 @@ TEST_F(TreeScopeTest, CommonAncestorOfSameTrees) {
   EXPECT_EQ(GetDocument(),
             GetDocument()->CommonAncestorTreeScope(*GetDocument()));
   ShadowRoot& shadow_root =
-      GetBody()->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      GetBody()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   EXPECT_EQ(shadow_root, shadow_root.CommonAncestorTreeScope(shadow_root));
 }
 
@@ -51,7 +51,7 @@ TEST_F(TreeScopeTest, CommonAncestorOfInclusiveTrees) {
   // shadowRoot
 
   ShadowRoot& shadow_root =
-      GetBody()->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      GetBody()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   EXPECT_EQ(GetDocument(), GetDocument()->CommonAncestorTreeScope(shadow_root));
   EXPECT_EQ(GetDocument(), shadow_root.CommonAncestorTreeScope(*GetDocument()));
@@ -68,9 +68,9 @@ TEST_F(TreeScopeTest, CommonAncestorOfSiblingTrees) {
   GetBody()->AppendChild(div_b);
 
   ShadowRoot& shadow_root_a =
-      div_a->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      div_a->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   ShadowRoot& shadow_root_b =
-      div_b->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      div_b->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   EXPECT_EQ(GetDocument(),
             shadow_root_a.CommonAncestorTreeScope(shadow_root_b));
@@ -91,14 +91,14 @@ TEST_F(TreeScopeTest, CommonAncestorOfTreesAtDifferentDepths) {
   GetBody()->AppendChild(div_b);
 
   ShadowRoot& shadow_root_y =
-      div_y->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      div_y->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   ShadowRoot& shadow_root_b =
-      div_b->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      div_b->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   Element* div_in_y = GetDocument()->CreateRawElement(html_names::kDivTag);
   shadow_root_y.AppendChild(div_in_y);
   ShadowRoot& shadow_root_a =
-      div_in_y->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      div_in_y->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   EXPECT_EQ(GetDocument(),
             shadow_root_a.CommonAncestorTreeScope(shadow_root_b));

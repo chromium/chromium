@@ -134,7 +134,7 @@ class Internals final : public ScriptWrappable {
   ShadowRoot* createUserAgentShadowRoot(Element* host);
 
   ShadowRoot* shadowRoot(Element* host);
-  String shadowRootType(const Node*, ExceptionState&) const;
+  String ShadowRootMode(const Node*, ExceptionState&) const;
   uint32_t countElementShadow(const Node*, ExceptionState&) const;
   const AtomicString& shadowPseudoId(Element*);
 

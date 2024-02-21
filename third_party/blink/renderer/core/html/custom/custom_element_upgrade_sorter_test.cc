@@ -178,7 +178,7 @@ TEST_F(CustomElementUpgradeSorterTest, sorter_shadow) {
   Element* d = CreateElementWithId("a-a", "d");
 
   GetDocument().documentElement()->AppendChild(a);
-  ShadowRoot* s = &a->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  ShadowRoot* s = &a->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   a->AppendChild(d);
 
   s->AppendChild(b);

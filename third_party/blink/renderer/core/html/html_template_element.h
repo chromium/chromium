@@ -42,7 +42,7 @@ namespace blink {
 class DocumentFragment;
 class TemplateContentDocumentFragment;
 
-enum class DeclarativeShadowRootType {
+enum class DeclarativeShadowRootMode {
   kNone,
   kOpen,
   kClosed,
