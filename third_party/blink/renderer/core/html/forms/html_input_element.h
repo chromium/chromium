@@ -390,6 +390,7 @@ class CORE_EXPORT HTMLInputElement
 
  protected:
   void DefaultEventHandler(Event&) override;
+  bool IsInnerEditorValueEmpty() const final;
 
  private:
   enum AutoCompleteSetting { kUninitialized, kOn, kOff };
@@ -509,6 +510,7 @@ class CORE_EXPORT HTMLInputElement
   unsigned is_placeholder_visible_ : 1;
   unsigned has_been_password_field_ : 1;
   unsigned should_show_strong_password_label_ : 1;
+  unsigned scheduled_create_shadow_tree_ : 1;
   Member<InputType> input_type_;
   Member<InputTypeView> input_type_view_;
   // The ImageLoader must be owned by this element because the loader code

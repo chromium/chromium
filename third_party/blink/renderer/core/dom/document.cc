@@ -2338,6 +2338,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
+  ProcessScheduledShadowTreeCreationsNow();
+
   auto advance_to_style_clean = [this]() {
     DocumentLifecycle& lifecycle = Lifecycle();
     if (lifecycle.GetState() < DocumentLifecycle::kStyleClean) {
@@ -9156,6 +9158,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(anchor_element_interaction_tracker_);
   visitor->Trace(focused_element_change_observers_);
   visitor->Trace(pending_link_header_preloads_);
+  visitor->Trace(elements_needing_shadow_tree_);
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
@@ -9591,6 +9594,25 @@ void Document::SetLcpElementFoundInHtml(bool found) {
 
 bool Document::IsLcpElementFoundInHtml() {
   return data_->lcpp_encountered_lcp_in_html;
+}
+
+void Document::ScheduleShadowTreeCreation(HTMLInputElement& element) {
+  elements_needing_shadow_tree_.insert(&element);
+}
+
+void Document::UnscheduleShadowTreeCreation(HTMLInputElement& element) {
+  elements_needing_shadow_tree_.erase(&element);
+}
+
+void Document::ProcessScheduledShadowTreeCreationsNow() {
+  if (elements_needing_shadow_tree_.empty()) {
+    return;
+  }
+  HeapHashSet<Member<HTMLInputElement>> elements_needing_shadow_tree;
+  std::swap(elements_needing_shadow_tree, elements_needing_shadow_tree_);
+  for (auto& element : elements_needing_shadow_tree) {
+    element->EnsureShadowSubtree();
+  }
 }
 
 // static

@@ -319,6 +319,13 @@ ControlPart TextFieldInputType::AutoAppearance() const {
   return kTextFieldPart;
 }
 
+bool TextFieldInputType::IsInnerEditorValueEmpty() const {
+  if (!HasCreatedShadowSubtree()) {
+    return VisibleValue().empty();
+  }
+  return GetElement().InnerEditorValue().empty();
+}
+
 void TextFieldInputType::CreateShadowSubtree() {
   DCHECK(IsShadowHost(GetElement()));
   ShadowRoot* shadow_root = GetElement().UserAgentShadowRoot();
@@ -544,6 +551,10 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
 
 HTMLElement* TextFieldInputType::UpdatePlaceholderText(
     bool is_suggested_value) {
+  if (!HasCreatedShadowSubtree() &&
+      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+    return nullptr;
+  }
   if (!SupportsPlaceholder()) {
     return nullptr;
   }

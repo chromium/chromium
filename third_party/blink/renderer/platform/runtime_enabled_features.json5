@@ -715,6 +715,12 @@
       status: "stable",
     },
     {
+      // Controls whether form elements may delay editor creation until layout.
+      // This is a kill switch. See https://crbug.com/325613706 for details.
+      name: "CreateInputShadowTreeDuringLayout",
+      status: "stable"
+    },
+    {
       name: "CrossFramePerformanceTimeline",
       status: "experimental",
     },

@@ -124,6 +124,8 @@ class MultipleFieldsTemporalInputTypeView final
   AXObject* PopupRootAXObject() final;
 
   DateTimeEditElement* GetDateTimeEditElement() const;
+  // Similar to GetDateTimeEditElement(), but does not force creation.
+  DateTimeEditElement* GetDateTimeEditElementIfCreated() const;
   SpinButtonElement* GetSpinButtonElement() const;
   ClearButtonElement* GetClearButtonElement() const;
   PickerIndicatorElement* GetPickerIndicatorElement() const;

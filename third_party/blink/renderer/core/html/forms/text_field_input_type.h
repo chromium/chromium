@@ -53,6 +53,7 @@ class TextFieldInputType : public InputType,
   bool CanSetSuggestedValue() override;
   void HandleKeydownEvent(KeyboardEvent&) override;
 
+  bool IsInnerEditorValueEmpty() const final;
   void CreateShadowSubtree() override;
   void DestroyShadowSubtree() override;
   void ValueAttributeChanged() override;

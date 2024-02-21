@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 using ::testing::Truly;
 
@@ -156,7 +157,11 @@ TEST_F(HTMLInputElementTest, create) {
       GetDocument(), CreateElementFlags::ByParser(&GetDocument()));
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->ParserSetAttributes(Vector<Attribute, kAttributePrealloc>());
-  EXPECT_NE(nullptr, input->UserAgentShadowRoot());
+  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+    EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
+  } else {
+    EXPECT_NE(nullptr, input->UserAgentShadowRoot());
+  }
 }
 
 TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
@@ -309,6 +314,31 @@ TEST_F(HTMLInputElementTest, UpdateTypeDcheck) {
   input->setAttribute(html_names::kTypeAttr, AtomicString("radio"));
   // Test succeeds if the above setAttribute() didn't trigger a DCHECK failure
   // in Document::UpdateFocusAppearanceAfterLayout().
+}
+
+TEST_F(HTMLInputElementTest, LazilyCreateShadowTree) {
+  GetDocument().body()->setInnerHTML("<input/>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(IsShadowHost(*input));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(IsShadowHost(*input));
+}
+
+TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithPlaceholder) {
+  GetDocument().body()->setInnerHTML("<input placeholder='x'/>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(IsShadowHost(*input));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(IsShadowHost(*input));
+}
+
+TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithValue) {
+  GetDocument().body()->setInnerHTML("<input value='x'/>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(IsShadowHost(*input));
 }
 
 struct PasswordFieldResetParam {

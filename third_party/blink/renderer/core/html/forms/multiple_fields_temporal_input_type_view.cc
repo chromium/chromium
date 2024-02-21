@@ -151,6 +151,11 @@ MultipleFieldsTemporalInputTypeView::GetDateTimeEditElement() const {
   return To<DateTimeEditElement>(element);
 }
 
+DateTimeEditElement*
+MultipleFieldsTemporalInputTypeView::GetDateTimeEditElementIfCreated() const {
+  return HasCreatedShadowSubtree() ? GetDateTimeEditElement() : nullptr;
+}
+
 SpinButtonElement* MultipleFieldsTemporalInputTypeView::GetSpinButtonElement()
     const {
   auto* element = GetElement().EnsureShadowSubtree()->getElementById(
@@ -511,8 +516,8 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
 }
 
 bool MultipleFieldsTemporalInputTypeView::HasBadInput() const {
-  DateTimeEditElement* edit = GetDateTimeEditElement();
-  return GetElement().Value().empty() && edit &&
+  DateTimeEditElement* edit = GetDateTimeEditElementIfCreated();
+  return edit && GetElement().Value().empty() &&
          edit->AnyEditableFieldsHaveValues();
 }
 
@@ -623,6 +628,9 @@ void MultipleFieldsTemporalInputTypeView::OpenPopupView() {
 }
 
 void MultipleFieldsTemporalInputTypeView::ClosePopupView() {
+  if (!HasCreatedShadowSubtree()) {
+    return;
+  }
   if (PickerIndicatorElement* picker = GetPickerIndicatorElement())
     picker->ClosePopup();
 }

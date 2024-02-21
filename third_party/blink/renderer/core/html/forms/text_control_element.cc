@@ -188,8 +188,8 @@ String TextControlElement::StrippedPlaceholder() const {
 
 bool TextControlElement::PlaceholderShouldBeVisible() const {
   return SuggestedValue().empty() && SupportsPlaceholder() &&
-         InnerEditorValue().empty() &&
-         FastHasAttribute(html_names::kPlaceholderAttr);
+         FastHasAttribute(html_names::kPlaceholderAttr) &&
+         IsInnerEditorValueEmpty();
 }
 
 HTMLElement* TextControlElement::PlaceholderElement() const {
@@ -208,6 +208,13 @@ void TextControlElement::UpdatePlaceholderVisibility() {
   bool place_holder_was_visible = IsPlaceholderVisible();
   HTMLElement* placeholder = PlaceholderElement();
   if (!placeholder) {
+    if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() &&
+        !InnerEditorElement()) {
+      // The place holder visibility needs to be updated as it may be used by
+      // CSS selectors.
+      SetPlaceholderVisibility(PlaceholderShouldBeVisible());
+      return;
+    }
     placeholder = UpdatePlaceholderText();
   }
   SetPlaceholderVisibility(PlaceholderShouldBeVisible());
@@ -232,6 +239,19 @@ void TextControlElement::UpdatePlaceholderVisibility() {
   if (place_holder_was_visible != IsPlaceholderVisible() &&
       SuggestedValue().empty()) {
     PseudoStateChanged(CSSSelector::kPseudoPlaceholderShown);
+  }
+}
+
+void TextControlElement::UpdatePlaceholderShadowPseudoId(
+    HTMLElement& placeholder) {
+  if (suggested_value_.empty()) {
+    // Reset the pseudo-id for placeholders to use the appropriated style
+    placeholder.SetShadowPseudoId(
+        shadow_element_names::kPseudoInputPlaceholder);
+  } else {
+    // Set the pseudo-id for suggested values to use the appropriated style.
+    placeholder.SetShadowPseudoId(
+        shadow_element_names::kPseudoInternalInputSuggested);
   }
 }
 
@@ -476,6 +496,7 @@ bool TextControlElement::SetSelectionRange(
     TextFieldSelectionDirection direction) {
   if (OpenShadowRoot() || !IsTextControl())
     return false;
+  HTMLElement* inner_editor = EnsureInnerEditorElement();
   const unsigned editor_value_length = InnerEditorValue().length();
   end = std::min(end, editor_value_length);
   start = std::min(start, end);
@@ -490,7 +511,6 @@ bool TextControlElement::SetSelectionRange(
   if (ShouldApplySelectionCache() || !isConnected())
     return did_change;
 
-  HTMLElement* inner_editor = EnsureInnerEditorElement();
   if (!frame || !inner_editor)
     return did_change;
 
@@ -1055,16 +1075,7 @@ void TextControlElement::SetSuggestedValue(const String& value) {
     return;
 
   UpdatePlaceholderVisibility();
-
-  if (suggested_value_.empty()) {
-    // Reset the pseudo-id for placeholders to use the appropriated style
-    placeholder->SetShadowPseudoId(
-        shadow_element_names::kPseudoInputPlaceholder);
-  } else {
-    // Set the pseudo-id for suggested values to use the appropriated style.
-    placeholder->SetShadowPseudoId(
-        shadow_element_names::kPseudoInternalInputSuggested);
-  }
+  UpdatePlaceholderShadowPseudoId(*placeholder);
 }
 
 HTMLElement* TextControlElement::CreateInnerEditorElement() {

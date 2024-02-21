@@ -2060,6 +2060,11 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetLcpElementFoundInHtml(bool found);
   bool IsLcpElementFoundInHtml();
 
+  // Adds/removes an element to the set of elements that need shadow tree
+  // creation on the next layout.
+  void ScheduleShadowTreeCreation(HTMLInputElement& element);
+  void UnscheduleShadowTreeCreation(HTMLInputElement& element);
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -2153,6 +2158,10 @@ class CORE_EXPORT Document : public ContainerNode,
   bool HasPendingVisualUpdate() const {
     return lifecycle_.GetState() == DocumentLifecycle::kVisualUpdatePending;
   }
+
+  // Calls EnsureShadowSubtree() on all Elements added via
+  // ScheduleShadowTreeCreation().
+  void ProcessScheduledShadowTreeCreationsNow();
 
   bool ShouldScheduleLayoutTreeUpdate() const;
   void ScheduleLayoutTreeUpdate();
@@ -2812,6 +2821,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // access-controlled media to not load when it is the top-level URL when
   // third-party cookie blocking is enabled.
   bool override_site_for_cookies_for_csp_media_ = false;
+
+  // See description in ScheduleShadowTreeCreation().
+  HeapHashSet<Member<HTMLInputElement>> elements_needing_shadow_tree_;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

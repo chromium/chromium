@@ -236,6 +236,10 @@ void ImageInputType::SetUseFallbackContent() {
   if (use_fallback_content_)
     return;
   use_fallback_content_ = true;
+  if (!HasCreatedShadowSubtree() &&
+      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+    return;
+  }
   if (GetElement().GetDocument().InStyleRecalc())
     return;
   if (ShadowRoot* root = GetElement().UserAgentShadowRoot())
@@ -247,6 +251,10 @@ void ImageInputType::EnsurePrimaryContent() {
   if (!use_fallback_content_)
     return;
   use_fallback_content_ = false;
+  if (!HasCreatedShadowSubtree() &&
+      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+    return;
+  }
   if (ShadowRoot* root = GetElement().UserAgentShadowRoot())
     root->RemoveChildren();
   CreateShadowSubtree();

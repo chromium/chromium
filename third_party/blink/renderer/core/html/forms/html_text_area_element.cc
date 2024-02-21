@@ -699,6 +699,10 @@ void HTMLTextAreaElement::CreateInnerEditorElementIfNecessary() const {
   NOTREACHED();
 }
 
+bool HTMLTextAreaElement::IsInnerEditorValueEmpty() const {
+  return InnerEditorValue().empty();
+}
+
 HTMLElement* HTMLTextAreaElement::UpdatePlaceholderText() {
   HTMLElement* placeholder = PlaceholderElement();
   const String placeholder_text = GetPlaceholderValue();

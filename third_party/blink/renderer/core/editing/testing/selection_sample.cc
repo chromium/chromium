@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -63,6 +64,7 @@ class Parser final {
   SelectionInDOMTree SetSelectionText(HTMLElement* element,
                                       const std::string& selection_text) {
     element->setInnerHTML(String::FromUTF8(selection_text.c_str()));
+    element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     ConvertTemplatesToShadowRoots(*element);
     Traverse(element);
     if (anchor_node_ && focus_node_) {
