@@ -55,16 +55,6 @@ bundle_data("unit_tests_resources") {
 # Please do not modify this list. The content is updated by script.
 # For more info, please see `tools/whats_new`.
 screenshots_lists = [
-  "m116/calendar_event.json",
-  "m116/calendar_event_darkmode.json",
-  "m116/chrome_actions.json",
-  "m116/chrome_actions_darkmode.json",
-  "m116/incognito_lock.json",
-  "m116/incognito_lock_darkmode.json",
-  "m116/incognito_tabs_from_other_apps.json",
-  "m116/incognito_tabs_from_other_apps_darkmode.json",
-  "m116/mini_maps.json",
-  "m116/mini_maps_darkmode.json",
   "m122/LensSearch.json",
   "m122/LensSearch_darkmode.json",
   "m122/BottomOmnibox.json",
