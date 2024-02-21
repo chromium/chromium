@@ -917,7 +917,7 @@ BASE_FEATURE(kVideoToolboxAv1Decoding,
 // Expiry: When VTVideoDecodeAccelerator is deleted
 BASE_FEATURE(kVideoToolboxVideoDecoder,
              "VideoToolboxVideoDecoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
 
 // A video encoder is allowed to drop a frame in cast mirroring.
