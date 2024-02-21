@@ -407,14 +407,13 @@ bool JobTaskSource::HasReadyTasks(TimeTicks now) const {
   return true;
 }
 
-absl::optional<Task> JobTaskSource::Clear(
-    TaskSource::Transaction* transaction) {
+std::optional<Task> JobTaskSource::Clear(TaskSource::Transaction* transaction) {
   Cancel();
 
   // Nothing is cleared since other workers might still racily run tasks. For
   // simplicity, the destructor will take care of it once all references are
   // released.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace internal

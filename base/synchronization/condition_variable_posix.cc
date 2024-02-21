@@ -8,12 +8,13 @@
 #include <stdint.h>
 #include <sys/time.h>
 
+#include <optional>
+
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <atomic>
@@ -94,7 +95,7 @@ void ConditionVariable::InitializeFeatures() {
 #endif
 
 void ConditionVariable::Wait() {
-  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_)
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -110,7 +111,7 @@ void ConditionVariable::Wait() {
 }
 
 void ConditionVariable::TimedWait(const TimeDelta& max_time) {
-  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_)
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);

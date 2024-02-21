@@ -42,7 +42,7 @@ class AcceleratorsUtilTest : public AshTestBase {
 TEST_F(AcceleratorsUtilTest, BasicDomCode) {
   const std::u16string expected = u"a";
 
-  absl::optional<KeyCodeLookupEntry> found_entry =
+  std::optional<KeyCodeLookupEntry> found_entry =
       AcceleratorKeycodeLookupCache::Get()->Find(ui::KeyboardCode::VKEY_A,
                                                  /*remap_positional_key=*/true);
   EXPECT_FALSE(found_entry.has_value());
@@ -80,9 +80,9 @@ TEST_F(AcceleratorsUtilTest, PositionalKeyCode) {
 
 TEST_F(AcceleratorsUtilTest, NonAlphanumericKey) {
   const std::u16string expected = u"Meta";
-  absl::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
-      found_entry = AcceleratorKeycodeLookupCache::Get()->Find(
-          ui::KeyboardCode::VKEY_COMMAND, /*remap_positional_key=*/true);
+  std::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry> found_entry =
+      AcceleratorKeycodeLookupCache::Get()->Find(ui::KeyboardCode::VKEY_COMMAND,
+                                                 /*remap_positional_key=*/true);
   EXPECT_FALSE(found_entry.has_value());
   EXPECT_EQ(expected, KeycodeToKeyString(ui::KeyboardCode::VKEY_COMMAND));
 

@@ -70,8 +70,8 @@ void MenuRunnerImplRemoteCocoa::RunMenuAt(
     MenuAnchorPosition anchor,
     int32_t run_types,
     gfx::NativeView native_view_for_gestures,
-    absl::optional<gfx::RoundedCornersF> corners,
-    absl::optional<std::string> show_menu_host_duration_histogram) {
+    std::optional<gfx::RoundedCornersF> corners,
+    std::optional<std::string> show_menu_host_duration_histogram) {
   RunMenu(parent, bounds.CenterPoint());
 }
 

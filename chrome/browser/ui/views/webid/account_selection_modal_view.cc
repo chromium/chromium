@@ -74,7 +74,7 @@ AccountSelectionModalView::AccountSelectionModalView(
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CANCEL));
 
-  title_ = GetTitle(top_frame_for_display, /*iframe_for_display=*/absl::nullopt,
+  title_ = GetTitle(top_frame_for_display, /*iframe_for_display=*/std::nullopt,
                     idp_title, rp_context);
   SetAccessibleTitle(title_);
 }

@@ -339,7 +339,7 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       ui_manager->CreateBlockingPage(
           web_contents, main_frame_url, {resource},
           /*forward_extension_event=*/false,
-          /*blocked_page_shown_timestamp=*/absl::nullopt));
+          /*blocked_page_shown_timestamp=*/std::nullopt));
 }
 
 std::unique_ptr<EnterpriseBlockPage> CreateEnterpriseBlockPage(

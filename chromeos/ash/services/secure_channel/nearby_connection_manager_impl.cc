@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager_impl.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -13,7 +15,6 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_disconnector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -100,7 +101,7 @@ void NearbyConnectionManagerImpl::OnReceivedAdvertisement(
 
   NotifyBleDiscoveryStateChanged(
       ChooseChannelRecipient(remote_device.GetDeviceId()),
-      mojom::DiscoveryResult::kSuccess, absl::nullopt);
+      mojom::DiscoveryResult::kSuccess, std::nullopt);
   SetAuthenticatingChannel(
       remote_device.GetDeviceId(),
       SecureChannel::Factory::Create(std::move(connection)));
@@ -109,7 +110,7 @@ void NearbyConnectionManagerImpl::OnReceivedAdvertisement(
 void NearbyConnectionManagerImpl::OnDiscoveryFailed(
     const DeviceIdPair& device_id_pair,
     mojom::DiscoveryResult discovery_result,
-    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   NotifyBleDiscoveryStateChanged(device_id_pair, discovery_result,
                                  potential_error_code);
 }

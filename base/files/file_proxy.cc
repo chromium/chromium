@@ -5,6 +5,7 @@
 #include "base/files/file_proxy.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/heap_array.h"
@@ -15,7 +16,6 @@
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -182,7 +182,7 @@ class ReadHelper : public FileHelper {
   ReadHelper& operator=(const ReadHelper&) = delete;
 
   void RunWork(int64_t offset) {
-    absl::optional<size_t> result = file_.Read(offset, buffer_);
+    std::optional<size_t> result = file_.Read(offset, buffer_);
     if (!result.has_value()) {
       bytes_read_ = -1;
       error_ = File::FILE_ERROR_FAILED;
@@ -219,7 +219,7 @@ class WriteHelper : public FileHelper {
   WriteHelper& operator=(const WriteHelper&) = delete;
 
   void RunWork(int64_t offset) {
-    absl::optional<size_t> result = file_.Write(offset, buffer_);
+    std::optional<size_t> result = file_.Write(offset, buffer_);
     if (!result.has_value()) {
       bytes_written_ = -1;
       error_ = File::FILE_ERROR_FAILED;

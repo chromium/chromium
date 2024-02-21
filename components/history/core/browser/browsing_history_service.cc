@@ -734,7 +734,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
               HistoryEntry::REMOTE_ENTRY, gurl, title, time, client_id,
               !state->search_text.empty(), std::u16string(),
               /* blocked_visit */ false, GURL(favicon_url), 0, 0,
-              /*app_id= */ absl::nullopt));
+              /*app_id= */ std::nullopt));
         }
       }
     }

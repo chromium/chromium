@@ -127,7 +127,7 @@ namespace {
 // Get the UserDisplayMode for the app on the current platform (may be absent
 // for not-yet-migrated apps loaded from the database). Use
 // `WebApp::user_display_mode` instead for migrated apps.
-absl::optional<mojom::UserDisplayMode> GetCurrentPlatformUserDisplayMode(
+std::optional<mojom::UserDisplayMode> GetCurrentPlatformUserDisplayMode(
     const WebApp& app) {
 #if BUILDFLAG(IS_CHROMEOS)
   return app.user_display_mode_cros();

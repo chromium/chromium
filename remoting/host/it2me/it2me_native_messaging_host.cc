@@ -329,7 +329,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     }
   }
 
-  absl::optional<ReconnectParams> reconnect_params;
+  std::optional<ReconnectParams> reconnect_params;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   bool is_enterprise_admin_user =
       message.FindBool(kIsEnterpriseAdminUser).value_or(false);

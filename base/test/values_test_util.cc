@@ -4,6 +4,7 @@
 
 #include "base/test/values_test_util.h"
 
+#include <optional>
 #include <ostream>
 #include <utility>
 
@@ -15,22 +16,20 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 void ExpectDictBooleanValue(bool expected_value,
                             const Value::Dict& dict,
                             StringPiece path) {
-  EXPECT_EQ(dict.FindBoolByDottedPath(path),
-            absl::make_optional(expected_value))
+  EXPECT_EQ(dict.FindBoolByDottedPath(path), std::make_optional(expected_value))
       << path;
 }
 
 void ExpectDictIntegerValue(int expected_value,
                             const Value::Dict& dict,
                             StringPiece path) {
-  EXPECT_EQ(dict.FindIntByDottedPath(path), absl::make_optional(expected_value))
+  EXPECT_EQ(dict.FindIntByDottedPath(path), std::make_optional(expected_value))
       << path;
 }
 
@@ -38,7 +37,7 @@ void ExpectDictStringValue(StringPiece expected_value,
                            const Value::Dict& dict,
                            StringPiece path) {
   EXPECT_EQ(OptionalFromPtr(dict.FindStringByDottedPath(path)),
-            absl::make_optional(expected_value))
+            std::make_optional(expected_value))
       << path;
 }
 
@@ -167,19 +166,18 @@ class DictionaryHasValuesMatcher
 // EXPECT failure and returns nullopt on failure. If `expected_type` is
 // provided, treats `json` parsing as a Value of a different type as a failure.
 //
-absl::optional<Value> ParseJsonHelper(
-    StringPiece json,
-    absl::optional<Value::Type> expected_type) {
+std::optional<Value> ParseJsonHelper(StringPiece json,
+                                     std::optional<Value::Type> expected_type) {
   auto result = JSONReader::ReadAndReturnValueWithError(
       json, JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   if (!result.has_value()) {
     ADD_FAILURE() << "Failed to parse \"" << json
                   << "\": " << result.error().message;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (expected_type && result->type() != *expected_type) {
     ADD_FAILURE() << "JSON is of wrong type: " << json;
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*result);
 }
@@ -261,19 +259,19 @@ void IsJsonMatcher::DescribeNegationTo(std::ostream* os) const {
 }
 
 Value ParseJson(StringPiece json) {
-  absl::optional<Value> result =
-      ParseJsonHelper(json, /*expected_type=*/absl::nullopt);
+  std::optional<Value> result =
+      ParseJsonHelper(json, /*expected_type=*/std::nullopt);
   return result.has_value() ? std::move(*result) : Value();
 }
 
 Value::Dict ParseJsonDict(StringPiece json) {
-  absl::optional<Value> result =
+  std::optional<Value> result =
       ParseJsonHelper(json, /*expected_type=*/Value::Type::DICT);
   return result.has_value() ? std::move(*result).TakeDict() : Value::Dict();
 }
 
 Value::List ParseJsonList(StringPiece json) {
-  absl::optional<Value> result =
+  std::optional<Value> result =
       ParseJsonHelper(json, /*expected_type=*/Value::Type::LIST);
   return result.has_value() ? std::move(*result).TakeList() : Value::List();
 }

@@ -65,10 +65,10 @@ struct StructTraits<skia::mojom::SkcmsTransferFunctionDataView,
 
 template <>
 struct StructTraits<skia::mojom::SkColorSpaceDataView, ::sk_sp<SkColorSpace>> {
-  static absl::optional<skcms_TransferFunction> to_linear(
+  static std::optional<skcms_TransferFunction> to_linear(
       const ::sk_sp<SkColorSpace>& in) {
     if (!in) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     skcms_TransferFunction trfn = {
         1.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f,
@@ -76,10 +76,10 @@ struct StructTraits<skia::mojom::SkColorSpaceDataView, ::sk_sp<SkColorSpace>> {
     in->transferFn(&trfn);
     return trfn;
   }
-  static absl::optional<skcms_Matrix3x3> to_xyzd50(
+  static std::optional<skcms_Matrix3x3> to_xyzd50(
       const ::sk_sp<SkColorSpace>& in) {
     if (!in) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     skcms_Matrix3x3 m = {{{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}}};
     // The function toXYZD50 returns a boolean for historical reasons. It will
@@ -91,11 +91,11 @@ struct StructTraits<skia::mojom::SkColorSpaceDataView, ::sk_sp<SkColorSpace>> {
 
   static bool Read(skia::mojom::SkColorSpaceDataView data,
                    ::sk_sp<SkColorSpace>* out) {
-    absl::optional<skcms_TransferFunction> to_linear;
+    std::optional<skcms_TransferFunction> to_linear;
     if (!data.ReadToLinear(&to_linear)) {
       return false;
     }
-    absl::optional<skcms_Matrix3x3> to_xyzd50;
+    std::optional<skcms_Matrix3x3> to_xyzd50;
     if (!data.ReadToXyzd50(&to_xyzd50)) {
       return false;
     }

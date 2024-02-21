@@ -26,7 +26,7 @@ ASH_EXPORT bool IsBatterySaverAllowed();
 
 // Test method to allow testing without the Battery Saver feature.
 ASH_EXPORT void OverrideIsBatterySaverAllowedForTesting(
-    absl::optional<bool> isAllowed);
+    std::optional<bool> isAllowed);
 
 // BatterySaverController is a singleton that controls battery saver state via
 // PowerManagerClient by watching for updates to ash::prefs::kPowerBatterySaver

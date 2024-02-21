@@ -162,7 +162,7 @@ void ThreadGroup::StartImpl(
     WorkerThreadObserver* worker_thread_observer,
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,
-    absl::optional<TimeDelta> may_block_threshold) {
+    std::optional<TimeDelta> may_block_threshold) {
   DCHECK(!replacement_thread_group_);
 
   if (synchronous_thread_start_for_testing) {

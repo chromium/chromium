@@ -601,7 +601,7 @@ struct Event {
   const raw_ptr<content::BrowserContext> restrict_to_browser_context;
 
   // If present, then the event will only be sent to this context type.
-  const absl::optional<mojom::ContextType> restrict_to_context_type;
+  const std::optional<mojom::ContextType> restrict_to_context_type;
 
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.
@@ -656,14 +656,14 @@ struct Event {
         std::string_view event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
-        absl::optional<mojom::ContextType> restrict_to_context_type =
-            absl::nullopt);
+        std::optional<mojom::ContextType> restrict_to_context_type =
+            std::nullopt);
 
   Event(events::HistogramValue histogram_value,
         std::string_view event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
-        absl::optional<mojom::ContextType> restrict_to_context_type,
+        std::optional<mojom::ContextType> restrict_to_context_type,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
         mojom::EventFilteringInfoPtr info,

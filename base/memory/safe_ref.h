@@ -23,7 +23,7 @@ namespace base {
 // benign crash instead of as a Use-after-Free.
 //
 // SafeRef pointers cannot be null (as expressed by the "Ref" suffix instead of
-// "Ptr"). A SafeRef can be wrapped in an absl::optional if it should not always
+// "Ptr"). A SafeRef can be wrapped in an std::optional if it should not always
 // point to something valid. (A SafePtr sibling type can be introduced if this
 // is problematic, or if consuming moves are needed!)
 //

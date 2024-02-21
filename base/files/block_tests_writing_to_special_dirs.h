@@ -5,12 +5,12 @@
 #ifndef BASE_FILES_BLOCK_TESTS_WRITING_TO_SPECIAL_DIRS_H_
 #define BASE_FILES_BLOCK_TESTS_WRITING_TO_SPECIAL_DIRS_H_
 
+#include <optional>
 #include <set>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -43,7 +43,7 @@ class BASE_EXPORT BlockTestsWritingToSpecialDirs {
   // `CanWriteToPath` above checks the paths stored in that object, if it is
   // set. Thus, only ScopedBlockTestsWritingToSpecialDirs should be able to
   // block tests writing to special dirs.
-  static absl::optional<BlockTestsWritingToSpecialDirs>& Get();
+  static std::optional<BlockTestsWritingToSpecialDirs>& Get();
 
   // `blocked_paths_` will be initialized lazily, from `blocked_dirs_`.
   std::set<FilePath> blocked_paths_;

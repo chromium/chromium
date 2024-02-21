@@ -122,7 +122,7 @@ class HistoryTabHelper
   std::optional<NavigationState> cached_navigation_state_;
 
   // The package name of an app that opens a Custom Tab and visits a URL.
-  absl::optional<std::string> app_id_ = absl::nullopt;
+  std::optional<std::string> app_id_ = std::nullopt;
 
   // Set to true in unit tests to avoid need for a Browser instance.
   bool force_eligible_tab_for_testing_ = false;

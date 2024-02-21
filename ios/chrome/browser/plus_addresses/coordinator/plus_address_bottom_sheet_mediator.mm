@@ -95,7 +95,7 @@
 }
 
 - (NSString*)primaryEmailAddress {
-  absl::optional<std::string> primaryAddress =
+  std::optional<std::string> primaryAddress =
       _plusAddressService->GetPrimaryEmail();
   // TODO(crbug.com/1467623): determine the appropriate behavior in cases
   // without a primary email (or just switch the signature away from optional).

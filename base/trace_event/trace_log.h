@@ -11,6 +11,7 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
@@ -645,7 +645,7 @@ class BASE_EXPORT TraceLog :
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 #if BUILDFLAG(IS_ANDROID)
-  absl::optional<TraceConfig> atrace_startup_config_;
+  std::optional<TraceConfig> atrace_startup_config_;
 #endif
 };
 

@@ -4,12 +4,13 @@
 
 #include "base/task/sequence_manager/work_tracker.h"
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::sequence_manager::internal {
 
@@ -46,7 +47,7 @@ TEST(SequenceManagerWorkTrackerTest, SetRunTaskSynchronouslyAllowedBlocks) {
   other_thread.Start();
   other_thread.task_runner()->PostTask(
       FROM_HERE, BindLambdaForTesting([&]() {
-        absl::optional<SyncWorkAuthorization> auth =
+        std::optional<SyncWorkAuthorization> auth =
             tracker.TryAcquireSyncWorkAuthorization();
         EXPECT_TRUE(auth->IsValid());
         did_acquire_sync_work_auth.Signal();
@@ -107,7 +108,7 @@ TEST(SequenceManagerWorkTrackerTest, TwoSyncWorkAuthorizations) {
   WorkTracker tracker;
   tracker.SetRunTaskSynchronouslyAllowed(true);
 
-  absl::optional<SyncWorkAuthorization> first =
+  std::optional<SyncWorkAuthorization> first =
       tracker.TryAcquireSyncWorkAuthorization();
   EXPECT_TRUE(first->IsValid());
   SyncWorkAuthorization second = tracker.TryAcquireSyncWorkAuthorization();
@@ -131,7 +132,7 @@ TEST(SequenceManagerWorkTrackerTest, OnBeginWorkBlocks) {
   other_thread.Start();
   other_thread.task_runner()->PostTask(
       FROM_HERE, BindLambdaForTesting([&]() {
-        absl::optional<SyncWorkAuthorization> auth =
+        std::optional<SyncWorkAuthorization> auth =
             tracker.TryAcquireSyncWorkAuthorization();
         EXPECT_TRUE(auth->IsValid());
         did_acquire_sync_work_auth.Signal();

@@ -51,7 +51,7 @@ class API_AVAILABLE(macos(13.0)) GraphImpl final : public WebNNGraphImpl {
   static MLFeatureValue* CreateFeatureValue(
       GraphImpl::CoreMLFeatureInfo* feature_info,
       mojo_base::BigBuffer data);
-  static absl::optional<CoreMLFeatureInfo> GetCoreMLFeatureInfo(
+  static std::optional<CoreMLFeatureInfo> GetCoreMLFeatureInfo(
       const GraphBuilder::OperandInfo* operand_info);
   using CoreMLFeatureInfoMap = base::flat_map<std::string, CoreMLFeatureInfo>;
   GraphImpl(

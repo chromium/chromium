@@ -138,7 +138,7 @@ class PermissionsClient {
   // may be null. |callback| will be called with the result, and may be run
   // synchronously if the result is available immediately.
   using GetUkmSourceIdCallback =
-      base::OnceCallback<void(absl::optional<ukm::SourceId>)>;
+      base::OnceCallback<void(std::optional<ukm::SourceId>)>;
   virtual void GetUkmSourceId(ContentSettingsType permission_type,
                               content::BrowserContext* browser_context,
                               content::WebContents* web_contents,

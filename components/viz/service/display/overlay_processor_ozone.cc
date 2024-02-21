@@ -86,7 +86,7 @@ void ConvertToTiledOzoneOverlaySurface(
   ozone_candidate->color_space = overlay_candidate.color_space;
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = gfx::RectF(1.0, 1.0);
-  ozone_candidate->clip_rect = absl::nullopt;
+  ozone_candidate->clip_rect = std::nullopt;
   ozone_candidate->is_opaque = overlay_candidate.is_opaque;
   ozone_candidate->opacity = overlay_candidate.opacity;
   ozone_candidate->plane_z_order = overlay_candidate.plane_z_order;

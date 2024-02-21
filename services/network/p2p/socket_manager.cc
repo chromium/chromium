@@ -423,7 +423,7 @@ void P2PSocketManager::CreateSocket(
     const P2PPortRange& port_range,
     const P2PHostAndIPEndPoint& remote_address,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    const absl::optional<base::UnguessableToken>& devtools_token,
+    const std::optional<base::UnguessableToken>& devtools_token,
     mojo::PendingRemote<mojom::P2PSocketClient> client,
     mojo::PendingReceiver<mojom::P2PSocket> receiver) {
   if (port_range.min_port > port_range.max_port ||

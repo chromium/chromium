@@ -702,7 +702,7 @@ void FederatedAuthRequestImpl::RequestToken(
         break;
     };
     RecordLifecycleStateFailureReason(reason);
-    std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
+    std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
     return;

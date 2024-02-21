@@ -383,7 +383,7 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
   }
 
   // Case: Non-standard keys cannot have search as a modifier.
-  absl::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
+  std::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
       key_code_entry = FindKeyCodeEntry(accelerator.key_code());
   if (key_code_entry.has_value()) {
     const ui::KeyEvent key_event(

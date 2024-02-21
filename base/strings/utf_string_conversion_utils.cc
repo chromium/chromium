@@ -11,14 +11,14 @@ namespace base {
 
 // CountUnicodeCharacters ------------------------------------------------------
 
-absl::optional<size_t> CountUnicodeCharacters(std::string_view text,
-                                              size_t limit) {
+std::optional<size_t> CountUnicodeCharacters(std::string_view text,
+                                             size_t limit) {
   base_icu::UChar32 unused = 0;
   size_t count = 0;
   for (size_t index = 0; count < limit && index < text.size();
        ++count, ++index) {
     if (!ReadUnicodeCharacter(text.data(), text.size(), &index, &unused)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return count;

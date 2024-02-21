@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <iosfwd>
+#include <optional>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -24,7 +25,6 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -266,7 +266,7 @@ class BASE_EXPORT PlatformThreadBase {
   static TimeDelta GetRealtimePeriod(Delegate* delegate);
 
   // Returns the override of task leeway if any.
-  static absl::optional<TimeDelta> GetThreadLeewayOverride();
+  static std::optional<TimeDelta> GetThreadLeewayOverride();
 
   // Returns the default thread stack size set by chrome. If we do not
   // explicitly set default size then returns 0.
@@ -361,7 +361,7 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
                                     bool backgrounded);
 
   // Returns the thread type of a thread given its thread id.
-  static absl::optional<ThreadType> GetThreadTypeFromThreadId(
+  static std::optional<ThreadType> GetThreadTypeFromThreadId(
       ProcessId process_id,
       PlatformThreadId thread_id);
 

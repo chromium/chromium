@@ -6,6 +6,7 @@
 #define BASE_STRINGS_STRING_UTIL_IMPL_HELPERS_H_
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "base/check.h"
@@ -15,7 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/third_party/icu/icu_utf.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::internal {
 
@@ -508,11 +508,11 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
 //   instance, with `%` as the `placeholder_prefix`: %%->%, %%%%->%%, etc.
 // * `is_strict_mode`:
 //   * If this parameter is `true`, error handling is stricter. The function
-//   returns `absl::nullopt` if:
+//   returns `std::nullopt` if:
 //     * a placeholder %N is encountered where N > substitutions.size().
 //     * a literal `%` is not escaped with a `%`.
 template <typename T, typename CharT = typename T::value_type>
-absl::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
+std::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
     T format_string,
     const std::vector<std::basic_string<CharT>>& subst,
     const CharT placeholder_prefix,
@@ -548,7 +548,7 @@ absl::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
               DLOG(ERROR) << "Invalid placeholder after placeholder prefix: "
                           << std::basic_string<CharT>(1, placeholder_prefix)
                           << std::basic_string<CharT>(1, *i);
-              return absl::nullopt;
+              return std::nullopt;
             }
 
             continue;
@@ -565,12 +565,12 @@ absl::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
           } else if (is_strict_mode) {
             DLOG(ERROR) << "index out of range: " << index << ": "
                         << substitutions;
-            return absl::nullopt;
+            return std::nullopt;
           }
         }
       } else if (is_strict_mode) {
         DLOG(ERROR) << "unexpected placeholder prefix at end of string";
-        return absl::nullopt;
+        return std::nullopt;
       }
     } else {
       formatted.push_back(*i);

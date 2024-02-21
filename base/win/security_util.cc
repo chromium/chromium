@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <winternl.h>
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -14,7 +16,6 @@
 #include "base/win/access_control_list.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -34,7 +35,7 @@ bool AddACEToPath(const FilePath& path,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  absl::optional<SecurityDescriptor> sd =
+  std::optional<SecurityDescriptor> sd =
       SecurityDescriptor::FromFile(path, DACL_SECURITY_INFORMATION);
   if (!sd) {
     return false;
@@ -101,11 +102,11 @@ void AppendSidVector(std::vector<Sid>& base_sids,
   }
 }
 
-absl::optional<ACCESS_MASK> GetGrantedAccess(HANDLE handle) {
+std::optional<ACCESS_MASK> GetGrantedAccess(HANDLE handle) {
   PUBLIC_OBJECT_BASIC_INFORMATION basic_info = {};
   if (!NT_SUCCESS(::NtQueryObject(handle, ObjectBasicInformation, &basic_info,
                                   sizeof(basic_info), nullptr))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return basic_info.GrantedAccess;
 }

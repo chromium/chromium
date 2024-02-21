@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace qr_code_generator {
 

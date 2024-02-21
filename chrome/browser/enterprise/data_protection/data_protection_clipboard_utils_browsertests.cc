@@ -102,9 +102,9 @@ class DataControlsClipboardUtilsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                        PasteAllowed_NoSource) {
-  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(absl::nullopt),
+      /*source=*/content::ClipboardEndpoint(std::nullopt),
       /*destination=*/
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                        PasteAllowed_SameSource) {
-  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -163,9 +163,9 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   set_expected_dialog_type(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
-  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(absl::nullopt),
+      /*source=*/content::ClipboardEndpoint(std::nullopt),
       /*destination=*/
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
         /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
   }
 
-  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       /*destination=*/content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://foo.com")),

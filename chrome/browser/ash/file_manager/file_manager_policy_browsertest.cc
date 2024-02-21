@@ -698,7 +698,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
           /*username*/ kUserName,
           /*profile_identifier*/ profile->GetPath().AsUTF8Unsafe(),
           /*scan_ids*/ expected_scan_ids,
-          /*content_transfer_method*/ absl::nullopt);
+          /*content_transfer_method*/ std::nullopt);
 
       return true;
     }

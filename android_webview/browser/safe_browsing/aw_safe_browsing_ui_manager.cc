@@ -130,7 +130,7 @@ AwSafeBrowsingUIManager::CreateBlockingPage(
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource,
     bool forward_extension_event,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   // The AwWebResourceRequest can't be provided yet, since the navigation hasn't
   // started. Once it has, it will be provided via
   // AwSafeBrowsingBlockingPage::CreatedErrorPageNavigation.

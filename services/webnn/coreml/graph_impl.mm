@@ -236,7 +236,7 @@ MLFeatureValue* GraphImpl::CreateFeatureValue(
 }
 
 // static
-absl::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
+std::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
     const GraphBuilder::OperandInfo* operand_info) {
   CHECK(operand_info);
   enum MLMultiArrayDataType data_type;
@@ -256,7 +256,7 @@ absl::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
     case webnn::mojom::Operand_DataType::kInt8:
     case webnn::mojom::Operand_DataType::kUint8:
       // Unsupported data types in coreml.
-      return absl::nullopt;
+      return std::nullopt;
   }
   NSMutableArray* shape =
       [[NSMutableArray alloc] initWithCapacity:operand_info->dimensions.size()];
@@ -269,7 +269,7 @@ absl::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
   if (!expected_size.IsValid()) {
     DLOG(ERROR)
         << "WebNN::CoreML Error GetCoreMLFeatureInfo expected size overflow";
-    return absl::nullopt;
+    return std::nullopt;
   }
   uint32_t current_stride = expected_size.ValueOrDie();
   for (uint32_t dimension : operand_info->dimensions) {

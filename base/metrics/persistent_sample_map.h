@@ -13,6 +13,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -20,7 +21,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -93,7 +93,7 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // |until_value| to force the importing of all available samples (null will
   // always be returned in this case).
   HistogramBase::Count* ImportSamples(
-      absl::optional<HistogramBase::Sample> until_value);
+      std::optional<HistogramBase::Sample> until_value);
 
   // All created/loaded sample values and their associated counts. The storage
   // for the actual Count numbers is owned by the |records_| object and its

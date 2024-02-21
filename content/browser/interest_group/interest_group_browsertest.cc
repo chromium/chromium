@@ -7586,7 +7586,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
       int bucket,
       int value,
       AggregatableReportSharedInfo::DebugMode debug_mode,
-      std::optional<uint64_t> debug_key = absl::nullopt) {
+      std::optional<uint64_t> debug_key = std::nullopt) {
     ASSERT_FALSE(run_loop_);
     run_loop_ = std::make_unique<base::RunLoop>();
 
@@ -12988,9 +12988,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ComponentAuction) {
       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
       {"2", TestInterestGroupObserver::kTopLevelBid, test_origin, "cars", 1.0,
-       /*bid_currency=*/absl::nullopt, test_origin},
+       /*bid_currency=*/std::nullopt, test_origin},
       {"2", TestInterestGroupObserver::kWin, test_origin, "cars",
-       /*bid=*/absl::nullopt, /*bid_currency=*/absl::nullopt, test_origin},
+       /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt, test_origin},
   });
 }
 
@@ -13780,7 +13780,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
         {"2", TestInterestGroupObserver::kTopLevelBid, bidder_origin, "cars",
          42.0, "CAD", component_seller_origin},
         {"2", TestInterestGroupObserver::kWin, bidder_origin, "cars",
-         /*bid=*/absl::nullopt, /*bid_currency=*/absl::nullopt,
+         /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
          component_seller_origin},
     });
   }
@@ -19345,10 +19345,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
                                                 /*name=*/"cars")
                     .SetBiddingUrl(embedded_https_test_server().GetURL(
                         "a.test", "/interest_group/bidding_logic.js"))
-                    .SetAds({{{ad_url, /*metadata=*/absl::nullopt,
-                               /*size_group=*/absl::nullopt,
-                               /*buyer_reporting_id=*/absl::nullopt,
-                               /*buyer_and_seller_reporting_id=*/absl::nullopt,
+                    .SetAds({{{ad_url, /*metadata=*/std::nullopt,
+                               /*size_group=*/std::nullopt,
+                               /*buyer_reporting_id=*/std::nullopt,
+                               /*buyer_and_seller_reporting_id=*/std::nullopt,
                                /*ad_render_id=*/"buyCars"}}})
                     .Build()));
 
@@ -19387,8 +19387,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       ->GetDefaultStoragePartition()
       ->SetNetworkContextForTesting(std::move(pending_remote));
 
-  std::string result =
-      GetInterestGroupAdAuctionData(test_origin, absl::nullopt);
+  std::string result = GetInterestGroupAdAuctionData(test_origin, std::nullopt);
 
   static_cast<PreconnectCheckingNetworkContext*>(preconnect_check->impl())
       ->run_loop()

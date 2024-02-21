@@ -113,7 +113,7 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
 
   void DidGetSize(base::OnceCallback<void(uint64_t)> callback,
                   const std::string& operation,
-                  absl::optional<uint64_t> size);
+                  std::optional<uint64_t> size);
 
   void DidDelete(base::OnceCallback<void(bool)> callback,
                  const std::string& operation,

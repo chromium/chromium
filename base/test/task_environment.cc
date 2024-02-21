@@ -50,8 +50,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#include <optional>
+
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -253,7 +254,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   // non-delayed work. Advances time to the next task unless
   // |quit_when_idle_requested| or TaskEnvironment controls mock time.
   bool MaybeFastForwardToWakeUp(
-      absl::optional<sequence_manager::WakeUp> next_wake_up,
+      std::optional<sequence_manager::WakeUp> next_wake_up,
       bool quit_when_idle_requested) override {
     if (quit_when_idle_requested) {
       return false;
@@ -309,13 +310,13 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   // by the same amount. If false, `LiveTicks` won't be advanced (behaving as if
   // the system was suspended).
   NextTaskSource FastForwardToNextTaskOrCap(
-      absl::optional<sequence_manager::WakeUp> next_main_thread_wake_up,
+      std::optional<sequence_manager::WakeUp> next_main_thread_wake_up,
       TimeTicks fast_forward_cap,
       bool advance_live_ticks) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Consider the next thread pool tasks iff they're running.
-    absl::optional<TimeTicks> next_thread_pool_task_time;
+    std::optional<TimeTicks> next_thread_pool_task_time;
     if (thread_pool_ && thread_pool_task_tracker_->TasksAllowedToRun()) {
       next_thread_pool_task_time =
           thread_pool_->NextScheduledRunTimeForTesting();
@@ -324,7 +325,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     // Custom comparison logic to consider nullopt the largest rather than
     // smallest value. Could consider using TimeTicks::Max() instead of nullopt
     // to represent out-of-tasks?
-    absl::optional<TimeTicks> next_task_time;
+    std::optional<TimeTicks> next_task_time;
     if (!next_main_thread_wake_up) {
       next_task_time = next_thread_pool_task_time;
     } else if (!next_thread_pool_task_time) {
@@ -873,7 +874,7 @@ TimeDelta TaskEnvironment::NextMainThreadPendingTaskDelay() const {
   if (!sequence_manager_->IsIdleForTesting()) {
     return TimeDelta();
   }
-  absl::optional<sequence_manager::WakeUp> wake_up =
+  std::optional<sequence_manager::WakeUp> wake_up =
       sequence_manager_->GetNextDelayedWakeUp();
   return wake_up ? wake_up->time - lazy_now.Now() : TimeDelta::Max();
 }

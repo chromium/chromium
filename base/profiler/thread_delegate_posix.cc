@@ -8,10 +8,11 @@
 #include <pthread.h>
 #include <stdio.h>
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #include "base/profiler/stack_base_address_posix.h"
@@ -21,7 +22,7 @@ namespace base {
 // static
 std::unique_ptr<ThreadDelegatePosix> ThreadDelegatePosix::Create(
     SamplingProfilerThreadToken thread_token) {
-  absl::optional<uintptr_t> base_address;
+  std::optional<uintptr_t> base_address;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base_address = thread_token.stack_base_address;
 #else

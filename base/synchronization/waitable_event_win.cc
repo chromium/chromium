@@ -4,11 +4,11 @@
 
 #include "base/synchronization/waitable_event.h"
 
+#include <stddef.h>
 #include <windows.h>
 
-#include <stddef.h>
-
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -20,7 +20,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 

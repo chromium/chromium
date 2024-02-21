@@ -18,6 +18,8 @@
 
 static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -26,7 +28,6 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/os_compat_android.h"
@@ -76,7 +77,7 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
-short FcntlFlockType(absl::optional<File::LockMode> mode) {
+short FcntlFlockType(std::optional<File::LockMode> mode) {
   if (!mode.has_value())
     return F_UNLCK;
   switch (mode.value()) {
@@ -89,7 +90,7 @@ short FcntlFlockType(absl::optional<File::LockMode> mode) {
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
-                           absl::optional<File::LockMode> mode) {
+                           std::optional<File::LockMode> mode) {
   struct flock lock;
   lock.l_type = FcntlFlockType(std::move(mode));
   lock.l_whence = SEEK_SET;
@@ -121,7 +122,7 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
-                           absl::optional<File::LockMode> mode) {
+                           std::optional<File::LockMode> mode) {
   NOTIMPLEMENTED();  // NaCl doesn't implement flock struct.
   return File::FILE_ERROR_INVALID_OPERATION;
 }
@@ -421,7 +422,7 @@ File::Error File::Lock(File::LockMode mode) {
 
 File::Error File::Unlock() {
   SCOPED_FILE_TRACE("Unlock");
-  return CallFcntlFlock(file_.get(), absl::optional<File::LockMode>());
+  return CallFcntlFlock(file_.get(), std::optional<File::LockMode>());
 }
 #endif
 

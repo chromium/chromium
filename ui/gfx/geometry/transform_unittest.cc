@@ -15,7 +15,6 @@
 #include "base/numerics/angle_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/decomposed_transform.h"

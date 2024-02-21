@@ -6,6 +6,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/api/tasks/tasks_client.h"
@@ -18,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::api {
 namespace {
@@ -158,7 +158,7 @@ void FakeTasksClient::AddTaskImpl(const std::string& task_list_id,
 
   auto pending_task = std::make_unique<Task>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), title,
-      /*due=*/absl::nullopt, /*completed=*/false,
+      /*due=*/std::nullopt, /*completed=*/false,
       /*has_subtasks=*/false, /*has_email_link=*/false,
       /*has_notes=*/false,
       /*updated=*/base::Time::Now());

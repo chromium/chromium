@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_path_watcher.h"
+#include "base/files/file_path_watcher_inotify.h"
 
 #include <errno.h>
 #include <poll.h>
@@ -18,6 +18,7 @@
 #include <fstream>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_map>
 #include <utility>
@@ -26,7 +27,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher_inotify.h"
+#include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -44,7 +45,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -419,7 +419,7 @@ void InotifyReader::OnInotifyEvent(const inotify_event* event) {
                               : FilePathWatcher::FilePathType::kFile,
         .change_type = ToChangeType(event),
         .cookie =
-            event->cookie ? absl::make_optional(event->cookie) : absl::nullopt,
+            event->cookie ? std::make_optional(event->cookie) : std::nullopt,
     };
     bool created = event->mask & (IN_CREATE | IN_MOVED_TO);
     bool deleted = event->mask & (IN_DELETE | IN_MOVED_FROM);
@@ -838,7 +838,7 @@ bool FilePathWatcherImpl::AddWatchForBrokenSymlink(const FilePath& path,
   return false;
 #else   // BUILDFLAG(IS_FUCHSIA)
   DUMP_WILL_BE_CHECK_EQ(InotifyReader::kInvalidWatch, watch_entry->watch);
-  absl::optional<FilePath> link = ReadSymbolicLinkAbsolute(path);
+  std::optional<FilePath> link = ReadSymbolicLinkAbsolute(path);
   if (!link) {
     return true;
   }

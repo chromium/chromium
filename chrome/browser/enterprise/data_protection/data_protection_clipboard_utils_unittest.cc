@@ -184,7 +184,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        DataProtectionPaste_NoDestinationWebContents) {
   // Missing a destination WebContents implies the tab is gone, so null should
   // always be returned even if no DC rule is set.
-  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       SourceEndpoint(),
       content::ClipboardEndpoint(

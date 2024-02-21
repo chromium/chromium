@@ -368,7 +368,7 @@ struct MessagePumpGlib::RunState {
   // g_main_context_iteration() in Run(). nullopt if Run() is not calling
   // g_main_context_iteration(). Used to track whether the pump has forced a
   // nested state due to a native pump.
-  absl::optional<int> g_depth_on_iteration;
+  std::optional<int> g_depth_on_iteration;
 
   // Used to keep track of the native event work items processed by the message
   // pump.

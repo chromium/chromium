@@ -4,11 +4,12 @@
 
 #include "base/task/sequence_manager/wake_up_queue.h"
 
+#include <optional>
+
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -42,13 +43,13 @@ void WakeUpQueue::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
 
 void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
                                         LazyNow* lazy_now,
-                                        absl::optional<WakeUp> wake_up) {
+                                        std::optional<WakeUp> wake_up) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->wake_up_queue(), this);
   DCHECK(queue->IsQueueEnabled() || !wake_up);
 
-  absl::optional<WakeUp> previous_wake_up = GetNextDelayedWakeUp();
-  absl::optional<WakeUpResolution> previous_queue_resolution;
+  std::optional<WakeUp> previous_wake_up = GetNextDelayedWakeUp();
+  std::optional<WakeUpResolution> previous_queue_resolution;
   if (queue->heap_handle().IsValid()) {
     previous_queue_resolution =
         wake_up_queue_.at(queue->heap_handle()).wake_up.resolution;
@@ -69,7 +70,7 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
       wake_up_queue_.erase(queue->heap_handle());
   }
 
-  absl::optional<WakeUp> new_wake_up = GetNextDelayedWakeUp();
+  std::optional<WakeUp> new_wake_up = GetNextDelayedWakeUp();
 
   if (previous_queue_resolution &&
       *previous_queue_resolution == WakeUpResolution::kHigh) {
@@ -117,10 +118,10 @@ void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(
   }
 }
 
-absl::optional<WakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
+std::optional<WakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (wake_up_queue_.empty())
-    return absl::nullopt;
+    return std::nullopt;
   WakeUp wake_up = wake_up_queue_.top().wake_up;
   // `wake_up.resolution` is not meaningful since it may be different from
   // has_pending_high_resolution_tasks(). Return WakeUpResolution::kLow here to
@@ -153,14 +154,14 @@ DefaultWakeUpQueue::DefaultWakeUpQueue(
 DefaultWakeUpQueue::~DefaultWakeUpQueue() = default;
 
 void DefaultWakeUpQueue::OnNextWakeUpChanged(LazyNow* lazy_now,
-                                             absl::optional<WakeUp> wake_up) {
+                                             std::optional<WakeUp> wake_up) {
   sequence_manager_->SetNextWakeUp(lazy_now, wake_up);
 }
 
 void DefaultWakeUpQueue::UnregisterQueue(internal::TaskQueueImpl* queue) {
   DCHECK_EQ(queue->wake_up_queue(), this);
   LazyNow lazy_now(sequence_manager_->main_thread_clock());
-  SetNextWakeUpForQueue(queue, &lazy_now, absl::nullopt);
+  SetNextWakeUpForQueue(queue, &lazy_now, std::nullopt);
 }
 
 const char* DefaultWakeUpQueue::GetName() const {
@@ -174,8 +175,7 @@ NonWakingWakeUpQueue::NonWakingWakeUpQueue(
 NonWakingWakeUpQueue::~NonWakingWakeUpQueue() = default;
 
 void NonWakingWakeUpQueue::OnNextWakeUpChanged(LazyNow* lazy_now,
-                                               absl::optional<WakeUp> wake_up) {
-}
+                                               std::optional<WakeUp> wake_up) {}
 
 const char* NonWakingWakeUpQueue::GetName() const {
   return "NonWakingWakeUpQueue";
@@ -183,7 +183,7 @@ const char* NonWakingWakeUpQueue::GetName() const {
 
 void NonWakingWakeUpQueue::UnregisterQueue(internal::TaskQueueImpl* queue) {
   DCHECK_EQ(queue->wake_up_queue(), this);
-  SetNextWakeUpForQueue(queue, nullptr, absl::nullopt);
+  SetNextWakeUpForQueue(queue, nullptr, std::nullopt);
 }
 
 }  // namespace internal

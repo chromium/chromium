@@ -17,7 +17,7 @@ namespace base {
 // A specialization of StrongAlias for UnguessableToken. Unlike
 // UnguessableToken, a TokenType<...> does not default to null and does not
 // expose the concept of null tokens. If you need to indicate a null token,
-// please use absl::optional<TokenType<...>>.
+// please use std::optional<TokenType<...>>.
 template <typename TypeMarker>
 class TokenType : public StrongAlias<TypeMarker, UnguessableToken> {
  private:

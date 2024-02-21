@@ -955,7 +955,7 @@ TEST_F(TraceEventAnalyzerTest, ComplexArgument) {
 
   ASSERT_TRUE(events[0]->HasDictArg("arg"));
   base::Value::Dict arg = events[0]->GetKnownArgAsDict("arg");
-  EXPECT_EQ(absl::optional<std::string>("value"),
+  EXPECT_EQ(std::optional<std::string>("value"),
             base::OptionalFromPtr(arg.FindString("property")));
 }
 

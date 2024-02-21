@@ -43,7 +43,7 @@ class CONTENT_EXPORT ContentClientParams final {
                       const url::Origin& request_initiator,
                       ukm::SourceIdObj ukm_source_id,
                       bool* bypass_redirect_checks = nullptr,
-                      std::optional<int64_t> navigation_id = absl::nullopt,
+                      std::optional<int64_t> navigation_id = std::nullopt,
                       scoped_refptr<base::SequencedTaskRunner>
                           navigation_response_task_runner = nullptr);
 

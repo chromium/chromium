@@ -104,20 +104,20 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
   return result;
 }
 
-absl::optional<int> GetZoomLevel(content::WebContents* capturer,
-                                 const content::DesktopMediaID& captured_id) {
+std::optional<int> GetZoomLevel(content::WebContents* capturer,
+                                const content::DesktopMediaID& captured_id) {
   content::RenderFrameHost* const captured_rfh =
       content::RenderFrameHost::FromID(
           captured_id.web_contents_id.render_process_id,
           captured_id.web_contents_id.main_render_frame_id);
   if (!captured_rfh || !captured_rfh->IsActive()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   content::WebContents* const captured_wc =
       content::WebContents::FromRenderFrameHost(captured_rfh);
   if (!captured_wc) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   double zoom_level = blink::PageZoomLevelToZoomFactor(

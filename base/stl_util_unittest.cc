@@ -11,6 +11,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <list>
+#include <optional>
 #include <queue>
 #include <set>
 #include <stack>
@@ -23,7 +24,6 @@
 #include "base/containers/queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {

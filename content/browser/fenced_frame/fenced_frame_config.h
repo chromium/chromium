@@ -480,7 +480,7 @@ class CONTENT_EXPORT FencedFrameProperties {
   // FencedFrameProperties constructor rather than
   // OnFencedFrameURLMappingComplete.
   void AdjustPropertiesForUrnIframe() {
-    partition_nonce_ = absl::nullopt;
+    partition_nonce_ = std::nullopt;
     can_disable_untrusted_network_ = false;
   }
 

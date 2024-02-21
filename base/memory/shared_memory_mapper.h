@@ -5,12 +5,13 @@
 #ifndef BASE_MEMORY_SHARED_MEMORY_MAPPER_H_
 #define BASE_MEMORY_SHARED_MEMORY_MAPPER_H_
 
+#include <stdint.h>
+
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/memory/platform_shared_memory_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <stdint.h>
 
 namespace base {
 
@@ -28,7 +29,7 @@ class BASE_EXPORT SharedMemoryMapper {
 
   // Maps the shared memory region identified through the provided platform
   // handle into the caller's address space.
-  virtual absl::optional<span<uint8_t>> Map(
+  virtual std::optional<span<uint8_t>> Map(
       subtle::PlatformSharedMemoryHandle handle,
       bool write_allowed,
       uint64_t offset,

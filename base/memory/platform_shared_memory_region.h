@@ -5,6 +5,10 @@
 #ifndef BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 
+#include <stdint.h>
+
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
@@ -12,9 +16,6 @@
 #include "base/memory/shared_memory_mapper.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <stdint.h>
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 namespace content {
@@ -191,12 +192,12 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   // |offset| into the caller's address space using the provided
   // |SharedMemoryMapper|. |offset| must be aligned to value of
   // |SysInfo::VMAllocationGranularity()|. Fails if requested bytes are out of
-  // the region limits. Returns the mapping as span on success, or absl::nullopt
+  // the region limits. Returns the mapping as span on success, or std::nullopt
   // on failure. The mapped address is guaranteed to have an alignment of at
   // least |kMapMinimumAlignment|.
-  absl::optional<span<uint8_t>> MapAt(uint64_t offset,
-                                      size_t size,
-                                      SharedMemoryMapper* mapper) const;
+  std::optional<span<uint8_t>> MapAt(uint64_t offset,
+                                     size_t size,
+                                     SharedMemoryMapper* mapper) const;
 
   // Unmaps the provided shared memory mapping, which must have previously been
   // created by calling |MapAt()| above.

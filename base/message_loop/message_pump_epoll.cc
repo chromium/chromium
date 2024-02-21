@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -21,7 +22,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 

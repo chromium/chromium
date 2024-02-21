@@ -206,12 +206,12 @@ bool PickleIterator::ReadData(const char** data, size_t* length) {
   return ReadBytes(data, *length);
 }
 
-absl::optional<base::span<const uint8_t>> PickleIterator::ReadData() {
+std::optional<base::span<const uint8_t>> PickleIterator::ReadData() {
   const char* ptr;
   size_t length;
 
   if (!ReadData(&ptr, &length))
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::as_bytes(base::make_span(ptr, length));
 }

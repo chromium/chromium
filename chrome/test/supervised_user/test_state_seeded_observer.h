@@ -6,6 +6,7 @@
 #define CHROME_TEST_SUPERVISED_USER_TEST_STATE_SEEDED_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,6 @@
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/state_observer.h"
 
 namespace supervised_user {

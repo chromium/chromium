@@ -88,9 +88,8 @@ void ThreadControllerImpl::ScheduleWork() {
   }
 }
 
-void ThreadControllerImpl::SetNextDelayedDoWork(
-    LazyNow* lazy_now,
-    absl::optional<WakeUp> wake_up) {
+void ThreadControllerImpl::SetNextDelayedDoWork(LazyNow* lazy_now,
+                                                std::optional<WakeUp> wake_up) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(associated_thread_->sequence_checker);
   DCHECK(sequence_);
   DCHECK(!wake_up || !wake_up->is_immediate());
@@ -167,7 +166,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   DCHECK(sequence_);
 
   work_deduplicator_.OnWorkStarted();
-  absl::optional<base::TimeTicks> recent_time;
+  std::optional<base::TimeTicks> recent_time;
 
   WeakPtr<ThreadControllerImpl> weak_ptr = weak_factory_.GetWeakPtr();
   for (int i = 0; i < main_sequence_only().work_batch_size_; i++) {
@@ -182,7 +181,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
     run_level_tracker_.OnWorkStarted(lazy_now_select_task);
     int run_depth = static_cast<int>(run_level_tracker_.num_run_levels());
 
-    absl::optional<SequencedTaskSource::SelectedTask> selected_task =
+    std::optional<SequencedTaskSource::SelectedTask> selected_task =
         sequence_->SelectNextTask(lazy_now_select_task);
     LazyNow lazy_now_task_selected(time_source_);
     run_level_tracker_.OnApplicationTaskSelected(
@@ -226,7 +225,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
       // the next loop iteration.
       if (lazy_now_after_run_task.has_value()) {
         recent_time =
-            absl::optional<base::TimeTicks>(lazy_now_after_run_task.Now());
+            std::optional<base::TimeTicks>(lazy_now_after_run_task.Now());
       } else {
         recent_time.reset();
       }
@@ -250,7 +249,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   work_deduplicator_.WillCheckForMoreWork();
 
   LazyNow lazy_now_after_work(time_source_);
-  absl::optional<WakeUp> next_wake_up =
+  std::optional<WakeUp> next_wake_up =
       sequence_->GetPendingWakeUp(&lazy_now_after_work);
   // The OnIdle() callback allows the TimeDomains to advance virtual time in
   // which case we now have immediate work to do.

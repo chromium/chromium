@@ -14,7 +14,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/query_parser/snippet.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {

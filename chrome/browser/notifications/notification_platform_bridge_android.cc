@@ -273,8 +273,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
                      NotificationOperation::kDisablePermission,
                      notification_type,
                      GURL(ConvertJavaStringToUTF8(env, java_origin)),
-                     notification_id, absl::nullopt /* action index */,
-                     absl::nullopt /* reply */, absl::nullopt /* by_user */));
+                     notification_id, std::nullopt /* action index */,
+                     std::nullopt /* reply */, std::nullopt /* by_user */));
 }
 
 void NotificationPlatformBridgeAndroid::Display(

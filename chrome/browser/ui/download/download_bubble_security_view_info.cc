@@ -35,7 +35,7 @@ DownloadBubbleSecurityViewInfo::SubpageButton::SubpageButton(
     DownloadCommands::Command command,
     std::u16string label,
     bool is_prominent,
-    absl::optional<ui::ColorId> text_color)
+    std::optional<ui::ColorId> text_color)
     : command(command),
       label(label),
       is_prominent(is_prominent),

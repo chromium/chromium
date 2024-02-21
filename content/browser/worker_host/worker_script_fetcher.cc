@@ -467,7 +467,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
       CreateContentBrowserURLLoaderThrottles(
           *resource_request, browser_context, wc_getter,
           nullptr /* navigation_ui_data */, RenderFrameHost::kNoFrameTreeNodeId,
-          /*navigation_id=*/absl::nullopt);
+          /*navigation_id=*/std::nullopt);
 
   // Create a BrowserContext getter using |service_worker_context|.
   // This context is aware of shutdown and safely returns a nullptr

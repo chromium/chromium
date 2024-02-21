@@ -6,10 +6,10 @@
 #define BASE_TEST_METRICS_HISTOGRAM_ENUM_READER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/metrics/histogram_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -23,10 +23,10 @@ using HistogramEnumEntryMap = std::map<HistogramBase::Sample, std::string>;
 //   <int value="9" label="enable-pinch-virtual-viewport"/>
 // becomes:
 //   { 9 => "enable-pinch-virtual-viewport" }
-// Returns empty absl::nullopt on failure.
-absl::optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
+// Returns empty std::nullopt on failure.
+std::optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
     const std::string& enum_name,
-    const absl::optional<std::string>& subdirectory = absl::nullopt);
+    const std::optional<std::string>& subdirectory = std::nullopt);
 
 }  // namespace base
 

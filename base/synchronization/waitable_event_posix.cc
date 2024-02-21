@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/synchronization/waitable_event.h"
+
 #include <stddef.h>
 
 #include <limits>
+#include <optional>
 #include <vector>
 
 #include "base/check_op.h"
@@ -12,12 +15,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // -----------------------------------------------------------------------------
 // A WaitableEvent on POSIX is implemented as a wait-list. Currently we don't

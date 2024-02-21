@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/wallpaper_metrics_provider.h"
 
+#include <optional>
+
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -12,7 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -34,7 +35,7 @@ TEST_F(WallpaperMetricsProviderTest, MissingUnitId) {
   ash::WallpaperInfo info;
   info.type = ash::WallpaperType::kOnline;
   // Explicitly set unit_id to nullopt.
-  info.unit_id = absl::nullopt;
+  info.unit_id = std::nullopt;
   info.collection_id = "test_collection_id";
   wallpaper_controller->SetUserWallpaperInfo(account_id, info);
 

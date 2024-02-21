@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId1,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   bool called = false;
   base::RunLoop run_loop;

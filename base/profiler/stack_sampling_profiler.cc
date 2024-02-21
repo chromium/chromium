@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
@@ -30,7 +31,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/static_constants.h"
@@ -180,16 +180,16 @@ class StackSamplingProfiler::SamplingThread : public Thread {
   void ApplyMetadataToPastSamples(base::TimeTicks period_start,
                                   base::TimeTicks period_end,
                                   uint64_t name_hash,
-                                  absl::optional<int64_t> key,
+                                  std::optional<int64_t> key,
                                   int64_t value,
-                                  absl::optional<PlatformThreadId> thread_id);
+                                  std::optional<PlatformThreadId> thread_id);
 
   // Adds the metadata as profile metadata. Profile metadata stores metadata
   // global to the profile.
   void AddProfileMetadata(uint64_t name_hash,
-                          absl::optional<int64_t> key,
+                          std::optional<int64_t> key,
                           int64_t value,
-                          absl::optional<PlatformThreadId> thread_id);
+                          std::optional<PlatformThreadId> thread_id);
 
   // Removes an active collection based on its collection id, forcing it to run
   // its callback if any data has been collected. This can be called externally
@@ -246,13 +246,13 @@ class StackSamplingProfiler::SamplingThread : public Thread {
       base::TimeTicks period_start,
       base::TimeTicks period_end,
       uint64_t name_hash,
-      absl::optional<int64_t> key,
+      std::optional<int64_t> key,
       int64_t value,
-      absl::optional<PlatformThreadId> thread_id);
+      std::optional<PlatformThreadId> thread_id);
   void AddProfileMetadataTask(uint64_t name_hash,
-                              absl::optional<int64_t> key,
+                              std::optional<int64_t> key,
                               int64_t value,
-                              absl::optional<PlatformThreadId> thread_id);
+                              std::optional<PlatformThreadId> thread_id);
   void RemoveCollectionTask(int collection_id);
   void RecordSampleTask(int collection_id);
   void ShutdownTask(int add_events);
@@ -418,9 +418,9 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamples(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
     uint64_t name_hash,
-    absl::optional<int64_t> key,
+    std::optional<int64_t> key,
     int64_t value,
-    absl::optional<PlatformThreadId> thread_id) {
+    std::optional<PlatformThreadId> thread_id) {
   ThreadExecutionState state;
   scoped_refptr<SingleThreadTaskRunner> task_runner = GetTaskRunner(&state);
   if (state != RUNNING)
@@ -434,9 +434,9 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamples(
 
 void StackSamplingProfiler::SamplingThread::AddProfileMetadata(
     uint64_t name_hash,
-    absl::optional<int64_t> key,
+    std::optional<int64_t> key,
     int64_t value,
-    absl::optional<PlatformThreadId> thread_id) {
+    std::optional<PlatformThreadId> thread_id) {
   ThreadExecutionState state;
   scoped_refptr<SingleThreadTaskRunner> task_runner = GetTaskRunner(&state);
   if (state != RUNNING) {
@@ -603,9 +603,9 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamplesTask(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
     uint64_t name_hash,
-    absl::optional<int64_t> key,
+    std::optional<int64_t> key,
     int64_t value,
-    absl::optional<PlatformThreadId> thread_id) {
+    std::optional<PlatformThreadId> thread_id) {
   DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
   MetadataRecorder::Item item(name_hash, key, thread_id, value);
   for (auto& id_collection_pair : active_collections_) {
@@ -618,9 +618,9 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamplesTask(
 
 void StackSamplingProfiler::SamplingThread::AddProfileMetadataTask(
     uint64_t name_hash,
-    absl::optional<int64_t> key,
+    std::optional<int64_t> key,
     int64_t value,
-    absl::optional<PlatformThreadId> thread_id) {
+    std::optional<PlatformThreadId> thread_id) {
   DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
   MetadataRecorder::Item item(name_hash, key, thread_id, value);
   for (auto& id_collection_pair : active_collections_) {
@@ -938,9 +938,9 @@ void StackSamplingProfiler::ApplyMetadataToPastSamples(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
     uint64_t name_hash,
-    absl::optional<int64_t> key,
+    std::optional<int64_t> key,
     int64_t value,
-    absl::optional<PlatformThreadId> thread_id) {
+    std::optional<PlatformThreadId> thread_id) {
   SamplingThread::GetInstance()->ApplyMetadataToPastSamples(
       period_start, period_end, name_hash, key, value, thread_id);
 }
@@ -950,7 +950,7 @@ void StackSamplingProfiler::AddProfileMetadata(
     uint64_t name_hash,
     int64_t key,
     int64_t value,
-    absl::optional<PlatformThreadId> thread_id) {
+    std::optional<PlatformThreadId> thread_id) {
   SamplingThread::GetInstance()->AddProfileMetadata(name_hash, key, value,
                                                     thread_id);
 }

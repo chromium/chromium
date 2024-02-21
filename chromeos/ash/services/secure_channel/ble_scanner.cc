@@ -76,7 +76,7 @@ void BleScanner::NotifyReceivedAdvertisementFromDevice(
 void BleScanner::NotifyBleDiscoverySessionFailed(
     const DeviceIdPair& device_id_pair,
     mojom::DiscoveryResult discovery_result,
-    absl::optional<mojom::DiscoveryErrorCode> error_code) {
+    std::optional<mojom::DiscoveryErrorCode> error_code) {
   for (auto& observer : observer_list_) {
     observer.OnDiscoveryFailed(device_id_pair, discovery_result, error_code);
   }

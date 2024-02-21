@@ -128,7 +128,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   // Retrieves the current battery state to update `is_on_battery_`.
   void GetBatteryState();
   void OnBatteryStateReceived(
-      const absl::optional<BatteryLevelProvider::BatteryState>& battery_state);
+      const std::optional<BatteryLevelProvider::BatteryState>& battery_state);
 
   // Reference to the system IOPMrootDomain port.
   io_connect_t power_manager_port_ = IO_OBJECT_NULL;

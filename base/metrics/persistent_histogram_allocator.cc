@@ -184,7 +184,7 @@ PersistentSparseHistogramDataManager::GetSampleMapRecordsWhileLocked(
 std::vector<PersistentMemoryAllocator::Reference>
 PersistentSparseHistogramDataManager::LoadRecords(
     PersistentSampleMapRecords* sample_map_records,
-    absl::optional<HistogramBase::Sample> until_value) {
+    std::optional<HistogramBase::Sample> until_value) {
   // DataManager must be locked in order to access the |sample_records_|
   // vectors.
   base::AutoLock auto_lock(lock_);
@@ -262,7 +262,7 @@ PersistentSampleMapRecords::~PersistentSampleMapRecords() = default;
 
 std::vector<PersistentMemoryAllocator::Reference>
 PersistentSampleMapRecords::GetNextRecords(
-    absl::optional<HistogramBase::Sample> until_value) {
+    std::optional<HistogramBase::Sample> until_value) {
   auto references = data_manager_->LoadRecords(this, until_value);
   seen_ += references.size();
   return references;

@@ -104,7 +104,7 @@ bool GetKeyType(const chaps::Attribute* attr, KeyType& key_type) {
 }
 
 bool GetOptionalString(const chaps::Attribute* attr,
-                       absl::optional<std::string>& result_string) {
+                       std::optional<std::string>& result_string) {
   if (!attr || !attr->has_value() || !attr->has_length()) {
     return false;
   }

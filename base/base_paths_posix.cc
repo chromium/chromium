@@ -49,7 +49,7 @@ bool PathProviderPosix(int key, FilePath* result) {
       return true;
 #elif BUILDFLAG(IS_FREEBSD)
       int name[] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
-      absl::optional<std::string> bin_dir = StringSysctl(name, std::size(name));
+      std::optional<std::string> bin_dir = StringSysctl(name, std::size(name));
       if (!bin_dir.has_value() || bin_dir.value().length() <= 1) {
         NOTREACHED() << "Unable to resolve path.";
         return false;

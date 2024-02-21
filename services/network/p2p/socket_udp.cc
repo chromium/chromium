@@ -111,7 +111,7 @@ P2PSocketUdp::P2PSocketUdp(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     net::NetLog* net_log,
     const DatagramServerSocketFactory& socket_factory,
-    absl::optional<base::UnguessableToken> devtools_token)
+    std::optional<base::UnguessableToken> devtools_token)
     : P2PSocket(Delegate, std::move(client), std::move(socket), P2PSocket::UDP),
       throttler_(throttler),
       traffic_annotation_(traffic_annotation),
@@ -135,7 +135,7 @@ P2PSocketUdp::P2PSocketUdp(
     P2PMessageThrottler* throttler,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     net::NetLog* net_log,
-    absl::optional<base::UnguessableToken> devtools_token)
+    std::optional<base::UnguessableToken> devtools_token)
     : P2PSocketUdp(Delegate,
                    std::move(client),
                    std::move(socket),

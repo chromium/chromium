@@ -77,12 +77,12 @@ uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
   return features::LimitAImageReaderMaxSizeToOne() ? 1 : 2;
 }
 
-absl::optional<gfx::Size> GetImageSize(AImage* image) {
+std::optional<gfx::Size> GetImageSize(AImage* image) {
   int32_t width = 0, height = 0;
   if (AImage_getWidth(image, &width) != AMEDIA_OK ||
       AImage_getHeight(image, &height) != AMEDIA_OK || width <= 0 ||
       height <= 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return gfx::Size(width, height);

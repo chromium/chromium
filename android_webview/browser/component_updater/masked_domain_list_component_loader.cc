@@ -31,8 +31,7 @@ void LoadMaskedDomainListComponent(ComponentLoaderPolicyVector& policies) {
   policies.push_back(std::make_unique<
                      component_updater::MaskedDomainListComponentLoaderPolicy>(
       /* on_list_ready=*/base::BindRepeating(
-          [](base::Version version,
-             const absl::optional<std::string>& raw_mdl) {
+          [](base::Version version, const std::optional<std::string>& raw_mdl) {
             if (raw_mdl.has_value()) {
               content::GetNetworkService()->UpdateMaskedDomainList(
                   raw_mdl.value());

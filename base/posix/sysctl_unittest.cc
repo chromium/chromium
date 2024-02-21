@@ -16,11 +16,11 @@ namespace {
 using SysctlTest = testing::Test;
 
 TEST(SysctlTest, MibSuccess) {
-  absl::optional<std::string> result1 = StringSysctl({CTL_HW, HW_MACHINE});
+  std::optional<std::string> result1 = StringSysctl({CTL_HW, HW_MACHINE});
   EXPECT_TRUE(result1);
 
 #if !BUILDFLAG(IS_OPENBSD)
-  absl::optional<std::string> result2 = StringSysctlByName("hw.machine");
+  std::optional<std::string> result2 = StringSysctlByName("hw.machine");
   EXPECT_TRUE(result2);
 
   EXPECT_EQ(result1, result2);
@@ -28,7 +28,7 @@ TEST(SysctlTest, MibSuccess) {
 }
 
 TEST(SysctlTest, MibFailure) {
-  absl::optional<std::string> result = StringSysctl({-1});
+  std::optional<std::string> result = StringSysctl({-1});
   EXPECT_FALSE(result);
 
 #if !BUILDFLAG(IS_OPENBSD)

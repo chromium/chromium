@@ -134,7 +134,7 @@ TEST_F(SupportsUserDataTest, ReentrantSetUserDataDuringRemoval) {
     raw_ref<TestSupportsUserData> supports_user_data_;
   };
   {
-    absl::optional<TestSupportsUserData> supports_user_data;
+    std::optional<TestSupportsUserData> supports_user_data;
     supports_user_data.emplace();
     // This awkward construction is required since death tests are typically
     // implemented using `fork()`, so calling `SetUserData()` outside the

@@ -71,7 +71,7 @@ class MockInnerText : public InnerTextProvider {
   MOCK_METHOD(void,
               GetInnerText,
               (content::RenderFrameHost & host,
-               absl::optional<int> node_id,
+               std::optional<int> node_id,
                content_extraction::InnerTextCallback callback));
 };
 

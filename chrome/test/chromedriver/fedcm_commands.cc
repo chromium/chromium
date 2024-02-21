@@ -84,7 +84,7 @@ Status ExecuteClickDialogButton(Session* session,
 
   std::string button = *params.FindString("dialogButton");
   if (button == "TermsOfService" || button == "PrivacyPolicy") {
-    absl::optional<int> index = params.FindInt("index");
+    std::optional<int> index = params.FindInt("index");
     if (!index) {
       return Status(kInvalidArgument, "index must be specified");
     }

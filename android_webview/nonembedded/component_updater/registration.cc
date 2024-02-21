@@ -47,7 +47,7 @@ void RegisterComponentsForUpdate(
           component_updater::MaskedDomainListComponentInstallerPolicy>(
           /*on_list_ready=*/base::BindRepeating(
               [](base::Version version,
-                 const absl::optional<std::string>& raw_mdl) {
+                 const std::optional<std::string>& raw_mdl) {
                 if (raw_mdl.has_value()) {
                   VLOG(1) << "Received Masked Domain List version " << version;
                 } else {

@@ -557,7 +557,7 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
       base::Value::Dict().Set(
           base::NumberToString(static_cast<int32_t>(chooser_type)),
           base::Value::Dict().Set("foo", "bar")),
-      absl::nullopt, url::Origin::Create(GURL(url1)));
+      std::nullopt, url::Origin::Create(GURL(url1)));
 
   revoked_permissions_list = hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);

@@ -238,11 +238,11 @@ bool IsTopRowKey(ui::KeyboardCode key_code, ui::DomCode dom_code) {
 
 }  // namespace
 
-absl::optional<ash::KeyCodeLookupEntry> FindKeyCodeEntry(
+std::optional<ash::KeyCodeLookupEntry> FindKeyCodeEntry(
     ui::KeyboardCode key_code,
     ui::DomCode original_dom_code,
     bool remap_positional_key) {
-  absl::optional<ash::KeyCodeLookupEntry> cached_key_data =
+  std::optional<ash::KeyCodeLookupEntry> cached_key_data =
       ash::AcceleratorKeycodeLookupCache::Get()->Find(key_code,
                                                       remap_positional_key);
   // Cache hit, return immediately.
@@ -275,7 +275,7 @@ absl::optional<ash::KeyCodeLookupEntry> FindKeyCodeEntry(
           layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
                                 &key_code_to_compare)) {
         if (!dom_key.IsValid()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         if (dom_key.IsDeadKey()) {
           result = GetStringForDeadKey(dom_key);
@@ -321,7 +321,7 @@ absl::optional<ash::KeyCodeLookupEntry> FindKeyCodeEntry(
     return ash::KeyCodeLookupEntry{dom_code, dom_key, key_code_to_compare,
                                    key_string};
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,

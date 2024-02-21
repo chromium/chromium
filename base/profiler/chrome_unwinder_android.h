@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/profiler/chrome_unwind_info_android.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/unwinder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -103,7 +104,7 @@ GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
 //    `ChromeUnwindInfoAndroid::function_table` for details.
 //  instruction_byte_offset_from_text_section_start: The distance in bytes
 //    between the instruction of interest and text section start.
-BASE_EXPORT const absl::optional<FunctionOffsetTableIndex>
+BASE_EXPORT const std::optional<FunctionOffsetTableIndex>
 GetFunctionTableIndexFromInstructionOffset(
     span<const uint32_t> page_start_instructions,
     span<const FunctionTableEntry> function_offset_table_indices,

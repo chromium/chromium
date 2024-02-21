@@ -6,6 +6,7 @@
 #define BASE_TEST_TEST_FUTURE_H_
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/auto_reset.h"
@@ -22,7 +23,6 @@
 #include "base/test/test_future_internal.h"
 #include "base/thread_annotations.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::test {
 
@@ -475,7 +475,7 @@ class TestFuture {
   base::RepeatingClosure ready_signal_ GUARDED_BY_CONTEXT(sequence_checker_) =
       base::DoNothing();
 
-  absl::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
 };

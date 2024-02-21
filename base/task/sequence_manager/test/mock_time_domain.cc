@@ -4,7 +4,7 @@
 
 #include "base/task/sequence_manager/test/mock_time_domain.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace base {
 namespace sequence_manager {
@@ -23,7 +23,7 @@ void MockTimeDomain::SetNowTicks(TimeTicks now_ticks) {
 }
 
 bool MockTimeDomain::MaybeFastForwardToWakeUp(
-    absl::optional<WakeUp> next_wake_up,
+    std::optional<WakeUp> next_wake_up,
     bool quit_when_idle_requested) {
   return false;
 }

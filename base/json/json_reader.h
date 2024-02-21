@@ -36,6 +36,7 @@
 #ifndef BASE_JSON_JSON_READER_H_
 #define BASE_JSON_JSON_READER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -44,7 +45,6 @@
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -106,15 +106,15 @@ class BASE_EXPORT JSONReader {
   JSONReader& operator=(const JSONReader&) = delete;
 
   // Reads and parses |json|, returning a Value.
-  // If |json| is not a properly formed JSON string, returns absl::nullopt.
-  static absl::optional<Value> Read(
+  // If |json| is not a properly formed JSON string, returns std::nullopt.
+  static std::optional<Value> Read(
       StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a Value::Dict.
-  // If |json| is not a properly formed JSON dict string, returns absl::nullopt.
-  static absl::optional<Value::Dict> ReadDict(
+  // If |json| is not a properly formed JSON dict string, returns std::nullopt.
+  static std::optional<Value::Dict> ReadDict(
       StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);

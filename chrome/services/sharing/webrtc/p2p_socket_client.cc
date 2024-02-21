@@ -59,7 +59,7 @@ void P2PSocketClient::Init(network::P2PSocketType type,
       type, local_address, network::P2PPortRange(min_port, max_port),
       remote_address,
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation_),
-      /*devtools_token=*/absl::nullopt, receiver_.BindNewPipeAndPassRemote(),
+      /*devtools_token=*/std::nullopt, receiver_.BindNewPipeAndPassRemote(),
       socket_.BindNewPipeAndPassReceiver());
   receiver_.set_disconnect_handler(base::BindOnce(
       &P2PSocketClient::OnConnectionError, base::Unretained(this)));

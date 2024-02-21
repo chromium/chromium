@@ -239,10 +239,10 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
   // data.
   base::optional_ref<const ui::DataTransferEndpoint> source =
       data_src.has_value() && !data_src->off_the_record() ? data_src
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
   base::optional_ref<const ui::DataTransferEndpoint> destination =
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
 
   std::string src_pattern;
   std::string dst_pattern;
@@ -321,10 +321,10 @@ void DataTransferDlpController::PasteIfAllowed(
   // data.
   base::optional_ref<const ui::DataTransferEndpoint> source =
       data_src.has_value() && !data_src->off_the_record() ? data_src
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
   base::optional_ref<const ui::DataTransferEndpoint> destination =
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
 
   if (absl::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
       !IsFilesApp(destination)) {

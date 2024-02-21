@@ -49,7 +49,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void ScheduleWork() override;
   void BindToCurrentThread(std::unique_ptr<MessagePump> message_pump) override;
   void SetNextDelayedDoWork(LazyNow* lazy_now,
-                            absl::optional<WakeUp> wake_up) override;
+                            std::optional<WakeUp> wake_up) override;
   void SetSequencedTaskSource(SequencedTaskSource* sequence) override;
   bool RunsTasksInCurrentSequence() override;
   void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) override;

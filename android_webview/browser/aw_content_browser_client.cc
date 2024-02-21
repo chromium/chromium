@@ -582,7 +582,7 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
     int frame_tree_node_id,
-    absl::optional<int64_t> navigation_id) {
+    std::optional<int64_t> navigation_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Set lookup mechanism based on feature flag
@@ -659,7 +659,7 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
             return client->GetSafeBrowsingUrlCheckerDelegate();
           },
           base::Unretained(this)),
-      wc_getter, frame_tree_node_id, /*navigation_id=*/absl::nullopt,
+      wc_getter, frame_tree_node_id, /*navigation_id=*/std::nullopt,
       // TODO(crbug.com/1033760): rt_lookup_service is
       // used to perform real time URL check, which is gated by UKM opted-in.
       // Since AW currently doesn't support UKM, this feature is not enabled.

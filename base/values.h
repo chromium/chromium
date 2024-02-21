@@ -13,6 +13,7 @@
 #include <iosfwd>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -72,9 +72,9 @@ namespace base {
 // returned by value. Binary blobs, `std::string`, `Value::Dict`, `Value::List`
 // are returned by reference.
 //
-// `GetIfBool()`, `GetIfInt()`, et cetera return `absl::nullopt`/`nullptr` if
+// `GetIfBool()`, `GetIfInt()`, et cetera return `std::nullopt`/`nullptr` if
 // the `Value` does not have the correct subtype; otherwise, returns the value
-// wrapped in an `absl::optional` (for `bool`, `int`, `double`) or by pointer
+// wrapped in an `std::optional` (for `bool`, `int`, `double`) or by pointer
 // (for binary blobs, `std::string`, `Value::Dict`, `Value::List`).
 //
 // Note: both `GetDouble()` and `GetIfDouble()` still return a non-null result
@@ -109,14 +109,14 @@ namespace base {
 //       is not present.
 // - `FindBool()`, `FindInt()`, ...: Similar to `Find()`, but ensures that the
 //       `Value` also has the correct subtype. Same return semantics as
-//       `GetIfBool()`, `GetIfInt()`, et cetera, returning `absl::nullopt` or
+//       `GetIfBool()`, `GetIfInt()`, et cetera, returning `std::nullopt` or
 //       `nullptr` if the key is not present or the value has the wrong subtype.
 // - `Set()`: Associate a value with a `StringPiece` key. Accepts `Value` or any
 //       of the subtypes that `Value` can hold.
 // - `Remove()`: Remove the key from this dictionary, if present.
 // - `Extract()`: If the key is present in the dictionary, removes the key from
 //       the dictionary and transfers ownership of `Value` to the caller.
-//       Otherwise, returns `absl::nullopt`.
+//       Otherwise, returns `std::nullopt`.
 //
 // Dictionaries also support an additional set of helper methods that operate on
 // "paths": `FindByDottedPath()`, `SetByDottedPath()`, `RemoveByDottedPath()`,
@@ -246,15 +246,15 @@ class BASE_EXPORT GSL_OWNER Value {
   bool is_dict() const { return type() == Type::DICT; }
   bool is_list() const { return type() == Type::LIST; }
 
-  // Returns the stored data if the type matches, or `absl::nullopt`/`nullptr`
+  // Returns the stored data if the type matches, or `std::nullopt`/`nullptr`
   // otherwise. `bool`, `int`, and `double` are returned in a wrapped
-  // `absl::optional`; blobs, `Value::Dict`, and `Value::List` are returned by
+  // `std::optional`; blobs, `Value::Dict`, and `Value::List` are returned by
   // pointer.
-  absl::optional<bool> GetIfBool() const;
-  absl::optional<int> GetIfInt() const;
+  std::optional<bool> GetIfBool() const;
+  std::optional<int> GetIfInt() const;
   // Returns a non-null value for both `Value::Type::DOUBLE` and
   // `Value::Type::INT`, converting the latter to a double.
-  absl::optional<double> GetIfDouble() const;
+  std::optional<double> GetIfDouble() const;
   const std::string* GetIfString() const;
   std::string* GetIfString();
   const BlobStorage* GetIfBlob() const;
@@ -371,15 +371,15 @@ class BASE_EXPORT GSL_OWNER Value {
     const Value* Find(StringPiece key) const;
     Value* Find(StringPiece key);
 
-    // Similar to `Find()` above, but returns `absl::nullopt`/`nullptr` if the
+    // Similar to `Find()` above, but returns `std::nullopt`/`nullptr` if the
     // type of the entry does not match. `bool`, `int`, and `double` are
-    // returned in a wrapped `absl::optional`; blobs, `Value::Dict`, and
+    // returned in a wrapped `std::optional`; blobs, `Value::Dict`, and
     // `Value::List` are returned by pointer.
-    absl::optional<bool> FindBool(StringPiece key) const;
-    absl::optional<int> FindInt(StringPiece key) const;
+    std::optional<bool> FindBool(StringPiece key) const;
+    std::optional<int> FindInt(StringPiece key) const;
     // Returns a non-null value for both `Value::Type::DOUBLE` and
     // `Value::Type::INT`, converting the latter to a double.
-    absl::optional<double> FindDouble(StringPiece key) const;
+    std::optional<double> FindDouble(StringPiece key) const;
     const std::string* FindString(StringPiece key) const;
     std::string* FindString(StringPiece key);
     const BlobStorage* FindBlob(StringPiece key) const;
@@ -482,8 +482,8 @@ class BASE_EXPORT GSL_OWNER Value {
     bool Remove(StringPiece key);
 
     // Similar to `Remove()`, but returns the value corresponding to the removed
-    // entry or `absl::nullopt` otherwise.
-    absl::optional<Value> Extract(StringPiece key);
+    // entry or `std::nullopt` otherwise.
+    std::optional<Value> Extract(StringPiece key);
 
     // Equivalent to the above methods but operating on paths instead of keys.
     // A path is shorthand syntax for referring to a key nested inside
@@ -500,11 +500,11 @@ class BASE_EXPORT GSL_OWNER Value {
     const Value* FindByDottedPath(StringPiece path) const;
     Value* FindByDottedPath(StringPiece path);
 
-    absl::optional<bool> FindBoolByDottedPath(StringPiece path) const;
-    absl::optional<int> FindIntByDottedPath(StringPiece path) const;
+    std::optional<bool> FindBoolByDottedPath(StringPiece path) const;
+    std::optional<int> FindIntByDottedPath(StringPiece path) const;
     // Returns a non-null value for both `Value::Type::DOUBLE` and
     // `Value::Type::INT`, converting the latter to a double.
-    absl::optional<double> FindDoubleByDottedPath(StringPiece path) const;
+    std::optional<double> FindDoubleByDottedPath(StringPiece path) const;
     const std::string* FindStringByDottedPath(StringPiece path) const;
     std::string* FindStringByDottedPath(StringPiece path);
     const BlobStorage* FindBlobByDottedPath(StringPiece path) const;
@@ -590,7 +590,7 @@ class BASE_EXPORT GSL_OWNER Value {
 
     bool RemoveByDottedPath(StringPiece path);
 
-    absl::optional<Value> ExtractByDottedPath(StringPiece path);
+    std::optional<Value> ExtractByDottedPath(StringPiece path);
 
     // Estimates dynamic memory usage. Requires tracing support
     // (enable_base_tracing gn flag), otherwise always returns 0. See

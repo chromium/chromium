@@ -299,10 +299,10 @@ gfx::Rect GetGridBoundsInScreen(
 
 std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
   if (!ShouldAllowSplitView()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!display::Screen::GetScreen()->InTabletMode()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto* overview_session = OverviewController::Get()->overview_session();
   DCHECK(overview_session);

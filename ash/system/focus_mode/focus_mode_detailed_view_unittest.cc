@@ -802,7 +802,7 @@ TEST_F(FocusModeDetailedViewTest, CheckHasSelectedTaskHistogram) {
   const std::string title = "Focus Task";
   controller->SetSelectedTask(std::make_unique<api::Task>(
                                   /*id=*/base::NumberToString(id), title,
-                                  /*due=*/absl::nullopt, /*completed=*/false,
+                                  /*due=*/std::nullopt, /*completed=*/false,
                                   /*has_subtasks=*/false,
                                   /*has_email_link=*/false,
                                   /*has_notes=*/false,

@@ -554,7 +554,7 @@ void InterestGroupManagerImpl::LoadNextInterestGroupAdAuctionData(
     // Since a single B&A blob can be associated with multiple auctions, we
     // can't link these loads to a specific one.
     GetInterestGroupsForOwner(
-        /*devtools_auction_id=*/absl::nullopt, next_owner,
+        /*devtools_auction_id=*/std::nullopt, next_owner,
         base::BindOnce(
             &InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData,
             weak_factory_.GetWeakPtr(), std::move(state), std::move(owners),

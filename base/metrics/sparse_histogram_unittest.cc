@@ -487,16 +487,16 @@ TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
   // Check the first bucket.
   const base::Value::Dict* bucket1 = buckets_list[0].GetIfDict();
   ASSERT_TRUE(bucket1 != nullptr);
-  EXPECT_EQ(bucket1->FindInt("low"), absl::optional<int>(100));
-  EXPECT_EQ(bucket1->FindInt("high"), absl::optional<int>(101));
-  EXPECT_EQ(bucket1->FindInt("count"), absl::optional<int>(10));
+  EXPECT_EQ(bucket1->FindInt("low"), std::optional<int>(100));
+  EXPECT_EQ(bucket1->FindInt("high"), std::optional<int>(101));
+  EXPECT_EQ(bucket1->FindInt("count"), std::optional<int>(10));
 
   // Check the second bucket.
   const base::Value::Dict* bucket2 = buckets_list[1].GetIfDict();
   ASSERT_TRUE(bucket2 != nullptr);
-  EXPECT_EQ(bucket2->FindInt("low"), absl::optional<int>(200));
-  EXPECT_EQ(bucket2->FindInt("high"), absl::optional<int>(201));
-  EXPECT_EQ(bucket2->FindInt("count"), absl::optional<int>(15));
+  EXPECT_EQ(bucket2->FindInt("low"), std::optional<int>(200));
+  EXPECT_EQ(bucket2->FindInt("high"), std::optional<int>(201));
+  EXPECT_EQ(bucket2->FindInt("count"), std::optional<int>(15));
 }
 
 TEST_P(SparseHistogramTest, WriteAscii) {

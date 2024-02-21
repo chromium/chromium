@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_POLICY_IDLE_IDLE_TIMEOUT_POLICY_UTILS_H_
 #define IOS_CHROME_BROWSER_UI_POLICY_IDLE_IDLE_TIMEOUT_POLICY_UTILS_H_
 
+#import <optional>
+
 #import "base/containers/flat_set.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_timeout_policy_utils.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_idle {
 

@@ -1712,7 +1712,7 @@ TEST_F(CrosNetworkConfigTest, SimStateCarrierLocked) {
   // Any attempt to unlock carrier locked sim with the pin should fail and
   // should not change the carrier lock status.
   EXPECT_FALSE(SetCellularSimState(FakeShillDeviceClient::kDefaultSimPin,
-                                   /*new_pin=*/absl::nullopt,
+                                   /*new_pin=*/std::nullopt,
                                    /*require_pin=*/false));
 
   // Sim should continue to be carrier locked.

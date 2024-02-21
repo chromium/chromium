@@ -493,11 +493,11 @@ expected<bool, LONG> RegKey::IsLink() const {
   return unexpected(result);
 }
 
-absl::optional<LONG> RegKey::DeleteIfLink() {
+std::optional<LONG> RegKey::DeleteIfLink() {
   if (auto is_link = IsLink(); !is_link.has_value()) {
     return is_link.error();  // Failed to determine if a link.
   } else if (is_link.value() == false) {
-    return absl::nullopt;  // Not a link.
+    return std::nullopt;  // Not a link.
   }
 
   const NTSTATUS delete_result = ::NtDeleteKey(key_);

@@ -20,7 +20,7 @@ ScopedJavaLocalRef<jobject> UnguessableTokenAndroid::Create(
                                       static_cast<jlong>(low));
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 UnguessableTokenAndroid::FromJavaUnguessableToken(
     JNIEnv* env,
     const JavaRef<jobject>& token) {

@@ -343,10 +343,10 @@ FilePath MakeAbsoluteFilePath(const FilePath& input) {
   return FilePath(full_path);
 }
 
-absl::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
+std::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
     const FilePath& input) {
   if (input.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   FilePath collapsed_path;
@@ -359,7 +359,7 @@ absl::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
     components_span = components_span.subspan(1);
   } else {
     if (!GetCurrentDirectory(&collapsed_path)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -577,11 +577,10 @@ bool ReadSymbolicLink(const FilePath& symlink_path, FilePath* target_path) {
   return true;
 }
 
-absl::optional<FilePath> ReadSymbolicLinkAbsolute(
-    const FilePath& symlink_path) {
+std::optional<FilePath> ReadSymbolicLinkAbsolute(const FilePath& symlink_path) {
   FilePath target_path;
   if (!ReadSymbolicLink(symlink_path, &target_path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Relative symbolic links are relative to the symlink's directory.

@@ -5,6 +5,7 @@
 #include "base/task/thread_pool/task_tracker.h"
 
 #include <atomic>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -34,7 +35,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -398,7 +398,7 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
   const bool should_run_tasks = BeforeRunTask(task_source->shutdown_behavior());
 
   // Run the next task in |task_source|.
-  absl::optional<Task> task;
+  std::optional<Task> task;
   TaskTraits traits;
   {
     auto transaction = task_source->BeginTransaction();
@@ -462,10 +462,10 @@ void TaskTracker::RunTask(Task task,
       DCHECK_EQ(fizzle_block_shutdown_tasks_ref, 0);
     }
   };
-  absl::optional<ScopedDisallowSingleton> disallow_singleton;
-  absl::optional<ScopedDisallowBlocking> disallow_blocking;
-  absl::optional<ScopedDisallowBaseSyncPrimitives> disallow_sync_primitives;
-  absl::optional<BlockShutdownTaskFizzler> fizzle_block_shutdown_tasks;
+  std::optional<ScopedDisallowSingleton> disallow_singleton;
+  std::optional<ScopedDisallowBlocking> disallow_blocking;
+  std::optional<ScopedDisallowBaseSyncPrimitives> disallow_sync_primitives;
+  std::optional<BlockShutdownTaskFizzler> fizzle_block_shutdown_tasks;
   if (traits.shutdown_behavior() ==
       TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN) {
     disallow_singleton.emplace();
@@ -485,7 +485,7 @@ void TaskTracker::RunTask(Task task,
         scoped_set_task_priority_for_current_thread(traits.priority());
 
     // Local storage map used if none is provided by |environment|.
-    absl::optional<SequenceLocalStorageMap> local_storage_map;
+    std::optional<SequenceLocalStorageMap> local_storage_map;
     if (!environment.sequence_local_storage)
       local_storage_map.emplace();
 
@@ -497,9 +497,9 @@ void TaskTracker::RunTask(Task task,
 
     // Set up TaskRunner CurrentDefaultHandle as expected for the scope of the
     // task.
-    absl::optional<SequencedTaskRunner::CurrentDefaultHandle>
+    std::optional<SequencedTaskRunner::CurrentDefaultHandle>
         sequenced_task_runner_current_default_handle;
-    absl::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
+    std::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
         single_thread_task_runner_current_default_handle;
     if (environment.sequenced_task_runner) {
       DCHECK_EQ(TaskSourceExecutionMode::kSequenced,

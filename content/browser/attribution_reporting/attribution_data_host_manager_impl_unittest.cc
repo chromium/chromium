@@ -3842,7 +3842,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     data_host_manager_.NotifyBackgroundRegistrationStarted(
         kBackgroundId, context_origin,
         /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
-        kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+        kFrameId, kLastNavigationId, /*attribution_src_token=*/std::nullopt,
         kDevtoolsRequestId);
 
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");

@@ -9,6 +9,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -414,7 +414,7 @@ class BASE_EXPORT FeatureList {
   // has been registered via SetInstance(). Additionally, a feature with a given
   // name must only have a single corresponding Feature struct, which is checked
   // in builds with DCHECKs enabled.
-  static absl::optional<bool> GetStateIfOverridden(const Feature& feature);
+  static std::optional<bool> GetStateIfOverridden(const Feature& feature);
 
   // Returns the field trial associated with the given |feature|. Must only be
   // called after the singleton instance has been registered via SetInstance().
@@ -567,7 +567,7 @@ class BASE_EXPORT FeatureList {
   // Returns whether the given |feature| is enabled. This is invoked by the
   // public FeatureList::GetStateIfOverridden() static function on the global
   // singleton. Requires the FeatureList to have already been fully initialized.
-  absl::optional<bool> IsFeatureEnabledIfOverridden(
+  std::optional<bool> IsFeatureEnabledIfOverridden(
       const Feature& feature) const;
 
   // Returns the override state of a given |feature|. If the feature was not

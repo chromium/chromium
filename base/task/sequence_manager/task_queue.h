@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -20,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/base_tracing_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perfetto {
 class EventContext;
@@ -88,9 +88,9 @@ class BASE_EXPORT TaskQueue {
     // tasks or ripe delayed tasks. The implementation should return the next
     // allowed wake up, or nullopt if no future wake-up is necessary.
     // This is always called on the thread this TaskQueue is associated with.
-    virtual absl::optional<WakeUp> GetNextAllowedWakeUp(
+    virtual std::optional<WakeUp> GetNextAllowedWakeUp(
         LazyNow* lazy_now,
-        absl::optional<WakeUp> next_desired_wake_up,
+        std::optional<WakeUp> next_desired_wake_up,
         bool has_ready_task) = 0;
 
    protected:
@@ -292,7 +292,7 @@ class BASE_EXPORT TaskQueue {
   // such tasks (immediate tasks don't count) or the queue is disabled it
   // returns nullopt.
   // NOTE: this must be called on the thread this TaskQueue was created by.
-  virtual absl::optional<WakeUp> GetNextDesiredWakeUp() = 0;
+  virtual std::optional<WakeUp> GetNextDesiredWakeUp() = 0;
 
   // Can be called on any thread.
   virtual const char* GetName() const = 0;

@@ -167,7 +167,7 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
   std::string proxy = "a-proxy";
   auto ip_protection_proxy_chain =
       net::ProxyChain::ForIpProtection({net::ProxyServer::FromSchemeHostAndPort(
-          net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt)});
+          net::ProxyServer::SCHEME_HTTPS, proxy, std::nullopt)});
   const std::vector<net::ProxyChain> proxy_chain_list = {
       std::move(ip_protection_proxy_chain)};
   auto ipp_proxy_list_manager_ =

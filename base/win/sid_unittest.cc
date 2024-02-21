@@ -12,6 +12,8 @@
 
 #include <sddl.h>
 
+#include <optional>
+
 #include "base/ranges/algorithm.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
@@ -19,13 +21,12 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::win {
 
 namespace {
 
-bool EqualSid(const absl::optional<Sid>& sid, const ATL::CSid& compare_sid) {
+bool EqualSid(const std::optional<Sid>& sid, const ATL::CSid& compare_sid) {
   if (!sid)
     return false;
   return sid->Equal(const_cast<SID*>(compare_sid.GetPSID()));
@@ -40,7 +41,7 @@ bool EqualSid(const Sid& sid, const std::wstring& sddl_sid) {
   return sid.Equal(sid_ptr.get());
 }
 
-bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
+bool EqualSid(const std::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
   if (!sid)
     return false;
   char known_sid_buffer[SECURITY_MAX_SID_SIZE] = {};
@@ -51,7 +52,7 @@ bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
   return sid->Equal(known_sid_buffer);
 }
 
-bool TestSidVector(absl::optional<std::vector<Sid>> sids,
+bool TestSidVector(std::optional<std::vector<Sid>> sids,
                    const std::vector<std::wstring>& sddl) {
   return sids && ranges::equal(*sids, sddl,
                                [](const Sid& sid, const std::wstring& sddl) {
@@ -134,13 +135,13 @@ TEST(SidTest, Initializers) {
   PSID sid_world_pointer = const_cast<SID*>(sid_world.GetPSID());
 
   // Check the PSID constructor.
-  absl::optional<Sid> sid_sid_star = Sid::FromPSID(sid_world_pointer);
+  std::optional<Sid> sid_sid_star = Sid::FromPSID(sid_world_pointer);
   ASSERT_TRUE(EqualSid(sid_sid_star, sid_world));
 
   char invalid_sid[16] = {};
   ASSERT_FALSE(Sid::FromPSID(invalid_sid));
 
-  absl::optional<Sid> sid_sddl = Sid::FromSddlString(L"S-1-1-0");
+  std::optional<Sid> sid_sddl = Sid::FromSddlString(L"S-1-1-0");
   ASSERT_TRUE(sid_sddl);
   ASSERT_TRUE(EqualSid(sid_sddl, sid_world));
 }
@@ -240,9 +241,9 @@ TEST(SidTest, KnownSids) {
 }
 
 TEST(SidTest, SddlString) {
-  absl::optional<Sid> sid_sddl = Sid::FromSddlString(L"S-1-1-0");
+  std::optional<Sid> sid_sddl = Sid::FromSddlString(L"S-1-1-0");
   ASSERT_TRUE(sid_sddl);
-  absl::optional<std::wstring> sddl_str = sid_sddl->ToSddlString();
+  std::optional<std::wstring> sddl_str = sid_sddl->ToSddlString();
   ASSERT_TRUE(sddl_str);
   ASSERT_EQ(L"S-1-1-0", *sddl_str);
   ASSERT_FALSE(Sid::FromSddlString(L"X-1-1-0"));

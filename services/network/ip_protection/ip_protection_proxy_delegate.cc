@@ -162,7 +162,7 @@ IpProtectionProxyDelegate::CheckEligibility(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key) const {
   auto dvlog = [&](std::string message) {
-    absl::optional<net::SchemefulSite> top_frame_site =
+    std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
     DVLOG(3) << "IPPD::CheckEligibility(" << url << ", "
              << (top_frame_site.has_value() ? top_frame_site.value()
@@ -186,7 +186,7 @@ bool IpProtectionProxyDelegate::CheckAvailability(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key) const {
   auto dvlog = [&](std::string message) {
-    absl::optional<net::SchemefulSite> top_frame_site =
+    std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
     DVLOG(3) << "IPPD::CheckAvailability(" << url << ", "
              << (top_frame_site.has_value() ? top_frame_site.value()

@@ -37,7 +37,7 @@ class KeyboardModifierEventRewriterDelegateImpl
       ui::EventRewriterAsh::Delegate* event_rewriter_delegate)
       : event_rewriter_delegate_(event_rewriter_delegate) {}
 
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
       ui::mojom::ModifierKey modifier_key,
       const std::string& pref_name) const override {

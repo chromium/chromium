@@ -253,7 +253,7 @@ void WifiHotspotConnector::InitiateConnectionToCurrentNetwork() {
 // TODO(b/318534727): Record the number of attempts before completion in a
 // metric.
 void WifiHotspotConnector::CompleteActiveConnectionAttempt(
-    absl::optional<WifiHotspotConnectionError> error) {
+    std::optional<WifiHotspotConnectionError> error) {
   if (wifi_network_guid_.empty()) {
     PA_LOG(ERROR) << "CompleteActiveConnectionAttempt"
                   << "was called, but no connection attempt is in progress.";

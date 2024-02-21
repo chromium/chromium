@@ -79,7 +79,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   void UpdateWaitingForWifi();
   void InitiateConnectionToCurrentNetwork();
   void CompleteActiveConnectionAttempt(
-      absl::optional<WifiHotspotConnectionError> error);
+      std::optional<WifiHotspotConnectionError> error);
   void CreateWifiConfiguration();
   void RequestWifiScan();
   base::Value::Dict CreateWifiPropertyDictionary(const std::string& ssid,

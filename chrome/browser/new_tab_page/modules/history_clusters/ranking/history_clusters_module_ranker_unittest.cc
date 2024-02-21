@@ -890,7 +890,7 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailableScoreThreshold) {
   visit.content_annotations.model_annotations.categories = {
       {"category1", 90}, {"boostedbuthidden", 84}};
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-      visit, /*normalized_url=*/absl::nullopt, 0.0)};
+      visit, /*normalized_url=*/std::nullopt, 0.0)};
 
   history::Cluster cluster2 = cluster1;
   cluster2.cluster_id = 2;

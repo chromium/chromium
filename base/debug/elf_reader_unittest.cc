@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 
 #include <cstdint>
+#include <optional>
 
 #include "base/debug/test_elf_image_builder.h"
 #include "base/files/memory_mapped_file.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 extern char __executable_start;
 
@@ -128,9 +128,9 @@ TEST_P(ElfReaderTest, ReadElfLibraryName) {
                            .AddSoName("mysoname")
                            .Build();
 
-  absl::optional<StringPiece> library_name =
+  std::optional<StringPiece> library_name =
       ReadElfLibraryName(image.elf_start());
-  ASSERT_NE(absl::nullopt, library_name);
+  ASSERT_NE(std::nullopt, library_name);
   EXPECT_EQ("mysoname", *library_name);
 }
 
@@ -139,9 +139,9 @@ TEST_P(ElfReaderTest, ReadElfLibraryNameNoSoName) {
                            .AddLoadSegment(PF_R | PF_X, /* size = */ 2000)
                            .Build();
 
-  absl::optional<StringPiece> library_name =
+  std::optional<StringPiece> library_name =
       ReadElfLibraryName(image.elf_start());
-  EXPECT_EQ(absl::nullopt, library_name);
+  EXPECT_EQ(std::nullopt, library_name);
 }
 
 TEST_P(ElfReaderTest, GetRelocationOffset) {

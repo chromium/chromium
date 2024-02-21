@@ -283,7 +283,7 @@ DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
     mojom::UserDisplayMode user_display_mode,
     bool is_shortcut_app,
     bool ignore_shortstand) {
-  const absl::optional<DisplayMode> resolved_display_mode =
+  const std::optional<DisplayMode> resolved_display_mode =
       ShouldResolveShortstandDisplayMode(ignore_shortstand)
           ? TryResolveShortstandUserDisplayMode(is_shortcut_app)
           : TryResolveUserDisplayMode(user_display_mode);

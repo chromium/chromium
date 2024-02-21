@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -18,7 +19,6 @@
 #include "base/strings/string_piece.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -81,7 +81,7 @@ class BASE_EXPORT JSONParser {
   // result as a Value.
   // Wrap this in base::FooValue::From() to check the Value is of type Foo and
   // convert to a FooValue at the same time.
-  absl::optional<Value> Parse(StringPiece input);
+  std::optional<Value> Parse(StringPiece input);
 
   // Returns the error code.
   JsonParseError error_code() const;
@@ -155,22 +155,22 @@ class BASE_EXPORT JSONParser {
 
     // The copied string representation. Will be unset until Convert() is
     // called.
-    absl::optional<std::string> string_;
+    std::optional<std::string> string_;
   };
 
   // Returns the next |count| bytes of the input stream, or nullopt if fewer
   // than |count| bytes remain.
-  absl::optional<StringPiece> PeekChars(size_t count);
+  std::optional<StringPiece> PeekChars(size_t count);
 
   // Calls PeekChars() with a |count| of 1.
-  absl::optional<char> PeekChar();
+  std::optional<char> PeekChar();
 
   // Returns the next |count| bytes of the input stream, or nullopt if fewer
   // than |count| bytes remain, and advances the parser position by |count|.
-  absl::optional<StringPiece> ConsumeChars(size_t count);
+  std::optional<StringPiece> ConsumeChars(size_t count);
 
   // Calls ConsumeChars() with a |count| of 1.
-  absl::optional<char> ConsumeChar();
+  std::optional<char> ConsumeChar();
 
   // Returns a pointer to the current character position.
   const char* pos();
@@ -187,22 +187,22 @@ class BASE_EXPORT JSONParser {
   bool EatComment();
 
   // Calls GetNextToken() and then ParseToken().
-  absl::optional<Value> ParseNextToken();
+  std::optional<Value> ParseNextToken();
 
   // Takes a token that represents the start of a Value ("a structural token"
   // in RFC terms) and consumes it, returning the result as a Value.
-  absl::optional<Value> ParseToken(Token token);
+  std::optional<Value> ParseToken(Token token);
 
   // Assuming that the parser is currently wound to '{', this parses a JSON
   // object into a Value.
-  absl::optional<Value> ConsumeDictionary();
+  std::optional<Value> ConsumeDictionary();
 
   // Assuming that the parser is wound to '[', this parses a JSON list into a
   // Value.
-  absl::optional<Value> ConsumeList();
+  std::optional<Value> ConsumeList();
 
   // Calls through ConsumeStringRaw and wraps it in a value.
-  absl::optional<Value> ConsumeString();
+  std::optional<Value> ConsumeString();
 
   // Assuming that the parser is wound to a double quote, this parses a string,
   // decoding any escape sequences and converts UTF-16 to UTF-8. Returns true on
@@ -217,14 +217,14 @@ class BASE_EXPORT JSONParser {
 
   // Assuming that the parser is wound to the start of a valid JSON number,
   // this parses and converts it to either an int or double value.
-  absl::optional<Value> ConsumeNumber();
+  std::optional<Value> ConsumeNumber();
   // Helper that reads characters that are ints. Returns true if a number was
   // read and false on error.
   bool ReadInt(bool allow_leading_zeros);
 
   // Consumes the literal values of |true|, |false|, and |null|, assuming the
   // parser is wound to the first character of any of those.
-  absl::optional<Value> ConsumeLiteral();
+  std::optional<Value> ConsumeLiteral();
 
   // Helper function that returns true if the byte squence |match| can be
   // consumed at the current parser position. Returns false if there are fewer

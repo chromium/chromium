@@ -36,7 +36,7 @@ class D3DVideoDecoderWrapper {
 
   // Get whether single video decoder texture is recommended by the driver.
   // Returns whether this operation succeeds.
-  virtual absl::optional<bool> UseSingleTexture() const = 0;
+  virtual std::optional<bool> UseSingleTexture() const = 0;
 
   // Clear all internal states.
   virtual void Reset() = 0;

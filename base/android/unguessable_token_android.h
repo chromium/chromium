@@ -22,7 +22,7 @@ class BASE_EXPORT UnguessableTokenAndroid {
       const base::UnguessableToken& token);
 
   // Create a native UnguessableToken from Java UnguessableToken |token|.
-  static absl::optional<base::UnguessableToken> FromJavaUnguessableToken(
+  static std::optional<base::UnguessableToken> FromJavaUnguessableToken(
       JNIEnv* env,
       const JavaRef<jobject>& token);
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -171,7 +171,7 @@ class BASE_EXPORT RegKey {
   // was a link and was deleted, a Windows error code if checking the key or
   // deleting it failed, or `nullopt` if the key exists and is not a symbolic
   // link.
-  absl::optional<LONG> DeleteIfLink();
+  std::optional<LONG> DeleteIfLink();
 
   // Recursively deletes a key and all of its subkeys.
   static LONG RegDelRecurse(HKEY root_key, const wchar_t* name, REGSAM access);

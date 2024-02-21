@@ -552,7 +552,7 @@ ProfileNetworkContextService::GetCertificatePolicy() {
 
   for (const base::Value& cert_b64 :
        prefs->GetList(prefs::kCAHintCertificates)) {
-    absl::optional<std::vector<uint8_t>> decoded_opt =
+    std::optional<std::vector<uint8_t>> decoded_opt =
         base::Base64Decode(cert_b64.GetString());
 
     if (decoded_opt.has_value()) {
@@ -561,7 +561,7 @@ ProfileNetworkContextService::GetCertificatePolicy() {
   }
 
   for (const base::Value& cert_b64 : prefs->GetList(prefs::kCACertificates)) {
-    absl::optional<std::vector<uint8_t>> decoded_opt =
+    std::optional<std::vector<uint8_t>> decoded_opt =
         base::Base64Decode(cert_b64.GetString());
 
     if (decoded_opt.has_value()) {

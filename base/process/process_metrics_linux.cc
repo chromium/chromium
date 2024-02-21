@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/cpu.h"
@@ -36,7 +37,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -799,7 +799,7 @@ bool GetSwapInfoImpl(SwapInfo* swap_info) {
   // Since ZRAM update, it shows the usage data in different places.
   // If file "/sys/block/zram0/mm_stat" exists, use the new way, otherwise,
   // use the old way.
-  static absl::optional<bool> use_new_zram_interface;
+  static std::optional<bool> use_new_zram_interface;
   FilePath zram_mm_stat_file("/sys/block/zram0/mm_stat");
   if (!use_new_zram_interface.has_value()) {
     use_new_zram_interface = PathExists(zram_mm_stat_file);

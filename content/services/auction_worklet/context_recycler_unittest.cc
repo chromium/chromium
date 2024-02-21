@@ -177,11 +177,11 @@ class ContextRecyclerTest : public testing::Test {
       ig_params2->priority_vector.emplace();
       ig_params2->priority_vector->insert(
           std::pair<std::string, double>("a", 42.0));
-      ig_params2->ads = {{{GURL("https://ad.test/1"), absl::nullopt},
+      ig_params2->ads = {{{GURL("https://ad.test/1"), std::nullopt},
                           {GURL("https://ad.test/2"), {"\"metadata 1\""}}}};
       ig_params2->ad_components = {
           {{GURL("https://ad-component.test/1"), {"\"metadata 2\""}},
-           {GURL("https://ad-component.test/2"), absl::nullopt}}};
+           {GURL("https://ad-component.test/2"), std::nullopt}}};
 
       mojom::BiddingBrowserSignalsPtr bs_params2 =
           mojom::BiddingBrowserSignals::New();
@@ -1127,7 +1127,7 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
   ig_params->enable_bidding_signals_prioritization = true;
   ig_params->ads = {{{GURL("https://ad2.test/"), {"\"metadata 3\""}}}};
   ig_params->ad_components = {
-      {{GURL("https://ad-component2.test/"), absl::nullopt}}};
+      {{GURL("https://ad-component2.test/"), std::nullopt}}};
 
   mojom::BiddingBrowserSignalsPtr bs_params =
       mojom::BiddingBrowserSignals::New();

@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_ASH_BIRCH_BIRCH_FILE_SUGGEST_PROVIDER_H_
 #define CHROME_BROWSER_UI_ASH_BIRCH_BIRCH_FILE_SUGGEST_PROVIDER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -32,7 +33,7 @@ class ASH_EXPORT BirchFileSuggestProvider
   void OnFileSuggestionUpdated(FileSuggestionType type) override;
 
   void OnSuggestedFileDataUpdated(
-      const absl::optional<std::vector<FileSuggestData>>& suggest_results);
+      const std::optional<std::vector<FileSuggestData>>& suggest_results);
 
   void set_file_suggest_service_for_test(
       FileSuggestKeyedService* suggest_service) {

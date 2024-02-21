@@ -322,7 +322,7 @@ WebViewInternalCaptureVisibleRegionFunction::Run() {
       web_view_internal::CaptureVisibleRegion::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  absl::optional<ImageDetails> image_details;
+  std::optional<ImageDetails> image_details;
   if (args().size() > 1) {
     image_details = ImageDetails::FromValue(args()[1]);
   }

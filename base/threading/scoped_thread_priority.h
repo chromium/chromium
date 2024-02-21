@@ -6,6 +6,7 @@
 #define BASE_THREADING_SCOPED_THREAD_PRIORITY_H_
 
 #include <atomic>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -13,7 +14,6 @@
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -61,7 +61,7 @@ class BASE_EXPORT ScopedBoostPriority {
   ScopedBoostPriority& operator=(const ScopedBoostPriority&) = delete;
 
  private:
-  absl::optional<ThreadType> original_thread_type_;
+  std::optional<ThreadType> original_thread_type_;
 };
 
 namespace internal {
@@ -84,7 +84,7 @@ class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
  private:
 #if BUILDFLAG(IS_WIN)
   // The original priority when invoking entering the scope().
-  absl::optional<ThreadType> original_thread_type_;
+  std::optional<ThreadType> original_thread_type_;
   const raw_ptr<std::atomic_bool> already_loaded_;
 #endif
 };

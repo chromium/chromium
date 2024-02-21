@@ -578,7 +578,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const std::string& evidence_locker_filepath,
     const std::string& scan_id,
     const std::string& content_transfer_method) {
-  absl::optional<enterprise_connectors::ReportingSettings> settings =
+  std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {

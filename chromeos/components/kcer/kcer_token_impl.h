@@ -460,7 +460,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
       SessionChapsClient::SlotId(0xFFFFFFFF);
   // Indicates whether PSS signatures are supported. This variable caches the
   // value from Chaps, if it's empty, it needs to be retrieved first.
-  absl::optional<bool> token_supports_pss_;
+  std::optional<bool> token_supports_pss_;
 
   // Queue for the tasks that were received while the tast queue was blocked.
   std::deque<base::OnceClosure> task_queue_;

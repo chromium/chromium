@@ -585,14 +585,14 @@ TEST_F(WindowBoundsTrackerTest, MirrorBuiltinPrimaryDisplay) {
   // Enter mirror mode.
   const gfx::Rect w2_remapping_bounds_in_1st(
       gfx::Rect(gfx::Point(200, 0), window_size));
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(first_display_id, display_manager()->mirroring_source_id());
   EXPECT_EQ(w1_initial_bounds, w1->GetBoundsInScreen());
   EXPECT_EQ(w2_remapping_bounds_in_1st, w2->GetBoundsInScreen());
 
   // Exit mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(w2_initial_bounds, w2->GetBoundsInScreen());
 

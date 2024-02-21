@@ -47,7 +47,7 @@ void TabResourceUsageCollector::RemoveObserver(Observer* o) {
 
 void TabResourceUsageCollector::ImmediatelyRefreshMetrics(
     content::WebContents* web_contents) {
-  absl::optional<PageContext> page_context =
+  std::optional<PageContext> page_context =
       PageContext::FromWebContents(web_contents);
   if (page_context.has_value()) {
     QueryBuilder()

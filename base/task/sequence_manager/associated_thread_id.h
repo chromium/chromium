@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/memory/ref_counted.h"
@@ -15,7 +16,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/platform_thread_ref.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {

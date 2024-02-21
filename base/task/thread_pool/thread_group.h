@@ -6,6 +6,7 @@
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/task/thread_pool/worker_thread.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_windows_thread_environment.h"
@@ -90,8 +90,8 @@ class BASE_EXPORT ThreadGroup {
       WorkerThreadObserver* worker_thread_observer,
       WorkerEnvironment worker_environment,
       bool synchronous_thread_start_for_testing = false,
-      absl::optional<TimeDelta> may_block_threshold =
-          absl::optional<TimeDelta>()) = 0;
+      std::optional<TimeDelta> may_block_threshold =
+          std::optional<TimeDelta>()) = 0;
 
   // Registers the thread group in TLS.
   void BindToCurrentThread();
@@ -212,8 +212,8 @@ class BASE_EXPORT ThreadGroup {
       WorkerThreadObserver* worker_thread_observer,
       WorkerEnvironment worker_environment,
       bool synchronous_thread_start_for_testing = false,
-      absl::optional<TimeDelta> may_block_threshold =
-          absl::optional<TimeDelta>());
+      std::optional<TimeDelta> may_block_threshold =
+          std::optional<TimeDelta>());
 
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
@@ -265,7 +265,7 @@ class BASE_EXPORT ThreadGroup {
    private:
     // A RegisteredTaskSourceAndTransaction and the thread group in which it
     // should be enqueued.
-    absl::optional<RegisteredTaskSourceAndTransaction>
+    std::optional<RegisteredTaskSourceAndTransaction>
         transaction_with_task_source_;
     raw_ptr<ThreadGroup> destination_thread_group_ = nullptr;
   };
@@ -529,7 +529,7 @@ class BASE_EXPORT ThreadGroup {
   // Null-opt unless |synchronous_thread_start_for_testing| was true at
   // construction. In that case, it's signaled each time
   // WorkerThreadDelegateImpl::OnMainEntry() completes.
-  absl::optional<WaitableEvent> worker_started_for_testing_;
+  std::optional<WaitableEvent> worker_started_for_testing_;
 
   // Set at the start of JoinForTesting().
   bool join_for_testing_started_ GUARDED_BY(lock_) = false;

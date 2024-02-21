@@ -5,6 +5,7 @@
 #include "base/observer_list_threadsafe.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -369,7 +369,7 @@ TEST(ObserverListThreadSafeDeathTest, CrossThreadRemovalRestricted) {
 }
 
 TEST(ObserverListThreadSafeTest, OutlivesTaskEnvironment) {
-  absl::optional<test::TaskEnvironment> task_environment(absl::in_place);
+  std::optional<test::TaskEnvironment> task_environment(std::in_place);
   auto observer_list = base::MakeRefCounted<ObserverListThreadSafe<Foo>>();
 
   Adder a(1);
@@ -381,7 +381,7 @@ TEST(ObserverListThreadSafeTest, OutlivesTaskEnvironment) {
 }
 
 TEST(ObserverListThreadSafeTest, OutlivesTaskEnvironmentRemovalRestricted) {
-  absl::optional<test::TaskEnvironment> task_environment(absl::in_place);
+  std::optional<test::TaskEnvironment> task_environment(std::in_place);
   auto observer_list = base::MakeRefCounted<
       ObserverListThreadSafe<Foo, RemoveObserverPolicy::kAddingSequenceOnly>>();
 

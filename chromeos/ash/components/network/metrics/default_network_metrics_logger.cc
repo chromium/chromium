@@ -69,7 +69,7 @@ std::optional<DefaultNetworkMetricsLogger::NetworkTechnologyMeterSubtype>
 DefaultNetworkMetricsLogger::GetNetworkTechnologyMeterSubtype(
     const NetworkState* network) {
   if (!network) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   switch (network->GetNetworkTechnologyType()) {
@@ -92,7 +92,7 @@ DefaultNetworkMetricsLogger::GetNetworkTechnologyMeterSubtype(
     case NetworkState::NetworkTechnologyType::kUnknown:
       [[fallthrough]];
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

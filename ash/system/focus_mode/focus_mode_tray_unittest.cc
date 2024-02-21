@@ -189,7 +189,7 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
   controller->SetSelectedTask(
       std::make_unique<api::Task>(
           /*id=*/base::NumberToString(0), "make a travel plan",
-          /*due=*/absl::nullopt, /*completed=*/false, /*has_subtasks=*/false,
+          /*due=*/std::nullopt, /*completed=*/false, /*has_subtasks=*/false,
           /*has_email_link=*/false,
           /*has_notes=*/false,
           /*updated=*/base::Time::Now())
@@ -296,7 +296,7 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
   controller->SetInactiveSessionDuration(session_duration);
   controller->SetSelectedTask(std::make_unique<api::Task>(
                                   /*id=*/base::NumberToString(1), task_name,
-                                  /*due=*/absl::nullopt, /*completed=*/false,
+                                  /*due=*/std::nullopt, /*completed=*/false,
                                   /*has_subtasks=*/false,
                                   /*has_email_link=*/false,
                                   /*has_notes=*/false,

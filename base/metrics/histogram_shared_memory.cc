@@ -94,18 +94,18 @@ HistogramSharedMemory::SharedMemory::operator=(
     HistogramSharedMemory::SharedMemory&&) = default;
 
 // static
-absl::optional<HistogramSharedMemory::SharedMemory>
+std::optional<HistogramSharedMemory::SharedMemory>
 HistogramSharedMemory::Create(int process_id,
                               const HistogramSharedMemory::Config& config) {
   auto region = UnsafeSharedMemoryRegion::Create(config.memory_size_bytes);
   if (!region.IsValid()) {
     DVLOG(1) << "Failed to create shared memory region.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto mapping = region.Map();
   if (!mapping.IsValid()) {
     DVLOG(1) << "Failed to create shared memory mapping.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return SharedMemory{std::move(region),

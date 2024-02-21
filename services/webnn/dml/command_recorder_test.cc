@@ -400,7 +400,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Relu operator initializer deson't need to bind any input and persistent
   // resources.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
-      compiled_operator.Get(), absl::nullopt, absl::nullopt));
+      compiled_operator.Get(), std::nullopt, std::nullopt));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
   EXPECT_HRESULT_SUCCEEDED(
       command_recorder->GetCommandQueue()->WaitSyncForTesting());
@@ -444,7 +444,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Execute the operator with input and output bindings.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
       std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, absl::nullopt, absl::nullopt));
+      output_bindings, std::nullopt, std::nullopt));
 
   // Close, execute and wait for completion.
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
@@ -1121,7 +1121,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Execute the operator with persistent, input and output bindings.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
       std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, persistent_buffer_binding_desc, absl::nullopt));
+      output_bindings, persistent_buffer_binding_desc, std::nullopt));
 
   // Close, execute and wait for completion.
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());

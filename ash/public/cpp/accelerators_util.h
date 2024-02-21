@@ -69,7 +69,7 @@ ASH_PUBLIC_EXPORT std::u16string GetKeyDisplay(
 // layout keycodes based on `remap_positional_key`. Returns nullptr if no valid
 // `KeyCodeLookupEntry` can be produced from the given `key_code`.
 ASH_PUBLIC_EXPORT
-absl::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
+std::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
 FindKeyCodeEntry(ui::KeyboardCode key_code,
                  ui::DomCode dom_code = ui::DomCode::NONE,
                  bool remap_positional_key = true);

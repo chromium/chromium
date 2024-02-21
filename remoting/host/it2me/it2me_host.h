@@ -118,7 +118,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   // Creates a new ReconnectParams struct if reconnections are allowed and the
   // remote client has connected, otherwise an empty optional is returned.
-  virtual absl::optional<ReconnectParams> CreateReconnectParams() const;
+  virtual std::optional<ReconnectParams> CreateReconnectParams() const;
 
   // Creates It2Me host structures and starts the host.
   virtual void Connect(
@@ -226,7 +226,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   It2MeHostState state_ = It2MeHostState::kDisconnected;
 
-  absl::optional<ReconnectParams> reconnect_params_;
+  std::optional<ReconnectParams> reconnect_params_;
 
   std::string support_id_;
   std::string host_secret_;

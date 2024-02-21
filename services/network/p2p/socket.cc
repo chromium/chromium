@@ -137,7 +137,7 @@ std::unique_ptr<P2PSocket> P2PSocket::Create(
     net::NetLog* net_log,
     ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
     P2PMessageThrottler* throttler,
-    absl::optional<base::UnguessableToken> devtools_token) {
+    std::optional<base::UnguessableToken> devtools_token) {
   switch (type) {
     case P2P_SOCKET_UDP:
       return std::make_unique<P2PSocketUdp>(

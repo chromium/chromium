@@ -759,7 +759,7 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEntryInPage) {
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_NE(absl::nullopt, entry_found);
+    ASSERT_NE(std::nullopt, entry_found);
     EXPECT_EQ(0, entry_found->instruction_offset_from_function_start);
     EXPECT_EQ(40ul, entry_found->function_offset_table_byte_index);
   }
@@ -771,7 +771,7 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEntryInPage) {
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_NE(absl::nullopt, entry_found);
+    ASSERT_NE(std::nullopt, entry_found);
     EXPECT_EQ(46, entry_found->instruction_offset_from_function_start);
     EXPECT_EQ(40ul, entry_found->function_offset_table_byte_index);
   }
@@ -784,7 +784,7 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEntryInPage) {
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_NE(absl::nullopt, entry_found);
+    ASSERT_NE(std::nullopt, entry_found);
     // 0xffff - 6 = 0xfff9.
     EXPECT_EQ(0xfff9, entry_found->instruction_offset_from_function_start);
     EXPECT_EQ(70ul, entry_found->function_offset_table_byte_index);
@@ -813,7 +813,7 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEmptyPage) {
       page_start_instructions, function_offset_table_indices,
       /* instruction_offset */ (page_instruction_offset << 1) +
           (page_number << 17));
-  ASSERT_NE(absl::nullopt, entry_found);
+  ASSERT_NE(std::nullopt, entry_found);
   EXPECT_EQ(0x10004, entry_found->instruction_offset_from_function_start);
   EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
 }
@@ -842,7 +842,7 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupInvalidIntructionOffset) {
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_EQ(absl::nullopt, entry_found);
+    ASSERT_EQ(std::nullopt, entry_found);
   }
   {
     const uint32_t page_number = 2;
@@ -851,7 +851,7 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupInvalidIntructionOffset) {
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_EQ(absl::nullopt, entry_found);
+    ASSERT_EQ(std::nullopt, entry_found);
   }
 }
 
@@ -881,7 +881,7 @@ TEST(ChromeUnwinderAndroidTest,
       page_start_instructions, function_offset_table_indices,
       /* instruction_offset */ (page_instruction_offset << 1) +
           (page_number << 17));
-  ASSERT_NE(absl::nullopt, entry_found);
+  ASSERT_NE(std::nullopt, entry_found);
   EXPECT_EQ(0x10004, entry_found->instruction_offset_from_function_start);
   EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
 }
@@ -912,7 +912,7 @@ TEST(ChromeUnwinderAndroidTest,
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_NE(absl::nullopt, entry_found);
+    ASSERT_NE(std::nullopt, entry_found);
     EXPECT_EQ(0x4, entry_found->instruction_offset_from_function_start);
     EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
   }
@@ -923,7 +923,7 @@ TEST(ChromeUnwinderAndroidTest,
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_NE(absl::nullopt, entry_found);
+    ASSERT_NE(std::nullopt, entry_found);
     EXPECT_EQ(0x10004, entry_found->instruction_offset_from_function_start);
     EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
   }
@@ -934,7 +934,7 @@ TEST(ChromeUnwinderAndroidTest,
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_NE(absl::nullopt, entry_found);
+    ASSERT_NE(std::nullopt, entry_found);
     EXPECT_EQ(0x20004, entry_found->instruction_offset_from_function_start);
     EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
   }
@@ -945,7 +945,7 @@ TEST(ChromeUnwinderAndroidTest,
         page_start_instructions, function_offset_table_indices,
         /* instruction_offset */ (page_instruction_offset << 1) +
             (page_number << 17));
-    ASSERT_NE(absl::nullopt, entry_found);
+    ASSERT_NE(std::nullopt, entry_found);
     EXPECT_EQ(0x30004, entry_found->instruction_offset_from_function_start);
     EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
   }

@@ -14,8 +14,9 @@
 #include "build/build_config.h"
 
 #if DCHECK_IS_ON()
+#include <optional>
+
 #include "base/debug/stack_trace.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 // -----------------------------------------------------------------------------
@@ -510,7 +511,7 @@ class BooleanWithStack {
 
  private:
   bool value_ = false;
-  absl::optional<debug::StackTrace> stack_;
+  std::optional<debug::StackTrace> stack_;
 };
 
 #else

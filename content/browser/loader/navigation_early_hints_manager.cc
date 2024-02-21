@@ -536,7 +536,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
           base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                               frame_tree_node_id_),
           /*navigation_ui_data=*/nullptr, frame_tree_node_id_,
-          /*navigation_id=*/absl::nullopt);
+          /*navigation_id=*/std::nullopt);
 
   auto loader_client = std::make_unique<PreloadURLLoaderClient>(*this, request);
   auto loader = blink::ThrottlingURLLoader::CreateLoaderAndStart(

@@ -97,7 +97,7 @@ FocusModeChipCarousel::FocusModeChipCarousel(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetPaintToLayer();
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
 
   scroll_contents_ =
       scroll_view_->SetContents(std::make_unique<views::FlexLayoutView>());

@@ -68,7 +68,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
 
   ~D3D12VideoDecoderWrapperImpl() override = default;
 
-  absl::optional<bool> UseSingleTexture() const override { return true; }
+  std::optional<bool> UseSingleTexture() const override { return true; }
 
   void Reset() override {
     picture_parameters_buffer_.clear();

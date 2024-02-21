@@ -1411,7 +1411,7 @@ void ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction(
       CHECK(entity);
 
       if (entity->key_version()) {
-        absl::optional<std::vector<uint8_t>> wrapped_secret =
+        std::optional<std::vector<uint8_t>> wrapped_secret =
             enclave_manager_->GetWrappedSecret(entity->key_version());
         if (wrapped_secret) {
           request->wrapped_secrets.emplace_back(std::move(*wrapped_secret));

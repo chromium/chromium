@@ -19,7 +19,7 @@ SamplingProfilerThreadToken GetSamplingProfilerCurrentThreadToken() {
 #if BUILDFLAG(IS_ANDROID)
   return {id, pthread_self()};
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  absl::optional<uintptr_t> maybe_stack_base =
+  std::optional<uintptr_t> maybe_stack_base =
       GetThreadStackBaseAddress(id, pthread_self());
   return {id, maybe_stack_base};
 #else

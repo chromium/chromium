@@ -165,7 +165,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
           << request.all_headers;
       return MakeTrustTokenFailureResponse();
     }
-    absl::optional<std::string> operation_result = trust_token_handler_.Issue(
+    std::optional<std::string> operation_result = trust_token_handler_.Issue(
         request.headers.at("Sec-Private-State-Token"));
     if (!operation_result) {
       ADD_FAILURE() << "Trust token issue request operation failed.";
@@ -214,7 +214,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
     quiche::BinaryHttpResponse response(net::HTTP_OK);
 
     std::string path = request.control_data().path;
-    absl::optional<std::string> redemption_result;
+    std::optional<std::string> redemption_result;
     for (const auto& header : request.GetHeaderFields()) {
       if (base::EqualsCaseInsensitiveASCII(header.name,
                                            "Sec-Private-State-Token")) {
@@ -250,7 +250,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
         quiche::BinaryHttpRequest::Create(plaintext_request.first).value();
     std::string path = bhttp_request.control_data().path;
 
-    absl::optional<quiche::BinaryHttpResponse> response;
+    std::optional<quiche::BinaryHttpResponse> response;
     if (path.starts_with("/v1:query?key=")) {
       response.emplace(HandleBhttpQueryRequest(bhttp_request));
     } else if (path.starts_with("/v1/types/fledge/sets/")) {

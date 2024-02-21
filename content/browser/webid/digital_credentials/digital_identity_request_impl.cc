@@ -39,7 +39,7 @@ DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 void DigitalIdentityRequestImpl::CompleteRequest(const std::string& response) {
   if (!provider_) {
     std::move(callback_).Run(RequestDigitalIdentityStatus::kError,
-                             absl::nullopt);
+                             std::nullopt);
     return;
   }
 
@@ -47,7 +47,7 @@ void DigitalIdentityRequestImpl::CompleteRequest(const std::string& response) {
     std::move(callback_).Run(RequestDigitalIdentityStatus::kSuccess, response);
   } else {
     std::move(callback_).Run(RequestDigitalIdentityStatus::kError,
-                             absl::nullopt);
+                             std::nullopt);
   }
 }
 
@@ -111,8 +111,7 @@ void DigitalIdentityRequestImpl::Request(
     blink::mojom::DigitalCredentialProviderPtr digital_credential_provider,
     RequestCallback callback) {
   if (!IsWebIdentityDigitalCredentialsEnabled()) {
-    std::move(callback).Run(RequestDigitalIdentityStatus::kError,
-                            absl::nullopt);
+    std::move(callback).Run(RequestDigitalIdentityStatus::kError, std::nullopt);
     return;
   }
 
@@ -126,7 +125,7 @@ void DigitalIdentityRequestImpl::Request(
   if (callback_) {
     // Only allow one in-flight wallet request.
     std::move(callback).Run(RequestDigitalIdentityStatus::kErrorTooManyRequests,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
@@ -138,7 +137,7 @@ void DigitalIdentityRequestImpl::Request(
   }
   if (!provider_) {
     std::move(callback_).Run(RequestDigitalIdentityStatus::kError,
-                             absl::nullopt);
+                             std::nullopt);
     return;
   }
 

@@ -5,10 +5,11 @@
 #ifndef BASE_TEST_POWER_MONITOR_TEST_UTILS_H_
 #define BASE_TEST_POWER_MONITOR_TEST_UTILS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/power_monitor/battery_level_provider.h"
 #include "base/power_monitor/sampling_event_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::test {
 
@@ -30,11 +31,11 @@ class TestBatteryLevelProvider : public base::BatteryLevelProvider {
   TestBatteryLevelProvider();
   void GetBatteryState(
       base::OnceCallback<
-          void(const absl::optional<base::BatteryLevelProvider::BatteryState>&)>
+          void(const std::optional<base::BatteryLevelProvider::BatteryState>&)>
           callback) override;
 
   void SetBatteryState(
-      absl::optional<base::BatteryLevelProvider::BatteryState> battery_state);
+      std::optional<base::BatteryLevelProvider::BatteryState> battery_state);
 
   static base::BatteryLevelProvider::BatteryState CreateBatteryState(
       int battery_count = 1,
@@ -42,7 +43,7 @@ class TestBatteryLevelProvider : public base::BatteryLevelProvider {
       int charge_percent = 100);
 
  private:
-  absl::optional<base::BatteryLevelProvider::BatteryState> battery_state_;
+  std::optional<base::BatteryLevelProvider::BatteryState> battery_state_;
 };
 
 }  // namespace base::test

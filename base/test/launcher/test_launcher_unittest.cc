@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -31,7 +33,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -731,7 +732,7 @@ bool ValidateTestResultObject(const Value::Dict& iteration_data,
 
 // Validate |root| dictionary value contains a list with |values|
 // at |key| value.
-bool ValidateStringList(const absl::optional<Value::Dict>& root,
+bool ValidateStringList(const std::optional<Value::Dict>& root,
                         const std::string& key,
                         std::vector<const char*> values) {
   const Value::List* list = root->FindList(key);
@@ -788,7 +789,7 @@ TEST_F(TestLauncherTest, JsonSummary) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
+  std::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
   EXPECT_TRUE(
       ValidateStringList(root, "all_tests",
@@ -839,7 +840,7 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
+  std::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
   Value::Dict* dict = root->FindDict("test_locations");
   ASSERT_TRUE(dict);
@@ -1211,7 +1212,7 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   GetAppOutputAndError(command_line, &output);
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
+  std::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
   const Value::Dict* dict = root->FindDict("test_locations");
@@ -1381,7 +1382,7 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   GetAppOutputWithExitCode(command_line, &output, &exit_code);
 
   // Validate that we actually ran a test.
-  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
+  std::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
   Value::Dict* dict = root->FindDict("test_locations");

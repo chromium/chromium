@@ -207,7 +207,7 @@ void TraceEventTestFixture::OnTraceDataCollected(
   trace_buffer_.AddFragment(events_str->data());
   trace_buffer_.Finish();
 
-  absl::optional<Value> root = base::JSONReader::Read(
+  std::optional<Value> root = base::JSONReader::Read(
       json_output_.json_output, JSON_PARSE_RFC | JSON_ALLOW_CONTROL_CHARS);
 
   if (!root.has_value()) {
@@ -796,8 +796,8 @@ void ValidateInstantEventPresentOnEveryThread(const Value::List& trace_parsed,
     if (!name || *name != "multi thread event")
       continue;
 
-    absl::optional<int> maybe_thread = dict->FindIntByDottedPath("args.thread");
-    absl::optional<int> maybe_event = dict->FindIntByDottedPath("args.event");
+    std::optional<int> maybe_thread = dict->FindIntByDottedPath("args.thread");
+    std::optional<int> maybe_event = dict->FindIntByDottedPath("args.event");
 
     EXPECT_TRUE(maybe_thread.has_value());
     EXPECT_TRUE(maybe_event.has_value());
@@ -1461,7 +1461,7 @@ TEST_F(TraceEventTestFixture, ThreadNames) {
   for (const Value::Dict* item : items) {
     ASSERT_TRUE(item);
 
-    absl::optional<int> maybe_tid = item->FindInt("tid");
+    std::optional<int> maybe_tid = item->FindInt("tid");
     EXPECT_TRUE(maybe_tid.has_value());
 
     // See if this thread name is one of the threads we just created
@@ -2085,7 +2085,7 @@ TEST_F(TraceEventTestFixture, TraceBufferVectorReportFull) {
 
   EXPECT_TRUE(trace_full_metadata);
   EXPECT_EQ(*trace_full_metadata->FindString("ph"), "M");
-  absl::optional<double> maybe_buffer_limit_reached_timestamp =
+  std::optional<double> maybe_buffer_limit_reached_timestamp =
       trace_full_metadata->FindDoubleByDottedPath("args.overflowed_at_ts");
 
   EXPECT_EQ(*maybe_buffer_limit_reached_timestamp,
@@ -2098,7 +2098,7 @@ TEST_F(TraceEventTestFixture, TraceBufferVectorReportFull) {
   ASSERT_TRUE(!trace_parsed_.empty());
   const Value& last_trace_event = trace_parsed_.back();
   EXPECT_TRUE(last_trace_event.is_dict());
-  absl::optional<double> maybe_last_trace_event_timestamp =
+  std::optional<double> maybe_last_trace_event_timestamp =
       last_trace_event.GetDict().FindDouble("ts");
   EXPECT_TRUE(maybe_last_trace_event_timestamp.has_value());
   EXPECT_LE(maybe_last_trace_event_timestamp.value(),
@@ -2473,7 +2473,7 @@ TEST_F(TraceEventTestFixture, TimeOffset) {
   double last_timestamp = 0;
   for (const Value& item : trace_parsed_) {
     EXPECT_TRUE(item.is_dict());
-    absl::optional<double> timestamp = item.GetDict().FindDouble("ts");
+    std::optional<double> timestamp = item.GetDict().FindDouble("ts");
     EXPECT_TRUE(timestamp.has_value());
     EXPECT_GE(timestamp.value(), last_timestamp);
     EXPECT_LE(timestamp.value(), end_time);

@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_THREAD_CONTROLLER_H_
 #define BASE_TASK_SEQUENCE_MANAGER_THREAD_CONTROLLER_H_
 
+#include <optional>
 #include <stack>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -102,7 +102,7 @@ class BASE_EXPORT ThreadController {
   // immediate work into account.
   // TODO(kraynov): Remove |lazy_now| parameter.
   virtual void SetNextDelayedDoWork(LazyNow* lazy_now,
-                                    absl::optional<WakeUp> wake_up) = 0;
+                                    std::optional<WakeUp> wake_up) = 0;
 
   // Sets the sequenced task source from which to take tasks after
   // a Schedule*Work() call is made.
@@ -360,7 +360,7 @@ class BASE_EXPORT ThreadController {
       // non-null when recording is enabled.
       raw_ptr<HistogramBase> histogram_ = nullptr;
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-      absl::optional<perfetto::Track> perfetto_track_;
+      std::optional<perfetto::Track> perfetto_track_;
 
       // True if tracing was enabled during the last pass of RecordTimeInPhase.
       bool was_tracing_enabled_ = false;

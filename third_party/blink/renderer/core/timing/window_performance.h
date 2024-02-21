@@ -230,7 +230,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   // Return a valid fallback time in event timing if there's one; otherwise
   // return nullopt.
-  absl::optional<base::TimeTicks> GetFallbackTime(
+  std::optional<base::TimeTicks> GetFallbackTime(
       PerformanceEventTiming* entry,
       base::TimeTicks event_timestamp,
       base::TimeTicks presentation_timestamp);

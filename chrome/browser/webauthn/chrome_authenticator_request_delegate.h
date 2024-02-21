@@ -389,14 +389,14 @@ class ChromeAuthenticatorRequestDelegate
   std::unique_ptr<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
       pending_transport_availability_info_;
 
-  absl::optional<device::FidoRequestType> request_type_;
+  std::optional<device::FidoRequestType> request_type_;
 
   std::optional<device::UserVerificationRequirement>
       user_verification_requirement_;
 
   // The set of pertinent synced passkeys for this request. Persisted here
   // so that a consistent set of passkeys is used throughout the transaction.
-  absl::optional<std::vector<sync_pb::WebauthnCredentialSpecifics>>
+  std::optional<std::vector<sync_pb::WebauthnCredentialSpecifics>>
       gpm_credentials_;
 
   // The pending request to fetch the state of the trusted vault.

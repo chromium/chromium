@@ -16,11 +16,12 @@
 #include <lib/fidl/cpp/wire/connect_service.h>
 #include <lib/zx/channel.h>
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sys {
 class OutgoingDirectory;
@@ -199,7 +200,7 @@ class BASE_EXPORT ScopedSingleClientServiceBinding {
   }
 
   fidl::Binding<Interface> binding_;
-  absl::optional<ScopedServicePublisher<Interface>> publisher_;
+  std::optional<ScopedServicePublisher<Interface>> publisher_;
   base::OnceClosure on_last_client_callback_;
 };
 

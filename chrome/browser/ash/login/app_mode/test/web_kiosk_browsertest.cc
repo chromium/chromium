@@ -54,12 +54,12 @@ const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
 
 std::optional<Profile*> LoadKioskProfile(const AccountId& account_id) {
-  TestFuture<absl::optional<Profile*>> profile_future;
+  TestFuture<std::optional<Profile*>> profile_future;
   auto profile_loader = LoadProfile(
       account_id, KioskAppType::kWebApp,
       base::BindOnce([](KioskProfileLoader::Result result) {
-        return result.has_value() ? absl::make_optional(result.value())
-                                  : absl::nullopt;
+        return result.has_value() ? std::make_optional(result.value())
+                                  : std::nullopt;
       }).Then(profile_future.GetCallback()));
   return profile_future.Take();
 }

@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -367,7 +367,7 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
   void OnBleDiscoveryStateChanged(
       const DeviceIdPair& device_id_pair,
       mojom::DiscoveryResult result,
-      absl::optional<mojom::DiscoveryErrorCode> error_code) {
+      std::optional<mojom::DiscoveryErrorCode> error_code) {
     device_discovery_results_[device_id_pair] = result;
   }
 

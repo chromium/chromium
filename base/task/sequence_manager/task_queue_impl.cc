@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -37,7 +38,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -607,7 +607,7 @@ void TaskQueueImpl::TakeImmediateIncomingQueueTasks(TaskDeque* queue) {
       DCHECK(!task.queue_time.is_null());
       DCHECK(task.delayed_run_time.is_null());
       if (task.queue_time >= main_thread_only().delayed_fence.value()) {
-        main_thread_only().delayed_fence = absl::nullopt;
+        main_thread_only().delayed_fence = std::nullopt;
         DCHECK(!main_thread_only().current_fence);
         main_thread_only().current_fence = Fence(task.task_order());
         // Do not trigger WorkQueueSets notification when taking incoming
@@ -666,10 +666,10 @@ bool TaskQueueImpl::HasTaskToRunImmediatelyOrReadyDelayedTask() const {
   return !any_thread_.immediate_incoming_queue.empty();
 }
 
-absl::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
+std::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
   // Note we don't scheduled a wake-up for disabled queues.
   if (main_thread_only().delayed_incoming_queue.empty() || !IsQueueEnabled())
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto& top_task = main_thread_only().delayed_incoming_queue.top();
 
@@ -936,9 +936,9 @@ void TaskQueueImpl::InsertFence(TaskQueue::InsertFencePosition position) {
 
 void TaskQueueImpl::InsertFence(Fence current_fence) {
   // Only one fence may be present at a time.
-  main_thread_only().delayed_fence = absl::nullopt;
+  main_thread_only().delayed_fence = std::nullopt;
 
-  absl::optional<Fence> previous_fence = main_thread_only().current_fence;
+  std::optional<Fence> previous_fence = main_thread_only().current_fence;
 
   // Tasks posted after this point will have a strictly higher enqueue order
   // and will be blocked from running.
@@ -981,9 +981,9 @@ void TaskQueueImpl::InsertFenceAt(TimeTicks time) {
 }
 
 void TaskQueueImpl::RemoveFence() {
-  absl::optional<Fence> previous_fence = main_thread_only().current_fence;
-  main_thread_only().current_fence = absl::nullopt;
-  main_thread_only().delayed_fence = absl::nullopt;
+  std::optional<Fence> previous_fence = main_thread_only().current_fence;
+  main_thread_only().current_fence = std::nullopt;
+  main_thread_only().delayed_fence = std::nullopt;
 
   bool front_task_unblocked =
       main_thread_only().immediate_work_queue->RemoveFence();
@@ -1129,7 +1129,7 @@ void TaskQueueImpl::SetQueueEnabled(bool enabled) {
 
   // Update the |main_thread_only_| struct.
   main_thread_only().is_enabled = enabled;
-  main_thread_only().disabled_time = absl::nullopt;
+  main_thread_only().disabled_time = std::nullopt;
 
   // |sequence_manager_| can be null in tests.
   if (!sequence_manager_)
@@ -1309,7 +1309,7 @@ void TaskQueueImpl::ResetThrottler() {
 }
 
 void TaskQueueImpl::UpdateWakeUp(LazyNow* lazy_now) {
-  absl::optional<WakeUp> wake_up = GetNextDesiredWakeUp();
+  std::optional<WakeUp> wake_up = GetNextDesiredWakeUp();
   if (main_thread_only().throttler && IsQueueEnabled()) {
     // GetNextAllowedWakeUp() may return a non-null wake_up even if |wake_up| is
     // nullopt, e.g. to throttle immediate tasks.
@@ -1320,7 +1320,7 @@ void TaskQueueImpl::UpdateWakeUp(LazyNow* lazy_now) {
 }
 
 void TaskQueueImpl::SetNextWakeUp(LazyNow* lazy_now,
-                                  absl::optional<WakeUp> wake_up) {
+                                  std::optional<WakeUp> wake_up) {
   if (main_thread_only().scheduled_wake_up == wake_up)
     return;
   main_thread_only().scheduled_wake_up = wake_up;
@@ -1418,7 +1418,7 @@ void TaskQueueImpl::ActivateDelayedFenceIfNeeded(const Task& task) {
   if (main_thread_only().delayed_fence.value() > task.delayed_run_time)
     return;
   InsertFence(Fence(task.task_order()));
-  main_thread_only().delayed_fence = absl::nullopt;
+  main_thread_only().delayed_fence = std::nullopt;
 }
 
 void TaskQueueImpl::MaybeReportIpcTaskQueuedFromMainThread(

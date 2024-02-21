@@ -11,7 +11,7 @@
 
 namespace base {
 
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
+std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -24,7 +24,7 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
                                                   *handle, offset, size, &addr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmar_map";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return make_span(reinterpret_cast<uint8_t*>(addr), size);

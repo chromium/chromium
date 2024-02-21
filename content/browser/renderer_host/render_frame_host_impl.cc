@@ -12799,7 +12799,7 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     SCOPED_CRASH_KEY_STRING32("ValidateDidCommit_empty_baseurl", "url",
                               params->url.possibly_invalid_spec());
     base::debug::DumpWithoutCrashing();
-    params->initiator_base_url = absl::nullopt;
+    params->initiator_base_url = std::nullopt;
   }
 
   // A cross-document navigation requires an embedding token. Navigations

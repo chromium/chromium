@@ -895,7 +895,7 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
     const ui::Event& event,
     const mojom::Button& button,
     std::vector<std::unique_ptr<ui::Event>>& rewritten_events) {
-  absl::optional<RemappingActionResult> remapping_action_result =
+  std::optional<RemappingActionResult> remapping_action_result =
       GetRemappingAction(event.source_device_id(), button);
   if (!remapping_action_result) {
     return false;
@@ -1313,7 +1313,7 @@ PeripheralCustomizationEventRewriter::GetRemappingAction(
         button, *graphics_tablet_settings);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PeripheralCustomizationEventRewriter::RemoveRemappedModifiers(

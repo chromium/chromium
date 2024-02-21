@@ -540,7 +540,7 @@ TEST_F(TabManagerDelegateTest, TestTargetMemoryToFreeIsRespected) {
 
   tab_manager_delegate.LowMemoryKillImpl(
       base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
-      TabManager::TabDiscardDoneCB(base::DoNothing()), absl::nullopt);
+      TabManager::TabDiscardDoneCB(base::DoNothing()), std::nullopt);
 
   auto killed_tabs = tab_manager_delegate.GetKilledTabs();
 

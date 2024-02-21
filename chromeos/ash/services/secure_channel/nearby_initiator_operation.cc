@@ -165,7 +165,7 @@ void NearbyInitiatorOperation::OnConnectionFailure(
 
 void NearbyInitiatorOperation::OnBleDiscoveryStateChanged(
     mojom::DiscoveryResult discovery_result,
-    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   ble_discovery_state_changed_callback_.Run(discovery_result,
                                             potential_error_code);
 }

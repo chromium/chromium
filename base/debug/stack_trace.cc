@@ -14,7 +14,7 @@
 #include "build/config/compiler/compiler_buildflags.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <pthread.h>

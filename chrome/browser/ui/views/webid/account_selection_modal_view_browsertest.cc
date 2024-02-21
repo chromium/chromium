@@ -111,7 +111,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest {
         CreateTestClientMetadata(terms_of_service_url), {account},
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowSingleAccountConfirmDialog(
-        kTopFrameETLDPlusOne, /*iframe_for_display=*/absl::nullopt, account,
+        kTopFrameETLDPlusOne, /*iframe_for_display=*/std::nullopt, account,
         idp_data, show_back_button);
   }
 

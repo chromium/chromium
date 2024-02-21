@@ -35,12 +35,12 @@ class KcerFactoryAsh final : public KcerFactory {
       base::WeakPtr<internal::KcerImpl> kcer_service,
       AccountId account_id,
       std::unique_ptr<ash::TPMTokenInfoGetter> scoped_device_token_info_getter,
-      absl::optional<user_data_auth::TpmTokenInfo> device_token_info);
+      std::optional<user_data_auth::TpmTokenInfo> device_token_info);
   void GotAllTokenInfos(
       base::WeakPtr<internal::KcerImpl> kcer_service,
-      absl::optional<user_data_auth::TpmTokenInfo> device_token_info,
+      std::optional<user_data_auth::TpmTokenInfo> device_token_info,
       std::unique_ptr<ash::TPMTokenInfoGetter> scoped_user_token_info_getter,
-      absl::optional<user_data_auth::TpmTokenInfo> user_token_info);
+      std::optional<user_data_auth::TpmTokenInfo> user_token_info);
 
   void StartInitializingDeviceKcerForNss();
   void InitializeDeviceKcerForNss(
@@ -50,7 +50,7 @@ class KcerFactoryAsh final : public KcerFactory {
   void StartInitializingDeviceKcerWithoutNss();
   void InitializeDeviceKcerWithoutNss(
       std::unique_ptr<ash::TPMTokenInfoGetter> scoped_device_token_info_getter,
-      absl::optional<user_data_auth::TpmTokenInfo> device_token_info);
+      std::optional<user_data_auth::TpmTokenInfo> device_token_info);
 };
 
 }  // namespace kcer

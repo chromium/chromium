@@ -8,6 +8,7 @@
 #define BASE_FILES_FILE_PATH_WATCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -75,7 +75,7 @@ class BASE_EXPORT FilePathWatcher {
     // to coalesce these events. Consider upstreaming this event coalesing logic
     // to the platform-specific implementations and then replacing `cookie` with
     // the file path that the file was moved from, if this is known.
-    absl::optional<uint32_t> cookie;
+    std::optional<uint32_t> cookie;
   };
 
   // TODO(https://crbug.com/1425601): Rename this now that this class declares

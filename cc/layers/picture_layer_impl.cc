@@ -2123,7 +2123,7 @@ void PictureLayerImpl::InvalidatePaintWorklets(
     // we can repaint the PaintWorklet during impl side invalidation.
     if (base::Contains(prop_ids, key) &&
         entry.first->ValueChangeShouldCauseRepaint(prev, next)) {
-      entry.second.second = absl::nullopt;
+      entry.second.second = std::nullopt;
     }
   }
 }

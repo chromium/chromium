@@ -87,14 +87,14 @@ bool Base64Decode(StringPiece input,
   return true;
 }
 
-absl::optional<std::vector<uint8_t>> Base64Decode(StringPiece input) {
+std::optional<std::vector<uint8_t>> Base64Decode(StringPiece input) {
   std::vector<uint8_t> ret(modp_b64_decode_len(input.size()));
 
   size_t input_size = input.size();
   size_t output_size = modp_b64_decode(reinterpret_cast<char*>(ret.data()),
                                        input.data(), input_size);
   if (output_size == MODP_B64_ERROR)
-    return absl::nullopt;
+    return std::nullopt;
 
   ret.resize(output_size);
   return ret;

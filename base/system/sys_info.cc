@@ -29,7 +29,7 @@ constexpr uint64_t kLowMemoryDeviceThresholdMB = 1024;
 constexpr uint64_t kLowMemoryDeviceThresholdMB = 2048;
 #endif
 
-absl::optional<uint64_t> g_amount_of_physical_memory_mb_for_testing;
+std::optional<uint64_t> g_amount_of_physical_memory_mb_for_testing;
 }  // namespace
 
 // static
@@ -263,9 +263,9 @@ std::string SysInfo::ProcessCPUArchitecture() {
 }
 
 // static
-absl::optional<uint64_t> SysInfo::SetAmountOfPhysicalMemoryMbForTesting(
+std::optional<uint64_t> SysInfo::SetAmountOfPhysicalMemoryMbForTesting(
     const uint64_t amount_of_memory_mb) {
-  absl::optional<uint64_t> current = g_amount_of_physical_memory_mb_for_testing;
+  std::optional<uint64_t> current = g_amount_of_physical_memory_mb_for_testing;
   g_amount_of_physical_memory_mb_for_testing.emplace(amount_of_memory_mb);
   return current;
 }

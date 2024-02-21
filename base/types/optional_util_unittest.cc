@@ -10,7 +10,7 @@ namespace base {
 namespace {
 
 TEST(OptionalUtilTest, OptionalToPtr) {
-  absl::optional<float> optional;
+  std::optional<float> optional;
   EXPECT_EQ(nullptr, OptionalToPtr(optional));
 
   optional = 0.1f;
@@ -20,10 +20,10 @@ TEST(OptionalUtilTest, OptionalToPtr) {
 
 TEST(OptionalUtilTest, OptionalFromPtr) {
   float* f_ptr = nullptr;
-  EXPECT_EQ(absl::nullopt, OptionalFromPtr(f_ptr));
+  EXPECT_EQ(std::nullopt, OptionalFromPtr(f_ptr));
 
   float f = 0.1f;
-  absl::optional<float> optional_f(f);
+  std::optional<float> optional_f(f);
   EXPECT_EQ(optional_f, OptionalFromPtr(&f));
 }
 

@@ -52,7 +52,7 @@ void ClientConnectionParameters::SetConnectionSucceeded(
 
 void ClientConnectionParameters::SetBleDiscoveryState(
     mojom::DiscoveryResult discovery_result,
-    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   UpdateBleDiscoveryState(discovery_result, potential_error_code);
 }
 

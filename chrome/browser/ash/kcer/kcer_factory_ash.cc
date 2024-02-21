@@ -107,8 +107,8 @@ void KcerFactoryAsh::StartInitializingKcerWithoutNss(
   const user_manager::User* user = GetUserByContext(context);
   if (!user) {
     return KcerFactory::InitializeKcerInstanceWithoutNss(
-        kcer_service, /*user_token_id=*/absl::nullopt,
-        /*device_token_id=*/absl::nullopt);
+        kcer_service, /*user_token_id=*/std::nullopt,
+        /*device_token_id=*/std::nullopt);
   }
 
   if (user->IsAffiliated()) {
@@ -117,7 +117,7 @@ void KcerFactoryAsh::StartInitializingKcerWithoutNss(
 
   return GetUserTokenInfo(std::move(kcer_service), user->GetAccountId(),
                           /*scoped_device_token_info_getter=*/nullptr,
-                          /*device_token_info=*/absl::nullopt);
+                          /*device_token_info=*/std::nullopt);
 }
 
 void KcerFactoryAsh::GetDeviceTokenInfo(
@@ -148,7 +148,7 @@ void KcerFactoryAsh::GetUserTokenInfo(
     base::WeakPtr<internal::KcerImpl> kcer_service,
     AccountId account_id,
     std::unique_ptr<ash::TPMTokenInfoGetter> scoped_device_token_info_getter,
-    absl::optional<user_data_auth::TpmTokenInfo> device_token_info) {
+    std::optional<user_data_auth::TpmTokenInfo> device_token_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!kcer_service) {
     return;
@@ -172,20 +172,20 @@ void KcerFactoryAsh::GetUserTokenInfo(
 
 void KcerFactoryAsh::GotAllTokenInfos(
     base::WeakPtr<internal::KcerImpl> kcer_service,
-    absl::optional<user_data_auth::TpmTokenInfo> device_token_info,
+    std::optional<user_data_auth::TpmTokenInfo> device_token_info,
     std::unique_ptr<ash::TPMTokenInfoGetter> scoped_user_token_info_getter,
-    absl::optional<user_data_auth::TpmTokenInfo> user_token_info) {
+    std::optional<user_data_auth::TpmTokenInfo> user_token_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!kcer_service) {
     return;
   }
 
-  absl::optional<SessionChapsClient::SlotId> user_token_id;
+  std::optional<SessionChapsClient::SlotId> user_token_id;
   if (user_token_info) {
     user_token_id = SessionChapsClient::SlotId(
         static_cast<uint64_t>(user_token_info->slot()));
   }
-  absl::optional<SessionChapsClient::SlotId> device_token_id;
+  std::optional<SessionChapsClient::SlotId> device_token_id;
   if (device_token_info) {
     device_token_id = SessionChapsClient::SlotId(
         static_cast<uint64_t>(device_token_info->slot()));
@@ -249,10 +249,10 @@ void KcerFactoryAsh::StartInitializingDeviceKcerWithoutNss() {
 
 void KcerFactoryAsh::InitializeDeviceKcerWithoutNss(
     std::unique_ptr<ash::TPMTokenInfoGetter> scoped_device_token_info_getter,
-    absl::optional<user_data_auth::TpmTokenInfo> device_token_info) {
+    std::optional<user_data_auth::TpmTokenInfo> device_token_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<SessionChapsClient::SlotId> device_token_id;
+  std::optional<SessionChapsClient::SlotId> device_token_id;
   if (device_token_info) {
     device_token_id = SessionChapsClient::SlotId(
         static_cast<uint64_t>(device_token_info->slot()));

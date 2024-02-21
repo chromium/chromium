@@ -265,7 +265,7 @@ void CdmStorageManager::DidWriteFile(base::OnceCallback<void(bool)> callback,
 
 void CdmStorageManager::DidGetSize(base::OnceCallback<void(uint64_t)> callback,
                                    const std::string& operation,
-                                   absl::optional<uint64_t> size) {
+                                   std::optional<uint64_t> size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::UmaHistogramBoolean(GetHistogramName(operation), !size.has_value());

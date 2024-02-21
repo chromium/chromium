@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_GROUP_WORKER_DELEGATE_H_
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_WORKER_DELEGATE_H_
 
+#include <optional>
+
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/thread_group.h"
@@ -12,7 +14,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_blocking_call_internal.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::internal {
 
@@ -117,9 +118,9 @@ class ThreadGroup::ThreadGroupWorkerDelegate : public BlockingObserver {
   // thread, protected by |outer_->lock_| when not on the worker thread.
   struct WriteWorkerReadAny {
     // The priority of the task the worker is currently running if any.
-    absl::optional<TaskPriority> current_task_priority;
+    std::optional<TaskPriority> current_task_priority;
     // The shutdown behavior of the task the worker is currently running if any.
-    absl::optional<TaskShutdownBehavior> current_shutdown_behavior;
+    std::optional<TaskShutdownBehavior> current_shutdown_behavior;
 
     // Time when MayBlockScopeEntered() was last called. Reset when
     // BlockingScopeExited() is called.

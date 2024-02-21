@@ -44,9 +44,9 @@ class ContentfulPaintTimingInfo {
       const std::optional<net::RequestPriority>& image_request_priority,
       bool in_main_frame,
       const blink::LargestContentfulPaintType type,
-      const absl::optional<base::TimeDelta>& image_discovery_time,
-      const absl::optional<base::TimeDelta>& image_load_start,
-      const absl::optional<base::TimeDelta>& image_load_end);
+      const std::optional<base::TimeDelta>& image_discovery_time,
+      const std::optional<base::TimeDelta>& image_load_start,
+      const std::optional<base::TimeDelta>& image_load_end);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
   void Reset(const std::optional<base::TimeDelta>& time,
              const uint64_t& size,
@@ -207,7 +207,7 @@ class LargestContentfulPaintHandler {
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       ContentfulPaint& subframe_contentful_paint,
-      const absl::optional<base::TimeDelta>&
+      const std::optional<base::TimeDelta>&
           first_input_or_scroll_notified_timestamp,
       const base::TimeDelta& navigation_start_offset,
       const bool is_cross_site);

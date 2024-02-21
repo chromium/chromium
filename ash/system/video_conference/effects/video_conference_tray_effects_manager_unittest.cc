@@ -47,11 +47,11 @@ class TestEffectDelegate : public VcEffectsDelegate {
   ~TestEffectDelegate() override = default;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override {
+  std::optional<int> GetEffectState(VcEffectId effect_id) override {
     return std::nullopt;
   }
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override {}
+                                std::optional<int> state) override {}
 };
 
 class VideoConferenceTrayEffectsManagerTest

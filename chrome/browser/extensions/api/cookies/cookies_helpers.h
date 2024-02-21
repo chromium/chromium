@@ -127,7 +127,7 @@ bool CookieMatchesPartitionKeyCollection(
 bool CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
     const std::optional<extensions::api::cookies::CookiePartitionKey>&
         api_partition_key,
-    const absl::optional<net::CookiePartitionKey>& net_partition_key);
+    const std::optional<net::CookiePartitionKey>& net_partition_key);
 
 // A class representing the cookie filter parameters passed into
 // cookies.getAll().

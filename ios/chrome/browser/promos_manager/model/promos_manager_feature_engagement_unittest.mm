@@ -35,7 +35,7 @@ class PromosManagerFeatureEngagementTest : public PlatformTest {
 // than once in 30 days is added to all active standard promos.
 TEST_F(PromosManagerFeatureEngagementTest, TestPerPromoLimit) {
   for (const base::Feature* feature : ActiveStandardPromos()) {
-    absl::optional<feature_engagement::FeatureConfig> optional_config =
+    std::optional<feature_engagement::FeatureConfig> optional_config =
         feature_engagement::GetClientSideiOSPromoFeatureConfig(feature);
 
     ASSERT_TRUE(optional_config.has_value());
@@ -57,7 +57,7 @@ TEST_F(PromosManagerFeatureEngagementTest, TestPerPromoLimit) {
 // active standard promos.
 TEST_F(PromosManagerFeatureEngagementTest, TestGlobalLimit) {
   for (const base::Feature* feature : ActiveStandardPromos()) {
-    absl::optional<feature_engagement::FeatureConfig> optional_config =
+    std::optional<feature_engagement::FeatureConfig> optional_config =
         feature_engagement::GetClientSideiOSPromoFeatureConfig(feature);
 
     ASSERT_TRUE(optional_config.has_value());

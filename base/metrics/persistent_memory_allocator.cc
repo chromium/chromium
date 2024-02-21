@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <optional>
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
@@ -27,7 +28,6 @@
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -1209,7 +1209,7 @@ void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
   if (IsReadonly())
     return;
 
-  absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
+  std::optional<base::ScopedBlockingCall> scoped_blocking_call;
   if (sync)
     scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
 

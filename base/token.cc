@@ -6,13 +6,14 @@
 
 #include <inttypes.h>
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/pickle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -34,9 +35,9 @@ std::string Token::ToString() const {
 }
 
 // static
-absl::optional<Token> Token::FromString(StringPiece string_representation) {
+std::optional<Token> Token::FromString(StringPiece string_representation) {
   if (string_representation.size() != 32) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   uint64_t words[2];
   for (size_t i = 0; i < 2; i++) {
@@ -50,12 +51,12 @@ absl::optional<Token> Token::FromString(StringPiece string_representation) {
       } else if (('A' <= c) && (c <= 'F')) {
         word = (word << 4) | static_cast<uint64_t>(c - 'A' + 10);
       } else {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
     words[i] = word;
   }
-  return absl::optional<Token>(absl::in_place, words[0], words[1]);
+  return std::optional<Token>(std::in_place, words[0], words[1]);
 }
 
 void WriteTokenToPickle(Pickle* pickle, const Token& token) {
@@ -63,14 +64,14 @@ void WriteTokenToPickle(Pickle* pickle, const Token& token) {
   pickle->WriteUInt64(token.low());
 }
 
-absl::optional<Token> ReadTokenFromPickle(PickleIterator* pickle_iterator) {
+std::optional<Token> ReadTokenFromPickle(PickleIterator* pickle_iterator) {
   uint64_t high;
   if (!pickle_iterator->ReadUInt64(&high))
-    return absl::nullopt;
+    return std::nullopt;
 
   uint64_t low;
   if (!pickle_iterator->ReadUInt64(&low))
-    return absl::nullopt;
+    return std::nullopt;
 
   return Token(high, low);
 }

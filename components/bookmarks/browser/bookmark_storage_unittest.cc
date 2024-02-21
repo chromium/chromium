@@ -4,6 +4,7 @@
 
 #include "components/bookmarks/browser/bookmark_storage.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -18,7 +19,6 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bookmarks {
 
@@ -36,11 +36,11 @@ std::unique_ptr<BookmarkModel> CreateModelWithOneBookmark() {
   return model;
 }
 
-absl::optional<base::Value::Dict> ReadFileToDict(
+std::optional<base::Value::Dict> ReadFileToDict(
     const base::FilePath& file_path) {
   std::string file_content;
   if (!base::ReadFileToString(file_path, &file_content)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::JSONReader::ReadDict(file_content);
 }
@@ -203,7 +203,7 @@ TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
   EXPECT_TRUE(base::PathExists(bookmarks_file_path));
   EXPECT_FALSE(base::PathExists(backup_file_path));
 
-  absl::optional<base::Value::Dict> file_content =
+  std::optional<base::Value::Dict> file_content =
       ReadFileToDict(bookmarks_file_path);
   ASSERT_TRUE(file_content.has_value());
   EXPECT_FALSE(file_content->empty());
@@ -224,13 +224,13 @@ TEST(BookmarkStorageTest, ShouldSaveEmptyFileToDiskIfAccountBookmarksEmpty) {
   BookmarkStorage storage(model.get(), BookmarkStorage::kSelectAccountNodes,
                           bookmarks_file_path);
 
-  ASSERT_EQ(ReadFileToDict(bookmarks_file_path), absl::nullopt);
+  ASSERT_EQ(ReadFileToDict(bookmarks_file_path), std::nullopt);
 
   storage.ScheduleSave();
   task_environment.FastForwardUntilNoTasksRemain();
 
   EXPECT_EQ(ReadFileToDict(bookmarks_file_path),
-            absl::make_optional<base::Value::Dict>());
+            std::make_optional<base::Value::Dict>());
 }
 
 }  // namespace bookmarks

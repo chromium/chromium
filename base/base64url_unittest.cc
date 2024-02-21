@@ -41,7 +41,7 @@ TEST(Base64UrlTest, BinaryIncludePaddingPolicy) {
 
   EXPECT_THAT(Base64UrlDecode(string_encoded_with_padding,
                               Base64UrlDecodePolicy::DISALLOW_PADDING),
-              absl::nullopt);
+              std::nullopt);
 }
 
 TEST(Base64UrlTest, BinaryOmitPaddingPolicy) {
@@ -70,7 +70,7 @@ TEST(Base64UrlTest, BinaryOmitPaddingPolicy) {
 
   EXPECT_THAT(Base64UrlDecode(string_encoded_without_padding,
                               Base64UrlDecodePolicy::REQUIRE_PADDING),
-              absl::nullopt);
+              std::nullopt);
 }
 
 TEST(Base64UrlTest, EncodeIncludePaddingPolicy) {
@@ -143,7 +143,7 @@ TEST(Base64UrlTest, DecodeIntoVector) {
       Base64UrlDecode("invalid=", Base64UrlDecodePolicy::DISALLOW_PADDING));
 
   static constexpr uint8_t kExpected[] = {'1', '2', '3', '4'};
-  absl::optional<std::vector<uint8_t>> result =
+  std::optional<std::vector<uint8_t>> result =
       Base64UrlDecode("MTIzNA", Base64UrlDecodePolicy::DISALLOW_PADDING);
   ASSERT_TRUE(ranges::equal(*result, kExpected));
 }

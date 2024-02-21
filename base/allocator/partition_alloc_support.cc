@@ -8,6 +8,7 @@
 #include <cinttypes>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/allocator/partition_alloc_features.h"
@@ -55,7 +56,6 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
@@ -421,7 +421,7 @@ struct DanglingPointerFreeInfo {
   uintptr_t id = 0;
 };
 using DanglingRawPtrBuffer =
-    std::array<absl::optional<DanglingPointerFreeInfo>, 32>;
+    std::array<std::optional<DanglingPointerFreeInfo>, 32>;
 DanglingRawPtrBuffer g_stack_trace_buffer GUARDED_BY(g_stack_trace_buffer_lock);
 
 void DanglingRawPtrDetected(uintptr_t id) {
@@ -430,12 +430,12 @@ void DanglingRawPtrDetected(uintptr_t id) {
   internal::PartitionAutoLock guard(g_stack_trace_buffer_lock);
 
 #if DCHECK_IS_ON()
-  for (absl::optional<DanglingPointerFreeInfo>& entry : g_stack_trace_buffer) {
+  for (std::optional<DanglingPointerFreeInfo>& entry : g_stack_trace_buffer) {
     PA_DCHECK(!entry || entry->id != id);
   }
 #endif  // DCHECK_IS_ON()
 
-  for (absl::optional<DanglingPointerFreeInfo>& entry : g_stack_trace_buffer) {
+  for (std::optional<DanglingPointerFreeInfo>& entry : g_stack_trace_buffer) {
     if (!entry) {
       entry = {debug::StackTrace(), debug::TaskTrace(), id};
       return;
@@ -448,17 +448,17 @@ void DanglingRawPtrDetected(uintptr_t id) {
 
 // From the traces recorded in |DanglingRawPtrDetected|, extract the one
 // whose id match |id|. Return nullopt if not found.
-absl::optional<DanglingPointerFreeInfo> TakeDanglingPointerFreeInfo(
+std::optional<DanglingPointerFreeInfo> TakeDanglingPointerFreeInfo(
     uintptr_t id) {
   internal::PartitionAutoLock guard(g_stack_trace_buffer_lock);
-  for (absl::optional<DanglingPointerFreeInfo>& entry : g_stack_trace_buffer) {
+  for (std::optional<DanglingPointerFreeInfo>& entry : g_stack_trace_buffer) {
     if (entry && entry->id == id) {
-      absl::optional<DanglingPointerFreeInfo> result(entry);
-      entry = absl::nullopt;
+      std::optional<DanglingPointerFreeInfo> result(entry);
+      entry = std::nullopt;
       return result;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Extract from the StackTrace output, the signature of the pertinent caller.
@@ -562,7 +562,7 @@ std::string ExtractDanglingPtrSignature(debug::TaskTrace task_trace) {
 }
 
 std::string ExtractDanglingPtrSignature(
-    absl::optional<DanglingPointerFreeInfo> free_info,
+    std::optional<DanglingPointerFreeInfo> free_info,
     debug::StackTrace release_stack_trace,
     debug::TaskTrace release_task_trace) {
   if (free_info) {
@@ -597,7 +597,7 @@ void DanglingRawPtrReleased(uintptr_t id) {
   // allocate memory.
   debug::StackTrace stack_trace_release;
   debug::TaskTrace task_trace_release;
-  absl::optional<DanglingPointerFreeInfo> free_info =
+  std::optional<DanglingPointerFreeInfo> free_info =
       TakeDanglingPointerFreeInfo(id);
 
   if constexpr (dangling_pointer_type ==

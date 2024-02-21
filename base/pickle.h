@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -59,7 +59,7 @@ class BASE_EXPORT PickleIterator {
   [[nodiscard]] bool ReadData(const char** data, size_t* length);
 
   // Similar, but using base::span for convenience.
-  [[nodiscard]] absl::optional<base::span<const uint8_t>> ReadData();
+  [[nodiscard]] std::optional<base::span<const uint8_t>> ReadData();
 
   // A pointer to the data will be placed in |*data|. The caller specifies the
   // number of bytes to read, and ReadBytes will validate this length. The

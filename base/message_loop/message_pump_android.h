@@ -6,7 +6,9 @@
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_ANDROID_H_
 
 #include <jni.h>
+
 #include <memory>
+#include <optional>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
@@ -15,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct ALooper;
 
@@ -91,7 +92,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // delayed task. This avoids redundantly scheduling |delayed_fd_| with the
   // same timeout when subsequent work phases all go idle on the same pending
   // delayed task; nullopt if no wakeup is currently scheduled.
-  absl::optional<TimeTicks> delayed_scheduled_time_;
+  std::optional<TimeTicks> delayed_scheduled_time_;
 
   // If set, a callback to fire when the message pump is quit.
   base::OnceClosure on_quit_callback_;

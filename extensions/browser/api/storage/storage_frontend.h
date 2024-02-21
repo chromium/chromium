@@ -98,7 +98,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   void OnSettingsChanged(
       const ExtensionId& extension_id,
       StorageAreaNamespace storage_area,
-      absl::optional<api::storage::AccessLevel> session_access_level,
+      std::optional<api::storage::AccessLevel> session_access_level,
       base::Value changes);
 
   // The (non-incognito) browser context this Frontend belongs to.

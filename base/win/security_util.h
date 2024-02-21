@@ -5,12 +5,12 @@
 #ifndef BASE_WIN_SECURITY_UTIL_H_
 #define BASE_WIN_SECURITY_UTIL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -47,7 +47,7 @@ BASE_EXPORT void AppendSidVector(std::vector<Sid>& base_sids,
 
 // Gets the granted access for an open handle.
 // |handle| specifies any kernel object handle to query.
-BASE_EXPORT absl::optional<ACCESS_MASK> GetGrantedAccess(HANDLE handle);
+BASE_EXPORT std::optional<ACCESS_MASK> GetGrantedAccess(HANDLE handle);
 
 }  // namespace win
 }  // namespace base

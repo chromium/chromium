@@ -36,7 +36,7 @@ void PortSetTraits::Free(mach_port_t port) {
 
 bool CreateMachPort(ScopedMachReceiveRight* receive,
                     ScopedMachSendRight* send,
-                    absl::optional<mach_port_msgcount_t> queue_limit) {
+                    std::optional<mach_port_msgcount_t> queue_limit) {
   mach_port_options_t options{};
   options.flags = (send != nullptr ? MPO_INSERT_SEND_RIGHT : 0);
 

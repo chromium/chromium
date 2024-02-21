@@ -5805,7 +5805,7 @@ void NavigationRequest::CommitNavigation() {
     // TODO(https://crbug.com/1169736): Make this unreachable by blocking
     // cross-origin about:srcdoc navigations. Then enforce that the chosen
     // origin for srcdoc cases agrees with the parent frame's origin.
-    common_params_->initiator_base_url = absl::nullopt;
+    common_params_->initiator_base_url = std::nullopt;
   }
 
   // TODO(https://crbug.com/888079): The storage key's origin is ignored at the

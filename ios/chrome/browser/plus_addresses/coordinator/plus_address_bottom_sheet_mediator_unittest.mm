@@ -68,7 +68,7 @@ class FakePlusAddressService : public PlusAddressService {
                           .is_confirmed = false}));
   }
 
-  absl::optional<std::string> GetPrimaryEmail() override {
+  std::optional<std::string> GetPrimaryEmail() override {
     // Ensure the value is present without requiring identity setup.
     return "plus+primary@plus.plus";
   }

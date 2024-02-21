@@ -13,9 +13,9 @@
 namespace base {
 
 // static
-absl::optional<BlockTestsWritingToSpecialDirs>&
+std::optional<BlockTestsWritingToSpecialDirs>&
 BlockTestsWritingToSpecialDirs::Get() {
-  static NoDestructor<absl::optional<BlockTestsWritingToSpecialDirs>>
+  static NoDestructor<std::optional<BlockTestsWritingToSpecialDirs>>
       block_tests_writing_to_special_dirs;
   return *block_tests_writing_to_special_dirs;
 }

@@ -4,6 +4,8 @@
 
 #include "base/test/scoped_run_loop_timeout.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -11,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::test {
 
@@ -73,7 +74,7 @@ ScopedRunLoopTimeout::~ScopedRunLoopTimeout() {
 
 ScopedRunLoopTimeout::ScopedRunLoopTimeout(
     const Location& timeout_enabled_from_here,
-    absl::optional<TimeDelta> timeout,
+    std::optional<TimeDelta> timeout,
     RepeatingCallback<std::string()> on_timeout_log)
     : nested_timeout_(RunLoop::GetTimeoutForCurrentThread()) {
   CHECK(timeout.has_value() || nested_timeout_)

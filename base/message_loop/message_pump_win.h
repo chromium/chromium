@@ -9,6 +9,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -20,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -168,7 +168,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   // Non-nullopt if there's currently a native timer installed. If so, it
   // indicates when the timer is set to fire and can be used to avoid setting
   // redundant timers.
-  absl::optional<TimeTicks> installed_native_timer_;
+  std::optional<TimeTicks> installed_native_timer_;
 
   // This will become true when a native loop takes our kMsgHaveWork out of the
   // system queue. It will be reset to false whenever DoRunLoop regains control.

@@ -234,7 +234,7 @@ bool DidInSplitViewWindowChange(aura::Window* window,
   // For the current tablet mode split view design, we can assume that the
   // `window` is being snapped to the same `snap_position` it was snapped since
   // it's single layer design. We need to check if the snap ratio is the same.
-  absl::optional<float> snap_ratio = window_state->snap_ratio();
+  std::optional<float> snap_ratio = window_state->snap_ratio();
   // Get the snap ratio for the window that is currently occupying the
   // `snap_position`.
   const auto* window_state_in_current_snap_position =
@@ -809,7 +809,7 @@ void SplitViewController::AttachToBeSnappedWindow(
   bool do_snap_animation = false;
   int divider_position =
       split_view_divider_.divider_widget() ? GetDividerPosition() : -1;
-  if (absl::optional<float> snap_ratio = WindowState::Get(window)->snap_ratio();
+  if (std::optional<float> snap_ratio = WindowState::Get(window)->snap_ratio();
       snap_ratio) {
     divider_position = CalculateDividerPosition(snap_position, *snap_ratio);
     // If `other_window` can't fit in the requested snap ratio, show a snap

@@ -600,7 +600,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&, this](VideoEncoderOutput output,
-                absl::optional<VideoEncoder::CodecDescription> desc) {
+                std::optional<VideoEncoder::CodecDescription> desc) {
         if (output.size == 0) {
           dropped_frames_count++;
           dropped_frame_timestamps.push_back(output.timestamp);

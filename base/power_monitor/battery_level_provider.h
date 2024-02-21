@@ -6,13 +6,14 @@
 #define BASE_POWER_MONITOR_BATTERY_LEVEL_PROVIDER_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -43,18 +44,18 @@ class BASE_EXPORT BatteryLevelProvider {
     bool is_external_power_connected = false;
 
     // Current battery capacity. nullopt if `battery_count` != 1.
-    absl::optional<uint64_t> current_capacity;
+    std::optional<uint64_t> current_capacity;
 
     // Fully charged battery capacity. nullopt if `battery_count` != 1.
-    absl::optional<uint64_t> full_charged_capacity;
+    std::optional<uint64_t> full_charged_capacity;
 
     // The voltage of the battery. Only available on MacOS. nullopt if
     // `battery_count` != 1.
-    absl::optional<uint64_t> voltage_mv;
+    std::optional<uint64_t> voltage_mv;
 
     // The unit of the battery's charge. Usually kMWh (milliwatt-hour) but can
     // be relative on Windows. nullopt if `battery_count` != 1.
-    absl::optional<BatteryLevelUnit> charge_unit;
+    std::optional<BatteryLevelUnit> charge_unit;
 
     // The time at which the battery state capture took place.
     base::TimeTicks capture_time;
@@ -65,7 +66,7 @@ class BASE_EXPORT BatteryLevelProvider {
     // the current capacity, in milliwatt-hours. Only available on
     // Windows, and if a battery is present. This value is populated by the
     // manufacturer and is not guaranteed to be available or accurate.
-    absl::optional<uint32_t> battery_discharge_granularity;
+    std::optional<uint32_t> battery_discharge_granularity;
 #endif  // BUILDFLAG(IS_WIN)
   };
 
@@ -82,7 +83,7 @@ class BASE_EXPORT BatteryLevelProvider {
   // (forwards nullopt on retrieval error). `callback` will not be invoked if
   // the BatteryLevelProvider is destroyed.
   virtual void GetBatteryState(
-      base::OnceCallback<void(const absl::optional<BatteryState>&)>
+      base::OnceCallback<void(const std::optional<BatteryState>&)>
           callback) = 0;
 
  protected:
@@ -99,7 +100,7 @@ class BASE_EXPORT BatteryLevelProvider {
     uint64_t full_charged_capacity;
 
     // The voltage of the battery. Only available on MacOS.
-    absl::optional<uint64_t> voltage_mv;
+    std::optional<uint64_t> voltage_mv;
 
     // The battery's unit of charge.
     BatteryLevelUnit charge_unit;
@@ -109,13 +110,13 @@ class BASE_EXPORT BatteryLevelProvider {
     // percent. Only available on Windows, and if a battery is present. This
     // value is populated by the manufacturer and is not guaranteed to be
     // available or accurate.
-    absl::optional<uint32_t> battery_discharge_granularity;
+    std::optional<uint32_t> battery_discharge_granularity;
 
     // The most coarse granularity among all the reporting scales of the
     // battery, in hundredths of a percent. Only available on Windows, and if a
     // battery is present. This value is populated by the manufacturer and is
     // not guaranteed to be available or accurate.
-    absl::optional<uint32_t> max_battery_discharge_granularity;
+    std::optional<uint32_t> max_battery_discharge_granularity;
 #endif  // BUILDFLAG(IS_WIN)
   };
 

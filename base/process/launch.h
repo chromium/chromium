@@ -111,7 +111,7 @@ struct BASE_EXPORT LaunchOptions {
   // for a good overview of Windows handle inheritance.
   //
   // Implementation note: it might be nice to implement in terms of
-  // absl::optional<>, but then the natural default state (vector not present)
+  // std::optional<>, but then the natural default state (vector not present)
   // would be "all inheritable handles" while we want "no inheritance."
   enum class Inherit {
     // Only those handles in |handles_to_inherit| vector are inherited. If the

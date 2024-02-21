@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_SYSTEM_ANCHORED_NUDGE_DATA_H_
 #define ASH_PUBLIC_CPP_SYSTEM_ANCHORED_NUDGE_DATA_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -13,7 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -81,8 +81,8 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   ui::ImageModel image_model;
   std::u16string title_text;
   std::vector<ui::KeyboardCode> keyboard_codes;
-  absl::optional<ui::ColorId> background_color_id;
-  absl::optional<ui::ColorId> image_background_color_id;
+  std::optional<ui::ColorId> background_color_id;
+  std::optional<ui::ColorId> image_background_color_id;
 
   // Callback for close button pressed.
   base::RepeatingClosure close_button_callback;

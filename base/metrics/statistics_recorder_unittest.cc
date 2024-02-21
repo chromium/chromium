@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -364,7 +364,7 @@ TEST_P(StatisticsRecorderTest, ToJSON) {
   std::string json(StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_FULL));
 
   // Check for valid JSON.
-  absl::optional<Value> root = JSONReader::Read(json);
+  std::optional<Value> root = JSONReader::Read(json);
   ASSERT_TRUE(root);
   Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
@@ -403,7 +403,7 @@ TEST_P(StatisticsRecorderTest, ToJSONOmitBuckets) {
 
   std::string json =
       StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_OMIT_BUCKETS);
-  absl::optional<Value> root = JSONReader::Read(json);
+  std::optional<Value> root = JSONReader::Read(json);
   ASSERT_TRUE(root);
   Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);

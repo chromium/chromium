@@ -1168,7 +1168,7 @@ void SiteSettingsHandler::HandleClearPartitionedUsage(
 
   // The group key should always be an eTLD+1 because there aren't any
   // partitioned entries for IWAs (which have a non-eTLD+1 grouping key).
-  absl::optional<std::string> group_etld_plus1 = grouping_key.GetEtldPlusOne();
+  std::optional<std::string> group_etld_plus1 = grouping_key.GetEtldPlusOne();
   DCHECK(group_etld_plus1);
 
   net::SchemefulSite https_top_level_site(
@@ -2331,8 +2331,8 @@ void SiteSettingsHandler::GetHostCookies(
       if (!cookie) {
         continue;
       }
-      absl::optional<std::string> partition_etld_plus1 = absl::nullopt;
-      absl::optional<GroupingKey> partition_grouping_key = absl::nullopt;
+      std::optional<std::string> partition_etld_plus1 = std::nullopt;
+      std::optional<GroupingKey> partition_grouping_key = std::nullopt;
       if (cookie->IsPartitioned()) {
         partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().host();
         partition_grouping_key =

@@ -80,7 +80,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
 
 // static
 std::string SysInfo::GetIOSBuildNumber() {
-  absl::optional<std::string> build_number =
+  std::optional<std::string> build_number =
       StringSysctl({CTL_KERN, KERN_OSVERSION});
   return build_number.value();
 }

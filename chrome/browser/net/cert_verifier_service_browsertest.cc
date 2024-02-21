@@ -281,7 +281,7 @@ class CertVerifierServiceCAPlatformIntegrationPolicyTest
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kCAPlatformIntegrationEnabled,
-              absl::optional<base::Value>(platform_root_store_enabled()));
+              std::optional<base::Value>(platform_root_store_enabled()));
     UpdateProviderPolicy(policies);
   }
 

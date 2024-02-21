@@ -126,7 +126,7 @@ void NearbyConnectionManager::NotifyNearbyInitiatorConnectionSuccess(
 void NearbyConnectionManager::NotifyBleDiscoveryStateChanged(
     const DeviceIdPair& device_id_pair,
     mojom::DiscoveryResult discovery_result,
-    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   if (id_pair_to_initiator_metadata_map_.contains(device_id_pair)) {
     GetInitiatorEntry(device_id_pair)
         .ble_discovery_state_change_callback.Run(discovery_result,

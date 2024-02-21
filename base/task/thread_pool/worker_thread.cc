@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <optional>
 #include <utility>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
@@ -26,7 +27,6 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -394,7 +394,7 @@ void WorkerThread::RunWorker() {
 #if BUILDFLAG(IS_APPLE)
     apple::ScopedNSAutoreleasePool autorelease_pool;
 #endif
-    absl::optional<WatchHangsInScope> hang_watch_scope;
+    std::optional<WatchHangsInScope> hang_watch_scope;
 
     TRACE_EVENT_END0("base", "WorkerThread active");
     // TODO(crbug.com/1021571): Remove this once fixed.

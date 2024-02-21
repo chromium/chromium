@@ -488,7 +488,7 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
       bool is_safe_browsing_surveys_enabled,
       base::OnceCallback<void(bool, SBThreatType)>
           trust_safety_sentiment_service_trigger,
-      absl::optional<base::TimeTicks> blocked_page_shown_timestamp)
+      std::optional<base::TimeTicks> blocked_page_shown_timestamp)
       : SafeBrowsingBlockingPage(
             manager,
             web_contents,
@@ -549,7 +549,7 @@ class TestSafeBrowsingBlockingPageFactory
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
       bool should_trigger_reporting,
-      absl::optional<base::TimeTicks> blocked_page_shown_timestamp) override {
+      std::optional<base::TimeTicks> blocked_page_shown_timestamp) override {
     PrefService* prefs =
         Profile::FromBrowserContext(web_contents->GetBrowserContext())
             ->GetPrefs();
@@ -3265,7 +3265,7 @@ class SafeBrowsingBlockingPageIDNTest
         contents,
         is_subresource ? GURL("http://mainframe.example.com/") : request_url,
         {resource}, /*forward_extension_event=*/false,
-        /*blocked_page_shown_timestamp=*/absl::nullopt);
+        /*blocked_page_shown_timestamp=*/std::nullopt);
   }
 };
 

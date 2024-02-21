@@ -35,7 +35,7 @@ constexpr wchar_t kSerialNumberQuery[] = L"SELECT SerialNumber FROM Win32_Bios";
 
 // Instantiates `wmi_services` with a connection to `server_name` in WMI. Will
 // set a security blanket if `set_blanket` is true.
-absl::optional<WmiError> CreateLocalWmiConnection(
+std::optional<WmiError> CreateLocalWmiConnection(
     bool set_blanket,
     const std::wstring& server_name,
     ComPtr<IWbemServices>* wmi_services) {
@@ -63,7 +63,7 @@ absl::optional<WmiError> CreateLocalWmiConnection(
   }
 
   *wmi_services = std::move(wmi_services_r);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Runs `query` through `wmi_services` and sets the results' `enumerator`.
@@ -89,9 +89,9 @@ bool TryRunQuery(const std::wstring& query,
 
 }  // namespace
 
-absl::optional<WmiError> RunWmiQuery(const std::wstring& server_name,
-                                     const std::wstring& query,
-                                     ComPtr<IEnumWbemClassObject>* enumerator) {
+std::optional<WmiError> RunWmiQuery(const std::wstring& server_name,
+                                    const std::wstring& query,
+                                    ComPtr<IEnumWbemClassObject>* enumerator) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
   DCHECK(enumerator);
@@ -106,7 +106,7 @@ absl::optional<WmiError> RunWmiQuery(const std::wstring& server_name,
   if (!TryRunQuery(query, wmi_services, enumerator))
     return WmiError::kFailedToExecWMIQuery;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool CreateLocalWmiConnection(bool set_blanket,

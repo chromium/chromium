@@ -95,7 +95,7 @@ interface CoreProbes {
   void ApplyAcceptLanguageOverride(CoreProbeSink*, String* accept_language);
   void ApplyHardwareConcurrencyOverride(CoreProbeSink*, unsigned int& hardware_concurrency);
   void ApplyUserAgentOverride(CoreProbeSink*, String* user_agent);
-  void ApplyUserAgentMetadataOverride(CoreProbeSink*, absl::optional<blink::UserAgentMetadata>* ua_metadata_override);
+  void ApplyUserAgentMetadataOverride(CoreProbeSink*, std::optional<blink::UserAgentMetadata>* ua_metadata_override);
   void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const ResourceLoaderOptions&, ResourceRequestBlockedReason, ResourceType);
   void DidChangeResourcePriority(LocalFrame*, DocumentLoader*, uint64_t identifier, ResourceLoadPriority load_priority);
   void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, ResourceLoaderOptions&, ResourceType);
@@ -119,7 +119,7 @@ interface CoreProbes {
   void DidReceiveScriptResponse(ExecutionContext*, uint64_t identifier);
   void DomContentLoadedEventFired([Keep] LocalFrame*);
   void LoadEventFired([Keep] LocalFrame*);
-  void FrameAttachedToParent([Keep] LocalFrame*, const absl::optional<AdScriptIdentifier>& ad_script_on_stack);
+  void FrameAttachedToParent([Keep] LocalFrame*, const std::optional<AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent([Keep] LocalFrame*, FrameDetachType);
   void DidStartProvisionalLoad([Keep] LocalFrame*);
   void DidFailProvisionalLoad([Keep] LocalFrame*);
@@ -136,7 +136,7 @@ interface CoreProbes {
   void FrameRequestedNavigation(LocalFrame*, Frame* target_frame, const KURL& url, ClientNavigationReason reason, NavigationPolicy policy);
   void FrameScheduledNavigation([Keep] LocalFrame*, const KURL& url, base::TimeDelta delay, ClientNavigationReason reason);
   void FrameClearedScheduledNavigation([Keep] LocalFrame*);
-  void WillCreateWebSocket([Keep] ExecutionContext*, uint64_t identifier, const KURL& request_url, const String& protocol, absl::optional<base::UnguessableToken>* devtools_token);
+  void WillCreateWebSocket([Keep] ExecutionContext*, uint64_t identifier, const KURL& request_url, const String& protocol, std::optional<base::UnguessableToken>* devtools_token);
   void WillSendWebSocketHandshakeRequest([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request);
   void DidReceiveWebSocketHandshakeResponse([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request, network::mojom::blink::WebSocketHandshakeResponse* response);
   void DidCloseWebSocket([Keep] ExecutionContext*, uint64_t identifier);
@@ -146,7 +146,7 @@ interface CoreProbes {
   void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
   void WebTransportConnectionEstablished(ExecutionContext*, uint64_t transport_id);
   void WebTransportClosed(ExecutionContext*, uint64_t transport_id);
-  void WillCreateP2PSocketUdp(ExecutionContext*, absl::optional<base::UnguessableToken>* devtools_token);
+  void WillCreateP2PSocketUdp(ExecutionContext*, std::optional<base::UnguessableToken>* devtools_token);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
   void LayerTreeDidChange(LocalFrame*);
   void LayerTreePainted(LocalFrame*);

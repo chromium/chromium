@@ -19,8 +19,8 @@ struct ProcessTypeToOptionalConfig {
   int process_type;
   std::optional<Config> expected;
 
-  ProcessTypeToOptionalConfig(int type, absl::nullopt_t)
-      : process_type(type), expected(absl::nullopt) {}
+  ProcessTypeToOptionalConfig(int type, std::nullopt_t)
+      : process_type(type), expected(std::nullopt) {}
 
   ProcessTypeToOptionalConfig(int type, std::string_view name, size_t size)
       : process_type(type), expected(Config{type, name, size}) {}

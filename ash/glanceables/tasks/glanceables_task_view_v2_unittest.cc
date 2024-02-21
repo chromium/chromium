@@ -325,7 +325,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
     // Simulate reply, the view should update itself with the new task id.
     const auto created_task =
         api::Task("task-id", "New",
-                  /*due=*/absl::nullopt, /*completed=*/false,
+                  /*due=*/std::nullopt, /*completed=*/false,
                   /*has_subtasks=*/false,
                   /*has_email_link=*/false, /*has_notes=*/false,
                   /*updated=*/base::Time::Now());
@@ -392,7 +392,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
   // Simulate reply, this should re-enable the checkbox and title buttons.
   const auto created_task =
       api::Task("task-id", "New",
-                /*due=*/absl::nullopt, /*completed=*/false,
+                /*due=*/std::nullopt, /*completed=*/false,
                 /*has_subtasks=*/false,
                 /*has_email_link=*/false, /*has_notes=*/false,
                 /*updated=*/base::Time::Now());

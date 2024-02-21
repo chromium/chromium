@@ -53,6 +53,7 @@
 #include <charconv>
 #include <limits>
 #include <map>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -67,7 +68,6 @@
 #include "third_party/abseil-cpp/absl/container/btree_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/node_hash_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -131,7 +131,7 @@ void MeasureOneContainer(const Inserter& inserter) {
 
   RAW_LOG(INFO, "iteration 0");
   // Record any initial allocations made by an empty container.
-  absl::optional<ScopedLogAllocAndFree> base_size_logger;
+  std::optional<ScopedLogAllocAndFree> base_size_logger;
   base_size_logger.emplace();
   Container c;
   base_size_logger.reset();

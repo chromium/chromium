@@ -390,7 +390,7 @@ void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
   // base::ModuleCache::CreateModuleForAddress is not implemented for it.
   // Thus the below code must be included on a conditional basis.
   const auto ipc_method_address = reinterpret_cast<uintptr_t>(ipc_method_info_);
-  const absl::optional<size_t> location_iid =
+  const std::optional<size_t> location_iid =
       base::trace_event::InternedUnsymbolizedSourceLocation::Get(
           &ctx, ipc_method_address);
   if (location_iid) {

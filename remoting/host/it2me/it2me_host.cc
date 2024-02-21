@@ -125,8 +125,8 @@ bool It2MeHost::SessionSupportsReconnections() const {
 #endif
 }
 
-absl::optional<ReconnectParams> It2MeHost::CreateReconnectParams() const {
-  absl::optional<ReconnectParams> reconnect_params;
+std::optional<ReconnectParams> It2MeHost::CreateReconnectParams() const {
+  std::optional<ReconnectParams> reconnect_params;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   if (!SessionSupportsReconnections()) {
     return reconnect_params;

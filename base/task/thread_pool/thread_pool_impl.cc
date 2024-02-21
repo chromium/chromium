@@ -5,6 +5,7 @@
 #include "base/task/thread_pool/thread_pool_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -33,7 +34,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -317,7 +317,7 @@ ThreadPoolImpl::CreateUpdateableSequencedTaskRunner(const TaskTraits& traits) {
   return MakeRefCounted<PooledSequencedTaskRunner>(traits, this);
 }
 
-absl::optional<TimeTicks> ThreadPoolImpl::NextScheduledRunTimeForTesting()
+std::optional<TimeTicks> ThreadPoolImpl::NextScheduledRunTimeForTesting()
     const {
   if (task_tracker_->HasIncompleteTaskSourcesForTesting())
     return TimeTicks::Now();

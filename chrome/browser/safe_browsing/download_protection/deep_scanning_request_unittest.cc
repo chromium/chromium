@@ -717,7 +717,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     request.Start();
 
@@ -791,7 +791,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     request.Start();
 
@@ -855,7 +855,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     request.Start();
 
@@ -919,7 +919,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     request.Start();
 
@@ -987,7 +987,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     request.Start();
 
@@ -1046,7 +1046,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         EventResultToString(EventResult::ALLOWED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     request.Start();
 
@@ -1105,7 +1105,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         EventResultToString(EventResult::ALLOWED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     request.Start();
 
@@ -1169,7 +1169,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_reason*/ absl::nullopt);
+        /*content_transfer_reason*/ std::nullopt);
 
     request.Start();
 
@@ -1451,7 +1451,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         /*result*/ EventResultToString(EventResult::ALLOWED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_reason*/ absl::nullopt);
+        /*content_transfer_reason*/ std::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -1562,7 +1562,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
             kScanId + std::string("0"),
             kScanId + std::string("1"),
         },
-        /*content_transfer_reason*/ absl::nullopt);
+        /*content_transfer_reason*/ std::nullopt);
 
     request.Start();
     run_loop.Run();
@@ -1617,7 +1617,7 @@ TEST_F(DeepScanningReportingTest, Timeout) {
       EventResultToString(EventResult::ALLOWED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*content_transfer_reason*/ absl::nullopt);
+      /*content_transfer_reason*/ std::nullopt);
 
   request.Start();
 
@@ -1864,7 +1864,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         EventResultToString(expected_event_result_for_safe_large_file()),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_reason*/ absl::nullopt);
+        /*content_transfer_reason*/ std::nullopt);
 
     request.Start();
 
@@ -1924,7 +1924,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*result*/ EventResultToString(expected_event_result_for_malware()),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-        /*content_transfer_reason*/ absl::nullopt);
+        /*content_transfer_reason*/ std::nullopt);
 
     request.Start();
 

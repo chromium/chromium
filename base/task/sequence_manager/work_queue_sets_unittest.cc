@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -17,7 +18,6 @@
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -143,7 +143,7 @@ TEST_F(WorkQueueSetsTest, GetOldestQueueAndTaskOrderInSet_TaskOrder) {
   size_t set = 1;
   work_queue_sets_->ChangeSetIndex(work_queue, set);
 
-  absl::optional<WorkQueueAndTaskOrder> work_queue_and_task_order =
+  std::optional<WorkQueueAndTaskOrder> work_queue_and_task_order =
       work_queue_sets_->GetOldestQueueAndTaskOrderInSet(set);
   ASSERT_TRUE(work_queue_and_task_order);
   EXPECT_EQ(work_queue, work_queue_and_task_order->queue);
@@ -161,7 +161,7 @@ TEST_F(WorkQueueSetsTest, GetOldestQueueAndTaskOrderInSet_MultipleAgesInSet) {
   work_queue_sets_->ChangeSetIndex(queue1, set);
   work_queue_sets_->ChangeSetIndex(queue2, set);
   work_queue_sets_->ChangeSetIndex(queue3, set);
-  absl::optional<WorkQueueAndTaskOrder> queue_and_order =
+  std::optional<WorkQueueAndTaskOrder> queue_and_order =
       work_queue_sets_->GetOldestQueueAndTaskOrderInSet(set);
   ASSERT_TRUE(queue_and_order);
   EXPECT_EQ(queue3, queue_and_order->queue);

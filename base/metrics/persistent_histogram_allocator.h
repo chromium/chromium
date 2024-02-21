@@ -8,6 +8,7 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -86,7 +86,7 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
   // |sample_map_records| has seen all its records.
   std::vector<PersistentMemoryAllocator::Reference> LoadRecords(
       PersistentSampleMapRecords* sample_map_records,
-      absl::optional<HistogramBase::Sample> until_value);
+      std::optional<HistogramBase::Sample> until_value);
 
   // Weak-pointer to the allocator used by the sparse histograms.
   raw_ptr<PersistentMemoryAllocator> allocator_;
@@ -134,7 +134,7 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // vector is returned, which definitely means that |this| has seen all its
   // records.
   std::vector<PersistentMemoryAllocator::Reference> GetNextRecords(
-      absl::optional<HistogramBase::Sample> until_value);
+      std::optional<HistogramBase::Sample> until_value);
 
   // Creates a new persistent sample-map record for sample |value| and returns
   // a reference to it.

@@ -48,7 +48,7 @@ TEST(JniByteBuffer, DISABLED_ConversionFromNonBuffer) {
 
   ScopedJavaLocalRef<jobject> jnonbuffer(env, env->NewObject(cls, init));
 
-  absl::optional<base::span<const uint8_t>> maybe_span =
+  std::optional<base::span<const uint8_t>> maybe_span =
       MaybeJavaByteBufferToSpan(env, jnonbuffer.obj());
   EXPECT_FALSE(maybe_span.has_value());
 }

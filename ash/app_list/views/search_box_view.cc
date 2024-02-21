@@ -277,7 +277,7 @@ class RoundRectPathGenerator : public views::HighlightPathGenerator {
   ~RoundRectPathGenerator() override = default;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     return gfx::RRectF(rect, radii_);
   }
 

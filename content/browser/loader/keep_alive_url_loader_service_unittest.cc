@@ -646,7 +646,7 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   GetLastPendingRequest()->client->OnReceiveResponse(
       CreateResponseHead(
           {{kAttributionReportingRegisterSourceHeader, kRegisterSourceJson}}),
-      /*body=*/{}, /*cached_metadata=*/absl::nullopt);
+      /*body=*/{}, /*cached_metadata=*/std::nullopt);
 
   base::RunLoop().RunUntilIdle();
 }

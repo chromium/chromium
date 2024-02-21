@@ -30,8 +30,9 @@
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#include <optional>
+
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

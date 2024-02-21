@@ -11,19 +11,18 @@
 
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 namespace {
 
-// Construction from `std::nullptr_t` is disallowed; `absl::nullopt` must be
+// Construction from `std::nullptr_t` is disallowed; `std::nullopt` must be
 // used to construct an empty `optional_ref`.
 static_assert(!std::is_constructible_v<optional_ref<int>, std::nullptr_t>);
 
 // No-compile asserts for various const -> mutable conversions.
 static_assert(
-    !std::is_constructible_v<optional_ref<int>, const absl::optional<int>&>);
+    !std::is_constructible_v<optional_ref<int>, const std::optional<int>&>);
 static_assert(!std::is_constructible_v<optional_ref<int>, const int*>);
 static_assert(!std::is_constructible_v<optional_ref<int>, const int&>);
 static_assert(!std::is_constructible_v<optional_ref<int>, int&&>);
@@ -57,13 +56,13 @@ class TestClass {
 };
 
 TEST(OptionalRefTest, FromNullopt) {
-  [](optional_ref<const int> r) { EXPECT_FALSE(r.has_value()); }(absl::nullopt);
+  [](optional_ref<const int> r) { EXPECT_FALSE(r.has_value()); }(std::nullopt);
 
-  [](optional_ref<int> r) { EXPECT_FALSE(r.has_value()); }(absl::nullopt);
+  [](optional_ref<int> r) { EXPECT_FALSE(r.has_value()); }(std::nullopt);
 }
 
 TEST(OptionalRefTest, FromConstEmptyOptional) {
-  const absl::optional<int> optional_int;
+  const std::optional<int> optional_int;
 
   [](optional_ref<const int> r) { EXPECT_FALSE(r.has_value()); }(optional_int);
 
@@ -71,7 +70,7 @@ TEST(OptionalRefTest, FromConstEmptyOptional) {
 }
 
 TEST(OptionalRefTest, FromMutableEmptyOptional) {
-  absl::optional<int> optional_int;
+  std::optional<int> optional_int;
 
   [](optional_ref<const int> r) { EXPECT_FALSE(r.has_value()); }(optional_int);
 
@@ -79,7 +78,7 @@ TEST(OptionalRefTest, FromMutableEmptyOptional) {
 }
 
 TEST(OptionalRefTest, FromConstOptional) {
-  const absl::optional<int> optional_int(6);
+  const std::optional<int> optional_int(6);
 
   [](optional_ref<const int> r) {
     EXPECT_TRUE(r.has_value());
@@ -90,7 +89,7 @@ TEST(OptionalRefTest, FromConstOptional) {
 }
 
 TEST(OptionalRefTest, FromMutableOptional) {
-  absl::optional<int> optional_int(6);
+  std::optional<int> optional_int(6);
 
   [](optional_ref<const int> r) {
     EXPECT_TRUE(r.has_value());
@@ -213,7 +212,7 @@ TEST(OptionalRefTest, FromMutableEmptyOptionalRefTest) {
   }
 
   {
-    optional_ref<int> r1(absl::nullopt);
+    optional_ref<int> r1(std::nullopt);
     [](optional_ref<int> r2) { EXPECT_FALSE(r2.has_value()); }(r1);
   }
 }
@@ -371,12 +370,12 @@ TEST(OptionalRefTest, AsPtr) {
 
 TEST(OptionalRefTest, CopyAsOptional) {
   optional_ref<int> r1;
-  absl::optional<int> o1 = r1.CopyAsOptional();
-  EXPECT_EQ(absl::nullopt, o1);
+  std::optional<int> o1 = r1.CopyAsOptional();
+  EXPECT_EQ(std::nullopt, o1);
 
   int value = 6;
   optional_ref<int> r2(value);
-  absl::optional<int> o2 = r2.CopyAsOptional();
+  std::optional<int> o2 = r2.CopyAsOptional();
   EXPECT_EQ(6, o2);
 }
 
@@ -398,33 +397,33 @@ TEST(OptionalRefTest, EqualityComparisonWithNullOpt) {
 TEST(OptionalRefDeathTest, ArrowOnEmpty) {
   [](optional_ref<const TestClass> r) {
     EXPECT_CHECK_DEATH(r->ConstMethod());
-  }(absl::nullopt);
+  }(std::nullopt);
 
   [](optional_ref<TestClass> r) {
     EXPECT_CHECK_DEATH(r->ConstMethod());
     EXPECT_CHECK_DEATH(r->MutableMethod());
-  }(absl::nullopt);
+  }(std::nullopt);
 }
 
 TEST(OptionalRefDeathTest, StarOnEmpty) {
   [](optional_ref<const TestClass> r) {
     EXPECT_CHECK_DEATH((*r).ConstMethod());
-  }(absl::nullopt);
+  }(std::nullopt);
 
   [](optional_ref<TestClass> r) {
     EXPECT_CHECK_DEATH((*r).ConstMethod());
     EXPECT_CHECK_DEATH((*r).MutableMethod());
-  }(absl::nullopt);
+  }(std::nullopt);
 }
 
 TEST(OptionalRefDeathTest, ValueOnEmpty) {
   [](optional_ref<const TestClass> r) {
     EXPECT_CHECK_DEATH(r.value());
-  }(absl::nullopt);
+  }(std::nullopt);
 
   [](optional_ref<TestClass> r) {
     EXPECT_CHECK_DEATH(r.value());
-  }(absl::nullopt);
+  }(std::nullopt);
 }
 
 TEST(OptionalRefTest, ClassTemplateArgumentDeduction) {
@@ -442,17 +441,17 @@ TEST(OptionalRefTest, ClassTemplateArgumentDeduction) {
     static_assert(std::is_same_v<decltype(optional_ref(i)), optional_ref<int>>);
   }
 
-  static_assert(std::is_same_v<decltype(optional_ref(absl::optional<int>())),
+  static_assert(std::is_same_v<decltype(optional_ref(std::optional<int>())),
                                optional_ref<const int>>);
 
   {
-    const absl::optional<int> o;
+    const std::optional<int> o;
     static_assert(
         std::is_same_v<decltype(optional_ref(o)), optional_ref<const int>>);
   }
 
   {
-    absl::optional<int> o;
+    std::optional<int> o;
     static_assert(std::is_same_v<decltype(optional_ref(o)), optional_ref<int>>);
   }
 

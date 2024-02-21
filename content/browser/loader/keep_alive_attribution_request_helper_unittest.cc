@@ -121,7 +121,7 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
       AttributionReportingEligibility eligibility =
           AttributionReportingEligibility::kEventSourceOrTrigger,
       const std::optional<base::UnguessableToken>& attribution_src_token =
-          absl::nullopt,
+          std::nullopt,
       const GURL& context_url = GURL("https://secure_source.com")) {
     test_web_contents()->NavigateAndCommit(context_url);
 
@@ -156,7 +156,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, SingleResponse) {
   const GURL reporting_url("https://report.test");
   auto helper = CreateValidHelper(
       reporting_url, AttributionReportingEligibility::kEventSourceOrTrigger,
-      /*attribution_src_token=*/absl::nullopt, source_url);
+      /*attribution_src_token=*/std::nullopt, source_url);
 
   EXPECT_CALL(
       *mock_attribution_manager(),
@@ -418,7 +418,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     ASSERT_TRUE(context.has_value());
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEmpty, reporting_url,
-        /*attribution_src_token=*/absl::nullopt, "devtools-request-id",
+        /*attribution_src_token=*/std::nullopt, "devtools-request-id",
         network::AttributionReportingRuntimeFeatures(), context.value());
     EXPECT_EQ(helper, nullptr);
   }
@@ -435,7 +435,7 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     ASSERT_TRUE(context.has_value());
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEventSourceOrTrigger, reporting_url,
-        /*attribution_src_token=*/absl::nullopt, "devtools-request-id",
+        /*attribution_src_token=*/std::nullopt, "devtools-request-id",
         network::AttributionReportingRuntimeFeatures(), context.value());
     EXPECT_EQ(helper, nullptr);
   }

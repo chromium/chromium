@@ -715,7 +715,7 @@ std::optional<InterestGroupUpdate> ParseUpdateJson(
   }
   if (!TryToCopyMaxTrustedBiddingSignalsURLLength(*dict,
                                                   interest_group_update)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!TryToCopyTrustedBiddingSignalsKeys(*dict, interest_group_update)) {
     return std::nullopt;

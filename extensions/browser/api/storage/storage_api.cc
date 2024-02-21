@@ -227,7 +227,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
 
   if (!result.changes().empty()) {
     observer_->Run(
-        extension_id(), storage_area_, /*session_access_level=*/absl::nullopt,
+        extension_id(), storage_area_, /*session_access_level=*/std::nullopt,
         value_store::ValueStoreChange::ToValue(result.PassChanges()));
   }
 

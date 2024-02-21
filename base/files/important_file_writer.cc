@@ -121,7 +121,7 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
     OnceCallback<void(bool success)> after_write_callback,
     const std::string& histogram_suffix) {
   // Produce the actual data string on the background sequence.
-  absl::optional<std::string> data =
+  std::optional<std::string> data =
       std::move(data_producer_for_background_sequence).Run();
   if (!data) {
     DLOG(WARNING) << "Failed to serialize data to be saved in " << path.value();
@@ -310,7 +310,7 @@ void ImportantFileWriter::WriteNow(std::string data) {
   }
 
   WriteNowWithBackgroundDataProducer(base::BindOnce(
-      [](std::string data) { return absl::make_optional(std::move(data)); },
+      [](std::string data) { return std::make_optional(std::move(data)); },
       std::move(data)));
 }
 
@@ -373,7 +373,7 @@ void ImportantFileWriter::DoScheduledWrite() {
   BackgroundDataProducerCallback data_producer_for_background_sequence;
 
   if (absl::holds_alternative<DataSerializer*>(serializer_)) {
-    absl::optional<std::string> data;
+    std::optional<std::string> data;
     data = absl::get<DataSerializer*>(serializer_)->SerializeData();
     if (!data) {
       DLOG(WARNING) << "Failed to serialize data to be saved in "
@@ -384,7 +384,7 @@ void ImportantFileWriter::DoScheduledWrite() {
 
     previous_data_size_ = data->size();
     data_producer_for_background_sequence = base::BindOnce(
-        [](std::string data) { return absl::make_optional(std::move(data)); },
+        [](std::string data) { return std::make_optional(std::move(data)); },
         std::move(data).value());
   } else {
     data_producer_for_background_sequence =

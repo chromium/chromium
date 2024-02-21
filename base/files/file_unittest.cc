@@ -260,7 +260,7 @@ TEST(FileTest, ReadWriteSpans) {
   ASSERT_TRUE(file.IsValid());
 
   // Write 0 bytes to the file.
-  absl::optional<size_t> bytes_written = file.Write(0, base::span<uint8_t>());
+  std::optional<size_t> bytes_written = file.Write(0, base::span<uint8_t>());
   ASSERT_TRUE(bytes_written.has_value());
   EXPECT_EQ(0u, bytes_written.value());
 
@@ -272,7 +272,7 @@ TEST(FileTest, ReadWriteSpans) {
 
   // Read from EOF.
   uint8_t data_read_1[32];
-  absl::optional<size_t> bytes_read =
+  std::optional<size_t> bytes_read =
       file.Read(bytes_written.value(), data_read_1);
   ASSERT_TRUE(bytes_read.has_value());
   EXPECT_EQ(0u, bytes_read.value());
@@ -588,7 +588,7 @@ TEST(FileTest, ReadAtCurrentPositionSpans) {
   EXPECT_TRUE(file.IsValid());
 
   std::string data("test");
-  absl::optional<size_t> result = file.Write(0, base::as_byte_span(data));
+  std::optional<size_t> result = file.Write(0, base::as_byte_span(data));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(data.size(), result.value());
 
@@ -645,7 +645,7 @@ TEST(FileTest, WriteAtCurrentPositionSpans) {
 
   std::string data("test");
   size_t first_chunk_size = data.size() / 2;
-  absl::optional<size_t> result =
+  std::optional<size_t> result =
       file.WriteAtCurrentPos(base::as_byte_span(data).first(first_chunk_size));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(first_chunk_size, result.value());

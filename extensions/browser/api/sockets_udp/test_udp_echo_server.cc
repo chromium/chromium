@@ -43,8 +43,8 @@ class TestUdpSocketListenerImpl : public network::test::UDPSocketListenerImpl {
 
  private:
   void OnReceived(int32_t result,
-                  const absl::optional<net::IPEndPoint>& src_addr,
-                  absl::optional<base::span<const uint8_t>> data) override {
+                  const std::optional<net::IPEndPoint>& src_addr,
+                  std::optional<base::span<const uint8_t>> data) override {
     if (on_received_callback_) {
       std::move(on_received_callback_)
           .Run(result, src_addr.value(), data.value());

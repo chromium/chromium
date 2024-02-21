@@ -321,8 +321,8 @@ void KcerFactory::InitializeKcerInstanceForNss(
 
 void KcerFactory::InitializeKcerInstanceWithoutNss(
     base::WeakPtr<internal::KcerImpl> kcer_service,
-    absl::optional<SessionChapsClient::SlotId> user_token_id,
-    absl::optional<SessionChapsClient::SlotId> device_token_id) {
+    std::optional<SessionChapsClient::SlotId> user_token_id,
+    std::optional<SessionChapsClient::SlotId> device_token_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!kcer_service) {
     return;
@@ -334,7 +334,7 @@ void KcerFactory::InitializeKcerInstanceWithoutNss(
 }
 
 base::WeakPtr<internal::KcerToken> KcerFactory::GetTokenWithoutNss(
-    absl::optional<SessionChapsClient::SlotId> token_id,
+    std::optional<SessionChapsClient::SlotId> token_id,
     Token token_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

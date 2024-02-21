@@ -1537,7 +1537,7 @@ class WebAppSyncBridgeTest_UserDisplayModeSplit
 TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {
   GURL start_url = GURL("https://example.com/app");
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id_path=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
 
   // Install an app.
   if (installed_before_sync()) {

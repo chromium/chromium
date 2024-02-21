@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/task/thread_pool.h"
+
 #include <stddef.h>
+
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -13,13 +17,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -164,7 +166,7 @@ class ThreadPoolPerfTest : public testing::Test {
   void OnCompletePostingTasks() { complete_posting_tasks_.Signal(); }
 
   void Benchmark(const std::string& story_name, ExecutionMode execution_mode) {
-    absl::optional<ThreadPoolInstance::ScopedExecutionFence> execution_fence;
+    std::optional<ThreadPoolInstance::ScopedExecutionFence> execution_fence;
     if (execution_mode == ExecutionMode::kPostThenRun) {
       execution_fence.emplace();
     }

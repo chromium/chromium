@@ -456,7 +456,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -520,7 +520,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -587,7 +587,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
           /*username*/ kUserName,
           /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
           /*scan_id*/ kScanId,
-          /*content_transfer_method*/ absl::nullopt);
+          /*content_transfer_method*/ std::nullopt);
       ASSERT_TRUE(test_delegate_);
       test_delegate_->SetPageWarningForTesting(
           CreateResponse(ContentAnalysisResponse::Result::TriggeredRule::WARN));
@@ -613,7 +613,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -671,7 +671,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;

@@ -9,11 +9,11 @@
 namespace base {
 
 TEST(SafeBaseNameTest, Basic) {
-  absl::optional<SafeBaseName> basename(SafeBaseName::Create(FilePath()));
+  std::optional<SafeBaseName> basename(SafeBaseName::Create(FilePath()));
   EXPECT_TRUE(basename.has_value());
   EXPECT_TRUE(basename->path().empty());
 
-  absl::optional<SafeBaseName> basename2(
+  std::optional<SafeBaseName> basename2(
       SafeBaseName::Create(FILE_PATH_LITERAL("bar")));
   EXPECT_TRUE(basename2);
   EXPECT_EQ(basename2->path(), FilePath(FILE_PATH_LITERAL("bar")));
@@ -21,7 +21,7 @@ TEST(SafeBaseNameTest, Basic) {
 
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
 TEST(SafeBaseNameTest, WinRoot) {
-  absl::optional<SafeBaseName> basename(
+  std::optional<SafeBaseName> basename(
       SafeBaseName::Create(FILE_PATH_LITERAL("C:\\foo\\bar")));
   EXPECT_TRUE(basename.has_value());
   EXPECT_EQ(basename->path(), FilePath(FILE_PATH_LITERAL("bar")));
@@ -31,14 +31,14 @@ TEST(SafeBaseNameTest, WinRoot) {
 }
 #else
 TEST(SafeBaseNameTest, Root) {
-  absl::optional<SafeBaseName> basename(
+  std::optional<SafeBaseName> basename(
       SafeBaseName::Create(FilePath(FILE_PATH_LITERAL("/"))));
   EXPECT_FALSE(basename.has_value());
 }
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
 
 TEST(SafeBaseNameTest, Separators) {
-  absl::optional<SafeBaseName> basename(
+  std::optional<SafeBaseName> basename(
       SafeBaseName::Create(FILE_PATH_LITERAL("/foo/bar")));
   EXPECT_TRUE(basename.has_value());
   EXPECT_EQ(basename->path(), FilePath(FILE_PATH_LITERAL("bar")));

@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_GROUP_IMPL_H_
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_IMPL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
@@ -19,7 +20,6 @@
 #include "base/task/thread_pool/worker_thread_set.h"
 #include "base/task/thread_pool/worker_thread_waitable_event.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -66,8 +66,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
              WorkerThreadObserver* worker_thread_observer,
              WorkerEnvironment worker_environment,
              bool synchronous_thread_start_for_testing = false,
-             absl::optional<TimeDelta> may_block_threshold =
-                 absl::optional<TimeDelta>()) override;
+             std::optional<TimeDelta> may_block_threshold =
+                 std::optional<TimeDelta>()) override;
   void JoinForTesting() override;
   void DidUpdateCanRunPolicy() override;
   void OnShutdownStarted() override;

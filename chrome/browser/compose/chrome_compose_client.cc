@@ -270,7 +270,7 @@ void ChromeComposeClient::OpenComposeSettings() {
 
 void ChromeComposeClient::GetInnerText(
     content::RenderFrameHost& host,
-    absl::optional<int> node_id,
+    std::optional<int> node_id,
     content_extraction::InnerTextCallback callback) {
   content_extraction::GetInnerText(host, node_id, std::move(callback));
 }

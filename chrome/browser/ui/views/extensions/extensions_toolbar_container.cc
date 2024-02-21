@@ -389,10 +389,10 @@ void ExtensionsToolbarContainer::UpdateRequestAccessButton(
 
   // Extensions button has left flat edge iff request access button is visible.
   // This will also update the button's background.
-  absl::optional<ToolbarButton::Edge> extensions_button_edge =
+  std::optional<ToolbarButton::Edge> extensions_button_edge =
       request_access_button_->GetVisible()
-          ? absl::optional<ToolbarButton::Edge>(ToolbarButton::Edge::kLeft)
-          : absl::nullopt;
+          ? std::optional<ToolbarButton::Edge>(ToolbarButton::Edge::kLeft)
+          : std::nullopt;
   extensions_button_->SetFlatEdge(extensions_button_edge);
 }
 

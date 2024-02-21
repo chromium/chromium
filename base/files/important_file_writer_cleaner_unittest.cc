@@ -4,6 +4,8 @@
 
 #include "base/files/important_file_writer_cleaner.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -16,7 +18,6 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::ElementsAre;
 
@@ -98,7 +99,7 @@ class ImportantFileWriterCleanerTest : public ::testing::Test {
   FilePath dir_2_file_new_;
   FilePath dir_2_file_old_;
   FilePath dir_2_file_other_;
-  absl::optional<ScopedCleanerLifetime> cleaner_lifetime_;
+  std::optional<ScopedCleanerLifetime> cleaner_lifetime_;
 };
 
 void ImportantFileWriterCleanerTest::SetUp() {

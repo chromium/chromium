@@ -18,7 +18,6 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -38,7 +37,7 @@ class NearbyConnectionManager {
 
   using BleDiscoveryStateChangeCallback =
       base::RepeatingCallback<void(mojom::DiscoveryResult,
-                                   absl::optional<mojom::DiscoveryErrorCode>)>;
+                                   std::optional<mojom::DiscoveryErrorCode>)>;
   using NearbyConnectionStateChangeCallback =
       base::RepeatingCallback<void(mojom::NearbyConnectionStep,
                                    mojom::NearbyConnectionStepResult)>;
@@ -89,7 +88,7 @@ class NearbyConnectionManager {
   void NotifyBleDiscoveryStateChanged(
       const DeviceIdPair& device_id_pair,
       mojom::DiscoveryResult discovery_result,
-      absl::optional<mojom::DiscoveryErrorCode> potential_error_code);
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code);
   void NotifyNearbyConnectionStateChanged(
       const DeviceIdPair& device_id_pair,
       mojom::NearbyConnectionStep step,

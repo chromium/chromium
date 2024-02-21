@@ -196,7 +196,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // TaskSource:
   RunStatus WillRunTask() override;
   Task TakeTask(TaskSource::Transaction* transaction) override;
-  absl::optional<Task> Clear(TaskSource::Transaction* transaction) override;
+  std::optional<Task> Clear(TaskSource::Transaction* transaction) override;
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
   bool WillReEnqueue(TimeTicks now,
                      TaskSource::Transaction* transaction) override;

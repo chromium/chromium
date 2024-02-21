@@ -988,7 +988,7 @@ TEST_F(KcerChapsUtilImplTest, ImportPkcs12HardwareBackedSuccess) {
 // Successfully import EC key and single certificate from PKCS12 file to
 // Chaps software slot with is_software_backed = false.
 TEST_F(KcerChapsUtilImplTest, ImportPkcs12WithEcKeyHardwareBackedSuccess) {
-  using OPTIONAL_CK_BYTE_VECTOR = absl::optional<std::vector<CK_BYTE>>;
+  using OPTIONAL_CK_BYTE_VECTOR = std::optional<std::vector<CK_BYTE>>;
   std::map<CK_ATTRIBUTE_TYPE, OPTIONAL_CK_BYTE_VECTOR> expected_key_data;
   // Strings below have hardcoded fields from "client_with_ec_key.p12" which is
   // referenced by GetPkcs12Data(), they are Base64Encoded for the shorter
@@ -1033,7 +1033,7 @@ TEST_F(KcerChapsUtilImplTest, ImportPkcs12WithEcKeyHardwareBackedSuccess) {
 // Successfully import EC key and single certificate from PKCS12 file to
 // Chaps software slot with is_software_backed = true.
 TEST_F(KcerChapsUtilImplTest, ImportPkcs12WithEcKeySoftwareBackedSuccess) {
-  using OPTIONAL_CK_BYTE_VECTOR = absl::optional<std::vector<CK_BYTE>>;
+  using OPTIONAL_CK_BYTE_VECTOR = std::optional<std::vector<CK_BYTE>>;
   std::map<CK_ATTRIBUTE_TYPE, OPTIONAL_CK_BYTE_VECTOR> expected_key_data;
   // Strings below have hardcoded fields from "client_with_ec_key.p12" which is
   // referenced by GetPkcs12Data(), they are Base64Encoded for the shorter

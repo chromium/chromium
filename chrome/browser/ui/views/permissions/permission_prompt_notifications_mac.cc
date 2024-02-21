@@ -66,7 +66,7 @@ PermissionPromptNotificationsMac::GetPromptDisposition() const {
 
 std::optional<gfx::Rect>
 PermissionPromptNotificationsMac::GetViewBoundsInScreen() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PermissionPromptNotificationsMac::ShouldFinalizeRequestAfterDecided()

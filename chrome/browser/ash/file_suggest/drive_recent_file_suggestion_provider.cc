@@ -107,7 +107,7 @@ std::optional<FileSuggestData> CreateFileSuggestion(
 
   // If the file was shared with user, but not yet viewed by the user, surface
   // it as a shared file.
-  if (const absl::optional<base::Time>& shared_time =
+  if (const std::optional<base::Time>& shared_time =
           file_metadata.shared_with_me_time;
       shared_time && !shared_time->is_null() && viewed_time.is_null()) {
     if ((base::Time::Now() - *shared_time).magnitude() >

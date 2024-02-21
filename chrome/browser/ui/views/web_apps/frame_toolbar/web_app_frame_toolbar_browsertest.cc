@@ -1757,7 +1757,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       LoadWholeAppIsDraggableTestPageWithDataAndGetURL()));
   content::WaitForLoadStop(helper()->browser_view()->GetActiveWebContents());
 
-  absl::optional<SkRegion> draggable_region =
+  std::optional<SkRegion> draggable_region =
       helper()->browser_view()->browser()->app_controller()->draggable_region();
 
   EXPECT_TRUE(draggable_region.has_value());

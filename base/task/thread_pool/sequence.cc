@@ -296,7 +296,7 @@ TimeTicks Sequence::GetDelayedSortKey() const {
   return TS_UNCHECKED_READ(latest_ready_time_).load(std::memory_order_relaxed);
 }
 
-absl::optional<Task> Sequence::Clear(TaskSource::Transaction* transaction) {
+std::optional<Task> Sequence::Clear(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
   AnnotateLockAcquired annotate(lock_);
 

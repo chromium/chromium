@@ -53,7 +53,7 @@ class ResultsWaiter {
     run_loop.Run();
   }
 
-  void ResetResult() { result_ = absl::nullopt; }
+  void ResetResult() { result_ = std::nullopt; }
 
   bool GetResult() {
     EXPECT_TRUE(result_);

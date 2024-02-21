@@ -6,6 +6,7 @@
 
 #include <array>
 #include <atomic>
+#include <optional>
 #include <queue>
 #include <vector>
 
@@ -39,7 +40,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -491,7 +491,7 @@ void SequenceManagerImpl::ScheduleWork() {
 }
 
 void SequenceManagerImpl::SetNextWakeUp(LazyNow* lazy_now,
-                                        absl::optional<WakeUp> wake_up) {
+                                        std::optional<WakeUp> wake_up) {
   auto next_wake_up = AdjustWakeUp(wake_up, lazy_now);
   if (next_wake_up && next_wake_up->is_immediate()) {
     ScheduleWork();
@@ -524,10 +524,10 @@ void SequenceManagerImpl::SetRunTaskSynchronouslyAllowed(
   work_tracker_.SetRunTaskSynchronouslyAllowed(can_run_tasks_synchronously);
 }
 
-absl::optional<SequenceManagerImpl::SelectedTask>
+std::optional<SequenceManagerImpl::SelectedTask>
 SequenceManagerImpl::SelectNextTask(LazyNow& lazy_now,
                                     SelectTaskOption option) {
-  absl::optional<SelectedTask> selected_task =
+  std::optional<SelectedTask> selected_task =
       SelectNextTaskImpl(lazy_now, option);
 
   if (selected_task.has_value()) {
@@ -591,7 +591,7 @@ void SequenceManagerImpl::LogTaskDebugInfo(
 }
 #endif  // DCHECK_IS_ON() && !BUILDFLAG(IS_NACL)
 
-absl::optional<SequenceManagerImpl::SelectedTask>
+std::optional<SequenceManagerImpl::SelectedTask>
 SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
                                         SelectTaskOption option) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
@@ -618,7 +618,7 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
                                             /* force_verbose */ false));
 
     if (!work_queue)
-      return absl::nullopt;
+      return std::nullopt;
 
     // If the head task was canceled, remove it and run the selector again.
     if (UNLIKELY(work_queue->RemoveAllCanceledTasksFromFront()))
@@ -686,7 +686,7 @@ void SequenceManagerImpl::RemoveAllCanceledDelayedTasksFromFront(
           lazy_now);
 }
 
-absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
+std::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
     LazyNow* lazy_now,
     SelectTaskOption option) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
@@ -716,26 +716,26 @@ absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
   return AdjustWakeUp(GetNextDelayedWakeUpWithOption(option), lazy_now);
 }
 
-absl::optional<WakeUp> SequenceManagerImpl::GetNextDelayedWakeUp() const {
+std::optional<WakeUp> SequenceManagerImpl::GetNextDelayedWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   return main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
 }
 
-absl::optional<WakeUp> SequenceManagerImpl::GetNextDelayedWakeUpWithOption(
+std::optional<WakeUp> SequenceManagerImpl::GetNextDelayedWakeUpWithOption(
     SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
   if (option == SelectTaskOption::kSkipDelayedTask)
-    return absl::nullopt;
+    return std::nullopt;
   return GetNextDelayedWakeUp();
 }
 
-absl::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
-    absl::optional<WakeUp> wake_up,
+std::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
+    std::optional<WakeUp> wake_up,
     LazyNow* lazy_now) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!wake_up)
-    return absl::nullopt;
+    return std::nullopt;
   // Overdue work needs to be run immediately.
   if (lazy_now->Now() >= wake_up->earliest_time())
     return WakeUp{};
@@ -744,7 +744,7 @@ absl::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
   // appearing idle and |time_domain| will decide what to do in
   // MaybeFastForwardToWakeUp().
   if (main_thread_only().time_domain)
-    return absl::nullopt;
+    return std::nullopt;
   return *wake_up;
 }
 
@@ -761,7 +761,7 @@ bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
   // |non_waking_wake_up_queue|).
 #if BUILDFLAG(IS_WIN)
   if (g_explicit_high_resolution_timer_win) {
-    absl::optional<WakeUp> wake_up =
+    std::optional<WakeUp> wake_up =
         main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
     if (!wake_up)
       return false;

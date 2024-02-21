@@ -178,7 +178,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   void UndoRegrantPermissionsForOrigin(
       const std::set<ContentSettingsType>& permissions,
       const base::Value::Dict& chooser_permissions_data,
-      const absl::optional<content_settings::ContentSettingConstraints>
+      const std::optional<content_settings::ContentSettingConstraints>
           constraint,
       const url::Origin origin);
 
@@ -190,7 +190,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   void StorePermissionInRevokedPermissionSetting(
       const std::set<ContentSettingsType>& permissions,
       const base::Value::Dict& chooser_permissions_data,
-      const absl::optional<content_settings::ContentSettingConstraints>
+      const std::optional<content_settings::ContentSettingConstraints>
           constraint,
       const url::Origin origin);
 
@@ -242,7 +242,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   void StorePermissionInRevokedPermissionSetting(
       const std::set<ContentSettingsType>& permissions,
       const base::Value::Dict& chooser_permissions_data,
-      const absl::optional<content_settings::ContentSettingConstraints>
+      const std::optional<content_settings::ContentSettingConstraints>
           constraint,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);

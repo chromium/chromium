@@ -12652,7 +12652,7 @@ TEST_F(AdAuctionServiceImplBAndATest, GetInterestGroupAdAuctionDataNoKeys) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds(
-              {{{GURL("https://c.test/ad1.html"), /*metadata=*/absl::nullopt}}})
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/std::nullopt}}})
           .Build(),
       GURL("https://a.test/example.html"));
 
@@ -12699,7 +12699,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds(
-              {{{GURL("https://c.test/ad1.html"), /*metadata=*/absl::nullopt}}})
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/std::nullopt}}})
           .Build(),
       GURL("https://a.test/example.html"));
 
@@ -12719,7 +12719,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds(
-              {{{GURL("https://c.test/ad1.html"), /*metadata=*/absl::nullopt}}})
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/std::nullopt}}})
           .Build(),
       GURL("https://a.test/example.html"));
 
@@ -12763,13 +12763,13 @@ TEST_F(AdAuctionServiceImplBAndATest,
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds(
-              {{{GURL("https://c.test/ad1.html"), /*metadata=*/absl::nullopt}}})
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/std::nullopt}}})
           .Build(),
       GURL("https://a.test/example.html"));
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "boats")
           .SetAds(
-              {{{GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt}}})
+              {{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt}}})
           .Build(),
       GURL("https://a.test/example.html"));
 

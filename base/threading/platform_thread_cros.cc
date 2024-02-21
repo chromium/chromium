@@ -213,16 +213,16 @@ void SetThreadLatencySensitivity(ProcessId process_id,
 }
 
 // Get the type by reading through kThreadTypeToNiceValueMap
-absl::optional<ThreadType> GetThreadTypeForNiceValue(int nice_value) {
+std::optional<ThreadType> GetThreadTypeForNiceValue(int nice_value) {
   for (auto i : internal::kThreadTypeToNiceValueMap) {
     if (nice_value == i.nice_value) {
       return i.thread_type;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<int> GetNiceValueForThreadId(PlatformThreadId thread_id) {
+std::optional<int> GetNiceValueForThreadId(PlatformThreadId thread_id) {
   // Get the current nice value of the thread_id
   errno = 0;
   int nice_value = getpriority(PRIO_PROCESS, static_cast<id_t>(thread_id));
@@ -231,7 +231,7 @@ absl::optional<int> GetNiceValueForThreadId(PlatformThreadId thread_id) {
     DVPLOG_IF(1, errno != ESRCH)
         << "Failed to call getpriority for thread id " << thread_id
         << ", performance may be effected.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return nice_value;
 }
@@ -350,13 +350,13 @@ bool PlatformThreadChromeOS::IsDisplayThreadsRtFeatureEnabled() {
 }
 
 // static
-absl::optional<ThreadType> PlatformThreadChromeOS::GetThreadTypeFromThreadId(
+std::optional<ThreadType> PlatformThreadChromeOS::GetThreadTypeFromThreadId(
     ProcessId process_id,
     PlatformThreadId thread_id) {
   // Get the current nice_value of the thread_id
-  absl::optional<int> nice_value = GetNiceValueForThreadId(thread_id);
+  std::optional<int> nice_value = GetNiceValueForThreadId(thread_id);
   if (!nice_value.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetThreadTypeForNiceValue(nice_value.value());
 }
@@ -393,13 +393,12 @@ void PlatformThreadChromeOS::SetThreadBackgrounded(ProcessId process_id,
                                                    PlatformThreadId thread_id,
                                                    bool backgrounded) {
   // Get the current nice value of the thread_id
-  absl::optional<int> nice_value =
-      GetNiceValueForThreadId(thread_id);
+  std::optional<int> nice_value = GetNiceValueForThreadId(thread_id);
   if (!nice_value.has_value()) {
     return;
   }
 
-  absl::optional<ThreadType> type =
+  std::optional<ThreadType> type =
       GetThreadTypeForNiceValue(nice_value.value());
   if (!type.has_value()) {
     return;

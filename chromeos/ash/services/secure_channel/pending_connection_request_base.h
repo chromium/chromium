@@ -81,7 +81,7 @@ class PendingConnectionRequestBase
 
   void UpdateBleDiscoveryState(
       mojom::DiscoveryResult discovery_result,
-      absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
     client_connection_parameters_->SetBleDiscoveryState(discovery_result,
                                                         potential_error_code);
   }

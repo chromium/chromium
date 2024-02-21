@@ -11,7 +11,7 @@
 
 namespace enterprise_idle {
 
-absl::optional<int> GetIdleTimeoutActionsTitleId(ActionSet actions) {
+std::optional<int> GetIdleTimeoutActionsTitleId(ActionSet actions) {
   if (actions.clear && actions.close && actions.signout) {
     return IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_TITLE;
   }
@@ -42,7 +42,7 @@ int GetIdleTimeoutActionsSubtitleId(ActionSet actions) {
                        : IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA;
 }
 
-absl::optional<int> GetIdleTimeoutActionsSnackbarMessageId(ActionSet actions) {
+std::optional<int> GetIdleTimeoutActionsSnackbarMessageId(ActionSet actions) {
   if (actions.clear && actions.close && actions.signout) {
     return IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_SNACKBAR_MESSAGE;
   }

@@ -176,7 +176,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
         resource_request, version_->context()->wrapper()->browser_context(),
         std::move(web_contents_getter),
         /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId,
-        /*navigation_id=*/absl::nullopt);
+        /*navigation_id=*/std::nullopt);
   }
 
   network_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(

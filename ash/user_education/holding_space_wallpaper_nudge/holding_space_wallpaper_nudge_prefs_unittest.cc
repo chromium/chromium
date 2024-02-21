@@ -36,14 +36,14 @@ constexpr char kTimeOfFirstInteractionPrefPrefix[] =
 // Helpers ---------------------------------------------------------------------
 
 // Fetches the time pref associated with the first time of a given interaction.
-absl::optional<base::Time> GetTimeOfFirstInteraction(PrefService* prefs,
-                                                     Interaction interaction) {
+std::optional<base::Time> GetTimeOfFirstInteraction(PrefService* prefs,
+                                                    Interaction interaction) {
   auto pref_name = base::StrCat(
       {kTimeOfFirstInteractionPrefPrefix,
        holding_space_wallpaper_nudge_metrics::ToString(interaction),
        ".first_time"});
   auto* pref = prefs->FindPreference(pref_name);
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 
@@ -78,12 +78,12 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, FirstInteraction) {
   for (auto interaction : kAllInteractionsSet) {
     // Should be unset by default.
     EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
-              absl::nullopt);
+              std::nullopt);
 
     // Should remain unset because the user's first session is not set.
     EXPECT_FALSE(MarkTimeOfFirstInteraction(pref_service(), interaction));
     EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
-              absl::nullopt);
+              std::nullopt);
   }
 
   MarkTimeOfFirstEligibleSession(pref_service());
@@ -99,7 +99,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, FirstInteraction) {
     auto interaction_time =
         GetTimeOfFirstInteraction(pref_service(), interaction);
     EXPECT_THAT(interaction_time,
-                AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
+                AllOf(Ne(std::nullopt), Ge(before), Le(after)));
 
     // For any call beyond the first, the function should return false and the
     // marked time should not change.

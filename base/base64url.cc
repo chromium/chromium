@@ -35,18 +35,18 @@ class StringPieceOrString {
   }
 
  private:
-  const absl::optional<std::string> str_;
+  const std::optional<std::string> str_;
   const StringPiece piece_;
 };
 
 // Converts the base64url `input` into a plain base64 string.
-absl::optional<StringPieceOrString> Base64ToBase64URL(
+std::optional<StringPieceOrString> Base64ToBase64URL(
     StringPiece input,
     Base64UrlDecodePolicy policy) {
   // Characters outside of the base64url alphabet are disallowed, which includes
   // the {+, /} characters found in the conventional base64 alphabet.
   if (input.find_first_of(kBase64Chars) != std::string::npos)
-    return absl::nullopt;
+    return std::nullopt;
 
   const size_t required_padding_characters = input.size() % 4;
   const bool needs_replacement =
@@ -56,7 +56,7 @@ absl::optional<StringPieceOrString> Base64ToBase64URL(
     case Base64UrlDecodePolicy::REQUIRE_PADDING:
       // Fail if the required padding is not included in |input|.
       if (required_padding_characters > 0)
-        return absl::nullopt;
+        return std::nullopt;
       break;
     case Base64UrlDecodePolicy::IGNORE_PADDING:
       // Missing padding will be silently appended.
@@ -64,7 +64,7 @@ absl::optional<StringPieceOrString> Base64ToBase64URL(
     case Base64UrlDecodePolicy::DISALLOW_PADDING:
       // Fail if padding characters are included in |input|.
       if (input.find_first_of(kPaddingChar) != std::string::npos)
-        return absl::nullopt;
+        return std::nullopt;
       break;
   }
 
@@ -129,7 +129,7 @@ void Base64UrlEncode(StringPiece input,
 bool Base64UrlDecode(StringPiece input,
                      Base64UrlDecodePolicy policy,
                      std::string* output) {
-  absl::optional<StringPieceOrString> base64_input =
+  std::optional<StringPieceOrString> base64_input =
       Base64ToBase64URL(input, policy);
   if (!base64_input) {
     return false;
@@ -137,13 +137,13 @@ bool Base64UrlDecode(StringPiece input,
   return Base64Decode(base64_input->get(), output);
 }
 
-absl::optional<std::vector<uint8_t>> Base64UrlDecode(
+std::optional<std::vector<uint8_t>> Base64UrlDecode(
     StringPiece input,
     Base64UrlDecodePolicy policy) {
-  absl::optional<StringPieceOrString> base64_input =
+  std::optional<StringPieceOrString> base64_input =
       Base64ToBase64URL(input, policy);
   if (!base64_input) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return Base64Decode(base64_input->get());
 }

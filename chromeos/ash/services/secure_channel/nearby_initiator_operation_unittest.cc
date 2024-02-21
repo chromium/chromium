@@ -93,7 +93,7 @@ class SecureChannelNearbyInitiatorOperationTest : public testing::Test {
 
   void OnBleDiscoveryStateChanged(
       mojom::DiscoveryResult result,
-      absl::optional<mojom::DiscoveryErrorCode> error_code) {
+      std::optional<mojom::DiscoveryErrorCode> error_code) {
     discovery_result_ = result;
     discovery_error_code_ = error_code;
   }
@@ -119,7 +119,7 @@ class SecureChannelNearbyInitiatorOperationTest : public testing::Test {
   std::optional<NearbyInitiatorFailureType> failure_type_from_callback_;
 
   mojom::DiscoveryResult discovery_result_;
-  absl::optional<mojom::DiscoveryErrorCode> discovery_error_code_;
+  std::optional<mojom::DiscoveryErrorCode> discovery_error_code_;
   mojom::NearbyConnectionStep nearby_connection_step_;
   mojom::NearbyConnectionStepResult nearby_connection_step_result_;
   mojom::SecureChannelState secure_channel_state_;

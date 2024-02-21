@@ -10,13 +10,14 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/android/jni_android.h"
 #include "base/base_jni/ThreadUtils_jni.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_id_name_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -76,14 +77,14 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
   return false;
 }
 
-absl::optional<ThreadPriorityForTest>
+std::optional<ThreadPriorityForTest>
 GetCurrentThreadPriorityForPlatformForTest() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (Java_ThreadUtils_isThreadPriorityAudio(
       env, PlatformThread::CurrentId())) {
-    return absl::make_optional(ThreadPriorityForTest::kRealtimeAudio);
+    return std::make_optional(ThreadPriorityForTest::kRealtimeAudio);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace internal

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <atomic>
+#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
@@ -19,7 +20,6 @@
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -88,7 +88,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
   // Returns the priority of the most important pending task if one exists.
   // O(1).
-  absl::optional<TaskQueue::QueuePriority> GetHighestPendingPriority(
+  std::optional<TaskQueue::QueuePriority> GetHighestPendingPriority(
       SelectTaskOption option = SelectTaskOption::kDefault) const;
 
   // WorkQueueSets::Observer implementation:
@@ -146,14 +146,14 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   /*
    * SetOperation is used to configure ChooseWithPriority() and must have:
    *
-   * static absl::optional<WorkQueueAndTaskOrder>
+   * static std::optional<WorkQueueAndTaskOrder>
    * GetWithPriority(const WorkQueueSets& sets,
    *                 TaskQueue::QueuePriority priority);
    */
 
   // The default
   struct SetOperationOldest {
-    static absl::optional<WorkQueueAndTaskOrder> GetWithPriority(
+    static std::optional<WorkQueueAndTaskOrder> GetWithPriority(
         const WorkQueueSets& sets,
         TaskQueue::QueuePriority priority) {
       return sets.GetOldestQueueAndTaskOrderInSet(priority);
@@ -162,7 +162,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
 #if DCHECK_IS_ON()
   struct SetOperationRandom {
-    static absl::optional<WorkQueueAndTaskOrder> GetWithPriority(
+    static std::optional<WorkQueueAndTaskOrder> GetWithPriority(
         const WorkQueueSets& sets,
         TaskQueue::QueuePriority priority) {
       return sets.GetRandomQueueAndTaskOrderInSet(priority);

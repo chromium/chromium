@@ -40,7 +40,7 @@ void SetUserOptStatus(bool status) {
 }
 
 // Overrides the result of IsBatterySaverAllowed for testing.
-absl::optional<bool> override_allowed_for_testing;
+std::optional<bool> override_allowed_for_testing;
 
 }  // namespace
 
@@ -57,7 +57,7 @@ bool IsBatterySaverAllowed() {
   return false;
 }
 
-void OverrideIsBatterySaverAllowedForTesting(absl::optional<bool> isAllowed) {
+void OverrideIsBatterySaverAllowedForTesting(std::optional<bool> isAllowed) {
   CHECK_IS_TEST();
   override_allowed_for_testing = isAllowed;
 }

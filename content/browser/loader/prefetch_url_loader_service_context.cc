@@ -281,7 +281,7 @@ PrefetchURLLoaderServiceContext::CreateURLLoaderThrottles(
       base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                           frame_tree_node_id),
       nullptr /* navigation_ui_data */, frame_tree_node_id,
-      /*navigation_id=*/absl::nullopt);
+      /*navigation_id=*/std::nullopt);
 }
 
 }  // namespace content

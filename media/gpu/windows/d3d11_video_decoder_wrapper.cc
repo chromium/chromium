@@ -53,14 +53,14 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     }
   }
 
-  absl::optional<bool> UseSingleTexture() const override {
+  std::optional<bool> UseSingleTexture() const override {
     D3D11_VIDEO_DECODER_DESC desc;
     D3D11_VIDEO_DECODER_CONFIG config;
     HRESULT hr = video_decoder_->GetCreationParameters(&desc, &config);
     if (FAILED(hr)) {
       RecordFailure("D3D11VideoDecoder GetCreationParameters failed",
                     D3D11StatusCode::kDecoderGetCreationParametersFailed, hr);
-      return absl::nullopt;
+      return std::nullopt;
     }
     // Prefer whatever the config tells us about whether to use one Texture2D
     // with multiple array slices, or multiple Texture2Ds with one slice each.

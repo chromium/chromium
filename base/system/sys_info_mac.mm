@@ -12,6 +12,7 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include <optional>
 #include <string_view>
 
 #include "base/apple/scoped_mach_port.h"
@@ -29,7 +30,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/system/sys_info_internal.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -46,16 +46,16 @@ bool g_is_cpu_security_mitigation_enabled_read = false;
 
 namespace internal {
 
-absl::optional<int> NumberOfPhysicalProcessors() {
+std::optional<int> NumberOfPhysicalProcessors() {
   return GetSysctlIntValue("hw.physicalcpu_max");
 }
 
-absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
+std::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
   g_is_cpu_security_mitigation_enabled_read = true;
 
   if (!g_is_cpu_security_mitigation_enabled ||
       !FeatureList::IsEnabled(kNumberOfCoresWithCpuSecurityMitigation)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return NumberOfPhysicalProcessors();
 }
@@ -145,22 +145,22 @@ std::string SysInfo::HardwareModelName() {
 }
 
 // static
-absl::optional<SysInfo::HardwareModelNameSplit>
+std::optional<SysInfo::HardwareModelNameSplit>
 SysInfo::SplitHardwareModelNameDoNotUse(std::string_view name) {
   size_t number_loc = name.find_first_of("0123456789");
   if (number_loc == std::string::npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   size_t comma_loc = name.find(',', number_loc);
   if (comma_loc == std::string::npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   HardwareModelNameSplit split;
   if (!StringToInt(name.substr(0u, comma_loc).substr(number_loc),
                    &split.model) ||
       !StringToInt(name.substr(comma_loc + 1), &split.variant)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   split.category = name.substr(0u, number_loc);
   return split;

@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_THREAD_CONTROLLER_WITH_MESSAGE_PUMP_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +25,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -61,7 +61,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void WillQueueTask(PendingTask* pending_task) override;
   void ScheduleWork() override;
   void SetNextDelayedDoWork(LazyNow* lazy_now,
-                            absl::optional<WakeUp> wake_up) override;
+                            std::optional<WakeUp> wake_up) override;
   bool RunsTasksInCurrentSequence() override;
   void SetDefaultTaskRunner(
       scoped_refptr<SingleThreadTaskRunner> task_runner) override;
@@ -152,7 +152,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // Returns a WakeUp for the next pending task, is_immediate() if the next task
   // can run immediately, or nullopt if there are no more immediate or delayed
   // tasks.
-  absl::optional<WakeUp> DoWorkImpl(LazyNow* continuation_lazy_now);
+  std::optional<WakeUp> DoWorkImpl(LazyNow* continuation_lazy_now);
 
   bool RunsTasksByBatches() const;
 
@@ -204,7 +204,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // the overhead between each work item (no-op if HangWatcher is not enabled
   // on this thread). Cleared when going to sleep and at the end of a Run()
   // (i.e. when Quit()). Nested runs override their parent.
-  absl::optional<WatchHangsInScope> hang_watch_scope_;
+  std::optional<WatchHangsInScope> hang_watch_scope_;
 
   // Can only be set once (just before calling
   // work_deduplicator_.BindToCurrentThread()). After that only read access is

@@ -40,7 +40,7 @@ struct InnerTextResult;
 class InnerTextProvider {
  public:
   virtual void GetInnerText(content::RenderFrameHost& host,
-                            absl::optional<int> node_id,
+                            std::optional<int> node_id,
                             content_extraction::InnerTextCallback callback) = 0;
 
  protected:

@@ -1003,7 +1003,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
 
@@ -1056,7 +1056,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
   }
@@ -1116,7 +1116,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
   }
@@ -1156,7 +1156,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     file_transfer_analysis_delegate_->BypassWarnings(std::nullopt);
   }
@@ -1331,7 +1331,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   ScanUpload(source_url, destination_url);
 
@@ -1443,7 +1443,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncrypted) {
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
 
@@ -1516,7 +1516,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1599,7 +1599,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ {scan_id, scan_id, scan_id},
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1664,7 +1664,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ {scan_id, scan_id},
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1752,7 +1752,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ expected_scan_ids,
-      /*content_transfer_method*/ absl::nullopt);
+      /*content_transfer_method*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1856,7 +1856,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_ids*/ expected_scan_ids,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     ScanUpload(source_directory_url_, destination_directory_url_);
   }
@@ -1936,7 +1936,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_ids*/ expected_scan_ids,
-        /*content_transfer_method*/ absl::nullopt);
+        /*content_transfer_method*/ std::nullopt);
 
     file_transfer_analysis_delegate_->BypassWarnings(std::nullopt);
   }

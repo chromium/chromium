@@ -78,7 +78,7 @@ class ChromeComposeClient
 
   // InnerTextProvider
   void GetInnerText(content::RenderFrameHost& host,
-                    absl::optional<int> node_id,
+                    std::optional<int> node_id,
                     content_extraction::InnerTextCallback callback) override;
 
   bool GetMSBBStateFromPrefs();

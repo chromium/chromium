@@ -11,9 +11,10 @@
 #include "base/tracing_buildflags.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
+#include <optional>
+
 #include "base/trace_event/memory_dump_manager.h"  // no-presubmit-check
 #include "base/trace_event/process_memory_dump.h"  // no-presubmit-check
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
@@ -107,7 +108,7 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
   // If resident size is not available, a virtual size is used as fallback.
   size_t size = virtual_size;
 #if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
-  absl::optional<size_t> resident_size =
+  std::optional<size_t> resident_size =
       trace_event::ProcessMemoryDump::CountResidentBytesInSharedMemory(
           mapped_memory, mapped_size);
   if (resident_size.has_value())

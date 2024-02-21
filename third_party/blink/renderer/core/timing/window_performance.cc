@@ -521,7 +521,7 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
   std::optional<int> key_code = event_data->GetKeyCode();
   std::optional<PointerId> pointer_id = event_data->GetPointerId();
 
-  absl::optional<base::TimeTicks> fallback_time =
+  std::optional<base::TimeTicks> fallback_time =
       GetFallbackTime(entry, event_timestamp, presentation_timestamp);
 
   base::TimeTicks entry_end_timetick =
@@ -621,7 +621,7 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
   }
 }
 
-absl::optional<base::TimeTicks> WindowPerformance::GetFallbackTime(
+std::optional<base::TimeTicks> WindowPerformance::GetFallbackTime(
     PerformanceEventTiming* entry,
     base::TimeTicks event_timestamp,
     base::TimeTicks presentation_timestamp) {
@@ -682,7 +682,7 @@ absl::optional<base::TimeTicks> WindowPerformance::GetFallbackTime(
   } else if (fallback_end_time_to_processing_end) {
     return processing_end_timetick;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool WindowPerformance::SetInteractionIdAndRecordLatency(

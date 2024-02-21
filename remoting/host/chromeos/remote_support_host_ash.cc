@@ -192,7 +192,7 @@ void RemoteSupportHostAsh::OnSessionRetrieved(
     SessionId session_id,
     const std::string& access_token,
     StartSessionCallback callback,
-    absl::optional<base::Value::Dict> session) {
+    std::optional<base::Value::Dict> session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!session.has_value()) {

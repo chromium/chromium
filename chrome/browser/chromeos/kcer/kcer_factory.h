@@ -113,12 +113,12 @@ class KcerFactory : public ProfileKeyedServiceFactory {
   // `device_token_id` respectively, initializes `kcer_service` with the tokens.
   void InitializeKcerInstanceWithoutNss(
       base::WeakPtr<internal::KcerImpl> kcer_service,
-      absl::optional<SessionChapsClient::SlotId> user_token_id,
-      absl::optional<SessionChapsClient::SlotId> device_token_id);
+      std::optional<SessionChapsClient::SlotId> user_token_id,
+      std::optional<SessionChapsClient::SlotId> device_token_id);
 
   // Initializes a single token.
   base::WeakPtr<internal::KcerToken> GetTokenWithoutNss(
-      absl::optional<SessionChapsClient::SlotId> token_id,
+      std::optional<SessionChapsClient::SlotId> token_id,
       Token token_type);
 
   // Returns whether the Kcer-without-NSS experiment is enabled.

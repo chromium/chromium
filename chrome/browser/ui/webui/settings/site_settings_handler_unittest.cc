@@ -269,10 +269,10 @@ void RegisterWebApp(Profile* profile, apps::AppPtr app) {
 std::unique_ptr<net::CanonicalCookie> CreateCookieKey(
     const GURL& url,
     const std::string& cookie_line,
-    absl::optional<net::CookiePartitionKey> cookie_partition_key =
-        absl::nullopt) {
+    std::optional<net::CookiePartitionKey> cookie_partition_key =
+        std::nullopt) {
   return net::CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
-                                      absl::nullopt /* server_time */,
+                                      std::nullopt /* server_time */,
                                       cookie_partition_key);
 }
 

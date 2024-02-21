@@ -4,14 +4,15 @@
 
 #include "base/synchronization/condition_variable.h"
 
+#include <windows.h>
+
+#include <optional>
+
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <windows.h>
 
 namespace base {
 
@@ -32,7 +33,7 @@ void ConditionVariable::Wait() {
 }
 
 void ConditionVariable::TimedWait(const TimeDelta& max_time) {
-  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_)
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);

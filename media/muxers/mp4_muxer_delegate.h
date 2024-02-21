@@ -135,9 +135,9 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   int audio_sample_rate_ = 0;
 
   // Flush for startup is only called once.
-  absl::optional<size_t> written_file_type_box_size_;
+  std::optional<size_t> written_file_type_box_size_;
 
-  absl::optional<size_t> written_mov_box_size_;
+  std::optional<size_t> written_mov_box_size_;
 
   uint32_t sequence_number_ = 1;
 

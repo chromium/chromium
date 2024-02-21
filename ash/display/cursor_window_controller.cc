@@ -4,6 +4,8 @@
 
 #include "ash/display/cursor_window_controller.h"
 
+#include <optional>
+
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -22,7 +24,6 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -108,11 +109,11 @@ std::vector<gfx::ImageSkia> GetCursorImages(
   // Rotation is handled in viz (for aura::Window based cursor)
   // or fast ink canvas (for fast ink based cursor), so don't do any
   // rotation here.
-  absl::optional<ui::CursorData> cursor_data = wm::GetCursorData(
+  std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
       type, cursor_size, dsf,
       cursor_size == ui::CursorSize::kLarge
           ? std::make_optional(target_cursor_size_in_dip * dsf)
-          : absl::nullopt,
+          : std::nullopt,
       display::Display::ROTATE_0);
   if (!cursor_data) {
     return images;

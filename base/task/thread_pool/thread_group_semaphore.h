@@ -5,12 +5,13 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_GROUP_SEMAPHORE_H_
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_SEMAPHORE_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/thread_group_impl.h"
 #include "base/task/thread_pool/worker_thread_semaphore.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -52,8 +53,8 @@ class BASE_EXPORT ThreadGroupSemaphore : public ThreadGroup {
              WorkerThreadObserver* worker_thread_observer,
              WorkerEnvironment worker_environment,
              bool synchronous_thread_start_for_testing = false,
-             absl::optional<TimeDelta> may_block_threshold =
-                 absl::optional<TimeDelta>()) override;
+             std::optional<TimeDelta> may_block_threshold =
+                 std::optional<TimeDelta>()) override;
   void JoinForTesting() override;
   void DidUpdateCanRunPolicy() override;
   void OnShutdownStarted() override;

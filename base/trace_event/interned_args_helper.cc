@@ -112,7 +112,7 @@ void InternedMapping::Add(perfetto::EventContext* ctx,
 }
 
 // static
-absl::optional<size_t> InternedUnsymbolizedSourceLocation::Get(
+std::optional<size_t> InternedUnsymbolizedSourceLocation::Get(
     perfetto::EventContext* ctx,
     uintptr_t address) {
   auto* index_for_field = GetOrCreateIndexForField(ctx->GetIncrementalState());
@@ -131,7 +131,7 @@ absl::optional<size_t> InternedUnsymbolizedSourceLocation::Get(
       index_for_field->module_cache_.GetModuleForAddress(address);
 #endif
   if (!module) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   size_t iid;
   if (index_for_field->index_.LookUpOrInsert(&iid, address)) {

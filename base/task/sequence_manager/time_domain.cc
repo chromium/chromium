@@ -4,9 +4,10 @@
 
 #include "base/task/sequence_manager/time_domain.h"
 
+#include <optional>
+
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {

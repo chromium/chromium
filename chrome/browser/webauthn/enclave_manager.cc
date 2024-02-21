@@ -135,7 +135,7 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Build an enclave request that registers a new device and requests a new
@@ -609,7 +609,7 @@ std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
   CHECK(is_ready());
   const auto it = user_->wrapped_security_domain_secrets().find(version);
   if (it == user_->wrapped_security_domain_secrets().end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ToVector(it->second);
 }
@@ -1305,7 +1305,7 @@ void EnclaveManager::JoinDomain() {
       *primary_account_info_, store_keys_args_for_joining_->keys,
       store_keys_args_for_joining_->last_key_version, *secure_box_pub_key,
       trusted_vault::AuthenticationFactorType::kPhysicalDevice,
-      /*authentication_factor_type_hint=*/absl::nullopt,
+      /*authentication_factor_type_hint=*/std::nullopt,
       base::BindOnce(
           [](base::WeakPtr<EnclaveManager> client,
              trusted_vault::TrustedVaultRegistrationStatus status) {

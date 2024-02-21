@@ -849,25 +849,25 @@ INSTANTIATE_TEST_SUITE_P(
 
         // The following should not perform an alias since Alt is part of the
         // original accelerator.
-        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN}, std::nullopt},
 
-        {ui::Accelerator{ui::VKEY_HOME, ui::EF_ALT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_HOME, ui::EF_ALT_DOWN}, std::nullopt},
 
-        {ui::Accelerator{ui::VKEY_PRIOR, ui::EF_ALT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_PRIOR, ui::EF_ALT_DOWN}, std::nullopt},
 
-        {ui::Accelerator{ui::VKEY_END, ui::EF_ALT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_END, ui::EF_ALT_DOWN}, std::nullopt},
 
-        {ui::Accelerator{ui::VKEY_NEXT, ui::EF_ALT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_NEXT, ui::EF_ALT_DOWN}, std::nullopt},
 
-        {ui::Accelerator{ui::VKEY_HOME, ui::EF_CONTROL_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_HOME, ui::EF_CONTROL_DOWN}, std::nullopt},
 
-        {ui::Accelerator{ui::VKEY_END, ui::EF_CONTROL_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_END, ui::EF_CONTROL_DOWN}, std::nullopt},
 
         {ui::Accelerator{ui::VKEY_HOME, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
-         absl::nullopt},
+         std::nullopt},
 
         {ui::Accelerator{ui::VKEY_END, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
-         absl::nullopt},
+         std::nullopt},
     }));
 
 TEST_P(SixPackAliasAltTest, CheckSixPackAliasAlt) {
@@ -1098,7 +1098,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         // The following should not perform an alias since Alt is part of the
         // original accelerator.
-        {ui::Accelerator{ui::VKEY_F11, ui::EF_ALT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_F11, ui::EF_ALT_DOWN}, std::nullopt},
     }));
 
 TEST_P(ExtendedFKeysAliasAltTest, CheckExtendedFKeysAliasAlt) {
@@ -1181,7 +1181,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         // The following should not perform an alias since Shift is part of
         // the original accelerator.
-        {ui::Accelerator{ui::VKEY_F11, ui::EF_SHIFT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_F11, ui::EF_SHIFT_DOWN}, std::nullopt},
     }));
 
 TEST_P(ExtendedFKeysAliasShiftTest, CheckExtendedFKeysAliasShift) {
@@ -1269,15 +1269,15 @@ INSTANTIATE_TEST_SUITE_P(
         // The following should not perform an alias since Ctrl and Shift
         // are part of the original accelerator.
         {ui::Accelerator{ui::VKEY_F11, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
-         absl::nullopt},
+         std::nullopt},
 
         // The following should not perform an alias since Ctrl is part of the
         // original accelerator.
-        {ui::Accelerator{ui::VKEY_F11, ui::EF_CONTROL_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_F11, ui::EF_CONTROL_DOWN}, std::nullopt},
 
         // The following should not perform an alias since Shift is part of the
         // original accelerator.
-        {ui::Accelerator{ui::VKEY_F11, ui::EF_SHIFT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_F11, ui::EF_SHIFT_DOWN}, std::nullopt},
     }));
 
 TEST_P(ExtendedFKeysAliasCtrlShiftTest, CheckExtendedFKeysAliasCtrlShift) {

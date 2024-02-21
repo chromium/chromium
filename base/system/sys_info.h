@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -18,7 +19,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
@@ -154,7 +154,7 @@ class BASE_EXPORT SysInfo {
   // Do not add any further callers! When the aforementioned 2022-era hardware
   // is the minimum requirement for Chromium, remove this function and adjust
   // all callers appropriately.
-  static absl::optional<HardwareModelNameSplit> SplitHardwareModelNameDoNotUse(
+  static std::optional<HardwareModelNameSplit> SplitHardwareModelNameDoNotUse(
       std::string_view name);
 #endif
 
@@ -337,7 +337,7 @@ class BASE_EXPORT SysInfo {
 
   // Sets the amount of physical memory in MB for testing, thus allowing tests
   // to run irrespective of the host machine's configuration.
-  static absl::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
+  static std::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
       uint64_t amount_of_memory_mb);
   static void ClearAmountOfPhysicalMemoryMbForTesting();
 };

@@ -59,7 +59,7 @@ void DevicePosturePlatformProviderWin::StartListening() {
 }
 
 void DevicePosturePlatformProviderWin::StopListening() {
-  registry_key_ = absl::nullopt;
+  registry_key_ = std::nullopt;
 }
 
 std::optional<DevicePostureType> DevicePosturePlatformProviderWin::ParsePosture(
@@ -79,7 +79,7 @@ std::optional<DevicePostureType> DevicePosturePlatformProviderWin::ParsePosture(
     return iter->second;
   }
   DVLOG(1) << "Could not parse the posture data: " << posture_state;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DevicePosturePlatformProviderWin::ComputeFoldableState(
@@ -142,14 +142,14 @@ std::optional<std::vector<gfx::Rect>>
 DevicePosturePlatformProviderWin::ParseViewportSegments(
     const base::Value::List& viewport_segments) {
   if (viewport_segments.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Check if the list is correctly constructed. It should be a multiple of
   // |left side|fold|right side| or 1.
   if (viewport_segments.size() != 1 && viewport_segments.size() % 3 != 0) {
     DVLOG(1) << "Could not parse the viewport segments data.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<gfx::Rect> segments;
@@ -157,7 +157,7 @@ DevicePosturePlatformProviderWin::ParseViewportSegments(
     const std::string* segment_string = segment.GetIfString();
     if (!segment_string) {
       DVLOG(1) << "Could not parse the viewport segments data";
-      return absl::nullopt;
+      return std::nullopt;
     }
     auto rectangle_dimensions = base::SplitStringPiece(
         *segment_string, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
@@ -165,7 +165,7 @@ DevicePosturePlatformProviderWin::ParseViewportSegments(
     if (rectangle_dimensions.size() != 4) {
       DVLOG(1) << "Could not parse the viewport segments data: "
                << *segment_string;
-      return absl::nullopt;
+      return std::nullopt;
     }
     int x, y, width, height;
     if (!base::StringToInt(rectangle_dimensions[0], &x) ||
@@ -174,7 +174,7 @@ DevicePosturePlatformProviderWin::ParseViewportSegments(
         !base::StringToInt(rectangle_dimensions[3], &height)) {
       DVLOG(1) << "Could not parse the viewport segments data: "
                << *segment_string;
-      return absl::nullopt;
+      return std::nullopt;
     }
     segments.emplace_back(x, y, width, height);
   }

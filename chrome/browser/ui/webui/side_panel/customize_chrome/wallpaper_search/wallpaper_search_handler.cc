@@ -232,7 +232,7 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
 
 void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                         absl::nullopt);
+                                                         std::nullopt);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -757,7 +757,7 @@ void WallpaperSearchHandler::OnInspirationsRetrieved(
     // Network errors (i.e. the server did not provide a response).
     DVLOG(1) << "Request failed with error: "
              << inspirations_simple_url_loader_->NetError();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -780,7 +780,7 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value() || !result->is_list()) {
     DVLOG(1) << "Parsing JSON failed: " << result.error();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>
@@ -834,7 +834,7 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
       if (!background_image || !thumbnail_image || !description || !id_string) {
         continue;
       }
-      const absl::optional<base::Token> id_token =
+      const std::optional<base::Token> id_token =
           base::Token::FromString(*id_string);
       if (!id_token.has_value()) {
         continue;
@@ -857,7 +857,7 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
   if (mojo_inspiration_groups.size() > 0) {
     std::move(callback).Run(std::move(mojo_inspiration_groups));
   } else {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 }
 

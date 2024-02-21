@@ -429,8 +429,7 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
 void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
     const std::set<ContentSettingsType>& permissions,
     const base::Value::Dict& chooser_permissions_data,
-    const absl::optional<content_settings::ContentSettingConstraints>
-        constraint,
+    const std::optional<content_settings::ContentSettingConstraints> constraint,
     const url::Origin origin) {
   for (const auto& permission : permissions) {
     if (IsContentSetting(permission)) {
@@ -681,7 +680,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
     // Store revoked permissions on HCSM.
     if (!revoked_permissions.empty()) {
       StorePermissionInRevokedPermissionSetting(
-          revoked_permissions, chooser_permissions_data, absl::nullopt,
+          revoked_permissions, chooser_permissions_data, std::nullopt,
           primary_pattern, secondary_pattern);
     }
 
@@ -706,8 +705,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
     const std::set<ContentSettingsType>& permissions,
     const base::Value::Dict& chooser_permissions_data,
-    const absl::optional<content_settings::ContentSettingConstraints>
-        constraint,
+    const std::optional<content_settings::ContentSettingConstraints> constraint,
     const url::Origin origin) {
   // The |secondary_pattern| for
   // |ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS| is always wildcard.
@@ -720,8 +718,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
     const std::set<ContentSettingsType>& permissions,
     const base::Value::Dict& chooser_permissions_data,
-    const absl::optional<content_settings::ContentSettingConstraints>
-        constraint,
+    const std::optional<content_settings::ContentSettingConstraints> constraint,
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
   GURL url = GURL(primary_pattern.ToString());

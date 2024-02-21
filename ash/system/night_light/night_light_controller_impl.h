@@ -203,7 +203,7 @@ class ASH_EXPORT NightLightControllerImpl
 
   // Night light state in the last call to `RefreshFeatureState()`. `nullopt`
   // if no call has been made yet.
-  absl::optional<bool> last_observed_enabled_state_;
+  std::optional<bool> last_observed_enabled_state_;
 
   base::WeakPtrFactory<NightLightControllerImpl> weak_ptr_factory_;
 };

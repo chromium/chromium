@@ -55,7 +55,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_result,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
-    const absl::optional<std::string>& expected_content_transfer_method) {
+    const std::optional<std::string>& expected_content_transfer_method) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
@@ -97,7 +97,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
     const std::string& expected_result,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
-    const absl::optional<std::string>& expected_content_transfer_method) {
+    const std::optional<std::string>& expected_content_transfer_method) {
   DCHECK_EQ(expected_filenames.size(), expected_sha256s.size());
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes_[expected_filenames[i]] = expected_sha256s[i];
@@ -184,7 +184,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
     const std::string& expected_scan_id,
-    const absl::optional<std::string>& expected_content_transfer_method) {
+    const std::optional<std::string>& expected_content_transfer_method) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
@@ -228,7 +228,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
     const std::vector<std::string>& expected_scan_ids,
-    const absl::optional<std::string>& expected_content_transfer_method) {
+    const std::optional<std::string>& expected_content_transfer_method) {
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes_[expected_filenames[i]] = expected_sha256s[i];
     dlp_verdicts_[expected_filenames[i]] = expected_dlp_verdicts[i];
@@ -274,7 +274,7 @@ void EventReportValidator::
         const std::string& expected_profile_username,
         const std::string& expected_profile_identifier,
         const std::string& expected_scan_id,
-        const absl::optional<std::string>& expected_content_transfer_method) {
+        const std::optional<std::string>& expected_content_transfer_method) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;

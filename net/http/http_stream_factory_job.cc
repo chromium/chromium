@@ -917,11 +917,11 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
   // supported, but when it is we can remove this CHECK.
   CHECK(proxy_info_.proxy_chain().is_direct());
 
-  absl::optional<NetworkTrafficAnnotationTag> traffic_annotation =
+  std::optional<NetworkTrafficAnnotationTag> traffic_annotation =
       proxy_info_.traffic_annotation().is_valid()
-          ? absl::make_optional<NetworkTrafficAnnotationTag>(
+          ? std::make_optional<NetworkTrafficAnnotationTag>(
                 proxy_info_.traffic_annotation())
-          : absl::nullopt;
+          : std::nullopt;
   int rv = quic_request_.Request(
       destination_, quic_version_, proxy_info_.proxy_chain(),
       std::move(traffic_annotation), SessionUsage::kDestination,

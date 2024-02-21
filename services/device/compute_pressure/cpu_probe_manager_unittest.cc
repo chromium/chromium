@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -20,7 +21,6 @@
 #include "components/system_cpu/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -100,7 +100,7 @@ TEST_F(CpuProbeManagerTest, EnsureStarted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(absl::make_optional(CpuSample{0.9}));
+      ->SetLastSample(std::make_optional(CpuSample{0.9}));
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
 

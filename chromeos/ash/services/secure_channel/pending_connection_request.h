@@ -15,7 +15,6 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -52,7 +51,7 @@ class PendingConnectionRequest {
 
   virtual void HandleBleDiscoveryStateChange(
       mojom::DiscoveryResult discovery_result,
-      absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {}
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) {}
   virtual void HandleNearbyConnectionChange(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) {}

@@ -6,6 +6,7 @@
 #define BASE_TASK_THREAD_POOL_DELAYED_TASK_MANAGER_H_
 
 #include <functional>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/containers/intrusive_heap.h"
@@ -20,7 +21,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -57,7 +57,7 @@ class BASE_EXPORT DelayedTaskManager {
   void ProcessRipeTasks();
 
   // Returns the |delayed_run_time| of the next scheduled task, if any.
-  absl::optional<TimeTicks> NextScheduledRunTime() const;
+  std::optional<TimeTicks> NextScheduledRunTime() const;
 
   // Returns the DelayPolicy for the next delayed task.
   subtle::DelayPolicy TopTaskDelayPolicyForTesting() const;

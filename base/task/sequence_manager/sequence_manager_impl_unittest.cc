@@ -65,8 +65,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
+#include <optional>
+
 #include "base/test/trace_event_analyzer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 using base::sequence_manager::EnqueueOrder;
@@ -2483,7 +2484,7 @@ TEST_P(SequenceManagerTest, TimeDomainDoesNotCauseWakeUp) {
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 1, &run_order), Milliseconds(10));
   LazyNow lazy_now1(domain.get());
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now1));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now1));
   EXPECT_EQ(TimeTicks::Max(), NextPendingTaskTime());
 
   domain->SetNowTicks(sequence_manager()->NowTicks() + Milliseconds(10));
@@ -2536,9 +2537,9 @@ class MockTaskQueueThrottler : public TaskQueue::Throttler {
   MOCK_METHOD0(OnHasImmediateTask, void());
   MOCK_METHOD1(GetNextAllowedWakeUp_DesiredWakeUpTime, void(TimeTicks));
 
-  absl::optional<WakeUp> GetNextAllowedWakeUp(
+  std::optional<WakeUp> GetNextAllowedWakeUp(
       LazyNow* lazy_now,
-      absl::optional<WakeUp> next_desired_wake_up,
+      std::optional<WakeUp> next_desired_wake_up,
       bool has_immediate_work) override {
     if (next_desired_wake_up)
       GetNextAllowedWakeUp_DesiredWakeUpTime(next_desired_wake_up->time);
@@ -2547,12 +2548,12 @@ class MockTaskQueueThrottler : public TaskQueue::Throttler {
     return next_desired_wake_up;
   }
 
-  void SetNextAllowedWakeUp(absl::optional<WakeUp> next_allowed_wake_up) {
+  void SetNextAllowedWakeUp(std::optional<WakeUp> next_allowed_wake_up) {
     next_allowed_wake_up_ = next_allowed_wake_up;
   }
 
  private:
-  absl::optional<WakeUp> next_allowed_wake_up_;
+  std::optional<WakeUp> next_allowed_wake_up_;
 };
 
 }  // namespace
@@ -3524,9 +3525,9 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
   auto queue = CreateTaskQueue();
   constexpr TimeDelta kDelay(Milliseconds(10));
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
@@ -3541,7 +3542,7 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
   EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay, kLeeway}),
             sequence_manager()->GetPendingWakeUp(&lazy_now));
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
@@ -3553,7 +3554,7 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
       lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
@@ -3561,7 +3562,7 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
       lazy_now2, SequencedTaskSource::SelectTaskOption::kDefault));
   sequence_manager()->DidRunTask(lazy_now2);
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 }
 
 TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
@@ -3569,9 +3570,9 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
   constexpr TimeDelta kDelay(Milliseconds(10));
   LazyNow lazy_now(mock_tick_clock());
 
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
@@ -3607,7 +3608,7 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
       lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
@@ -3615,7 +3616,7 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
       lazy_now2, SequencedTaskSource::SelectTaskOption::kDefault));
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   sequence_manager()->DidRunTask(lazy_now2);
@@ -3667,7 +3668,7 @@ TEST_P(SequenceManagerTest,
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
       lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
@@ -3679,14 +3680,14 @@ TEST_P(SequenceManagerTest,
 
   // No delayed tasks can be executed anymore.
   EXPECT_FALSE(sequence_manager()->SelectNextTask(lazy_now2));
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 }
 
 TEST_P(SequenceManagerTest, GetPendingWakeUp) {
   auto queues = CreateTaskQueues(2u);
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             Seconds(10));
@@ -3720,7 +3721,7 @@ TEST_P(SequenceManagerTest, GetPendingWakeUp_Disabled) {
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
 TEST_P(SequenceManagerTest, GetPendingWakeUp_Fence) {
@@ -3730,7 +3731,7 @@ TEST_P(SequenceManagerTest, GetPendingWakeUp_Fence) {
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
 TEST_P(SequenceManagerTest, GetPendingWakeUp_FenceUnblocking) {
@@ -3773,7 +3774,7 @@ TEST_P(SequenceManagerTest, RemoveAllCanceledDelayedTasksFromFront) {
   // Canceling the task is not sufficient to ensure it is not considered for the
   // next task time.
   cancelable_closure.Cancel();
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
 TEST_P(SequenceManagerTest,
@@ -3812,10 +3813,10 @@ TEST_P(SequenceManagerTest,
   cancelable_closure_2.Cancel();
 
   // No more valid tasks in any queues.
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Test that calling `GetPendingWakeUp()` works when no task is canceled.
-  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
+  EXPECT_EQ(std::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
 namespace {
@@ -3958,7 +3959,7 @@ TEST_P(SequenceManagerTest, DisablingQueuesChangesDelayTillNextDoWork) {
 TEST_P(SequenceManagerTest, GetNextDesiredWakeUp) {
   auto queue = CreateTaskQueue();
 
-  EXPECT_EQ(absl::nullopt, queue->GetNextDesiredWakeUp());
+  EXPECT_EQ(std::nullopt, queue->GetNextDesiredWakeUp());
 
   TimeTicks start_time = sequence_manager()->NowTicks();
   TimeDelta delay1 = Milliseconds(10);
@@ -3974,7 +3975,7 @@ TEST_P(SequenceManagerTest, GetNextDesiredWakeUp) {
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       queue->CreateQueueEnabledVoter();
   voter->SetVoteToEnable(false);
-  EXPECT_EQ(absl::nullopt, queue->GetNextDesiredWakeUp());
+  EXPECT_EQ(std::nullopt, queue->GetNextDesiredWakeUp());
 
   voter->SetVoteToEnable(true);
   EXPECT_EQ(start_time + delay2, queue->GetNextDesiredWakeUp()->time);
@@ -4758,7 +4759,7 @@ class MockTimeDomain : public TimeDomain {
   TimeTicks NowTicks() const override { return now_; }
 
   // TimeDomain:
-  bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> wakeup,
+  bool MaybeFastForwardToWakeUp(std::optional<WakeUp> wakeup,
                                 bool quit_when_idle_requested) override {
     return MaybeFastForwardToWakeUp(quit_when_idle_requested);
   }
@@ -5792,8 +5793,8 @@ TEST_F(SequenceManagerRunOrPostTaskTest, SequenceAndThreadChecker) {
 
   SequenceCheckerImpl sequence_checker;
   ThreadCheckerImpl thread_checker;
-  absl::optional<SequenceCheckerImpl> sequence_checker_bound_in_task;
-  absl::optional<ThreadCheckerImpl> thread_checker_bound_in_task;
+  std::optional<SequenceCheckerImpl> sequence_checker_bound_in_task;
+  std::optional<ThreadCheckerImpl> thread_checker_bound_in_task;
 
   EXPECT_TRUE(other_thread_task_runner()->PostTask(
       FROM_HERE, BindLambdaForTesting([&]() {
@@ -5830,8 +5831,8 @@ TEST_F(SequenceManagerRunOrPostTaskTest,
 
   SequenceCheckerImpl sequence_checker;
   ThreadCheckerImpl thread_checker;
-  absl::optional<SequenceCheckerImpl> sequence_checker_bound_in_task;
-  absl::optional<ThreadCheckerImpl> thread_checker_bound_in_task;
+  std::optional<SequenceCheckerImpl> sequence_checker_bound_in_task;
+  std::optional<ThreadCheckerImpl> thread_checker_bound_in_task;
 
   ThreadPoolInstance::Create("TestPool");
   ThreadPoolInstance::Get()->Start({/* max_num_foreground_threads_in=*/1});

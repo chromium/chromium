@@ -95,7 +95,7 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
     const GURL& main_frame_url,
     const UnsafeResource& unsafe_resource,
     std::unique_ptr<AwWebResourceRequest> resource_request,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   // Log the request destination that triggers the safe browsing blocking page.
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                             unsafe_resource.request_destination);

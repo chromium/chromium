@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include <limits>
+#include <optional>
 #include <string>
 
 #include "base/build_time.h"
@@ -22,7 +23,6 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -52,9 +52,9 @@ const char kThaiLocale[] = "th-TH";
 const char kBangkokTimeZoneId[] = "Asia/Bangkok";
 
 // Returns the total offset (including Daylight Saving Time) of the timezone
-// with |timezone_id| at |time|, or absl::nullopt in case of failure.
-absl::optional<base::TimeDelta> GetTimeZoneOffsetAtTime(const char* timezone_id,
-                                                        Time time) {
+// with |timezone_id| at |time|, or std::nullopt in case of failure.
+std::optional<base::TimeDelta> GetTimeZoneOffsetAtTime(const char* timezone_id,
+                                                       Time time) {
   std::unique_ptr<icu::TimeZone> tz(icu::TimeZone::createTimeZone(timezone_id));
   if (*tz == icu::TimeZone::getUnknown()) {
     return {};
@@ -109,7 +109,7 @@ class ScopedLibcTZ {
   static constexpr char kTZ[] = "TZ";
 
   bool success_ = true;
-  absl::optional<std::string> old_timezone_;
+  std::optional<std::string> old_timezone_;
 };
 
 constexpr char ScopedLibcTZ::kTZ[];
@@ -1208,7 +1208,7 @@ TEST_F(TimeTest, LocalExplodedIsLocaleIndependent) {
   Time time;
   ASSERT_TRUE(base::Time::FromUTCExploded(utc_exploded_orig, &time));
 
-  absl::optional<TimeDelta> expected_delta =
+  std::optional<TimeDelta> expected_delta =
       GetTimeZoneOffsetAtTime(kBangkokTimeZoneId, time);
 
   ASSERT_TRUE(expected_delta.has_value());

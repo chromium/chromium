@@ -4,6 +4,7 @@
 
 #include "base/test/test_mock_time_task_runner.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -370,7 +370,7 @@ void TestMockTimeTaskRunner::ProcessTasksNoLaterThan(TimeDelta max_delta,
 
   // Multiple test task runners can share the same thread for determinism in
   // unit tests. Make sure this TestMockTimeTaskRunner's tasks run in its scope.
-  absl::optional<SingleThreadTaskRunner::CurrentHandleOverrideForTesting>
+  std::optional<SingleThreadTaskRunner::CurrentHandleOverrideForTesting>
       ttrh_override;
   if (!SingleThreadTaskRunner::HasCurrentDefault() ||
       SingleThreadTaskRunner::GetCurrentDefault() != proxy_task_runner_.get()) {

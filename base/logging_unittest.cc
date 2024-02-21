@@ -52,7 +52,7 @@
 #include <zircon/types.h>
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace logging {
 

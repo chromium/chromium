@@ -5,13 +5,14 @@
 #ifndef BASE_TASK_SINGLE_THREAD_TASK_RUNNER_H_
 #define BASE_TASK_SINGLE_THREAD_TASK_RUNNER_H_
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink::scheduler {
 class MainThreadSchedulerImpl;

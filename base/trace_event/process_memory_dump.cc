@@ -7,6 +7,7 @@
 #include <errno.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/bits.h"
@@ -23,7 +24,6 @@
 #include "base/trace_event/traced_value.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
@@ -93,7 +93,7 @@ size_t ProcessMemoryDump::GetSystemPageSize() {
 }
 
 // static
-absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
+std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     void* start_address,
     size_t mapped_size) {
   const size_t page_size = GetSystemPageSize();
@@ -176,13 +176,13 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
   DCHECK(!failure);
   if (failure) {
     LOG(ERROR) << "CountResidentBytes failed. The resident size is invalid";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return total_resident_pages;
 }
 
 // static
-absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
+std::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
     void* start_address,
     size_t mapped_size) {
   // `MapAt()` performs some internal arithmetic to allow non-page-aligned
@@ -211,7 +211,7 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
   if (result == MachVMRegionResult::Error) {
     LOG(ERROR) << "CountResidentBytesInSharedMemory failed. The resident size "
                   "is invalid";
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   }
 
   size_t resident_pages =

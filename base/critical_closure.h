@@ -14,9 +14,10 @@
 #include "build/ios_buildflags.h"
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/ios/scoped_critical_action.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace base {
@@ -51,7 +52,7 @@ class PendingCriticalClosure {
   void Run();
 
  private:
-  absl::optional<ios::ScopedCriticalAction> critical_action_;
+  std::optional<ios::ScopedCriticalAction> critical_action_;
   std::string task_name_;
   OnceClosure closure_;
 };

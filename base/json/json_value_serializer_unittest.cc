@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_util.h"
@@ -18,7 +19,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -77,7 +77,7 @@ void CheckJSONIsStillTheSame(const Value& value) {
 }
 
 void ValidateJsonList(const std::string& json) {
-  absl::optional<Value> value = JSONReader::Read(json);
+  std::optional<Value> value = JSONReader::Read(json);
   ASSERT_TRUE(value);
   Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
@@ -370,7 +370,7 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
   ValidateJsonList("[ 1 //// ,2\r\n ]");
 
   // It's ok to have a comment in a string.
-  absl::optional<Value> value = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
+  std::optional<Value> value = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
   ASSERT_TRUE(value);
   Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);

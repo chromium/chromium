@@ -443,7 +443,7 @@ class IndexedDBTest
   }
 
   IndexedDBBucketContextHandle CreateBucketHandle(
-      absl::optional<storage::BucketLocator> bucket_locator = absl::nullopt) {
+      std::optional<storage::BucketLocator> bucket_locator = std::nullopt) {
     if (!bucket_locator) {
       const blink::StorageKey storage_key =
           blink::StorageKey::CreateFromStringForTesting("http://localhost:81");

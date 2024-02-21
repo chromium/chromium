@@ -108,7 +108,7 @@ BatteryStateSampler::CreateSamplingEventSource() {
 #endif  // !BUILDFLAG(IS_MAC)
 
 void BatteryStateSampler::OnInitialBatteryStateSampled(
-    const absl::optional<BatteryLevelProvider::BatteryState>& battery_state) {
+    const std::optional<BatteryLevelProvider::BatteryState>& battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!has_last_battery_state_);
@@ -128,7 +128,7 @@ void BatteryStateSampler::OnSamplingEvent() {
 }
 
 void BatteryStateSampler::OnBatteryStateSampled(
-    const absl::optional<BatteryLevelProvider::BatteryState>& battery_state) {
+    const std::optional<BatteryLevelProvider::BatteryState>& battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(has_last_battery_state_);

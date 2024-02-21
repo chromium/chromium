@@ -40,7 +40,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
     const GURL& main_frame_url,
     const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
     bool should_trigger_reporting,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // Create appropriate display options for this blocking page.
@@ -141,7 +141,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
     content::WebContents* web_contents,
     const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
     const BaseUIManager* ui_manager,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);

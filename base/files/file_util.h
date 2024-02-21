@@ -24,7 +24,6 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -59,9 +58,9 @@ BASE_EXPORT FilePath MakeAbsoluteFilePath(const FilePath& input);
 // This may block if `input` is a relative path, when calling
 // GetCurrentDirectory().
 //
-// This doesn't return absl::nullopt unless (1) `input` is empty, or (2)
+// This doesn't return std::nullopt unless (1) `input` is empty, or (2)
 // `input` is a relative path and GetCurrentDirectory() fails.
-[[nodiscard]] BASE_EXPORT absl::optional<FilePath>
+[[nodiscard]] BASE_EXPORT std::optional<FilePath>
 MakeAbsoluteFilePathNoResolveSymbolicLinks(const FilePath& input);
 #endif
 
@@ -226,7 +225,7 @@ BASE_EXPORT bool TextContentsEqual(const FilePath& filename1,
 // Reads the file at |path| and returns a vector of bytes on success, and
 // nullopt on error. For security reasons, a |path| containing path traversal
 // components ('..') is treated as a read error, returning nullopt.
-BASE_EXPORT absl::optional<std::vector<uint8_t>> ReadFileToBytes(
+BASE_EXPORT std::optional<std::vector<uint8_t>> ReadFileToBytes(
     const FilePath& path);
 
 // Reads the file at |path| into |contents| and returns true on success and
@@ -310,7 +309,7 @@ BASE_EXPORT bool ReadSymbolicLink(const FilePath& symlink, FilePath* target);
 // Can fail if readlink() fails, or if
 // MakeAbsoluteFilePathNoResolveSymbolicLinks() fails on the resulting absolute
 // path.
-BASE_EXPORT absl::optional<FilePath> ReadSymbolicLinkAbsolute(
+BASE_EXPORT std::optional<FilePath> ReadSymbolicLinkAbsolute(
     const FilePath& symlink);
 
 // Bits and masks of the file permission.

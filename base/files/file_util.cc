@@ -322,14 +322,14 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   return read_successs;
 }
 
-absl::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
+std::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
   if (path.ReferencesParent()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ScopedFILE file_stream(OpenFile(path, "rb"));
   if (!file_stream) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint8_t> bytes;
@@ -339,7 +339,7 @@ absl::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
                                      bytes.resize(size);
                                      return make_span(bytes);
                                    })) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return bytes;
 }

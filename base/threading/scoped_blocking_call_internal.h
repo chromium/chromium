@@ -5,6 +5,8 @@
 #ifndef BASE_THREADING_SCOPED_BLOCKING_CALL_INTERNAL_H_
 #define BASE_THREADING_SCOPED_BLOCKING_CALL_INTERNAL_H_
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
@@ -14,7 +16,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -199,7 +200,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] UncheckedScopedBlockingCall {
 
   // Non-nullopt for non-nested blocking calls of type MAY_BLOCK on foreground
   // threads which we monitor for I/O jank.
-  absl::optional<IOJankMonitoringWindow::ScopedMonitoredCall> monitored_call_;
+  std::optional<IOJankMonitoringWindow::ScopedMonitoredCall> monitored_call_;
 };
 
 }  // namespace internal

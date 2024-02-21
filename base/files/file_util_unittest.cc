@@ -401,8 +401,8 @@ class ScopedWorkingDirectory {
 TEST_F(FileUtilTest, MakeAbsoluteFilePathNoResolveSymbolicLinks) {
   FilePath cwd;
   ASSERT_TRUE(GetCurrentDirectory(&cwd));
-  const std::pair<FilePath, absl::optional<FilePath>> kExpectedResults[]{
-      {FilePath(), absl::nullopt},
+  const std::pair<FilePath, std::optional<FilePath>> kExpectedResults[]{
+      {FilePath(), std::nullopt},
       {FilePath("."), cwd},
       {FilePath(".."), cwd.DirName()},
       {FilePath("a/.."), cwd},
@@ -1072,7 +1072,7 @@ TEST_F(FileUtilTest, CreateAndReadRelativeSymlinks) {
   ASSERT_TRUE(ReadSymbolicLink(link_from, &result));
   EXPECT_EQ(filename_link_to.value(), result.value());
 
-  absl::optional<FilePath> absolute_link = ReadSymbolicLinkAbsolute(link_from);
+  std::optional<FilePath> absolute_link = ReadSymbolicLinkAbsolute(link_from);
   ASSERT_TRUE(absolute_link);
   EXPECT_EQ(link_to.value(), absolute_link->value());
 
@@ -3444,7 +3444,7 @@ TEST_F(FileUtilTest, ReadFileToBytes) {
   // Create test file.
   ASSERT_TRUE(WriteFile(file_path, kTestData));
 
-  absl::optional<std::vector<uint8_t>> bytes = ReadFileToBytes(file_path);
+  std::optional<std::vector<uint8_t>> bytes = ReadFileToBytes(file_path);
   ASSERT_TRUE(bytes.has_value());
   EXPECT_EQ(kTestData, bytes);
 

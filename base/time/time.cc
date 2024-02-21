@@ -7,6 +7,7 @@
 #include <atomic>
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <ostream>
 #include <tuple>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/third_party/nspr/prtime.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 

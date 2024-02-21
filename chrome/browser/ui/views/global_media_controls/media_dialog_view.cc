@@ -671,7 +671,7 @@ MediaDialogView::BuildMediaItemUIView(
       id, item, BuildFooter(id, item, profile_, media_color_theme_),
       BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
                           show_devices, media_color_theme_),
-      /*notification_theme=*/absl::nullopt, media_color_theme_,
+      /*notification_theme=*/std::nullopt, media_color_theme_,
       global_media_controls::MediaDisplayPage::kMediaDialogView);
 }
 

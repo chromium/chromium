@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <tuple>
 #include <utility>
@@ -25,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -231,17 +231,17 @@ const char* Value::GetTypeName(Value::Type type) {
   return kTypeNames[static_cast<size_t>(type)];
 }
 
-absl::optional<bool> Value::GetIfBool() const {
-  return is_bool() ? absl::make_optional(GetBool()) : absl::nullopt;
+std::optional<bool> Value::GetIfBool() const {
+  return is_bool() ? std::make_optional(GetBool()) : std::nullopt;
 }
 
-absl::optional<int> Value::GetIfInt() const {
-  return is_int() ? absl::make_optional(GetInt()) : absl::nullopt;
+std::optional<int> Value::GetIfInt() const {
+  return is_int() ? std::make_optional(GetInt()) : std::nullopt;
 }
 
-absl::optional<double> Value::GetIfDouble() const {
-  return (is_int() || is_double()) ? absl::make_optional(GetDouble())
-                                   : absl::nullopt;
+std::optional<double> Value::GetIfDouble() const {
+  return (is_int() || is_double()) ? std::make_optional(GetDouble())
+                                   : std::nullopt;
 }
 
 const std::string* Value::GetIfString() const {
@@ -428,19 +428,19 @@ Value* Value::Dict::Find(StringPiece key) {
   return FindPtrOrNull(storage_, key);
 }
 
-absl::optional<bool> Value::Dict::FindBool(StringPiece key) const {
+std::optional<bool> Value::Dict::FindBool(StringPiece key) const {
   const Value* v = Find(key);
-  return v ? v->GetIfBool() : absl::nullopt;
+  return v ? v->GetIfBool() : std::nullopt;
 }
 
-absl::optional<int> Value::Dict::FindInt(StringPiece key) const {
+std::optional<int> Value::Dict::FindInt(StringPiece key) const {
   const Value* v = Find(key);
-  return v ? v->GetIfInt() : absl::nullopt;
+  return v ? v->GetIfInt() : std::nullopt;
 }
 
-absl::optional<double> Value::Dict::FindDouble(StringPiece key) const {
+std::optional<double> Value::Dict::FindDouble(StringPiece key) const {
   const Value* v = Find(key);
-  return v ? v->GetIfDouble() : absl::nullopt;
+  return v ? v->GetIfDouble() : std::nullopt;
 }
 
 const std::string* Value::Dict::FindString(StringPiece key) const {
@@ -603,12 +603,12 @@ bool Value::Dict::Remove(StringPiece key) {
   return storage_.erase(key) > 0;
 }
 
-absl::optional<Value> Value::Dict::Extract(StringPiece key) {
+std::optional<Value> Value::Dict::Extract(StringPiece key) {
   DCHECK(IsStringUTF8AllowingNoncharacters(key));
 
   auto it = storage_.find(key);
   if (it == storage_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   Value v = std::move(*it->second);
   storage_.erase(it);
@@ -641,20 +641,20 @@ Value* Value::Dict::FindByDottedPath(StringPiece path) {
   return const_cast<Value*>(std::as_const(*this).FindByDottedPath(path));
 }
 
-absl::optional<bool> Value::Dict::FindBoolByDottedPath(StringPiece path) const {
+std::optional<bool> Value::Dict::FindBoolByDottedPath(StringPiece path) const {
   const Value* v = FindByDottedPath(path);
-  return v ? v->GetIfBool() : absl::nullopt;
+  return v ? v->GetIfBool() : std::nullopt;
 }
 
-absl::optional<int> Value::Dict::FindIntByDottedPath(StringPiece path) const {
+std::optional<int> Value::Dict::FindIntByDottedPath(StringPiece path) const {
   const Value* v = FindByDottedPath(path);
-  return v ? v->GetIfInt() : absl::nullopt;
+  return v ? v->GetIfInt() : std::nullopt;
 }
 
-absl::optional<double> Value::Dict::FindDoubleByDottedPath(
+std::optional<double> Value::Dict::FindDoubleByDottedPath(
     StringPiece path) const {
   const Value* v = FindByDottedPath(path);
-  return v ? v->GetIfDouble() : absl::nullopt;
+  return v ? v->GetIfDouble() : std::nullopt;
 }
 
 const std::string* Value::Dict::FindStringByDottedPath(StringPiece path) const {
@@ -835,7 +835,7 @@ Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path, List&& value) && {
   return std::move(*this);
 }
 
-absl::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
+std::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
   DCHECK(!path.empty());
   DCHECK(IsStringUTF8AllowingNoncharacters(path));
 
@@ -851,9 +851,9 @@ absl::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
   StringPiece next_key = path.substr(0, dot_index);
   auto* next_dict = FindDict(next_key);
   if (!next_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<Value> extracted =
+  std::optional<Value> extracted =
       next_dict->ExtractByDottedPath(path.substr(dot_index + 1));
   if (extracted && next_dict->empty()) {
     Remove(next_key);

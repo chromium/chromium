@@ -1051,7 +1051,7 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
-  absl::optional<api::autofill_private::SetAutofillSyncToggleEnabled::Params>
+  std::optional<api::autofill_private::SetAutofillSyncToggleEnabled::Params>
       parameters =
           api::autofill_private::SetAutofillSyncToggleEnabled::Params::Create(
               args());

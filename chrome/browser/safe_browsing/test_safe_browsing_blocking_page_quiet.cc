@@ -30,7 +30,7 @@ TestSafeBrowsingBlockingPageQuiet::TestSafeBrowsingBlockingPageQuiet(
                            ui_manager,
                            nullptr,
                            /* settings_page_helper */ nullptr,
-                           /* blocked_page_shown_timestamp */ absl::nullopt),
+                           /* blocked_page_shown_timestamp */ std::nullopt),
                        display_options),
       sb_error_ui_(unsafe_resources[0].url,
                    main_frame_url,

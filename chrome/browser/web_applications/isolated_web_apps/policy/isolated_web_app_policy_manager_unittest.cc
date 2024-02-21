@@ -410,8 +410,8 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
       test_managed_guest_session_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 
-  absl::optional<web_package::SignedWebBundleId> lazy_app1_id_;
-  absl::optional<web_package::SignedWebBundleId> lazy_app2_id_;
+  std::optional<web_package::SignedWebBundleId> lazy_app1_id_;
+  std::optional<web_package::SignedWebBundleId> lazy_app2_id_;
 };
 
 class IsolatedWebAppPolicyManagerTest
@@ -464,7 +464,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
 
  private:
   InstallIsolatedWebAppCallback stashed_callback_;
-  absl::optional<web_package::SignedWebBundleId> id_;
+  std::optional<web_package::SignedWebBundleId> id_;
 };
 
 template <typename T>

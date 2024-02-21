@@ -71,14 +71,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
                const net::NetworkTrafficAnnotationTag& traffic_annotation,
                net::NetLog* net_log,
                const DatagramServerSocketFactory& socket_factory,
-               absl::optional<base::UnguessableToken> devtools_token);
+               std::optional<base::UnguessableToken> devtools_token);
   P2PSocketUdp(Delegate* delegate,
                mojo::PendingRemote<mojom::P2PSocketClient> client,
                mojo::PendingReceiver<mojom::P2PSocket> socket,
                P2PMessageThrottler* throttler,
                const net::NetworkTrafficAnnotationTag& traffic_annotation,
                net::NetLog* net_log,
-               absl::optional<base::UnguessableToken> devtools_token);
+               std::optional<base::UnguessableToken> devtools_token);
 
   P2PSocketUdp(const P2PSocketUdp&) = delete;
   P2PSocketUdp& operator=(const P2PSocketUdp&) = delete;

@@ -69,7 +69,7 @@ class PendingNearbyInitiatorConnectionRequest
       NearbyInitiatorFailureType failure_detail) override;
   void HandleBleDiscoveryStateChange(
       mojom::DiscoveryResult discovery_state,
-      absl::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
   void HandleNearbyConnectionChange(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) override;

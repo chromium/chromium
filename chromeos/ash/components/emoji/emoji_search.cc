@@ -70,7 +70,7 @@ void AddDataFromFileToMap(
   }
 
   // TODO(b/309343774): switch to JSON reading service
-  absl::optional<base::Value> json = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json = base::JSONReader::Read(json_string);
   CHECK(json) << "parse failed for " << file_id_in_resources << ":"
               << json_string << "EOF";
   base::Value::List groups = std::move(*json).TakeList();

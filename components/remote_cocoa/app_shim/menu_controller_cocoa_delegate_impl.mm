@@ -178,7 +178,7 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
 }
 
 - (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model {
-  absl::optional<size_t> alertedIndex;
+  std::optional<size_t> alertedIndex;
 
   // A map containing elements that need to be tracked, mapping from their
   // identifiers to their indexes in the menu.

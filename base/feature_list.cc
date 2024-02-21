@@ -470,14 +470,14 @@ bool FeatureList::IsValidFeatureOrFieldTrialName(StringPiece name) {
 }
 
 // static
-absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
+std::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
   if (!g_feature_list_instance ||
       !g_feature_list_instance->AllowFeatureAccess(feature)) {
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
         feature, g_feature_list_instance &&
                      g_feature_list_instance->IsEarlyAccessInstance());
     // If there is no feature list, there can be no overrides.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return g_feature_list_instance->IsFeatureEnabledIfOverridden(feature);
 }
@@ -725,7 +725,7 @@ bool FeatureList::IsFeatureEnabled(const Feature& feature) const {
   return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
 }
 
-absl::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
+std::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
     const Feature& feature) const {
   OverrideState overridden_state = GetOverrideState(feature);
 
@@ -733,7 +733,7 @@ absl::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
   if (overridden_state != OVERRIDE_USE_DEFAULT)
     return overridden_state == OVERRIDE_ENABLE_FEATURE;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 FeatureList::OverrideState FeatureList::GetOverrideState(

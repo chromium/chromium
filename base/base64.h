@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -48,9 +48,8 @@ BASE_EXPORT bool Base64Decode(
     std::string* output,
     Base64DecodePolicy policy = Base64DecodePolicy::kStrict);
 
-// Decodes the base64 input string. Returns `absl::nullopt` if unsuccessful.
-BASE_EXPORT absl::optional<std::vector<uint8_t>> Base64Decode(
-    StringPiece input);
+// Decodes the base64 input string. Returns `std::nullopt` if unsuccessful.
+BASE_EXPORT std::optional<std::vector<uint8_t>> Base64Decode(StringPiece input);
 
 }  // namespace base
 

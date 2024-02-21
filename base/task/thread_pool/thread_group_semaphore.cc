@@ -140,7 +140,7 @@ void ThreadGroupSemaphore::Start(
     WorkerThreadObserver* worker_thread_observer,
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,
-    absl::optional<TimeDelta> may_block_threshold) {
+    std::optional<TimeDelta> may_block_threshold) {
   ThreadGroup::StartImpl(
       max_tasks, max_best_effort_tasks, suggested_reclaim_time,
       service_thread_task_runner, worker_thread_observer, worker_environment,
@@ -284,7 +284,7 @@ ThreadGroupSemaphore::SemaphoreWorkerDelegate::SwapProcessedTask(
   // A transaction to the TaskSource to reenqueue, if any. Instantiated here as
   // `TaskSource::lock_` is a UniversalPredecessor and must always be acquired
   // prior to acquiring a second lock
-  absl::optional<RegisteredTaskSourceAndTransaction>
+  std::optional<RegisteredTaskSourceAndTransaction>
       transaction_with_task_source;
   if (task_source) {
     transaction_with_task_source.emplace(
@@ -317,8 +317,8 @@ ThreadGroupSemaphore::SemaphoreWorkerDelegate::SwapProcessedTask(
   // Running task bookkeeping.
   outer()->DecrementTasksRunningLockRequired(
       *read_worker().current_task_priority);
-  write_worker().current_shutdown_behavior = absl::nullopt;
-  write_worker().current_task_priority = absl::nullopt;
+  write_worker().current_shutdown_behavior = std::nullopt;
+  write_worker().current_task_priority = std::nullopt;
 
   if (transaction_with_task_source) {
     // If there is a task to enqueue, we can swap it for another task without

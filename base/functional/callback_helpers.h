@@ -191,15 +191,15 @@ class BASE_EXPORT ScopedClosureRunner {
 };
 
 // Returns a placeholder type that will implicitly convert into a null callback,
-// similar to how absl::nullopt / std::nullptr work in conjunction with
-// absl::optional and various smart pointer types.
+// similar to how std::nullopt / std::nullptr work in conjunction with
+// std::optional and various smart pointer types.
 constexpr auto NullCallback() {
   return internal::NullCallbackTag();
 }
 
 // Returns a placeholder type that will implicitly convert into a callback that
-// does nothing, similar to how absl::nullopt / std::nullptr work in conjunction
-// with absl::optional and various smart pointer types.
+// does nothing, similar to how std::nullopt / std::nullptr work in conjunction
+// with std::optional and various smart pointer types.
 constexpr auto DoNothing() {
   return internal::DoNothingCallbackTag();
 }

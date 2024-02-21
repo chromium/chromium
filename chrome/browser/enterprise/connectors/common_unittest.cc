@@ -195,7 +195,7 @@ class ContentAnalysisResponseCustomMessageTest
   std::u16string expected_message() const { return std::get<1>(GetParam()); }
 
   AnalysisSettings settings() {
-    absl::optional<AnalysisSettings> settings =
+    std::optional<AnalysisSettings> settings =
         ConnectorsServiceFactory::GetForBrowserContext(profile())
             ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
     EXPECT_TRUE(settings.has_value());

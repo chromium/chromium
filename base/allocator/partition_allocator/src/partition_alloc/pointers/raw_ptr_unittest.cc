@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -42,7 +43,6 @@
 #include "partition_alloc/tagging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
@@ -1429,7 +1429,7 @@ TEST_F(RawPtrTest, PointerToMemberFunction) {
 
 TEST_F(RawPtrTest, WorksWithOptional) {
   int x = 0;
-  absl::optional<raw_ptr<int>> maybe_int;
+  std::optional<raw_ptr<int>> maybe_int;
   EXPECT_FALSE(maybe_int.has_value());
 
   maybe_int = nullptr;
@@ -1983,14 +1983,14 @@ TEST_F(BackupRefPtrTest, ReinterpretCast) {
 }
 #endif  // PA_CONFIG(REF_COUNT_CHECK_COOKIE)
 
-// Tests that ref-count management is correct, despite `absl::optional` may be
+// Tests that ref-count management is correct, despite `std::optional` may be
 // using `union` underneath.
 TEST_F(BackupRefPtrTest, WorksWithOptional) {
   void* ptr = allocator_.root()->Alloc(16);
   auto* ref_count = allocator_.root()->RefCountPointerFromObjectForTesting(ptr);
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
-  absl::optional<raw_ptr<void>> opt = ptr;
+  std::optional<raw_ptr<void>> opt = ptr;
   ASSERT_TRUE(opt.has_value());
   EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
 
@@ -2007,7 +2007,7 @@ TEST_F(BackupRefPtrTest, WorksWithOptional) {
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
   {
-    absl::optional<raw_ptr<void>> opt2 = ptr;
+    std::optional<raw_ptr<void>> opt2 = ptr;
     ASSERT_TRUE(opt2.has_value());
     EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
   }

@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -121,7 +120,7 @@ void FocusModeTasksProvider::AddTask(const std::string& title,
                                      OnTaskSavedCallback callback) {
   std::unique_ptr<api::Task> task = std::make_unique<api::Task>(
       /*id=*/base::NumberToString(task_id_++), title,
-      /*due=*/absl::nullopt, /*completed=*/false, /*has_subtasks=*/false,
+      /*due=*/std::nullopt, /*completed=*/false, /*has_subtasks=*/false,
       /*has_email_link=*/false,
       /*has_notes=*/false, /*updated=*/base::Time::Now());
 

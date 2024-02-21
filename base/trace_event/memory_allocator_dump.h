@@ -9,6 +9,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perfetto {
 namespace protos {
@@ -148,8 +148,7 @@ class BASE_EXPORT MemoryAllocatorDump {
   MemoryAllocatorDumpGuid guid_;
   MemoryDumpLevelOfDetail level_of_detail_;
   int flags_;  // See enum Flags.
-  mutable absl::optional<uint64_t>
-      cached_size_;  // Lazy, for GetSizeInternal().
+  mutable std::optional<uint64_t> cached_size_;  // Lazy, for GetSizeInternal().
   std::vector<Entry> entries_;
 };
 
