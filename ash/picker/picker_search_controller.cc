@@ -69,19 +69,27 @@ void PickerSearchController::StartSearch(
   burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
                        &PickerSearchController::PublishBurnInResults);
 
-  client_->StartCrosSearch(
-      query,
-      base::BindRepeating(&PickerSearchController::HandleCrosSearchResults,
-                          weak_ptr_factory_.GetWeakPtr()));
-  gif_search_debouncer_.RequestSearch(
-      base::BindOnce(&PickerSearchController::StartGifSearch,
-                     weak_ptr_factory_.GetWeakPtr(), utf8_query));
+  if (!category.has_value() || (category == PickerCategory::kBrowsingHistory ||
+                                category == PickerCategory::kBookmarks ||
+                                category == PickerCategory::kOpenTabs)) {
+    client_->StartCrosSearch(
+        query,
+        base::BindRepeating(&PickerSearchController::HandleCrosSearchResults,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 
-  // Emoji search is currently synchronous.
-  HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
+  // These searches do not have category-specific search.
+  if (!category.has_value()) {
+    gif_search_debouncer_.RequestSearch(
+        base::BindOnce(&PickerSearchController::StartGifSearch,
+                       weak_ptr_factory_.GetWeakPtr(), utf8_query));
 
-  // Date results is currently synchronous.
-  HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
+    // Emoji search is currently synchronous.
+    HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
+
+    // Date results is currently synchronous.
+    HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
+  }
 }
 
 void PickerSearchController::StopSearch() {

@@ -581,5 +581,19 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
           gfx::Size(480, 480), u"cat blink")});
 }
 
+TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kBurnInPeriod);
+  EXPECT_CALL(client, StartCrosSearch(Eq(u"ant"), _)).Times(1);
+  EXPECT_CALL(client, StartCrosSearch(Eq(u"bat"), _)).Times(1);
+  EXPECT_CALL(client, StartCrosSearch(Eq(u"cat"), _)).Times(1);
+  EXPECT_CALL(client, FetchGifSearch(_, _)).Times(0);
+
+  controller.StartSearch(u"cat", PickerCategory::kBookmarks, base::DoNothing());
+  controller.StartSearch(u"ant", PickerCategory::kBrowsingHistory,
+                         base::DoNothing());
+  controller.StartSearch(u"bat", PickerCategory::kOpenTabs, base::DoNothing());
+}
+
 }  // namespace
 }  // namespace ash
