@@ -652,6 +652,7 @@ class Internals final : public ScriptWrappable {
                                int resource_load_priority);
   Member<InternalRuntimeFlags> runtime_flags_;
   Member<Document> document_;
+  std::optional<ColorSchemeHelper> color_scheme_helper_;
 };
 
 }  // namespace blink

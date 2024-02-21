@@ -3404,13 +3404,12 @@ void Internals::forceCompositingUpdate(Document* document,
 
 void Internals::setForcedColorsAndDarkPreferredColorScheme(Document* document) {
   DCHECK(document);
-  ColorSchemeHelper color_scheme_helper(*document);
-  color_scheme_helper.SetPreferredColorScheme(
+  color_scheme_helper_.emplace(*document);
+  color_scheme_helper_->SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
-  color_scheme_helper.SetForcedColors(*document, ForcedColors::kActive);
-  color_scheme_helper.SetEmulatedForcedColors(*document,
-                                              /*is_dark_theme=*/false);
-  document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
+  color_scheme_helper_->SetForcedColors(*document, ForcedColors::kActive);
+  color_scheme_helper_->SetEmulatedForcedColors(*document,
+                                                /*is_dark_theme=*/false);
 }
 
 void Internals::setDarkPreferredColorScheme(Document* document) {
