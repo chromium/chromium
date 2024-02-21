@@ -74,11 +74,6 @@ MediaStreamVideoTrackUnderlyingSource::GetStreamTransferOptimizer() {
           WrapCrossThreadWeakPersistent(this)));
 }
 
-scoped_refptr<base::SequencedTaskRunner>
-MediaStreamVideoTrackUnderlyingSource::GetIOTaskRunner() {
-  return Platform::Current()->GetIOTaskRunner();
-}
-
 void MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
     CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource> source) {
@@ -90,7 +85,6 @@ void MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted(
 void MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack(
     scoped_refptr<media::VideoFrame> media_frame,
     base::TimeTicks estimated_capture_time) {
-  DCHECK(GetIOTaskRunner()->RunsTasksInCurrentSequence());
   // The scaled video frames are currently ignored.
   QueueFrame(std::move(media_frame));
 }
