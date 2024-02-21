@@ -319,14 +319,12 @@ class WaylandWindow : public PlatformWindow,
   virtual void OnDragLeave();
   virtual void OnDragSessionClose(ui::mojom::DragOperation operation);
 
-  // Sets the window geometry.
-  virtual void SetWindowGeometry(gfx::Size size_dip);
+  // Sets the window geometry with insets.
+  virtual void SetWindowGeometry(const gfx::Size& size_dip,
+                                 const gfx::Insets& insets_dip);
 
   // Returns the offset of the window geometry within the window surface.
   gfx::Vector2d GetWindowGeometryOffsetInDIP() const;
-
-  // Returns the effective decoration insets.
-  gfx::Insets GetDecorationInsetsInDIP() const;
 
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();
@@ -577,12 +575,6 @@ class WaylandWindow : public PlatformWindow,
   scoped_refptr<BitmapCursor> cursor_;
 #endif
 
-  // Margins between edges of the surface and the window geometry (i.e., the
-  // area of the window that is visible to the user as the actual window).  The
-  // areas outside the geometry are used to draw client-side window decorations.
-  // TODO(crbug.com/1306688): Use DIP for frame insets.
-  std::optional<gfx::Insets> frame_insets_px_;
-
   bool has_touch_focus_ = false;
   // The UI scale may be forced through the command line, which means that it
   // replaces the default value that is equal to the natural device scale.
@@ -661,9 +653,6 @@ class WaylandWindow : public PlatformWindow,
   // values provided by the client, until we get an actual configure from the
   // server. See the comments on applied_state_ for further explanation.
   PlatformWindowDelegate::State latched_state_;
-
-  // Stores the insets in DIP at the time of the last latched state.
-  gfx::Insets latched_insets_;
 
   // In-flight state requests. Once a frame comes from the GPU
   // process with the appropriate viz sequence number, ack_configure request

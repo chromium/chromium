@@ -91,7 +91,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool OnInitialize(PlatformWindowInitProperties properties,
                     PlatformWindowDelegate::State* state) override;
   bool IsActive() const override;
-  void SetWindowGeometry(gfx::Size size_dip) override;
+  void SetWindowGeometry(const gfx::Size& size_dip,
+                         const gfx::Insets& insets_dip) override;
   bool IsScreenCoordinatesEnabled() const override;
   bool SupportsConfigureMinimizedState() const override;
   bool SupportsConfigurePinnedState() const override;

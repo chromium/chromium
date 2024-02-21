@@ -631,6 +631,93 @@ TEST_P(WaylandWindowTest, OnlyChangeDecorationInsets) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 }
 
+// Checks that decoration insets and bounds state is synchronized.
+TEST_P(WaylandWindowTest, ChangeBothBoundsAndDecorationInsets) {
+  constexpr gfx::Rect kFirstBounds{410, 310};
+  constexpr gfx::Insets kFirstInsets = gfx::Insets(5);
+
+  constexpr gfx::Rect kSecondBounds{420, 320};
+  constexpr gfx::Insets kSecondInsets = gfx::Insets(10);
+
+  uint32_t serial = 1;
+
+  // 1. Set bounds to kFirstBounds.
+  window_->SetBoundsInDIP(kFirstBounds);
+  constexpr auto geometry1 = kFirstBounds;
+  auto state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, geometry1.size(), state, serial++);
+
+  // 2. Set insets to kFirstInsets.
+  window_->SetDecorationInsets(&kFirstInsets);
+  auto geometry2 = kFirstBounds;
+  geometry2.Inset(kFirstInsets);
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, geometry2.size(), state, serial++);
+
+  // 3. Set bounds to kSecondBounds.
+  window_->SetBoundsInDIP(kSecondBounds);
+  auto geometry3 = kSecondBounds;
+  // insets_dip set in Step 2 should be preserved.
+  geometry3.Inset(kFirstInsets);
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, geometry3.size(), state, serial++);
+
+  // 4. Set insets to kSecondInsets.
+  window_->SetDecorationInsets(&kSecondInsets);
+  auto geometry4 = kSecondBounds;
+  geometry4.Inset(kSecondInsets);
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, geometry4.size(), state, serial++);
+
+  // 5. Process the request for step 2.
+  PostToServerAndWait([id = surface_id_, geometry = geometry1](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(geometry)).Times(0);
+    EXPECT_CALL(*xdg_surface, AckConfigure(/*serial=*/1)).Times(0);
+  });
+
+  PostToServerAndWait([id = surface_id_, geometry = geometry2](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(geometry));
+    EXPECT_CALL(*xdg_surface, AckConfigure(/*serial=*/2));
+  });
+
+  // insets_dip update won't produce a new frame so viz sequence id is
+  // incremented only once by step 1.
+  AdvanceFrameToGivenVizSequenceId(window_.get(), delegate_, /*viz_seq=*/1);
+  VerifyAndClearExpectations();
+
+  // 6. Process the request for step 4.
+  PostToServerAndWait([id = surface_id_, geometry = geometry3](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(geometry)).Times(0);
+    EXPECT_CALL(*xdg_surface, AckConfigure(/*serial=*/3)).Times(0);
+  });
+
+  PostToServerAndWait([id = surface_id_, geometry = geometry4](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(geometry));
+    EXPECT_CALL(*xdg_surface, AckConfigure(/*serial=*/4));
+  });
+
+  // insets_dip update won't produce a new frame so viz sequence id is
+  // incremented only once by step 3.
+  AdvanceFrameToGivenVizSequenceId(window_.get(), delegate_, /*viz_seq=*/2);
+  VerifyAndClearExpectations();
+}
+
 #if BUILDFLAG(IS_LINUX)
 // Checks that when the window gets some of its edges tiled, it notifies the
 // delegate appropriately.

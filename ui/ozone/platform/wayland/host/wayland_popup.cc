@@ -62,7 +62,7 @@ bool WaylandPopup::CreateShellPopup() {
   }
 
   auto bounds_dip = wl::TranslateWindowBoundsToParentDIP(this, parent_window());
-  bounds_dip.Inset(GetDecorationInsetsInDIP());
+  bounds_dip.Inset(applied_state().auxiliary_data.insets_dip);
 
   ShellPopupParams params;
   params.bounds = bounds_dip;
@@ -173,7 +173,7 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
   if (shell_popup_ && old_bounds_dip != bounds_dip) {
     auto bounds_dip_in_parent =
         wl::TranslateWindowBoundsToParentDIP(this, parent_window());
-    bounds_dip_in_parent.Inset(GetDecorationInsetsInDIP());
+    bounds_dip_in_parent.Inset(applied_state().auxiliary_data.insets_dip);
 
     // If Wayland moved the popup (for example, a dnd arrow icon), schedule
     // redraw as Aura doesn't do that for moved surfaces. If redraw has not been
@@ -210,7 +210,7 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
       parent_window()->GetWindowGeometryOffsetInDIP();
 
   // Bounds are in the geometry space. Need to add decoration insets backs.
-  const auto insets = GetDecorationInsetsInDIP();
+  const auto insets = applied_state().auxiliary_data.insets_dip;
   pending_configure_state_.bounds_dip->Inset(-insets);
   pending_configure_state_.size_px =
       delegate()->ConvertRectToPixels(pending_bounds_dip).size();
@@ -306,13 +306,14 @@ bool WaylandPopup::IsSurfaceConfigured() {
   return shell_popup() ? shell_popup()->IsConfigured() : false;
 }
 
-void WaylandPopup::SetWindowGeometry(gfx::Size size_dip) {
+void WaylandPopup::SetWindowGeometry(const gfx::Size& size_dip,
+                                     const gfx::Insets& insets_dip) {
   if (!shell_popup_) {
     return;
   }
-  const auto insets = GetDecorationInsetsInDIP();
+
   gfx::Rect geometry_dip(size_dip);
-  geometry_dip.Inset(insets);
+  geometry_dip.Inset(insets_dip);
   shell_popup_->SetWindowGeometry(geometry_dip);
 }
 
