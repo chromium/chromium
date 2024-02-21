@@ -641,6 +641,7 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
   all_passords_bottom_sheet_controller_ =
       std::make_unique<AllPasswordsBottomSheetController>(
           &GetWebContents(), password_client_->GetProfilePasswordStore(),
+          password_client_->GetAccountPasswordStore(),
           base::BindOnce(
               &PasswordAccessoryControllerImpl::AllPasswordsSheetDismissed,
               base::Unretained(this)),

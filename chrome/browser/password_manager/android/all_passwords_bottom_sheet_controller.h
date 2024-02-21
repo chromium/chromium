@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_
 
+#include "base/barrier_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -49,7 +50,8 @@ class AllPasswordsBottomSheetController
       content::WebContents* web_contents,
       std::unique_ptr<AllPasswordsBottomSheetView> view,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      password_manager::PasswordStoreInterface* store,
+      password_manager::PasswordStoreInterface* profile_store,
+      password_manager::PasswordStoreInterface* account_store,
       base::OnceCallback<void()> dismissal_callback,
       autofill::mojom::FocusedFieldType focused_field_type,
       password_manager::PasswordManagerClient* client,
@@ -59,7 +61,8 @@ class AllPasswordsBottomSheetController
 
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
-      password_manager::PasswordStoreInterface* store,
+      password_manager::PasswordStoreInterface* profile_store,
+      password_manager::PasswordStoreInterface* account_store,
       base::OnceCallback<void()> dismissal_callback,
       autofill::mojom::FocusedFieldType focused_field_type);
   ~AllPasswordsBottomSheetController() override;
@@ -99,6 +102,10 @@ class AllPasswordsBottomSheetController
   // Fills the password into the focused field.
   void FillPassword(const std::u16string& password);
 
+  void OnResultFromAllStoresReceived(
+      std::vector<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
+          results);
+
   // The controller takes |view_| ownership.
   std::unique_ptr<AllPasswordsBottomSheetView> view_;
 
@@ -108,7 +115,13 @@ class AllPasswordsBottomSheetController
   raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   // The controller doesn't take |store_| ownership.
-  raw_ptr<password_manager::PasswordStoreInterface> store_;
+  raw_ptr<password_manager::PasswordStoreInterface> profile_store_;
+  raw_ptr<password_manager::PasswordStoreInterface> account_store_;
+
+  // Allows to aggregate GetAllLogins results from multiple stores.
+  base::RepeatingCallback<void(
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>)>
+      on_password_forms_received_barrier_callback_;
 
   // A callback method will be consumed when the user dismisses the BottomSheet.
   base::OnceCallback<void()> dismissal_callback_;

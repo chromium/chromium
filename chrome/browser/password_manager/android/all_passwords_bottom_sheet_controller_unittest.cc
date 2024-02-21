@@ -124,8 +124,9 @@ class AllPasswordsBottomSheetControllerTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    store_ = CreateAndUseTestPasswordStore(profile());
-    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    profile_store_ = CreateAndUseTestPasswordStore(profile());
+    profile_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
     createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
   }
 
@@ -138,20 +139,25 @@ class AllPasswordsBottomSheetControllerTest
         std::make_unique<AllPasswordsBottomSheetController>(
             base::PassKey<AllPasswordsBottomSheetControllerTest>(),
             web_contents(), std::move(mock_view_unique_ptr),
-            driver_.AsWeakPtr(), store_.get(), dissmissal_callback_.Get(),
-            focused_field_type, mock_pwd_manager_client_.get(),
+            driver_.AsWeakPtr(), profile_store_.get(), account_store_.get(),
+            dissmissal_callback_.Get(), focused_field_type,
+            mock_pwd_manager_client_.get(),
             mock_pwd_reuse_detection_manager_client_.get(),
             show_migration_warning_callback_.Get());
   }
 
   void TearDown() override {
-    store_->ShutdownOnUIThread();
+    profile_store_->ShutdownOnUIThread();
+    if (account_store_) {
+      account_store_->ShutdownOnUIThread();
+    }
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
   MockPasswordManagerDriver& driver() { return driver_; }
 
-  TestPasswordStore& store() { return *store_; }
+  TestPasswordStore& profile_store() { return *profile_store_; }
+  TestPasswordStore& account_store() { return *account_store_; }
 
   MockAllPasswordsBottomSheetView& view() { return *mock_view_; }
 
@@ -178,9 +184,10 @@ class AllPasswordsBottomSheetControllerTest
     return show_migration_warning_callback_;
   }
 
- private:
+ protected:
   MockPasswordManagerDriver driver_;
-  scoped_refptr<TestPasswordStore> store_;
+  scoped_refptr<TestPasswordStore> profile_store_;
+  scoped_refptr<TestPasswordStore> account_store_;
 
   raw_ptr<MockAllPasswordsBottomSheetView> mock_view_;
   DismissCallback dissmissal_callback_;
@@ -202,18 +209,38 @@ TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
   auto form3 = MakeSavedPassword(kExampleOrg, kUsername1);
   auto form4 = MakeSavedPassword(kExampleOrg, kUsername2);
 
-  store().AddLogin(form1);
-  store().AddLogin(form2);
-  store().AddLogin(form3);
-  store().AddLogin(form4);
+  profile_store().AddLogin(form1);
+  profile_store().AddLogin(form2);
+  profile_store().AddLogin(form3);
+  profile_store().AddLogin(form4);
   // Exceptions are not shown. Sites where saving is disabled still show pwds.
-  store().AddLogin(MakePasswordException(kExampleDe));
-  store().AddLogin(MakePasswordException(kExampleCom));
+  profile_store().AddLogin(MakePasswordException(kExampleDe));
+  profile_store().AddLogin(MakePasswordException(kExampleCom));
 
   EXPECT_CALL(view(),
               Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2)),
                                         Pointee(Eq(form3)), Pointee(Eq(form4))),
                    FocusedFieldType::kFillablePasswordField));
+  all_passwords_controller()->Show();
+
+  // Show method uses the store which has async work.
+  RunUntilIdle();
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       CallingShowMultipleTimesHasNoEffect) {
+  auto form1 = MakeSavedPassword(kExampleCom, kUsername1);
+  auto form2 = MakeSavedPassword(kExampleCom, kUsername2);
+
+  profile_store().AddLogin(form1);
+  profile_store().AddLogin(form2);
+
+  EXPECT_CALL(view(),
+              Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2))),
+                   FocusedFieldType::kFillablePasswordField))
+      .Times(1);
+  all_passwords_controller()->Show();
+  all_passwords_controller()->Show();
   all_passwords_controller()->Show();
 
   // Show method uses the store which has async work.
@@ -407,4 +434,79 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
   EXPECT_CALL(show_migration_warning_callback(), Run).Times(0);
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(false));
+}
+
+class AllPasswordsBottomSheetControllerAccountStoreTest
+    : public AllPasswordsBottomSheetControllerTest {
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    profile()->GetPrefs()->SetInteger(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
+    profile_store_ = CreateAndUseTestPasswordStore(profile());
+    profile_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
+    account_store_ = CreateAndUseTestAccountPasswordStore(profile());
+    account_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
+    createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
+  }
+};
+
+TEST_F(AllPasswordsBottomSheetControllerAccountStoreTest,
+       PasswordsFromBothStores) {
+  auto form1 = MakeSavedPassword(kExampleCom, kUsername1);
+  auto form2 = MakeSavedPassword(kExampleCom, kUsername2);
+  auto form3 = MakeSavedPassword(kExampleOrg, kUsername1);
+  auto form4 = MakeSavedPassword(kExampleOrg, kUsername2);
+
+  profile_store().AddLogin(form1);
+  account_store().AddLogin(form2);
+  account_store().AddLogin(form3);
+  profile_store().AddLogin(form4);
+  // Exceptions are not shown.
+  profile_store().AddLogin(MakePasswordException(kExampleCom));
+  account_store().AddLogin(MakePasswordException(kExampleCom));
+
+  form2.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  form3.in_store = password_manager::PasswordForm::Store::kAccountStore;
+
+  EXPECT_CALL(view(),
+              Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2)),
+                                        Pointee(Eq(form3)), Pointee(Eq(form4))),
+                   FocusedFieldType::kFillablePasswordField));
+  all_passwords_controller()->Show();
+
+  // Show method uses the store which has async work.
+  RunUntilIdle();
+}
+
+TEST_F(AllPasswordsBottomSheetControllerAccountStoreTest,
+       PasswordsFromAccountStoreOnly) {
+  auto form1 = MakeSavedPassword(kExampleCom, kUsername1);
+  auto form2 = MakeSavedPassword(kExampleCom, kUsername2);
+
+  account_store().AddLogin(form1);
+  account_store().AddLogin(form2);
+  // Exceptions are not shown.
+  account_store().AddLogin(MakePasswordException(kExampleCom));
+
+  form1.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  form2.in_store = password_manager::PasswordForm::Store::kAccountStore;
+
+  EXPECT_CALL(view(),
+              Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2))),
+                   FocusedFieldType::kFillablePasswordField));
+  all_passwords_controller()->Show();
+
+  // Show method uses the store which has async work.
+  RunUntilIdle();
+}
+
+TEST_F(AllPasswordsBottomSheetControllerAccountStoreTest, BothStoresEmpty) {
+  EXPECT_CALL(view(), Show(testing::IsEmpty(),
+                           FocusedFieldType::kFillablePasswordField));
+  all_passwords_controller()->Show();
+
+  // Show method uses the store which has async work.
+  RunUntilIdle();
 }
