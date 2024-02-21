@@ -3810,16 +3810,6 @@ extern const char kFocusModeDescription[];
 extern const char kForceReSyncDriveName[];
 extern const char kForceReSyncDriveDescription[];
 
-extern const char kFrameThrottleFpsName[];
-extern const char kFrameThrottleFpsDescription[];
-extern const char kFrameThrottleFpsDefault[];
-extern const char kFrameThrottleFps5[];
-extern const char kFrameThrottleFps10[];
-extern const char kFrameThrottleFps15[];
-extern const char kFrameThrottleFps20[];
-extern const char kFrameThrottleFps25[];
-extern const char kFrameThrottleFps30[];
-
 extern const char kFSPsInRecentsName[];
 extern const char kFSPsInRecentsDescription[];
 

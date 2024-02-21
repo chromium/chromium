@@ -2774,23 +2774,6 @@ const FeatureEntry::Choice kEnableExperimentalCookieFeaturesChoices[] = {
      switches::kEnableExperimentalCookieFeatures, ""},
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const FeatureEntry::Choice kFrameThrottleFpsChoices[] = {
-    {flag_descriptions::kFrameThrottleFpsDefault, "", ""},
-    {flag_descriptions::kFrameThrottleFps5, ash::switches::kFrameThrottleFps,
-     "5"},
-    {flag_descriptions::kFrameThrottleFps10, ash::switches::kFrameThrottleFps,
-     "10"},
-    {flag_descriptions::kFrameThrottleFps15, ash::switches::kFrameThrottleFps,
-     "15"},
-    {flag_descriptions::kFrameThrottleFps20, ash::switches::kFrameThrottleFps,
-     "20"},
-    {flag_descriptions::kFrameThrottleFps25, ash::switches::kFrameThrottleFps,
-     "25"},
-    {flag_descriptions::kFrameThrottleFps30, ash::switches::kFrameThrottleFps,
-     "30"}};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 const FeatureEntry::FeatureParam kDrawPredictedPointExperiment1Point12Ms[] = {
     {"predicted_points", features::kDraw1Point12Ms}};
 const FeatureEntry::FeatureParam kDrawPredictedPointExperiment2Points6Ms[] = {
@@ -8369,12 +8352,6 @@ const FeatureEntry kFeatureEntries[] = {
          app_list_features::kDynamicSearchUpdateAnimation,
          kDynamicSearchUpdateAnimationVariations,
          "LauncherDynamicAnimations")},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"frame-throttle-fps", flag_descriptions::kFrameThrottleFpsName,
-     flag_descriptions::kFrameThrottleFpsDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kFrameThrottleFpsChoices)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

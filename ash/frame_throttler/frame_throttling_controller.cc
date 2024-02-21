@@ -7,11 +7,9 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -106,15 +104,7 @@ FrameThrottlingController::FrameThrottlingController(
     viz::HostFrameSinkManager* host_frame_sink_manager)
     : host_frame_sink_manager_(host_frame_sink_manager) {
   DCHECK(host_frame_sink_manager_);
-  int default_fps = kDefaultThrottleFps;
-  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  if (cl->HasSwitch(switches::kFrameThrottleFps)) {
-    if (!base::StringToInt(cl->GetSwitchValueASCII(switches::kFrameThrottleFps),
-                           &default_fps)) {
-      default_fps = kDefaultThrottleFps;
-    }
-  }
-  default_throttled_frame_interval_ = base::Hertz(default_fps);
+  default_throttled_frame_interval_ = base::Hertz(kDefaultThrottleFps);
   current_throttled_frame_interval_ = default_throttled_frame_interval_;
 }
 

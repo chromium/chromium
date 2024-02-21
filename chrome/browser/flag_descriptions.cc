@@ -6620,17 +6620,6 @@ const char kForceReSyncDriveName[] = "Force resync drive";
 const char kForceReSyncDriveDescription[] =
     "Enable Drive to forcibly resync office files.";
 
-const char kFrameThrottleFpsName[] = "Set frame throttling fps.";
-const char kFrameThrottleFpsDescription[] =
-    "Set the throttle fps for compositor frame submission.";
-const char kFrameThrottleFpsDefault[] = "Default";
-const char kFrameThrottleFps5[] = "5 fps";
-const char kFrameThrottleFps10[] = "10 fps";
-const char kFrameThrottleFps15[] = "15 fps";
-const char kFrameThrottleFps20[] = "20 fps";
-const char kFrameThrottleFps25[] = "25 fps";
-const char kFrameThrottleFps30[] = "30 fps";
-
 const char kFSPsInRecentsName[] =
     "Enable chrome.fileSystemProviders in Recents";
 const char kFSPsInRecentsDescription[] =
