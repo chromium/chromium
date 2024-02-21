@@ -251,7 +251,7 @@ PopupRowView::PopupRowView(
   auto [position, set_size] = ComputePositionInSet(controller_, line_number);
   content_view_->GetViewAccessibility().SetPosInSet(position);
   content_view_->GetViewAccessibility().SetSetSize(set_size);
-  content_view_->GetViewAccessibility().OverrideIsSelected(false);
+  content_view_->GetViewAccessibility().SetIsSelected(false);
   content_event_handler_ =
       set_exit_enter_callbacks(CellType::kContent, *content_view_);
   layout->SetFlexForView(content_view_.get(), 1);
@@ -374,7 +374,7 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
   // If the previous cell was content, set it as unselected.
   if (selected_cell_ == CellType::kContent) {
     content_view_->UpdateStyle(/*selected=*/false);
-    content_view_->GetViewAccessibility().OverrideIsSelected(false);
+    content_view_->GetViewAccessibility().SetIsSelected(false);
     controller_->UnselectSuggestion();
   }
 
@@ -386,7 +386,7 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
     content_view_->UpdateStyle(/*selected=*/true);
-    content_view_->GetViewAccessibility().OverrideIsSelected(true);
+    content_view_->GetViewAccessibility().SetIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;

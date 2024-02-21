@@ -555,11 +555,11 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
                            "Check failed: labelled_by_view != view_");
 }
 
-TEST_F(ViewAXPlatformNodeDelegateTest, OverrideIsSelected) {
+TEST_F(ViewAXPlatformNodeDelegateTest, SetIsSelected) {
   View::Views view_ids = SetUpExtraViews();
 
-  view_ids[1]->GetViewAccessibility().OverrideIsSelected(true);
-  view_ids[2]->GetViewAccessibility().OverrideIsSelected(false);
+  view_ids[1]->GetViewAccessibility().SetIsSelected(true);
+  view_ids[2]->GetViewAccessibility().SetIsSelected(false);
 
   ui::AXNodeData node_data_0;
   view_ids[0]->GetViewAccessibility().GetAccessibleNodeData(&node_data_0);

@@ -116,7 +116,7 @@ class VIEWS_EXPORT ViewAccessibility {
   ax::mojom::Role GetViewAccessibilityRole() const;
 
   void SetBounds(const gfx::RectF& bounds);
-  
+
   void SetIsSelected(bool selected);
 
   // Note that `pos_in_set` starts from 1 not 0.
@@ -247,6 +247,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // ViewAccessibility::ClearSetSize instead. See https://crbug.com/324485311.
   void ClearPosInSetOverride();
 
+  // Deprecated. Use ViewAccessibility::SetIsSelected instead.
+  // See https://crbug.com/324485311.
   // Overrides the `ax::mojom::BoolAttribute::kSelected` attribute.
   void OverrideIsSelected(bool selected);
 
