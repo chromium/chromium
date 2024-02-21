@@ -8,7 +8,8 @@ import {ImageCache} from './cache.js';
 import type {ImageTransformParam} from './image_orientation.js';
 import {ImageOrientation} from './image_orientation.js';
 import {ImageRequestTask} from './image_request_task.js';
-import {type LoadImageRequest, LoadImageResponse} from './load_image_request.js';
+import type {LoadImageResponse} from './load_image_request.js';
+import {type LoadImageRequest} from './load_image_request.js';
 import {Scheduler} from './scheduler.js';
 
 let instance: ImageLoader|null = null;

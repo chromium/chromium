@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Menu} from './ui/menu.js';
-import {MultiMenuButton} from './ui/multi_menu_button.js';
+import type {Menu} from './ui/menu.js';
+import type {MultiMenuButton} from './ui/multi_menu_button.js';
 
 export class SelectionMenuController {
   constructor(

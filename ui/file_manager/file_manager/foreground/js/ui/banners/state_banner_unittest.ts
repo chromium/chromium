@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import './state_banner.js';
+
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -11,7 +13,7 @@ import {waitUntil} from '../../../../common/js/test_error_reporting.js';
 import {getLastVisitedURL} from '../../../../common/js/util.js';
 import {Command} from '../command.js';
 
-import {StateBanner} from './state_banner.js';
+import type {StateBanner} from './state_banner.js';
 
 let stateBanner: StateBanner;
 

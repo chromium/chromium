@@ -9,14 +9,16 @@ import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 
-import {Action, ActionsModel} from './actions_model.js';
-import {EventType, FileSelectionHandler} from './file_selection.js';
-import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
-import {MetadataSetEvent} from './metadata/metadata_cache_set.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import type {Action} from './actions_model.js';
+import {ActionsModel} from './actions_model.js';
+import type {FileSelectionHandler} from './file_selection.js';
+import {EventType} from './file_selection.js';
+import type {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+import type {MetadataSetEvent} from './metadata/metadata_cache_set.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 import {contextMenuHandler, type ShowEvent} from './ui/context_menu_handler.js';
-import {DirectoryTree} from './ui/directory_tree.js';
-import {FileManagerUI} from './ui/file_manager_ui.js';
+import type {DirectoryTree} from './ui/directory_tree.js';
+import type {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
  * Manages actions for the current selection.

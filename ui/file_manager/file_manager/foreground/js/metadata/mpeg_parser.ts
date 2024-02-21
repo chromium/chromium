@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ByteReader, SeekOrigin} from './byte_reader.js';
-import {ParserMetadata} from './metadata_item.js';
+import type {ParserMetadata} from './metadata_item.js';
 import {MetadataParser, type MetadataParserLogger} from './metadata_parser.js';
 
 interface Atom {

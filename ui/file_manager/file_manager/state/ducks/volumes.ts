@@ -4,7 +4,8 @@
 
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {isOneDriveId, isSameEntry, sortEntries} from '../../common/js/entry_utils.js';
-import {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isGuestOsEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
 import type {GetActionFactoryPayload} from '../../common/js/util.js';

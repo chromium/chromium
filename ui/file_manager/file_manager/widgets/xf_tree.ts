@@ -5,7 +5,8 @@
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import {css, customElement, html, query, state, XfBase} from './xf_base.js';
-import {type TreeItemCollapsedEvent, XfTreeItem} from './xf_tree_item.js';
+import type {XfTreeItem} from './xf_tree_item.js';
+import {type TreeItemCollapsedEvent} from './xf_tree_item.js';
 import {handleTreeSlotChange, isTreeItem} from './xf_tree_util.js';
 
 /**

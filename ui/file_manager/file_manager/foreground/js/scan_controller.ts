@@ -8,10 +8,10 @@ import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
 import {getStore, type Store} from '../../state/store.js';
 
-import {DirectoryModel} from './directory_model.js';
-import {FileSelectionHandler} from './file_selection.js';
-import {SpinnerController} from './spinner_controller.js';
-import {ListContainer} from './ui/list_container.js';
+import type {DirectoryModel} from './directory_model.js';
+import type {FileSelectionHandler} from './file_selection.js';
+import type {SpinnerController} from './spinner_controller.js';
+import type {ListContainer} from './ui/list_container.js';
 
 /**
  * Handler for scan related events of DirectoryModel.

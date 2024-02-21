@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 
 import type {MetadataKey} from './metadata_item.js';
 

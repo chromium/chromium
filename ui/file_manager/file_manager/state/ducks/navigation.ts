@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isOneDriveId} from '../../common/js/entry_utils.js';
-import {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import type {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {Slice} from '../../lib/base_store.js';
 import {type AndroidApp, DialogType, type NavigationKey, type NavigationRoot, NavigationSection, NavigationType, type State, type Volume} from '../../state/state.js';

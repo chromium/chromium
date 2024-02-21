@@ -8,18 +8,19 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry, isSameEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
-import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
+import type {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {readSubDirectoriesForRenamedEntry} from '../../state/ducks/all_entries.js';
 import {getStore} from '../../state/store.js';
-import {XfTree} from '../../widgets/xf_tree.js';
-import {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import type {XfTree} from '../../widgets/xf_tree.js';
+import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import {isTreeItem} from '../../widgets/xf_tree_util.js';
 
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 import {renameEntry, validateEntryName} from './file_rename.js';
 import type {WithContextMenu} from './ui/context_menu_handler.js';
-import {DirectoryItem, DirectoryTree, SubDirectoryItem} from './ui/directory_tree.js';
-import {FilesAlertDialog} from './ui/files_alert_dialog.js';
+import type {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
+import {SubDirectoryItem} from './ui/directory_tree.js';
+import type {FilesAlertDialog} from './ui/files_alert_dialog.js';
 
 /**
  * Naming controller for directory tree.

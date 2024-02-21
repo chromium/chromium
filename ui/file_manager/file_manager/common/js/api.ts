@@ -6,7 +6,7 @@
  * @fileoverview Helpers for APIs used within Files app.
  */
 
-import {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
 import {unwrapEntry} from './entry_utils.js';
 import {promisify} from './util.js';

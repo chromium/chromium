@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LoaderType, LoadTarget} from './thumbnail_loader.js';
+import type {LoaderType, LoadTarget} from './thumbnail_loader.js';
 
 /**
  * Mock thumbnail loader.

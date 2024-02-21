@@ -4,7 +4,7 @@
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {ImageRequestTask} from './image_request_task.js';
+import type {ImageRequestTask} from './image_request_task.js';
 import {MAXIMUM_IN_PARALLEL, Scheduler} from './scheduler.js';
 
 

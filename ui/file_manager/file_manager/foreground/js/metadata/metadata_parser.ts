@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ByteReader} from './byte_reader.js';
-import {ParserMetadata} from './metadata_item.js';
+import type {ParserMetadata} from './metadata_item.js';
 
 export interface MetadataParserLogger {
   /**

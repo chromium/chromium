@@ -7,7 +7,7 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
 import {installMockChrome} from '../common/js/mock_chrome.js';
-import {MockFileSystem} from '../common/js/mock_entry.js';
+import type {MockFileSystem} from '../common/js/mock_entry.js';
 import {waitUntil} from '../common/js/test_error_reporting.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
 import {VolumeType} from '../common/js/volume_manager_types.js';
@@ -15,7 +15,7 @@ import {addAndroidApps} from '../state/ducks/android_apps.js';
 import {addVolume, removeVolume} from '../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../state/for_tests.js';
 import {getStore} from '../state/store.js';
-import {XfTree} from '../widgets/xf_tree.js';
+import type {XfTree} from '../widgets/xf_tree.js';
 
 import {DirectoryTreeContainer} from './directory_tree_container.js';
 

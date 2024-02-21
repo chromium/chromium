@@ -9,7 +9,8 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
-import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import type {MockFileSystem} from '../../common/js/mock_entry.js';
+import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
@@ -18,7 +19,8 @@ import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeep
 
 import type {CommandHandlerDeps, FilesCommandId} from './command_handler.js';
 import {CommandHandler, ValidMenuCommandsForUma} from './command_handler.js';
-import {CanExecuteEvent, Command} from './ui/command.js';
+import type {Command} from './ui/command.js';
+import {CanExecuteEvent} from './ui/command.js';
 
 let mockMetrics: MockMetrics;
 

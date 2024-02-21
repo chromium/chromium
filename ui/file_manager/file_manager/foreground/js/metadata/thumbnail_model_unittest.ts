@@ -5,7 +5,7 @@
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MetadataItem, type MetadataKey} from './metadata_item.js';
-import {MetadataModel} from './metadata_model.js';
+import type {MetadataModel} from './metadata_model.js';
 import {ThumbnailModel} from './thumbnail_model.js';
 
 const imageEntry: Entry = {

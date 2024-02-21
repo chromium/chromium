@@ -11,7 +11,7 @@ import {AsyncQueue, ConcurrentQueue} from '../../common/js/async_util.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {isDriveRootType, isFakeEntry, isTrashEntry, readEntriesRecursively} from '../../common/js/entry_utils.js';
 import {isType} from '../../common/js/file_type.js';
-import {EntryList, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {EntryList, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordInterval, recordMediumCount, startInterval} from '../../common/js/metrics.js';
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders, TRASH_CONFIG} from '../../common/js/trash.js';
@@ -23,8 +23,9 @@ import {getStore} from '../../state/store.js';
 
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import {FileListModel} from './file_list_model.js';
-import {MetadataItem, type MetadataKey} from './metadata/metadata_item.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import type {MetadataItem} from './metadata/metadata_item.js';
+import {type MetadataKey} from './metadata/metadata_item.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 
 
 // Generalized entry and directory entry definitions.

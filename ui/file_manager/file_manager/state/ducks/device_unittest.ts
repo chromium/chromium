@@ -5,7 +5,7 @@
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import type {VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import type {State} from '../../state/state.js';

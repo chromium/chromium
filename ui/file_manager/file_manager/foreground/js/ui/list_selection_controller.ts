@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ListSelectionModel} from './list_selection_model.js';
-import {ListSingleSelectionModel} from './list_single_selection_model.js';
+import type {ListSelectionModel} from './list_selection_model.js';
+import type {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 /**
  * The selection controller that is to be used with lists. This is implemented

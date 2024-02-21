@@ -7,21 +7,22 @@ import '../../background/js/file_manager_base.js';
 import '../../background/js/test_util.js';
 import '../../widgets/xf_jellybean.js';
 
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import type {Crostini} from '../../background/js/crostini.js';
-import {FileManagerBase} from '../../background/js/file_manager_base.js';
+import type {FileManagerBase} from '../../background/js/file_manager_base.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
-import {ArrayDataModel} from '../../common/js/array_data_model.js';
+import type {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
-import {EntryList, FakeEntry, FakeEntryImpl, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {FilesAppState} from '../../common/js/files_app_state.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {isDlpEnabled, isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
@@ -59,7 +60,8 @@ import {DirectoryTreeNamingController} from './directory_tree_naming_controller.
 import {importElements} from './elements_importer.js';
 import {EmptyFolderController} from './empty_folder_controller.js';
 import {forceDefaultHandler} from './file_manager_commands_util.js';
-import {FileSelection, FileSelectionHandler} from './file_selection.js';
+import type {FileSelection} from './file_selection.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
@@ -94,7 +96,7 @@ import {FileGrid} from './ui/file_grid.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 import {FileTable} from './ui/file_table.js';
-import {List} from './ui/list.js';
+import type {List} from './ui/list.js';
 import {Menu} from './ui/menu.js';
 
 /**

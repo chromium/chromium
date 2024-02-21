@@ -16,19 +16,21 @@ import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
+import type {XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
+import {USER_CANCELLED} from '../../widgets/xf_password_dialog.js';
 
-import {type DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
-import {FileManager} from './file_manager.js';
+import type {DirectoryModel} from './directory_model.js';
+import {type DirectoryChangeTracker} from './directory_model.js';
+import type {FileManager} from './file_manager.js';
 import {FileTasks} from './file_tasks.js';
-import {FileTransferController} from './file_transfer_controller.js';
+import type {FileTransferController} from './file_transfer_controller.js';
 import {MetadataItem} from './metadata/metadata_item.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {TaskController} from './task_controller.js';
-import {TaskHistory} from './task_history.js';
-import {DefaultTaskDialog} from './ui/default_task_dialog.js';
-import {ImportCrostiniImageDialog} from './ui/import_crostini_image_dialog.js';
-import {InstallLinuxPackageDialog} from './ui/install_linux_package_dialog.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
+import type {TaskController} from './task_controller.js';
+import type {TaskHistory} from './task_history.js';
+import type {DefaultTaskDialog} from './ui/default_task_dialog.js';
+import type {ImportCrostiniImageDialog} from './ui/import_crostini_image_dialog.js';
+import type {InstallLinuxPackageDialog} from './ui/install_linux_package_dialog.js';
 
 let passwordDialog: XfPasswordDialog;
 

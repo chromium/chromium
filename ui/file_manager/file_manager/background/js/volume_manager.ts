@@ -5,11 +5,12 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getRootType, isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
-import {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {FilesEventTarget, type CustomEventMap} from '../../common/js/files_event_target.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {str} from '../../common/js/translations.js';
 import {promisify, timeoutPromise} from '../../common/js/util.js';
-import {COMPUTERS_DIRECTORY_PATH, FileSystemType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VolumeError, VolumeType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType} from '../../common/js/volume_manager_types.js';
+import type {FileSystemType, Source} from '../../common/js/volume_manager_types.js';
+import {COMPUTERS_DIRECTORY_PATH, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {addVolume, removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 

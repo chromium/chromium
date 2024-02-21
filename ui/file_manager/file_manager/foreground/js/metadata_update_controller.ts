@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import {isFakeEntry, unwrapEntry} from '../../common/js/entry_utils.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {type EntryMetadata, updateMetadata} from '../../state/ducks/all_entries.js';
 import {getStore} from '../../state/store.js';
 
-import {DirectoryModel} from './directory_model.js';
-import {MetadataSetEvent} from './metadata/metadata_cache_set.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
-import {ListContainer} from './ui/list_container.js';
+import type {DirectoryModel} from './directory_model.js';
+import type {MetadataSetEvent} from './metadata/metadata_cache_set.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
+import type {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
+import type {ListContainer} from './ui/list_container.js';
 
 
 /** Number of milliseconds in a day. */

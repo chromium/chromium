@@ -4,12 +4,13 @@
 
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
-import {Action, ActionsModel, CommonActionId, InternalActionId} from '../actions_model.js';
+import type {Action, ActionsModel} from '../actions_model.js';
+import {CommonActionId, InternalActionId} from '../actions_model.js';
 
 import {Command} from './command.js';
 import {FilesMenuItem} from './files_menu.js';
-import {Menu} from './menu.js';
-import {MenuItem} from './menu_item.js';
+import type {Menu} from './menu.js';
+import type {MenuItem} from './menu_item.js';
 
 export class ActionsSubmenu {
   private readonly items_: MenuItem[] = [];

@@ -9,7 +9,7 @@ import {unwrapEntry} from '../../../common/js/entry_utils.js';
 
 import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
-import {MetadataRequest} from './metadata_request.js';
+import type {MetadataRequest} from './metadata_request.js';
 
 /**
  * Metadata provider for FileEntry#getMetadata.

@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import type {VolumeManager} from '../background/js/volume_manager.js';
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
 import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
-import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
+import type {EntryList} from '../common/js/files_app_entry_types.js';
+import {FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {RootTypesForUMA, VolumeType} from '../common/js/volume_manager_types.js';
 import {ICON_TYPES} from '../foreground/js/constants.js';
-import {DirectoryModel} from '../foreground/js/directory_model.js';
-import {Command} from '../foreground/js/ui/command.js';
+import type {DirectoryModel} from '../foreground/js/directory_model.js';
+import type {Command} from '../foreground/js/ui/command.js';
 import {contextMenuHandler} from '../foreground/js/ui/context_menu_handler.js';
-import {Menu} from '../foreground/js/ui/menu.js';
+import type {Menu} from '../foreground/js/ui/menu.js';
 import {convertEntryToFileData, readSubDirectories, readSubDirectoriesToCheckDirectoryChildren, shouldDelayLoadingChildren, traverseAndExpandPathEntries, updateFileData} from '../state/ducks/all_entries.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots} from '../state/ducks/navigation.js';

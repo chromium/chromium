@@ -8,7 +8,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {bytesToString, str, strf} from '../../../common/js/translations.js';
 
-import {MenuItem} from './menu_item.js';
+import type {MenuItem} from './menu_item.js';
 
 /**
  * Selector used by tast tests to identify when the storage meter is empty.

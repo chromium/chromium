@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import '../../../../widgets/xf_bulk_pinning_dialog.js';
+import './drive_bulk_pinning_banner.js';
+
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitForElementUpdate} from '../../../../common/js/unittest_util.js';
-import {XfBulkPinningDialog} from '../../../../widgets/xf_bulk_pinning_dialog.js';
+import type {XfBulkPinningDialog} from '../../../../widgets/xf_bulk_pinning_dialog.js';
 
-import {DriveBulkPinningBanner} from './drive_bulk_pinning_banner.js';
-import {EducationalBanner} from './educational_banner.js';
+import type {DriveBulkPinningBanner} from './drive_bulk_pinning_banner.js';
+import type {EducationalBanner} from './educational_banner.js';
 
 export function setUp() {
   console.log('Setting up drive-bulk-pinning-banner element');

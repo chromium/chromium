@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {FilesAppEntry} from '../common/js/files_app_entry_types.js';
-import {DialogType} from '../common/js/shared_types.js';
-import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
+import type {DialogType} from '../common/js/shared_types.js';
+import type {RootType, VolumeType} from '../common/js/volume_manager_types.js';
 import type {MetadataItem} from '../foreground/js/metadata/metadata_item.js';
 
 export {DialogType} from '../common/js/shared_types.js';

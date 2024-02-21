@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ImageRequestTask} from './image_request_task.js';
+import type {ImageRequestTask} from './image_request_task.js';
 
 /** Maximum download tasks to be run in parallel. */
 export const MAXIMUM_IN_PARALLEL = 5;

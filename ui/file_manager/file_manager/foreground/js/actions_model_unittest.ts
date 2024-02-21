@@ -9,16 +9,17 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
-import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import type {MockFileSystem} from '../../common/js/mock_entry.js';
+import {MockDirectoryEntry, MockFileEntry} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 
 import {ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
-import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import type {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import type {ActionModelUi} from './ui/action_model_ui.js';
-import {FilesAlertDialog} from './ui/files_alert_dialog.js';
-import {ListContainer} from './ui/list_container.js';
+import type {FilesAlertDialog} from './ui/files_alert_dialog.js';
+import type {ListContainer} from './ui/list_container.js';
 
 type GetCustomActionsCallback =
     (actions: chrome.fileManagerPrivate.FileSystemProviderAction[]) => void;

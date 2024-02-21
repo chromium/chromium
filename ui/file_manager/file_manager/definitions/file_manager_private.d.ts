@@ -10,7 +10,7 @@
  * regenerate.
  */
 
-import {ChromeEvent} from './chrome_event.js';
+import type {ChromeEvent} from './chrome_event.js';
 
 declare global {
   export namespace chrome {

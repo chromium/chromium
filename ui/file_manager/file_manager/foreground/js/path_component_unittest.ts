@@ -5,7 +5,7 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {fakeDriveVolumeId, fakeMyFilesVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {MockFileSystem} from '../../common/js/mock_entry.js';
+import type {MockFileSystem} from '../../common/js/mock_entry.js';
 import {str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 

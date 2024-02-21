@@ -6,7 +6,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
-import {CanExecuteEvent, Command} from './command.js';
+import type {CanExecuteEvent} from './command.js';
+import {Command} from './command.js';
 
 
 export function setUp() {

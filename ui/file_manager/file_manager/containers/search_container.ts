@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import type {VolumeManager} from '../background/js/volume_manager.js';
 import {queryRequiredElement} from '../common/js/dom_utils.js';
@@ -19,7 +21,8 @@ import type {FileKey} from '../state/file_key.js';
 import {type CurrentDirectory, PropStatus, type SearchData, SearchLocation, type SearchOptions, SearchRecency, type State} from '../state/state.js';
 import {getStore, type Store} from '../state/store.js';
 import {type BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
-import {OptionKind, SEARCH_OPTIONS_CHANGED, type SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
+import type {XfSearchOptionsElement} from '../widgets/xf_search_options.js';
+import {OptionKind, SEARCH_OPTIONS_CHANGED, type SearchOptionsChangedEvent} from '../widgets/xf_search_options.js';
 import type {XfOption} from '../widgets/xf_select.js';
 
 /**

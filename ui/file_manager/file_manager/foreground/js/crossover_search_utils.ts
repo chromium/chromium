@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 
 /**
  * Return DirectoryEntry of the first root directory (all volume display root

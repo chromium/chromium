@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './files_tooltip.js';
+
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {FilesTooltip} from './files_tooltip.js';
+import type {FilesTooltip} from './files_tooltip.js';
 
 let chocolateButton: HTMLButtonElement;
 let cherriesButton: HTMLButtonElement;

@@ -13,7 +13,7 @@ import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
-import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
+import type {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
 import {EntryType, type FileData, type State} from '../../state/state.js';
 import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, updMetadata, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, type Store} from '../store.js';

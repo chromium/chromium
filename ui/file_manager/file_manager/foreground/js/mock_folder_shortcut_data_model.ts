@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
-import {MockEntry} from '../../common/js/mock_entry.js';
+import type {MockEntry} from '../../common/js/mock_entry.js';
 
-import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+import type {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 
 /**
  * Mock FolderShortcutDataModel.

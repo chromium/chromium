@@ -15,7 +15,8 @@ import {getEntry, getStore} from '../../state/store.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {createDOMError} from './dom_utils.js';
-import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
+import type {VolumeEntry} from './files_app_entry_types.js';
+import {EntryList, FakeEntryImpl} from './files_app_entry_types.js';
 import {isArcVmEnabled, isNewDirectoryTreeEnabled, isPluginVmEnabled} from './flags.js';
 import {collator, getEntryLabel} from './translations.js';
 import type {TrashEntry} from './trash.js';

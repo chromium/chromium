@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataStats} from '../prod/file_manager/shared_types.js';
+import type {MetadataStats} from '../prod/file_manager/shared_types.js';
 import {addEntries, createTestFile, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
 
 import {remoteCall} from './background.js';

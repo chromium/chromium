@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import type {ElementObject} from '../prod/file_manager/shared_types.js';
-import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
+import type {TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath} from '../test_util.js';
 
 import {remoteCall} from './background.js';
 import {fileListKeyboardSelectionA11yImpl, fileListMouseSelectionA11yImpl} from './file_list.js';

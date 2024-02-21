@@ -6,7 +6,7 @@ import {assertEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_asser
 
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 

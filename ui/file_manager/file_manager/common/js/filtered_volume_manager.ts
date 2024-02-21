@@ -9,7 +9,7 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {VolumeInfoList} from '../../background/js/volume_info_list.js';
 import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent} from '../../background/js/volume_manager.js';
 import {VolumeManager} from '../../background/js/volume_manager.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
 import {type SpliceEvent} from './array_data_model.js';
 import {isFuseBoxDebugEnabled} from './flags.js';

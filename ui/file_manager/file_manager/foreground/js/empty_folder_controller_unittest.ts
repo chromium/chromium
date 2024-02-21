@@ -6,7 +6,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {createChild} from '../../common/js/dom_utils.js';
-import {FakeEntry, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import type {FakeEntry} from '../../common/js/files_app_entry_types.js';
+import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
@@ -19,10 +20,10 @@ import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '..
 import {PropStatus} from '../../state/state.js';
 import {getEmptyState, getStore} from '../../state/store.js';
 
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 import {EmptyFolderController, type ScanFailedEvent} from './empty_folder_controller.js';
 import {FileListModel} from './file_list_model.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
 import {ProvidersModel} from './providers_model.js';

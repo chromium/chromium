@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import './xf_password_dialog.js';
+
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotReached} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
 
-import {USER_CANCELLED, XfPasswordDialog} from './xf_password_dialog.js';
+import type {XfPasswordDialog} from './xf_password_dialog.js';
+import {USER_CANCELLED} from './xf_password_dialog.js';
 
 let passwordDialog: XfPasswordDialog;
 let dialog: CrDialogElement;

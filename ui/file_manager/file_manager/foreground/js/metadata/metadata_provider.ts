@@ -4,8 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {MetadataItem, type MetadataKey} from './metadata_item.js';
-import {MetadataRequest} from './metadata_request.js';
+import type {MetadataItem} from './metadata_item.js';
+import {type MetadataKey} from './metadata_item.js';
+import type {MetadataRequest} from './metadata_request.js';
 
 export abstract class MetadataProvider {
   private readonly validPropertyNames_: Set<string>;

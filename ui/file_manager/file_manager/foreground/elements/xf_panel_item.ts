@@ -9,8 +9,8 @@ import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/ir
 
 import {str} from '../../common/js/translations.js';
 
-import {PanelButton} from './xf_button.js';
-import {CircularProgress} from './xf_circular_progress.js';
+import type {PanelButton} from './xf_button.js';
+import type {CircularProgress} from './xf_circular_progress.js';
 import {getTemplate} from './xf_panel_item.html.js';
 
 export enum PanelType {

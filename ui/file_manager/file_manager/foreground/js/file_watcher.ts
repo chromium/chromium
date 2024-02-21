@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {isFakeEntry, unwrapEntry} from '../../common/js/entry_utils.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 
 export type WatcherDirectoryChangedEvent =

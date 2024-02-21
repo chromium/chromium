@@ -15,8 +15,9 @@ import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {FileListModel, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
-import {ListThumbnailLoader, type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
-import {MetadataModel} from '../metadata/metadata_model.js';
+import type {ListThumbnailLoader} from '../list_thumbnail_loader.js';
+import {type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
+import type {MetadataModel} from '../metadata/metadata_model.js';
 
 import type {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';

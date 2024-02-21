@@ -5,7 +5,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -16,18 +16,18 @@ import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../state/state.js';
-import {FilesToast} from '../elements/files_toast.js';
+import type {FilesToast} from '../elements/files_toast.js';
 
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
 import {FileListModel} from './file_list_model.js';
-import {FileSelectionHandler} from './file_selection.js';
+import type {FileSelectionHandler} from './file_selection.js';
 import {deduplicatePath, FileTransferController, resolvePath, writeFile} from './file_transfer_controller.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
 import type {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
-import {DirectoryTree} from './ui/directory_tree.js';
+import type {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FileTable} from './ui/file_table.js';

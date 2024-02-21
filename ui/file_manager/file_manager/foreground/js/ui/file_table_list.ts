@@ -6,26 +6,26 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import type {EntryLocation} from '../../../background/js/entry_location_impl.js';
 import type {VolumeManager} from '../../../background/js/volume_manager.js';
-import {ArrayDataModel} from '../../../common/js/array_data_model.js';
+import type {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {getIcon, isEncrypted} from '../../../common/js/file_type.js';
-import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
-import {FileListModel} from '../file_list_model.js';
-import {MetadataItem} from '../metadata/metadata_item.js';
-import {MetadataModel} from '../metadata/metadata_model.js';
+import type {FileListModel} from '../file_list_model.js';
+import type {MetadataItem} from '../metadata/metadata_item.js';
+import type {MetadataModel} from '../metadata/metadata_model.js';
 
 import type {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
-import {FileGridSelectionController} from './file_grid.js';
-import {FileListSelectionModel} from './file_list_selection_model.js';
-import {FileTable} from './file_table.js';
+import type {FileGridSelectionController} from './file_grid.js';
+import type {FileListSelectionModel} from './file_list_selection_model.js';
+import type {FileTable} from './file_table.js';
 import {FileTapHandler, TapEvent} from './file_tap_handler.js';
 import {List} from './list.js';
-import {ListItem} from './list_item.js';
+import type {ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
-import {ListSelectionModel} from './list_selection_model.js';
+import type {ListSelectionModel} from './list_selection_model.js';
 import {TableList} from './table/table_list.js';
 
 // Group Heading height, align with CSS #list-container .group-heading.

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isSameEntry, isVolumeEntry} from '../../common/js/entry_utils.js';
-import {EntryList, FakeEntry} from '../../common/js/files_app_entry_types.js';
+import type {EntryList, FakeEntry} from '../../common/js/files_app_entry_types.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';

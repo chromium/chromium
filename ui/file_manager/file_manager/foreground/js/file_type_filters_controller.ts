@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
 import {createChild} from '../../common/js/dom_utils.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
-import {FakeEntry} from '../../common/js/files_app_entry_types.js';
+import type {FakeEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
 import type {State} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 
-import type {DirectoryChangeEvent} from './directory_model.js';
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryChangeEvent, DirectoryModel} from './directory_model.js';
 import type {A11yAnnounce} from './ui/a11y_announce.js';
 
 /**

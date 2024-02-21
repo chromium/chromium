@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import type {ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
 import {ScriptLoader} from '../../common/js/script_loader.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import type {XfBreadcrumb} from '../../widgets/xf_breadcrumb.js';

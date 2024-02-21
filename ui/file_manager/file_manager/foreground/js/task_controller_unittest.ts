@@ -14,7 +14,8 @@ import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {queryDecoratedElement} from '../../common/js/dom_utils.js';
 import {isSameEntries} from '../../common/js/entry_utils.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
-import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import type {MockFileSystem} from '../../common/js/mock_entry.js';
+import {MockFileEntry} from '../../common/js/mock_entry.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
@@ -22,15 +23,15 @@ import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
 import {PropStatus, type State} from '../../state/state.js';
 import {getEmptyState, getStore, waitForState} from '../../state/store.js';
 
-import {DirectoryModel} from './directory_model.js';
-import {FileSelectionHandler} from './file_selection.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import type {DirectoryModel} from './directory_model.js';
+import type {FileSelectionHandler} from './file_selection.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
-import {MetadataUpdateController} from './metadata_update_controller.js';
+import type {MetadataUpdateController} from './metadata_update_controller.js';
 import {TaskController} from './task_controller.js';
 import {ComboButton} from './ui/combobutton.js';
 import {Command} from './ui/command.js';
-import {FileManagerUI} from './ui/file_manager_ui.js';
+import type {FileManagerUI} from './ui/file_manager_ui.js';
 import {FilesMenuItem} from './ui/files_menu.js';
 
 /** Mock chrome APIs.  */

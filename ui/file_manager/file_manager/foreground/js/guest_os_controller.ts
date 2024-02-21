@@ -11,7 +11,7 @@ import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {getEntry, getStore} from '../../state/store.js';
 
 import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
-import {DirectoryTree} from './ui/directory_tree.js';
+import type {DirectoryTree} from './ui/directory_tree.js';
 
 /**
  * GuestOsController handles the foreground UI relating to Guest OSs.

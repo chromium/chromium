@@ -26,7 +26,8 @@ import {PropStatus, SearchLocation, type SearchOptions, type State, type Volume,
 import {getFileData, getStore, getVolume, type Store} from '../../state/store.js';
 
 import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
-import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileFilter, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
+import type {ContentScanner, FileFilter} from './directory_contents.js';
+import {CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher, type WatcherDirectoryChangedEvent} from './file_watcher.js';
 import type {MetadataKey} from './metadata/metadata_item.js';

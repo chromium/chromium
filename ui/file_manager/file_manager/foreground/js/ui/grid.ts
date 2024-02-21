@@ -9,7 +9,7 @@ import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {List} from './list.js';
 import {ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
-import {ListSelectionModel} from './list_selection_model.js';
+import type {ListSelectionModel} from './list_selection_model.js';
 
 /**
  * @fileoverview This implements a grid control. Grid contains a bunch of

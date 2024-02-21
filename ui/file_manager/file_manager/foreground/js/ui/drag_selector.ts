@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {List} from './list.js';
+import type {List} from './list.js';
 
 interface DragState {
   /**

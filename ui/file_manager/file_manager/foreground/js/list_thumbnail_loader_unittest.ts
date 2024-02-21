@@ -12,12 +12,12 @@ import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/moc
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 import {FileListModel} from './file_list_model.js';
 import {ListThumbnailLoader, ListThumbnailLoaderTask, TEST_VOLUME_TYPE, type ThumbnailLoadedEvent} from './list_thumbnail_loader.js';
 import type {MetadataKey} from './metadata/metadata_item.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {ThumbnailModel} from './metadata/thumbnail_model.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
+import type {ThumbnailModel} from './metadata/thumbnail_model.js';
 import {MockThumbnailLoader} from './mock_thumbnail_loader.js';
 import type {ThumbnailLoader} from './thumbnail_loader.js';
 

@@ -6,7 +6,8 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {isFakeEntry} from '../../../common/js/entry_utils.js';
-import {FakeEntryImpl, FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
+import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../../common/js/mock_entry.js';
 import {RootType} from '../../../common/js/volume_manager_types.js';

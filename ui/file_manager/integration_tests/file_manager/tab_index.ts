@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
-import {addEntries, RootPath, TestEntryInfo} from '../test_util.js';
+import type {TestEntryInfo} from '../test_util.js';
+import {addEntries, RootPath} from '../test_util.js';
 
 import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';

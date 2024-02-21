@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import {getKeyModifiers, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {getFileTypeForName} from '../../../common/js/file_types_base.js';

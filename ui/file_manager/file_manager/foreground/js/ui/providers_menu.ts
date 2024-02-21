@@ -4,10 +4,10 @@
 
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
-import {ProvidersModel} from '../providers_model.js';
+import type {ProvidersModel} from '../providers_model.js';
 
 import {FilesMenuItem} from './files_menu.js';
-import {Menu} from './menu.js';
+import type {Menu} from './menu.js';
 
 /** Fills out the menu for mounting or installing new providers. */
 export class ProvidersMenu {

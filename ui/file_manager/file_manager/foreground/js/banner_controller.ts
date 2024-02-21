@@ -10,16 +10,17 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
 import {getTeamDriveName} from '../../common/js/entry_utils.js';
-import {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
+import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
 import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
-import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {RootType} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {DialogType, type State} from '../../state/state.js';
 import {getStore, type Store} from '../../state/store.js';
 
 import {DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 import {TAG_NAME as DlpRestrictedBannerName} from './ui/banners/dlp_restricted_banner.js';
 import {TAG_NAME as DriveBulkPinningBannerTagName} from './ui/banners/drive_bulk_pinning_banner.js';
 import {TAG_NAME as DriveLowIndividualSpaceBanner} from './ui/banners/drive_low_individual_space_banner.js';
@@ -36,7 +37,8 @@ import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_dis
 import {TAG_NAME as PhotosWelcomeBannerTagName} from './ui/banners/photos_welcome_banner.js';
 import {TAG_NAME as SharedWithCrostiniPluginVmBanner} from './ui/banners/shared_with_crostini_pluginvm_banner.js';
 import {TAG_NAME as TrashBannerTagName} from './ui/banners/trash_banner.js';
-import {type AllowedVolumeOrType, Banner, BANNER_INFINITE_TIME, BannerEvent, type MinDiskThreshold} from './ui/banners/types.js';
+import type {Banner} from './ui/banners/types.js';
+import {type AllowedVolumeOrType, BANNER_INFINITE_TIME, BannerEvent, type MinDiskThreshold} from './ui/banners/types.js';
 
 /**
  * Local storage key suffix for how many times a banner was shown.

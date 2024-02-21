@@ -11,12 +11,12 @@ import {RootType} from '../../common/js/volume_manager_types.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {crostiniPlaceHolderKey} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
-import {FilesToast} from '../elements/files_toast.js';
+import type {FilesToast} from '../elements/files_toast.js';
 
 import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
 import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
 import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
-import {DirectoryTree} from './ui/directory_tree.js';
+import type {DirectoryTree} from './ui/directory_tree.js';
 
 /**
  * CrostiniController handles the foreground UI relating to crostini.

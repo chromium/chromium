@@ -15,7 +15,7 @@ import {getRootTypeFromVolumeType, RootType, VolumeType} from '../../common/js/v
 import {DialogType} from '../../state/state.js';
 
 import {BannerController} from './banner_controller.js';
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
 import {type AllowedVolumeOrType, Banner, BANNER_INFINITE_TIME, BannerEvent, type MinDiskThreshold} from './ui/banners/types.js';
 

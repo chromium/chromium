@@ -4,7 +4,7 @@
 
 import {openWindow} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
-import {FilesAppState} from '../../common/js/files_app_state.js';
+import type {FilesAppState} from '../../common/js/files_app_state.js';
 
 /** Coordinates the creation of new windows for Files app.  */
 export class AppWindowWrapper {

@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
@@ -15,7 +15,8 @@ import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
 import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandRootEntryInDrives, isNonModifiable, isRecentRootType, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
-import {EntryList, FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
@@ -37,7 +38,8 @@ import {canExecuteVisibleOnDriveInNormalAppModeOnly, containsNonInteractiveEntry
 import type {PasteWithDestDirectoryEvent} from './file_transfer_controller.js';
 import {getAllowedVolumeTypes, maybeStoreTimeOfFirstPin} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
-import {type CanExecuteEvent, Command, type CommandEvent} from './ui/command.js';
+import type {Command} from './ui/command.js';
+import {type CanExecuteEvent, type CommandEvent} from './ui/command.js';
 import type {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import type {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 

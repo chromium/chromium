@@ -5,7 +5,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getDirectory} from '../../common/js/api.js';
-import {FilesAppState} from '../../common/js/files_app_state.js';
+import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordInterval} from '../../common/js/metrics.js';
 import {isInGuestMode} from '../../common/js/util.js';
 import {ARCHIVE_OPENED_EVENT_TYPE, Source, VOLUME_ALREADY_MOUNTED, VolumeType} from '../../common/js/volume_manager_types.js';

@@ -4,7 +4,7 @@
 
 import {DirectoryTreePageObject} from './file_manager/page_objects/directory_tree.js';
 import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './file_manager/test_data.js';
-import {ElementObject, FilesAppState, KeyModifiers, VolumeType} from './prod/file_manager/shared_types.js';
+import type {ElementObject, FilesAppState, KeyModifiers, VolumeType} from './prod/file_manager/shared_types.js';
 import {addEntries, getCaller, openEntryChoosingWindow, pending, pollForChosenEntry, repeatUntil, sendTestMessage, TestEntryInfo} from './test_util.js';
 
 export type MenuObject = ElementObject&{

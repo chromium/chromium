@@ -7,15 +7,17 @@ import {isDirectoryEntry, isNativeEntry, isSameEntry, unwrapEntry} from '../../c
 import {getType} from '../../common/js/file_type.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {strf} from '../../common/js/translations.js';
-import {TrashEntry} from '../../common/js/trash.js';
-import {FilesMetadataBox, type RawIfd} from '../elements/files_metadata_box.js';
-import {FilesQuickView} from '../elements/files_quick_view.js';
+import type {TrashEntry} from '../../common/js/trash.js';
+import type {FilesMetadataBox} from '../elements/files_metadata_box.js';
+import {type RawIfd} from '../elements/files_metadata_box.js';
+import type {FilesQuickView} from '../elements/files_quick_view.js';
 
-import {MetadataItem, type MetadataKey} from './metadata/metadata_item.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import type {MetadataItem} from './metadata/metadata_item.js';
+import {type MetadataKey} from './metadata/metadata_item.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 import {PathComponent} from './path_component.js';
-import {QuickViewModel} from './quick_view_model.js';
-import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
+import type {QuickViewModel} from './quick_view_model.js';
+import type {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 
 function isTrashEntry(entry: Entry|FilesAppEntry): entry is TrashEntry {
   return 'restoreEntry' in entry;

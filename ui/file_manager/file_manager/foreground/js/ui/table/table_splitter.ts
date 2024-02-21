@@ -13,10 +13,10 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {jsSetter} from '../../../../common/js/cr_ui.js';
-import {FileTableColumnModel} from '../file_table.js';
+import type {FileTableColumnModel} from '../file_table.js';
 import {Splitter} from '../splitter.js';
 
-import {Table} from './table.js';
+import type {Table} from './table.js';
 
 export function createTableSplitter(table: Table): TableSplitter {
   const el = document.createElement('div') as TableSplitter;

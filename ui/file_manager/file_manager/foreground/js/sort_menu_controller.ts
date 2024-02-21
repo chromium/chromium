@@ -6,8 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 
-import {FileListModel} from './file_list_model.js';
-import {MultiMenuButton} from './ui/multi_menu_button.js';
+import type {FileListModel} from './file_list_model.js';
+import type {MultiMenuButton} from './ui/multi_menu_button.js';
 
 export class SortMenuController {
   private sortByNameButton_: HTMLElement;

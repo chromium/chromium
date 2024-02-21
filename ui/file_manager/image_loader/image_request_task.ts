@@ -5,7 +5,7 @@
 import {getFileTypeForName} from 'chrome://file-manager/common/js/file_types_base.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ImageCache} from './cache.js';
+import type {ImageCache} from './cache.js';
 import {resizeAndCrop, shouldProcess} from './image_loader_util.js';
 import {ImageOrientation} from './image_orientation.js';
 import {cacheKey, type LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';

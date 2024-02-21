@@ -5,7 +5,7 @@
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {fakeMyFilesVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {convertEntryToFileData} from '../../state/ducks/all_entries.js';
 import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
 
