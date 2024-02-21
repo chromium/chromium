@@ -36,9 +36,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -75,11 +75,7 @@ std::unique_ptr<InvalidationService> CreateInvalidationServiceForSenderId(
 ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
     Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Using ProfileHelper::GetSigninProfile() here would lead to an infinite loop
-  // when this method is called during the creation of the sign-in profile
-  // itself. Using ProfileHelper::GetSigninProfileDir() is safe because it does
-  // not try to access the sign-in profile.
-  if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
+  if (ash::IsSigninBrowserContext(profile) ||
       (user_manager::UserManager::IsInitialized() &&
        user_manager::UserManager::Get()->IsLoggedInAsGuest())) {
     // The Chrome OS login and Chrome OS guest profiles do not have GAIA

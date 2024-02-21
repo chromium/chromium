@@ -89,11 +89,6 @@ base::FilePath ProfileHelper::GetProfilePathByUserIdHash(
 }
 
 // static
-base::FilePath ProfileHelper::GetSigninProfileDir() {
-  return BrowserContextHelper::Get()->GetSigninBrowserContextPath();
-}
-
-// static
 Profile* ProfileHelper::GetSigninProfile() {
   return Profile::FromBrowserContext(
       BrowserContextHelper::Get()->DeprecatedGetOrCreateSigninBrowserContext());

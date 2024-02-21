@@ -1214,12 +1214,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool force_supervised_user_id =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      g_browser_process->platform_part()
-              ->profile_helper()
-              ->GetSigninProfileDir() != profile->GetPath() &&
-      g_browser_process->platform_part()
-              ->profile_helper()
-              ->GetLockScreenAppProfilePath() != profile->GetPath() &&
+      !ash::IsSigninBrowserContext(profile) &&
+      !ash::IsLockScreenAppBrowserContext(profile) &&
 #endif
       command_line->HasSwitch(switches::kSupervisedUserId);
 

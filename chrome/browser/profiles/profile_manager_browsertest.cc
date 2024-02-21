@@ -60,9 +60,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #endif
 
@@ -232,13 +232,11 @@ base::FilePath GetFirstNonSigninNonLockScreenAppProfile(
   std::vector<ProfileAttributesEntry*> entries =
       storage->GetAllProfilesAttributesSortedByNameWithCheck();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::FilePath signin_path = ash::ProfileHelper::GetSigninProfileDir();
-  const base::FilePath lock_screen_apps_path =
-      ash::ProfileHelper::GetLockScreenAppProfilePath();
-
   for (ProfileAttributesEntry* entry : entries) {
     base::FilePath profile_path = entry->GetPath();
-    if (profile_path != signin_path && profile_path != lock_screen_apps_path) {
+    std::string base_name = profile_path.BaseName().value();
+    if (base_name != ash::kSigninBrowserContextBaseName &&
+        base_name != ash::kLockScreenAppBrowserContextBaseName) {
       return profile_path;
     }
   }

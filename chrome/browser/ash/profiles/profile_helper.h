@@ -54,11 +54,6 @@ class ProfileHelper {
       const std::string& user_id_hash);
 
   // DEPRECATED: Please use
-  // ash::BrowserContextHelper::GetSigninBrowserContextPath() instead.
-  // Returns the path that corresponds to the sign-in profile.
-  static base::FilePath GetSigninProfileDir();
-
-  // DEPRECATED: Please use
   // ash::BrowserContextHelper::GetSigninBrowserContext() instead.
   // Returns OffTheRecord profile for use during signing phase.
   static Profile* GetSigninProfile();
