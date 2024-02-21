@@ -1680,7 +1680,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   lifecycle_helper()->OnForegroundSessionStart();
 
   updater_bridge_consumer()->OnSettingFetchingError(
-      PasswordManagerSetting::kAutoSignIn);
+      PasswordManagerSetting::kAutoSignIn,
+      AndroidBackendAPIErrorCode::kUnexpectedError);
   updater_bridge_consumer()->OnSettingValueFetched(
       PasswordManagerSetting::kOfferToSavePasswords, false);
 
@@ -1691,6 +1692,10 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
+
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationFailed.AutoSignIn.APIError",
+      AndroidBackendAPIErrorCode::kUnexpectedError, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
@@ -1759,11 +1764,16 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   updater_bridge_consumer()->OnSettingValueFetched(
       PasswordManagerSetting::kOfferToSavePasswords, true);
 
-  updater_bridge_consumer()->OnFailedSettingChange(
-      PasswordManagerSetting::kAutoSignIn);
   updater_bridge_consumer()->OnSuccessfulSettingChange(
-      PasswordManagerSetting::kOfferToSavePasswords);
+      PasswordManagerSetting::kAutoSignIn);
+  updater_bridge_consumer()->OnFailedSettingChange(
+      PasswordManagerSetting::kOfferToSavePasswords,
+      AndroidBackendAPIErrorCode::kUnexpectedError);
 
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationFailed.OfferToSavePasswords."
+      "APIError",
+      AndroidBackendAPIErrorCode::kUnexpectedError, 1);
 }

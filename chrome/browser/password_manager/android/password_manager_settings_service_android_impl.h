@@ -75,11 +75,13 @@ class PasswordManagerSettingsServiceAndroidImpl
   void OnSettingValueAbsent(
       password_manager::PasswordManagerSetting setting) override;
   void OnSettingFetchingError(
-      password_manager::PasswordManagerSetting setting) override;
+      password_manager::PasswordManagerSetting setting,
+      AndroidBackendAPIErrorCode api_error_code) override;
   void OnSuccessfulSettingChange(
       password_manager::PasswordManagerSetting setting) override;
   void OnFailedSettingChange(
-      password_manager::PasswordManagerSetting setting) override;
+      password_manager::PasswordManagerSetting setting,
+      AndroidBackendAPIErrorCode api_error_code) override;
 
   // Stores the given `value` of the `setting` into the android-only GMS prefs.
   // Stores the same `value` in the old prefs are not being synced.

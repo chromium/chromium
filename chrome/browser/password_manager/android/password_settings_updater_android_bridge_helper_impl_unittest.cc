@@ -36,7 +36,7 @@ class MockConsumer
   MOCK_METHOD(void, OnSettingValueAbsent, (PasswordManagerSetting), (override));
   MOCK_METHOD(void,
               OnSettingFetchingError,
-              (PasswordManagerSetting),
+              (PasswordManagerSetting, AndroidBackendAPIErrorCode),
               (override));
   MOCK_METHOD(void,
               OnSuccessfulSettingChange,
@@ -44,7 +44,7 @@ class MockConsumer
               (override));
   MOCK_METHOD(void,
               OnFailedSettingChange,
-              (PasswordManagerSetting),
+              (PasswordManagerSetting, AndroidBackendAPIErrorCode),
               (override));
 };
 

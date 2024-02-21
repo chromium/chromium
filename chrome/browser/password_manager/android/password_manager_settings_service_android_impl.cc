@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
@@ -130,6 +131,25 @@ bool DidAccessingGMSPrefsFailed(
   return !results[0].was_successful || !results[1].was_successful ||
          results[0].setting == results[1].setting;
 }
+
+std::string_view GetMetricsInfixForSetting(
+    password_manager::PasswordManagerSetting setting) {
+  switch (setting) {
+    case password_manager::PasswordManagerSetting::kOfferToSavePasswords:
+      return "OfferToSavePasswords";
+    case password_manager::PasswordManagerSetting::kAutoSignIn:
+      return "AutoSignIn";
+  }
+}
+
+void RecordFailedMigrationMetric(std::string_view infix_for_setting,
+                                 AndroidBackendAPIErrorCode api_error) {
+  base::UmaHistogramSparse(
+      base::StrCat({"PasswordManager.PasswordSettingsMigrationFailed.",
+                    infix_for_setting, ".APIError"}),
+      static_cast<int>(api_error));
+}
+
 }  // namespace
 
 PasswordManagerSettingsServiceAndroidImpl::
@@ -304,12 +324,15 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnSettingFetchingError(
-    password_manager::PasswordManagerSetting setting) {
+    password_manager::PasswordManagerSetting setting,
+    AndroidBackendAPIErrorCode api_error_code) {
   CHECK(bridge_helper_);
   if (!UsesUPMBackend()) {
     return;
   }
   if (start_migration_callback_) {
+    RecordFailedMigrationMetric(GetMetricsInfixForSetting(setting),
+                                api_error_code);
     start_migration_callback_.Run(PasswordManagerSettingGmsAccessResult(
         setting, /*was_successful=*/false));
   }
@@ -327,12 +350,15 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSuccessfulSettingChange(
   }
 }
 void PasswordManagerSettingsServiceAndroidImpl::OnFailedSettingChange(
-    password_manager::PasswordManagerSetting setting) {
+    password_manager::PasswordManagerSetting setting,
+    AndroidBackendAPIErrorCode api_error_code) {
   CHECK(bridge_helper_);
   if (!UsesUPMBackend()) {
     return;
   }
   if (migration_finished_callback_) {
+    RecordFailedMigrationMetric(GetMetricsInfixForSetting(setting),
+                                api_error_code);
     migration_finished_callback_.Run(PasswordManagerSettingGmsAccessResult(
         setting, /*was_successful=*/false));
   }
