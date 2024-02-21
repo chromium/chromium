@@ -1114,11 +1114,13 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
                        }},
       invoked_in);
 
+  const bool is_canary_dev =
+      chrome::GetChannel() == version_info::Channel::CANARY ||
+      chrome::GetChannel() == version_info::Channel::DEV;
   const bool emit_crashes =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-      chrome::GetChannel() == version_info::Channel::CANARY ||
-      chrome::GetChannel() == version_info::Channel::DEV;
+      is_canary_dev;
 #else
       false;
 #endif
@@ -1129,7 +1131,13 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
 
   base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
-  base::sequence_manager::internal::ThreadController::InitializeFeatures();
+  // Set `record_sample_metadata` on dev and canary channels since these are the
+  // only channels where this metadata is expected to be useful for the
+  // foreseeable future. Please refer to
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/profiler/
+  // for more context.
+  base::sequence_manager::internal::ThreadController::InitializeFeatures(
+      /*record_sample_metadata=*/is_canary_dev);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   base::MessagePumpLibevent::InitializeFeatures();
 #elif BUILDFLAG(IS_MAC)

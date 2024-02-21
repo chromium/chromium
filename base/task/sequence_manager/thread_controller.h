@@ -142,8 +142,9 @@ class BASE_EXPORT ThreadController {
 #endif
 
   // Initializes the state of all the thread controller features. Must be
-  // invoked after FeatureList initialization.
-  static void InitializeFeatures();
+  // invoked after FeatureList initialization. Set `record_sample_metadata` to
+  // always enable recording sample metadata in this class.
+  static void InitializeFeatures(bool record_sample_metadata);
 
   // Enables TimeKeeper metrics. `thread_name` will be used as a suffix.
   void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);

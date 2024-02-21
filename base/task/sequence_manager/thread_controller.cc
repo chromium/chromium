@@ -19,11 +19,12 @@ namespace sequence_manager {
 namespace internal {
 
 namespace {
-// Control whether sample metadata is recorded in this class. Enabled by
-// default to ensure never losing data.
+// Enable sample metadata recording in this class, if it's currently disabled.
+// Note that even if `kThreadControllerSetsProfilerMetadata` is disabled, sample
+// metadata may still be recorded.
 BASE_FEATURE(kThreadControllerSetsProfilerMetadata,
              "ThreadControllerSetsProfilerMetadata",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Thread safe copy to be updated once feature list is available. This
 // defaults to true to make sure that no metadata is lost on clients that
@@ -56,9 +57,10 @@ ThreadController::RunLevelTracker::~RunLevelTracker() {
 }
 
 // static
-void ThreadController::InitializeFeatures() {
+void ThreadController::InitializeFeatures(bool record_sample_metadata) {
   g_thread_controller_sets_profiler_metadata.store(
-      base::FeatureList::IsEnabled(kThreadControllerSetsProfilerMetadata),
+      record_sample_metadata ||
+          base::FeatureList::IsEnabled(kThreadControllerSetsProfilerMetadata),
       std::memory_order_relaxed);
 }
 
