@@ -263,6 +263,9 @@ void InitLogging(UpdaterScope updater_scope) {
   logging::LoggingSettings settings;
   settings.log_file_path = log_file->value().c_str();
   settings.logging_dest = logging::LOG_TO_ALL;
+#if BUILDFLAG(IS_WIN)
+  settings.logging_dest &= ~logging::LOG_TO_SYSTEM_DEBUG_LOG;
+#endif  // BUILDFLAG(IS_WIN)
   logging::InitLogging(settings);
   logging::SetLogItems(/*enable_process_id=*/true,
                        /*enable_thread_id=*/true,
