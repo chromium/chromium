@@ -19,8 +19,9 @@
 namespace trusted_vault {
 namespace {
 
+// The "/0" suffix is required but ignored.
 constexpr char kUpdateVaultUrl[] =
-    "https://cryptauthvault.googleapis.com/v1/vaults/";
+    "https://cryptauthvault.googleapis.com/v1/vaults/0";
 
 void ProcessUpdateVaultResponseResponse(
     RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback callback,
@@ -70,7 +71,7 @@ RecoveryKeyStoreConnectionImpl::~RecoveryKeyStoreConnectionImpl() = default;
 std::unique_ptr<RecoveryKeyStoreConnectionImpl::Request>
 RecoveryKeyStoreConnectionImpl::UpdateRecoveryKeyStore(
     const CoreAccountInfo& account_info,
-    const trusted_vault_pb::UpdateVaultRequest& update_vault_request,
+    const trusted_vault_pb::Vault& vault,
     UpdateRecoveryKeyStoreCallback callback) {
   TrustedVaultRequest::RecordFetchStatusCallback record_fetch_status_to_uma =
       base::BindRepeating(
@@ -78,7 +79,7 @@ RecoveryKeyStoreConnectionImpl::UpdateRecoveryKeyStore(
           RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore);
   auto request = std::make_unique<TrustedVaultRequest>(
       account_info.account_id, TrustedVaultRequest::HttpMethod::kPatch,
-      GURL(kUpdateVaultUrl), update_vault_request.SerializeAsString(),
+      GURL(kUpdateVaultUrl), vault.SerializeAsString(),
       /*max_retry_duration=*/base::Seconds(0), url_loader_factory_,
       access_token_fetcher_->Clone(), std::move(record_fetch_status_to_uma));
   request->FetchAccessTokenAndSendRequest(

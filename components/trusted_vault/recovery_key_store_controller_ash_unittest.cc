@@ -51,13 +51,13 @@ MATCHER_P(HasAccountId, expected, "") {
 }
 
 MATCHER_P(DeviceIdEquals, expected, "") {
-  const trusted_vault_pb::UpdateVaultRequest& request = arg;
+  const trusted_vault_pb::Vault& request = arg;
   return request.chrome_os_metadata().device_id() == expected;
 }
 
 MATCHER(VaultHasPasskeysApplicationKey, "") {
-  const trusted_vault_pb::UpdateVaultRequest& request = arg;
-  auto application_keys = request.vault().application_keys();
+  const trusted_vault_pb::Vault& request = arg;
+  auto application_keys = request.application_keys();
   return application_keys.size() == 1 &&
          application_keys.at(0).key_name() == kSecurityDomainKeyName;
 }
@@ -77,6 +77,8 @@ class GetRecoverableKeyStoresReplyBuilder {
     cryptohome::RecoverableKeyStore* key_store = reply_.add_key_stores();
     key_store->mutable_key_store_metadata()->set_knowledge_factor_type(
         cryptohome::KNOWLEDGE_FACTOR_TYPE_PIN);
+    key_store->mutable_key_store_metadata()->set_hash_type(
+        cryptohome::HASH_TYPE_PBKDF2_AES256_1234);
     key_store->mutable_wrapped_security_domain_key()->set_key_name(
         kSecurityDomainKeyName);
     return *this;
@@ -86,6 +88,8 @@ class GetRecoverableKeyStoresReplyBuilder {
     cryptohome::RecoverableKeyStore* key_store = reply_.add_key_stores();
     key_store->mutable_key_store_metadata()->set_knowledge_factor_type(
         cryptohome::KNOWLEDGE_FACTOR_TYPE_PASSWORD);
+    key_store->mutable_key_store_metadata()->set_hash_type(
+        cryptohome::HASH_TYPE_SHA256_TOP_HALF);
     key_store->mutable_wrapped_security_domain_key()->set_key_name(
         kSecurityDomainKeyName);
     return *this;
@@ -103,7 +107,7 @@ class MockRecoveryKeyStoreConnection : public RecoveryKeyStoreConnection {
   MOCK_METHOD(std::unique_ptr<Request>,
               UpdateRecoveryKeyStore,
               (const CoreAccountInfo& account_info,
-               const trusted_vault_pb::UpdateVaultRequest& request,
+               const trusted_vault_pb::Vault& request,
                UpdateRecoveryKeyStoreCallback callback),
               (override));
 };
@@ -155,7 +159,7 @@ class RecoveryKeyStoreControllerAshTest : public testing::Test {
                                        _))
         .WillOnce(
             [status](const CoreAccountInfo& account_info,
-                     const trusted_vault_pb::UpdateVaultRequest& request,
+                     const trusted_vault_pb::Vault& request,
                      RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback
                          callback) {
               // Invoke `callback` asynchronously to avoid hair pinning.

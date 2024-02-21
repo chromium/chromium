@@ -46,8 +46,8 @@ class RecoveryKeyStoreController {
   // data to be uploaded to the recovery key store service.
   class RecoveryKeyProvider {
    public:
-    using RecoveryKeyStoreDataCallback = base::OnceCallback<void(
-        std::optional<trusted_vault_pb::UpdateVaultRequest>)>;
+    using RecoveryKeyStoreDataCallback =
+        base::OnceCallback<void(std::optional<trusted_vault_pb::Vault>)>;
 
     virtual ~RecoveryKeyProvider();
 
@@ -95,7 +95,7 @@ class RecoveryKeyStoreController {
   void ScheduleNextUpdate(base::TimeDelta delay);
   void UpdateRecoveryKeyStore();
   void OnGetCurrentRecoveryKeyStoreData(
-      std::optional<trusted_vault_pb::UpdateVaultRequest> request);
+      std::optional<trusted_vault_pb::Vault> request);
   void OnUpdateRecoveryKeyStore(std::vector<ApplicationKey> application_keys,
                                 UpdateRecoveryKeyStoreStatus status);
   void CompleteUpdateRequest(const std::vector<ApplicationKey>& result);

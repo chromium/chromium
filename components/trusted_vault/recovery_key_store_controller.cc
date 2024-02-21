@@ -82,25 +82,24 @@ void RecoveryKeyStoreController::UpdateRecoveryKeyStore() {
 }
 
 void RecoveryKeyStoreController::OnGetCurrentRecoveryKeyStoreData(
-    std::optional<trusted_vault_pb::UpdateVaultRequest> update_vault_request) {
+    std::optional<trusted_vault_pb::Vault> vault) {
   CHECK(ongoing_update_);
 
-  if (!update_vault_request ||
-      update_vault_request->vault().application_keys().empty()) {
+  if (!vault || vault->application_keys().empty()) {
     CompleteUpdateRequest({});
     return;
   }
 
   std::vector<ApplicationKey> uploaded_application_keys;
   for (const trusted_vault_pb::ApplicationKey& key :
-       update_vault_request->vault().application_keys()) {
+       vault->application_keys()) {
     uploaded_application_keys.push_back(ApplicationKey{
         key.key_name(),
         std::vector<uint8_t>(key.asymmetric_key_pair().public_key().begin(),
                              key.asymmetric_key_pair().public_key().end())});
   }
   ongoing_update_->request = connection_->UpdateRecoveryKeyStore(
-      account_info_, std::move(*update_vault_request),
+      account_info_, std::move(*vault),
       base::BindOnce(&RecoveryKeyStoreController::OnUpdateRecoveryKeyStore,
                      weak_factory_.GetWeakPtr(),
                      std::move(uploaded_application_keys)));

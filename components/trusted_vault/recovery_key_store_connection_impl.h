@@ -28,7 +28,7 @@ class RecoveryKeyStoreConnectionImpl : public RecoveryKeyStoreConnection {
 
   std::unique_ptr<Request> UpdateRecoveryKeyStore(
       const CoreAccountInfo& account_info,
-      const trusted_vault_pb::UpdateVaultRequest& update_vault_request,
+      const trusted_vault_pb::Vault& request,
       UpdateRecoveryKeyStoreCallback callback) override;
 
  private:
