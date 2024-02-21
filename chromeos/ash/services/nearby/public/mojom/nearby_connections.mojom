@@ -136,6 +136,16 @@ interface ConnectionListenerV3 {
   OnConnectionInitiated(ash.nearby.presence.mojom.PresenceDevice remote_device,
                         InitialConnectionInfoV3 info);
 
+  // Called when both sides have accepted or either side has rejected the
+  // connection. If the `ConnectionResolution` status is `kSuccess`, both sides
+  // have accepted the connection and may now send `Payload` to each other.
+  // Otherwise, the connection was rejected.
+  //
+  // remote_device - The object for the remote device.
+  // resolution    - The resolution of the connection (accepted or rejected).
+  OnConnectionResult(ash.nearby.presence.mojom.PresenceDevice remote_device,
+                     Status resolution);
+
   // Called when a remote device is disconnected or has become unreachable.
   // At this point service (re-)discovery may start again.
   //

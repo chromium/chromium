@@ -139,6 +139,8 @@ class NearbyConnectionsManagerImpl
   // ConnectionListenerV3:
   void OnConnectionInitiated(PresenceDevicePtr remote_device,
                              InitialConnectionInfoV3Ptr info) override;
+  void OnConnectionResult(PresenceDevicePtr remote_device,
+                          Status status) override;
   void OnDisconnected(PresenceDevicePtr remote_device) override;
 
   void OnConnectionTimedOut(const std::string& endpoint_id);
@@ -177,6 +179,9 @@ class NearbyConnectionsManagerImpl
   // A map of endpoint_id to NearbyConnection.
   base::flat_map<std::string, std::unique_ptr<NearbyConnectionImpl>>
       connections_;
+  // A map of endpoint_id to NearbyConnection for V3 connections.
+  base::flat_map<std::string, std::unique_ptr<NearbyConnectionImpl>>
+      connections_v3_;
   // A map of endpoint_id to timers that timeout a connection request.
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       connect_timeout_timers_;

@@ -52,7 +52,7 @@ const char kServiceId[] = "NearbySharing";
 const char kConnectionToken[] = "connection_token";
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
-const char kEndpointId[] = "974846";
+const char kEndpointId[] = "ABCD";
 const size_t kEndpointIdLength = 4u;
 const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
 const char kAccountName[] = "criscros@gmail.com";
@@ -311,11 +311,17 @@ class FakeConnectionListenerV3 : public mojom::ConnectionListenerV3 {
     initiated_cb.Run(std::move(remote_device), std::move(info));
   }
 
+  void OnConnectionResult(PresenceDevicePtr remote_device,
+                          mojom::Status status) override {
+    result_cb.Run(std::move(remote_device), status);
+  }
+
   void OnDisconnected(PresenceDevicePtr remote_device) override {
     disconnected_cb.Run(std::move(remote_device));
   }
 
-  // TODO(b/287336280): Introduce functions when callback implementation begins.
+  // TODO(b/287336280): Introduce `OnBandwidthChanged()` when interface
+  // implementation begins.
 
   mojo::Receiver<mojom::ConnectionListenerV3> receiver{this};
   base::RepeatingCallback<void(PresenceDevicePtr,
@@ -1615,6 +1621,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
   fake_connection_listener_v3.initiated_cb =
       base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
                                      mojom::InitialConnectionInfoV3Ptr info) {
+        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
         EXPECT_EQ(remote_device->metadata->device_name,
                   presence_device.GetMetadata().device_name());
         EXPECT_EQ(remote_device->metadata->account_name,
@@ -1642,19 +1649,45 @@ TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
   EXPECT_EQ(presence_device_mojom->endpoint_id,
             presence_device.GetEndpointId());
 
+  base::RunLoop initiated_run_loop;
   FakeConnectionListenerV3 fake_connection_listener_v3;
+  fake_connection_listener_v3.initiated_cb =
+      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+                                     mojom::InitialConnectionInfoV3Ptr info) {
+        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+        EXPECT_EQ(remote_device->metadata->device_name,
+                  presence_device.GetMetadata().device_name());
+        EXPECT_EQ(remote_device->metadata->account_name,
+                  presence_device.GetMetadata().account_name());
+        EXPECT_EQ(remote_device->metadata->user_name,
+                  presence_device.GetMetadata().user_name());
+        EXPECT_EQ(remote_device->metadata->device_profile_url,
+                  presence_device.GetMetadata().device_profile_url());
+        EXPECT_EQ(info->authentication_status,
+                  mojom::AuthenticationStatus::kSuccess);
+
+        initiated_run_loop.Quit();
+      });
+
+  base::RunLoop on_connection_result_run_loop;
+  fake_connection_listener_v3.result_cb = base::BindLambdaForTesting(
+      [&](PresenceDevicePtr remote_device, mojom::Status status) {
+        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+        EXPECT_EQ(status, mojom::Status::kSuccess);
+
+        on_connection_result_run_loop.Quit();
+      });
+
   RequestConnectionV3(fake_connection_listener_v3,
                       presence_device_mojom.Clone());
-
-  // TODO(b/308178927): When callback functions are created, introduce an
-  // `accepted_run_loop` to check for `result_cb` in
-  // `fake_connection_listener_v3`.
+  initiated_run_loop.Run();
 
   EXPECT_EQ(presence_device_mojom->endpoint_id,
             presence_device.GetEndpointId());
   FakePayloadListenerV3 fake_payload_listener_v3;
   AcceptConnectionV3(fake_payload_listener_v3,
                      std::move(presence_device_mojom));
+  on_connection_result_run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
@@ -1668,10 +1701,6 @@ TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
   FakeConnectionListenerV3 fake_connection_listener_v3;
   RequestConnectionV3(fake_connection_listener_v3,
                       presence_device_mojom.Clone());
-
-  // TODO(b/308178927): When callback functions are created, introduce an
-  // `rejected_run_loop` to check for `result_cb` in
-  // `fake_connection_listener_v3`.
 
   EXPECT_EQ(presence_device_mojom->endpoint_id,
             presence_device.GetEndpointId());
@@ -1687,8 +1716,41 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
             presence_device.GetEndpointId());
 
   FakeConnectionListenerV3 fake_connection_listener_v3;
+  base::RunLoop initiated_run_loop;
+  fake_connection_listener_v3.initiated_cb =
+      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+                                     mojom::InitialConnectionInfoV3Ptr info) {
+        EXPECT_EQ(remote_device->metadata->device_name,
+                  presence_device.GetMetadata().device_name());
+        EXPECT_EQ(remote_device->metadata->account_name,
+                  presence_device.GetMetadata().account_name());
+        EXPECT_EQ(remote_device->metadata->user_name,
+                  presence_device.GetMetadata().user_name());
+        EXPECT_EQ(remote_device->metadata->device_profile_url,
+                  presence_device.GetMetadata().device_profile_url());
+        EXPECT_EQ(info->authentication_status,
+                  mojom::AuthenticationStatus::kSuccess);
+
+        initiated_run_loop.Quit();
+      });
+
+  base::RunLoop on_connection_result_run_loop;
+  fake_connection_listener_v3.result_cb = base::BindLambdaForTesting(
+      [&](PresenceDevicePtr remote_device, mojom::Status status) {
+        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+        EXPECT_EQ(status, mojom::Status::kSuccess);
+
+        on_connection_result_run_loop.Quit();
+      });
+
+  fake_connection_listener_v3.disconnected_cb =
+      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device) {
+        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+      });
+
   RequestConnectionV3(fake_connection_listener_v3,
                       presence_device_mojom.Clone());
+  initiated_run_loop.Run();
 
   presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
@@ -1697,6 +1759,7 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
   FakePayloadListenerV3 fake_payload_listener_v3;
   ClientProxy* client_proxy = AcceptConnectionV3(fake_payload_listener_v3,
                                                  presence_device_mojom.Clone());
+  on_connection_result_run_loop.Run();
 
   EXPECT_CALL(*service_controller_router_ptr_, DisconnectFromDeviceV3)
       .WillOnce([&client_proxy](ClientProxy* client,

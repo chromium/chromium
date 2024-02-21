@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
@@ -785,7 +786,9 @@ void NearbyConnectionsManagerImpl::OnConnectionAccepted(
         endpoint_id, std::make_unique<NearbyConnectionImpl>(
                          weak_ptr_factory_.GetWeakPtr(), endpoint_id));
     DCHECK(result.second);
-    std::move(pending_it->second).Run(result.first->second.get());
+    std::move(pending_it->second)
+        .Run(
+            /*nearby_connection=*/result.first->second.get());
     pending_outgoing_connections_.erase(pending_it);
     connect_timeout_timers_.erase(endpoint_id);
   }
@@ -798,7 +801,7 @@ void NearbyConnectionsManagerImpl::OnConnectionRejected(
 
   auto it = pending_outgoing_connections_.find(endpoint_id);
   if (it != pending_outgoing_connections_.end()) {
-    std::move(it->second).Run(nullptr);
+    std::move(it->second).Run(/*nearby_connection=*/nullptr);
     pending_outgoing_connections_.erase(it);
     connect_timeout_timers_.erase(endpoint_id);
   }
@@ -816,6 +819,10 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
     pending_outgoing_connections_.erase(it);
     connect_timeout_timers_.erase(endpoint_id);
   }
+
+  // TODO(b/326139109): Refactor to add a check for `endpoint_id` to ensure that
+  // it exists in either `pending_outgoing_connections_` or `connections_`.
+  // Otherwise we should `ReportBadMessage()`.
 
   // Destroying the NearbyConnectionImpl object may start a chain of callbacks
   // that can delete this NearbyConnectionsManagerImpl object. This may result
@@ -967,13 +974,74 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiated(
   }
 }
 
+void NearbyConnectionsManagerImpl::OnConnectionResult(
+    PresenceDevicePtr remote_device,
+    Status status) {
+  CD_LOG(INFO, Feature::NC)
+      << __func__ << ": OnConnectionResult result=" << status;
+
+  const std::string& endpoint_id = remote_device->endpoint_id;
+  auto it = pending_outgoing_connections_.find(endpoint_id);
+
+  if (it == pending_outgoing_connections_.end()) {
+    connection_listener_v3s_.ReportBadMessage(
+        base::StringPrintf("OnConnectionResult() received endpoint_id=%s which "
+                           "does not exist in connections V3",
+                           endpoint_id.c_str()));
+    return;
+  }
+
+  if (status == Status::kSuccess) {
+    auto result = connections_v3_.emplace(
+        endpoint_id, std::make_unique<NearbyConnectionImpl>(
+                         weak_ptr_factory_.GetWeakPtr(), endpoint_id));
+    std::move(it->second)
+        .Run(
+            /*nearby_connection=*/result.first->second.get());
+  } else {
+    std::move(it->second).Run(/*nearby_connection=*/nullptr);
+  }
+
+  pending_outgoing_connections_.erase(it);
+  connect_timeout_timers_.erase(endpoint_id);
+}
+
 void NearbyConnectionsManagerImpl::OnDisconnected(
     PresenceDevicePtr remote_device) {
-  // TODO(b/311263430): Implement when the `OnResult()` callback is implemented
-  // and the appropriate |NearbyConnection| is created upon
-  // ConnectionsStatus::kSuccess. This function will then tear down the
-  // established |NearbyConnection|.
-  NOTIMPLEMENTED();
+  const std::string& endpoint_id = remote_device->endpoint_id;
+
+  auto it = pending_outgoing_connections_.find(endpoint_id);
+  if (it != pending_outgoing_connections_.end()) {
+    std::move(it->second).Run(/*nearby_connection=*/nullptr);
+    pending_outgoing_connections_.erase(it);
+    connect_timeout_timers_.erase(endpoint_id);
+  } else {
+    // Destroying the NearbyConnectionImpl object may start a chain of callbacks
+    // that can delete this NearbyConnectionsManagerImpl object. This may result
+    // in a crash (see b/303675257). Update the |connections_v3_| map, but wait
+    // to destroy the connection object until after we're done modifying
+    // internal state in OnDisconnected() by letting the connection go out of
+    // scope.
+    std::unique_ptr<NearbyConnectionImpl> connection;
+    auto active_connections_it = connections_v3_.find(endpoint_id);
+
+    // The specified endpoint_id was not in pending connections, and thus must
+    // be in active `connections_v3_`. If not, report a bad message from Nearby.
+    if (active_connections_it == connections_v3_.end()) {
+      connection_listener_v3s_.ReportBadMessage(
+          base::StringPrintf("OnDisconnected() received endpoint_id=%s which "
+                             "does not exist in pending connections or "
+                             "connections V3",
+                             endpoint_id.c_str()));
+    } else {
+      connection = std::move(active_connections_it->second);
+      connections_v3_.erase(active_connections_it);
+    }
+  }
+
+  // TODO(b/325534442): Emit to V3 version of the metric
+  // RequestedBandwidthUpgradeResult, and updated BWU-related maps. See older
+  // OnDisconnected() method.
 }
 
 nearby::connections::mojom::NearbyConnections*
@@ -1018,6 +1086,7 @@ void NearbyConnectionsManagerImpl::Reset() {
   payload_status_listeners_.clear();
   ClearIncomingPayloads();
   connections_.clear();
+  connections_v3_.clear();
   connection_info_map_.clear();
   discovery_listener_ = nullptr;
   incoming_connection_listener_ = nullptr;
