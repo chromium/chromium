@@ -19,6 +19,7 @@ per-file chromium.android.*=chrome-weblayer-builder@chops-service-accounts.iam.g
 
 # For Android related reviews
 per-file chromium.android.*=zhiyuans@google.com
+per-file chromium.android.*=wnwen@chromium.org
 
 # For Lacros version skew tests related reviews
 per-file chromium.chromiumos.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
@@ -46,6 +47,9 @@ per-file *chromium.perf*.json=hypan@google.com
 per-file *chromium.perf*.json=jeffyoon@google.com
 per-file *chromium.perf*.json=johnchen@chromium.org
 per-file *chromium.perf*.json=wenbinzhang@google.com
+
+# For Android perf related reviews
+per-file *chromium.perf*.json=wnwen@chromium.org
 
 # For OOBE-related test filters.
 per-file *oobe*=file://ash/login/OOBE_WEBUI_OWNERS
