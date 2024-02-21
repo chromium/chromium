@@ -168,65 +168,65 @@ TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteExternal) {
   EXPECT_TRUE(set_on_destruction2);
 }
 
-#if defined(__clang__) && HAS_ATTRIBUTE(trivial_abi)
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
-// Test disabled on Windows due to
-// https://github.com/llvm/llvm-project/issues/69394
-// Test disabled on Apple due to b/324278148
-
 TEST(SequenceLocalStorageMapTest, DestructorInline) {
-  bool set_on_destruction = false;
+  if constexpr (!absl::is_trivially_relocatable<SetOnDestroy>()) {
+    // Test disabled because there is no reliable way to detect SetOnDestroy
+    // is trivially relocatble.
+    // See https://github.com/llvm/llvm-project/issues/69394
+    GTEST_SKIP();
+  } else {
+    bool set_on_destruction = false;
 
-  {
-    SequenceLocalStorageMap sequence_local_storage_map;
-    ScopedSetSequenceLocalStorageMapForCurrentThread
-        scoped_sequence_local_storage_map(&sequence_local_storage_map);
+    {
+      SequenceLocalStorageMap sequence_local_storage_map;
+      ScopedSetSequenceLocalStorageMapForCurrentThread
+          scoped_sequence_local_storage_map(&sequence_local_storage_map);
 
-    SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
-        CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction);
+      SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
+          CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction);
 
-    sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
+      sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
+    }
+
+    EXPECT_TRUE(set_on_destruction);
   }
-
-  EXPECT_TRUE(set_on_destruction);
 }
 
 TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteInline) {
-  bool set_on_destruction = false;
-  bool set_on_destruction2 = false;
-  {
-    SequenceLocalStorageMap sequence_local_storage_map;
-    ScopedSetSequenceLocalStorageMapForCurrentThread
-        scoped_sequence_local_storage_map(&sequence_local_storage_map);
+  if constexpr (!absl::is_trivially_relocatable<SetOnDestroy>()) {
+    // Test disabled because there is no reliable way to detect SetOnDestroy
+    // is trivially relocatble.
+    // See https://github.com/llvm/llvm-project/issues/69394
+    GTEST_SKIP();
+  } else {
+    bool set_on_destruction = false;
+    bool set_on_destruction2 = false;
+    {
+      SequenceLocalStorageMap sequence_local_storage_map;
+      ScopedSetSequenceLocalStorageMapForCurrentThread
+          scoped_sequence_local_storage_map(&sequence_local_storage_map);
 
-    SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
-        CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction);
-    SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair2 =
-        CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction2);
+      SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
+          CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction);
+      SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair2 =
+          CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction2);
 
-    sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
+      sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
 
-    ASSERT_FALSE(set_on_destruction);
+      ASSERT_FALSE(set_on_destruction);
 
-    // Overwrites the old value in the slot.
-    sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair2));
+      // Overwrites the old value in the slot.
+      sequence_local_storage_map.Set(kSlotId,
+                                     std::move(value_destructor_pair2));
 
-    // Destructor should've been called for the old value in the slot, and not
-    // yet called for the new value.
-    EXPECT_TRUE(set_on_destruction);
-    EXPECT_FALSE(set_on_destruction2);
+      // Destructor should've been called for the old value in the slot, and not
+      // yet called for the new value.
+      EXPECT_TRUE(set_on_destruction);
+      EXPECT_FALSE(set_on_destruction2);
+    }
+    EXPECT_TRUE(set_on_destruction2);
   }
-  EXPECT_TRUE(set_on_destruction2);
 }
-
-#else  // !BUILDFLAG(IS_WIN)
-
-static_assert(!absl::is_trivially_relocatable<SetOnDestroy>(),
-              "A compiler change on Windows indicates the preprocessor "
-              "guarding the test above needs to be updated.");
-
-#endif  // !BUILDFLAG(IS_WIN)
-#endif  //  defined(__clang__) && HAS_ATTRIBUTE(trivial_abi)
 
 }  // namespace internal
 }  // namespace base
