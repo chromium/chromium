@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -52,7 +53,7 @@ void KeyRotationLauncherImpl::LaunchKeyRotation(
 
   auto dm_server_url = GetUploadBrowserPublicKeyUrl(
       dm_token_storage_->RetrieveClientId(), dm_token.value(),
-      device_management_service_);
+      /*profile_id=*/std::nullopt, device_management_service_);
   if (!dm_server_url) {
     std::move(callback).Run(
         KeyRotationCommand::Status::FAILED_INVALID_DMSERVER_URL);

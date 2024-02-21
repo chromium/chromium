@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_loader_impl.h"
+
+#include <optional>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -82,7 +83,7 @@ void KeyLoaderImpl::SynchronizePublicKey(LoadKeyCallback callback,
 
   auto dm_server_url = GetUploadBrowserPublicKeyUrl(
       dm_token_storage_->RetrieveClientId(), dm_token.value(),
-      device_management_service_);
+      /*profile_id=*/std::nullopt, device_management_service_);
   if (!dm_server_url) {
     LogSynchronizationError(DTSynchronizationError::kInvalidServerUrl);
     std::move(callback).Run(

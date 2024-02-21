@@ -13,8 +13,10 @@
 #include "chrome/browser/enterprise/client_certificates/certificate_store_factory.h"
 #include "chrome/browser/enterprise/client_certificates/profile_cloud_management_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
@@ -65,6 +67,7 @@ CertificateProvisioningServiceFactory::CertificateProvisioningServiceFactory()
           "CertificateProvisioningService",
           BuildCertificateProvisioningProfileSelections()) {
   DependsOn(CertificateStoreFactory::GetInstance());
+  DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
 }
 
 CertificateProvisioningServiceFactory::
@@ -90,7 +93,10 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* certificate_store = CertificateStoreFactory::GetForProfile(profile);
   auto url_loader_factory = profile->GetURLLoaderFactory();
   auto* device_management_service = GetDeviceManagementService();
-  if (!certificate_store || !url_loader_factory || !device_management_service) {
+  auto* profile_id_service =
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile);
+  if (!certificate_store || !url_loader_factory || !device_management_service ||
+      !profile_id_service) {
     return nullptr;
   }
 
@@ -98,7 +104,7 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->GetPrefs(), certificate_store,
       KeyUploadClient::Create(
           std::make_unique<ProfileCloudManagementDelegate>(
-              profile, device_management_service),
+              profile, device_management_service, profile_id_service),
           std::make_unique<enterprise_connectors::MojoKeyNetworkDelegate>(
               std::move(url_loader_factory))));
 }

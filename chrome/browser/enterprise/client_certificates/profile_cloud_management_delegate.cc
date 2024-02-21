@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -19,10 +20,14 @@ namespace client_certificates {
 
 ProfileCloudManagementDelegate::ProfileCloudManagementDelegate(
     Profile* profile,
-    policy::DeviceManagementService* device_management_service)
-    : profile_(profile), device_management_service_(device_management_service) {
+    policy::DeviceManagementService* device_management_service,
+    enterprise::ProfileIdService* profile_id_service)
+    : profile_(profile),
+      device_management_service_(device_management_service),
+      profile_id_service_(profile_id_service) {
   CHECK(profile_);
   CHECK(device_management_service_);
+  CHECK(profile_id_service_);
 }
 
 ProfileCloudManagementDelegate::~ProfileCloudManagementDelegate() = default;
@@ -44,7 +49,8 @@ ProfileCloudManagementDelegate::GetUploadBrowserPublicKeyUrl() const {
   }
 
   return enterprise_connectors::GetUploadBrowserPublicKeyUrl(
-      client_id.value(), dm_token.value(), device_management_service_);
+      client_id.value(), dm_token.value(), profile_id_service_->GetProfileId(),
+      device_management_service_);
 }
 
 const enterprise_management::PolicyData*

@@ -10,6 +10,10 @@
 
 class Profile;
 
+namespace enterprise {
+class ProfileIdService;
+}  // namespace enterprise
+
 namespace enterprise_management {
 class PolicyData;
 }  // namespace enterprise_management
@@ -24,7 +28,8 @@ class ProfileCloudManagementDelegate : public CloudManagementDelegate {
  public:
   ProfileCloudManagementDelegate(
       Profile* profile,
-      policy::DeviceManagementService* device_management_service);
+      policy::DeviceManagementService* device_management_service,
+      enterprise::ProfileIdService* profile_id_service);
   ~ProfileCloudManagementDelegate() override;
 
   // CloudManagementDelegate:
@@ -37,6 +42,7 @@ class ProfileCloudManagementDelegate : public CloudManagementDelegate {
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<policy::DeviceManagementService> device_management_service_;
+  const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
 };
 
 }  // namespace client_certificates
