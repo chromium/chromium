@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_complete_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_predicate.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
@@ -204,6 +205,90 @@ class OperatorForEachInternalObserver final
   Member<AbortController> controller_;
   Member<V8Visitor> callback_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
+class OperatorFilterSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorFilterSubscribeDelegate(Observable* source_observable,
+                                  V8Predicate* predicate)
+      : source_observable_(source_observable), predicate_(predicate) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state,
+                                                     predicate_),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+    visitor->Trace(predicate_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* subscriber,
+                           ScriptState* script_state,
+                           V8Predicate* predicate)
+        : subscriber_(subscriber),
+          script_state_(script_state),
+          predicate_(predicate) {
+      CHECK(subscriber_);
+      CHECK(script_state_);
+      CHECK(predicate_);
+    }
+
+    void Next(ScriptValue value) override {
+      // `ScriptState::Scope` can only be created in a valid context, so
+      // early-return if we're in a detached one.
+      if (!script_state_->ContextIsValid()) {
+        return;
+      }
+
+      ScriptState::Scope scope(script_state_);
+      v8::TryCatch try_catch(script_state_->GetIsolate());
+      v8::Maybe<bool> matches = predicate_->Invoke(nullptr, value);
+      if (try_catch.HasCaught()) {
+        subscriber_->error(
+            script_state_,
+            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+        return;
+      }
+
+      // Since we handled the exception case above, `matches` must not be
+      // `v8::Nothing`.
+      if (matches.ToChecked()) {
+        subscriber_->next(value);
+      }
+    }
+    void Error(ScriptState*, ScriptValue error) override {
+      subscriber_->error(script_state_, error);
+    }
+    void Complete() override { subscriber_->complete(script_state_); }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(subscriber_);
+      visitor->Trace(script_state_);
+      visitor->Trace(predicate_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> subscriber_;
+    Member<ScriptState> script_state_;
+    Member<V8Predicate> predicate_;
+  };
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  Member<Observable> source_observable_;
+  Member<V8Predicate> predicate_;
 };
 
 class OperatorMapSubscribeDelegate final
@@ -563,6 +648,13 @@ Observable* Observable::map(ScriptState*, V8Mapper* mapper) {
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
       MakeGarbageCollected<OperatorMapSubscribeDelegate>(this, mapper));
+  return return_observable;
+}
+
+Observable* Observable::filter(ScriptState*, V8Predicate* predicate) {
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorFilterSubscribeDelegate>(this, predicate));
   return return_observable;
 }
 

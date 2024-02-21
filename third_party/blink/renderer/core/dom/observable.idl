@@ -13,6 +13,7 @@ callback Mapper = any (any element, unsigned long long index);
 // Differs from Mapper only in return type, since this callback is exclusively
 // used to visit each element in a sequence, not transform it.
 callback Visitor = undefined (any element, unsigned long long index);
+callback Predicate = boolean (any value);
 
 dictionary Observer {
   ObserverCallback next;
@@ -39,6 +40,7 @@ interface Observable {
   // should convert that `any` into an `Observable`.
   [CallWith=ScriptState] Observable takeUntil(Observable notifier);
   [CallWith=ScriptState] Observable map(Mapper mapper);
+  [CallWith=ScriptState] Observable filter(Predicate predicate);
 
   // Promise-returning operators.
   // See https://wicg.github.io/observable/#promise-returning-operators.

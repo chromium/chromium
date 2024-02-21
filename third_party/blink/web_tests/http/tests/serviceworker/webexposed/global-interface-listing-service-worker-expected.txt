@@ -1270,6 +1270,7 @@ interface NotificationEvent : ExtendableEvent
 interface Observable
     attribute @@toStringTag
     method constructor
+    method filter
     method forEach
     method map
     method subscribe
