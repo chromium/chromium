@@ -23,6 +23,9 @@ namespace blink {
 namespace {
 // This is experimentally determined and corresponds to the UA decided
 // parameter as mentioned in spec.
+// If changing this, consider modifying
+// web_tests/fast/scrolling/area-at-exact-proximity-range-doesnt-crash.html
+// accordingly.
 constexpr float kProximityRatio = 1.0 / 3.0;
 
 cc::SnapAlignment AdjustForRtlWritingMode(cc::SnapAlignment align) {
