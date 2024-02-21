@@ -46,9 +46,12 @@ inline constexpr char kBrowserLockdownModeEnabled[] =
 inline constexpr char kBrowserStateInfoCache[] = "profile.info_cache";
 
 // Directory of the browser state profile used.
+// TODO(crbug.com/325921947): Remove use of this key, kBrowserStatesLastActive
+// should be used.
 inline constexpr char kBrowserStateLastUsed[] = "profile.last_used";
 
 // List of directories of the browser states last active.
+// TODO(crbug.com/325923177): Update this key with active BrowserStates.
 inline constexpr char kBrowserStatesLastActive[] =
     "profile.last_active_profiles";
 

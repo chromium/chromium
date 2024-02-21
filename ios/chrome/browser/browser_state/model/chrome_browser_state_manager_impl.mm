@@ -109,6 +109,8 @@ base::FilePath GetUserDataDir() {
 
 }  // namespace
 
+// TODO(crbug.com/325923030): lastActiveBrowserStates should be loaded in the
+// constructor.
 ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl() {}
 
 ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
@@ -151,6 +153,8 @@ base::FilePath ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDir(
     const base::FilePath& user_data_dir) {
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   DCHECK(local_state);
+  // TODO(crbug.com/325921947): Remove use of this key, kBrowserStatesLastActive
+  // should be used.
   std::string last_used_browser_state_name =
       local_state->GetString(prefs::kBrowserStateLastUsed);
   if (last_used_browser_state_name.empty()) {

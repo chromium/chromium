@@ -326,7 +326,7 @@
   // The actual pref names and values below are irrelevant, but the calls
   // themselves should return data without crashing or asserting.
   [ChromeEarlGrey localStateIntegerPref:prefs::kBrowserStatesNumCreated];
-  [ChromeEarlGrey localStateStringPref:prefs::kBrowserStateLastUsed];
+  [ChromeEarlGrey localStateStringPref:prefs::kTabPickupLastDisplayedURL];
 
   [ChromeEarlGrey userBooleanPref:prefs::kIosBookmarkPromoAlreadySeen];
   [ChromeEarlGrey userIntegerPref:prefs::kIosBookmarkCachedTopMostRow];

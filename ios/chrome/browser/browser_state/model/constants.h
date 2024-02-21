@@ -5,16 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CONSTANTS_H_
 
-// A handful of resource-like constants related to the Chrome application.
-
 #include "base/files/file_path.h"
 
+// A handful of resource-like constants related to the Chrome application.
+
 extern const char kIOSChromeInitialBrowserState[];
-extern const char kIOSChromeMultiBrowserStatePrefix[];
 
 extern const base::FilePath::CharType kIOSChromeCacheDirname[];
 extern const base::FilePath::CharType kIOSChromeCookieFilename[];
-extern const base::FilePath::CharType kIOSChromeCRLSetFilename[];
 extern const base::FilePath::CharType
     kIOSChromeNetworkPersistentStateFilename[];
 
