@@ -141,6 +141,10 @@ class BaseTestCase(unittest.TestCase):
                     'args': ['--disable-site-isolation-trials'],
                 },
             ]))
+        for wpt_dir in self.mac_port.WPT_DIRS:
+            self._write(self.tool.filesystem.join(wpt_dir, 'MANIFEST.json'),
+                        json.dumps({}))
+
         # Create some dummy tests (note _setup_mock_build_data uses the same
         # test names). Also, create some dummy baselines to avoid the implicit
         # all-pass warning.
@@ -161,6 +165,7 @@ class BaseTestCase(unittest.TestCase):
         # we can make the default port also a "test" port.
         self.original_port_factory_get = self.tool.port_factory.get
         self._test_port = self.tool.port_factory.get('test')
+        self._test_port.set_option_default('manifest_update', False)
 
         def get_test_port(port_name=None, options=None, **kwargs):
             if not port_name:
@@ -520,6 +525,7 @@ class TestRebaseline(BaseTestCase):
                     },
                 },
                 step_name='blink_web_tests (with patch)'))
+        self._write('reftest.html', 'Dummy test contents')
         self._write('reftest-expected.html', 'reference page')
 
         test_baseline_set = TestBaselineSet(self.tool.builders)

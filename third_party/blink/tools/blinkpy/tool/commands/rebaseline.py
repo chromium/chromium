@@ -588,6 +588,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         rebaselinable_set = self._filter_baseline_set(test_baseline_set)
         test_count = len(rebaselinable_set.all_tests())
         if test_count == 0:
+            _log.info('No tests to rebaseline.')
             return 0
 
         _log.info('Rebaselining %s.', pluralize('test', test_count))

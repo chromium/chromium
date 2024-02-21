@@ -25,6 +25,7 @@ from blinkpy.tool.commands.build_resolver import (
 from blinkpy.tool.commands.command import resolve_test_patterns
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 from blinkpy.tool.commands.rebaseline import TestBaselineSet
+from blinkpy.tool.grammar import pluralize
 
 _log = logging.getLogger(__name__)
 
@@ -314,7 +315,26 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                         continue
                     test_baseline_set.add(test, build,
                                           step_results.step_name())
-        return test_baseline_set
+
+        # Validate test existence, since the builder may run tests not found
+        # locally. `Port.tests()` performs an expensive filesystem walk, so
+        # filter out all invalid tests here instead of filtering at each build
+        # step.
+        tests = set(self._host_port.tests(test_baseline_set.all_tests()))
+        missing_tests, valid_set = set(), TestBaselineSet(self._tool.builders)
+        for task in test_baseline_set:
+            if task.test in tests:
+                valid_set.add(*task)
+            else:
+                missing_tests.add(task.test)
+        if missing_tests:
+            _log.warning(
+                'Skipping rebaselining for %s missing from the local checkout:',
+                pluralize('test', len(missing_tests)))
+            for test in sorted(missing_tests):
+                _log.warning(f'  {test}')
+            _log.warning('You may want to rebase or trigger new builds.')
+        return valid_set
 
     def _test_base_path(self):
         """Returns the relative path from the repo root to the web tests."""

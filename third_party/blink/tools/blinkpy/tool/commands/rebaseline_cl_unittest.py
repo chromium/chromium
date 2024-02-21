@@ -234,7 +234,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'verbose': False,
             'builders': [],
             'patchset': None,
-            'manifest_update': True,
+            'manifest_update': False,
         }
         options.update(kwargs)
         return optparse.Values(options)
@@ -322,6 +322,28 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/4)\n",
             "INFO: Downloaded baselines for 'one/missing.html' (2/4)\n",
             "INFO: Downloaded baselines for 'one/text-fail.html' (3/4)\n",
+            "INFO: Downloaded baselines for 'two/image-fail.html' (4/4)\n",
+            'INFO: Staging 0 baselines with git.\n',
+        ])
+
+    def test_execute_with_tests_missing_locally(self):
+        self._remove('one/text-fail.html')
+        exit_code = self.command.execute(self.command_options(), [], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'WARNING: Skipping rebaselining for 1 test missing from the local '
+            'checkout:\n',
+            'WARNING:   one/text-fail.html\n',
+            'WARNING: You may want to rebase or trigger new builds.\n',
+            'INFO: Rebaselining 4 tests.\n',
+            "INFO: Copied baselines for 'one/flaky-fail.html' (wav) (1/4)\n",
+            "INFO: Copied baselines for 'one/missing.html' (png) (2/4)\n",
+            "INFO: Copied baselines for 'one/slow-fail.html' (txt) (3/4)\n",
+            "INFO: Copied baselines for 'two/image-fail.html' (png) (4/4)\n",
+            "INFO: Downloaded baselines for 'one/flaky-fail.html' (1/4)\n",
+            "INFO: Downloaded baselines for 'one/missing.html' (2/4)\n",
+            "INFO: Downloaded baselines for 'one/slow-fail.html' (3/4)\n",
             "INFO: Downloaded baselines for 'two/image-fail.html' (4/4)\n",
             'INFO: Staging 0 baselines with git.\n',
         ])
@@ -506,6 +528,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertEqual(exit_code, 0)
         self.assertLog([
             'INFO: All builds finished.\n',
+            'INFO: No tests to rebaseline.\n',
         ])
 
     def test_execute_with_no_trigger_jobs_option(self):
