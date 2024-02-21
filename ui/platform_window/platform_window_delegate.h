@@ -116,59 +116,33 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // This is used by OnStateChanged and currently only by ozone/wayland.
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) State {
     bool operator==(const State& rhs) const {
-      return std::tie(bounds_dip, size_px, window_scale, raster_scale,
-                      occlusion_state, auxiliary_data) ==
+      return std::tie(bounds_dip, size_px, window_scale, raster_scale, insets,
+                      occlusion_state) ==
              std::tie(rhs.bounds_dip, rhs.size_px, rhs.window_scale,
-                      rhs.raster_scale, rhs.occlusion_state,
-                      rhs.auxiliary_data);
+                      rhs.raster_scale, rhs.insets, rhs.occlusion_state);
     }
 
-    // AuxiliaryFrameData contains the data which does not affect a frame itself
-    // but should be carried together in State. e.g. Insets data is used to
-    // determine where the produced frame should be located, but the frame
-    // should not be updated by the insets change.
-    // ProducesFrameOnUpdateFrom should NOT check whether AuxiliaryFrameData is
-    // updated since the data contained here are all irrelevant from producing a
-    // new frame.
-    struct AuxiliaryFrameData {
-      bool operator==(const AuxiliaryFrameData& rhs) const {
-        return insets_dip == rhs.insets_dip;
-      }
-
-      // Insets in DIP. Used in platforms where window decorations are drawn by
-      // the client.
-      // Insets should not affect producing a new frame since this parameter is
-      // only used to compute the geometry while it does not change the size
-      // similarly to bounds origin. This data needs to be carried together in
-      // State since insets and bounds must be synchronized to place the frame
-      // correctly.
-      gfx::Insets insets_dip;
-    };
-
-    // Bounds in DIP. The origin of `bounds_dip` does not affect whether it
-    // produces a new frame or not. Only the size of `bounds_dip` does.
+    // Bounds in DIP.
     gfx::Rect bounds_dip;
-
     // Size in pixels. Note that it's required to keep information in both DIP
     // and pixels since it is not always possible to convert between them.
     gfx::Size size_px;
-
     // Current scale factor of the output where the window is located at.
     float window_scale = 1.0;
-
     // TODO(crbug.com/1395267): Add window states here.
 
     // Scale to raster the window at.
     float raster_scale = 1.0;
 
+    // Insets in DIP. Used in platforms where window decorations are drawn by
+    // the client.
+    gfx::Insets insets;
+
     // Occlusion state
     PlatformWindowOcclusionState occlusion_state =
         PlatformWindowOcclusionState::kUnknown;
 
-    // AuxiliaryFrameData which does not produce frame on update.
-    AuxiliaryFrameData auxiliary_data;
-
-    // Returns true if updating from the given State `old` to this state
+    // Returns true if updating from the given State |old| to this state
     // should produce a frame.
     bool ProducesFrameOnUpdateFrom(const State& old) const;
 

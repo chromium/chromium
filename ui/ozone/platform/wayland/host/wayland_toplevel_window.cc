@@ -621,7 +621,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
       pending_configure_state_.bounds_dip.value_or(gfx::Rect()));
   if (width_dip > 1 && height_dip > 1) {
     bounds_dip.SetRect(x, y, width_dip, height_dip);
-    const auto& insets = applied_state().auxiliary_data.insets_dip;
+    const auto insets = GetDecorationInsetsInDIP();
     if (ShouldSetBounds(state_) && !insets.IsEmpty()) {
       bounds_dip.Inset(-insets);
       bounds_dip.set_origin({x, y});
@@ -731,8 +731,7 @@ bool WaylandToplevelWindow::IsSurfaceConfigured() {
   return shell_toplevel() ? shell_toplevel()->IsConfigured() : false;
 }
 
-void WaylandToplevelWindow::SetWindowGeometry(const gfx::Size& size_dip,
-                                              const gfx::Insets& insets_dip) {
+void WaylandToplevelWindow::SetWindowGeometry(gfx::Size size_dip) {
   DCHECK(connection()->SupportsSetWindowGeometry());
 
   if (!shell_toplevel_)
@@ -740,8 +739,9 @@ void WaylandToplevelWindow::SetWindowGeometry(const gfx::Size& size_dip,
 
   gfx::Rect geometry_dip(size_dip);
 
-  if (state_ == PlatformWindowState::kNormal && !insets_dip.IsEmpty()) {
-    geometry_dip.Inset(insets_dip);
+  const auto insets = GetDecorationInsetsInDIP();
+  if (state_ == PlatformWindowState::kNormal && !insets.IsEmpty()) {
+    geometry_dip.Inset(insets);
 
     // Shrinking the bounds by the decoration insets might result in empty
     // bounds. For the reasons already explained in WaylandWindow::Initialize(),

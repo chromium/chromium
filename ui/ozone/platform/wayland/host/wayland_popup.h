@@ -48,8 +48,7 @@ class WaylandPopup : public WaylandWindow {
   bool OnInitialize(PlatformWindowInitProperties properties,
                     PlatformWindowDelegate::State* state) override;
   WaylandPopup* AsWaylandPopup() override;
-  void SetWindowGeometry(const gfx::Size& size_dip,
-                         const gfx::Insets& insets_dip) override;
+  void SetWindowGeometry(gfx::Size size_dip) override;
   void UpdateWindowMask() override;
   void PropagateBufferScale(float new_scale) override;
   void ShowTooltip(const std::u16string& text,
