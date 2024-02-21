@@ -412,68 +412,6 @@ TEST_F(LegacyImageFileManagerTest, AllImagesDeleted) {
   EXPECT_FALSE(base::PathExists(image_2_path));
 }
 
-class LegacyImageFileManagerWithoutStoringGreySnapshotsTest
-    : public LegacyImageFileManagerTest {
- public:
-  LegacyImageFileManagerWithoutStoringGreySnapshotsTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kGreySnapshotOptimization,
-        {{"level", "do-not-store-to-disk-and-cache"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that all grey images are deleted when LegacyImageFileManager is
-// initialized.
-TEST_F(LegacyImageFileManagerWithoutStoringGreySnapshotsTest,
-       DeleteExistingGreySnapshotsOnInit) {
-  LegacyImageFileManager* file_manager = GetImageFileManager();
-  ASSERT_TRUE(file_manager);
-
-  // Write color images to disk.
-  UIImage* image = GenerateRandomImage(0);
-  const SnapshotID kSnapshotID1(SessionID::NewUnique().id());
-  const SnapshotID kSnapshotID2(SessionID::NewUnique().id());
-  [file_manager writeImage:image withSnapshotID:kSnapshotID1];
-  [file_manager writeImage:image withSnapshotID:kSnapshotID2];
-
-  // Write grey images generated from color ones to disk.
-  [file_manager convertAndSaveGreyImage:kSnapshotID1];
-  [file_manager convertAndSaveGreyImage:kSnapshotID2];
-
-  // Wait until all operations are done.
-  FlushRunLoops();
-
-  base::FilePath image_1_path =
-      [file_manager greyImagePathForSnapshotID:kSnapshotID1];
-  base::FilePath image_2_path =
-      [file_manager greyImagePathForSnapshotID:kSnapshotID2];
-  EXPECT_TRUE(base::PathExists(image_1_path));
-  EXPECT_TRUE(base::PathExists(image_2_path));
-
-  // Initialize LegacyImageFileManager again so that the existing grey images
-  // should be deleted.
-  LegacyImageFileManager* file_manager2 = [[LegacyImageFileManager alloc]
-      initWithStoragePath:scoped_temp_directory_.GetPath()
-               legacyPath:base::FilePath()];
-  ASSERT_TRUE(file_manager2);
-
-  // Wait until all grey images are deleted by initializing `file_manager2`.
-  base::RunLoop run_loop;
-  [file_manager2
-      readImageWithSnapshotID:SnapshotID(SessionID::NewUnique().id())
-                   completion:base::BindOnce(base::IgnoreArgs<UIImage*>(
-                                  run_loop.QuitClosure()))];
-  run_loop.Run();
-
-  EXPECT_FALSE(base::PathExists(image_1_path));
-  EXPECT_FALSE(base::PathExists(image_2_path));
-
-  [file_manager2 shutdown];
-}
-
 // This is a duplicated test class of LegacyImageFileManagerTest to test
 // ImageFileManager. We can't use value-parameterized tests because some
 // public APIs are different from LegacyImageFileManager.

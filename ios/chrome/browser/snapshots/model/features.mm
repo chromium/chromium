@@ -10,7 +10,7 @@ BASE_FEATURE(kSnapshotInSwift,
 
 BASE_FEATURE(kGreySnapshotOptimization,
              "GreySnapshotOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<GreySnapshotOptimizationLevel>::Option
     kGreySnapshotOptimizationLevelOptions[] = {
@@ -22,7 +22,7 @@ constexpr base::FeatureParam<GreySnapshotOptimizationLevel>::Option
 constexpr base::FeatureParam<GreySnapshotOptimizationLevel>
     kGreySnapshotOptimizationLevelParam{
         &kGreySnapshotOptimization, "level",
-        GreySnapshotOptimizationLevel::kDoNotStoreToDisk,
+        GreySnapshotOptimizationLevel::kDoNotStoreToDiskAndCache,
         &kGreySnapshotOptimizationLevelOptions};
 
 BOOL IsGreySnapshotOptimizationEnabled() {

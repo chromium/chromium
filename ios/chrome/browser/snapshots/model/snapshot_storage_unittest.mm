@@ -185,21 +185,6 @@ class SnapshotStorageTest : public PlatformTest {
     }
   }
 
-  // Waits for the first `count` grey images of `test_images_` to be placed in
-  // the storage.
-  void WaitForGreyImagesInCache(NSUInteger count) {
-    FlushRunLoops(snapshot_storage_);
-    {
-      NSUInteger index = 0;
-      for (auto [snapshot_id, _] : test_images_) {
-        EXPECT_TRUE([snapshot_storage_ hasGreyImageInMemory:snapshot_id]);
-        if (++index >= count) {
-          break;
-        }
-      }
-    }
-  }
-
   void TriggerMemoryWarning() {
     // _performMemoryWarning is a private API and must not be compiled into
     // official builds.
@@ -287,157 +272,6 @@ TEST_F(SnapshotStorageTest, ReadAndWriteWithoutCache) {
   FlushRunLoops(storage);
 
   EXPECT_EQ(numberOfCallbacks, kSnapshotCount);
-}
-
-// Tests that createGreyCache creates the grey snapshots in the background,
-// from color images in the in-memory storage.  When the grey images are all
-// loaded into memory, tests that the request to retrieve the grey snapshot
-// calls the callback immediately.
-// Disabled on simulators because it sometimes crashes. crbug/421425
-#if !TARGET_IPHONE_SIMULATOR
-TEST_F(SnapshotStorageTest, CreateGreyCache) {
-  ASSERT_TRUE(CreateSnapshotStorage());
-  LoadAllColorImagesIntoCache(true);
-
-  // Request the creation of a grey image storage for all images.
-  SnapshotStorage* storage = GetSnapshotStorage();
-  {
-    std::vector<SnapshotID> snapshot_ids;
-    for (auto [snapshot_id, _] : test_images_) {
-      snapshot_ids.push_back(snapshot_id);
-    }
-    [storage createGreyCache:snapshot_ids];
-  }
-
-  // Wait for them to be put into the grey image storage.
-  WaitForGreyImagesInCache(kSnapshotCount);
-
-  __block NSUInteger numberOfCallbacks = 0;
-  for (auto [snapshot_id, _] : test_images_) {
-    [storage retrieveGreyImageForSnapshotID:snapshot_id
-                                   callback:^(UIImage* image) {
-                                     EXPECT_TRUE(image);
-                                     ++numberOfCallbacks;
-                                   }];
-  }
-
-  EXPECT_EQ(numberOfCallbacks, kSnapshotCount);
-}
-
-// Same as previous test, except that all the color images are on disk,
-// rather than in memory.
-// Disabled due to the greyImage crash.  b/8048597
-TEST_F(SnapshotStorageTest, CreateGreyCacheFromDisk) {
-  ASSERT_TRUE(CreateSnapshotStorage());
-  LoadAllColorImagesIntoCache(true);
-
-  // Remove color images from in-memory storage.
-  SnapshotStorage* storage = GetSnapshotStorage();
-
-  TriggerMemoryWarning();
-
-  // Request the creation of a grey image storage for all images.
-  {
-    std::vector<SnapshotID> snapshot_ids;
-    for (auto [snapshot_id, _] : test_images_) {
-      snapshot_ids.push_back(snapshot_id);
-    }
-    [storage createGreyCache:snapshot_ids];
-  }
-
-  // Wait for them to be put into the grey image storage.
-  WaitForGreyImagesInCache(kSnapshotCount);
-
-  __block NSUInteger numberOfCallbacks = 0;
-  for (auto [snapshot_id, _] : test_images_) {
-    [storage retrieveGreyImageForSnapshotID:snapshot_id
-                                   callback:^(UIImage* image) {
-                                     EXPECT_TRUE(image);
-                                     ++numberOfCallbacks;
-                                   }];
-  }
-
-  EXPECT_EQ(numberOfCallbacks, kSnapshotCount);
-}
-#endif  // !TARGET_IPHONE_SIMULATOR
-
-// Tests mostRecentGreyBlock, which is a block to be called when the most
-// recently requested grey image is finally loaded.
-// The test requests three images be storaged as grey images.  Only the final
-// callback of the three requests should be called.
-// Disabled due to the greyImage crash.  b/8048597
-TEST_F(SnapshotStorageTest, MostRecentGreyBlock) {
-  ASSERT_TRUE(CreateSnapshotStorage());
-  const NSUInteger kNumImages = 3;
-  std::vector<SnapshotID> snapshotIDs;
-  for (auto [snapshot_id, _] : test_images_) {
-    snapshotIDs.push_back(snapshot_id);
-    if (snapshotIDs.size() >= kNumImages) {
-      break;
-    }
-  }
-
-  SnapshotStorage* storage = GetSnapshotStorage();
-
-  // Put 3 images in the storage.
-  LoadColorImagesIntoCache(kNumImages, true);
-
-  // Make sure the color images are only on disk, to ensure the background
-  // thread is slow enough to queue up the requests.
-  TriggerMemoryWarning();
-
-  // Enable the grey image storage.
-  [storage createGreyCache:snapshotIDs];
-
-  // Request the grey versions
-  __block BOOL firstCallbackCalled = NO;
-  __block BOOL secondCallbackCalled = NO;
-  __block BOOL thirdCallbackCalled = NO;
-  ASSERT_GE(snapshotIDs.size(), kNumImages);
-  [storage greyImageForSnapshotID:snapshotIDs[0]
-                         callback:^(UIImage*) {
-                           firstCallbackCalled = YES;
-                         }];
-  [storage greyImageForSnapshotID:snapshotIDs[1]
-                         callback:^(UIImage*) {
-                           secondCallbackCalled = YES;
-                         }];
-  [storage greyImageForSnapshotID:snapshotIDs[2]
-                         callback:^(UIImage*) {
-                           thirdCallbackCalled = YES;
-                         }];
-
-  // Wait for them to be loaded.
-  WaitForGreyImagesInCache(kNumImages);
-
-  EXPECT_FALSE(firstCallbackCalled);
-  EXPECT_FALSE(secondCallbackCalled);
-  EXPECT_TRUE(thirdCallbackCalled);
-}
-
-// Test the function used to save a grey copy of a color snapshot fully on a
-// background thread when the application is backgrounded.
-TEST_F(SnapshotStorageTest, GreyImageAllInBackground) {
-  ASSERT_TRUE(CreateSnapshotStorage());
-  LoadAllColorImagesIntoCache(true);
-
-  SnapshotStorage* storage = GetSnapshotStorage();
-
-  // Now convert every image into a grey image, on disk, in the background.
-  for (auto [snapshot_id, _] : test_images_) {
-    [storage saveGreyInBackgroundForSnapshotID:snapshot_id];
-  }
-
-  // Waits for the grey images for `test_images_` to be written to disk, which
-  // happens in a background thread.
-  FlushRunLoops(storage);
-
-  for (auto [snapshot_id, _] : test_images_) {
-    const base::FilePath path =
-        [storage greyImagePathForSnapshotID:snapshot_id];
-    EXPECT_TRUE(base::PathExists(path));
-    base::DeleteFile(path);
-  }
 }
 
 // Tests that an image is immediately deleted when calling
@@ -620,23 +454,9 @@ TEST_F(SnapshotStorageTest, MigrateCache_FailCreatingCache) {
   [storage shutdown];
 }
 
-class SnapshotStorageWithoutStoringGreySnapshotsTest
-    : public SnapshotStorageTest {
- public:
-  SnapshotStorageWithoutStoringGreySnapshotsTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kGreySnapshotOptimization,
-        {{"level", "do-not-store-to-disk-and-cache"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that retrieving grey snapshot images generated by color images stored
 // in cache.
-TEST_F(SnapshotStorageWithoutStoringGreySnapshotsTest,
-       RetrieveGreyImageFromColorImageInMemory) {
+TEST_F(SnapshotStorageTest, RetrieveGreyImageFromColorImageInMemory) {
   ASSERT_TRUE(CreateSnapshotStorage());
   LoadAllColorImagesIntoCache(true);
 
@@ -658,8 +478,7 @@ TEST_F(SnapshotStorageWithoutStoringGreySnapshotsTest,
 
 // Tests that retrieving grey snapshot images generated by color images stored
 // in disk.
-TEST_F(SnapshotStorageWithoutStoringGreySnapshotsTest,
-       RetrieveGreyImageFromColorImageInDisk) {
+TEST_F(SnapshotStorageTest, RetrieveGreyImageFromColorImageInDisk) {
   ASSERT_TRUE(CreateSnapshotStorage());
   LoadAllColorImagesIntoCache(true);
 
