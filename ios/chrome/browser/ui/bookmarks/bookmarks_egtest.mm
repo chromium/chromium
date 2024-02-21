@@ -290,7 +290,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Create a new folder.
-  [BookmarkEarlGreyUI addFolderWithName:nil];
+  [BookmarkEarlGreyUI addFolderWithName:nil
+                                inModel:BookmarkModelType::kLocalOrSyncable];
 
   // Verify that the editor is present.  Uses notNil() instead of
   // sufficientlyVisible() because the large title in the navigation bar causes
