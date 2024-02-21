@@ -116,9 +116,8 @@ void FullscreenMagnifierTestHelper::OnMagnifierBoundsChanged() {
 
   std::move(bounds_changed_waiter_).Run();
 
-  // Wait for any additional animation to complete.
-  MagnifierAnimationWaiter magnifier_waiter(GetFullscreenMagnifierController());
-  magnifier_waiter.Wait();
+  // Note: no need to wait for animation to get updated viewport. That can be
+  // done separately if we need to check cursor changes.
 }
 
 }  // namespace ash

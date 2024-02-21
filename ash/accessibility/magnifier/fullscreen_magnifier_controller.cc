@@ -959,8 +959,7 @@ void FullscreenMagnifierController::MoveMagnifierWindowFollowRect(
       root_window_->layer()->GetAnimator()->StopAnimating();
       is_on_animation_ = false;
     }
-    RedrawDIP(gfx::PointF(x, y), scale_,
-              0,  // No animation on panning.
+    RedrawDIP(gfx::PointF(x, y), scale_, kDefaultAnimationDurationInMs,
               kDefaultAnimationTweenType);
   }
 }

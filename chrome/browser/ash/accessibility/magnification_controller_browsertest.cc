@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/fullscreen_magnifier_test_helper.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -110,11 +111,40 @@ IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
 
   // Set the focus on the button.
   utils.SetFocusOnNode("Big Button 1", "button");
-  helper()->WaitForMagnifierBoundsChanged();
 
   // Verify the magnifier window has moved to contain the button.
-  const gfx::Rect view_port_after_focus = GetViewPort();
-  EXPECT_TRUE(view_port_after_focus.Contains(button_bounds));
+  helper()->WaitForMagnifierBoundsChanged();
+  EXPECT_TRUE(GetViewPort().Contains(button_bounds));
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
+                       AnimatesToFollowKeyboardFocus) {
+  helper()->LoadMagnifier(GetProfile());
+
+  AutomationTestUtils utils(extension_misc::kAccessibilityCommonExtensionId);
+  utils.SetUpTestSupport();
+  const std::string url = std::string(kDataURIPrefix) + kTestHtmlContent;
+  NavigateToUrl(GURL(url));
+  utils.WaitForPageLoad(url);
+
+  // Move magnifier window to exclude the button.
+  const gfx::Rect button_bounds =
+      utils.GetNodeBoundsInRoot("Big Button 1", "button");
+  helper()->MoveMagnifierWindow(
+      button_bounds.right() + GetViewPort().width(),
+      button_bounds.bottom() + GetViewPort().height());
+  const gfx::Rect view_port_before_focus = GetViewPort();
+  EXPECT_FALSE(view_port_before_focus.Contains(button_bounds));
+
+  MagnifierAnimationWaiter magnifier_waiter(GetFullscreenMagnifierController());
+
+  // Set the focus on the button.
+  utils.SetFocusOnNode("Big Button 1", "button");
+
+  // After the some animation, we should have arrived at the right viewport.
+  do {
+    magnifier_waiter.Wait();
+  } while (!GetViewPort().Contains(button_bounds));
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
