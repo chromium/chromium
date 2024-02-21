@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/ui/ntp/metrics/feed_session_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 
@@ -35,8 +34,6 @@ using feed::FeedEngagementType;
 using feed::FeedUserActionType;
 
 @interface FeedMetricsRecorder ()
-// Helper for recording session time metrics.
-@property(nonatomic, strong) FeedSessionRecorder* sessionRecorder;
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedEngagedSimple.
 @property(nonatomic, assign) BOOL engagedSimpleReportedDiscover;
@@ -104,15 +101,6 @@ using feed::FeedUserActionType;
     _prefService = prefService;
   }
   return self;
-}
-
-#pragma mark - Properties
-
-- (FeedSessionRecorder*)sessionRecorder {
-  if (!_sessionRecorder) {
-    _sessionRecorder = [[FeedSessionRecorder alloc] init];
-  }
-  return _sessionRecorder;
 }
 
 #pragma mark - Public
@@ -1032,8 +1020,6 @@ using feed::FeedUserActionType;
   if (scrollDistance > kMinScrollThreshold || interacted) {
     [self recordEngaged];
   }
-
-  [self.sessionRecorder recordUserInteractionOrScrolling];
 }
 
 // Checks if a Good Visit should be recorded. `interacted` is YES if it was

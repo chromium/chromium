@@ -1145,8 +1145,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContentSuggestions.Feed.RefreshTrigger"
     enum="FeedRefreshTrigger" expires_after="2024-06-30">
-  <owner>edchin@google.com</owner>
-  <owner>sczs@chromium.org</owner>
+  <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Tracks triggers that ask the Discover engine to refresh the feed. However, a
@@ -1173,24 +1172,6 @@ chromium-metrics-reviews@google.com.
   <summary>Number of each type of feedback sent about the feed.</summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.SessionDuration" units="ms"
-    expires_after="2024-06-30">
-  <owner>edchin@google.com</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The amount of time a user spends in the feed in a single session. A session
-    is measured only by user interactions or user scrolling events in the feed.
-    Two events are considered as being within the same session if they are at
-    most 5 minutes apart from each other. A series of events is likely to
-    constitute a single session. A user opening the feed but having no
-    interaction and not scrolling is not considered a session. A user tapping an
-    article then quickly returning to the feed is considered within the same
-    session. The time between sessions by definition will be longer than 5
-    minutes.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful"
     enum="Boolean" expires_after="2024-07-07">
   <owner>birnie@google.com</owner>
@@ -1200,28 +1181,6 @@ chromium-metrics-reviews@google.com.
     track the status of the sign in as a boolean (successful=true, unsuccessful=
     false). This provides a measure of how many users are signing in via the
     Feed and features like Back of Card sign in promo vs other sign in avenues.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.TimeBetweenInteractions" units="ms"
-    expires_after="2023-12-10">
-  <owner>edchin@google.com</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The amount of time between user interactions or user scrolling in the feed.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.TimeBetweenSessions" units="ms"
-    expires_after="2024-06-30">
-  <owner>edchin@google.com</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The amount of time between user feed sessions, as defined in
-    |ContentSuggestions.Feed.SessionDuration|. This is by definition longer than
-    5 minutes.
   </summary>
 </histogram>
 
