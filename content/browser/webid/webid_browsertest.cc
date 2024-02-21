@@ -898,6 +898,40 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
   }
 };
 
+EvalJsResult RunDigitalIdentityValidRequest(
+    const ToRenderFrameHost& execution_target) {
+  const constexpr char kValidRequest[] = R"({
+      identity: {
+        providers: [{
+          holder: {
+            selector: {
+              format: ['mdoc'],
+              doctype: 'org.iso.18013.5.1.mDL',
+              fields: [
+                'org.iso.18013.5.1.family_name',
+                'org.iso.18013.5.1.portrait',
+              ]
+            },
+            params: {
+              nonce: '1234',
+              readerPublicKey: 'test_reader_public_key',
+              extraParamAsNeededByDigitalCredentials: true,
+            },
+          },
+        }],
+      },
+    })";
+
+  std::string script = base::StringPrintf(R"(
+      (async () => {
+          const {token} = await navigator.credentials.get(%s);
+          return token;
+      }) ()
+      )",
+                                          kValidRequest);
+  return EvalJs(execution_target, script);
+}
+
 // Test that a Verifiable Credential can be requested via the JS API.
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                        RequestDigitalCredentials) {
@@ -935,34 +969,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
             std::move(callback).Run("test-mdoc");
           }));
 
-  std::string script = R"(
-        (async () => {
-          const {token} = await navigator.credentials.get({
-            identity: {
-              providers: [{
-                holder: {
-                  selector: {
-                    format: ['mdoc'],
-                    doctype: 'org.iso.18013.5.1.mDL',
-                    fields: [
-                      'org.iso.18013.5.1.family_name',
-                      'org.iso.18013.5.1.portrait',
-                    ]
-                  },
-                  params: {
-                    nonce: '1234',
-                    readerPublicKey: 'test_reader_public_key',
-                    extraParamAsNeededByDigitalCredentials: true,
-                  },
-                },
-              }],
-            },
-          });
-          return token;
-        }) ()
-    )";
-
-  EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
+  EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
 }
 
 // Test that when there's a pending mdoc request, a second `get` call should be
@@ -974,44 +981,17 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
-  std::string script = R"(
-        (async () => {
-          const {token} = await navigator.credentials.get({
-            identity: {
-              providers: [{
-                holder: {
-                  selector: {
-                    format: ["mdoc"],
-                    doctype: 'org.iso.18013.5.1.mDL',
-                    fields: [
-                      'org.iso.18013.5.1.family_name',
-                      'org.iso.18013.5.1.portrait',
-                    ],
-                  },
-                  params: {
-                    nonce: '1234',
-                    readerPublicKey: 'test_reader_public_key',
-                    extraParamAsNeededByDigitalCredentials: true,
-                  },
-                },
-              }],
-            },
-          });
-          return token;
-        }) ()
-    )";
-
   EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             EXPECT_EQ(
                 "AbortError: Only one navigator.credentials.get request may be "
                 "outstanding at one time.",
-                ExtractJsError(EvalJs(shell(), script)));
+                ExtractJsError(RunDigitalIdentityValidRequest(shell())));
             std::move(callback).Run("test-mdoc");
           }));
 
-  EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
+  EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
 }
 
 // Verify that the Authz parameters are passed to the id assertion endpoint.
