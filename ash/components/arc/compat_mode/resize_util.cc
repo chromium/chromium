@@ -25,6 +25,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -92,7 +93,8 @@ void ResizeToPhone(views::Widget* widget) {
   widget->GetNativeWindow()->ClearProperty(aura::client::kRestoreBoundsKey);
   // Always make sure the window is in normal state because the window might be
   // maximized/snapped.
-  widget->Restore();
+  widget->GetNativeWindow()->SetProperty(aura::client::kShowStateKey,
+                                         ui::SHOW_STATE_NORMAL);
 
   widget->CenterWindow(GetPossibleSizeInWorkArea(widget, kPortraitPhoneDp));
 
@@ -106,7 +108,8 @@ void ResizeToTablet(views::Widget* widget) {
   widget->GetNativeWindow()->ClearProperty(aura::client::kRestoreBoundsKey);
   // Always make sure the window is in normal state because the window might be
   // maximized/snapped.
-  widget->Restore();
+  widget->GetNativeWindow()->SetProperty(aura::client::kShowStateKey,
+                                         ui::SHOW_STATE_NORMAL);
 
   // We here don't shrink the preferred size according to the available workarea
   // bounds like ResizeToPhone, because we'd like to let Android decide if the

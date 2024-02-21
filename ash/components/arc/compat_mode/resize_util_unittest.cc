@@ -11,8 +11,11 @@
 #include "ash/public/cpp/system/scoped_toast_pause.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "base/notreached.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -59,6 +62,31 @@ class FakeToastManager : public ash::ToastManager {
   bool called_cancel_{false};
 };
 
+class ScopedWindowPropertyObserver : public aura::WindowObserver {
+ public:
+  using WindowPropertyChangedCallback =
+      base::RepeatingCallback<void(aura::Window*, const void*, intptr_t)>;
+
+  ScopedWindowPropertyObserver(aura::Window* window,
+                               WindowPropertyChangedCallback on_changed)
+      : on_changed_(std::move(on_changed)) {
+    observer_.Observe(window);
+  }
+  ~ScopedWindowPropertyObserver() override { observer_.Reset(); }
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    on_changed_.Run(window, key, old);
+  }
+  void OnWindowDestroying(aura::Window* window) override { observer_.Reset(); }
+
+ private:
+  WindowPropertyChangedCallback on_changed_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
+};
+
 }  // namespace
 
 class ResizeUtilTest : public CompatModeTestBase {
@@ -89,6 +117,18 @@ TEST_F(ResizeUtilTest, TestResizeLockToPhone) {
                                            ui::SHOW_STATE_MAXIMIZED);
 
   // Test the widget is resized.
+  ScopedWindowPropertyObserver observer(
+      widget()->GetNativeWindow(),
+      base::BindLambdaForTesting(
+          [](aura::Window* window, const void* key, intptr_t old) {
+            if (key != aura::client::kIsRestoringKey) {
+              return;
+            }
+            if (!window->GetProperty(aura::client::kIsRestoringKey)) {
+              return;
+            }
+            NOTREACHED() << "The restroing key should not be enabled.";
+          }));
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
   EXPECT_TRUE(widget()->IsMaximized());
   ResizeLockToPhone(widget(), pref_delegate());
@@ -110,6 +150,18 @@ TEST_F(ResizeUtilTest, TestResizeLockToTablet) {
                                            ui::SHOW_STATE_MAXIMIZED);
 
   // Test the widget is resized.
+  ScopedWindowPropertyObserver observer(
+      widget()->GetNativeWindow(),
+      base::BindLambdaForTesting(
+          [](aura::Window* window, const void* key, intptr_t old) {
+            if (key != aura::client::kIsRestoringKey) {
+              return;
+            }
+            if (!window->GetProperty(aura::client::kIsRestoringKey)) {
+              return;
+            }
+            NOTREACHED() << "The restroing key should not be enabled.";
+          }));
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
   EXPECT_TRUE(widget()->IsMaximized());
   ResizeLockToTablet(widget(), pref_delegate());
