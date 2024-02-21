@@ -134,12 +134,19 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
     return nullptr;
 
   if (LayoutText* layout_text = GetLayoutObject()) {
-    // TODO(kojii): The `0, old_str.length()` doesn't look right.
-    layout_text->SetTextWithOffset(data(),
-                                   TextDiffRange::Delete(0, old_str.length()));
-    if (ContainsOnlyWhitespaceOrEmpty()) {
+    if (RuntimeEnabledFeatures::TextDiffSplitFixEnabled()) {
       // To avoid |LayoutText| has empty text, we rebuild layout tree.
-      SetForceReattachLayoutTree();
+      const bool by_reattach = ContainsOnlyWhitespaceOrEmpty();
+      UpdateTextLayoutObject(
+          TextDiffRange::Delete(offset, old_str.length() - offset), by_reattach,
+          *layout_text);
+    } else {
+      layout_text->SetTextWithOffset(
+          data(), TextDiffRange::Delete(0, old_str.length()));
+      if (ContainsOnlyWhitespaceOrEmpty()) {
+        // To avoid |LayoutText| has empty text, we rebuild layout tree.
+        SetForceReattachLayoutTree();
+      }
     }
   }
 
@@ -486,12 +493,19 @@ void Text::UpdateTextLayoutObject(const TextDiffRange& diff) {
   if (!InActiveDocument())
     return;
   LayoutText* text_layout_object = GetLayoutObject();
-  if (ShouldUpdateLayoutByReattaching(*this, text_layout_object)) {
+  UpdateTextLayoutObject(
+      diff, ShouldUpdateLayoutByReattaching(*this, text_layout_object),
+      *text_layout_object);
+}
+
+void Text::UpdateTextLayoutObject(const TextDiffRange& diff,
+                                  bool by_reattach,
+                                  LayoutText& layout_text) {
+  if (by_reattach) {
     SetForceReattachLayoutTree();
     return;
   }
-
-  text_layout_object->SetTextWithOffset(data(), diff);
+  layout_text.SetTextWithOffset(data(), diff);
 }
 
 CharacterData* Text::CloneWithData(Document& factory,

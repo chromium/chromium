@@ -86,6 +86,10 @@ class CORE_EXPORT Text : public CharacterData {
   // This will catch anyone doing an unnecessary check.
   bool IsTextNode() const = delete;
 
+  void UpdateTextLayoutObject(const TextDiffRange& diff,
+                              bool by_reattach,
+                              LayoutText& layout_text);
+
   CharacterData* CloneWithData(Document&, const String&) const override;
 };
 
