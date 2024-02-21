@@ -20,16 +20,12 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/corb/orb_impl.h"
 #include "services/network/public/cpp/corb/orb_mimetypes.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-using CorbResponseAnalyzer =
-    network::corb::CrossOriginReadBlocking::CorbResponseAnalyzer;
 
 namespace network::corb {
 
@@ -1836,29 +1832,6 @@ class ResponseAnalyzerTest : public testing::Test,
   net::TestDelegate delegate_;
 };  // namespace network
 
-// Runs a particular TestScenario (passed as the test's parameter) through the
-// ResponseAnalyzer, verifying that the response is correctly allowed or blocked
-// based on the scenario.
-TEST_P(ResponseAnalyzerTest, ResponseBlocking) {
-  const TestScenario scenario = GetParam();
-  SCOPED_TRACE(testing::Message()
-               << "\nScenario at " << __FILE__ << ":" << scenario.source_line);
-  // Initialize |response| from the parameters.
-  //
-  // TODO(krstnmnlsn): The response is constructed outside of
-  // RunAnalyzerOnScenario to let the CORBProtection test below gather some
-  // values from it before the analyzer clears the headers. Once the
-  // CORBProtection logging is removed (and that test gone) the response can be
-  // constructed in RunAnalyzerOnScenario().
-  auto response =
-      CreateResponse(scenario.response_content_type, scenario.response_headers,
-                     scenario.initiator_origin);
-
-  // Run the analyzer and confirm it allows/blocks correctly.
-  RunAnalyzerOnScenario(scenario, *response,
-                        std::make_unique<CorbResponseAnalyzer>());
-}
-
 TEST_P(ResponseAnalyzerTest, OpaqueResponseBlocking) {
   TestScenario scenario = GetParam();
   SCOPED_TRACE(testing::Message()
@@ -1916,132 +1889,6 @@ mojom::URLResponseHeadPtr CreateResponse(std::string raw_headers) {
   auto response = mojom::URLResponseHead::New();
   response->headers = headers;
   return response;
-}
-
-TEST(CrossOriginReadBlockingTest, SeemsSensitiveFromCORSHeuristic) {
-  // Response with no CORS header.
-  auto no_cors_response = CreateResponse("HTTP/1.1 200 OK");
-  EXPECT_FALSE(
-      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*no_cors_response));
-
-  // Response with CORS value = "*", so not sensitive.
-  auto cors_any_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Access-Control-Allow-Origin: *");
-  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
-      *cors_any_response));
-
-  // Response with CORS value = "null", so not sensitive.
-  auto cors_null_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Access-Control-Allow-Origin: null");
-  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
-      *cors_null_response));
-
-  // Response with CORS header restricting access to a particular origin.
-  auto cors_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Access-Control-Allow-Origin: http://www.a.com/");
-  EXPECT_TRUE(
-      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*cors_response));
-}
-
-TEST(CrossOriginReadBlockingTest, SeemsSensitiveFromCacheHeuristic) {
-  // Response with no cache-control or vary header.
-  auto no_cache_response = CreateResponse("HTTP/1.1 200 OK");
-  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
-      *no_cache_response));
-
-  // Response with cache-control but no vary header.
-  auto cache_only_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Cache-Control: private");
-  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
-      *cache_only_response));
-
-  // Response with vary: origin but no cache-control header.
-  auto vary_only_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Vary: origin");
-  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
-      *vary_only_response));
-
-  // Response with vary: user-agent and cache-control: no-cache (should still
-  // not seem sensitive).
-  auto wrong_values_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Vary: user-agent\n"
-      "Cache-Control: no-cache");
-  EXPECT_FALSE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
-      *wrong_values_response));
-
-  // Response with vary: origin and cache-control: private.
-  auto vary_and_cache_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Vary: origin\n"
-      "Cache-Control: private");
-  EXPECT_TRUE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
-      *vary_and_cache_response));
-
-  // Response with vary: origin, user-agent and cache-control: private, no-store
-  // (we should still find the relevant values).
-  auto extra_values_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Vary: origin, user-agent\n"
-      "Cache-Control: no-cache, private");
-  EXPECT_TRUE(CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(
-      *extra_values_response));
-}
-
-TEST(CrossOriginReadBlockingTest, SeemsSensitiveWithBothHeuristics) {
-  // Response with CORS heuristic should not appear sensitive to cache
-  // heuristic.
-  auto cors_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Access-Control-Allow-Origin: http://www.a.com/");
-  EXPECT_FALSE(
-      CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(*cors_response));
-
-  // Response with cache heuristic should not appear sensitive to CORS
-  // heuristic.
-  auto cache_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Vary: origin\n"
-      "Cache-Control: private");
-  EXPECT_FALSE(
-      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*cache_response));
-
-  // Response with both cache and CORS heuristic signals (e.g. vary: origin +
-  // cache-control: private as well as the access-control-allow-origin header).
-  auto both_response = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Vary: origin\n"
-      "Cache-Control: private\n"
-      "Access-Control-Allow-Origin: http://www.a.com/");
-  EXPECT_TRUE(
-      CorbResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*both_response));
-  EXPECT_TRUE(
-      CorbResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(*both_response));
-}
-
-TEST(CrossOriginReadBlockingTest, SupportsRangeRequests) {
-  // Response with no Accept-Ranges header. Should return false.
-  auto no_accept_ranges = CreateResponse("HTTP/1.1 200 OK");
-  EXPECT_FALSE(CorbResponseAnalyzer::SupportsRangeRequests(*no_accept_ranges));
-
-  // Response with an Accept-Ranges header. Should return true.
-  auto bytes_accept_ranges = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Accept-Ranges: bytes");
-  EXPECT_TRUE(
-      CorbResponseAnalyzer::SupportsRangeRequests(*bytes_accept_ranges));
-
-  // Response with an Accept-Ranges header value of |none|. Should return false.
-  auto none_accept_ranges = CreateResponse(
-      "HTTP/1.1 200 OK\n"
-      "Accept-Ranges: none");
-  EXPECT_FALSE(
-      CorbResponseAnalyzer::SupportsRangeRequests(*none_accept_ranges));
 }
 
 TEST(CrossOriginReadBlockingTest, OrbReportsIssuesOnARAResponse) {

@@ -12,7 +12,6 @@
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/corb/orb_mimetypes.h"
 #include "services/network/public/cpp/corb/orb_sniffers.h"
 #include "services/network/public/cpp/features.h"
@@ -202,6 +201,18 @@ bool IsOpaqueResponse(const std::optional<url::Origin>& request_initiator,
   return true;
 }
 
+bool HasNoSniff(const mojom::URLResponseHead& response) {
+  // TODO(vogelheim): Check for compatibility with spec &
+  //   ParseContentTypeOptionsHeader. Maybe move this to parsed_headers.
+  if (!response.headers) {
+    return false;
+  }
+  std::string nosniff_header;
+  response.headers->GetNormalizedHeader("x-content-type-options",
+                                        &nosniff_header);
+  return base::EqualsCaseInsensitiveASCII(nosniff_header, "nosniff");
+}
+
 }  // namespace
 
 OpaqueResponseBlockingAnalyzer::OpaqueResponseBlockingAnalyzer(
@@ -267,8 +278,7 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
 
   // 2. Let nosniff be the result of determining nosniff given response's header
   //    list.
-  is_no_sniff_header_present_ =
-      CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(response);
+  is_no_sniff_header_present_ = HasNoSniff(response);
 
   // 3. If mimeType is not failure, then:
   if (!mime_type_.empty()) {
