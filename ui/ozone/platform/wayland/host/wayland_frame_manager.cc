@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -306,6 +307,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 
   DCHECK(empty_frame || !connection_->presentation() ||
          frame->pending_feedback || frame->feedback.has_value());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "wayland", "WaylandFrameManager.PlaybackFrame", frame->frame_id);
   root_surface->Commit(true);
 
   frame->root_config = wl::WaylandOverlayConfig();
@@ -670,6 +673,9 @@ void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
         DCHECK(frame->merged_release_fence_fd.is_valid());
       }
 
+      TRACE_EVENT_INSTANT2("wayland", "OnExplicitBufferRelease",
+                           TRACE_EVENT_SCOPE_THREAD, "frame_id",
+                           frame->frame_id, "buffer_id", result->second->id());
       frame->submitted_buffers.erase(result);
       break;
     }
@@ -706,6 +712,9 @@ void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
         }
       }
 
+      TRACE_EVENT_INSTANT2("wayland", "OnWlBufferRelease",
+                           TRACE_EVENT_SCOPE_THREAD, "frame_id",
+                           frame->frame_id, "buffer_id", result->second->id());
       frame->submitted_buffers.erase(result);
       break;
     }
@@ -785,6 +794,8 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
 
       // The presentation info entries are sent with the last OnSubmission()
       // call.
+      TRACE_EVENT_NESTABLE_ASYNC_END0(
+          "wayland", "WaylandFrameManager.PlaybackFrame", (*iter)->frame_id);
       connection_->buffer_manager_host()->OnSubmission(
           window_->GetWidget(), (*iter)->frame_id, gfx::SwapResult::SWAP_ACK,
           std::move(release_fence_handle),
@@ -868,6 +879,8 @@ void WaylandFrameManager::FreezeTimeout() {
   for (auto& frame : submitted_frames_) {
     if (frame->submitted_buffers.empty())
       continue;
+    TRACE_EVENT_INSTANT1("wayland", "FreezeTimeout", TRACE_EVENT_SCOPE_THREAD,
+                         "frame_id", frame->frame_id);
     frame->submitted_buffers.clear();
     MaybeProcessSubmittedFrames();
     return;
