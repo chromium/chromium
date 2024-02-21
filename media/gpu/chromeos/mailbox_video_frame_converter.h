@@ -17,6 +17,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/video_frame.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -38,12 +39,12 @@ struct GpuFenceHandle;
 namespace media {
 
 // This class is used for converting GpuMemoryBuffer-backed VideoFrames to
-// gpu::Mailbox-backed VideoFrames. See ConvertFrame() for more details. After
-// conversion, the gpu::Mailbox-backed VideoFrame will retain a reference of the
-// VideoFrame passed to ConvertFrame().
+// gpu::Mailbox-backed FrameResources. See ConvertFrame() for more details.
+// After conversion, the returned gpu::Mailbox-backed FrameResource will retain
+// a reference to the VideoFrame passed to ConvertFrame().
 class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
  public:
-  using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
+  using OutputCB = base::RepeatingCallback<void(scoped_refptr<FrameResource>)>;
   using GetOriginalFrameCB =
       base::RepeatingCallback<VideoFrame*(gfx::GenericSharedMemoryId frame_id)>;
   using GetCommandBufferStubCB =
@@ -100,13 +101,13 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   void Initialize(scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
                   OutputCB output_cb);
 
-  // Enqueues |frame| to be converted to a gpu::Mailbox-backed VideoFrame. If
-  // set_get_original_frame_cb() was called with a non-null callback, |frame|
-  // must wrap a GpuMemoryBuffer-backed VideoFrame that is retrieved via that
-  // callback. Otherwise, |frame| will be used directly and must be a
-  // GpuMemoryBuffer-backed VideoFrame. The generated gpu::Mailbox is kept alive
-  // until the GpuMemoryBuffer-backed VideoFrame is destroyed. These methods
-  // must be called on |parent_task_runner_|.
+  // Enqueues |frame| to be converted to a gpu::Mailbox-backed
+  // VideoFrameResource. If set_get_original_frame_cb() was called with a
+  // non-null callback, |frame| must wrap a GpuMemoryBuffer-backed VideoFrame
+  // that is retrieved via that callback. Otherwise, |frame| will be used
+  // directly and must be a GpuMemoryBuffer-backed VideoFrame. The generated
+  // gpu::Mailbox is kept alive until the GpuMemoryBuffer-backed VideoFrame is
+  // destroyed. These methods must be called on |parent_task_runner_|.
   void ConvertFrame(scoped_refptr<VideoFrame> frame);
   void AbortPendingFrames();
   bool HasPendingFrames() const;
@@ -145,7 +146,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // TODO(crbug.com/998279): replace s/OnGPUThread/OnGPUTaskRunner/.
   bool InitializeOnGPUThread();
 
-  // Wraps |mailbox| and |frame| into a new VideoFrame and sends it via
+  // Wraps |mailbox| and |frame| into a new VideoFrameResource and sends it via
   // |output_cb_|.
   void WrapMailboxAndVideoFrameAndOutput(VideoFrame* origin_frame,
                                          scoped_refptr<VideoFrame> frame,
@@ -245,8 +246,8 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // be called on |parent_task_runner_|.
   OutputCB output_cb_;
 
-  // The weak pointer of this, bound to |parent_task_runner_|.
-  // Used at the VideoFrame destruction callback.
+  // The weak pointer of this, bound to |parent_task_runner_|. Used at the
+  // in the original frame's destruction callback.
   base::WeakPtr<MailboxVideoFrameConverter> parent_weak_this_;
   // The weak pointer of this, bound to |gpu_task_runner_|.
   // Used to generate SharedImages on the GPU main thread.

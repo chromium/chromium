@@ -28,6 +28,7 @@
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/oop_video_decoder.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
 
@@ -801,10 +802,11 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
                        decoder_weak_this_));
     return;
   }
-  if (frame_converter_)
+  if (frame_converter_) {
     frame_converter_->ConvertFrame(std::move(frame));
-  else
-    OnFrameConverted(std::move(frame));
+  } else {
+    OnFrameConverted(VideoFrameResource::Create(std::move(frame)));
+  }
 }
 
 void VideoDecoderPipeline::OnFrameProcessed(scoped_refptr<VideoFrame> frame) {
@@ -812,13 +814,15 @@ void VideoDecoderPipeline::OnFrameProcessed(scoped_refptr<VideoFrame> frame) {
   DVLOGF(4);
   TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameProcessed",
                "timestamp", (frame ? frame->timestamp().InMicroseconds() : 0));
-  if (frame_converter_)
+  if (frame_converter_) {
     frame_converter_->ConvertFrame(std::move(frame));
-  else
-    OnFrameConverted(std::move(frame));
+  } else {
+    OnFrameConverted(VideoFrameResource::Create(std::move(frame)));
+  }
 }
 
-void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
+void VideoDecoderPipeline::OnFrameConverted(
+    scoped_refptr<FrameResource> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
   TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameConverted",
@@ -830,8 +834,19 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
     return;
   }
 
+  // Gets a VideoFrame from |frame|.
+  // TODO(nhebert): add support for NativePixmap FrameResource when it is ready.
+  LOG_ASSERT(frame->AsVideoFrameResource())
+      << "frame is expected to be a VideoFrameResource";
+  scoped_refptr<VideoFrame> video_frame =
+      frame->AsVideoFrameResource()->GetMutableVideoFrame();
+
+  // Invalidates |frame| to avoid accidental usage. |video_frame| is what will
+  // be output.
+  frame.reset();
+
   // Flag that the video frame was decoded in a power efficient way.
-  frame->metadata().power_efficient = true;
+  video_frame->metadata().power_efficient = true;
 
   // MojoVideoDecoderService expects the |output_cb_| to be called on the client
   // task runner, even though media::VideoDecoder states frames should be output
@@ -839,7 +854,7 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
   // Note that all the decode/flush/output/reset callbacks are executed on
   // |client_task_runner_|.
   client_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(client_output_cb_, std::move(frame)));
+      FROM_HERE, base::BindOnce(client_output_cb_, std::move(video_frame)));
 
   // After outputting a frame, flush might be completed.
   CallFlushCbIfNeeded(/*override_status=*/std::nullopt);

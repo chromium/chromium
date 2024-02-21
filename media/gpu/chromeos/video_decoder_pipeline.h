@@ -23,6 +23,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/image_processor_with_pool.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
@@ -278,7 +279,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Called when |image_processor_| finishes processing a frame.
   void OnFrameProcessed(scoped_refptr<VideoFrame> frame);
   // Called when |frame_converter_| finishes converting a frame.
-  void OnFrameConverted(scoped_refptr<VideoFrame> frame);
+  void OnFrameConverted(scoped_refptr<FrameResource> frame);
   // Called when |decoder_| invokes the waiting callback.
   void OnDecoderWaiting(WaitingReason reason);
 

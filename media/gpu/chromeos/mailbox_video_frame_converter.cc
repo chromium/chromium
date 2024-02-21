@@ -23,6 +23,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
@@ -454,7 +455,7 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   mailbox_frame->metadata().is_webgpu_compatible =
       frame->metadata().is_webgpu_compatible;
 
-  output_cb_.Run(mailbox_frame);
+  output_cb_.Run(VideoFrameResource::Create(std::move(mailbox_frame)));
 }
 
 void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(

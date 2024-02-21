@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_switches.h"
 #include "media/base/simple_sync_token_client.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,7 +126,7 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
   // fixture instead of limiting their lifetime to each test. The reason is that
   // we don't want to crash if there are pending tasks at the end of a test that
   // use these callbacks.
-  StrictMock<base::MockRepeatingCallback<void(scoped_refptr<VideoFrame>)>>
+  StrictMock<base::MockRepeatingCallback<void(scoped_refptr<FrameResource>)>>
       mock_output_cb_;
   // |mock_destroy_shared_image_cbs_| are the SharedImage destruction callbacks
   // provided by the GpuDelegate to the MailboxVideoFrameConverter in order to
@@ -204,7 +205,7 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   }
 
   // |converted_frames| are the outputs of the MailboxVideoFrameConverter.
-  scoped_refptr<VideoFrame> converted_frames[std::size(gmb_frames)];
+  scoped_refptr<FrameResource> converted_frames[std::size(gmb_frames)];
 
   // Let's now feed each of the |gmb_frames| to the MailboxVideoFrameConverter
   // and verify that the GpuDelegate gets used correctly.
@@ -259,17 +260,18 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     converter_->ConvertFrame(std::move(gmb_frame));
     ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
     ASSERT_TRUE(converted_frames[i]);
-    EXPECT_EQ(converted_frames[i]->storage_type(), VideoFrame::STORAGE_OPAQUE);
-    EXPECT_EQ(converted_frames[i]->format(), gmb_frames[i]->format());
-    EXPECT_EQ(converted_frames[i]->coded_size(),
+    ASSERT_TRUE(!!converted_frames[i]->AsVideoFrameResource());
+    scoped_refptr<const VideoFrame> converted_frame =
+        converted_frames[i]->AsVideoFrameResource()->GetVideoFrame();
+    EXPECT_EQ(converted_frame->storage_type(), VideoFrame::STORAGE_OPAQUE);
+    EXPECT_EQ(converted_frame->format(), gmb_frames[i]->format());
+    EXPECT_EQ(converted_frame->coded_size(),
               gmb_frames[i]->visible_rect().size());
-    EXPECT_EQ(converted_frames[i]->visible_rect(),
-              gmb_frames[i]->visible_rect());
-    EXPECT_EQ(converted_frames[i]->natural_size(),
-              gmb_frames[i]->natural_size());
-    ASSERT_TRUE(converted_frames[i]->HasTextures());
-    ASSERT_EQ(converted_frames[i]->NumTextures(), 1u);
-    EXPECT_EQ(converted_frames[i]->mailbox_holder(0).mailbox,
+    EXPECT_EQ(converted_frame->visible_rect(), gmb_frames[i]->visible_rect());
+    EXPECT_EQ(converted_frame->natural_size(), gmb_frames[i]->natural_size());
+    ASSERT_TRUE(converted_frame->HasTextures());
+    ASSERT_EQ(converted_frame->NumTextures(), 1u);
+    EXPECT_EQ(converted_frame->mailbox_holder(0).mailbox,
               mailboxes_seen_by_gpu_delegate[i]);
   }
 
@@ -298,7 +300,11 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     EXPECT_CALL(*mock_frame_destruction_cbs_[i], Run())
         .After(wait_on_sync_token_and_release);
     SimpleSyncTokenClient sync_token_client(release_sync_token);
-    converted_frames[i]->UpdateReleaseSyncToken(&sync_token_client);
+    ASSERT_TRUE(!!converted_frames[i]->AsVideoFrameResource());
+    converted_frames[i]
+        ->AsVideoFrameResource()
+        ->GetMutableVideoFrame()
+        ->UpdateReleaseSyncToken(&sync_token_client);
     converted_frames[i].reset();
     ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
   }
