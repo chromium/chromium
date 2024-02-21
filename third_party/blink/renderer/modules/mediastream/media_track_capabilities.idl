@@ -12,7 +12,7 @@ dictionary MediaTrackCapabilities {
     sequence<boolean> echoCancellation;
     sequence<boolean> autoGainControl;
     sequence<boolean> noiseSuppression;
-    [RuntimeEnabled=MediaCaptureVoiceIsolation] sequence<boolean> voiceIsolation;
+    sequence<boolean> voiceIsolation;
     LongRange sampleSize;
     LongRange channelCount;
     LongRange sampleRate;

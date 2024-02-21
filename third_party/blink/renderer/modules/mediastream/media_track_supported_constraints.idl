@@ -19,7 +19,7 @@ dictionary MediaTrackSupportedConstraints {
     boolean echoCancellation = true;
     boolean autoGainControl = true;
     boolean noiseSuppression = true;
-    [RuntimeEnabled=MediaCaptureVoiceIsolation] boolean voiceIsolation = true;
+    boolean voiceIsolation = true;
     boolean latency = true;
     boolean channelCount = true;
     boolean deviceId = true;

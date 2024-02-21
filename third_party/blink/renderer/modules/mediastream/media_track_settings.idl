@@ -16,7 +16,7 @@ dictionary MediaTrackSettings {
     boolean echoCancellation;
     boolean autoGainControl;
     boolean noiseSuppression;
-    [RuntimeEnabled=MediaCaptureVoiceIsolation] boolean voiceIsolation;
+    boolean voiceIsolation;
     double latency;
     long channelCount;
     DOMString deviceId;
