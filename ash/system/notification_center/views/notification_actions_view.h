@@ -75,7 +75,10 @@ class ASH_EXPORT NotificationActionsView : public views::View,
   raw_ptr<views::FlexLayoutView> inline_reply_container_ = nullptr;
   raw_ptr<SystemTextfield> textfield_ = nullptr;
   raw_ptr<IconButton> send_button_ = nullptr;
+
+  base::WeakPtrFactory<NotificationActionsView> weak_factory_{this};
 };
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NOTIFICATION_CENTER_VIEWS_NOTIFICATION_ACTIONS_VIEW_H_

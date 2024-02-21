@@ -11,8 +11,12 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
+#include "ash/system/notification_center/message_center_constants.h"
+#include "ash/system/notification_center/message_center_utils.h"
+#include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -31,10 +35,12 @@ constexpr auto kInlineReplyContainerDefaultMargins =
 
 NotificationActionsView::NotificationActionsView() {
   SetUseDefaultFillLayout(true);
+  message_center_utils::InitLayerForAnimations(this);
 
   buttons_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   buttons_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
   buttons_container_->SetVisible(true);
+
   inline_reply_container_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
   inline_reply_container_->SetOrientation(
@@ -78,6 +84,8 @@ NotificationActionsView::~NotificationActionsView() = default;
 
 void NotificationActionsView::UpdateWithNotification(
     const message_center::Notification& notification) {
+  buttons_container_->RemoveAllChildViews();
+
   int button_index = 0;
   for (auto button : notification.buttons()) {
     // base::Unretained is safe here because `this` is guaranteed to outlive
@@ -100,6 +108,8 @@ void NotificationActionsView::UpdateWithNotification(
     actions_button->SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
     buttons_container_->AddChildView(std::move(actions_button));
   }
+
+  SetVisible(!notification.buttons().empty());
 }
 
 void NotificationActionsView::ReplyButtonPressed(
@@ -108,6 +118,28 @@ void NotificationActionsView::ReplyButtonPressed(
     const std::u16string placeholder) {
   inline_reply_container_->SetVisible(true);
   buttons_container_->SetVisible(false);
+
+  message_center_utils::FadeOutView(
+      this,
+      base::BindOnce(
+          [](base::WeakPtr<views::View> parent, views::View* buttons_container,
+             views::View* inline_reply_container) {
+            if (!parent) {
+              return;
+            }
+            buttons_container->SetVisible(false);
+            inline_reply_container->SetVisible(true);
+          },
+          weak_factory_.GetWeakPtr(), buttons_container_,
+          inline_reply_container_),
+      /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs,
+      gfx::Tween::LINEAR,
+      "Ash.NotificationView.ActionButtonsRow.FadeOut.AnimationSmoothness");
+
+  message_center_utils::FadeInView(
+      this, kActionButtonsFadeOutAnimationDurationMs,
+      kInlineReplyFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+      "Ash.NotificationView.InlineReply.FadeIn.AnimationSmoothness");
 
   textfield_->SetPlaceholderText(placeholder);
   textfield_->RequestFocus();
