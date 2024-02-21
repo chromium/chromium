@@ -8822,6 +8822,21 @@
             ]
         }
     ],
+    "IOSFeatureEngagementSessionReset": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FeatureEngagementSessionReset"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFeedSignedOutViewDemotion": [
         {
             "platforms": [
