@@ -206,6 +206,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kUnexpectedAlternateUrl:
               case OfficeDriveOpenErrors::kEmptyAlternateUrl:
               case OfficeDriveOpenErrors::kWaitingForUpload:
+              case OfficeDriveOpenErrors::kCannotGetRelativePath:
               case OfficeDriveOpenErrors::kSuccess:
                 SetWrongValueLogged(drive_open_error);
                 break;
@@ -312,6 +313,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kWaitingForUpload:
               case OfficeDriveOpenErrors::kDisableDrivePreferenceSet:
               case OfficeDriveOpenErrors::kDriveDisabledForAccountType:
+              case OfficeDriveOpenErrors::kCannotGetRelativePath:
                 break;
               case OfficeDriveOpenErrors::kSuccess:
                 SetWrongValueLogged(drive_open_error);
@@ -368,6 +370,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kWaitingForUpload:
               case OfficeDriveOpenErrors::kDisableDrivePreferenceSet:
               case OfficeDriveOpenErrors::kDriveDisabledForAccountType:
+              case OfficeDriveOpenErrors::kCannotGetRelativePath:
                 SetWrongValueLogged(drive_open_error);
                 break;
             }

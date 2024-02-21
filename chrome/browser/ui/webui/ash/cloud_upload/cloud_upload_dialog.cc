@@ -489,6 +489,9 @@ void CloudOpenTask::OpenAlreadyHostedDriveUrls() {
           base::BindOnce(&CloudOpenTask::OnGoogleDriveGetMetadata, this));
     } else {
       LOG(ERROR) << "Unexpected error obtaining the relative path ";
+      LogGoogleDriveOpenResultUMA(
+          OfficeTaskResult::kOpened,
+          OfficeDriveOpenErrors::kCannotGetRelativePath);
     }
   }
 }
