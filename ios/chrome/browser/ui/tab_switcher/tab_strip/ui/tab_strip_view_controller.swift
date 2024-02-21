@@ -273,6 +273,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     willDecelerate decelerate: Bool
   ) {
     layout.cellAnimatediOS16 = false
+    UserMetricsUtils.recordAction("MobileTabStripScrollDidEnd")
   }
 
   // MARK: - Private

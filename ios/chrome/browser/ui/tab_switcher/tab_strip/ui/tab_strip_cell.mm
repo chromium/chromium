@@ -6,6 +6,8 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
@@ -677,6 +679,7 @@ UIImage* DefaultFavicon() {
 
 // Selector registered to the close button.
 - (void)closeButtonTapped:(id)sender {
+  base::RecordAction(base::UserMetricsAction("MobileTabStripCloseTab"));
   [self.delegate closeButtonTappedForCell:self];
 }
 

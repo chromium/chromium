@@ -24108,15 +24108,21 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripCloseTab">
-  <obsolete>Deprecated as of 5/2015</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User tapped on the close button of a tab strip tab. Obsolete until
+    19/02/2024.
+  </description>
 </action>
 
 <action name="MobileTabStripNewTab">
-  <obsolete>Deprecated as of 5/2015</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User opened a tab using the tab strip new ta button. Obsolete until
+    19/02/2024.
+  </description>
 </action>
 
 <action name="MobileTabStripScrollDidEnd">
