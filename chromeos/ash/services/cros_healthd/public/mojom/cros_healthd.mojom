@@ -917,7 +917,6 @@ interface CrosHealthdProbeService {
 // Contains data about the current service instance of cros_healthd.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct ServiceStatus {
   // Boolean flag if the NetworkHealthService mojo remote has been sent from
   // Chrome and bound in cros_healthd.
@@ -930,7 +929,6 @@ struct ServiceStatus {
 // Interface to query the status of the cros_healthd service.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 interface CrosHealthdSystemService {
   // Returns the status of the cros_healthd service and external mojo remotes.
   GetServiceStatus@0() => (ServiceStatus response);
