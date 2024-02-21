@@ -316,7 +316,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
     try {
       sourceContent = await getCachedResource(url, scriptHash);
     } catch (err) {
-      log(`[RuntimeError] Failed to read original source ${url}: ${err.message}`);
+      log(`[RuntimeError][sourcemaps] Failed to read original source ${url}: ${err.message}`);
       continue;
     }
     const hash = sha256DigestHex(sourceContent);
@@ -334,7 +334,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
     }));
   }
   } catch (err) {
-    warning(`[sourcemaps] Error: ${err?.stack || err}`);
+    warning(`[RuntimeError][sourcemaps] Exception - ${err?.stack || err}`);
   }
 });
 
@@ -354,32 +354,26 @@ function makeAPIHash(content) {
 
 function collectUnresolvedSourceMapResources(mapText, mapURL) {
   let obj;
-  try {
-    obj = JSON.parse(mapText);
-    if (typeof obj !== "object" || !obj) {
-      return {
-        sources: [],
-      };
-    }
-  } catch (err) {
-    log(`Exception parsing sourcemap JSON (${mapURL})`);
-    return {
-      sources: [],
-    };
-  }
-
-  const unresolvedSources = [];
   let sourceOffset = 0;
 
   function logError(msg) {
     log(`[RuntimeError][sourcemaps] ${msg} (${mapURL}:${sourceOffset})`);
   }
 
+  try {
+    obj = JSON.parse(mapText);
+    if (typeof obj !== "object" || !obj) {
+      return [];
+    }
+  } catch (err) {
+    logError(`Exception parsing sourcemap JSON (${mapURL}): ${err?.message || err}`);
+    return [];
+  }
+
+  const unresolvedSources = [];
   if (obj.version !== 3) {
-    logError("Invalid sourcemap version");
-    return {
-      sources: [],
-    };
+    logError("Invalid sourcemap version: " + obj.version);
+    return [];
   }
 
   if (obj.sources != null) {
@@ -412,7 +406,7 @@ function collectUnresolvedSourceMapResources(mapText, mapURL) {
         }
       }
     } else {
-      logError("Invalid sourcemap source list");
+      logError("Invalid sourcemap sources list");
     }
   }
 
