@@ -12,8 +12,10 @@ import android.widget.ProgressBar;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -221,6 +223,8 @@ public class ConfirmSyncDataStateMachineDelegate {
         boolean isCurrentAccountManaged =
                 IdentityServicesProvider.get().getSigninManager(mProfile).getManagementDomain()
                         != null;
+        boolean usesSplitStoresAndUPMForLocal =
+                PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile));
         mConfirmImportSyncDataDialogCoordinator =
                 new ConfirmImportSyncDataDialogCoordinator(
                         mContext,
@@ -228,7 +232,8 @@ public class ConfirmSyncDataStateMachineDelegate {
                         listener,
                         oldAccountName,
                         newAccountName,
-                        isCurrentAccountManaged);
+                        isCurrentAccountManaged,
+                        usesSplitStoresAndUPMForLocal);
     }
 
     /**

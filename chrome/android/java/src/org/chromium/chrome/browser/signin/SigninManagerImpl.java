@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,10 +53,12 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -70,13 +73,6 @@ import java.util.List;
  */
 class SigninManagerImpl implements IdentityManager.Observer, SigninManager, AccountsChangeObserver {
     private static final String TAG = "SigninManager";
-    private static final int[] SYNC_DATA_TYPES = {
-        BrowsingDataType.HISTORY,
-        BrowsingDataType.CACHE,
-        BrowsingDataType.COOKIES,
-        BrowsingDataType.PASSWORDS,
-        BrowsingDataType.FORM_DATA
-    };
 
     /**
      * Address of the native Signin Manager android.
@@ -780,6 +776,23 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 new Runnable() {
                     @Override
                     public void run() {
+                        List<Integer> clearedTypes =
+                                new ArrayList<>(
+                                        Arrays.asList(
+                                                BrowsingDataType.HISTORY,
+                                                BrowsingDataType.CACHE,
+                                                BrowsingDataType.COOKIES,
+                                                BrowsingDataType.FORM_DATA));
+                        // If usesSplitStoresAndUPMForLocal() is true, browser sign-in won't upload
+                        // existing passwords, so there's no reason to wipe them immediately before.
+                        // Similarly, on browser sign-out, account passwords should survive (outside
+                        // of the browser) to be used by other apps, until system-level sign-out.
+                        // In other words, the browser has no business deleting any passwords here.
+                        if (!PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal(
+                                UserPrefs.get(mProfile))) {
+                            clearedTypes.add(BrowsingDataType.PASSWORDS);
+                        }
+
                         model.removeAllUserBookmarks();
                         BrowsingDataBridge.getForProfile(mProfile)
                                 .clearBrowsingData(
@@ -792,7 +805,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                                                 notifyCallbacksWaitingForOperation();
                                             }
                                         },
-                                        SYNC_DATA_TYPES,
+                                        clearedTypes.stream().mapToInt(Integer::intValue).toArray(),
                                         TimePeriod.ALL_TIME);
                     }
                 });

@@ -38,13 +38,19 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -70,7 +76,9 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
     private static final String MANAGED_DOMAIN = "managed-domain.com";
 
     @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+
+    @Rule public final JniMocker mJniMocker = new JniMocker();
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -80,6 +88,12 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
 
     @Mock private ConfirmSyncDataStateMachine.Listener mListenerMock;
 
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+
+    @Mock private UserPrefs.Natives mUserPrefsNativeMock;
+
+    @Mock private PrefService mPrefService;
+
     @Mock private Profile mProfile;
 
     private ConfirmSyncDataStateMachineDelegate mDelegate;
@@ -87,6 +101,10 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
     @Before
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        mJniMocker.mock(
+                PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativeMock);
+        when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefService);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         mDelegate =
                 TestThreadUtils.runOnUiThreadBlockingNoException(

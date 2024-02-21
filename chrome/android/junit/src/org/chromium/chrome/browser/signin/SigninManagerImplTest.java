@@ -48,13 +48,22 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -77,6 +86,8 @@ import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +124,10 @@ public class SigninManagerImplTest {
 
     @Mock private SigninManagerImpl.Natives mNativeMock;
     @Mock private IdentityManager.Natives mIdentityManagerNativeMock;
+    @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeNativeMock;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+    @Mock private UserPrefs.Natives mUserPrefsNativeMock;
+    @Mock private PrefService mPrefService;
     @Mock private AccountTrackerService mAccountTrackerService;
     @Mock private IdentityMutator mIdentityMutator;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
@@ -130,7 +145,12 @@ public class SigninManagerImplTest {
     public void setUp() {
         mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
+        mocker.mock(BrowsingDataBridgeJni.TEST_HOOKS, mBrowsingDataBridgeNativeMock);
+        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativeMock);
+        when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefService);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
+        BookmarkModel.setInstanceForTesting(FakeBookmarkModel.createModel());
 
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
@@ -783,6 +803,142 @@ public class SigninManagerImplTest {
         // managed or syncing.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         inOrder.verify(mNativeMock).wipeGoogleServiceWorkerCaches(anyLong(), any());
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void revokeSyncConsentFromJavaWithNullDomainAndWipeData_noLocalUpm() {
+        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
+                .thenReturn(false);
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                        eq(NATIVE_IDENTITY_MANAGER), anyInt()))
+                .thenReturn(ACCOUNT_INFO);
+
+        mSigninManager.revokeSyncConsent(
+                SignoutReason.TEST,
+                mock(SigninManager.SignOutCallback.class),
+                /* forceWipeUserData= */ true);
+
+        // Passwords should be among the cleared types.
+        int[] expectedClearedTypes =
+                new int[] {
+                    BrowsingDataType.HISTORY,
+                    BrowsingDataType.CACHE,
+                    BrowsingDataType.COOKIES,
+                    BrowsingDataType.FORM_DATA,
+                    BrowsingDataType.PASSWORDS
+                };
+        verify(mBrowsingDataBridgeNativeMock)
+                .clearBrowsingData(
+                        any(),
+                        any(),
+                        any(),
+                        eq(expectedClearedTypes),
+                        eq(TimePeriod.ALL_TIME),
+                        any(),
+                        any(),
+                        any(),
+                        any());
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void revokeSyncConsentFromJavaWithNullDomainAndWipeData_withLocalUpm() {
+        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
+                .thenReturn(true);
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                        eq(NATIVE_IDENTITY_MANAGER), anyInt()))
+                .thenReturn(ACCOUNT_INFO);
+
+        mSigninManager.revokeSyncConsent(
+                SignoutReason.TEST,
+                mock(SigninManager.SignOutCallback.class),
+                /* forceWipeUserData= */ true);
+
+        // Passwords should not be among the cleared types.
+        int[] expectedClearedTypes =
+                new int[] {
+                    BrowsingDataType.HISTORY,
+                    BrowsingDataType.CACHE,
+                    BrowsingDataType.COOKIES,
+                    BrowsingDataType.FORM_DATA,
+                };
+        verify(mBrowsingDataBridgeNativeMock)
+                .clearBrowsingData(
+                        any(),
+                        any(),
+                        any(),
+                        eq(expectedClearedTypes),
+                        eq(TimePeriod.ALL_TIME),
+                        any(),
+                        any(),
+                        any(),
+                        any());
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void wipeSyncDataOnly_noLocalUpm() {
+        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
+                .thenReturn(false);
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                        eq(NATIVE_IDENTITY_MANAGER), anyInt()))
+                .thenReturn(ACCOUNT_INFO);
+
+        mSigninManager.wipeSyncUserData(() -> {}, SigninManager.DataWipeOption.WIPE_SYNC_DATA);
+
+        // Passwords should be among the cleared types.
+        int[] expectedClearedTypes =
+                new int[] {
+                    BrowsingDataType.HISTORY,
+                    BrowsingDataType.CACHE,
+                    BrowsingDataType.COOKIES,
+                    BrowsingDataType.FORM_DATA,
+                    BrowsingDataType.PASSWORDS
+                };
+        verify(mBrowsingDataBridgeNativeMock)
+                .clearBrowsingData(
+                        any(),
+                        any(),
+                        any(),
+                        eq(expectedClearedTypes),
+                        eq(TimePeriod.ALL_TIME),
+                        any(),
+                        any(),
+                        any(),
+                        any());
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void wipeSyncDataOnly_withLocalUpm() {
+        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
+                .thenReturn(true);
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                        eq(NATIVE_IDENTITY_MANAGER), anyInt()))
+                .thenReturn(ACCOUNT_INFO);
+
+        mSigninManager.wipeSyncUserData(() -> {}, SigninManager.DataWipeOption.WIPE_SYNC_DATA);
+
+        // Passwords should not be among the cleared types.
+        int[] expectedClearedTypes =
+                new int[] {
+                    BrowsingDataType.HISTORY,
+                    BrowsingDataType.CACHE,
+                    BrowsingDataType.COOKIES,
+                    BrowsingDataType.FORM_DATA,
+                };
+        verify(mBrowsingDataBridgeNativeMock)
+                .clearBrowsingData(
+                        any(),
+                        any(),
+                        any(),
+                        eq(expectedClearedTypes),
+                        eq(TimePeriod.ALL_TIME),
+                        any(),
+                        any(),
+                        any(),
+                        any());
     }
 
     @Test
