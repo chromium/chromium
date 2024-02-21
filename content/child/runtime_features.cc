@@ -347,6 +347,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(device::features::kWebXrIncubations)},
           {wf::EnableWebXRPoseMotionData,
            raw_ref(device::features::kWebXrIncubations)},
+          {wf::EnableWebXRSpecParity,
+           raw_ref(device::features::kWebXrIncubations)},
 #endif
           {wf::EnableRemoveMobileViewportDoubleTap,
            raw_ref(features::kRemoveMobileViewportDoubleTap)},

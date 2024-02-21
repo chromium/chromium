@@ -12167,6 +12167,7 @@ interface XRSession : EventTarget
     getter frameRate
     getter inputSources
     getter interactionMode
+    getter isSystemKeyboardSupported
     getter onend
     getter onframeratechange
     getter oninputsourceschange

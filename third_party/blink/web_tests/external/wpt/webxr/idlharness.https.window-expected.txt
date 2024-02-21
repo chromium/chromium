@@ -1,11 +1,7 @@
 This is a testharness.js-based test.
-Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebGLRenderingContext includes WebGLRenderingContextOverloads: member names are unique
   assert_true: member bufferData is unique expected true got false
-[FAIL] XRSession interface: attribute isSystemKeyboardSupported
-  assert_true: The prototype object must have a property "isSystemKeyboardSupported" expected true got false
-[FAIL] XRSession interface: xrSession must inherit property "isSystemKeyboardSupported" with the proper type
-  assert_inherits: property "isSystemKeyboardSupported" not found in prototype chain
 [FAIL] XRFrame interface: attribute predictedDisplayTime
   assert_true: The prototype object must have a property "predictedDisplayTime" expected true got false
 [FAIL] XRWebGLLayer interface: attribute fixedFoveation

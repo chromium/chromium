@@ -4348,6 +4348,12 @@
       base_feature: "none",
     },
     {
+      name: "WebXRSpecParity",
+      depends_on: ["WebXR"],
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "WGIGamepadTriggerRumble",
       status: "test",
     },

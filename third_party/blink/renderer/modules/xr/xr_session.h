@@ -150,6 +150,8 @@ class XRSession final : public EventTarget,
 
   const FrozenArray<IDLString>& enabledFeatures() const;
 
+  bool isSystemKeyboardSupported() const { return false; }
+
   XRSpace* viewerSpace() const;
 
   XRAnchorSet* TrackedAnchors() const;
