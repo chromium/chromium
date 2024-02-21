@@ -141,7 +141,8 @@ void CrosSpeechRecognitionRecognizerImpl::
             ? chromeos::machine_learning::mojom::OptionalBool::kTrue
             : chromeos::machine_learning::mojom::OptionalBool::kFalse;
     cros_soda_client_->Reset(std::move(config), recognition_event_callback(),
-                             speech_recognition_stopped_callback());
+                             speech_recognition_stopped_callback(),
+                             language_identification_event_callback());
   }
   cros_soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
                               buffer_size);
