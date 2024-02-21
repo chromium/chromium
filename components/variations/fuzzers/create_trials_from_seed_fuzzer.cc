@@ -73,14 +73,10 @@ void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
   // provider arguments.
   auto client_state = MockChromeClientFilterableState();
 
-  // Using an empty string as the limited entropy randomization source means any
-  // layers with LIMITED entropy mode will be dropped.
-  // TODO(crbug.com/1518402): Add support for fuzzing seeds that contains a
-  // layer with LIMITED entropy mode after the limited entropy randomization
-  // logic lands.
   EntropyProviders entropy_providers(
       "client_id", {7999, 8000},
-      /*limited_entropy_randomization_source=*/std::string_view());
+      // The following is a test value for limited entropy randomization source
+      "00000000000000000000000000000001");
   VariationsLayers layers(seed, entropy_providers);
   VariationsSeedProcessor().CreateTrialsFromSeed(
       seed, *client_state, override_callback.callback(), entropy_providers,
