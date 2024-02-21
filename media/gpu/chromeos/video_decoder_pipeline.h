@@ -49,6 +49,11 @@ class MediaLog;
 // destroyed on |decoder_task_runner_|.
 class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
  public:
+  // Used by decoders to send FrameResource objects to the decoder pipeline for
+  // conversion, image processing, etc.
+  using PipelineOutputCB =
+      base::RepeatingCallback<void(scoped_refptr<FrameResource>)>;
+
   // Client interface of VideoDecoderMixin.
   class MEDIA_GPU_EXPORT Client {
    public:
@@ -141,6 +146,25 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
   // on the size of the frame pool that the decoder writes into. The default
   // implementation indicates no limit.
   virtual size_t GetMaxOutputFramePoolSize() const;
+
+  // Implementers should override the other Initialize(). The decoder
+  // pipeline wants a FrameResource, not a VideoFrame.
+  void Initialize(const VideoDecoderConfig& config,
+                  bool low_delay,
+                  CdmContext* cdm_context,
+                  InitCB init_cb,
+                  const OutputCB& output_cb,
+                  const WaitingCB& waiting_cb) final;
+
+  // VideoDecoderMixins should implement the following Initialize instead of
+  // VideoFrame::Initialize. This lets the decoder use FrameResource instead
+  // of VideoFrame as an output type.
+  virtual void Initialize(const VideoDecoderConfig& config,
+                          bool low_delay,
+                          CdmContext* cdm_context,
+                          InitCB init_cb,
+                          const PipelineOutputCB& output_cb,
+                          const WaitingCB& waiting_cb) = 0;
 
  protected:
   const std::unique_ptr<MediaLog> media_log_;
@@ -275,7 +299,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void OnError(const std::string& msg);
 
   // Called when |decoder_| finishes decoding a frame.
-  void OnFrameDecoded(scoped_refptr<VideoFrame> frame);
+  void OnFrameDecoded(scoped_refptr<FrameResource> frame);
   // Called when |image_processor_| finishes processing a frame.
   void OnFrameProcessed(scoped_refptr<FrameResource> frame);
   // Called when |frame_converter_| finishes converting a frame.

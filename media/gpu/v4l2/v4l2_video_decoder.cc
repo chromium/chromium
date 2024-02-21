@@ -27,6 +27,7 @@
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_status.h"
@@ -220,7 +221,7 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
                                   bool /*low_delay*/,
                                   CdmContext* cdm_context,
                                   InitCB init_cb,
-                                  const OutputCB& output_cb,
+                                  const PipelineOutputCB& output_cb,
                                   const WaitingCB& /*waiting_cb*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(config.IsValidConfig());
@@ -1226,7 +1227,7 @@ void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
 
   frame->set_color_space(color_space.ToGfxColorSpace());
 
-  output_cb_.Run(std::move(frame));
+  output_cb_.Run(VideoFrameResource::Create(std::move(frame)));
 }
 
 DmabufVideoFramePool* V4L2VideoDecoder::GetVideoFramePool() const {

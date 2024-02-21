@@ -46,7 +46,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb,
+                  const PipelineOutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
@@ -144,7 +144,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
 
   // Callback obtained from Initialize() to be called after every frame
   // has finished decoding and is ready for the client to display.
-  OutputCB output_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+  PipelineOutputCB output_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   // Hold the callback that came in with the EOS signal until the rest of the
   // frames have finished decoding.

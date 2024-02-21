@@ -65,7 +65,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb,
+                  const PipelineOutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
@@ -213,7 +213,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   State state_ = State::kUninitialized;
 
   // Callback used to notify the client when a frame is available for output.
-  OutputCB output_cb_;
+  PipelineOutputCB output_cb_;
 
   // Callback used to notify the client when we have lost decode context and
   // request a reset (Used in protected decoding).

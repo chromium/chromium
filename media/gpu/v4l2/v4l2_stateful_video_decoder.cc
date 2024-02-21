@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_log.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
@@ -259,7 +260,7 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                           bool /*low_delay*/,
                                           CdmContext* cdm_context,
                                           InitCB init_cb,
-                                          const OutputCB& output_cb,
+                                          const PipelineOutputCB& output_cb,
                                           const WaitingCB& /*waiting_cb*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
@@ -935,12 +936,12 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
                 weak_ptr_factory_for_CAPTURE_availability_.GetWeakPtr())));
         CHECK(wrapped_frame);
         VLOGF(3) << wrapped_frame->AsHumanReadableString();
-        output_cb_.Run(std::move(wrapped_frame));
+        output_cb_.Run(VideoFrameResource::Create(std::move(wrapped_frame)));
       } else {
         DCHECK_EQ(queue_type, V4L2_MEMORY_DMABUF);
         VLOGF(3) << video_frame->AsHumanReadableString();
         framerate_control_->AttachToVideoFrame(video_frame);
-        output_cb_.Run(std::move(video_frame));
+        output_cb_.Run(VideoFrameResource::Create(std::move(video_frame)));
       }
 
       // We just dequeued one decoded |video_frame|; try to reclaim

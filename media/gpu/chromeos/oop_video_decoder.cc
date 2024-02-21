@@ -14,6 +14,7 @@
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -465,7 +466,7 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                  bool low_delay,
                                  CdmContext* cdm_context,
                                  InitCB init_cb,
-                                 const OutputCB& output_cb,
+                                 const PipelineOutputCB& output_cb,
                                  const WaitingCB& waiting_cb) {
   DVLOGF(2) << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1028,7 +1029,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   can_read_without_stalling_ = can_read_without_stalling;
 
   if (output_cb_)
-    output_cb_.Run(std::move(wrapped_frame));
+    output_cb_.Run(VideoFrameResource::Create(std::move(wrapped_frame)));
 }
 
 void OOPVideoDecoder::OnWaiting(WaitingReason reason) {

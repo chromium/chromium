@@ -30,6 +30,7 @@
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/av1_vaapi_video_decoder_delegate.h"
@@ -179,7 +180,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                    bool /*low_delay*/,
                                    CdmContext* cdm_context,
                                    InitCB init_cb,
-                                   const OutputCB& output_cb,
+                                   const PipelineOutputCB& output_cb,
                                    const WaitingCB& waiting_cb) {
   DVLOGF(2) << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -618,7 +619,7 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
   if (gfx_color_space.IsValid())
     video_frame->set_color_space(gfx_color_space);
   video_frame->set_hdr_metadata(hdr_metadata_);
-  output_cb_.Run(std::move(video_frame));
+  output_cb_.Run(VideoFrameResource::Create(std::move(video_frame)));
 }
 
 void VaapiVideoDecoder::

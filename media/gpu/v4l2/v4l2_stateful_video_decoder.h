@@ -54,7 +54,7 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb,
+                  const PipelineOutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
@@ -137,7 +137,7 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   VideoCodecProfile profile_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);
-  OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PipelineOutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   DecodeCB flush_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Set to true when the driver identifies itself as a Mediatek 8173.
   bool is_mtk8173_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/stateless/h264_delegate.h"
@@ -134,7 +135,7 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                            bool low_delay,
                                            CdmContext* cdm_context,
                                            InitCB init_cb,
-                                           const OutputCB& output_cb,
+                                           const PipelineOutputCB& output_cb,
                                            const WaitingCB& waiting_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(config.IsValidConfig());
@@ -494,9 +495,9 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
 
     DVLOGF(4) << wrapped_frame->AsHumanReadableString();
 
-    // |output_cb_| passes the video frame off to the pipeline for further
+    // |output_cb_| passes the frame off to the pipeline for further
     // processing or display.
-    output_cb_.Run(std::move(wrapped_frame));
+    output_cb_.Run(VideoFrameResource::Create(std::move(wrapped_frame)));
   }
 }
 

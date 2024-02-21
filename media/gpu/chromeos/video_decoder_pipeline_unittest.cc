@@ -88,7 +88,7 @@ class MockDecoder : public VideoDecoderMixin {
                     bool,
                     CdmContext*,
                     InitCB,
-                    const OutputCB&,
+                    const PipelineOutputCB&,
                     const WaitingCB&));
   MOCK_METHOD2(Decode, void(scoped_refptr<DecoderBuffer>, DecodeCB));
   MOCK_METHOD1(Reset, void(base::OnceClosure));

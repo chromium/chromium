@@ -126,6 +126,15 @@ CroStatus VideoDecoderMixin::AttachSecureBuffer(
   return CroStatus::Codes::kOk;
 }
 
+void VideoDecoderMixin::Initialize(const VideoDecoderConfig& config,
+                                   bool low_delay,
+                                   CdmContext* cdm_context,
+                                   InitCB init_cb,
+                                   const OutputCB& output_cb,
+                                   const WaitingCB& waiting_cb) {
+  NOTREACHED() << "FrameResource version of Initialize is used instead";
+}
+
 void VideoDecoderMixin::ReleaseSecureBuffer(uint64_t secure_handle) {}
 
 size_t VideoDecoderMixin::GetMaxOutputFramePoolSize() const {
@@ -778,7 +787,7 @@ void VideoDecoderPipeline::OnDecodeDone(bool is_flush,
       FROM_HERE, base::BindOnce(std::move(decode_cb), std::move(status)));
 }
 
-void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
+void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<FrameResource> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
   TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameDecoded", "timestamp",
@@ -797,16 +806,15 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
 
   if (image_processor_) {
     image_processor_->Process(
-        VideoFrameResource::Create(std::move(frame)),
+        std::move(frame),
         base::BindOnce(&VideoDecoderPipeline::OnFrameProcessed,
                        decoder_weak_this_));
     return;
   }
   if (frame_converter_) {
-    frame_converter_->ConvertFrame(
-        VideoFrameResource::Create(std::move(frame)));
+    frame_converter_->ConvertFrame(std::move(frame));
   } else {
-    OnFrameConverted(VideoFrameResource::Create(std::move(frame)));
+    OnFrameConverted(std::move(frame));
   }
 }
 

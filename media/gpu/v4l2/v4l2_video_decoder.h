@@ -56,7 +56,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb,
+                  const PipelineOutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
@@ -201,7 +201,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   VideoAspectRatio aspect_ratio_;
 
   // Callbacks passed from Initialize().
-  OutputCB output_cb_;
+  PipelineOutputCB output_cb_;
 
   // Hold onto profile and color space passed in from Initialize() so that
   // it is available for InitializeBackend().
