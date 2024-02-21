@@ -203,6 +203,12 @@ BASE_DECLARE_FEATURE(kVariableRefreshRateAvailable);
 // this flag is overridden by the user, then the availability flag is ignored.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kEnableVariableRefreshRate);
+// This feature indicates that this device should have variable refresh rates
+// enabled by default if available. This overrides the default value of
+// |kEnableVariableRefreshRate|. This flag is added by USE and not exposed in
+// the chrome://flags UI.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kVariableRefreshRateDefaultEnabled);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsVariableRefreshRateEnabled();
 // Enables the variable refresh rate feature at all times.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
