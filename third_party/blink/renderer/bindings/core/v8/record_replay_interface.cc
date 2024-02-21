@@ -2198,10 +2198,6 @@ static void fromJsGetMatchedStylesForElement(
     auto rulesJs = convertCborToJS(isolate, pseudoIdMatches.fromJust());
     SetDataProperty(isolate, result, "pseudoIdMatches", rulesJs);
   }
-  if (inheritedEntries.isJust()) {
-    auto rulesJs = convertCborToJS(isolate, inheritedEntries.fromJust());
-    SetDataProperty(isolate, result, "inheritedEntries", rulesJs);
-  }
   if (keyframesRules.isJust()) {
     auto rulesJs = convertCborToJS(isolate, keyframesRules.fromJust());
     SetDataProperty(isolate, result, "keyframesRules", rulesJs);

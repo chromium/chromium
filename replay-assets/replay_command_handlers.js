@@ -2334,7 +2334,6 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
 
   const {
     matchedRules = EmptyArray,
-    inheritedEntries = EmptyArray,
     pseudoIdMatches = EmptyArray
   } = cdpMatchedStyles;
 
@@ -2349,19 +2348,6 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
 
   for (const cdpRule of matchedRules) {
     addCdpRule(cdpRule.rule);
-  }
-
-  for (const cdpInheritedEntry of inheritedEntries) {
-    // see https://chromedevtools.github.io/devtools-protocol/tot/CSS/#type-InheritedStyleEntry
-    const {
-      // inlineStyle, // inherited inline style
-      matchedCSSRules  // inherited non-inline rules
-    } = cdpInheritedEntry;
-
-    for (const match of matchedCSSRules) {
-      // match.matchingSelectors
-      addCdpRule(match.rule);
-    }
   }
 
   for (const pseudoMatch of pseudoIdMatches) {

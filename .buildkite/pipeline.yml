@@ -218,6 +218,8 @@ steps:
         RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
         # this is passed as a git URL which the replay plugin expects and parses
         RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+        # This is used by packages/e2e-tests/playwright.config.ts
+        CI: "1"
 
   # wait for all steps above, but also continue if they fail
   - wait: ~
