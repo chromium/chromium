@@ -1303,22 +1303,20 @@ void CaptionBubble::SetTextColor() {
   // Update Live Translate label style with the default colors before parsing
   // the CSS color string.
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    SkColor secondary_color = color_provider->GetColor(
-        ui::kColorLiveCaptionBubbleForegroundSecondary);
-    download_progress_label_->SetEnabledColor(secondary_color);
-
+    download_progress_label_->SetEnabledColor(primary_color);
     language_label_->SetBaseColor();
     language_label_->SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            vector_icons::kTranslateChromeRefreshIcon, secondary_color,
+            vector_icons::kTranslateChromeRefreshIcon, icon_color,
             kLiveTranslateImageWidthDip));
     language_label_->SetImageModel(
         views::Button::ButtonState::STATE_HOVERED,
         ui::ImageModel::FromVectorIcon(
-            vector_icons::kTranslateChromeRefreshIcon, primary_color));
+            vector_icons::kTranslateChromeRefreshIcon, primary_color,
+            kLiveTranslateImageWidthDip));
     language_label_->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
-                                  secondary_color);
+                                  icon_color);
     language_label_->SetTextColor(views::Button::ButtonState::STATE_HOVERED,
                                   primary_color);
   }
