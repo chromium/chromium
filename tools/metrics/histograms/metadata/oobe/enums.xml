@@ -206,6 +206,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The result of the cryptohome recovery opt-in. For managed users the policy
     value is used, for unmanaged users the user selection is used.
+
+    Starting from M124 the histogram is not reported for ephemeral users (before
+    that the value reported was always &quot;Not supported&quot;).
   </summary>
   <int value="0" label="Not supported"/>
   <int value="1" label="User Opt In"/>

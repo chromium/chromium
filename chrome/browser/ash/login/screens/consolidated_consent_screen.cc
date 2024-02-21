@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -489,7 +490,11 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
 }
 
 void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
-  RecordRecoveryOptinResult(context()->recovery_setup);
+  if (!chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
+    // Recovery is not set up for ephemeral users, don't send metrics in this
+    // case.
+    RecordRecoveryOptinResult(context()->recovery_setup);
+  }
   StartupUtils::MarkEulaAccepted();
   network_portal_detector::GetInstance()->Enable();
 
