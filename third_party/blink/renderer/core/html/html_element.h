@@ -307,7 +307,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // for example a `<dialog popover>` should run `popover` invocation steps
   // before `<dialog>` invocation steps.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
-  virtual bool HandleInvokeInternal(HTMLElement& invoker, AtomicString& action);
+  bool HandleInvokeInternal(HTMLElement& invoker,
+                            AtomicString& action) override;
 
   // This allows developers to enable or disable browser-provided writing
   // suggestions. If the attribute is not explicitly set on an element, it

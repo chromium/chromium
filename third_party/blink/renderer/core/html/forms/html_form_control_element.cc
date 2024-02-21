@@ -409,7 +409,7 @@ HTMLFormControlElement::popoverTargetElement() {
   return PopoverTargetElement{.popover = target_popover, .action = action};
 }
 
-HTMLElement* HTMLFormControlElement::invokeTargetElement() {
+Element* HTMLFormControlElement::invokeTargetElement() {
   if (!IsInTreeScope() || IsDisabledFormControl() ||
       (Form() && IsSuccessfulSubmitButton())) {
     return nullptr;
@@ -419,8 +419,7 @@ HTMLElement* HTMLFormControlElement::invokeTargetElement() {
     return nullptr;
   }
 
-  return DynamicTo<HTMLElement>(
-      GetElementAttribute(html_names::kInvoketargetAttr));
+  return GetElementAttribute(html_names::kInvoketargetAttr);
 }
 
 AtomicString HTMLFormControlElement::popoverTargetAction() const {

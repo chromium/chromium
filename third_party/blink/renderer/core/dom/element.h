@@ -96,6 +96,7 @@ class ElementIntersectionObserverData;
 class ElementRareDataVector;
 class ExceptionState;
 class FocusOptions;
+class HTMLElement;
 class HTMLTemplateElement;
 class Image;
 class InputDeviceCapabilities;
@@ -915,6 +916,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const AtomicString& event_type,
       Element* new_focused_element,
       InputDeviceCapabilities* source_capabilities = nullptr);
+
+  // This allows customization of how Invokes are handled, per element.
+  // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
+  virtual bool HandleInvokeInternal(HTMLElement& invoker,
+                                    AtomicString& action) {
+    return false;
+  }
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".

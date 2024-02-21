@@ -1967,7 +1967,7 @@ const HTMLElement* NearestTargetPopoverForInvoker(
         auto* invoke_target_element = form_element->invokeTargetElement();
 
         return invoke_target_element
-                   ? invoke_target_element
+                   ? DynamicTo<HTMLElement>(invoke_target_element)
                    : form_element->popoverTargetElement().popover.Get();
       });
 }

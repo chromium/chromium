@@ -116,7 +116,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   AtomicString popoverTargetAction() const;
   void setPopoverTargetAction(const AtomicString& value);
 
-  HTMLElement* invokeTargetElement();
+  Element* invokeTargetElement();
 
   AtomicString invokeAction() const;
   void setInvokeAction(const AtomicString& value);
