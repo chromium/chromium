@@ -201,8 +201,14 @@ gfx::Rect GetGridBoundsInScreen(
   if (auto* split_view_overview_session =
           RootWindowController::ForWindow(target_root)
               ->split_view_overview_session()) {
-    gfx::Rect target_bounds_in_screen(
-        split_view_overview_session->window()->GetTargetBounds());
+    aura::Window* snapped_window = split_view_overview_session->window();
+    gfx::Rect target_bounds_in_screen(snapped_window->GetTargetBounds());
+    WindowState* window_state = WindowState::Get(snapped_window);
+    CHECK(window_state->IsSnapped());
+    opposite_position = window_state->GetStateType() ==
+                                chromeos::WindowStateType::kPrimarySnapped
+                            ? SnapPosition::kSecondary
+                            : SnapPosition::kPrimary;
     wm::ConvertRectToScreen(target_root, &target_bounds_in_screen);
     bounds.Subtract(target_bounds_in_screen);
   } else {
@@ -256,12 +262,8 @@ gfx::Rect GetGridBoundsInScreen(
     }
   }
 
-  if (!opposite_position) {
-    // `opposite_position` is only non-empty if we are in split view state not
-    // `kNoSnap`.
-    return bounds;
-  }
-
+  // Clamp the bounds of the overview grid such that it doesn't go below 1/3 of
+  // the work area length
   const bool horizontal = IsLayoutHorizontal(target_root);
   const int min_length =
       (horizontal ? work_area.width() : work_area.height()) / 3;
@@ -270,13 +272,21 @@ gfx::Rect GetGridBoundsInScreen(
   if (current_length > min_length)
     return bounds;
 
-  // Clamp bounds' length to the minimum length.
+  // Clamp bounds' corresponding length to the minimum length.
   if (horizontal)
     bounds.set_width(min_length);
   else
     bounds.set_height(min_length);
 
-  if (IsPhysicalLeftOrTop(*opposite_position, target_root)) {
+  // These changes below are crucial for better visualization and help
+  // preventing crashes when dragging the snapped window towards the edge. In
+  // this case, the overview components will become too small to allow any
+  // gradient painting on desk bar or applying shadows. Please ensure to go
+  // through the bounds update below when one window is snapped in overview both
+  // in clamshell and tablet mode. See the regression behavior in
+  // http://b/324478757.
+  if (opposite_position &&
+      IsPhysicalLeftOrTop(*opposite_position, target_root)) {
     // If we are shifting to the left or top we need to update the origin as
     // well.
     const int offset = min_length - current_length;
