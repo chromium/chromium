@@ -277,7 +277,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Called when |decoder_| finishes decoding a frame.
   void OnFrameDecoded(scoped_refptr<VideoFrame> frame);
   // Called when |image_processor_| finishes processing a frame.
-  void OnFrameProcessed(scoped_refptr<VideoFrame> frame);
+  void OnFrameProcessed(scoped_refptr<FrameResource> frame);
   // Called when |frame_converter_| finishes converting a frame.
   void OnFrameConverted(scoped_refptr<FrameResource> frame);
   // Called when |decoder_| invokes the waiting callback.

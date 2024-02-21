@@ -20,11 +20,11 @@
 namespace media {
 
 // A simple client implementation of ImageProcessor.
-// By giving DmabufVideoFramePool, which provides VideoFrame for output, the
-// caller can process input frames without managing VideoFrame for output.
+// By giving DmabufVideoFramePool, which provides FrameResource for output, the
+// caller can process input frames without managing FrameResource for output.
 class ImageProcessorWithPool {
  public:
-  using FrameReadyCB = ImageProcessor::FrameReadyCB;
+  using FrameResourceReadyCB = ImageProcessor::FrameResourceReadyCB;
 
   // Initializes |frame_pool| and creates an ImageProcessorWithPool instance.
   // |num_frames| is the number of frames requested from |frame_pool|.
@@ -40,7 +40,8 @@ class ImageProcessorWithPool {
 
   // Processes |frame| by |image_processor_|. The processed output frame will be
   // returned by |ready_cb|, which is called on |task_runner_|.
-  void Process(scoped_refptr<VideoFrame> frame, FrameReadyCB ready_cb);
+  void Process(scoped_refptr<FrameResource> frame,
+               FrameResourceReadyCB ready_cb);
 
   // Returns true if there are pending frames.
   bool HasPendingFrames() const;
@@ -70,7 +71,8 @@ class ImageProcessorWithPool {
   void PumpProcessFrames();
 
   // Called when |image_processor_| finishes processing frames.
-  void OnFrameProcessed(FrameReadyCB ready_cb, scoped_refptr<VideoFrame> frame);
+  void OnFrameProcessed(FrameResourceReadyCB ready_cb,
+                        scoped_refptr<FrameResource> frame);
 
   // The image processor for processing frames.
   std::unique_ptr<ImageProcessor> image_processor_;
@@ -80,7 +82,7 @@ class ImageProcessorWithPool {
   const raw_ptr<DmabufVideoFramePool> frame_pool_;
 
   // The pending input frames that wait for passing to |image_processor_|.
-  base::queue<std::pair<scoped_refptr<VideoFrame>, FrameReadyCB>>
+  base::queue<std::pair<scoped_refptr<FrameResource>, FrameResourceReadyCB>>
       pending_frames_;
   // Number of frames that are processed in |image_processor_|.
   size_t num_frames_in_ip_ = 0;

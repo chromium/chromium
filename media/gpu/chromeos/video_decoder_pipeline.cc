@@ -797,7 +797,7 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
 
   if (image_processor_) {
     image_processor_->Process(
-        std::move(frame),
+        VideoFrameResource::Create(std::move(frame)),
         base::BindOnce(&VideoDecoderPipeline::OnFrameProcessed,
                        decoder_weak_this_));
     return;
@@ -810,16 +810,16 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
   }
 }
 
-void VideoDecoderPipeline::OnFrameProcessed(scoped_refptr<VideoFrame> frame) {
+void VideoDecoderPipeline::OnFrameProcessed(
+    scoped_refptr<FrameResource> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
   TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameProcessed",
                "timestamp", (frame ? frame->timestamp().InMicroseconds() : 0));
   if (frame_converter_) {
-    frame_converter_->ConvertFrame(
-        VideoFrameResource::Create(std::move(frame)));
+    frame_converter_->ConvertFrame(std::move(frame));
   } else {
-    OnFrameConverted(VideoFrameResource::Create(std::move(frame)));
+    OnFrameConverted(std::move(frame));
   }
 }
 
