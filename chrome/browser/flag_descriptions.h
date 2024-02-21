@@ -3350,9 +3350,6 @@ extern const char kAutocorrectToggleDescription[];
 extern const char kAutocorrectUseReplaceSurroundingTextName[];
 extern const char kAutocorrectUseReplaceSurroundingTextDescription[];
 
-extern const char kAvatarsCloudMigrationName[];
-extern const char kAvatarsCloudMigrationDescription[];
-
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 

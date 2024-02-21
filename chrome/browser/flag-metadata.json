@@ -2421,11 +2421,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-cros-avatars-cloud-migration",
-    "owners": [ "updowndota@chromium.org", "angelaxiao@chromium.org", "assistive-eng@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-cros-diacritics-on-physical-keyboard-longpress",
     "owners": ["jhtin@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 116

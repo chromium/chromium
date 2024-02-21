@@ -5799,11 +5799,6 @@ const char kAutocorrectUseReplaceSurroundingTextDescription[] =
     "When autocorrect is enabled, use the ReplaceSurroundingText API "
     "for better app compatibility.";
 
-const char kAvatarsCloudMigrationName[] =
-    "Loading CrOS avatar images from the cloud";
-const char kAvatarsCloudMigrationDescription[] =
-    "Enables loading avatar images from the cloud on ChromeOS.";
-
 const char kBluetoothFixA2dpPacketSizeName[] = "Bluetooth fix A2DP packet size";
 const char kBluetoothFixA2dpPacketSizeDescription[] =
     "Fixes Bluetooth A2DP packet size to a smaller default value to improve "

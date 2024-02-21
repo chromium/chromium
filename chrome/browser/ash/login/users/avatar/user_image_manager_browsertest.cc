@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -24,7 +23,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -309,14 +307,11 @@ class UserImageManagerTestBase : public LoginManagerTest,
       controllable_http_response_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class UserImageManagerTest : public UserImageManagerTestBase {
  public:
   UserImageManagerTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
     login_manager_mixin_.AppendRegularUsers(1);
     test_account_id1_ = login_manager_mixin_.users()[0].account_id;
   }
@@ -540,7 +535,6 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
  protected:
   UserImageManagerPolicyTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()) {
-    feature_list_.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
     login_manager_.AppendManagedUsers(1);
     enterprise_account_id_ = login_manager_.users()[0].account_id;
     cryptohome_id_ = cryptohome::CreateAccountIdentifierFromAccountId(
