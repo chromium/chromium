@@ -134,6 +134,15 @@ ModelExecutionManager::~ModelExecutionManager() {
   }
 }
 
+void ModelExecutionManager::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Invalidate the weak pointers before clearing the active fetchers, which
+  // will cause the drop all the model execution consumer callbacks, and avoid
+  // all processing during destructor.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  active_model_execution_fetchers_.clear();
+}
+
 void ModelExecutionManager::ExecuteModelWithStreaming(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& request_metadata,

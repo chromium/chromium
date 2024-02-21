@@ -71,6 +71,8 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   void OnModelUpdated(proto::OptimizationTarget target,
                       base::optional_ref<const ModelInfo> model_info) override;
 
+  void Shutdown();
+
  private:
   // Called from SessionImpl (via ExecuteRemoteFn) when model execution happens
   // remotely.

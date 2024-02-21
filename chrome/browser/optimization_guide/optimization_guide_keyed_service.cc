@@ -687,6 +687,9 @@ void OptimizationGuideKeyedService::ClearData() {
 
 void OptimizationGuideKeyedService::Shutdown() {
   hints_manager_->Shutdown();
+  if (model_execution_manager_) {
+    model_execution_manager_->Shutdown();
+  }
 }
 
 void OptimizationGuideKeyedService::OverrideTargetModelForTesting(
