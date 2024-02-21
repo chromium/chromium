@@ -288,16 +288,6 @@ bool HUPSearchDatabase();
 // ---------------------------------------------------------
 // For UI experiments.
 
-// Returns true if the OmniboxActionsUISimplification feature is enabled.
-bool IsActionsUISimplificationEnabled();
-// Indicates whether to include changes that affect the NTP realbox.
-extern const base::FeatureParam<bool> kActionsUISimplificationIncludeRealbox;
-// Indicates whether to delete extra matches produced by splitting
-// actions out to become independent suggestions. Note, this will only
-// apply if `IsActionsUISimplificationEnabled` returns true and the
-// total number of matches exceeds the limit (i.e. there are extra matches).
-extern const base::FeatureParam<bool> kActionsUISimplificationTrimExtra;
-
 // Returns true if the OmniboxKeywordModeRefresh feature is enabled.
 bool IsKeywordModeRefreshEnabled();
 

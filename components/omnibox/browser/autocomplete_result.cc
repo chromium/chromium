@@ -599,14 +599,12 @@ void AutocompleteResult::SplitActionsToSuggestions() {
       }
     }
   }
-  if (OmniboxFieldTrial::kActionsUISimplificationTrimExtra.Get()) {
-    // By design, do not change result size. But allow triggering
-    // for the edge case where the pedal extends a list that still
-    // does not exceed maximum.
-    if (matches_[size() - 1].type != AutocompleteMatchType::PEDAL ||
-        size() > GetDynamicMaxMatches()) {
-      matches_.resize(size_before);
-    }
+  // By design, do not change result size. But allow triggering
+  // for the edge case where the pedal extends a list that still
+  // does not exceed maximum.
+  if (matches_[size() - 1].type != AutocompleteMatchType::PEDAL ||
+      size() > GetDynamicMaxMatches()) {
+    matches_.resize(size_before);
   }
 }
 

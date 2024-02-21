@@ -1179,11 +1179,7 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
-      return vector_icons::kGoogleGLogoMonochromeIcon;
-    } else {
-      return vector_icons::kGoogleSuperGIcon;
-    }
+    return vector_icons::kGoogleGLogoMonochromeIcon;
   }
 #endif
 
@@ -1242,11 +1238,7 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
-      return vector_icons::kGoogleGLogoMonochromeIcon;
-    } else {
-      return vector_icons::kGoogleSuperGIcon;
-    }
+    return vector_icons::kGoogleGLogoMonochromeIcon;
   }
 #endif
 
@@ -1439,11 +1431,7 @@ class OmniboxPedalFindMyPhone : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
-      return vector_icons::kGoogleGLogoMonochromeIcon;
-    } else {
-      return vector_icons::kGoogleSuperGIcon;
-    }
+    return vector_icons::kGoogleGLogoMonochromeIcon;
   }
 #endif
 
@@ -1492,11 +1480,7 @@ class OmniboxPedalManageGooglePrivacy : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
-      return vector_icons::kGoogleGLogoMonochromeIcon;
-    } else {
-      return vector_icons::kGoogleSuperGIcon;
-    }
+    return vector_icons::kGoogleGLogoMonochromeIcon;
   }
 #endif
 

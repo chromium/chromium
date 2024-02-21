@@ -2445,11 +2445,6 @@ const char kOmniboxCR23SuggestionHoverFillShapeDescription[] =
     "Updates Omnibox suggestion hover fill shape to comply with CR23 "
     "guidelines.";
 
-const char kOmniboxActionsUISimplificationName[] =
-    "Omnibox Actions UI Simplification";
-const char kOmniboxActionsUISimplificationDescription[] =
-    "Simplifies omnibox actions UI design with inlined and separated actions.";
-
 const char kOmniboxKeywordModeRefreshName[] = "Omnibox Keyword Mode Refresh";
 const char kOmniboxKeywordModeRefreshDescription[] =
     "Changes suggestion behavior for keyword mode/site search/starter pack.";

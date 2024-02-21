@@ -637,9 +637,6 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
-      "omniboxActionsUISimplification",
-      base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
-  source->AddBoolean(
       "realboxCr23ExpandedStateIcons",
       base::FeatureList::IsEnabled(
           ntp_features::kRealboxCr23ExpandedStateIcons) ||

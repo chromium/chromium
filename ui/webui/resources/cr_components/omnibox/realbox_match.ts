@@ -104,13 +104,6 @@ export class RealboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /** Whether action chip is inlined. */
-      inlinedActions: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('omniboxActionsUISimplification'),
-        reflectToAttribute: true,
-      },
-
       /**
        * Whether the match is an entity suggestion (with or without an image).
        */
@@ -149,12 +142,6 @@ export class RealboxMatchElement extends PolymerElement {
 
       renderType: {
         type: String,
-        reflectToAttribute: true,
-      },
-
-      showCrNonInlinedHoverFill: {
-        type: Boolean,
-        computed: 'computeShowCrNonInlinedHoverFill_(hasAction)',
         reflectToAttribute: true,
       },
 
@@ -198,17 +185,6 @@ export class RealboxMatchElement extends PolymerElement {
         type: String,
         computed: `computeTailSuggestPrefix_(match)`,
       },
-
-      /**
-         Conditional CSS class that enables styling of elements differently
-          according to feature state.
-       */
-      simplifiedClass_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('omniboxActionsUISimplification') ?
-            'simplified' :
-            '',
-      },
     };
   }
 
@@ -217,11 +193,9 @@ export class RealboxMatchElement extends PolymerElement {
   hasAction: boolean;
   hasOutsetActionFocusRing: boolean;
   hasImage: boolean;
-  inlinedActions: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
   realboxConsistentRowHeight: boolean;
-  showCrNonInlinedHoverFill: boolean;
   sideType: SideType;
   private actionIsVisible_: boolean;
   private contentsHtml_: TrustedHTML;
@@ -420,21 +394,10 @@ export class RealboxMatchElement extends PolymerElement {
         '';
   }
 
-  private computeShowCrNonInlinedHoverFill_(): boolean {
-    return !this.inlinedActions &&
-        loadTimeData.getBoolean('realboxCr23HoverFillShape') && this.hasAction;
-  }
-
   private showActionsInlined_(): boolean {
     // Always show inlined div when feature is enabled, so that it will
     // grow and push other elements like remove button to the right.
-    return this.inlinedActions && !this.showCrNonInlinedHoverFill &&
-        this.sideType === SideType.kDefaultPrimary;
-  }
-
-  private showActionsUnderneath_(match: AutocompleteMatch): boolean {
-    return match.actions.length > 0 && !this.inlinedActions &&
-        !this.showCrNonInlinedHoverFill;
+    return this.sideType === SideType.kDefaultPrimary;
   }
 
   /**

@@ -1516,15 +1516,6 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
      std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
 };
 
-const FeatureEntry::FeatureParam kActionsUISimplificationTrimExtraFalse[]{
-    {"ActionsUISimplificationTrimExtra", "false"},
-};
-const FeatureEntry::FeatureVariation
-    kOmniboxActionsUISimplificationVariations[] = {
-        {"with TrimExtra false", kActionsUISimplificationTrimExtraFalse,
-         std::size(kActionsUISimplificationTrimExtraFalse), nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kOmniboxDriveSuggestionsIgnoreWhenDebouncing[] = {
         {"DocumentProviderIgnoreWhenDebouncing", "true"}};
@@ -5926,12 +5917,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
-    {"omnibox-actions-ui-simplification",
-     flag_descriptions::kOmniboxActionsUISimplificationName,
-     flag_descriptions::kOmniboxActionsUISimplificationDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxActionsUISimplification,
-                                    kOmniboxActionsUISimplificationVariations,
-                                    "OmniboxActionsUISimplification")},
     {"omnibox-keyword-mode-refresh",
      flag_descriptions::kOmniboxKeywordModeRefreshName,
      flag_descriptions::kOmniboxKeywordModeRefreshDescription, kOsDesktop,
