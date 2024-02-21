@@ -413,10 +413,10 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       is_origin_top_left_(is_origin_top_left),
       is_accelerated_(is_accelerated),
 #if BUILDFLAG(IS_MAC)
-      // On Mac, WebGPU usage is always backed by an IOSurface which should
-      // should also use the GL_TEXTURE_RECTANGLE target instead of
-      // GL_TEXTURE_2D. Setting |is_overlay_candidate_| both allows overlays,
-      // and causes |texture_target_| to take the value returned from
+      // On Mac, WebGPU usage is always backed by an IOSurface which should also
+      // use the GL_TEXTURE_RECTANGLE target instead of GL_TEXTURE_2D. Setting
+      // |is_overlay_candidate_| both allows overlays, and causes
+      // |texture_target_| to take the value returned from
       // gpu::GetBufferTextureTarget.
       is_overlay_candidate_(shared_image_usage_flags &
                             (gpu::SHARED_IMAGE_USAGE_SCANOUT |
