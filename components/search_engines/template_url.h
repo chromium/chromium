@@ -28,7 +28,6 @@
 
 class TemplateURL;
 
-
 // TemplateURLRef -------------------------------------------------------------
 
 // A TemplateURLRef represents a single URL within the larger TemplateURL class
@@ -563,10 +562,9 @@ class TemplateURLRef {
   // Replaces all replacements in |parsed_url_| with their actual values and
   // returns the result.  This is the main functionality of
   // ReplaceSearchTerms().
-  std::string HandleReplacements(
-      const SearchTermsArgs& search_terms_args,
-      const SearchTermsData& search_terms_data,
-      PostContent* post_content) const;
+  std::string HandleReplacements(const SearchTermsArgs& search_terms_args,
+                                 const SearchTermsData& search_terms_data,
+                                 PostContent* post_content) const;
 
   // The TemplateURL that contains us.  This should outlive us.
   raw_ptr<const TemplateURL> owner_;
@@ -615,7 +613,6 @@ class TemplateURLRef {
   // Whether the contained URL is a pre-populated URL.
   bool prepopulated_ = false;
 };
-
 
 // TemplateURL ----------------------------------------------------------------
 
