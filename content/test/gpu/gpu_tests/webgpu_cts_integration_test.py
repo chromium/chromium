@@ -9,6 +9,7 @@ import unittest
 
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgpu_cts_integration_test_base
+from gpu_tests.util import host_information
 
 import gpu_path_util
 
@@ -103,13 +104,13 @@ class WebGpuCtsIntegrationTest(
 
     # Run shader tests in serial on Mac.
     # The Metal shader compiler tends to be slow.
-    if sys.platform == 'darwin':
+    if host_information.IsMac():
       globs.add('webgpu:shader,execution*')
 
     # Run limit tests in serial if backend validation is enabled on Windows.
     # The validation layers add memory overhead which makes OOM likely when
     # many browsers and tests run in parallel.
-    if sys.platform == 'win32' and self._enable_dawn_backend_validation:
+    if host_information.IsWindows() and self._enable_dawn_backend_validation:
       globs.add('webgpu:api,validation,capability_checks,limits*')
       globs.add('webgpu:api,validation,state,device_lost*')
 

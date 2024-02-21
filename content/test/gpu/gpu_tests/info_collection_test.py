@@ -12,8 +12,10 @@ import six
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from gpu_tests import common_typing as ct
+from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import overlay_support
+from gpu_tests.util import host_information
 
 from telemetry.internal.platform import gpu_info as gi
 
@@ -61,6 +63,12 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     yield ('InfoCollection_clang_coverage_info_surfaced', '_',
            ['_RunClangCoverageInfoTest',
             InfoCollectionTestArgs()])
+    yield ('InfoCollection_host_information_matches_browser', '_', [
+        '_RunHostInformationTest',
+        InfoCollectionTestArgs(
+            expected_vendor_id_str=options.expected_vendor_id,
+            expected_device_id_strs=options.expected_device_ids)
+    ])
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -168,6 +176,44 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
   def _RunClangCoverageInfoTest(self, _: InfoCollectionTestArgs) -> None:
     gpu_info = self.browser.GetSystemInfo().gpu
     self.assertIn('is_clang_coverage', gpu_info.aux_attributes)
+
+  def _RunHostInformationTest(self, test_args: InfoCollectionTestArgs) -> None:
+    # This is used to verify that the functions in host_information align with
+    # the information we pull from the browser.
+    tags = self.GetPlatformTags(self.browser)
+    if any(os_tag in tags for os_tag in ('android', 'chromeos', 'fuchsia')):
+      self.skipTest('Test does not support remote platforms')
+
+    if 'win' in tags:
+      self.assertTrue(host_information.IsWindows())
+    elif 'linux' in tags:
+      self.assertTrue(host_information.IsLinux())
+    elif 'mac' in tags:
+      self.assertTrue(host_information.IsMac())
+    else:
+      self.fail('Running on unknown platform')
+
+    expected_vendor_id = int(test_args.expected_vendor_id_str, 16)
+    if expected_vendor_id == gpu_helper.GpuVendors.QUALCOMM:
+      self.assertTrue(host_information.IsArmCpu())
+      self.assertFalse(host_information.Isx86Cpu())
+      self.assertTrue(host_information.IsQualcommGpu())
+    elif expected_vendor_id == gpu_helper.GpuVendors.APPLE:
+      self.assertTrue(host_information.IsArmCpu())
+      self.assertFalse(host_information.Isx86Cpu())
+      self.assertTrue(host_information.IsAppleGpu())
+    else:
+      self.assertTrue(host_information.Isx86Cpu())
+      self.assertFalse(host_information.IsArmCpu())
+      if expected_vendor_id == gpu_helper.GpuVendors.AMD:
+        self.assertTrue(host_information.IsAmdGpu())
+      elif expected_vendor_id == gpu_helper.GpuVendors.INTEL:
+        self.assertTrue(host_information.IsIntelGpu())
+      elif expected_vendor_id == gpu_helper.GpuVendors.NVIDIA:
+        self.assertTrue(host_information.IsNvidiaGpu())
+      else:
+        self.fail('Running with unknown GPU vendor')
+
 
   @staticmethod
   def _ValueToStr(value: Union[str, bool]) -> str:

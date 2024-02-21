@@ -14,7 +14,6 @@ import logging
 import os
 import pkgutil
 import re
-import sys
 import types
 from typing import Any, Dict, Generator, List, Optional, Set, Tuple, Type
 import unittest
@@ -36,6 +35,7 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import overlay_support
+from gpu_tests.util import host_information
 
 TEST_WAS_SLOW = 'test_was_slow'
 
@@ -588,7 +588,7 @@ class GpuIntegrationTest(
     # GetPlatformTags() to restrict this to the flaking Mac configs.
     if not GpuIntegrationTest._is_first_browser_start:
       return False
-    return sys.platform == 'darwin'
+    return host_information.IsMac()
 
   # pylint: enable=no-self-use
 
@@ -766,7 +766,7 @@ class GpuIntegrationTest(
     return gpu_helper.IsIntel(gpu.devices[0].vendor_id)
 
   def IsDualGPUMacLaptop(self) -> bool:
-    if sys.platform != 'darwin':
+    if not host_information.IsMac():
       return False
     system_info = self.browser.GetSystemInfo()
     if not system_info:

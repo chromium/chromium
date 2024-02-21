@@ -6,7 +6,6 @@ import os
 import sys
 import json
 import itertools
-import platform
 from typing import Any, List, Set
 import unittest
 
@@ -14,6 +13,7 @@ import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
+from gpu_tests.util import host_information
 
 html_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'content', 'test',
                          'data', 'gpu', 'webcodecs')
@@ -41,7 +41,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _GetSerialGlobs(self) -> Set[str]:
     serial_globs = set()
-    if sys.platform == 'win32':
+    if host_information.IsWindows() and host_information.IsNvidiaGpu():
       serial_globs |= {
           # crbug.com/1473480. Windows + NVIDIA has a maximum parallel encode
           # limit of 2, so serialize hardware encoding tests on Windows.
@@ -51,11 +51,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _GetSerialTests(self) -> Set[str]:
     serial_tests = set()
-    # TODO(crbug.com/324293876): Move this check to wherever the host-side
-    # information collection ends up living.
-    # We can't rely on directly checking platform.machine() since it is
-    # possible that we're using emulated Python on arm64 devices.
-    if sys.platform == 'win32' and 'armv8' in platform.processor().lower():
+    if host_information.IsWindows() and host_information.IsArmCpu():
       serial_tests |= {
           # Checking whether serialization improves stability for
           # crbug.com/323824490.

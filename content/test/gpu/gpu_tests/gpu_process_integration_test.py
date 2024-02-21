@@ -14,6 +14,7 @@ from devil.android.sdk import version_codes
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
+from gpu_tests.util import host_information
 
 import gpu_path_util
 
@@ -272,7 +273,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Browser must support GPU aux attributes')
     if not 'gl_renderer' in system_info.gpu.aux_attributes:
       self.fail('Browser must have gl_renderer in aux attribs')
-    if (sys.platform != 'darwin'
+    if (not host_information.IsMac()
         and len(system_info.gpu.aux_attributes['gl_renderer']) <= 0):
       # On MacOSX we don't create a context to collect GL strings.1
       self.fail('Must have a non-empty gl_renderer string')
@@ -323,7 +324,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # On Linux we relaunch GPU process to fallback to SwiftShader, therefore
     # featureStatusForHardwareGpu isn't available. So finish early if we're on
     # Linux.
-    if sys.platform.startswith('linux'):
+    if host_information.IsLinux():
       return
 
     feature_status_for_hardware_gpu_list = _GetBrowserBridgeProperty(

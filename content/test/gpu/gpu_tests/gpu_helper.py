@@ -50,6 +50,7 @@ ENTIRE_TAG_REPLACEMENTS = {
 
 class GpuVendors(enum.IntEnum):
   AMD = 0x1002
+  APPLE = 0x106b
   INTEL = 0x8086
   NVIDIA = 0x10DE
   # ACPI ID as opposed to a PCI-E ID like other vendors.
@@ -209,6 +210,9 @@ def GetDisplayServer(browser_type: str) -> Optional[str]:
   # display server.
   if browser_type in REMOTE_BROWSER_TYPES:
     return None
+  # TODO(crbug.com/324293876): Move this to use host_information.IsLinux()
+  # once relevant constants are moved out of gpu_helper and there is no longer
+  # a circular dependency.
   if sys.platform.startswith('linux'):
     if 'WAYLAND_DISPLAY' in os.environ:
       return 'display-server-wayland'

@@ -6,7 +6,6 @@ import collections
 import fnmatch
 import json
 import os
-import sys
 import time
 from typing import Dict, List, Optional
 
@@ -15,6 +14,7 @@ import dataclasses  # Built-in, but pylint gives an ordering false positive.
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
+from gpu_tests.util import host_information
 from gpu_tests.util import websocket_server as wss
 from typ import expectations_parser
 
@@ -186,7 +186,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     enable_dawn_features = ['allow_unsafe_apis']
     disable_dawn_features = []
 
-    if sys.platform == 'win32':
+    if host_information.IsWindows():
       if cls._use_fxc:
         disable_dawn_features.append('use_dxc')
       else:
@@ -207,7 +207,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       browser_args.append('--use-webgpu-power-preference=%s' %
                           cls._use_webgpu_power_preference)
     if cls._enable_dawn_backend_validation:
-      if sys.platform == 'win32':
+      if host_information.IsWindows():
         browser_args.append('--enable-dawn-backend-validation=partial')
       else:
         browser_args.append('--enable-dawn-backend-validation')
@@ -248,7 +248,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
     super()._ModifyBrowserEnvironment()
-    if sys.platform == 'darwin' and cls._enable_dawn_backend_validation:
+    if host_information.IsMac() and cls._enable_dawn_backend_validation:
       if cls._original_environ is None:
         cls._original_environ = os.environ.copy()
       os.environ['MTL_DEBUG_LAYER'] = '1'
@@ -587,7 +587,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     else:
       tags.append('webgpu-not-compat')
 
-    if sys.platform == 'win32':
+    if host_information.IsWindows():
       if cls._use_fxc:
         tags.append('webgpu-dxc-disabled')
       else:

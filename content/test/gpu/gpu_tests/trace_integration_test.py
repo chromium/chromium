@@ -21,6 +21,7 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import overlay_support
 from gpu_tests import pixel_test_pages
+from gpu_tests.util import host_information
 
 import gpu_path_util
 
@@ -246,21 +247,21 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _GetSerialGlobs(self) -> Set[str]:
     serial_globs = set()
-    if sys.platform == 'win32':
+    if host_information.IsWindows():
       serial_globs |= {
-          # Flaky when run in parallel on Windows.
+          # Flaky when run in parallel on Windows. For NVIDIA, it's likely due
+          # to the limited number of global overlay contexts supported. For
+          # Intel, it could be due to that same issue or something else. AMD
+          # may be able to run in parallel once we have an AMD fleet to confirm
+          # with.
           'OverlayModeTraceTest_DirectComposition_Underlay*',
-          # Has issues running with any amount of parallelization on
-          # Windows/NVIDIA even though comment 12 in crbug.com/1505609 implies
-          # that up to three Chrome processes should be able to run in
-          # parallel without issue on the driver's end.
           'OverlayModeTraceTest_DirectComposition_Video*',
       }
     return serial_globs
 
   def _GetSerialTests(self) -> Set[str]:
     serial_tests = set()
-    if sys.platform == 'darwin':
+    if host_information.IsMac():
       serial_tests |= {
           # Flaky when run in parallel on Mac.
           'WebGPUTraceTest_WebGPUCanvasOneCopyCapture',
@@ -369,7 +370,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--enable-features=WebGPUBlobCache',
     ]
     # For the tests to run properly on Linux, we need additional args.
-    if sys.platform.startswith('linux'):
+    if host_information.IsLinux():
       webgpu_cache_test_browser_args += ['--enable-features=Vulkan']
 
     # WebGPU load and reload caching tests.

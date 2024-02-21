@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import os
-import platform
 import posixpath
 import sys
 import time
@@ -14,6 +13,7 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
+from gpu_tests.util import host_information
 
 import gpu_path_util
 
@@ -43,7 +43,7 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
 
   def _GetSerialGlobs(self) -> Set[str]:
     serial_globs = set()
-    if sys.platform == 'darwin':
+    if host_information.IsMac():
       serial_globs |= {
           # Flakily produces only half the image when run in parallel on Mac.
           'Pixel_OffscreenCanvasWebGL*',
@@ -69,18 +69,14 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
         'Pixel_WebGLLowToHighPowerAlphaFalse',
     }
 
-    if sys.platform.startswith('linux'):
+    if host_information.IsLinux() and host_information.IsAmdGpu():
       serial_tests |= {
           # Flakily produces slightly incorrect images when run in parallel on
           # AMD.
           'Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker',
       }
 
-    # TODO(crbug.com/324293876): Move this check to wherever the host-side
-    # information collection ends up living.
-    # We can't rely on directly checking platform.machine() since it is
-    # possible that we're using emulated Python on arm64 devices.
-    if sys.platform == 'win32' and 'armv8' in platform.processor().lower():
+    if host_information.IsWindows() and host_information.IsArmCpu():
       serial_tests |= {
           # Context loss tests don't like being run in parallel on Windows
           # arm64.
@@ -104,13 +100,13 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     # The following pages should run only on platforms where SwiftShader is
     # enabled. They are skipped on other platforms through test expectations.
     # pages += namespace.SwiftShaderPages(cls.test_base_name)
-    if sys.platform.startswith('darwin'):
+    if host_information.IsMac():
       pages += namespace.MacSpecificPages(cls.test_base_name)
       # Unfortunately we don't have a browser instance here so can't tell
       # whether we should really run these tests. They're short-circuited to a
       # certain degree on the other platforms.
       pages += namespace.DualGPUMacSpecificPages(cls.test_base_name)
-    if sys.platform.startswith('win'):
+    if host_information.IsWindows():
       pages += namespace.DirectCompositionPages(cls.test_base_name)
       pages += namespace.HdrTestPages(cls.test_base_name)
     for p in pages:
