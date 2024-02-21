@@ -1133,13 +1133,8 @@ gfx::Rect DragRectForImage(const DragImage* drag_image,
 
 std::unique_ptr<DragImage> DragImageForLink(const KURL& link_url,
                                             const String& link_text,
-                                            float device_scale_factor,
-                                            const Document* document) {
-  FontDescription font_description;
-  LayoutTheme::GetTheme().SystemFont(blink::CSSValueID::kNone, font_description,
-                                     document);
-  return DragImage::Create(link_url, link_text, font_description,
-                           device_scale_factor);
+                                            float device_scale_factor) {
+  return DragImage::Create(link_url, link_text, device_scale_factor);
 }
 
 gfx::Rect DragRectForLink(const DragImage* link_image,
@@ -1286,7 +1281,7 @@ std::unique_ptr<DragImage> DetermineDragImageAndRect(
     if (!drag_image) {
       DCHECK(frame->GetPage());
       drag_image = DragImageForLink(link_url, hit_test_result.TextContent(),
-                                    device_scale_factor, frame->GetDocument());
+                                    device_scale_factor);
       drag_obj_rect = DragRectForLink(drag_image.get(), mouse_dragged_point,
                                       device_scale_factor,
                                       frame->GetPage()->PageScaleFactor());

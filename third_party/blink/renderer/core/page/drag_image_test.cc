@@ -140,19 +140,10 @@ TEST(DragImageTest, TrimWhitespace) {
   String expected_label = "Example Example Example";
   float device_scale_factor = 1.0f;
 
-  FontDescription font_description;
-  font_description.FirstFamily().SetFamily(font_family_names::kArial,
-                                           FontFamily::Type::kFamilyName);
-  font_description.SetSpecifiedSize(16);
-  font_description.SetIsAbsoluteSize(true);
-  font_description.SetGenericFamily(FontDescription::kNoFamily);
-  font_description.SetWeight(kNormalWeightValue);
-  font_description.SetStyle(kNormalSlopeValue);
-
   std::unique_ptr<DragImage> test_image =
-      DragImage::Create(url, test_label, font_description, device_scale_factor);
-  std::unique_ptr<DragImage> expected_image = DragImage::Create(
-      url, expected_label, font_description, device_scale_factor);
+      DragImage::Create(url, test_label, device_scale_factor);
+  std::unique_ptr<DragImage> expected_image =
+      DragImage::Create(url, expected_label, device_scale_factor);
 
   EXPECT_EQ(test_image->Size().width(), expected_image->Size().width());
 }
