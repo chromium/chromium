@@ -1810,6 +1810,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
       .Add<ash::annotator::mojom::UntrustedAnnotatorPageHandlerFactory>();
 
   registry.ForWebUI<ash::UntrustedProjectorUI>()
+      .Add<color_change_listener::mojom::PageHandler>()
       .Add<ash::projector::mojom::UntrustedProjectorPageHandlerFactory>();
 
   registry.ForWebUI<ash::feedback::OsFeedbackUntrustedUI>()

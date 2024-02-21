@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {ProjectorError} from 'chrome-untrusted://projector/common/message_types.js';
 
@@ -257,8 +258,29 @@ function initCommunication() {
   });
 }
 
+/** @suppress {missingProperties} */
+function initColorUpdater() {
+  window.addEventListener('DOMContentLoaded', () => {
+    // Start listening to color change events. These events get picked up by
+    // logic in ts_helpers.ts on the google3 side.
+    ColorChangeUpdater.forDocument().start();
+  });
+
+  // Expose functions to bind to color change events to window so they can be
+  // automatically picked up by installColors(). See ts_helpers.ts in google3.
+  window.addColorChangeListener = function(listener) {
+    ColorChangeUpdater.forDocument().eventTarget.addEventListener(
+        COLOR_PROVIDER_CHANGED, listener);
+  };
+  window.removeColorChangeListener = function(listener) {
+    ColorChangeUpdater.forDocument().eventTarget.removeEventListener(
+        COLOR_PROVIDER_CHANGED, listener);
+  };
+}
+
 waitForAppElement().then(() => {
   // Create instances of the singletons (PostMessageAPIClient and
   // RequestHandler) when the document has finished loading.
   initCommunication();
+  initColorUpdater();
 });

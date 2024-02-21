@@ -41,6 +41,8 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
                      ash::features::IsProjectorV2Enabled());
   source->AddBoolean("isTranscriptChapterTitleEnabled",
                      ash::features::IsProjectorTranscriptChapterTitleEnabled());
+  source->AddBoolean("isDynamicColorsEnabled",
+                     ash::features::IsProjectorDynamicColorsEnabled());
 
   source->AddBoolean(
       "isInternalServerSideSpeechRecognitionEnabled",
