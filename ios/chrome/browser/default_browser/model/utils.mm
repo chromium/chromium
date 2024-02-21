@@ -809,18 +809,6 @@ bool IsChromePotentiallyNoLongerDefaultBrowser(int likelyDefaultInterval,
   return wasLikelyDefaultBrowser && !isStillLikelyDefaultBrowser;
 }
 
-bool IsChromePotentiallyNoLongerDefaultBrowser21To7() {
-  return IsChromePotentiallyNoLongerDefaultBrowser(21, 7);
-}
-
-bool IsChromePotentiallyNoLongerDefaultBrowser28To14() {
-  return IsChromePotentiallyNoLongerDefaultBrowser(28, 14);
-}
-
-bool IsChromePotentiallyNoLongerDefaultBrowser35To14() {
-  return IsChromePotentiallyNoLongerDefaultBrowser(35, 14);
-}
-
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType promo_type) {
   std::vector<base::Time> times = LoadTimestampsForPromoType(promo_type);
   return !times.empty();
