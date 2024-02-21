@@ -6,6 +6,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -37,11 +38,13 @@ void PrefetchStreamingURLLoader::Start(
   //
   // This is a violation of const correctness which lead to a confusing bug
   // here. If that goes away, then this copy might not be necessary.
+  //
+  // `is_outermost_main_frame` is true here because the prefetched result is
+  // served only for outermost main frames.
   url_loader_factory->CreateLoaderAndStart(
       prefetch_url_loader_.BindNewPipeAndPassReceiver(), /*request_id=*/0,
-      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
-          network::mojom::kURLLoadOptionSniffMimeType |
-          network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
+      NavigationURLLoader::GetURLLoaderOptions(
+          /*is_outermost_main_frame=*/true),
       network::ResourceRequest(request),
       prefetch_url_loader_client_receiver_.BindNewPipeAndPassRemote(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
