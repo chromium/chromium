@@ -275,22 +275,12 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
   // Although at this time, the sync service must exist already since it is
   // responsible for fetching the incoming sharing invitations for the sync
   // server. In case, `sync_service_` is null (e.g. due to a weird corner case
-  // of destruction of sync service after delivering the invitation), the user
-  // will be considered signed out (i.e. kNotUsingAccountStorage) and hence the
-  // invitation will be ignored.
-  features_util::PasswordAccountStorageUsageLevel usage_level =
-      features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
-                                                             sync_service_);
-  switch (usage_level) {
-    case features_util::PasswordAccountStorageUsageLevel::kSyncing:
-      password_store = profile_password_store_;
-      break;
-    case features_util::PasswordAccountStorageUsageLevel::kUsingAccountStorage:
-      password_store = account_password_store_;
-      break;
-    case features_util::PasswordAccountStorageUsageLevel::
-        kNotUsingAccountStorage:
-      break;
+  // of destruction of sync service after delivering the invitation), both
+  // checks below evaluate to false and hence the invitation will be ignored.
+  if (features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)) {
+    password_store = account_password_store_;
+  } else if (sync_service_ && sync_service_->IsSyncFeatureEnabled()) {
+    password_store = profile_password_store_;
   }
   // `password_store` shouldn't generally be null, since in those scenarios no
   // invitation should be received at all (e.g. for non sync'ing users). But
