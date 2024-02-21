@@ -2460,6 +2460,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
     'modifications': {
@@ -2496,6 +2497,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
   },
@@ -2506,6 +2508,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
     'modifications': {
@@ -2528,6 +2531,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
   },
@@ -2824,6 +2828,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
       # Can't run on MSAN because gl_tests uses the hardware driver,
       # which isn't instrumented.
@@ -2982,6 +2987,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
       # Can't run on MSAN because gl_unittests uses the hardware driver,
       # which isn't instrumented.
@@ -5012,6 +5018,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
     'modifications': {
@@ -5062,6 +5069,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
       # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',

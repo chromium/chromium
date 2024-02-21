@@ -2442,16 +2442,19 @@
         'os_type': 'android',
         'browser_config': 'android-chromium',
         'mixins': [
-          'android_t',
+          'android_u',
           'has_native_resultdb_integration',
           'oriole',
           'gpu-swarming-pool',
+          'limited_capacity_bot',
         ],
         # When the experimental OS version is identical to the stable version,
         # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
         # should have the same test_suites as 'Dawn Android arm64 Release (Pixel 6)'.
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gpu_telemetry_tests': 'gpu_dawn_android_telemetry_tests',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
+          'isolated_scripts': 'gpu_dawn_android_isolated_scripts',
         },
       },
       'Dawn Android arm64 Release (Pixel 6)': {
