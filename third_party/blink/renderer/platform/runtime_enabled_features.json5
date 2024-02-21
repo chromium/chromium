@@ -989,6 +989,11 @@
       status: "test",
     },
     {
+      // https://drafts.csswg.org/css-display-4/#reading-order-items
+      name: "CSSReadingOrderItems",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-color-5/#relative-colors
       name: "CSSRelativeColor",
       status: "stable",
