@@ -198,6 +198,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
 
   search_engine_ = std::make_unique<app_list::SearchEngine>(profile_);
   if (crosapi::browser_util::IsLacrosEnabled()) {
+    // TODO: b/326147929 - Add autocomplete provider types for the Lacros
+    // provider.
     search_engine_->AddProvider(
         std::make_unique<app_list::OmniboxLacrosProvider>(
             profile_, &app_list_controller_delegate_,
