@@ -1272,6 +1272,7 @@
 <translation id="1933489278505808700">Επιτρέπεται η ανάγνωση και η αλλαγή</translation>
 <translation id="1935303383381416800">Επιτρέπεται να βλέπουν την τοποθεσία σας</translation>
 <translation id="193565226207940518">Εργαλείο υποστήριξης</translation>
+<translation id="1935995810530254458">Αντιγραφή ούτως ή άλλως</translation>
 <translation id="1936157145127842922">Εμφάνιση στο φάκελο</translation>
 <translation id="1936931585862840749">Χρησιμοποιήστε έναν αριθμό για να υποδείξετε πόσα αντίγραφα θα εκτυπωθούν (1 έως <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Δεν είναι δυνατή η εισαγωγή ενός κοντέινερ με τύπο αρχιτεκτονικής <ph name="ARCHITECTURE_CONTAINER" /> με μια συσκευή της οποίας ο τύπος αρχιτεκτονικής είναι <ph name="ARCHITECTURE_DEVICE" />. Προσπαθήστε να επαναφέρετε αυτό το κοντέινερ σε μια άλλη συσκευή ή αποκτήστε πρόσβαση στα αρχεία αυτής της εικόνας κοντέινερ ανοίγοντάς τη στην εφαρμογή Αρχεία.</translation>
@@ -1911,6 +1912,7 @@
 <translation id="2412015533711271895">Πρέπει να έχεις την άδεια του γονέα ή του κηδεμόνα σου για να χρησιμοποιήσεις αυτή την επέκταση</translation>
 <translation id="2412593942846481727">Υπάρχει διαθέσιμη ενημέρωση</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Προσαρμόστε ακόμα περισσότερο το πρόγραμμα περιήγησης με επεκτάσεις από το <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Συνέχιση περιήγησης για <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Σκούρο</translation>
 <translation id="2415117815770324983">Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους. Θα παραμείνετε συνδεδεμένοι στον Λογαριασμό σας Google.</translation>
@@ -6851,6 +6853,7 @@
 <translation id="6271824294945464304">Κοινοποίηση κωδικού πρόσβασης</translation>
 <translation id="6273677812470008672">Ποιότητα</translation>
 <translation id="6274089201566806618">Σύνδεση στη συσκευή <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="6274108044476515407">Το αν μια διαφήμιση που βλέπετε είναι εξατομικευμένη μπορεί να εξαρτάται από πολλούς παράγοντες, όπως είναι αυτή η ρύθμιση, οι <ph name="BEGIN_LINK1" />διαφημίσεις που προτείνονται από ιστοτόπους<ph name="LINK_END1" />, οι <ph name="BEGIN_LINK2" />ρυθμίσεις cookie<ph name="LINK_END2" /> και το κατά πόσο ο ιστότοπος που βλέπετε εξατομικεύει τις διαφημίσεις. Μάθετε περισσότερα σχετικά με τη <ph name="BEGIN_LINK3" />διαχείριση του απορρήτου διαφημίσεων<ph name="LINK_END3" />.</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Απαιτείται όνομα χρήστη και κωδικός πρόσβασης για τον διακομιστή μεσολάβησης <ph name="PROXY_SERVER" />.</translation>
 <translation id="6277105963844135994">Χρονικό όριο δικτύου</translation>
@@ -7067,6 +7070,7 @@
 <translation id="6455521402703088376">Ανενεργή • Η δημοσίευση αυτής της επέκτασης καταργήθηκε από τον προγραμματιστή της</translation>
 <translation id="6455894534188563617">&amp;Νέος φάκελος</translation>
 <translation id="645705751491738698">Συνέχιση αποκλεισμού JavaScript</translation>
+<translation id="6458606150257356946">Επικόλληση ούτως ή άλλως</translation>
 <translation id="6458701200018867744">Η μεταφόρτωση απέτυχε (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Χρήση Επιλογής για Εύρεση</translation>
 <translation id="6459799433792303855">Το ενεργό παράθυρο μετακινήθηκε στη άλλη οθόνη.</translation>

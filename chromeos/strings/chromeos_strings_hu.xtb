@@ -64,6 +64,7 @@
 <translation id="1367951781824006909">Válasszon egy fájlt</translation>
 <translation id="1371650399987522809">Visszajelzés a Google AI által működtetett háttérképről</translation>
 <translation id="1387854245479784695">Ez az összes mag összesítése</translation>
+<translation id="1393206549145430405">kastély</translation>
 <translation id="1394661041439318933">Az eszköz tokjának akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Az átjáró pingelhető</translation>
 <translation id="1398634363027580500">Nagyon hosszú várakozási idő HTTPS esetén</translation>
@@ -76,6 +77,7 @@
 <translation id="1432110487435300883">Hozzávetőleges eredményért ossza el a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Minden hónapban automatikusan visszaállítja az adathasználatot a kiválasztott napon</translation>
 <translation id="1442433966118452622">Kép forrása</translation>
+<translation id="1446954767133808402">zafír</translation>
 <translation id="1449035143498573192">Megnyitás a Google Keresőben</translation>
 <translation id="1451536289672181509">Az eszköz egy billentyűzet.</translation>
 <translation id="1452939186874918380">esernyők</translation>
@@ -97,6 +99,7 @@
 <translation id="1555130319947370107">Kék</translation>
 <translation id="155865706765934889">Érintőpad</translation>
 <translation id="1561927818299383735">háttérvilágítás színe</translation>
+<translation id="1564356849266217610">organzin</translation>
 <translation id="1565038567006703504">Nem sikerült frissíteni a következőt: <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumok</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
@@ -118,6 +121,7 @@
 <translation id="1664796644829245314">Előnézet: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Beépített VPN</translation>
 <translation id="1669047024429367828">Láthatóság</translation>
+<translation id="1670478569471758522">A kiválasztott elemhez kapcsolódó további információ</translation>
 <translation id="1672499492233627739">Webkamera videófeedje</translation>
 <translation id="1676557873873341166">Videó készítése…</translation>
 <translation id="1684279041537802716">Kiemelés színe</translation>
@@ -141,6 +145,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Hitelesítés típusa</translation>
 <translation id="1776228893584526149">Háttérkép tónusa</translation>
+<translation id="1777913922912475695">híd</translation>
 <translation id="1782199038061388045">Fordítás</translation>
 <translation id="1788485524395674731">Ezt az alkalmazást a rendszergazdája kezeli</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
@@ -173,6 +178,7 @@
 <translation id="1923388006036088459">Kiemelés színei</translation>
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
 <translation id="1951012854035635156">Segéd</translation>
+<translation id="1954818433534793392">épület</translation>
 <translation id="1962550982027027473">Szükség van alapértelmezett APN-re</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profilfotó</translation>
@@ -207,6 +213,7 @@
 <translation id="2163937499206714165">Sötét mód bekapcsolása</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
 <translation id="2189104374785738357">APN-adatok szerkesztése</translation>
+<translation id="2201758491318984023">kerékpár</translation>
 <translation id="2203222757805818543">Jelenlegi ütemezés a következőre állítva: <ph name="SUNRISE" />–<ph name="SUNSET" />. A sötét mód ütemezésének automatikus frissítéséhez <ph name="BEGIN_LINK" />kapcsolja be a helyhozzáférést<ph name="END_LINK" /></translation>
 <translation id="2203642483788377106">szirt</translation>
 <translation id="2208388655216963643">impresszionista</translation>
@@ -235,6 +242,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2346474577291266260">Kiváló (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2347064478402194325">szék</translation>
 <translation id="2358070305000735383">A(z) <ph name="DESCRIPTION" /> szerkesztésére szolgáló párbeszédpanel meg van nyitva.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2364498172489649528">Sikeres ellenőrzés</translation>
@@ -252,9 +260,11 @@
 <translation id="2465272316171730950">Most nincs szabad kapacitásunk. Jöjjön vissza később.</translation>
 <translation id="2480572840229215612">rákok</translation>
 <translation id="248546197012830854">Az eszköz offline állapotú. A súgótartalom megtekintéséhez csatlakozzon Wi-Fi-hálózathoz.</translation>
+<translation id="2486301288428798846">fa</translation>
 <translation id="2491955442992294626">A rendszer nem teszteli a billentyűket, amikor másik ablakot használ</translation>
 <translation id="2493126929778606526">A legjobb, automatikusan kiválasztott fotók</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2501126912075504550">opál</translation>
 <translation id="2505327257735685095">A jelenlegi háttérkép frissítése</translation>
 <translation id="2512979179176933762">ablakok megjelenítése</translation>
 <translation id="2513396635448525189">Bejelentkezési kép</translation>
@@ -268,8 +278,10 @@
 <translation id="2561093647892030937">citromok</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
 <translation id="2584559707064218956">A beállításhoz nyissa meg a Beállításokat</translation>
+<translation id="2586146417912237930">kék és indigókék</translation>
 <translation id="2597774443162333062">A fájlokat elküldjük a Google-nak hibaelhárításra</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Szkennelés kész. 1 oldal beolvasva.}other{Szkennelés kész. {NUMBER_OF_PAGES} oldal beolvasva.}}</translation>
+<translation id="2617397783536231890">pamut</translation>
 <translation id="2618015542787108131">homokdűne</translation>
 <translation id="2619761439309613843">Napi frissítés</translation>
 <translation id="2620436844016719705">Rendszer</translation>
@@ -277,6 +289,7 @@
 <translation id="2640549051766135490">A következő album kiválasztva: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2652403576514495859">diktálás be- vagy kikapcsolása</translation>
 <translation id="2656001153562991489">Kizárólag Chromebook Plus esetén</translation>
+<translation id="2665671725390405060">Kiejtés meghallgatása</translation>
 <translation id="267442004702508783">frissítés</translation>
 <translation id="268270014981824665">billentyűzet halványítása</translation>
 <translation id="2712812801627182647">TLS-hitelesítési kulcs</translation>
@@ -287,10 +300,13 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Megosztott</translation>
 <translation id="2751739896257479635">EAP hitelesítés 2. fázisa</translation>
+<translation id="2754757901767760034">lámpa</translation>
 <translation id="2783010256799387990">SIKERES ELLENŐRZÉS</translation>
+<translation id="2786429550992142861">lenvászon</translation>
 <translation id="2787435249130282949">billentyűzet világosabb</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="28232023175184696">Nem lehet csatlakozni az internethez. Kattintson az újrapróbálkozáshoz.</translation>
+<translation id="2855718259207180827">gyapjú</translation>
 <translation id="2859243502336719778">Kritikus frissítés</translation>
 <translation id="2860473693272905224">Helyezze az újabb oldalt a szkennerre</translation>
 <translation id="2872961005593481000">Leállítás</translation>
@@ -396,6 +412,7 @@
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
 <translation id="3654530588944650786">Ragyogó <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> virágzik</translation>
+<translation id="3662461537616691585">burgundi és gesztenyevörös</translation>
 <translation id="3668449597372804501">Szálló felhők háttérkép</translation>
 <translation id="3675132884790542448">sertések</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
@@ -423,7 +440,9 @@
 <translation id="3865289341173661845">A súgótartalom nem áll rendelkezésre.</translation>
 <translation id="3865414814144988605">Felbontás</translation>
 <translation id="3866249974567520381">Leírás</translation>
+<translation id="3869314628814282185">tüll</translation>
 <translation id="387301095347517405">Annak a száma, hogy hány teljes töltési ciklusa volt az akkumulátornak.</translation>
+<translation id="3877066159641251281">Fordítás meghallgatása</translation>
 <translation id="3885327323343477505">Képernyőkímélő módosítása</translation>
 <translation id="391412459402535266">Az eszköz tesztelése nem sikerült. Váltson laptop módra a teszteléshez.</translation>
 <translation id="3916998944874125962">képernyőkép készítése</translation>
@@ -442,6 +461,7 @@
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eszköze most már naprakész</translation>
 <translation id="3998976413398910035">Nyomtatók kezelése</translation>
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
+<translation id="401147258241215701">obszidián</translation>
 <translation id="4021031199988160623">A teszteléshez váltson laptop módra</translation>
 <translation id="4034824040120875894">Nyomtató</translation>
 <translation id="4044093238444069296">Nem lehet csatlakozni átjáróhoz</translation>
@@ -481,6 +501,7 @@
 <translation id="4244962993387259361">Legalább 500 MB szabad tárhely szükséges memóriateszt futtatásához. Tárhely felszabadításához lépjen a Beállítások &gt; Tárhelykezelő menübe.</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4258281355379922695">HTTP várakozási idő</translation>
+<translation id="4266143281602681663">fonal</translation>
 <translation id="4271957103967917607">Teljes képernyős nézet</translation>
 <translation id="4275663329226226506">Média</translation>
 <translation id="4278766082079064416">A billentyűparancs már használatban van a következőhöz: „<ph name="CONFLICT_ACCEL_NAME" />”. Szerkessze vagy távolítsa el a probléma megoldásához.</translation>
@@ -489,6 +510,7 @@
 <translation id="4289849978083912975">Diavetítés</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
+<translation id="430786093962686457">sifon</translation>
 <translation id="4310735698903592804">A legújabb háttérképeket a Google AI biztosítja</translation>
 <translation id="4320904097188876154">neonlila</translation>
 <translation id="4333390807948134856">A következő gomb van megnyomva: <ph name="KEY_NAME" /></translation>
@@ -543,6 +565,7 @@
 <translation id="4646949265910132906">Biztonságos Wi-Fi-kapcsolat</translation>
 <translation id="4650608062294027130">Jobb oldali Shift</translation>
 <translation id="4654549501020883054">Minden nap más</translation>
+<translation id="4664651912255946953">bunda</translation>
 <translation id="4665014895760275686">Gyártó</translation>
 <translation id="467510802200863975">A jelszavak nem egyeznek</translation>
 <translation id="467715984478005772">Tűzfal valószínűsíthető</translation>
@@ -553,6 +576,7 @@
 <translation id="4744944742468440486">A kiválasztott elemhez kapcsolódó információ</translation>
 <translation id="4771607256327216405">billentyűzet világosítása</translation>
 <translation id="4773299976671772492">Leállítva</translation>
+<translation id="4778082030331381943">ametiszt</translation>
 <translation id="4782311465517282004">A szövegre jobb egérgombbal kattintva, illetve a szöveget lenyomva tartva hozzáférhet a definíciókhoz, a fordításokhoz és az átváltott mértékegységekhez.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotó</translation>
 <translation id="4793710386569335688">Ha további segítségére van szüksége, látogasson el a <ph name="BEGIN_LINK" />Súgó oldalára<ph name="END_LINK" />.</translation>
@@ -579,6 +603,7 @@
 <translation id="4854586501323951986">Beépített érintőképernyő</translation>
 <translation id="4855250849489639581">További rendezési lehetőségekért csúsztassa ujját gyorsan lefelé</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} próbálkozás maradt.}other{<ph name="ERROR_MESSAGE" /> {0} próbálkozás maradt.}}</translation>
+<translation id="4868181314237714900">gyapjú</translation>
 <translation id="4873827928179867585">Hitelesítési algoritmus</translation>
 <translation id="4880328057631981605">Hozzáférési pont neve</translation>
 <translation id="488307179443832524">A billentyűparancs már használatban van a következőhöz: „<ph name="CONFLICT_ACCEL_NAME" />”. Nyomjon meg egy új billentyűparancsot.</translation>
@@ -621,6 +646,7 @@
 <translation id="5130848777448318809">pónik</translation>
 <translation id="5137451382116112100">Teljes</translation>
 <translation id="5142961317498132443">Hitelesítés</translation>
+<translation id="5144887194300568405">Fordítás másolása</translation>
 <translation id="5145081769226915336">Szeretné a sötét mód automatikus bekapcsolását?</translation>
 <translation id="5154917547274118687">Memória</translation>
 <translation id="5160857336552977725">Jelentkezzen be <ph name="DEVICE_TYPE" /> eszközén</translation>
@@ -672,6 +698,7 @@
 <translation id="5431318178759467895">Színes</translation>
 <translation id="5457599981699367932">Böngészés vendégként</translation>
 <translation id="54609108002486618">Kezelt</translation>
+<translation id="5470776029649730099">zsákvászon</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} próbálkozás maradt.}other{{0} próbálkozás maradt.}}</translation>
 <translation id="5488280942828718790">bíborszínű</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -681,6 +708,7 @@
 <translation id="550600468576850160">mező</translation>
 <translation id="551689408806449779">Eszköz leválasztva. A teszteléshez próbáljon meg újracsatlakozni.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="554067135846762198">korall és cserbarna</translation>
 <translation id="5543701552415191873">zárolva</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatikus váltás sötét témára napnyugtakor</translation>
@@ -715,6 +743,7 @@
 <translation id="576835345334454681">Kijelző fényerejének növelése</translation>
 <translation id="57838592816432529">Némítás</translation>
 <translation id="5784136236926853061">Hosszú HTTP várakozási idő</translation>
+<translation id="5790391387506209808">lazúrkő</translation>
 <translation id="5810296156135698005">barokk</translation>
 <translation id="5816802250591013230">Nincs hozzárendelve billentyűparancs</translation>
 <translation id="5826644637650799838">A műalkotásról</translation>
@@ -740,6 +769,7 @@
 <translation id="5916664084637901428">Be</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fájlját a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}other{Fájljait a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}}</translation>
 <translation id="5928411637936685857">Törlés gomb a következőnél: <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="5930669310554144537">Álomképek</translation>
 <translation id="5931523347251946569">A fájl nem található</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="594552776027197022">Véletlenszerű kulcspár generálása</translation>
@@ -748,6 +778,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">korall</translation>
 <translation id="5984145644188835034">Alapértelmezett háttérkép</translation>
+<translation id="5996832681196460718">selyem</translation>
 <translation id="6017514345406065928">Zöld</translation>
 <translation id="6019566113895157499">Billentyűparancsok</translation>
 <translation id="6034694447310538551">Havonta történő automatikus visszaállítás engedélyezése</translation>
@@ -816,6 +847,7 @@
 <translation id="6382182670717268353">Képernyővédő előnézete</translation>
 <translation id="6388847657025262518">A szkenner dokumentumadagolója beragadt. Ellenőrizze az adagolót, és próbálja újra.</translation>
 <translation id="6394634179843537518">Fájl hozzáadása</translation>
+<translation id="6400680457268373900">Szürreális <ph name="DREAMSCAPES_OBJECT" /> <ph name="DREAMSCAPES_MATERIAL" /> anyagból, <ph name="DREAMSCAPES_COLORS" /> színben</translation>
 <translation id="6401427872449207797">keresés böngészőben</translation>
 <translation id="6410257289063177456">Képfájlok</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>
@@ -875,12 +907,15 @@
 <translation id="6723839937902243910">Energiaellátás</translation>
 <translation id="6723847290197874913">Billentyűzet háttérvilágítása</translation>
 <translation id="672609503628871915">Újdonságok</translation>
+<translation id="6740695858234317715">krém és narancs</translation>
+<translation id="6741823073189174383">csónak</translation>
 <translation id="6744441848304920043">dzsungel</translation>
 <translation id="6747215703636344499">Leállt – Megtelt a kimenet</translation>
 <translation id="6749473226660745022">Fotók</translation>
 <translation id="6753452347192452143">Az eszköz egy számítógép.</translation>
 <translation id="6756731097889387912">Nem sikerült a beolvasás megszakítása.</translation>
 <translation id="6760706756348334449">Hangerő csökkentése</translation>
+<translation id="6761537227090937007">Nagy felbontású kép létrehozása…</translation>
 <translation id="6766275201586212568">Sikertelen DNS-feloldások</translation>
 <translation id="6768237774506518020">Magas hibaarány DNS-feloldásnál</translation>
 <translation id="6791471867139427246">billentyűzetvilágítás színe</translation>
@@ -930,6 +965,7 @@
 <translation id="7135814714616751706">Billentyűparancs keresése</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144878232160441200">Újra</translation>
+<translation id="7144954474087165241">pagoda</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
 <translation id="7154020516215182599">Írja le visszajelzését vagy problémáját. Ha lehetséges, küldje el a probléma előidézéséhez vezető lépéseket.</translation>
 <translation id="7155171745945906037">Meglévő fénykép a fényképezőgépről vagy fájlból</translation>
@@ -949,6 +985,7 @@
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
 <translation id="7233782086689993269">Parancsikon visszaállítva</translation>
 <translation id="725133483556299729">Válassza ki a kívánt e-mail-címet</translation>
+<translation id="7255187042098209569">rózsaszín és lila</translation>
 <translation id="7271000785316964275">klasszicista</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
 <translation id="7271932918253517778">A felső sor billentyűit tartalmazó billentyűparancsban benne kell lennie a(z) <ph name="META_KEY" /> gombnak.</translation>
@@ -964,6 +1001,7 @@
 <translation id="7311368985037279727">billentyűzet színe</translation>
 <translation id="7317831949569936035">Iskolai regisztráció</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7321055305895875150">zöld és pávakék</translation>
 <translation id="7328475450575141167">pompás papagájvirág</translation>
 <translation id="7331297744262591636">Önnek legalább 18 évesnek kell lennie, és el kell fogadnia, hogy az AI-háttérképek használatára a <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Általános Szerződési Feltételek<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> és a <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generatív AI-ra vonatkozó Kiegészítő Általános Szerződési Feltételek<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> vonatkoznak.
           <ph name="LINE_BREAK" />
@@ -975,6 +1013,7 @@
 <translation id="7359657277149375382">Fájltípus</translation>
 <translation id="73631062356239394">Diagnosztikai adatok megosztása</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7384004438856720753">palota</translation>
 <translation id="7388959671917308825">Beépített érintőpad</translation>
 <translation id="7397270852490618635">Világos téma kikapcsolása</translation>
 <translation id="7401543881546089382">Billentyűkód törlése</translation>
@@ -1002,6 +1041,7 @@
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-érintőképernyő</translation>
+<translation id="757747079855995705">kő</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> van hátra</translation>
 <translation id="7613724632293948900">Átrendezés egérrel vagy nyílbillentyűkkel.</translation>
 <translation id="7618774594543487847">Semleges</translation>
@@ -1042,6 +1082,7 @@
 <translation id="7824219488248240180">posztimpresszionista</translation>
 <translation id="7841134249932030522">Sötét mód engedélyezése</translation>
 <translation id="7846634333498149051">Billentyűzet</translation>
+<translation id="7849737607196682401">csipke</translation>
 <translation id="7850847810298646851">A háttérképet a Google AI biztosítja</translation>
 <translation id="785170686607360576">tulipán</translation>
 <translation id="7856267634822906833">Bluetooth-érintőképernyő</translation>
@@ -1099,6 +1140,7 @@
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
 <translation id="8250926778281121244">rozsdaszínű</translation>
+<translation id="8257572018929862473">A gyors válaszok beállításainak megnyitása</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8262870577632766028">1 óra</translation>
 <translation id="827422111966801947">Indigókék</translation>
@@ -1142,6 +1184,7 @@
 <translation id="8477551185774834963">A DNS várakozási ideje kissé az engedélyezhető határérték felett van</translation>
 <translation id="8483248364096924578">IP-cím</translation>
 <translation id="8491311378305535241">Nem lehet a tűzfalon keresztül HTTP-protokollt használó webhelyekhez csatlakozni androidos alkalmazásokról</translation>
+<translation id="8495070016475833911">nemez</translation>
 <translation id="8498220429738806196">Forgalomszámlálók</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="8503836310948963452">Már csak néhány perc…</translation>
@@ -1171,6 +1214,7 @@
 <translation id="8726019395068607495">Leállt – Nyitva van a nyomtató fedele</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
+<translation id="8755946156089753497">torony</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotók-album</translation>
 <translation id="8775713578693478175">Modem APN</translation>
@@ -1184,6 +1228,7 @@
 <translation id="8820817407110198400">Könyvjelzők</translation>
 <translation id="8834539327799336565">Csatlakoztatva</translation>
 <translation id="8845001906332463065">Súgó</translation>
+<translation id="8849799913685544685">világítótorony</translation>
 <translation id="8851859208664803097">Leállítva – A nyomtató nem áll rendelkezésre</translation>
 <translation id="8855781559874488009">Nem lehet a tűzfalon keresztül HTTP-protokollt használó webhelyekhez csatlakozni</translation>
 <translation id="885701979325669005">Tárolás</translation>
@@ -1265,7 +1310,9 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="952992212772159698">Nincs aktiválva</translation>
+<translation id="95718197892796296">agyag</translation>
 <translation id="960719561871045870">Operátorkód</translation>
+<translation id="965918541715156800">sárga és pávakék</translation>
 <translation id="966787709310836684">menü</translation>
 <translation id="979450713603643090">Világos rózsaszín</translation>
 <translation id="982713511914535780">Lemerítési teszt futtatása</translation>

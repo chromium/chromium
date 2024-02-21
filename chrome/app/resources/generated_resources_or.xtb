@@ -1257,6 +1257,7 @@
 <translation id="1933489278505808700">ପଢ଼ିବା ଓ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1935303383381416800">ଆପଣଙ୍କ ଲୋକେସନ୍ ଦେଖିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="193565226207940518">ସହାୟତା ଟୁଲ</translation>
+<translation id="1935995810530254458">ଯେ କୌଣସି ମତେ କପି କରନ୍ତୁ</translation>
 <translation id="1936157145127842922">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="1936931585862840749">କେତେ କପି ପ୍ରିଣ୍ଟ କରିବାର ଅଛି ତାହା ସୂଚିତ କରିବା ପାଇଁ ଗୋଟିଏ ନମ୍ବର ବ୍ୟବହାର କରନ୍ତୁ (1ରୁ <ph name="MAX_COPIES" /> ମଧ୍ୟରେ)।</translation>
 <translation id="1937774647013465102">କଣ୍ଟେନର୍ ଆର୍କିଟେକ୍‌ଚର୍ <ph name="ARCHITECTURE_CONTAINER" />କୁ ଏହି ଡିଭାଇସ୍ ସହିତ ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିବ ନାହିଁ ଯେଉଁଟି ଏକ <ph name="ARCHITECTURE_DEVICE" /> ଅଟେ। ଆପଣ ଏହି କଣ୍ଟେନର୍‌କୁ ଏକ ଭିନ୍ନ ଡିଭାଇସ୍‌ରେ ରିଷ୍ଟୋର୍ କରିବାକୁ ଚେଷ୍ଟା କରିପାରିବେ କିମ୍ବା Files ଆପ୍‌ରେ ଖୋଲିବା ଦ୍ୱାରା ଆପଣ ଏହି କଣ୍ଟେନର୍ ଛବି ଭିତରେ ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିପାରିବେ।</translation>
@@ -1894,6 +1895,7 @@
 <translation id="2412015533711271895">ଏହି ଏକ୍ସଟେନସନ ବ୍ୟବହାର କରିବା ତୁମ ପାଇଁ ଠିକ ବୋଲି ତୁମ ବାପାମା କିମ୍ବା ଅଭିଭାବକ କହିବା ଆବଶ୍ୟକ</translation>
 <translation id="2412593942846481727">ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" />ରୁ ଏକ୍ସଟେନସନଗୁଡ଼ିକ ସହିତ ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଆହୁରି ଅଧିକ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> ପାଇଁ ବ୍ରାଉଜ କରିବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="2414886740292270097">ଗାଢ଼</translation>
 <translation id="2415117815770324983">ଅଧିକାଂଶ ସାଇଟରୁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରିଦିଏ। ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ ହୋଇ ରହିବେ।</translation>
@@ -6829,6 +6831,7 @@
 <translation id="6271824294945464304">ପାସୱାର୍ଡ ସେୟାର କରାଯାଉଛି</translation>
 <translation id="6273677812470008672">ଗୁଣବତ୍ତା</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> ସହ କନେକ୍ଟ କରାଯାଉଛି</translation>
+<translation id="6274108044476515407">ଆପଣ ଦେଖୁଥିବା କୌଣସି ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରାଯାଇଛି ନା ନାହିଁ ତାହା ଏହି ସେଟିଂ, <ph name="BEGIN_LINK1" />ସାଇଟ-ପ୍ରସ୍ତାବିତ ବିଜ୍ଞାପନ<ph name="LINK_END1" />, ଆପଣଙ୍କ <ph name="BEGIN_LINK2" />କୁକୀ ସେଟିଂସ<ph name="LINK_END2" /> ଏବଂ ଆପଣ ଭ୍ୟୁ କରୁଥିବା ସାଇଟ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରେ ନା ନାହିଁ ସମେତ ଅନେକ ଜିନିଷ ଉପରେ ନିର୍ଭର କରିପାରେ। <ph name="BEGIN_LINK3" />ଆପଣଙ୍କ ବିଜ୍ଞାପନ ଗୋପନୀୟତାକୁ ପରିଚାଳନା କରିବା<ph name="LINK_END3" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
 <translation id="6274202259872570803">ସ୍କ୍ରିନକାଷ୍ଟ</translation>
 <translation id="6276210637549544171">ପ୍ରକ୍ସି <ph name="PROXY_SERVER" /> ପାଇଁ ଏକ ଉପଯୋଗକର୍ତ୍ତାନାମ ଓ ପାସୱାର୍ଡ ଆବଶ୍ୟକ।</translation>
 <translation id="6277105963844135994">ନେଟ୍‌ୱାର୍କର ସମୟ ସମାପ୍ତ</translation>
@@ -7045,6 +7048,7 @@
 <translation id="6455521402703088376">ବନ୍ଦ ଅଛି • ଏହି ଏକ୍ସଟେନସନକୁ ଏହାର ଡେଭେଲପରଙ୍କ ଦ୍ୱାରା ଅନପବ୍ଲିସ କରାଯାଇଛି</translation>
 <translation id="6455894534188563617">&amp;ନୂଆ ଫୋଲ୍ଡର୍‌</translation>
 <translation id="645705751491738698">JavaScript ଅବରୋଧ କରିବା ପ୍ରକ୍ରିୟା ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="6458606150257356946">ଯେ କୌଣସି ମତେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6458701200018867744">ଅପ୍‌ଲୋଡ୍‌ ବିଫଳ ହେଲା (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">ଖୋଜିବା ପାଇଁ ଚୟନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6459799433792303855">ସକ୍ରିୟ ଥିବା ୱିଣ୍ଡୋ, ଅନ୍ୟ ଏକ ଡିସ୍‌ପ୍ଲେକୁ ଘୁଞ୍ଚାଯାଇଛି।</translation>

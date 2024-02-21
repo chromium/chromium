@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">Адресът е намерен</translation>
 <translation id="2286505070150039482">Откроен текст</translation>
 <translation id="2287614783861766820">{count,plural, =1{Този адрес ще бъде изтрит от това устройство.}other{Тези адреси ще бъдат изтрити от това устройство.}}</translation>
-<translation id="2297822946037605517">Споделяне на тази страница</translation>
 <translation id="2297989278479054870">След като излезете от профила си, отметките, паролите и др. в профила ви в Google ще бъдат премахнати от това устройство.</translation>
 <translation id="2299218006564889602">Паролите ви се шифроват на устройството ви, преди да бъдат запазени в мениджъра на паролите в Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • № <ph name="PARCEL_IDENTIFIER" /></translation>

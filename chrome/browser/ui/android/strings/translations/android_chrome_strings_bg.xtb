@@ -1179,6 +1179,7 @@
 <translation id="7205672015775254816">Съдържание от Google за млади умове – изключено</translation>
 <translation id="7207760545532569765">Възстановяване на <ph name="TAB_COUNT" /> раздела като нови на заден план.</translation>
 <translation id="7217781228893594884">Разделите в режим „инкогнито“ ще бъдат заключени, когато излезете от Chrome</translation>
+<translation id="722055596168483966">Персонализиране на услугите на Google</translation>
 <translation id="7221869452894271364">Зарежда повторно тази страница</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Предстои 1 изтегляне}other{Предстоят # изтегляния}}</translation>
 <translation id="72415438529550637">Долният лист с предложение за парола е затворен.</translation>
@@ -1423,6 +1424,7 @@
 <translation id="8354977102499939946">Бързо търсене с гласа ви. За да редактирате този пряк път, отворете настройките.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха възстановени</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
+<translation id="8378850197701296741">Имате отметки, история и други настройки от <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Потвърдете, че сте вие</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8394720698884623075">URL адресите се проверяват в съхраняван в Chrome списък с опасни сайтове</translation>

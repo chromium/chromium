@@ -13,6 +13,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1180362651362502943">Sigue usando los datos de Chrome en tu cuenta de Google.</translation>
 <translation id="1200396280085622191">Usa Chrome cada vez que toques enlaces de mensajes y otras aplicaciones.</translation>
 <translation id="1229222343402087523">Buscar ${searchPhrase} en Chrome</translation>
+<translation id="124228879633599436">Chrome no está actualizado. Actualízalo para protegerte.</translation>
 <translation id="1282031177488366470">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="1320619893013575407">Has desactivado el inicio de sesión en Chrome.</translation>
 <translation id="1333745675627230582">Jugar a El dinosaurio de Chrome</translation>
@@ -293,6 +294,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8788269841521769222">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="878917453316810648">Consejo de Chrome: Usa Chrome de forma predeterminada</translation>
 <translation id="8808828119384186784">Configuración de Chrome</translation>
+<translation id="8850736900032787670">Para recibir contenido personalizado según tus intereses, inicia sesión en Chrome.</translation>
 <translation id="8855781063981781621">Para inhabilitar el modo Bloqueo de seguridad en Chrome, desactívalo en tu iPad.</translation>
 <translation id="8856877214925961642">El cifrado con frase de contraseña no incluye los métodos de pago ni las direcciones.
 

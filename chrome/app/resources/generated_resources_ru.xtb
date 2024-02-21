@@ -1262,6 +1262,7 @@
 <translation id="1933489278505808700">Чтение и изменение разрешены</translation>
 <translation id="1935303383381416800">Разрешить сайтам определять ваше местоположение</translation>
 <translation id="193565226207940518">Инструмент поддержки</translation>
+<translation id="1935995810530254458">Все равно скопировать</translation>
 <translation id="1936157145127842922">Показать в папке</translation>
 <translation id="1936931585862840749">Укажите количество копий для печати, используя цифры (от 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не удалось импортировать тип архитектуры контейнера <ph name="ARCHITECTURE_CONTAINER" /> на это устройство (<ph name="ARCHITECTURE_DEVICE" />). Вы можете попробовать восстановить этот контейнер на другом устройстве или получить доступ к файлам, открыв образ контейнера в приложении "Файлы".</translation>
@@ -7054,6 +7055,7 @@
 <translation id="6455521402703088376">Отключено • Разработчик отменил публикацию этого расширения</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
 <translation id="645705751491738698">Всегда блокировать JavaScript</translation>
+<translation id="6458606150257356946">Все равно вставить</translation>
 <translation id="6458701200018867744">Ошибка загрузки (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Найти выделенное</translation>
 <translation id="6459799433792303855">Активное окно перемещено на другой экран.</translation>

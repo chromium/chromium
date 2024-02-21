@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">Адреса је пронађена</translation>
 <translation id="2286505070150039482">Истакнути текст</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ова адреса ће бити избрисана са овог уређаја.}one{Ове адресе ће бити избрисане са овог уређаја.}few{Ове адресе ће бити избрисане са овог уређаја.}other{Ове адресе ће бити избрисане са овог уређаја.}}</translation>
-<translation id="2297822946037605517">Дели ову страницу</translation>
 <translation id="2297989278479054870">Када се одјавите, обележивачи, лозинке и други садржај са Google налога ће бити уклоњени са овог уређаја.</translation>
 <translation id="2299218006564889602">Лозинке се шифрују на уређају пре него што се сачувају у Google менаџеру лозинки.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
@@ -571,6 +570,7 @@
 <translation id="3922310737605261887">Потражите текст који сте копирали</translation>
 <translation id="3928666092801078803">Комбинуј податке</translation>
 <translation id="3929457972718048006">Адресе</translation>
+<translation id="3939505428630887612">О овој страници</translation>
 <translation id="3948600256434252210">Можете да превучете удесно да бисте прегледали у режиму без архивирања.</translation>
 <translation id="3955822496205734389">Имате слабе лозинке.</translation>
 <translation id="3958312024468322930">Превуците је на фиксирано место у дну почетног екрана</translation>
@@ -586,6 +586,7 @@
 <translation id="4002019827078931033">Премести траку за адресу на врх</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4004204301268239848">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају.</translation>
+<translation id="4008355329784586136">Проверите подешавања подразумеваног прегледача</translation>
 <translation id="4018310736049373830">Управљајте активностима</translation>
 <translation id="4021931095789478915">Додај ${url} на листу за читање</translation>
 <translation id="4038354071007134711">Ниједна апликација на овом уређају не може да отвори датотеку.</translation>
@@ -634,6 +635,7 @@
 <translation id="4277990410970811858">Безбедно прегледање</translation>
 <translation id="4279431713294750185">Можете да превучете ивицу да бисте ишли напред.</translation>
 <translation id="4281844954008187215">Услови коришћења услуге</translation>
+<translation id="4282944936010261425">Не постоје безбедносни проблеми које треба да решите.</translation>
 <translation id="4286718549648564014">Адреса је премештена на налог <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Шта је ново</translation>
 <translation id="4293080268407233932">Претражи</translation>
@@ -1287,6 +1289,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7557508262441527045">Одјављени сте</translation>
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7564917801238348224">САЧУВАЈ…</translation>
+<translation id="7569588934989281656">Можете да превлачите траку са картицама да бисте прелазили са једне картице на другу.</translation>
 <translation id="7582857256643797524">Ово подешавање је омогућено на уређају</translation>
 <translation id="7583004045319035904">Откључајте картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7600965453749440009">Никад не преводи <ph name="LANGUAGE" /></translation>
@@ -1426,6 +1429,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8248969482078657578">Неактивне картице вам помажу да останете фокусирани</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8263336784344783289">Дајте назив овој групи</translation>
+<translation id="8263809106706527890">Можда је дошло до промене подешавања подразумеваног прегледача. Ово можете да проверите у подешавањима.</translation>
 <translation id="8264966119170358612">Неке од ваших сачуваних лозинки су откривене током повреде података који нису Google подаци. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Одјављени сте са налога <ph name="USER_NAME" /> у склопу ресетовања на iPad-у. Да бисте се поново пријавили, додирните Настави испод.</translation>
 <translation id="8271720166617117963">Прихвати и пријави ме</translation>

@@ -460,7 +460,7 @@
 <translation id="1348966090521113558">滑鼠無障礙設定</translation>
 <translation id="1350962700620017446">「<ph name="EXTENSION_NAME" />」想尋找並存取文件掃描器。</translation>
 <translation id="1352834119074414157">這個套件可能已毀損或遭到入侵。請關閉這個視窗並重新下載</translation>
-<translation id="1353275871123211385">如要使用應用程式核准設定、裝置使用時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
+<translation id="1353275871123211385">如要使用應用程式核准設定、螢幕時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
 <translation id="135389172849514421">可離線使用</translation>
 <translation id="1353980523955420967">找不到 PPD。請確認 Chromebook 已連上網路，然後再試一次。</translation>
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用及調整攝影機</translation>
@@ -800,6 +800,7 @@
 <translation id="1602085790802918092">正在啟動虛擬機器</translation>
 <translation id="1603116295689434284">Chrome 系統資訊</translation>
 <translation id="1603411913360944381">清除「<ph name="DEVICE_NAME" />」</translation>
+<translation id="1603879843804174953">長按</translation>
 <translation id="1603914832182249871">(無痕模式)</translation>
 <translation id="1604432177629086300">無法列印。請檢查印表機，然後再試一次。</translation>
 <translation id="1604567162047669454">辨識視覺版面配置語義</translation>
@@ -1260,6 +1261,7 @@
 <translation id="1933489278505808700">可以讀取及變更</translation>
 <translation id="1935303383381416800">可以查看你的位置資訊</translation>
 <translation id="193565226207940518">Support Tool</translation>
+<translation id="1935995810530254458">仍要複製</translation>
 <translation id="1936157145127842922">在資料夾中顯示</translation>
 <translation id="1936931585862840749">使用數字指定列印份數 (1 至 <ph name="MAX_COPIES" />)。</translation>
 <translation id="1937774647013465102">這個裝置使用 <ph name="ARCHITECTURE_DEVICE" />，因此無法匯入容器架構類型 <ph name="ARCHITECTURE_CONTAINER" />。你可以嘗試將這個容器還原至其他裝置，或透過 Files 應用程式開啟這個容器映像檔，以存取其中的檔案。</translation>
@@ -1339,6 +1341,7 @@
 <translation id="1992397118740194946">尚未設定</translation>
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="1995916364271252349">控管網站可以使用和顯示的資訊 (位置資訊、攝影機和彈出式視窗等等)</translation>
+<translation id="199610894463449797">{0,plural, =1{關閉這個設定檔}other{關閉這個設定檔 (# 個視窗)}}</translation>
 <translation id="1997433994358798851">Chrome 需要權限才能使用藍牙連線至你的裝置</translation>
 <translation id="1997616988432401742">您的憑證</translation>
 <translation id="1999115740519098545">起始畫面</translation>
@@ -1581,6 +1584,7 @@
 <translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
 <translation id="217576141146192373">無法新增印表機。請檢查你的印表機設定，然後再試一次。</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="217631816678106981">不要貼上</translation>
 <translation id="2177306523871626993">正在下載文字辨識檔案… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">無痕式分頁：<ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -2335,6 +2339,7 @@
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="2733248615007838252">按讚可對這些結果給予正面評價。</translation>
 <translation id="2733992589856193783">你已為這個網站建立密碼金鑰，需要使用行動裝置登入。</translation>
+<translation id="2734797989819862638">不要複製</translation>
 <translation id="27349076983469322">淺色背景</translation>
 <translation id="2735712963799620190">設定時間</translation>
 <translation id="2737363922397526254">收合...</translation>
@@ -3079,7 +3084,7 @@
 <translation id="3321460131042519426">允許自動換行</translation>
 <translation id="3321494112580110651">沒看到你的印表機嗎？</translation>
 <translation id="3321776060736518525">來源：<ph name="APP_URL" /></translation>
-<translation id="3323521181261657960">恭喜！你的裝置使用時間增加了</translation>
+<translation id="3323521181261657960">恭喜！你的螢幕時間增加了</translation>
 <translation id="3325804108816646710">正在尋找可用的設定檔…</translation>
 <translation id="3325910708063135066">已關閉 Mac 系統偏好設定中的攝影機和麥克風</translation>
 <translation id="3325930488268995856">已連線至 Microsoft OneDrive</translation>
@@ -3118,6 +3123,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}}</translation>
 <translation id="3361954577771524115">來源應用程式</translation>
 <translation id="3363202073972776113">這個新的設定檔將由貴機構管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">Alt 鍵 + 游標懸停</translation>
 <translation id="3364986687961713424">來自系統管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">請擇一使用 Ctrl 或 Alt 鍵</translation>
 <translation id="3368922792935385530">已連線</translation>
@@ -3361,7 +3367,7 @@
 <translation id="3552780134252864554">結束時將遭到清除</translation>
 <translation id="3554493885489666172">你的裝置是由 <ph name="PROFILE_NAME" /> 管理。管理員可以存取此裝置上任一設定檔中的資料。</translation>
 <translation id="3555812735919707620">移除擴充功能</translation>
-<translation id="3557101512409028104">透過 Family Link 設定網站限制和裝置使用時間限制</translation>
+<translation id="3557101512409028104">透過 Family Link 設定網站限制和螢幕時間限制</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，可以協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可以在孩子的 ChromeOS 裝置設定中允許或禁止傳送這類報告。如果你是網域管理員，可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559079791149580653">停止將畫面投放到「<ph name="DEVICE_NAME" />」</translation>
@@ -4099,7 +4105,7 @@
 <translation id="4099874310852108874">網路發生錯誤。</translation>
 <translation id="4100020874626534113">允許彈性指定變音符號。例如，無論輸入「anhs」或「asnh」，都能打出「ánh」這個字。</translation>
 <translation id="4100733287846229632">裝置空間嚴重不足</translation>
-<translation id="4100853287411968461">新的裝置使用時間限制</translation>
+<translation id="4100853287411968461">新的螢幕時間限制</translation>
 <translation id="4101352914005291489">隱藏的 SSID</translation>
 <translation id="4102906002417106771">重新啟動以執行 Powerwash</translation>
 <translation id="4103644672850109428">螢幕閱讀器、放大</translation>
@@ -4559,6 +4565,7 @@
 <translation id="4473559657152613417">在分頁標籤上按一下滑鼠右鍵，選取「將分頁新增到群組」</translation>
 <translation id="4473996011558324141">預估時間</translation>
 <translation id="4474155171896946103">將所有分頁加入書籤...</translation>
+<translation id="4475299370877036544">這項操作可能違反貴機構的政策</translation>
 <translation id="4475552974751346499">搜尋下載內容</translation>
 <translation id="4476590490540813026">運動員</translation>
 <translation id="4476659815936224889">如要掃描這個 QR code，你可以使用手機上的 QR 掃描器或相機應用程式。</translation>
@@ -5698,6 +5705,7 @@
 <translation id="5395498824851198390">預設字型</translation>
 <translation id="5397378439569041789">註冊資訊站或看板裝置</translation>
 <translation id="5397794290049113714">你</translation>
+<translation id="5398062879200420134">⌥ 鍵 + 游標懸停</translation>
 <translation id="5398497406011404839">隱藏的書籤</translation>
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的印表機</translation>
@@ -6322,6 +6330,7 @@
 <translation id="5882919346125742463">已知網路</translation>
 <translation id="5883356647197510494">已自動封鎖：<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">自訂各個擴充功能</translation>
+<translation id="5884730022784413637">長按</translation>
 <translation id="5885314688092915589">貴機構將管理這個設定檔</translation>
 <translation id="5885470467814103868">開始掃描</translation>
 <translation id="5885631909150054232">複製權杖</translation>
@@ -7047,6 +7056,7 @@
 <translation id="6455521402703088376">已關閉 • 開發人員已取消發布這項擴充功能</translation>
 <translation id="6455894534188563617">新增資料夾(&amp;N)</translation>
 <translation id="645705751491738698">繼續封鎖 JavaScript</translation>
+<translation id="6458606150257356946">仍要貼上</translation>
 <translation id="6458701200018867744">上傳失敗 (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)。</translation>
 <translation id="6459488832681039634">使用所選範圍尋找</translation>
 <translation id="6459799433792303855">使用中的視窗已移至其他畫面。</translation>
@@ -7846,6 +7856,7 @@
 <translation id="7072010813301522126">捷徑名稱</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 (使用 RSA 加密)</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 憑證和設定</translation>
+<translation id="7075896597860500885">不建議複製這個網站的內容</translation>
 <translation id="7076875098323397992">無法開始升級</translation>
 <translation id="7077751457066325012">查看及自訂鍵盤快速鍵</translation>
 <translation id="7077829361966535409">無法使用目前的 Proxy 設定載入登入頁面。請<ph name="GAIA_RELOAD_LINK_START" />重新登入<ph name="GAIA_RELOAD_LINK_END" />或使用其他 <ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
@@ -8195,6 +8206,7 @@
 <translation id="7368695150573390554">所有離線資料都會刪除</translation>
 <translation id="736877393389250337">無法在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟 <ph name="URL" />。請與你的系統管理員聯絡。</translation>
 <translation id="7370592524170198497">乙太網路 EAP：</translation>
+<translation id="7370751048350026847">不建議將這項內容貼到這個網站</translation>
 <translation id="7371490947952970241">關閉這部裝置的主要位置資訊設定即可關閉定位服務。你也可以前往位置資訊設定，將使用 Wi‑Fi、行動網路和感應器的定位功能關閉。</translation>
 <translation id="7371917887111892735">將分頁縮至固定分頁寬度</translation>
 <translation id="7374376573160927383">管理 USB 裝置</translation>
@@ -9592,6 +9604,7 @@
 <translation id="8403618281196981152">你在 Chrome 中的資料</translation>
 <translation id="8403807918453631441"><ph name="BRAND" />可以檢查你儲存的密碼</translation>
 <translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
+<translation id="8405118833120731611">{0,plural, =1{關閉這個設定檔}other{關閉這個設定檔 (# 個視窗)}}</translation>
 <translation id="8407199357649073301">記錄層級：</translation>
 <translation id="8408270600235826886">您可以控制要分享哪些資料給 Google，並隨時在「設定」中進行變更。我們會依據《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》的規範使用相關資料。</translation>
 <translation id="84098433273647700">目前安裝的主題。</translation>

@@ -1263,6 +1263,7 @@
 <translation id="1933489278505808700">Пашырэнню дазволена счытваць і змяняць даныя</translation>
 <translation id="1935303383381416800">Дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
 <translation id="193565226207940518">Інструмент падтрымкі</translation>
+<translation id="1935995810530254458">Усё роўна капіраваць</translation>
 <translation id="1936157145127842922">Паказаць у папцы</translation>
 <translation id="1936931585862840749">Каб указаць, колькі копій друкаваць, увядзіце лік (ад 1 да <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не ўдалося імпартаваць кантэйнер з тыпам архітэктуры "<ph name="ARCHITECTURE_CONTAINER" />" на прыладу з тыпам "<ph name="ARCHITECTURE_DEVICE" />". Можна паспрабаваць аднавіць гэты кантэйнер на іншай прыладзе або атрымаць доступ да файлаў у кантэйнеры, адкрыўшы яго вобраз у праграме "Файлы".</translation>
@@ -1897,6 +1898,7 @@
 <translation id="2412015533711271895">Каб выкарыстоўваць гэта пашырэнне, трэба атрымаць дазвол аднаго з бацькоў або апекуна</translation>
 <translation id="2412593942846481727">Ёсць абнаўленне</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2413009156320833859">Зрабіце свой браўзер яшчэ больш персаналізаваным з дапамогай пашырэнняў з <ph name="BEGIN_LINK1" />Вэб-крамы Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Узнавіць прагляд: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Цёмная</translation>
 <translation id="2415117815770324983">Вы выйдзеце з сістэмы на большасці сайтаў, але застаняцеся ва Уліковым запісе Google.</translation>
@@ -6831,6 +6833,7 @@
 <translation id="6271824294945464304">Ідзе абагульванне пароля</translation>
 <translation id="6273677812470008672">Якасць</translation>
 <translation id="6274089201566806618">Ідзе падключэнне да прылады "<ph name="HOST_DEVICE_NAME" />"</translation>
+<translation id="6274108044476515407">Ці будзе ажыццяўляцца персаналізацыя рэкламы, якая вам паказваецца, залежыць шмат ад чаго, у тым ліку ад гэтай налады, <ph name="BEGIN_LINK1" />рэкламы, якая прапануецца сайтамі<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />налад файлаў cookie<ph name="LINK_END2" />, а таксама ад таго, ці персаналізуе рэкламу сам сайт, які вы наведваеце. <ph name="BEGIN_LINK3" />Даведацца больш пра кіраванне прыватнасцю ў рэкламе.<ph name="LINK_END3" /></translation>
 <translation id="6274202259872570803">Скрынкаст</translation>
 <translation id="6276210637549544171">Проксі-сервер <ph name="PROXY_SERVER" /> патрабуе імя карыстальніка і пароль.</translation>
 <translation id="6277105963844135994">Час чакання сеткі</translation>
@@ -7047,6 +7050,7 @@
 <translation id="6455521402703088376">Выключана • Распрацоўшчык адрабіў публікацыю гэтага пашырэння</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
 <translation id="645705751491738698">Працягнуць блакіраваць JavaScript</translation>
+<translation id="6458606150257356946">Усё роўна ўставіць</translation>
 <translation id="6458701200018867744">Збой запампоўвання (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Выкарыстаць вылучанае для пошуку</translation>
 <translation id="6459799433792303855">Актыўнае акно перамешчана на іншы дысплэй.</translation>

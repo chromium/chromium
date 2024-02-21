@@ -72,6 +72,7 @@
 <translation id="1131264053432022307">Imaxe que copiaches</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142846828089312304">Bloquear cookies de terceiros no modo de incógnito</translation>
+<translation id="1144136880160289237">Aínda non tes ningún tema activo</translation>
 <translation id="1149617035358809955">verificar a túa identidade para poder completar a túa información de pago</translation>
 <translation id="1150565364351027703">Lentes de sol</translation>
 <translation id="1150979032973867961">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o sistema operativo do teu ordenador non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
@@ -324,6 +325,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="160851722280695521">Xogar a Dino Run en Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Segundo rolo</translation>
+<translation id="1612199629998703524">Xestionar temas</translation>
 <translation id="1615178538289490617">Revogar o acceso a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
 <translation id="1617276713587758852">Vehículos crossover</translation>
@@ -433,6 +435,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1812975699435941848">Educación sanitaria e formación médica</translation>
 <translation id="1813414402673211292">Borrar datos de navegación</translation>
+<translation id="1818522458013171885">Desbloquear</translation>
 <translation id="182139138257690338">descargas automáticas</translation>
 <translation id="1821930232296380041">Solicitude ou parámetros de solicitude non válidos</translation>
 <translation id="1822540298136254167">Sitios web que visitas e tempo que pasas neles</translation>
@@ -490,6 +493,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1945968466830820669">Poderías perder o acceso á conta da túa organización ou alguén podería roubarche a identidade. Chromium recoméndache que cambies de contrasinal agora.</translation>
 <translation id="1946849748901605102">12 x 15 polgadas</translation>
 <translation id="1947454675006758438">Grampa na parte superior dereita</translation>
+<translation id="1953729392594614704">Se bloqueas o tema <ph name="TOPIC" />, aínda que estea activo, tamén se bloquearán os temas relacionados</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">Localizar, protexer ou borrar o teu dispositivo</translation>
 <translation id="1958218078413065209">A túa máxima puntuación é <ph name="SCORE" />.</translation>
@@ -550,6 +554,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2071156619270205202">Esta tarxeta non é apta para asociarlle un número de tarxeta virtual.</translation>
 <translation id="2071692954027939183">As notificacións bloqueáronse automaticamente porque non adoitas permitilas</translation>
 <translation id="2071852865256799872">O teu navegador está xestionado pola túa organización e o teu perfil está xestionado por <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
 <translation id="2075497153347571252">A persoa administradora bloqueou o permiso do seguinte en <ph name="ORIGIN" />: <ph name="PERMISSION" /></translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2080021694978766903">Esta política non pode ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
@@ -584,6 +589,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2137891579555018930">Agardando polo permiso…</translation>
 <translation id="213826338245044447">Marcadores para móbiles</translation>
 <translation id="2141000681034340397">Editar entrada</translation>
+<translation id="2144171668675205303">Non hai ningún tema activo</translation>
 <translation id="214556005048008348">Cancelar pago</translation>
 <translation id="2148613324460538318">Engadir tarxeta</translation>
 <translation id="2148716181193084225">Hoxe</translation>
@@ -803,6 +809,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2596415276201385844">Para establecer unha conexión segura, é necesario que o reloxo estea correctamente axustado. Isto débese a que os certificados utilizados polos sitios web para identificarse só son válidos durante períodos de tempo específicos. Debido a que o reloxo do dispositivo está incorrectamente axustado, Chrome non pode verificar estes certificados.</translation>
 <translation id="2597378329261239068">Este documento está protexido con contrasinal. Introduce un contrasinal.</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
+<translation id="2608019759319359258">Se se bloquea un tema, non se usará para personalizar anuncios</translation>
 <translation id="2610561535971892504">Fai clic para copiar a información</translation>
 <translation id="2612993535136743634">Eliminaranse os códigos de seguranza que teñas gardados no dispositivo e na Conta de Google</translation>
 <translation id="2616412942031748191">Márketing e optimización de motores de busca</translation>
@@ -1112,6 +1119,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3299720788264079132">Produciuse un erro ao usar <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 polgadas</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
+<translation id="3303872874382375219">A personalización dos anuncios que se che mostran depende de moitos factores, como, por exemplo, desta opción de configuración, dos <ph name="BEGIN_LINK1" />temas dos anuncios<ph name="LINK_END1" />, da <ph name="BEGIN_LINK2" />configuración de cookies<ph name="LINK_END2" /> ou de se o sitio que estás vendo personaliza ou non os anuncios. Máis información sobre <ph name="BEGIN_LINK3" />como xestionar a privacidade nos anuncios<ph name="LINK_END3" />.</translation>
 <translation id="3304073249511302126">busca de dispositivos Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
@@ -1144,6 +1152,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3377144306166885718">O servidor utilizou unha versión obsoleta de TLS.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
 <translation id="3377736046129930310">Usar o bloqueo de pantalla para confirmar as tarxetas máis rápido</translation>
+<translation id="3378612801784846695">Os temas baséanse no teu historial de navegación recente. Os sitios utilízanos para mostrarche anuncios personalizados ao tempo que protexen a túa identidade</translation>
 <translation id="3380365263193509176">Erro descoñecido</translation>
 <translation id="3380864720620200369">ID de cliente:</translation>
 <translation id="3381668585148405088">Verifica a túa compra</translation>
@@ -1174,6 +1183,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3433111389595862568">Software de colaboración e conferencia</translation>
 <translation id="3433144818443565002">Chat de voz e vídeo</translation>
 <translation id="3434025015623587566">O xestor de contrasinais de Google necesita máis acceso</translation>
+<translation id="3434346831962601311">Non hai ningún tema bloqueado</translation>
 <translation id="343474037147570563">Os ficheiros que cargues ou anexes enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían examinarse para ver se conteñen datos confidenciais ou software malicioso, e almacenarse en función das políticas da empresa. Tamén podería velos a persoa administradora.</translation>
 <translation id="3435557549311968410">Continuo (curto)</translation>
 <translation id="3435738964857648380">Seguranza</translation>
@@ -1296,6 +1306,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3659521826520353662">Que sitios web definidos pola persoa administradora se visitan e cando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3665100783276035932">A maioría dos sitios deberían funcionar segundo o previsto</translation>
+<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Máis información<ph name="LINK_END1" /></translation>
 <translation id="3671117652518853176">Cando está opción estea desactivada, é posible que se che pida ocasionalmente que fagas unha verificación por motivos de seguranza</translation>
 <translation id="3671540257457995106">Queres permitir que a aplicación cambie de tamaño?</translation>
 <translation id="3672568546897166916">Produciuse un erro en <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
@@ -1881,6 +1892,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4895019427244614047">Eliminar enderezo</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Xogos Olímpicos</translation>
+<translation id="4898742041545089450">Este tema está desbloqueado e pode activarse en función do teu historial de navegación</translation>
 <translation id="4900217275619098670">Noveno rolo</translation>
 <translation id="4901052769830245369">Etiquetas (semibrillo)</translation>
 <translation id="4901162432287938633">Artigos de hixiene</translation>
@@ -1955,6 +1967,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Ligazón que copiaches</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
+<translation id="5052517576853118371">Temas activos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
 <translation id="505757197798929356">Indica o motivo polo que queres abrir o ficheiro (obrigatorio)</translation>
 <translation id="5060419232449737386">Configuración de subtítulos</translation>
@@ -2029,6 +2042,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5205222826937269299">É obrigatorio introducir o nome</translation>
 <translation id="5206392433295093945">Dormitorio</translation>
 <translation id="5209670883520018268">Bandexa 20</translation>
+<translation id="5214542134842513912">Selecciona as categorías amplas de temas que se poden usar para axudar a personalizar os anuncios. Se desactivas unha, bloquearanse os temas relacionados.</translation>
 <translation id="521659676233207110">Bandexa 13</translation>
 <translation id="5216942107514965959">Visitouse hoxe por última vez</translation>
 <translation id="5217759126664161410">O formato de protocolo non é válido.</translation>
@@ -2246,6 +2260,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="568292603005599551">Posición X da imaxe</translation>
 <translation id="5684277895745049190">Lista</translation>
 <translation id="5684874026226664614">Non se puido traducir esta páxina.</translation>
+<translation id="568489534660743582">A función de anuncios suxeridos polos sitios é só unha das moitas opcións que poden usar os sitios para personalizar os anuncios. Mesmo sen ela, os sitios poden mostrarche anuncios, pero é posible que che resulten menos interesantes.</translation>
 <translation id="5687340364605915800">Os sitios usan a súa discrecionalidade á hora de responder a esta solicitude</translation>
 <translation id="5688137257686092846">Profesionais da cosmética e a beleza</translation>
 <translation id="5689199277474810259">Exportar a JSON</translation>
@@ -3310,6 +3325,7 @@ Detalles adicionais:
 <translation id="7878562273885520351">Pode que o teu contrasinal estea en perigo</translation>
 <translation id="7880146494886811634">Gardar enderezo</translation>
 <translation id="7882421473871500483">Marrón</translation>
+<translation id="7886897188117641322">Selecciona as categorías amplas de temas que se poden usar para axudar a personalizar os anuncios</translation>
 <translation id="7887683347370398519">Comproba o CVC e téntao de novo</translation>
 <translation id="7887885240995164102">Acceder ao modo de pantalla superposta</translation>
 <translation id="7888575728750733395">Intent de renderización da impresión</translation>
@@ -3388,6 +3404,7 @@ Detalles adicionais:
 <translation id="8043255123207491407">Consultar os termos e condicións do vendedor</translation>
 <translation id="8046360364391076336">Materiais e equipamento industrial</translation>
 <translation id="8052898407431791827">Copiouse no portapapeis</translation>
+<translation id="805766869470867930">Non bloqueaches ningún tema</translation>
 <translation id="8057711352706143257"><ph name="SOFTWARE_NAME" /> non está configurado correctamente. Ao desinstalar <ph name="SOFTWARE_NAME" /> adoita solucionarse o problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Non é obrigatorio</translation>
 <translation id="8063875539456488183">Gardar e facer seguimento do prezo</translation>
@@ -3464,6 +3481,7 @@ Detalles adicionais:
 <translation id="8216640997712497593">14 x 18 polgadas</translation>
 <translation id="8217240300496046857">Os sitios non poden usar cookies para seguirte pola Web. As funcións dalgúns sitios poden quedar bloqueadas.</translation>
 <translation id="8218327578424803826">Localización asignada:</translation>
+<translation id="8220602974062798186">Queres bloquear <ph name="TOPIC" /> e os temas relacionados?</translation>
 <translation id="8220833680085771143">A protección contra o rastrexo non está dispoñible temporalmente</translation>
 <translation id="8228419419708659934">Vista de dúas páxinas</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> quere acceder a un dispositivo na túa rede:</translation>
@@ -3595,6 +3613,7 @@ Detalles adicionais:
 <translation id="8466379296835108687">{COUNT,plural, =1{1 tarxeta de crédito}other{# tarxetas de crédito}}</translation>
 <translation id="8467494337615822642">Vai á páxina de comprobación de seguranza de Chrome na configuración</translation>
 <translation id="8468358362970107653">Sobre C3</translation>
+<translation id="8472700501934242014">Temas bloqueados</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474910779563686872">Mostrar detalles do programador</translation>
@@ -3934,6 +3953,7 @@ Detalles adicionais:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utiliza un protocolo non compatible.</translation>
 <translation id="918454845714257218">Mira o código na <ph name="SIDE_OF_CARD" /> e téntao de novo</translation>
 <translation id="9186203289258525843">Botón para establecer Chrome como navegador predeterminado. Actívao para establecer Chrome como navegador predeterminado do sistema</translation>
+<translation id="9190557999028587593">Os temas de máis de catro semanas eliminaranse automaticamente</translation>
 <translation id="9191834167571392248">Perforación na parte inferior esquerda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>

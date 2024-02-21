@@ -50,6 +50,7 @@
 <translation id="22313767259766852">이 주소는 현재 Chromium에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
 <translation id="2236584955986023187">Chromium에서 데스크톱 사이트를 매번 요청함을 의미합니다</translation>
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
+<translation id="231828342043114302">내 관심분야를 바탕으로 맞춤설정된 콘텐츠를 받으려면 Chromium에 로그인하세요.</translation>
 <translation id="2374627437126809292">Chromium에서 Google 지도를 사용하여 감지된 주소의 경로 및 지역 정보를 제공합니다.</translation>
 <translation id="2386292341327187942">검색 위젯 상자에 Chromium을 입력합니다</translation>
 <translation id="2426113998523353159">조직에서 Chromium을 사용하려면 로그인해야 합니다.</translation>

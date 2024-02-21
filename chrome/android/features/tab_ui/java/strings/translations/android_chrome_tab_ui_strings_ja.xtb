@@ -36,7 +36,6 @@
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">共有シートのプレビューのサムネイル。</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
 <translation id="3882834874697329510">開いているタブの商品が値下げされた場合にアラートを受け取るには、[設定] で通知をオンにします。</translation>
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{タブをグループ化する}other{タブをグループ化する}}</translation>
@@ -96,6 +95,7 @@
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを共有}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを共有}}</translation>
 <translation id="7792771145871471484">提案を確認します。</translation>
+<translation id="7825973332242257878">タブグループ</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをグループ化する}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをグループ化する}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ}other{<ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ}}</translation>
 <translation id="7885132941432959125">タブを右に移動</translation>

@@ -247,7 +247,6 @@
 <translation id="2275480389219976105">വിലാസം കണ്ടെത്തി</translation>
 <translation id="2286505070150039482">ഹൈലൈറ്റ് ചെയ്ത ടെക്സ്റ്റ്</translation>
 <translation id="2287614783861766820">{count,plural, =1{ഈ ഉപകരണത്തിൽ നിന്ന് ഈ വിലാസം ഇല്ലാതാക്കും.}other{ഈ ഉപകരണത്തിൽ നിന്ന് ഈ വിലാസങ്ങൾ ഇല്ലാതാക്കും.}}</translation>
-<translation id="2297822946037605517">ഈ പേജ് പങ്കിടുക</translation>
 <translation id="2297989278479054870">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തതിന് ശേഷം, നിങ്ങളുടെ Google Account-ലെ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യും.</translation>
 <translation id="2299218006564889602">Google പാസ്‌വേഡ് മാനേജറിലേക്ക് സംരക്ഷിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ എൻക്രിപ്റ്റ് ചെയ്യുന്നു.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
@@ -288,6 +287,7 @@
 <translation id="2473876017985765807"><ph name="WEBSITE" /> എന്നതിനുള്ള പാസ്‌വേഡ് നിങ്ങൾ മുമ്പേ സംരക്ഷിച്ചു</translation>
 <translation id="2476359652512522418">തിരഞ്ഞെടുത്തിട്ടില്ല</translation>
 <translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
+<translation id="2480445180439820402">ചരിത്രം</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2484459871750294497">ഈ ഫീച്ചർ എനിക്ക് എങ്ങനെ പ്രവർത്തനക്ഷമമാക്കാം?</translation>
 <translation id="2496626742194544812">ആദ്യ ടാബിലേക്ക് പോകുക</translation>
@@ -578,6 +578,7 @@
 <translation id="3962326069546168954">സംരക്ഷിക്കുക</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3968505803272650567">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="3976922811715736829">അടുത്തിടെ ഉപയോഗിച്ച ടാബുകൾ</translation>
 <translation id="3989635538409502728">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="3994422733891749358">നിങ്ങൾ സ്വീകരിക്കാൻ ആഗ്രഹിക്കുന്ന അറിയിപ്പുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3995521777587992544">പേജ് ലോഡ് പ്രോഗ്രസ് ബാര്‍, <ph name="EMAIL" /> ലോഡ് ചെയ്‌തു.</translation>
@@ -636,6 +637,7 @@
 <translation id="4281844954008187215">സേവന നിബന്ധനകൾ</translation>
 <translation id="4282944936010261425">നിങ്ങൾക്ക് പരിഹരിക്കാൻ സുരക്ഷാ പ്രശ്‌നങ്ങളൊന്നുമില്ല.</translation>
 <translation id="4286718549648564014">വിലാസം നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ടിലേക്ക് നീക്കി</translation>
+<translation id="428768789042547925">പുതുതായി എന്താണുള്ളത്</translation>
 <translation id="4293080268407233932">തിരയുക</translation>
 <translation id="4302248187517737842">ഉപയോക്തൃനാമമില്ല ••••••••</translation>
 <translation id="4302415908542657649">പാസ്‌വേഡ് പങ്കിടുന്നു</translation>
@@ -690,6 +692,7 @@
 <translation id="4587589328781138893">സൈറ്റുകള്‍</translation>
 <translation id="4588014171431912783">നിങ്ങളുടെ അവസാനത്തെ ബാക്കപ്പ് അനുസരിച്ച് നിങ്ങളുടെ സമന്വയ ക്രമീകരണം പുനഃസ്ഥാപിക്കും. <ph name="BEGIN_LINK" />നിങ്ങൾക്ക് എന്തൊക്കെ സമന്വയിപ്പിക്കാമെന്ന് കാണുക<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">കീബോഡ്</translation>
+<translation id="4596899661486753028">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ്</translation>
 <translation id="4601095002996233687">സംശയാസ്പദമായ ഡൗൺലോഡുകൾക്കായി വിശദമായ സ്കാനുകൾ.</translation>
 <translation id="4606247758155004938">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്.</translation>
 <translation id="4607887340472970274">നിരക്ക് ട്രാക്ക് ചെയ്യൽ</translation>
@@ -1154,6 +1157,7 @@
 <translation id="6807889908376551050">എല്ലാം കാണിക്കുക...</translation>
 <translation id="681368974849482173">ഇനം സൃഷ്‌ടിച്ചു</translation>
 <translation id="6822587385560699678">ഓണായിരിക്കുമ്പോൾ, <ph name="ACCOUNT" /> -ൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കും. ഓഫായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിൽ മാത്രമേ പാസ്‌വേഡുകൾ സംരക്ഷിക്കൂ.</translation>
+<translation id="6824350924364057989">ക്രമീകരണം</translation>
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6842136130964845393">സംരക്ഷിച്ച നിങ്ങളുടെ പാസ്‌വേഡുകൾ എപ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കാൻ ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="6851516051005285358">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
@@ -1192,6 +1196,7 @@
 <translation id="7004499039102548441">സമീപകാല ടാബുകൾ</translation>
 <translation id="7006788746334555276">ഉള്ളടക്ക ക്രമീകരണങ്ങള്‍‌</translation>
 <translation id="7016070607649558507">നിങ്ങൾക്ക് ദുർബലമായ ഒരു പാസ്‌വേഡുണ്ട്. സുരക്ഷിതരായി നിലനിൽക്കാൻ ഇപ്പോൾ അത് പരിഹരിക്കുക.</translation>
+<translation id="7022197654033719543">സൈറ്റ് വിവരങ്ങൾ</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="704692552158601232">ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ്</translation>
 <translation id="7062545763355031412">അംഗീകരിച്ചശേഷം, അക്കൗണ്ടുകൾ മാറുക</translation>
@@ -1291,6 +1296,7 @@
 <translation id="7603852183842204213">പോപ്പ്-അപ്പുകൾ തടഞ്ഞു (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">ടാബ് ഗ്രൂപ്പുകൾ</translation>
 <translation id="7607521702806708809">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
+<translation id="7609559547731036746">Bookmarks</translation>
 <translation id="7638584964844754484">പാസ്‌ഫ്രെയ്‌സ് തെറ്റാണ്</translation>
 <translation id="7640669552036055091">Android-ൽ നിന്നുള്ള ടാബുകൾ</translation>
 <translation id="7646263789464975852">മെനു → ക്രമീകരണം → സുരക്ഷാ പരിശോധന</translation>
@@ -1328,8 +1334,10 @@
 <translation id="7781069478569868053">പുതിയ ടാബ് പേജ്</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം}other{{COUNT} ദിവസത്തിന് ശേഷം}}</translation>
+<translation id="7788868432173225918">വികസിപ്പിച്ച കാഴ്ച ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="7792549458069452436">ആപ്പ് സ്വന്തമാക്കുക</translation>
+<translation id="7800723706644914607">Password Manager</translation>
 <translation id="7807060072011926525">Google നൽകുന്നത്</translation>
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> തിരഞ്ഞെടുക്കുന്നതിലൂടെ നിങ്ങളുടെ എല്ലാ ബ്രൗസിംഗ് ചരിത്രവും ആക്‌സസ് ചെയ്യാൻ കഴിയും.</translation>
 <translation id="78146569776629510">ഡൗൺലോഡുകൾ</translation>
@@ -1402,6 +1410,7 @@
 <translation id="81313319706244542">2. പാസ്‌വേഡുകൾ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="8132598642024322408">ഇപ്പോൾ <ph name="PRICE" />, മുമ്പത്തെ വില <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">ഓരോ സൈറ്റിനും ആപ്പിനും വെവ്വേറെ പാസ്‌വേഡ് ഉപയോഗിക്കുക. ആവർത്തിച്ച് ഉപയോഗിക്കുന്ന പാസ്‌വേഡ് ആരെങ്കിലും കണ്ടെത്തിയാൽ, അത് ഉപയോഗിച്ച് അവർക്ക് നിങ്ങളുടെ മറ്റ് അക്കൗണ്ടുകളും ആക്‌സസ് ചെയ്യാനാകും. ക്ലിക്ക് ചെയ്ത് വെബ്സൈറ്റ് തുറന്ന് അവ ഇപ്പോൾതന്നെ മാറ്റുക.</translation>
+<translation id="814463369662540460">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="8156478151976189188">പാസ്‌വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകൾ</translation>
 <translation id="8159358225423560600">തൊട്ടുമുമ്പ്</translation>
@@ -1509,6 +1518,7 @@
 <translation id="8703536910991780768">നിങ്ങളുടെ പാസ്‌വേഡുകൾ ശക്തമാണെന്ന് തോന്നുന്നു</translation>
 <translation id="8706253136355675497">താപനില</translation>
 <translation id="8709409604518538305">ടാബുകൾ അടച്ചു</translation>
+<translation id="8709773186849937451">ഡൗൺലോഡുകൾ</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8717864919010420084">ലിങ്ക് പകർത്തുക</translation>
 <translation id="8721297211384281569">ഉപകരണ മെനു</translation>
@@ -1574,6 +1584,7 @@
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> ആണ് നിങ്ങളുടെ തിരയൽ യന്ത്രം. ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള അതിലെ നിർദ്ദേശങ്ങൾ കാണുക.</translation>
 <translation id="9008201768610948239">അവഗണിക്കുക</translation>
 <translation id="9012585441087414258">അപകടകരമെന്ന് തിരിച്ചറിഞ്ഞ സൈറ്റുകൾ, ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് പരിരക്ഷിക്കുന്നു. പേജ് സംശയാസ്പദമായ എന്തെങ്കിലും ചെയ്താൽ, URL-കളും പേജ് ഉള്ളടക്കത്തിന്റെ ബിറ്റുകളും 'Google സുരക്ഷിത ബ്രൗസിംഗിലേക്ക്' അയയ്ക്കും.</translation>
+<translation id="9025203546212508704">നിങ്ങളുടെ മെനു ഇഷ്‌ടാനുസൃതമാക്കുന്നത് എങ്ങനെയെന്ന് അറിയാൻ സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="9029650858822697271">നിങ്ങൾ സൈൻ ഔട്ട് ആയി</translation>
 <translation id="9034759925968272072">നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ആകില്ല. Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="9037965129289936994">യഥാര്‍ത്ഥമായത് കാണിക്കുക</translation>

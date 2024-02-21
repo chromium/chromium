@@ -36,7 +36,6 @@
 <translation id="3328308545011660196">Suggestie: <ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Thumbnail voor voorbeeld van blad delen.</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{De tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
 <translation id="3882834874697329510">Wil je een melding krijgen als er een lagere prijs is op een geopend tabblad, zet dan meldingen aan in Instellingen.</translation>
 <translation id="3940195383040445971">Prijzen volgen op tabbladen</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Tabblad groeperen}other{Tabbladen groeperen}}</translation>
@@ -96,6 +95,7 @@
 <translation id="7559245342362162951">Tabbladen van groep bekijken in raster op volledig scherm</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad delen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen delen}}</translation>
 <translation id="7792771145871471484">Bekijk de suggesties.</translation>
+<translation id="7825973332242257878">Tabbladgroepen</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad groeperen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen groeperen}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
 <translation id="7885132941432959125">Tabblad naar rechts verplaatsen</translation>

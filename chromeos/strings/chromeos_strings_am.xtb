@@ -66,6 +66,7 @@
 <translation id="1367951781824006909">ፋይል ይምረጡ</translation>
 <translation id="1371650399987522809">በGoogle AI የተጎላበተ ልጣፍ ግብረመልስ</translation>
 <translation id="1387854245479784695">ይህ የሁሉም ኮሮች ድምር ነው</translation>
+<translation id="1393206549145430405">ቤተ-መንግስት</translation>
 <translation id="1394661041439318933">መሣሪያው <ph name="BATTERY_PERCENTAGE" />% የመያዣ ባትሪ አለው።</translation>
 <translation id="1397738625398125236">አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>
 <translation id="1398634363027580500">በጣም ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
@@ -78,6 +79,7 @@
 <translation id="1432110487435300883">ግምታዊ የሆነ ውጤት ለማግኘት፣ የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> ያካፍሉት</translation>
 <translation id="1435763214710588005">በተመረጠው ቀን በየወሩ የውሂብ አጠቃቀምን በራስሰር ዳግም ያስጀምራል</translation>
 <translation id="1442433966118452622">የምስል ምንጭ</translation>
+<translation id="1446954767133808402">ሳፋየር</translation>
 <translation id="1449035143498573192">በGoogle ፍለጋ ውስጥ ክፈት</translation>
 <translation id="1451536289672181509">መሣሪያ ቁልፍ ሰሌዳ ነው።</translation>
 <translation id="1452939186874918380">ዣንጥላዎች</translation>
@@ -99,6 +101,7 @@
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1561927818299383735">የጀርባ ብርሃን ቀለም</translation>
+<translation id="1564356849266217610">ኦርጋንዛ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />ን ማዘመን አልተቻለም</translation>
 <translation id="1567064801249837505">አልበሞች</translation>
 <translation id="1572585716423026576">እንደ ልጣፍ አዘጋጅ</translation>
@@ -120,6 +123,7 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />ን አስቀድመው ይመልከቱ</translation>
 <translation id="1668469839109562275">አብሮገነብ VPN</translation>
 <translation id="1669047024429367828">የታይነት ደረጃ</translation>
+<translation id="1670478569471758522">ከእርስዎ ምርጫ ጋር የተያያዘ ተጨማሪ መረጃ</translation>
 <translation id="1672499492233627739">የድር ካሜራ ቪዲዮ ምግብ</translation>
 <translation id="1676557873873341166">ቪዲዮን በመቅረጽ ላይ</translation>
 <translation id="1684279041537802716">የአጽንዖት ቀለም</translation>
@@ -144,6 +148,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">የማረጋገጫ ዓይነት</translation>
 <translation id="1776228893584526149">የልጣፍ ቀለም</translation>
+<translation id="1777913922912475695">ድልድይ</translation>
 <translation id="1782199038061388045">ትርጉም</translation>
 <translation id="1788485524395674731">ይህ መተግበሪያ የሚተዳደረው በአስተዳዳሪዎ ነው</translation>
 <translation id="1792647875738159689">መቃኘትን በመሰረዝ ላይ</translation>
@@ -176,6 +181,7 @@
 <translation id="1923388006036088459">የማድመቂያ ቀለሞች</translation>
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1951012854035635156">ረዳት</translation>
+<translation id="1954818433534793392">ሕንፃ</translation>
 <translation id="1962550982027027473">ነባሪ ኤፒኤን ያስፈልጋል</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">የGoogle መገለጫ ፎቶ</translation>
@@ -210,6 +216,7 @@
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
 <translation id="2180197493692062006">የሆነ ችግር ተፈጥሯል። መተግበሪያውን ዳግም ለመክፈት ይሞክሩ።</translation>
 <translation id="2189104374785738357">የኤፒኤን ዝርዝሮችን ያርትዑ</translation>
+<translation id="2201758491318984023">ብስክሌት</translation>
 <translation id="2203222757805818543">የአሁኑ መርሐግብር ወደ <ph name="SUNRISE" /> - <ph name="SUNSET" /> ተቀናብሯል። የጨለማ ሁነታ መርሐግብርን በራስ-ሰር ለማዘመን <ph name="BEGIN_LINK" />የአካባቢ መዳረሻን ያብሩ<ph name="END_LINK" /></translation>
 <translation id="2203642483788377106">የገደል ጫፍ</translation>
 <translation id="2208388655216963643">ኢምፕሬሽኒስት</translation>
@@ -238,6 +245,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2346474577291266260">እጅግ በጣም ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2347064478402194325">ወንበር</translation>
 <translation id="2358070305000735383">ለ<ph name="DESCRIPTION" /> የአርትዕ መገናኛ ክፍት ነው።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2364498172489649528">አልፏል</translation>
@@ -255,9 +263,11 @@
 <translation id="2465272316171730950">ሙሉ አቅም ላይ ነን። እባክዎ ትንሽ ቆይተው ተመለሱ።</translation>
 <translation id="2480572840229215612">ሸርጣኖች</translation>
 <translation id="248546197012830854">መሣሪያ ከመስመር ውጭ ነው። የእገዛ ይዘትን ለመመልከት ከWi-Fi አውታረ መረብ ጋር ይገናኙ።</translation>
+<translation id="2486301288428798846">እንጨት</translation>
 <translation id="2491955442992294626">ሌላ መስኮት ሲጠቀሙ ቁልፎች አይሞከሩም</translation>
 <translation id="2493126929778606526">የእርስዎ ምርጥ ፎቶዎች፣ በራስ-ሰር የተመረጡ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2501126912075504550">ኦፓል</translation>
 <translation id="2505327257735685095">የአሁኑን የልጣፍ ምስል አድስ</translation>
 <translation id="2512979179176933762">መስኮቶችን ማሳያ</translation>
 <translation id="2513396635448525189">መግቢያ ምስል</translation>
@@ -271,8 +281,10 @@
 <translation id="2561093647892030937">ሎሚዎች</translation>
 <translation id="2570743873672969996">የ<ph name="TEST_NAME" /> ሙከራን በማሄድ ላይ...</translation>
 <translation id="2584559707064218956">ለማዋቀር ወደ ቅንብሮች ይሂዱ</translation>
+<translation id="2586146417912237930">ሰማያዊ እና ኢንዲጎ</translation>
 <translation id="2597774443162333062">ፋይሎች ስህተታቸው እንዲታረም ወደ Google ይላካሉ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገፅ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
+<translation id="2617397783536231890">ጥጥ</translation>
 <translation id="2618015542787108131">የአሸዋ ክምር</translation>
 <translation id="2619761439309613843">ዕለታዊ ዕድሳት</translation>
 <translation id="2620436844016719705">ስርዓት</translation>
@@ -280,6 +292,7 @@
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> አልበም ተመርጧል</translation>
 <translation id="2652403576514495859">በቃል ማስጻፍን ያንቁ ወይም ይቀያይሩ</translation>
 <translation id="2656001153562991489">ለChromebook Plus ለሚመለከተው የተወሰነ</translation>
+<translation id="2665671725390405060">የአነጋገር ስርዓትን ያዳምጡ</translation>
 <translation id="267442004702508783">አድስ</translation>
 <translation id="268270014981824665">የቁልፍ ሰሌዳ መደብዘዝ</translation>
 <translation id="2712812801627182647">የTLS ማረጋገጫ ቁልፍ</translation>
@@ -290,10 +303,13 @@
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2744221223678373668">የተጋራ</translation>
 <translation id="2751739896257479635">EAP የክፍል 2 ማረጋገጥ</translation>
+<translation id="2754757901767760034">ፋኖስ</translation>
 <translation id="2783010256799387990">አልፏል</translation>
+<translation id="2786429550992142861">ሊኖ</translation>
 <translation id="2787435249130282949">የቁልፍ ሰሌዳን ፈካ የሚያደርግ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="28232023175184696">ከበይነመረቡ ጋር መገናኘት አልተቻለም። እንደገና ለመሞከር ጠቅ ያድርጉ።</translation>
+<translation id="2855718259207180827">ሱፍ</translation>
 <translation id="2859243502336719778">ወሳኝ ዝማኔ</translation>
 <translation id="2860473693272905224">በቃኚው ላይ ሌላ ገፅ ያስቀምጡ</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
@@ -400,6 +416,7 @@
 <translation id="3632579075709132555">የግላዊነት ማያ ገፅ መቀየሪያ</translation>
 <translation id="3651050199673793219">የሙቀት መጠን አሃድ ይምረጡ</translation>
 <translation id="3654530588944650786">እየፈካ ያለ የሚያበራ <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
+<translation id="3662461537616691585">በርገንዲ እና ማሩን</translation>
 <translation id="3668449597372804501">የደመና ፍሰት ልጣፍ</translation>
 <translation id="3675132884790542448">አሳማዎች</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
@@ -427,7 +444,9 @@
 <translation id="3865289341173661845">የእገዛ ይዘት አይገኝም።</translation>
 <translation id="3865414814144988605">የምስል ጥራት</translation>
 <translation id="3866249974567520381">ማብራሪያ</translation>
+<translation id="3869314628814282185">ቱል</translation>
 <translation id="387301095347517405">ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ጊዜ ብዛት</translation>
+<translation id="3877066159641251281">ትርጉምን ያዳምጡ</translation>
 <translation id="3885327323343477505">የማያ ገፅ አሳራፊን ቀይር</translation>
 <translation id="391412459402535266">መሣሪያን መፈተሽ አልተቻለም። ለመፈተሽ ወደ የጭን ኮምፒውተር ሁነታ ይቀይሩ።</translation>
 <translation id="3916998944874125962">ቅጽበታዊ ገጽ እይታን የሚያነሳ</translation>
@@ -446,6 +465,7 @@
 <translation id="3993704782688964914">የእርስዎ <ph name="DEVICE_NAME" /> አሁን የተዘመነ ነው</translation>
 <translation id="3998976413398910035">አታሚዎችን አስተዳድር</translation>
 <translation id="4003384961948020559">አልተሳካም - ውፅዓት ሞልቷል</translation>
+<translation id="401147258241215701">ባልጩት</translation>
 <translation id="4021031199988160623">ለመሞከር ወደ የጭን ኮምፒውተር ሁነታ ይቀይሩ</translation>
 <translation id="4034824040120875894">አታሚ</translation>
 <translation id="4044093238444069296">አግባቢ ፍኖትን ማነጋገር አልተቻለም</translation>
@@ -486,6 +506,7 @@
 <translation id="4244962993387259361">የማህደረ ትውስታ ሙከራን ለማካሄድ ቢያንስ 500 ሜባ ነፃ ያስፈልገዎታል። ቦታን ለማስለቀቅ ወደ ቅንብሮች &gt; የማከማቻ አቀናባሪ ይሂዱ።</translation>
 <translation id="4250229828105606438">ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="4258281355379922695">የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
+<translation id="4266143281602681663">ድር</translation>
 <translation id="4271957103967917607">ሙሉ ማያ ገፅ ይመልከቱ</translation>
 <translation id="4275663329226226506">ማህደረ መረጃ</translation>
 <translation id="4278766082079064416">አቋራጭ ለ«<ph name="CONFLICT_ACCEL_NAME" />» ጥቅም ላይ እየዋለ ነው። ግግጭቱን ለመፍታት ያርትዑ ወይም ያስወግዱ።</translation>
@@ -494,6 +515,7 @@
 <translation id="4289849978083912975">የተንሸራታች ትዕይንት</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
+<translation id="430786093962686457">ሽፎን</translation>
 <translation id="4310735698903592804">በGoogle AI የተጎላበቱ የቅርብ ጊዜ ልጣፎች</translation>
 <translation id="4320904097188876154">ኒዮን ሮዝ</translation>
 <translation id="4333390807948134856">የ<ph name="KEY_NAME" /> ቁልፍ ተጭኗል</translation>
@@ -549,6 +571,7 @@
 <translation id="4646949265910132906">ደህንነቱ የተጠበቀ የWiFi ግንኙነት</translation>
 <translation id="4650608062294027130">የቀኝ ቀያይር</translation>
 <translation id="4654549501020883054">በየቀኑ ይለውጡ</translation>
+<translation id="4664651912255946953">የእንስሳ ፀጉር</translation>
 <translation id="4665014895760275686">አምራች</translation>
 <translation id="467510802200863975">የይለፍ ቃላትዎ አይዛመዱም</translation>
 <translation id="467715984478005772">ኬላ ተጠርጥሯል</translation>
@@ -559,6 +582,7 @@
 <translation id="4744944742468440486">ከእርስዎ ምርጫ ጋር የተዛመደ መረጃ</translation>
 <translation id="4771607256327216405">የቁልፍ ሰሌዳ ፈካ ማለት</translation>
 <translation id="4773299976671772492">ቆሟል</translation>
+<translation id="4778082030331381943">አሜቲስት</translation>
 <translation id="4782311465517282004">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ፎቶ</translation>
 <translation id="4793710386569335688">ለበለጠ እገዛ ወደ <ph name="BEGIN_LINK" />የእገዛ ማዕከል<ph name="END_LINK" /> ይሂዱ።</translation>
@@ -585,6 +609,7 @@
 <translation id="4854586501323951986">አብሮገነብ ተነኪ ማያ</translation>
 <translation id="4855250849489639581">ለተጨማሪ የአቀማመጥ አማራጮች ወደ ታች ያንሸራትቱ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ሙከራ ቀርቷል}one{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}other{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}}</translation>
+<translation id="4868181314237714900">የበግ ፀጉር</translation>
 <translation id="4873827928179867585">የማረጋገጥ ስልተ-ቀመር</translation>
 <translation id="4880328057631981605">የመዳረሻ ነጥብ ስም</translation>
 <translation id="488307179443832524">አቋራጭ ለ«<ph name="CONFLICT_ACCEL_NAME" />» ጥቅም ላይ እየዋለ ነው። አዲስ አቋራጭ ይጫኑ።</translation>
@@ -628,6 +653,7 @@
 <translation id="5130848777448318809">ትናንሽ ፈረሶች</translation>
 <translation id="5137451382116112100">ሙሉ</translation>
 <translation id="5142961317498132443">ማረጋገጥ</translation>
+<translation id="5144887194300568405">ትርጉምን ቅዳ</translation>
 <translation id="5145081769226915336">የጨለማ ሁነታን በራስ ሰር ይብራ?</translation>
 <translation id="5154917547274118687">ማህደረ ትውስታ</translation>
 <translation id="5160857336552977725">ወደ የእርስዎ <ph name="DEVICE_TYPE" /> ይግቡ</translation>
@@ -679,6 +705,7 @@
 <translation id="5431318178759467895">ቀለም</translation>
 <translation id="5457599981699367932">እንደ እንግዳ ያስሱ</translation>
 <translation id="54609108002486618">የተቀናበረ</translation>
+<translation id="5470776029649730099">በርላፕ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ሙከራ ቀርቷል}one{{0} ሙከራዎች ቀርተዋል}other{{0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="5488280942828718790">ማጀንታ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />፦ <ph name="PROBLEMS" /></translation>
@@ -688,6 +715,7 @@
 <translation id="550600468576850160">መስክ</translation>
 <translation id="551689408806449779">መሣሪያው ግንኙነቱ ተቋርጧል። ለመሞከር ዳግም ማገናኘትን ይሞክሩ</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="554067135846762198">ኮራል እና ታን</translation>
 <translation id="5543701552415191873">ተቆልፏል።</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ፀሐይ ስትጠልቅ በራስ-ሰር ወደ ጠቆር ያለ ገጽታ ቀይር</translation>
@@ -723,6 +751,7 @@
 <translation id="576835345334454681">የማሳያ ብሩህነት መጨመሪያ</translation>
 <translation id="57838592816432529">ድምፅ ይዝጉ</translation>
 <translation id="5784136236926853061">ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
+<translation id="5790391387506209808">ላፒስ ሉዙሊ</translation>
 <translation id="5810296156135698005">ባሮክ</translation>
 <translation id="5816802250591013230">ምንም አቋራጭ አልተመደበም</translation>
 <translation id="5826644637650799838">ስለሥነ ጥበቡ</translation>
@@ -748,6 +777,7 @@
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{የእርስዎ ፋይል በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}one{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}other{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}}</translation>
 <translation id="5928411637936685857">ለ<ph name="ACCELERATOR_INFO" /> የሰርዝ አዝራር።</translation>
+<translation id="5930669310554144537">የህልም ገጽታ</translation>
 <translation id="5931523347251946569">ፋይል አልተገኘም</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="594552776027197022">የዘፈቀደ የቁልፍ ጥምር አመንጭ</translation>
@@ -756,6 +786,7 @@
 <translation id="5972388717451707488">Engine አዘምን</translation>
 <translation id="5975130252842127517">ኮራል</translation>
 <translation id="5984145644188835034">ነባሪ ልጣፍ</translation>
+<translation id="5996832681196460718">ሐር</translation>
 <translation id="6017514345406065928">አረንጓዴ</translation>
 <translation id="6019566113895157499">የቁልፍ አቋራጮች</translation>
 <translation id="6034694447310538551">ራስ-ሰር ወርሃዊ ዳግም ማስጀመርን አንቃ</translation>
@@ -827,6 +858,7 @@
 <translation id="6382182670717268353">የማያ ገፅ ቆጣቢ ቅድመ ዕይታ</translation>
 <translation id="6388847657025262518">የቃኚው ሰነድ መጋቢ ተቀርቅሯል። መጋቢውን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="6394634179843537518">ፋይል አክል</translation>
+<translation id="6400680457268373900">በ<ph name="DREAMSCAPES_COLORS" /> ውስጥ ከ<ph name="DREAMSCAPES_MATERIAL" /> የተሰራ ያልተለመደ <ph name="DREAMSCAPES_OBJECT" /></translation>
 <translation id="6401427872449207797">የአሳሸ ፍለጋ</translation>
 <translation id="6410257289063177456">የምስል ፋይሎች</translation>
 <translation id="641081527798843608">የርዕሰ ጉዳይ ተዛማጅ</translation>
@@ -886,12 +918,15 @@
 <translation id="6723839937902243910">ኃይል</translation>
 <translation id="6723847290197874913">የቁልፍ ሰሌዳ የጀርባ ብርሃን</translation>
 <translation id="672609503628871915">ምን አዲስ ነገር እንዳለ ይመልከቱ</translation>
+<translation id="6740695858234317715">ክሬም እና ብርቱካናማ</translation>
+<translation id="6741823073189174383">ጀልባ</translation>
 <translation id="6744441848304920043">ጫካ</translation>
 <translation id="6747215703636344499">ቆሟል - ውፅዓት ሞልቷል</translation>
 <translation id="6749473226660745022">ፎቶዎች</translation>
 <translation id="6753452347192452143">መሣሪያ ኮምፒውተር ነው።</translation>
 <translation id="6756731097889387912">መቃኘትን መሰረዝ አልተቻለም</translation>
 <translation id="6760706756348334449">ድምፅ ቀንስ</translation>
+<translation id="6761537227090937007">ከፍተኛ ጥራት ያለው ምስል በመፍጠር ላይ…</translation>
 <translation id="6766275201586212568">ያልተሳኩ የዲኤንኤስ ጥራቶች</translation>
 <translation id="6768237774506518020">ከፍተኛ የዲኤንኤስ ጥራት አለመሳካት ብዛት</translation>
 <translation id="6791471867139427246">የቁልፍ ሰሌዳ ብርሃን ቀለም</translation>
@@ -943,6 +978,7 @@
 <translation id="7135814714616751706">የፍለጋ አቋራጮች</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
+<translation id="7144954474087165241">ፓጎዳ</translation>
 <translation id="714876143603641390">የላን ተገናኝነት</translation>
 <translation id="7154020516215182599">የእርስዎን ግብረመልስ ያጋሩ ወይም የእርስዎን ችግር ይግለጹ። ከተቻለ የእርስዎን ችግር ዳግም ለመስራት እርምጃዎችን ያካትቱ።</translation>
 <translation id="7155171745945906037">ነባር ፎቶ ከካሜራ ወይም ከፋይል</translation>
@@ -962,6 +998,7 @@
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="7233782086689993269">አቋራጭ ወደነበረበት ተመልሷል</translation>
 <translation id="725133483556299729">ኢሜይል ይምረጡ</translation>
+<translation id="7255187042098209569">ሮዝ እና ሐምራዊ</translation>
 <translation id="7271000785316964275">ክላሲስት</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="7271932918253517778">ከላይ ረድፍ ቁልፎች ያለው አቋራጭ የ<ph name="META_KEY" /> ቁልፍን ማካተት ያስፈልገዋል።</translation>
@@ -977,6 +1014,7 @@
 <translation id="7311368985037279727">የቁልፍ ሰሌዳ ቀለም</translation>
 <translation id="7317831949569936035">የትምህርት ቤት ምዝገባ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7321055305895875150">አረንጓዴ እና ቲል</translation>
 <translation id="7328475450575141167">የገነት ወፍ</translation>
 <translation id="7331297744262591636">ቢያንስ 18 ዓመት ሊሞላዎት እና የAI ልጣፎች አጠቃቀምዎ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />ለGoogle አገልግሎት ውል<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> እና <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ለአመንጪ AI ተጨማሪ የአገልግሎት ውል<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ተገዢ እንደሆነ መስማማት አለብዎት።
           <ph name="LINE_BREAK" />
@@ -988,6 +1026,7 @@
 <translation id="7359657277149375382">የፋይል ዓይነት</translation>
 <translation id="73631062356239394">የምርመራ ውሂብን ያጋሩ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7384004438856720753">ቤተ-መንግስት</translation>
 <translation id="7388959671917308825">አብሮገነብ የመዳሰሻ ሰሌዳ</translation>
 <translation id="7397270852490618635">ነጣ ያለ ገጽታን አጥፋ</translation>
 <translation id="7401543881546089382">አቋረጭ ይሰርዙ</translation>
@@ -1015,6 +1054,7 @@
 <translation id="7561454561030345039">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">የዩኤስቢ መነካት የሚችል ማያ</translation>
+<translation id="757747079855995705">ድንጋይ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ቀርቷል</translation>
 <translation id="7613724632293948900">በመዳፊት ወይም በቀስት ቁልፎች እንደገና ያስቀምጡ።</translation>
 <translation id="7618774594543487847">ገለልተኛ</translation>
@@ -1057,6 +1097,7 @@
 <translation id="7841134249932030522">ጨለማ ሁነታን አንቃ</translation>
 <translation id="7846634333498149051">የቁልፍ ሰሌዳ</translation>
 <translation id="7849030488395653706">ሰሜናዊ ብርሃናት</translation>
+<translation id="7849737607196682401">ማሰሪያ</translation>
 <translation id="7850847810298646851">በGoogle AI የተጎላበተ ልጣፍ</translation>
 <translation id="785170686607360576">ቱሊፕ</translation>
 <translation id="7856267634822906833">የብሉቱዝ መነካት የሚችል ማያ</translation>
@@ -1114,6 +1155,7 @@
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="8246209727385807362">የማይታወቅ አገልግሎት አቅራቢ</translation>
 <translation id="8250926778281121244">ዝገት</translation>
+<translation id="8257572018929862473">የፈጣን መልሶች ቅንብሮችን ክፈት</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8262870577632766028">1 ሰዓት</translation>
 <translation id="827422111966801947">ወይን ጠጅ</translation>
@@ -1157,6 +1199,7 @@
 <translation id="8477551185774834963">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በትንሹ ይበልጣል</translation>
 <translation id="8483248364096924578">የአይፒ አድራሻ</translation>
 <translation id="8491311378305535241">ከAndroid መተግበሪያዎች በኬላ በኩል ወደ ኤችቲቲፒ ድር ጣቢያዎች መገናኘት አይቻልም</translation>
+<translation id="8495070016475833911">ፌልት</translation>
 <translation id="8498220429738806196">የትራፊክ ቆጣሪዎች</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
@@ -1186,6 +1229,7 @@
 <translation id="8726019395068607495">ቆሟል - በር ክፍት ነው</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8747900814994928677">ለውጥን አረጋግጥ</translation>
+<translation id="8755946156089753497">ማማ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">የGoogle ፎቶዎች አልበም</translation>
 <translation id="8775713578693478175">ዘመናዊ ኤፒኤን</translation>
@@ -1199,6 +1243,7 @@
 <translation id="8820817407110198400">ዕልባቶች</translation>
 <translation id="8834539327799336565">አሁን ላይ ተገናኝቷል</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
+<translation id="8849799913685544685">የብርሃን ማማ</translation>
 <translation id="8851859208664803097">ቆሟል - ማተሚያ አይደረስበትም</translation>
 <translation id="8855781559874488009">በኬላ በኩል ወደ ኤችቲቲፒ ድር ጣቢያዎች መገናኘት አይቻልም</translation>
 <translation id="885701979325669005">ማከማቻ</translation>
@@ -1281,7 +1326,9 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="952992212772159698">አልገበረም</translation>
+<translation id="95718197892796296">ሸክላ</translation>
 <translation id="960719561871045870">የከዋኝ ኮድ</translation>
+<translation id="965918541715156800">ቢጫ እና ቲል</translation>
 <translation id="966787709310836684">ምናሌ</translation>
 <translation id="979450713603643090">ፈዛዛ ሮዝ</translation>
 <translation id="982713511914535780">የባትሪ ኃይል የመጨረስ ሙከራን አሂድ</translation>

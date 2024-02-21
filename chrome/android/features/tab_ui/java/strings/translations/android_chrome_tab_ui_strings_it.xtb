@@ -36,7 +36,6 @@
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura dell'anteprima del foglio di condivisione.</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="3882834874697329510">Attiva le notifiche nelle Impostazioni per ricevere un avviso quando ci sarà un prezzo più basso in una scheda aperta.</translation>
 <translation id="3940195383040445971">Monitora prezzi nelle schede</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Raggruppa scheda}other{Raggruppa schede}}</translation>
@@ -96,6 +95,7 @@
 <translation id="7559245342362162951">Mostra le schede del gruppo in una griglia a schermo intero</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Condividi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Condividi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="7792771145871471484">Controlla i suggerimenti.</translation>
+<translation id="7825973332242257878">Gruppi di schede</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Raggruppa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Raggruppa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recensione}other{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recensioni}}</translation>
 <translation id="7885132941432959125">Sposta scheda a destra</translation>
