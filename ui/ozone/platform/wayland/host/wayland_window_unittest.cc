@@ -3937,16 +3937,9 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   });
 }
 
-// TODO(https://crbug.com/1448391): Reenable for Lacros when adjusted for screen
-// coordinates.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SetsPropertiesOnShow DISABLED_SetsPropertiesOnShow
-#else
-#define MAYBE_SetsPropertiesOnShow SetsPropertiesOnShow
-#endif
 // Tests that if the window gets hidden and shown again, the title, app id and
 // size constraints remain the same.
-TEST_P(WaylandWindowTest, MAYBE_SetsPropertiesOnShow) {
+TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   constexpr char kAppId[] = "wayland_test";
   const std::u16string kTitle(u"WaylandWindowTest");
 
