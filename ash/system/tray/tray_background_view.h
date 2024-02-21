@@ -217,9 +217,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   bool IsShowAnimationEnabled();
 
   // Callbacks for Animations
+  void OnHideAnimationStarted();
   void OnAnimationAborted();
   virtual void OnAnimationEnded();
-  void OnHideAnimationStarted();
 
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }
@@ -266,6 +266,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   void StartPulseAnimation();
   void StopPulseAnimation();
 
+  // Used to bounce in animation on tray button.
+  void BounceInAnimation();
+
   void SetContextMenuEnabled(bool should_enable_menu) {
     set_context_menu_controller(should_enable_menu ? this : nullptr);
   }
@@ -309,11 +312,10 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // child layers will still be there until all the animation finished.
   std::unique_ptr<ui::Layer> RecreateLayer() override;
 
-  // Applies transformations to the |layer()| to animate the view when
-  // SetVisible(false) is called.
-  void HideAnimation();
+  // Applies transformations to the `layer()` to animate the view when
+  // `SetVisible(false)` is called.
   void FadeInAnimation();
-  void BounceInAnimation();
+  void HideAnimation();
 
   // Helper function that calculates background insets relative to local bounds.
   gfx::Insets GetBackgroundInsets() const;
