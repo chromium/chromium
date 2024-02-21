@@ -182,4 +182,26 @@ std::string OpKindToString(mojom::Reduce::Kind kind) {
   NOTREACHED_NORETURN();
 }
 
+std::string DataTypeToString(mojom::Operand::DataType type) {
+  switch (type) {
+    case mojom::Operand::DataType::kFloat32:
+      return "float32";
+    case mojom::Operand::DataType::kFloat16:
+      return "float16";
+    case mojom::Operand::DataType::kInt32:
+      return "int32";
+    case mojom::Operand::DataType::kUint32:
+      return "uint32";
+    case mojom::Operand::DataType::kInt8:
+      return "int8";
+    case mojom::Operand::DataType::kUint8:
+      return "uint8";
+    case mojom::Operand::DataType::kInt64:
+      return "int64";
+    case mojom::Operand::DataType::kUint64:
+      return "uint64";
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace webnn

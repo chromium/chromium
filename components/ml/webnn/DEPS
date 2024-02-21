@@ -1,3 +1,0 @@
-include_rules = [
-  "+services/webnn/public/mojom/webnn_graph.mojom.h",
-]

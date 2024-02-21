@@ -47,7 +47,7 @@ class MLGraphTest : public MLGraphTestBase {};
 
 template <typename T>
 struct ElementWiseBinaryTester {
-  webnn::mojom::blink::ElementWiseBinary::Kind kind;
+  ElementWiseBinaryKind kind;
   OperandInfo<T> lhs;
   OperandInfo<T> rhs;
   Vector<T> expected;
@@ -88,7 +88,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // The expected results should be the sum of the values of the two input
     // scalars.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {},
                 .values = {2.0}},
@@ -103,7 +103,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // The expected results should be the sum of the values of the two input
     // tensors, element-wise.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2},
                 .values = {1.0, 2.0}},
@@ -116,7 +116,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
   {
     // Test element-wise add operator for two 2-D tensors.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
@@ -130,7 +130,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // Test element-wise add operator for 0-D scalar broadcasting to 2-D
     // tensor.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
@@ -144,7 +144,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // Test element-wise add operator for 1-D tensor broadcasting to 2-D
     // tensor.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
@@ -158,7 +158,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // Test element-wise add operator for 3-D tensor broadcasting to 3-D
     // tensor.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
@@ -171,7 +171,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
   {
     // Test element-wise add operator for two 4-D tensors
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 2.0, 3.0, 4.0}},
@@ -186,7 +186,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // The expected results should be the difference of the values of the two
     // input tensors, element-wise.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kSub,
+        .kind = ElementWiseBinaryKind::kSub,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 2.0, 3.0, 4.0}},
@@ -201,7 +201,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // The expected results should be the product of the values of the two
     // input tensors, element-wise.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kMul,
+        .kind = ElementWiseBinaryKind::kMul,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 2.0, 3.0, 4.0}},
@@ -216,7 +216,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // The expected results should be the quotient of the values of the two
     // input tensors, element-wise.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kDiv,
+        .kind = ElementWiseBinaryKind::kDiv,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {3.0, 4.0, 6.0, 8.0}},
@@ -231,7 +231,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // The expected results should be the lesser values of the two input
     // tensors, element-wise.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kMin,
+        .kind = ElementWiseBinaryKind::kMin,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 4.0, 5.0, 8.0}},
@@ -246,7 +246,7 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // The expected results should be the greater values of the two input
     // tensors, element-wise.
     ElementWiseBinaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseBinary::Kind::kMax,
+        .kind = ElementWiseBinaryKind::kMax,
         .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 4.0, 5.0, 8.0}},
@@ -274,8 +274,7 @@ struct PowTester {
     auto* rhs_operand = BuildConstant(builder, rhs.dimensions, rhs.data_type,
                                       rhs.values, scope.GetExceptionState());
     auto* output_operand = BuildElementWiseBinary(
-        scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kPow,
-        lhs_operand, rhs_operand);
+        scope, builder, ElementWiseBinaryKind::kPow, lhs_operand, rhs_operand);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
@@ -321,7 +320,7 @@ TEST_P(MLGraphTest, PowTest) {
 
 template <typename T>
 struct ElementWiseUnaryTester {
-  webnn::mojom::blink::ElementWiseUnary::Kind kind;
+  ElementWiseUnaryKind kind;
   OperandInfo<T> input;
   Vector<T> expected;
 
@@ -335,56 +334,53 @@ struct ElementWiseUnaryTester {
                    scope.GetExceptionState());
     MLOperand* output_operand = nullptr;
     switch (kind) {
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kAbs:
+      case ElementWiseUnaryKind::kAbs:
         output_operand = builder->abs(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kCeil:
+      case ElementWiseUnaryKind::kCeil:
         output_operand =
             builder->ceil(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kCos:
+      case ElementWiseUnaryKind::kCos:
         output_operand = builder->cos(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kExp:
+      case ElementWiseUnaryKind::kExp:
         output_operand = builder->exp(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kFloor:
+      case ElementWiseUnaryKind::kFloor:
         output_operand =
             builder->floor(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kLog:
+      case ElementWiseUnaryKind::kLog:
         output_operand = builder->log(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kNeg:
+      case ElementWiseUnaryKind::kNeg:
         output_operand = builder->neg(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kSin:
+      case ElementWiseUnaryKind::kSin:
         output_operand = builder->sin(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kTan:
+      case ElementWiseUnaryKind::kTan:
         output_operand = builder->tan(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kErf:
+      case ElementWiseUnaryKind::kErf:
         output_operand = builder->erf(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity:
+      case ElementWiseUnaryKind::kIdentity:
         output_operand =
             builder->identity(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
+      case ElementWiseUnaryKind::kLogicalNot:
         output_operand =
             builder->logicalNot(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal:
+      case ElementWiseUnaryKind::kReciprocal:
         output_operand =
             builder->reciprocal(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::blink::ElementWiseUnary::Kind::kSqrt:
+      case ElementWiseUnaryKind::kSqrt:
         output_operand =
             builder->sqrt(input_operand, scope.GetExceptionState());
-        break;
-      case webnn::mojom::ElementWiseUnary_Kind::kCast:
-        // TODO: crbug.com/325598628 - Add tests for this case.
         break;
     }
     auto [graph, build_exception] =
@@ -411,7 +407,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // Test element-wise abs operator for a 0-D scalar.
     // The expected results should be the absolute value of the input scalar.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kAbs,
+        .kind = ElementWiseUnaryKind::kAbs,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {},
                   .values = {-2.0}},
@@ -423,7 +419,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // The expected results should be the absolute value of the input tensor,
     // element-wise.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kAbs,
+        .kind = ElementWiseUnaryKind::kAbs,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2},
                   .values = {-1.0, -2.0}},
@@ -435,7 +431,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // The expected results should be the ceiling of the input tensor,
     // element-wise.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kCeil,
+        .kind = ElementWiseUnaryKind::kCeil,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2},
                   .values = {1.1, -2.2}},
@@ -447,7 +443,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // The expected results should be the floor of the input tensor,
     // element-wise.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kFloor,
+        .kind = ElementWiseUnaryKind::kFloor,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2},
                   .values = {1.1, -2.2, 3.3, -4.4}},
@@ -459,7 +455,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // The expected results should be the numerical negative value of the input
     // tensor, element-wise.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kNeg,
+        .kind = ElementWiseUnaryKind::kNeg,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {1.0, -2.0, 3.0, -4.0}},
@@ -471,7 +467,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // The expected results should be the square root value of the input
     // tensor, element-wise.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kSqrt,
+        .kind = ElementWiseUnaryKind::kSqrt,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {1.0, 4.0, 9.0, 16.0}},
@@ -483,7 +479,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
   {
     // Test element-wise Cos operator.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kCos,
+        .kind = ElementWiseUnaryKind::kCos,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2},
                   .values = {1, -2, 3, -4}},
@@ -493,7 +489,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
   {
     // Test element-wise Exp operator.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kExp,
+        .kind = ElementWiseUnaryKind::kExp,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2},
                   .values = {1, -2, 3, -4}},
@@ -503,7 +499,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
   {
     // Test element-wise Log operator.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kLog,
+        .kind = ElementWiseUnaryKind::kLog,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {3},
                   .values = {0, 3, 10}},
@@ -513,7 +509,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
   {
     // Test element-wise Sin operator.
     ElementWiseUnaryTester<float>{
-        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kSin,
+        .kind = ElementWiseUnaryKind::kSin,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2},
                   .values = {1, -2, 3, -4}},
@@ -750,7 +746,7 @@ TEST_P(MLGraphTest, LeakyReluTest) {
 
 template <typename T>
 struct ReduceTester {
-  webnn::mojom::blink::Reduce::Kind kind;
+  ReduceKind kind;
   OperandInfo<T> input;
   bool keep_dimensions = false;
   Vector<T> expected;
@@ -793,7 +789,7 @@ TEST_P(MLGraphTest, ReduceTest) {
     // Test reduceMean operator with default options.
     auto* options = MLReduceOptions::Create();
     ReduceTester<float>{
-        .kind = webnn::mojom::blink::Reduce::Kind::kMean,
+        .kind = ReduceKind::kMean,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {1.0, 2.0, 3.0, 4.0}},
@@ -805,7 +801,7 @@ TEST_P(MLGraphTest, ReduceTest) {
     // Test reduceMean operator with keep_dimensions = true.
     auto* options = MLReduceOptions::Create();
     ReduceTester<float>{
-        .kind = webnn::mojom::blink::Reduce::Kind::kMean,
+        .kind = ReduceKind::kMean,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {1.0, 2.0, 3.0, 4.0}},
@@ -819,7 +815,7 @@ TEST_P(MLGraphTest, ReduceTest) {
     auto* options = MLReduceOptions::Create();
     options->setAxes({1});
     ReduceTester<float>{
-        .kind = webnn::mojom::blink::Reduce::Kind::kMean,
+        .kind = ReduceKind::kMean,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2},
                   .values = {1.0, 2.0, 3.0, 4.0}},
@@ -832,7 +828,7 @@ TEST_P(MLGraphTest, ReduceTest) {
     auto* options = MLReduceOptions::Create();
     options->setAxes({1});
     ReduceTester<float>{
-        .kind = webnn::mojom::blink::Reduce::Kind::kMean,
+        .kind = ReduceKind::kMean,
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2},
                   .values = {1.0, 2.0, 3.0, 4.0}},

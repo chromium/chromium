@@ -15,8 +15,5 @@ static_library("webnn") {
     "graph_validation_utils.cc",
     "graph_validation_utils.h",
   ]
-  deps = [
-    "//base",
-    "//services/webnn/public/mojom:mojom",
-  ]
+  deps = [ "//base" ]
 }

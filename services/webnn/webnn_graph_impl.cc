@@ -50,8 +50,69 @@ size_t GetBytesPerElement(mojom::Operand::DataType operand_type) {
   NOTREACHED();
 }
 
+webnn::Operand::DataType MojoOperandTypeToComponent(
+    mojom::Operand::DataType data_type) {
+  switch (data_type) {
+    case mojom::Operand::DataType::kFloat32:
+      return webnn::Operand::DataType::kFloat32;
+    case mojom::Operand::DataType::kFloat16:
+      return webnn::Operand::DataType::kFloat16;
+    case mojom::Operand::DataType::kInt32:
+      return webnn::Operand::DataType::kInt32;
+    case mojom::Operand::DataType::kUint32:
+      return webnn::Operand::DataType::kUint32;
+    case mojom::Operand::DataType::kInt64:
+      return webnn::Operand::DataType::kInt64;
+    case mojom::Operand::DataType::kUint64:
+      return webnn::Operand::DataType::kUint64;
+    case mojom::Operand::DataType::kInt8:
+      return webnn::Operand::DataType::kInt8;
+    case mojom::Operand::DataType::kUint8:
+      return webnn::Operand::DataType::kUint8;
+  }
+  NOTREACHED_NORETURN();
+}
+
 webnn::Operand ConvertToComponentOperand(const mojom::Operand* mojo_operand) {
-  return webnn::Operand(mojo_operand->data_type, mojo_operand->dimensions);
+  return webnn::Operand(MojoOperandTypeToComponent(mojo_operand->data_type),
+                        mojo_operand->dimensions);
+}
+
+webnn::InputOperandLayout MojoInputOperandLayoutToComponent(
+    webnn::mojom::InputOperandLayout layout) {
+  switch (layout) {
+    case webnn::mojom::InputOperandLayout::kChannelsFirst:
+      return webnn::InputOperandLayout::kNchw;
+    case webnn::mojom::InputOperandLayout::kChannelsLast:
+      return webnn::InputOperandLayout::kNhwc;
+  }
+  NOTREACHED_NORETURN();
+}
+
+webnn::ReduceKind MojoReduceTypeToComponent(mojom::Reduce::Kind kind) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+      return webnn::ReduceKind::kL1;
+    case mojom::Reduce::Kind::kL2:
+      return webnn::ReduceKind::kL2;
+    case mojom::Reduce::Kind::kLogSum:
+      return webnn::ReduceKind::kLogSum;
+    case mojom::Reduce::Kind::kLogSumExp:
+      return webnn::ReduceKind::kLogSumExp;
+    case mojom::Reduce::Kind::kMax:
+      return webnn::ReduceKind::kMax;
+    case mojom::Reduce::Kind::kMean:
+      return webnn::ReduceKind::kMean;
+    case mojom::Reduce::Kind::kMin:
+      return webnn::ReduceKind::kMin;
+    case mojom::Reduce::Kind::kProduct:
+      return webnn::ReduceKind::kProduct;
+    case mojom::Reduce::Kind::kSum:
+      return webnn::ReduceKind::kSum;
+    case mojom::Reduce::Kind::kSumSquare:
+      return webnn::ReduceKind::kSumSquare;
+  }
+  NOTREACHED_NORETURN();
 }
 
 bool ValidateClampAttributes(const mojom::ClampPtr& clamp) {
@@ -187,7 +248,8 @@ Conv2dAttributesType ConvertToConv2dAttributes(
 
   // Convert groups, input layout and bias.
   attributes_base.groups = conv2d->groups;
-  attributes_base.input_layout = conv2d->input_layout;
+  attributes_base.input_layout =
+      MojoInputOperandLayoutToComponent(conv2d->input_layout);
   attributes_base.bias_operand = std::move(bias_operand);
 
   return std::move(attributes_base);
@@ -269,14 +331,15 @@ webnn::Pool2dAttributes ConvertToPool2dAttributes(
       .height = pool2d->strides->height, .width = pool2d->strides->width};
   component_attributes.dilations = webnn::Size2d<uint32_t>{
       .height = pool2d->dilations->height, .width = pool2d->dilations->width};
-  component_attributes.layout = pool2d->layout;
+  component_attributes.layout =
+      MojoInputOperandLayoutToComponent(pool2d->layout);
   CHECK_EQ(output->dimensions.size(), 4u);
   switch (component_attributes.layout) {
-    case mojom::InputOperandLayout::kChannelsFirst:
+    case webnn::InputOperandLayout::kNchw:
       component_attributes.output_sizes = webnn::Size2d<uint32_t>{
           .height = output->dimensions[2], .width = output->dimensions[3]};
       break;
-    case mojom::InputOperandLayout::kChannelsLast:
+    case webnn::InputOperandLayout::kNhwc:
       component_attributes.output_sizes = webnn::Size2d<uint32_t>{
           .height = output->dimensions[1], .width = output->dimensions[2]};
       break;
@@ -317,7 +380,8 @@ webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
         id_to_operand_map.at(bias_operand_id.value());
     component_attributes.bias = ConvertToComponentOperand(bias_operand.get());
   }
-  component_attributes.layout = instance_normalization->layout;
+  component_attributes.layout =
+      MojoInputOperandLayoutToComponent(instance_normalization->layout);
 
   return component_attributes;
 }
@@ -349,7 +413,7 @@ bool ValidateUnaryOperation(
   }
 
   const auto input_data_type = input->data_type;
-  if (!input_constraint.Has(input_data_type)) {
+  if (!input_constraint.Has(MojoOperandTypeToComponent(input_data_type))) {
     // The data type is not in the constraint.
     return false;
   }
@@ -645,8 +709,7 @@ static constexpr auto kUnaryOperatorConstraints = base::MakeFixedFlatMap<
     {mojom::ElementWiseUnary::Kind::kNeg, DataTypeConstraint::kSignedNumber},
     {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat},
     {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kLogicalNot,
-     {mojom::Operand::DataType::kUint8}},
+    {mojom::ElementWiseUnary::Kind::kLogicalNot, {Operand::DataType::kUint8}},
     {mojom::ElementWiseUnary::Kind::kIdentity, DataTypeConstraintSet::All()},
     {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat},
     {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat},
@@ -1181,8 +1244,8 @@ bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateReduceAndInferOutput(
-      reduce->kind, ConvertToComponentOperand(input), reduce->axes,
-      reduce->keep_dimensions);
+      MojoReduceTypeToComponent(reduce->kind), ConvertToComponentOperand(input),
+      reduce->axes, reduce->keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }

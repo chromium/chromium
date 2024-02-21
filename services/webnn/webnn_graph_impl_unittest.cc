@@ -2185,8 +2185,8 @@ class ElementWiseUnaryDataTypeFixture
         const testing::TestParamInfo<ParamType>& info) const {
       std::string test_name =
           base::StrCat({OpKindToString(std::get<0>(info.param).first), "_",
-                        webnn::DataTypeToString(std::get<1>(info.param)), "_",
-                        webnn::DataTypeToString(std::get<2>(info.param))});
+                        DataTypeToString(std::get<1>(info.param)), "_",
+                        DataTypeToString(std::get<2>(info.param))});
       return test_name;
     }
   };

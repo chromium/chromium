@@ -59,64 +59,64 @@ namespace {
 
 MLGraphBuilder::BackendForTesting* g_backend_for_testing = nullptr;
 
-blink::V8MLOperandDataType::Enum MojoOperandDataTypeToBlink(
-    webnn::mojom::blink::Operand::DataType data_type) {
+blink::V8MLOperandDataType::Enum ComponentOperandTypeToBlink(
+    webnn::Operand::DataType data_type) {
   switch (data_type) {
-    case webnn::mojom::blink::Operand::DataType::kFloat32:
+    case webnn::Operand::DataType::kFloat32:
       return blink::V8MLOperandDataType::Enum::kFloat32;
-    case webnn::mojom::blink::Operand::DataType::kFloat16:
+    case webnn::Operand::DataType::kFloat16:
       return blink::V8MLOperandDataType::Enum::kFloat16;
-    case webnn::mojom::blink::Operand::DataType::kInt32:
+    case webnn::Operand::DataType::kInt32:
       return blink::V8MLOperandDataType::Enum::kInt32;
-    case webnn::mojom::blink::Operand::DataType::kUint32:
+    case webnn::Operand::DataType::kUint32:
       return blink::V8MLOperandDataType::Enum::kUint32;
-    case webnn::mojom::blink::Operand::DataType::kInt64:
+    case webnn::Operand::DataType::kInt64:
       return blink::V8MLOperandDataType::Enum::kInt64;
-    case webnn::mojom::blink::Operand::DataType::kUint64:
+    case webnn::Operand::DataType::kUint64:
       return blink::V8MLOperandDataType::Enum::kUint64;
-    case webnn::mojom::blink::Operand::DataType::kInt8:
+    case webnn::Operand::DataType::kInt8:
       return blink::V8MLOperandDataType::Enum::kInt8;
-    case webnn::mojom::blink::Operand::DataType::kUint8:
+    case webnn::Operand::DataType::kUint8:
       return blink::V8MLOperandDataType::Enum::kUint8;
   }
   NOTREACHED_NORETURN();
 }
 
-webnn::mojom::blink::Operand::DataType BlinkOperandDataTypeToMojo(
+webnn::Operand::DataType BlinkOperandTypeToComponent(
     blink::V8MLOperandDataType::Enum data_type) {
   switch (data_type) {
     case blink::V8MLOperandDataType::Enum::kFloat32:
-      return webnn::mojom::blink::Operand::DataType::kFloat32;
+      return webnn::Operand::DataType::kFloat32;
     case blink::V8MLOperandDataType::Enum::kFloat16:
-      return webnn::mojom::blink::Operand::DataType::kFloat16;
+      return webnn::Operand::DataType::kFloat16;
     case blink::V8MLOperandDataType::Enum::kInt32:
-      return webnn::mojom::blink::Operand::DataType::kInt32;
+      return webnn::Operand::DataType::kInt32;
     case blink::V8MLOperandDataType::Enum::kUint32:
-      return webnn::mojom::blink::Operand::DataType::kUint32;
+      return webnn::Operand::DataType::kUint32;
     case blink::V8MLOperandDataType::Enum::kInt64:
-      return webnn::mojom::blink::Operand::DataType::kInt64;
+      return webnn::Operand::DataType::kInt64;
     case blink::V8MLOperandDataType::Enum::kUint64:
-      return webnn::mojom::blink::Operand::DataType::kUint64;
+      return webnn::Operand::DataType::kUint64;
     case blink::V8MLOperandDataType::Enum::kInt8:
-      return webnn::mojom::blink::Operand::DataType::kInt8;
+      return webnn::Operand::DataType::kInt8;
     case blink::V8MLOperandDataType::Enum::kUint8:
-      return webnn::mojom::blink::Operand::DataType::kUint8;
+      return webnn::Operand::DataType::kUint8;
   }
   NOTREACHED_NORETURN();
 }
 
 webnn::Operand ConvertToComponentOperand(const blink::MLOperand* ml_operand) {
-  return webnn::Operand(BlinkOperandDataTypeToMojo(ml_operand->DataType()),
+  return webnn::Operand(BlinkOperandTypeToComponent(ml_operand->DataType()),
                         ml_operand->Dimensions());
 }
 
-webnn::mojom::blink::InputOperandLayout BlinkInputOperandLayoutToMojo(
+webnn::InputOperandLayout BlinkInputOperandLayoutToComponent(
     blink::V8MLInputOperandLayout::Enum type) {
   switch (type) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
-      return webnn::mojom::blink::InputOperandLayout::kChannelsFirst;
+      return webnn::InputOperandLayout::kNchw;
     case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      return webnn::mojom::blink::InputOperandLayout::kChannelsLast;
+      return webnn::InputOperandLayout::kNhwc;
   }
   NOTREACHED_NORETURN();
 }
@@ -161,29 +161,29 @@ webnn::RoundingType BlinkRoundingTypeToComponent(
   NOTREACHED_NORETURN();
 }
 
-webnn::mojom::blink::Reduce::Kind BlinkReduceKindToMojo(
+webnn::ReduceKind BlinkReduceKindToComponent(
     blink::MLOperator::OperatorKind kind) {
   switch (kind) {
     case blink::MLOperator::OperatorKind::kReduceL1:
-      return webnn::mojom::blink::Reduce::Kind::kL1;
+      return webnn::ReduceKind::kL1;
     case blink::MLOperator::OperatorKind::kReduceL2:
-      return webnn::mojom::blink::Reduce::Kind::kL2;
+      return webnn::ReduceKind::kL2;
     case blink::MLOperator::OperatorKind::kReduceLogSum:
-      return webnn::mojom::blink::Reduce::Kind::kLogSum;
+      return webnn::ReduceKind::kLogSum;
     case blink::MLOperator::OperatorKind::kReduceLogSumExp:
-      return webnn::mojom::blink::Reduce::Kind::kLogSumExp;
+      return webnn::ReduceKind::kLogSumExp;
     case blink::MLOperator::OperatorKind::kReduceMax:
-      return webnn::mojom::blink::Reduce::Kind::kMax;
+      return webnn::ReduceKind::kMax;
     case blink::MLOperator::OperatorKind::kReduceMean:
-      return webnn::mojom::blink::Reduce::Kind::kMean;
+      return webnn::ReduceKind::kMean;
     case blink::MLOperator::OperatorKind::kReduceMin:
-      return webnn::mojom::blink::Reduce::Kind::kMin;
+      return webnn::ReduceKind::kMin;
     case blink::MLOperator::OperatorKind::kReduceProduct:
-      return webnn::mojom::blink::Reduce::Kind::kProduct;
+      return webnn::ReduceKind::kProduct;
     case blink::MLOperator::OperatorKind::kReduceSum:
-      return webnn::mojom::blink::Reduce::Kind::kSum;
+      return webnn::ReduceKind::kSum;
     case blink::MLOperator::OperatorKind::kReduceSumSquare:
-      return webnn::mojom::blink::Reduce::Kind::kSumSquare;
+      return webnn::ReduceKind::kSumSquare;
     default:
       NOTREACHED_NORETURN();
   }
@@ -252,7 +252,7 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
   attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
   attributes.groups = options->groups();
   attributes.input_layout =
-      BlinkInputOperandLayoutToMojo(options->inputLayout().AsEnum());
+      BlinkInputOperandLayoutToComponent(options->inputLayout().AsEnum());
   if (options->hasBias()) {
     attributes.bias_operand = ConvertToComponentOperand(options->bias());
   }
@@ -348,7 +348,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
   attributes.dilations =
       webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
   attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
-  attributes.layout = BlinkInputOperandLayoutToMojo(options->layout().AsEnum());
+  attributes.layout =
+      BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
   attributes.rounding_type =
       BlinkRoundingTypeToComponent(options->roundingType().AsEnum());
   if (options->hasOutputSizes()) {
@@ -388,7 +389,8 @@ webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
   if (options->hasBias()) {
     attributes.bias = ConvertToComponentOperand(options->bias());
   }
-  attributes.layout = BlinkInputOperandLayoutToMojo(options->layout().AsEnum());
+  attributes.layout =
+      BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
   return attributes;
 }
 
@@ -495,7 +497,7 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
 
   auto* arg_min_max = MakeGarbageCollected<MLOperator>(builder, kind, options);
   auto output = MLOperand::ValidateAndCreateOutput(
-      builder, MojoOperandDataTypeToBlink(validated_output->data_type),
+      builder, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), arg_min_max);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -555,7 +557,7 @@ MLOperand* BuildUnaryOperator(
   // The output tensor of unary operator has the same data type and dimensions
   // as its input tensor.
   if (!data_type_constraint.Has(
-          BlinkOperandDataTypeToMojo(input->DataType()))) {
+          BlinkOperandTypeToComponent(input->DataType()))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
         String::Format(
@@ -584,7 +586,7 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
   const auto input_rank = input->Dimensions().size();
   const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
   auto validated_output = webnn::ValidateReduceAndInferOutput(
-      BlinkReduceKindToMojo(kind), ConvertToComponentOperand(input), axes,
+      BlinkReduceKindToComponent(kind), ConvertToComponentOperand(input), axes,
       options->keepDimensions());
   if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
@@ -598,7 +600,7 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce, the output
   // tensor of reduce has the same data type as its input.
   auto output = MLOperand::ValidateAndCreateOutput(
-      builder, MojoOperandDataTypeToBlink(validated_output->data_type),
+      builder, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), reduce);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -743,7 +745,7 @@ MLOperand* MLGraphBuilder::batchNormalization(
     inputs.push_back(options->bias());
   }
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), batch_normalization);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -774,7 +776,7 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
 
   auto* concat = MakeGarbageCollected<MLConcatOperator>(this, axis);
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), concat);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -839,7 +841,7 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
     inputs.push_back(options->bias());
   }
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output.value().data_type),
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), conv2d);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -880,7 +882,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(
     inputs.push_back(options->bias());
   }
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output.value().data_type),
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), convTranspose2d);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -940,7 +942,7 @@ BUILD_ELEMENTWISE_UNARY_OP(identity,
                            webnn::DataTypeConstraintSet::All())
 BUILD_ELEMENTWISE_UNARY_OP(logicalNot,
                            kLogicalNot,
-                           {webnn::mojom::blink::Operand::DataType::kUint8})
+                           {webnn::Operand::DataType::kUint8})
 BUILD_ELEMENTWISE_UNARY_OP(reciprocal,
                            kReciprocal,
                            webnn::DataTypeConstraint::kFloat)
@@ -1063,7 +1065,7 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
       this, MLOperator::OperatorKind::kGather, options);
   HeapVector<Member<const MLOperand>> inputs = {input, indices};
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), gather);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1095,7 +1097,7 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
     inputs.push_back(options->c());
   }
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output.value().data_type),
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), gemm);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1179,7 +1181,7 @@ MLOperand* MLGraphBuilder::instanceNormalization(
   }
 
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), instance_normalization);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1224,7 +1226,7 @@ MLOperand* MLGraphBuilder::layerNormalization(
   }
 
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), layer_normalization);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1307,7 +1309,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
   HeapVector<Member<const MLOperand>> outputs;
   for (const auto& validated_output : validated_outputs.value()) {
     auto output = MLOperand::ValidateAndCreateOutput(
-        this, MojoOperandDataTypeToBlink(validated_output.data_type),
+        this, ComponentOperandTypeToBlink(validated_output.data_type),
         Vector<uint32_t>(validated_output.dimensions), lstm);
     if (!output.has_value()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1355,7 +1357,7 @@ MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
   auto* matmul =
       MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kMatmul);
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output.value().data_type),
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), matmul);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1441,7 +1443,7 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
   auto* prelu =
       MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kPRelu);
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), prelu);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1550,7 +1552,7 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
   auto* resample2d = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kResample2d, options);
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), resample2d);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1596,7 +1598,7 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
 
   auto* slice = MakeGarbageCollected<MLSliceOperator>(this, starts, sizes);
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), slice);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1620,7 +1622,7 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   auto* softmax = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kSoftmax);
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output.value().data_type),
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), softmax);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1701,7 +1703,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   HeapVector<Member<const MLOperand>> outputs;
   for (const auto& validated_output : validated_outputs.value()) {
     auto output = MLOperand::ValidateAndCreateOutput(
-        this, MojoOperandDataTypeToBlink(validated_output.data_type),
+        this, ComponentOperandTypeToBlink(validated_output.data_type),
         Vector<uint32_t>(validated_output.dimensions), split);
     if (!output.has_value()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1738,7 +1740,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   HeapVector<Member<const MLOperand>> outputs;
   for (const auto& validated_output : validated_outputs.value()) {
     auto output = MLOperand::ValidateAndCreateOutput(
-        this, MojoOperandDataTypeToBlink(validated_output.data_type),
+        this, ComponentOperandTypeToBlink(validated_output.data_type),
         Vector<uint32_t>(validated_output.dimensions), split);
     if (!output.has_value()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1797,7 +1799,7 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose, the output
   // tensor of transpose has the same data type as its input.
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), transpose);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -1826,7 +1828,7 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
   auto* where =
       MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kWhere);
   const auto output = MLOperand::ValidateAndCreateOutput(
-      this, MojoOperandDataTypeToBlink(validated_output->data_type),
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), where);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
