@@ -313,6 +313,22 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SIGN_IN_PERSONALIZE_GOOGLE_SERVICES_SUMMARY" desc="Message of 'Personalize Google services' preference in signed in accounts settings screen">
         Control how your synced history can be used to personalize other Google services
       </message>
+      <!-- Personalized Google services preferences-->
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_SUMMARY" desc="Summary of 'Personalize Google services' settings screen">
+        To get the most personalized experience, include Chrome in Web &amp; App Activity and linked Google services
+      </message>
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_WAA_TITLE" desc="Title of 'Web &amp; App activity' preference in 'Personalize Google services' settings screen">
+        Web &amp; App Activity
+      </message>
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_WAA_SUMMARY" desc="Summary of 'Web &amp; App activity' preference in 'Personalize Google services' settings screen">
+        Include Chrome history if you want to add it to the Web &amp; App Activity in your Google Account
+      </message>
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_LINKED_SERVICES_TITLE" desc="Title of 'Linked Google services' preference in 'Personalize Google services' settings screen">
+        Linked Google services
+      </message>
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_LINKED_SERVICES_SUMMARY" desc="Summary of 'Linked Google services' preference in 'Personalize Google services' settings screen">
+        Link Chrome and other Google services if you want them to share data with each other
+      </message>
       <!-- Unified consent preferences -->
       <message name="IDS_SIGN_OUT_AND_TURN_OFF_SYNC" desc="The text for a preferences row that for signs out the user and turns off sync.">
         Sign out and turn off sync

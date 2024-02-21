@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -53,7 +54,10 @@ import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -71,8 +75,8 @@ import java.util.stream.Collectors;
 
 /**
  * Settings fragment to customize Sync options (data types, encryption). Corresponds to
- * chrome://settings/syncSetup/advanced and parts of chrome://settings/syncSetup on desktop.
- * This fragment is accessible from the main settings view.
+ * chrome://settings/syncSetup/advanced and parts of chrome://settings/syncSetup on desktop. This
+ * fragment is accessible from the main settings view.
  */
 public class ManageSyncSettings extends ChromeBaseSettingsFragment
         implements PassphraseDialogFragment.Listener,
@@ -81,7 +85,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 Preference.OnPreferenceChangeListener,
                 SyncService.SyncStateChangedListener,
                 Listener,
-                SyncErrorCardPreference.SyncErrorCardPreferenceListener {
+                SyncErrorCardPreference.SyncErrorCardPreferenceListener,
+                FragmentSettingsLauncher {
     private static final String IS_FROM_SIGNIN_SCREEN = "ManageSyncSettings.isFromSigninScreen";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
@@ -124,6 +129,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
 
     private SyncService mSyncService;
+    private SettingsLauncher mSettingsLauncher;
 
     private boolean mIsFromSigninScreen;
 
@@ -552,9 +558,19 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
-        AppHooks.get()
-                .createGoogleActivityController()
-                .openWebAndAppActivitySettings(getActivity(), signedInAccountName);
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
+        boolean isEeaChoiceCountry = templateUrlService.isEeaChoiceCountry();
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)
+                && isEeaChoiceCountry) {
+            mSettingsLauncher.launchSettingsActivity(
+                    getContext(), PersonalizeGoogleServicesSettings.class);
+        } else {
+            AppHooks.get()
+                    .createGoogleActivityController()
+                    .openWebAndAppActivitySettings(getActivity(), signedInAccountName);
+        }
         RecordUserAction.record("Signin_AccountSettings_GoogleActivityControlsClicked");
     }
 
@@ -666,6 +682,16 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED) {
             TrustedVaultClient.get().notifyRecoverabilityChanged();
         }
+    }
+
+    /**
+     * Overrides FragmentSettingsLauncher.setSettingsLauncher to inject the App SettingsLauncher.
+     *
+     * @param settingsLauncher App SettingsLauncher instance.
+     */
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
     }
 
     // SyncErrorCardPreferenceListener implementation:
