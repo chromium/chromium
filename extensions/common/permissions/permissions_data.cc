@@ -335,6 +335,15 @@ void PermissionsData::ClearTabSpecificPermissions(int tab_id) const {
   tab_specific_permissions_.erase(tab_id);
 }
 
+bool PermissionsData::HasTabPermissionsForSecurityOrigin(
+    int tab_id,
+    const GURL& url) const {
+  base::AutoLock auto_lock(runtime_lock_);
+  const PermissionSet* tab_permissions = GetTabSpecificPermissions(tab_id);
+  return tab_permissions &&
+         tab_permissions->effective_hosts().MatchesSecurityOrigin(url);
+}
+
 bool PermissionsData::HasAPIPermission(APIPermissionID permission) const {
   base::AutoLock auto_lock(runtime_lock_);
   return active_permissions_unsafe_->HasAPIPermission(permission);

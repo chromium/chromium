@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -236,6 +237,14 @@ bool DoesScriptMatch(const Extension& extension,
 
   GURL effective_url =
       GetEffectiveDocumentURL(&frame, url, script.match_origin_as_fallback());
+  auto* web_contents = content::WebContents::FromRenderFrameHost(&frame);
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  // Script can inject if the extension has tab permissions for the url.
+  if (extension.permissions_data()->HasTabPermissionsForSecurityOrigin(
+          tab_id, effective_url)) {
+    return true;
+  }
 
   // Dynamic scripts can only inject when the extension has host permissions for
   // the url.
@@ -778,6 +787,16 @@ void ScriptInjectionTracker::WillExecuteCode(
   // never handle user scripts.
   HandleProgrammaticScriptInjection(PassKey(), ScriptType::kContentScript,
                                     frame, extension);
+}
+
+// static
+void ScriptInjectionTracker::WillGrantActiveTab(
+    base::PassKey<ActiveTabPermissionGranter> pass_key,
+    const Extension& extension,
+    content::RenderProcessHost& process) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  AddMatchingScriptsToProcess(extension, process);
 }
 
 // static

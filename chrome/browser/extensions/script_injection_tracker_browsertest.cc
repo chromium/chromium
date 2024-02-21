@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions_test_util.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -136,6 +137,28 @@ class ScriptInjectionTrackerBrowserTest : public ExtensionBrowserTest {
 
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
+  }
+
+  // Returns the current active web contents.
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  // Navigates to url for given `hostname` and `relative_url`. Returns whether
+  // the navigation is in a new process compared to the currently active tab.
+  [[nodiscard]] bool NavigateToURLInNewProcess(base::StringPiece hostname,
+                                               base::StringPiece relative_url) {
+    content::WebContents* original_web_contents = GetActiveWebContents();
+
+    // Opening the URL in a new tab should force it into a new process.
+    GURL url = embedded_test_server()->GetURL(hostname, relative_url);
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+    content::WebContents* new_web_contents = GetActiveWebContents();
+    return original_web_contents->GetPrimaryMainFrame()->GetProcess() !=
+           new_web_contents->GetPrimaryMainFrame()->GetProcess();
   }
 };
 
@@ -1688,6 +1711,83 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   EXPECT_EQ("Content script has run",
             content::EvalJs(web_contents, "document.body.title"));
   EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+}
+
+// Tests that ScriptInjectionTracker updates the renderer data when activeTab is
+// granted.
+IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest, ActiveTabGranted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Step 1: Install extension with <all_urls> optional host permissions and
+  // dynamic content script with a.com matches.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "activeTab extension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "permissions": [ "scripting", "activeTab" ],
+        "background": { "service_worker": "worker.js" }
+      } )";
+  const char kWorkerScript[] = R"(
+      var scripts = [{
+        id: 'script1',
+        matches: ['*://a.com/*'],
+        js: ['content_script.js'],
+        runAt: 'document_end'
+      }];
+
+      chrome.runtime.onInstalled.addListener(function(details) {
+        chrome.scripting.registerContentScripts(scripts, () => {
+          chrome.test.sendMessage('SCRIPT_LOADED');
+        });
+      }); )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorkerScript);
+  const char kContentScript[] = R"(
+      document.body.title = 'Content script has run';
+  )";
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+
+  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
+
+  // Step 2: Navigate to a.com. Verify that the process doesn't show up as
+  // having been injected with content scripts.
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(web_contents, "document.body.innerText"));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Step 3: Grant activeTab and verify tracker runs the content script.
+  TabHelper* tab_helper = TabHelper::FromWebContents(web_contents);
+  tab_helper->active_tab_permission_granter()->GrantIfRequested(extension);
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Step 4: Navigate to a.com in the same renderer. Verify process shows up as
+  // having been injected with content script, and content script is injected.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_EQ("Content script has run",
+            content::EvalJs(web_contents, "document.body.title"));
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Step 5: Navigate to a.com on a new renderer. Verify process doesn't show up
+  // as having been injected with content scripts, since tab permission was
+  // granted only to the active tab.
+  ASSERT_TRUE(NavigateToURLInNewProcess("a.com", "/title1.html"));
+  web_contents = GetActiveWebContents();
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(web_contents, "document.body.innerText"));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 

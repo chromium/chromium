@@ -24,6 +24,7 @@
 #include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -171,15 +172,23 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     SetCorsOriginAccessList(browser_context, *extension, base::DoNothing());
 
     if (web_contents()->GetController().GetVisibleEntry()) {
-      // We update all extension render views with the new tab permissions, and
+      ProcessManager* process_manager = ProcessManager::Get(browser_context);
+      content::RenderProcessHost* process =
+          web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+      // Notify ScriptInjectionTracker that scripts may be executed after
+      // granting active tab.
+      ScriptInjectionTracker::WillGrantActiveTab(
+          base::PassKey<ActiveTabPermissionGranter>(), *extension, *process);
+
+      // Update all extension render views with the new tab permissions, and
       // also the tab itself.
       RendererMessageFunction update_message =
           base::BindRepeating(&UpdateTabSpecificPermissions, extension->id(),
                               new_hosts.Clone(), tab_id_);
-      ProcessManager* process_manager = ProcessManager::Get(browser_context);
       SendRendererMessageToProcesses(
           process_manager->GetRenderFrameHostsForExtension(extension->id()),
-          web_contents()->GetPrimaryMainFrame()->GetProcess(), update_message);
+          process, update_message);
 
       // If more things ever need to know about this, we should consider making
       // an observer class.
@@ -246,7 +255,7 @@ void ActiveTabPermissionGranter::ClearGrantedExtensionsAndNotify(
     return;
   }
 
-  std::set<content::RenderFrameHost*> frame_hosts;
+  std::set<content::RenderProcessHost*> extension_processes;
   std::vector<ExtensionId> extension_ids;
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
@@ -257,17 +266,37 @@ void ActiveTabPermissionGranter::ClearGrantedExtensionsAndNotify(
     SetCorsOriginAccessList(browser_context, *extension, base::DoNothing());
 
     extension_ids.push_back(extension->id());
-    std::set<content::RenderFrameHost*> extension_frame_hosts =
-        process_manager->GetRenderFrameHostsForExtension(extension->id());
-    frame_hosts.insert(extension_frame_hosts.begin(),
-                       extension_frame_hosts.end());
+    for (content::RenderFrameHost* extension_frame_host :
+         process_manager->GetRenderFrameHostsForExtension(extension->id())) {
+      extension_processes.insert(extension_frame_host->GetProcess());
+    }
   }
 
-  RendererMessageFunction clear_message =
-      base::BindRepeating(&ClearTabSpecificPermissions, extension_ids, tab_id_);
-  SendRendererMessageToProcesses(
-      frame_hosts, web_contents()->GetPrimaryMainFrame()->GetProcess(),
-      clear_message);
+  // Notify active renders to clear tab permissions. We need to notify all
+  // renderers because we notify of tab permissions on renderer creation, and a
+  // previously-created (spare) renderer may be used for this tab in the future,
+  // even if it isn't associated with the tab now (b/1923555).
+  // TODO(b/325307774): only communicate the tab permissions to the renderers
+  // that run in the given tab.
+  for (content::RenderProcessHost::iterator host_iterator(
+           content::RenderProcessHost::AllHostsIterator());
+       !host_iterator.IsAtEnd(); host_iterator.Advance()) {
+    // Ignore renderers that are not ready.
+    content::RenderProcessHost* process = host_iterator.GetCurrentValue();
+    if (!process->IsInitializedAndNotDead()) {
+      continue;
+    }
+
+    // Ignore renderers that aren't from the same profile.
+    if (process->GetBrowserContext() != browser_context) {
+      continue;
+    }
+
+    // Only extension processes need to update the origin allowlists.
+    bool update_origin_allowlist = extension_processes.contains(process);
+    ClearTabSpecificPermissions(extension_ids, tab_id_, update_origin_allowlist,
+                                process);
+  }
 
   for (const auto& id : extension_ids) {
     granted_extensions_.Remove(id);

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/site_permissions_helper.h"
 
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -17,6 +18,7 @@
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -284,6 +286,9 @@ class SitePermissionsHelperExecuteSciptBrowserTest
     : public SitePermissionsHelperBrowserTest {
  public:
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("a.com", "127.0.0.1");
+    host_resolver()->AddRule("b.com", "127.0.0.1");
+
     ExtensionBrowserTest::SetUpOnMainThread();
     // Loads an extension that executes a script on every page that is navigated
     // to. Then loads a test page and confirms it is running on the page.
@@ -312,6 +317,13 @@ class SitePermissionsHelperExecuteSciptBrowserTest
     permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
     original_nav_id_ =
         active_nav_controller().GetLastCommittedEntry()->GetUniqueID();
+  }
+
+  // Navigates to `host_name` with `relative_url`. `host_name` must be added as
+  // a rule in SetUpOnMainThread().
+  void NavigateTo(base::StringPiece host_name, base::StringPiece relative_url) {
+    GURL url = embedded_test_server()->GetURL(host_name, relative_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 };
 
@@ -460,6 +472,75 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(ReloadPageAndWaitForLoad());
     ASSERT_TRUE(WaitForReloadToFinish());
     blocked_action_waiter.Wait();
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
+}
+
+// Tests that active tab is cleared when we renavigate to a site previously
+// granted one-time tab permission after a cross-origin navigation. Regression
+// rest for b/324455951.
+IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
+                       CrossOriginRenavigationClearsGrantedTabPermission) {
+  active_action_runner()->accept_bubble_for_testing(true);
+
+  // Withheld extension's site access.
+  ScriptingPermissionsModifier(profile(), extension_.get())
+      .SetWithholdHostPermissions(true);
+
+  {
+    // Navigate to a.com. Script is not injected since extension has withheld
+    // site access.
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    NavigateTo("a.com", "/simple.html");
+    blocked_action_waiter.Wait();
+    ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                      active_web_contents()),
+              SitePermissionsHelper::SiteInteraction::kWithheld);
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
+
+  {
+    // Grant tab permissions to a.com. Script is injected (one time).
+    ExtensionTestMessageListener script_injection_listener(
+        "injection succeeded");
+    active_action_runner()->GrantTabPermissions({extension_.get()});
+    ASSERT_TRUE(WaitForReloadToFinish());
+    ASSERT_TRUE(script_injection_listener.WaitUntilSatisfied());
+    EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                      active_web_contents()),
+              SitePermissionsHelper::SiteInteraction::kGranted);
+    EXPECT_TRUE(ContentScriptInjected());
+    EXPECT_FALSE(ExtensionWantsToRun());
+  }
+
+  {
+    // Navigate to b.com. Script is not injected since extension has withheld
+    // site access.
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    NavigateTo("b.com", "/simple.html");
+    blocked_action_waiter.Wait();
+    EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                      active_web_contents()),
+              SitePermissionsHelper::SiteInteraction::kWithheld);
+    EXPECT_FALSE(ContentScriptInjected());
+    EXPECT_TRUE(ExtensionWantsToRun());
+  }
+
+  {
+    // Navigate back to a.com. Since we navigated to another origin, and then
+    // back to a.com it should not have tab permissions anymore. Thus, the
+    // script is not injected.
+    browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        active_action_runner());
+    NavigateTo("a.com", "/simple.html");
+    blocked_action_waiter.Wait();
+    EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
+                                                      active_web_contents()),
+              SitePermissionsHelper::SiteInteraction::kWithheld);
     EXPECT_FALSE(ContentScriptInjected());
     EXPECT_TRUE(ExtensionWantsToRun());
   }
