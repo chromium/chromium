@@ -11,6 +11,17 @@ source_set("webdata") {
   ]
   public_deps = [
     "//base",
+    "//components/plus_addresses:types",
     "//components/webdata/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plus_address_table_unittest.cc" ]
+  deps = [
+    ":webdata",
+    "//base/test:test_support",
+    "//components/plus_addresses:test_support",
   ]
 }

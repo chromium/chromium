@@ -10,6 +10,18 @@
 
 namespace plus_addresses::test {
 
+PlusProfile GetPlusProfile() {
+  return {.facet = "foo.com",
+          .plus_address = "plus+foo@plus.plus",
+          .is_confirmed = true};
+}
+
+PlusProfile GetPlusProfile2() {
+  return {.facet = "bar.com",
+          .plus_address = "plus+bar@plus.plus",
+          .is_confirmed = true};
+}
+
 std::string MakeCreationResponse(const PlusProfile& profile) {
   std::string json = base::ReplaceStringPlaceholders(
       R"(

@@ -5,6 +5,14 @@
 import("//build/buildflag_header.gni")
 import("//components/plus_addresses/buildflags.gni")
 
+source_set("types") {
+  sources = [ "plus_address_types.h" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+  ]
+}
+
 source_set("plus_addresses") {
   sources = [
     "plus_address_http_client.cc",
@@ -17,7 +25,6 @@ source_set("plus_addresses") {
     "plus_address_prefs.h",
     "plus_address_service.cc",
     "plus_address_service.h",
-    "plus_address_types.h",
   ]
   deps = [
     "//components/prefs",
@@ -31,6 +38,7 @@ source_set("plus_addresses") {
     # of features.h out of sources. Allowing those depending on
     # :plus_addresses to also depend on its features to reduce churn.
     ":features",
+    ":types",
     "//base",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",

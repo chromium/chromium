@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
 #define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
 
+#include <vector>
+
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -31,6 +34,16 @@ class PlusAddressTable : public WebDatabaseTable {
 
   // Retrieves the `PlusAddressTable` owned by `db`.
   static PlusAddressTable* FromWebDatabase(WebDatabase* db);
+
+  // Returns all stored PlusProfiles - or an empty vector if reading fails.
+  std::vector<PlusProfile> GetPlusProfiles() const;
+
+  // Adds `profile` to the database and returns true if the operation succeeded.
+  // Trying to add a `profile` for an already existing facet will fail.
+  bool AddPlusProfile(const PlusProfile& profile);
+
+  // Deletes all stored PlusProfiles, returning true if the operation succeeded.
+  bool ClearPlusProfiles();
 
   // WebDatabaseTable:
   WebDatabaseTable::TypeKey GetTypeKey() const override;

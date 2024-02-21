@@ -20,6 +20,8 @@ struct PlusProfile {
   std::string facet;
   std::string plus_address;
   bool is_confirmed;
+
+  friend bool operator==(const PlusProfile&, const PlusProfile&) = default;
 };
 
 enum class PlusAddressRequestErrorType {

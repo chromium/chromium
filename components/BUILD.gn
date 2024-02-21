@@ -276,6 +276,7 @@ test("components_unittests") {
     "//components/password_manager/core/common:unit_tests",
     "//components/payments/core:unit_tests",
     "//components/plus_addresses:unit_tests",
+    "//components/plus_addresses/webdata:unit_tests",
     "//components/policy/core/browser:unit_tests",
     "//components/policy/core/common:unit_tests",
     "//components/power_bookmarks/core:unit_tests",

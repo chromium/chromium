@@ -9,6 +9,12 @@
 
 namespace plus_addresses::test {
 
+// Returns a fully populated, confirmed PlusProfile.
+PlusProfile GetPlusProfile();
+// Returns a fully populated, confirmed PlusProfile different from
+// `GetPlusProfile()`.
+PlusProfile GetPlusProfile2();
+
 // Used in testing the GetOrCreate, Reserve, and Create network requests.
 std::string MakeCreationResponse(const PlusProfile& profile);
 // Used in testing the List network requests.
