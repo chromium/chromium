@@ -55,6 +55,10 @@ bool AddPropertyIfValid(drmModeAtomicReq* property_set,
 ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
                                    size_t size) {
   TRACE_EVENT0("drm", "CreateLutBlob");
+  if (source.IsDefaultIdentity()) {
+    return nullptr;
+  }
+
   ScopedDrmColorLutPtr lut(
       static_cast<drm_color_lut*>(malloc(sizeof(drm_color_lut) * size)));
   drm_color_lut* p = lut.get();

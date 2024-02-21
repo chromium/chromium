@@ -518,14 +518,23 @@ void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
         drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
   }
 
-  // Do not set DEGAMMA curve, because many devices have broken implementations.
-  // Only enable the DEGAMMA curve on devices known to have functional
-  // implementations.
-  // See https://crbug.com/41393617#comment32 for an example of banding.
-  // See https://crbug.com/1505062#comment17 for an example of corruption.
+  // Set the DEGAMMA curve to the one specified in the color profile, only if
+  // we will also be setting the GAMMA curve.
+  // TODO(https://crbug.com/1505062): This always has to be the identity because
+  // many devices have broken implementations. Identitify devices where this
+  // functionality is not broken.
   if (crtc_props->gamma_lut.id && crtc_props->gamma_lut_size.id &&
       crtc_props->degamma_lut.id && crtc_props->degamma_lut_size.id) {
-    crtc_state->pending_degamma_lut_blob = nullptr;
+    const auto& degamma_curve = crtc_state->color_calibration.srgb_to_linear;
+    if (degamma_curve.IsDefaultIdentity()) {
+      crtc_state->pending_degamma_lut_blob = nullptr;
+    } else {
+      ScopedDrmColorLutPtr degamma_blob_data =
+          CreateLutBlob(degamma_curve, crtc_props->degamma_lut_size.value);
+      crtc_state->pending_degamma_lut_blob = drm_->CreatePropertyBlob(
+          degamma_blob_data.get(),
+          sizeof(drm_color_lut) * crtc_props->degamma_lut_size.value);
+    }
   }
 
   // Set the GAMMA curve to the concatenation of the color profile with the
@@ -535,11 +544,15 @@ void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
       crtc_state->color_calibration.linear_to_device,
       crtc_state->gamma_adjustment.curve);
   if (crtc_props->gamma_lut.id && crtc_props->gamma_lut_size.id) {
-    ScopedDrmColorLutPtr gamma_blob_data =
-        CreateLutBlob(gamma_curve, crtc_props->gamma_lut_size.value);
-    crtc_state->pending_gamma_lut_blob = drm_->CreatePropertyBlob(
-        gamma_blob_data.get(),
-        sizeof(drm_color_lut) * crtc_props->gamma_lut_size.value);
+    if (gamma_curve.IsDefaultIdentity()) {
+      crtc_state->pending_gamma_lut_blob = nullptr;
+    } else {
+      ScopedDrmColorLutPtr gamma_blob_data =
+          CreateLutBlob(gamma_curve, crtc_props->gamma_lut_size.value);
+      crtc_state->pending_gamma_lut_blob = drm_->CreatePropertyBlob(
+          gamma_blob_data.get(),
+          sizeof(drm_color_lut) * crtc_props->gamma_lut_size.value);
+    }
   } else {
     // Fall back to legacy gamma if needed.
     drm_->SetGammaRamp(crtc_id, gamma_curve);
