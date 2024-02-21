@@ -76,13 +76,17 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnSettingFetchingError(
     jint error,
     jint api_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  // TODO(crbug.com/1289700): Notify a consumer/record metrics.
+  // TODO(crbug.com/1289700): Record metrics.
+  consumer_->OnSettingFetchingError(
+      static_cast<PasswordManagerSetting>(setting));
 }
 
 void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::
     OnSuccessfulSettingChange(JNIEnv* env, jint setting) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  // TODO(crbug.com/1289700): Notify a consumer/record metrics.
+  // TODO(crbug.com/1289700): Record metrics.
+  consumer_->OnSuccessfulSettingChange(
+      static_cast<PasswordManagerSetting>(setting));
 }
 
 void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnFailedSettingChange(
@@ -91,7 +95,9 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnFailedSettingChange(
     jint error,
     jint api_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  // TODO(crbug.com/1289700): Notify a consumer/record metrics.
+  // TODO(crbug.com/1289700): Record metrics.
+  consumer_->OnFailedSettingChange(
+      static_cast<PasswordManagerSetting>(setting));
 }
 
 }  // namespace password_manager

@@ -19,7 +19,7 @@
 
 class PrefService;
 
-struct PasswordManagerGetSettingGmsResult {
+struct PasswordManagerSettingGmsAccessResult {
   password_manager::PasswordManagerSetting setting;
   bool was_successful;
 };
@@ -74,6 +74,12 @@ class PasswordManagerSettingsServiceAndroidImpl
                              bool value) override;
   void OnSettingValueAbsent(
       password_manager::PasswordManagerSetting setting) override;
+  void OnSettingFetchingError(
+      password_manager::PasswordManagerSetting setting) override;
+  void OnSuccessfulSettingChange(
+      password_manager::PasswordManagerSetting setting) override;
+  void OnFailedSettingChange(
+      password_manager::PasswordManagerSetting setting) override;
 
   // Stores the given `value` of the `setting` into the android-only GMS prefs.
   // Stores the same `value` in the old prefs are not being synced.
@@ -107,7 +113,12 @@ class PasswordManagerSettingsServiceAndroidImpl
   // support. For the former ones this should be a noop without any changes to
   // their prefs. For the latter ones pref values might change.
   void MigratePrefsIfNeeded(
-      const std::vector<PasswordManagerGetSettingGmsResult>& results);
+      const std::vector<PasswordManagerSettingGmsAccessResult>& results);
+
+  // Checks if setting prefs was successful and marks the migation as complete
+  // if there were no errors.
+  void FinishSettingsMigration(
+      const std::vector<PasswordManagerSettingGmsAccessResult>& results);
 
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;
@@ -135,8 +146,21 @@ class PasswordManagerSettingsServiceAndroidImpl
   bool fetch_after_sync_status_change_in_progress_ = false;
 
   // Tires to start migration after getting prefs from gms finished.
-  base::RepeatingCallback<void(PasswordManagerGetSettingGmsResult)>
+  // This callback needs to be run even if getting pref value from GMS failed,
+  // because of the following scenario:
+  // 1. Chrome is opened, fetching prefs has started.
+  // 2. One of the calls to GMS fails, the other succeeds.
+  // 3. Chrome is put to the background and then to the foreground again.
+  // 4. That causes fetching prefs from the GMS again. And if one of them fails
+  // and the other succeeds, we would count the migration as successful. By
+  // calling the `start_migration_callback_` with was_successful set to false we
+  // ensure that if anything failed, migration will be counted as failed.
+  base::RepeatingCallback<void(PasswordManagerSettingGmsAccessResult)>
       start_migration_callback_;
+
+  // Finishes migration and checks for errors.
+  base::RepeatingCallback<void(PasswordManagerSettingGmsAccessResult)>
+      migration_finished_callback_;
 
   // Settings requested from the backend after a sync status change, but not
   // fetched yet.

@@ -31,6 +31,17 @@ class PasswordSettingsUpdaterAndroidReceiverBridge {
     // Asynchronous response called if there is no explicit value set for
     // `setting`.
     virtual void OnSettingValueAbsent(PasswordManagerSetting setting) = 0;
+
+    // Asynchronous response called if there was an error while fetching setting
+    // value.
+    virtual void OnSettingFetchingError(PasswordManagerSetting setting) = 0;
+
+    // Asynchronous response called after setting value was set successfully.
+    virtual void OnSuccessfulSettingChange(PasswordManagerSetting setting) = 0;
+
+    // Asynchronous response called if there call to change setting value
+    // failed.
+    virtual void OnFailedSettingChange(PasswordManagerSetting setting) = 0;
   };
 
   virtual ~PasswordSettingsUpdaterAndroidReceiverBridge() = default;
