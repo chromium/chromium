@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Element attribute reflection of popoverTargetElement/popovertarget should be kept in sync.
-  Cannot read properties of null (reading 'id')
-Harness: the test ran to completion.
-

@@ -2942,6 +2942,13 @@
         {}
        ]
       ],
+      "multicol-with-oof-in-multicol-with-oof-in-multicol.html": [
+       "b1104e28dde1e1a8d393d182d402397019fdf035",
+       [
+        null,
+        {}
+       ]
+      ],
       "negative-margin-on-column-spanner.html": [
        "0e14943d0157c2f5c1611174ea104431da177ba3",
        [
@@ -177623,6 +177630,19 @@
        {}
       ]
      ],
+     "scrollbar-color-dynamic-8.tentative.html": [
+      "4926fadaca1665103b0a678c47f4ebb7c801b822",
+      [
+       null,
+       [
+        [
+         "/css/css-scrollbars/scrollbar-color-dynamic-8-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scrollbar-color-scheme-dynamic-1.html": [
       "71fd97f27419316f5d923dce5673a3f0e0d87633",
       [
@@ -283705,7 +283725,20 @@
        {}
       ]
      ]
-    }
+    },
+    "cICP-wins.html": [
+     "c2aa29e30465a2a1bdb5da7a1aed5b09064b1e6d",
+     [
+      null,
+      [
+       [
+        "/png/cICP-wins-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ]
    },
    "preload": {
     "preload-in-data-doc.html": [
@@ -332084,6 +332117,10 @@
       "b431edf4240257aee7df076805baf93a7d19d1ae",
       []
      ],
+     "scrollbar-color-dynamic-8-ref.html": [
+      "badc99385247641412ffac88f12e320d6229e661",
+      []
+     ],
      "scrollbar-color-scheme-dynamic-1-ref.html": [
       "ec54bc08a721f2b6d4eff3a6422fdc816a4cbeae",
       []
@@ -358859,10 +358896,6 @@
      "2747a04b34f427b4a27a536dcfcdeae800d652b0",
      []
     ],
-    "gamepad-secure-context-expected.txt": [
-     "550d5cf6b5b4070d35d2d48b112d48153b3e3d69",
-     []
-    ],
     "idlharness-extensions.https.window-expected.txt": [
      "acaccc91ae3edbfc771da0c545a6aad88c2c1ebe",
      []
@@ -372691,10 +372724,6 @@
       []
      ],
      "invokers": {
-      "invoketarget-button-event-dispatch.tentative-expected.txt": [
-       "4ca08dd932d980dda572d14e8ca23f6fd7946032",
-       []
-      ],
       "resources": {
        "invoker-utils.js": [
         "317945502d4dcbb2f7ec298872a01becd9d47ddb",
@@ -372879,10 +372908,6 @@
       ],
       "popover-stacking-context-ref.html": [
        "4d4ca6973f89680d64b766b24909da7cf6832b67",
-       []
-      ],
-      "popovertarget-reflection-expected.txt": [
-       "d5a79af3fde1dd4966b168aa93a1a20d20c1cea9",
        []
       ],
       "resources": {
@@ -384237,13 +384262,25 @@
       ]
      }
     },
+    "cICP-wins-ref.html": [
+     "de7629453d91d09551fdfcbe51c90cda494e6fcf",
+     []
+    ],
     "support": {
+     "cICP-and-iCCP.png": [
+      "71d88defc12b18b29d2c2dd4303e4bfb15d1a4c0",
+      []
+     ],
      "cicp-display-p3.png": [
       "8fa0ce2123c4f876a71b1ca80e04931614f3b87f",
       []
      ],
      "exif-orientation-bottom-right.png": [
       "261d5f4c120d5bec05faab969b6476aa6f512989",
+      []
+     ],
+     "srgb_green.png": [
+      "a978f32536c3be6121e947f0312deaaeb7860bfc",
       []
      ],
      "trns-high-bits-set.png": [
@@ -389059,7 +389096,7 @@
       []
      ],
      "local-url-inherit-controller.https-expected.txt": [
-      "afcdebd1dd77bc8cb216602d6b4128a7908e7c25",
+      "249522f7be7c6f14ab351ad9fc1109eddae2890e",
       []
      ],
      "multi-globals": {
@@ -389960,7 +389997,7 @@
        []
       ],
       "local-url-inherit-controller-frame.html": [
-       "b1e554d2204d728bfec17fa24c3706bd9d66bdfe",
+       "3a5d9b51e7574de7e1a63ff47cfc62e32eff5550",
        []
       ],
       "local-url-inherit-controller-worker.js": [
@@ -394631,10 +394668,6 @@
       []
      ]
     },
-    "idlharness.window-expected.txt": [
-     "06e51e9adf36b27b5ff95e90210cae98b6273e24",
-     []
-    ],
     "interface": {
      "README.md": [
       "970fdd4df3517297e344019930d88fbb53b1a002",
@@ -398769,7 +398802,7 @@
         []
        ],
        "cached.py": [
-        "a43410f8856a861c8ad4633e40ea3ba298a5e31c",
+        "ce1dadefa148fe1e68ac162c42cb3845271579c4",
         []
        ],
        "headers.py": [
@@ -401088,19 +401121,19 @@
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "c88b19b98bb9317b9f843b74f1b1b453cb8dccbe",
+     "2b4e26a0e2379ab438778449b5cd87ce1a8ba087",
      []
     ],
     "idlharness.https.any.serviceworker-expected.txt": [
-     "c88b19b98bb9317b9f843b74f1b1b453cb8dccbe",
+     "2b4e26a0e2379ab438778449b5cd87ce1a8ba087",
      []
     ],
     "idlharness.https.any.sharedworker-expected.txt": [
-     "c88b19b98bb9317b9f843b74f1b1b453cb8dccbe",
+     "2b4e26a0e2379ab438778449b5cd87ce1a8ba087",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "c88b19b98bb9317b9f843b74f1b1b453cb8dccbe",
+     "2b4e26a0e2379ab438778449b5cd87ce1a8ba087",
      []
     ],
     "resources": {
@@ -403304,7 +403337,7 @@
      ]
     },
     "idlharness.https.window-expected.txt": [
-     "4e8dac4ee9d3b44c0fc808e731a190a28c3b9429",
+     "cf1ae2fb62544921b8b2fe2969f332f9a219e89d",
      []
     ],
     "layers": {
@@ -529768,7 +529801,7 @@
      ]
     ],
     "gamepad-secure-context.html": [
-     "28641220fd88ba35b524dac9b544b4bc4794de3a",
+     "7f1240fdaf14f7b675a0384e60b6a12ab83e3730",
      [
       null,
       {}
@@ -577831,7 +577864,7 @@
        ]
       ],
       "popovertarget-reflection.html": [
-       "d0750fdd4c099d28edded4a966ec5d7925e317d9",
+       "b4f99631abdad99748e716be15a4cc0d05931da6",
        [
         null,
         {}
@@ -629272,7 +629305,7 @@
       ]
      ],
      "local-url-inherit-controller.https.html": [
-      "6702abcadbb18958af4cb581d6286685f90b60c4",
+      "867e1b006d658ffad99b914f16b179b220700d2f",
       [
        null,
        {
@@ -630501,7 +630534,7 @@
       ]
      ],
      "gethtml.tentative.html": [
-      "c48230c17017cf6909bc281557c6acffbbbcb28b",
+      "eabd39131ba6277d1f6399ee77a616396c0e3d76",
       [
        null,
        {}
@@ -672746,7 +672779,7 @@
      ]
     ],
     "RTCRtpTransceiver-setCodecPreferences.html": [
-     "120b28527fbb6db33e07bc7ff5a28261168f4c30",
+     "30a0fa69c52143dc89997c09d7c4d5611d12df51",
      [
       null,
       {}
@@ -687541,6 +687574,85 @@
      ],
      [
       "webtransport/server-certificate-hashes.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "stats.https.any.js": [
+     "49015e896f535e6f13ac29fad294fdb7b1ecf0e8",
+     [
+      "webtransport/stats.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/stats.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/stats.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/stats.https.any.worker.html",
       {
        "script_metadata": [
         [
@@ -711157,7 +711269,7 @@
          ]
         ],
         "url_patterns.py": [
-         "517a94ffc4b0172e4668c235b206381b4f26b716",
+         "cee5f5d8225460a2fcaeaf5d12cf3d9ba7d0eefb",
          [
           null,
           {}
@@ -711183,6 +711295,13 @@
        "before_request_sent": {
         "before_request_sent.py": [
          "c92337e5075bf0b4eb6fff85dcc550d181f6588e",
+         [
+          null,
+          {}
+         ]
+        ],
+        "before_request_sent_cached.py": [
+         "2de71362ae5d117320338cb62bb7c6110d9f33cd",
          [
           null,
           {}
@@ -711318,7 +711437,7 @@
          ]
         ],
         "response_completed_cached.py": [
-         "6457e7d412b7c94016e80bea2734b6a0aa675f8d",
+         "25503c971db76355751fedb77cd223adfa4193c2",
          [
           null,
           {}
@@ -711341,7 +711460,7 @@
          ]
         ],
         "response_started_cached.py": [
-         "2776950b0eccbe16ae74dde21906cb0dc30140d7",
+         "2c747f135a1c450bd20dc04806f5d0e4aeeda2f0",
          [
           null,
           {}
