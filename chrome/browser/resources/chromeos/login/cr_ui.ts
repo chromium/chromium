@@ -223,12 +223,13 @@ export class Oobe extends DisplayManager {
       lang: 'language',
       dir: 'textdirection',
       highlight: 'highlightStrength',
-      tablet: 'isInTabletMode',
     };
     for (const [attribute, stringName] of Object.entries(attrToStrMap)) {
       const localizedString = loadTimeData.getValue(stringName);
       document.documentElement.setAttribute(attribute, localizedString);
     }
+    document.documentElement.toggleAttribute(
+        'tablet', loadTimeData.getBoolean('isInTabletMode'));
 
     document.querySelector<ApiKeysNoticeElement>('#api-keys-notice')
         ?.updateLocaleAndMaybeShowNotice();
