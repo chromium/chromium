@@ -162,6 +162,11 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         type: Boolean,
         value: false,
       },
+
+      networkDefaultAriaDescribedBy_: {
+        type: String,
+        value: null,
+      },
     };
   }
 
@@ -179,6 +184,8 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private shouldShowDialogWhenDisablingDns_: boolean;
   private showNetworkDefaultDescription_: boolean;
   private showPrivacyPolicyDescription_: boolean;
+  private networkDefaultAriaDescribedBy_: string|null;
+
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -214,6 +221,9 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       networkDefault: boolean, privacyPolicy: boolean): void {
     this.showNetworkDefaultDescription_ = networkDefault;
     this.showPrivacyPolicyDescription_ = privacyPolicy;
+
+    this.networkDefaultAriaDescribedBy_ =
+        networkDefault ? 'networkDefaultDescription' : null;
   }
 
   // Hide DNS dropdown description strings.
