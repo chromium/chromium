@@ -678,13 +678,13 @@ class AuthenticatorPriorityMechanismSheetModel
   void OnAccept() override;
 };
 
-// The sheet shown when the user is creating a GPM pin.
-class AuthenticatorGPMCreatePinSheetModel : public AuthenticatorSheetModelBase {
+// The sheet shown when the user is entering a GPM pin.
+class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
  public:
-  explicit AuthenticatorGPMCreatePinSheetModel(
+  explicit AuthenticatorGPMPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
       int pin_digits_count);
-  ~AuthenticatorGPMCreatePinSheetModel() override;
+  ~AuthenticatorGPMPinSheetModel() override;
 
   int pin_digits_count() const;
 

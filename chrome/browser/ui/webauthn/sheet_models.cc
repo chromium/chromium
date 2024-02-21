@@ -1580,9 +1580,9 @@ void AuthenticatorPriorityMechanismSheetModel::OnAccept() {
       .callback.Run();
 }
 
-// AuthenticatorGPMCreatePinSheetModel -------------------------------------
+// AuthenticatorGPMPinSheetModel -------------------------------------
 
-AuthenticatorGPMCreatePinSheetModel::AuthenticatorGPMCreatePinSheetModel(
+AuthenticatorGPMPinSheetModel::AuthenticatorGPMPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
     int pin_digits_count)
     : AuthenticatorSheetModelBase(dialog_model,
@@ -1592,14 +1592,13 @@ AuthenticatorGPMCreatePinSheetModel::AuthenticatorGPMCreatePinSheetModel(
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 }
 
-AuthenticatorGPMCreatePinSheetModel::~AuthenticatorGPMCreatePinSheetModel() =
-    default;
+AuthenticatorGPMPinSheetModel::~AuthenticatorGPMPinSheetModel() = default;
 
-int AuthenticatorGPMCreatePinSheetModel::pin_digits_count() const {
+int AuthenticatorGPMPinSheetModel::pin_digits_count() const {
   return pin_digits_count_;
 }
 
-void AuthenticatorGPMCreatePinSheetModel::SetPin(std::u16string pin) {
+void AuthenticatorGPMPinSheetModel::SetPin(std::u16string pin) {
   bool accept_button_enabled = IsAcceptButtonEnabled();
   pin_ = std::move(pin);
   if (accept_button_enabled != IsAcceptButtonEnabled()) {
@@ -1607,28 +1606,27 @@ void AuthenticatorGPMCreatePinSheetModel::SetPin(std::u16string pin) {
   }
 }
 
-std::u16string AuthenticatorGPMCreatePinSheetModel::GetStepTitle() const {
+std::u16string AuthenticatorGPMPinSheetModel::GetStepTitle() const {
   return u"Create a PIN for your Google Password Manager (UNTRANSLATED)";
 }
 
-std::u16string AuthenticatorGPMCreatePinSheetModel::GetStepDescription() const {
+std::u16string AuthenticatorGPMPinSheetModel::GetStepDescription() const {
   return u"Your PIN protects your data. You'll need it when you want to start "
          u"using your passkeys on new devices. (UNTRANSLATED)";
 }
 
-bool AuthenticatorGPMCreatePinSheetModel::IsAcceptButtonVisible() const {
+bool AuthenticatorGPMPinSheetModel::IsAcceptButtonVisible() const {
   return true;
 }
 
-bool AuthenticatorGPMCreatePinSheetModel::IsAcceptButtonEnabled() const {
+bool AuthenticatorGPMPinSheetModel::IsAcceptButtonEnabled() const {
   return static_cast<int>(pin_.length()) == pin_digits_count_;
 }
 
-std::u16string AuthenticatorGPMCreatePinSheetModel::GetAcceptButtonLabel()
-    const {
+std::u16string AuthenticatorGPMPinSheetModel::GetAcceptButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
 }
 
-void AuthenticatorGPMCreatePinSheetModel::OnAccept() {
+void AuthenticatorGPMPinSheetModel::OnAccept() {
   dialog_model()->OnGPMCreate();
 }
