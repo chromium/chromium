@@ -295,7 +295,7 @@ void PageInfoMainView::SetPermissionInfo(
             view->chosen_object_rows_.clear();
             view->PreferredSizeChanged();
             view->presenter_->RecordPageInfoAction(
-                PageInfo::PageInfoAction::PAGE_INFO_PERMISSIONS_CLEARED);
+                page_info::PAGE_INFO_PERMISSIONS_CLEARED);
           },
           base::Unretained(this))));
   reset_button_->SetProperty(views::kCrossAxisAlignmentKey,
@@ -612,8 +612,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
                 page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
                     has_description);
                 view->presenter_->RecordPageInfoAction(
-                    PageInfo::PageInfoAction::
-                        PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
+                    page_info::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
                 view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url,
                                                              event);
                 view->GetWidget()->Close();

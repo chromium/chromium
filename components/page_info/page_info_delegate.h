@@ -92,7 +92,7 @@ class PageInfoDelegate {
   virtual void OpenSafetyTipHelpCenterPage() = 0;
   virtual void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) = 0;
-  virtual void OnPageInfoActionOccurred(PageInfo::PageInfoAction action) = 0;
+  virtual void OnPageInfoActionOccurred(page_info::PageInfoAction action) = 0;
   virtual void OnUIClosing() = 0;
 #endif
 

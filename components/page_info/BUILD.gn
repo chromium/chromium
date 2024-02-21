@@ -1,6 +1,4 @@
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
+import("//build/config/features.gni")
 
 static_library("page_info") {
   sources = [
@@ -56,11 +54,5 @@ static_library("page_info") {
     ]
   } else {
     deps += [ "//ui/native_theme" ]
-  }
-}
-
-if (is_android) {
-  java_cpp_enum("page_info_action_javagen") {
-    sources = [ "page_info.h" ]
   }
 }

@@ -47,8 +47,7 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
       base::BindRepeating(
           [](PageInfoAdPersonalizationContentView* view) {
             view->presenter_->RecordPageInfoAction(
-                PageInfo::PageInfoAction::
-                    PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
+                page_info::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
             view->ui_delegate_->ShowPrivacySandboxSettings();
           },
           this),

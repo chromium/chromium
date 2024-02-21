@@ -138,6 +138,6 @@ generate_jni("jni_headers") {
 }
 
 android_library("page_info_action_enum_java") {
-  srcjar_deps = [ "//components/page_info:page_info_action_javagen" ]
+  srcjar_deps = [ "//components/page_info/core:page_info_action_javagen" ]
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }

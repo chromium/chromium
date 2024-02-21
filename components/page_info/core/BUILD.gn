@@ -30,6 +30,8 @@ static_library("core") {
     "about_this_site_validation.h",
     "features.cc",
     "features.h",
+    "page_info_action.cc",
+    "page_info_action.h",
     "page_info_history_data_source.cc",
     "page_info_history_data_source.h",
   ]
@@ -48,6 +50,12 @@ static_library("core") {
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base:base",
   ]
+}
+
+if (is_android) {
+  java_cpp_enum("page_info_action_javagen") {
+    sources = [ "page_info_action.h" ]
+  }
 }
 
 source_set("unit_tests") {

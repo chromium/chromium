@@ -1698,7 +1698,7 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
     const std::string url;
     const security_state::SecurityLevel security_level;
     const std::string security_level_name;
-    const PageInfo::PageInfoAction action;
+    const page_info::PageInfoAction action;
   };
 
   const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
@@ -1706,13 +1706,13 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
   const TestCase kTestCases[] = {
       // PAGE_INFO_OPENED used as shorthand for "take no action".
       {"https://example.test", security_state::SECURE, "SECURE",
-       PageInfo::PAGE_INFO_OPENED},
+       page_info::PAGE_INFO_OPENED},
       {"http://example.test", security_state::NONE, "NONE",
-       PageInfo::PAGE_INFO_OPENED},
+       page_info::PAGE_INFO_OPENED},
       {"https://example.test", security_state::SECURE, "SECURE",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED},
       {"http://example.test", security_state::NONE, "NONE",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED},
   };
 
   for (const auto& test : kTestCases) {
@@ -1730,14 +1730,14 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
         kHistogramPrefix + "NoAction." + test.security_level_name, 0);
 
     PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_OPENED) {
+    if (test.action != page_info::PAGE_INFO_OPENED) {
       test_page_info->RecordPageInfoAction(test.action);
     }
     ClearPageInfo();
 
     histograms.ExpectTotalCount(kHistogramPrefix + test.security_level_name, 1);
 
-    if (test.action != PageInfo::PAGE_INFO_OPENED) {
+    if (test.action != page_info::PAGE_INFO_OPENED) {
       histograms.ExpectTotalCount(
           kHistogramPrefix + "Action." + test.security_level_name, 1);
     } else {
@@ -1810,13 +1810,13 @@ TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
 
     histograms.ExpectTotalCount(kGenericHistogram, 0);
 
-    page_info()->RecordPageInfoAction(PageInfo::PAGE_INFO_OPENED);
+    page_info()->RecordPageInfoAction(page_info::PAGE_INFO_OPENED);
 
     // RecordPageInfoAction() is called during PageInfo
     // creation in addition to the explicit RecordPageInfoAction()
     // call, so it is called twice in total.
     histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram, PageInfo::PAGE_INFO_OPENED,
+    histograms.ExpectBucketCount(kGenericHistogram, page_info::PAGE_INFO_OPENED,
                                  2);
   }
 }
@@ -1827,7 +1827,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
   struct TestCase {
     const security_state::SafetyTipStatus safety_tip_status;
     const std::string safety_tip_status_name;
-    const PageInfo::PageInfoAction action;
+    const page_info::PageInfoAction action;
   };
 
   const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
@@ -1835,13 +1835,13 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
   const TestCase kTestCases[] = {
       // PAGE_INFO_COUNT used as shorthand for "take no action".
       {security_state::SafetyTipStatus::kNone, "SafetyTip_None",
-       PageInfo::PAGE_INFO_OPENED},
+       page_info::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kLookalike, "SafetyTip_Lookalike",
-       PageInfo::PAGE_INFO_OPENED},
+       page_info::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kNone, "SafetyTip_None",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED},
       {security_state::SafetyTipStatus::kLookalike, "SafetyTip_Lookalike",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED},
   };
 
   for (const auto& test : kTestCases) {
@@ -1860,7 +1860,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
         kHistogramPrefix + "NoAction." + test.safety_tip_status_name, 0);
 
     PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_OPENED) {
+    if (test.action != page_info::PAGE_INFO_OPENED) {
       test_page_info->RecordPageInfoAction(test.action);
     }
     ClearPageInfo();
@@ -1868,7 +1868,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
     histograms.ExpectTotalCount(kHistogramPrefix + test.safety_tip_status_name,
                                 1);
 
-    if (test.action != PageInfo::PAGE_INFO_OPENED) {
+    if (test.action != page_info::PAGE_INFO_OPENED) {
       histograms.ExpectTotalCount(
           kHistogramPrefix + "Action." + test.safety_tip_status_name, 1);
     } else {

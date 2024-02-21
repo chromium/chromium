@@ -71,7 +71,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OpenSafetyTipHelpCenterPage() override;
   void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) override;
-  void OnPageInfoActionOccurred(PageInfo::PageInfoAction action) override;
+  void OnPageInfoActionOccurred(page_info::PageInfoAction action) override;
   void OnUIClosing() override;
 #endif
 

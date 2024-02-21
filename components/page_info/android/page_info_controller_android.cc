@@ -83,7 +83,7 @@ void PageInfoControllerAndroid::RecordPageInfoAction(
     const JavaParamRef<jobject>& obj,
     jint action) {
   presenter_->RecordPageInfoAction(
-      static_cast<PageInfo::PageInfoAction>(action));
+      static_cast<page_info::PageInfoAction>(action));
 }
 
 void PageInfoControllerAndroid::UpdatePermissions(
