@@ -214,6 +214,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       content::SiteIsolationMode site_isolation_mode) override;
   bool ShouldLockProcessToSite(content::BrowserContext* browser_context,
                                const GURL& effective_url) override;
+  bool ShouldEnforceNewCanCommitUrlChecks() override;
   size_t GetMaxRendererProcessCountOverride() override;
   void WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,

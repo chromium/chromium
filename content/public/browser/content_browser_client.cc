@@ -178,6 +178,10 @@ bool ContentBrowserClient::ShouldLockProcessToSite(
   return true;
 }
 
+bool ContentBrowserClient::ShouldEnforceNewCanCommitUrlChecks() {
+  return true;
+}
+
 bool ContentBrowserClient::DoesWebUIUrlRequireProcessLock(const GURL& url) {
   return true;
 }
