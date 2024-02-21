@@ -1784,6 +1784,30 @@ TEST_F(BindTest, OverloadedOperator) {
   EXPECT_EQ("Hello", BindOnce(s, "Hello").Run());
 }
 
+TEST_F(BindTest, OverloadedOperatorQualifiers) {
+  // Bind should be able to pick the correct `operator()()` to invoke on a
+  // functor when the only difference between the overloads is their qualifiers.
+  struct S {
+    int operator()() const& { return 1; }
+    int operator()() && { return 2; }
+  } s;
+
+  // `BindRepeating()` normally stores a value and passes a const ref to the
+  // invoked method, regardless of whether lvalue or rvalue was originally
+  // provided.
+  EXPECT_EQ(1, BindRepeating(s).Run());
+  EXPECT_EQ(1, BindRepeating(S()).Run());
+
+  // The exception is if `Passed()` is used, which tells `BindRepeating()` to
+  // move the specified argument during invocation.
+  EXPECT_EQ(2, BindRepeating(Passed(S())).Run());
+
+  // `BindOnce()` also stores a value, but it always moves that value during
+  // invocation, regardless of whether lvalue or rvalue was originally provided.
+  EXPECT_EQ(2, BindOnce(s).Run());
+  EXPECT_EQ(2, BindOnce(S()).Run());
+}
+
 TEST_F(BindTest, OverloadedOperatorInexactMatch) {
   // The Bind machinery guesses signatures for overloaded `operator()()`s based
   // on the decay_t<>s of the bound args. But as long as all args are bound and

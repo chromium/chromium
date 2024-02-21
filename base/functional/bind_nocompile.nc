@@ -282,6 +282,29 @@ void OverloadedOperator() {
   BindOnce(d, 1, 1);        // expected-error@*:* {{Could not determine how to invoke functor.}}
 }
 
+void RefQualifiedOverloadedOperator() {
+  // Invocations with lvalues should attempt to use lvalue-ref-qualified
+  // methods.
+  struct A {
+    void operator()() const& = delete;
+    void operator()() && {}
+  } a;
+  // Using distinct types causes distinct template instantiations, so we get
+  // assertion failures below where we expect. This type facilitates that.
+  struct B : A {};
+  BindRepeating(a);    // expected-error@*:* {{Could not determine how to invoke functor.}}
+  BindRepeating(B());  // expected-error@*:* {{Could not determine how to invoke functor.}}
+
+  // Invocations with rvalues should attempt to use rvalue-ref-qualified
+  // methods.
+  struct C {
+    void operator()() const& {}
+    void operator()() && = delete;
+  };
+  BindRepeating(Passed(C()));  // expected-error@*:* {{Could not determine how to invoke functor.}}
+  BindOnce(C());               // expected-error@*:* {{Could not determine how to invoke functor.}}
+}
+
 // Define a type that disallows `Unretained()` via the internal customization
 // point, so the next test can use it.
 struct BlockViaCustomizationPoint {};
