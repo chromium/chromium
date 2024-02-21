@@ -48,6 +48,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/audio/sounds.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/biod/constants.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/authenticator.h"
@@ -160,9 +161,11 @@ const base::Clock* g_clock_for_testing_ = nullptr;
 const base::TickClock* g_tick_clock_for_testing_ = nullptr;
 
 chromeos::CertificateProviderService* GetLoginScreenCertProviderService() {
-  DCHECK(ProfileHelper::IsSigninProfileInitialized());
+  auto* browser_context =
+      BrowserContextHelper::Get()->GetSigninBrowserContext();
+  DCHECK(browser_context);
   return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
-      ProfileHelper::GetSigninProfile());
+      browser_context);
 }
 
 }  // namespace

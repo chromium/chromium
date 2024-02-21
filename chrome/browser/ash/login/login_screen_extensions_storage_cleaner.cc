@@ -9,8 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
@@ -23,8 +23,10 @@ const char kPersistentDataKeyPrefix[] = "persistent_data_";
 }  // namespace
 
 LoginScreenExtensionsStorageCleaner::LoginScreenExtensionsStorageCleaner() {
-  DCHECK(ProfileHelper::IsSigninProfileInitialized());
-  prefs_ = ProfileHelper::GetSigninProfile()->GetPrefs();
+  auto* browser_context =
+      BrowserContextHelper::Get()->GetSigninBrowserContext();
+  DCHECK(browser_context);
+  prefs_ = Profile::FromBrowserContext(browser_context)->GetPrefs();
   pref_change_registrar_.Init(prefs_);
   pref_change_registrar_.Add(
       extensions::pref_names::kInstallForceList,

@@ -84,6 +84,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -244,10 +245,12 @@ user_manager::UserType CalculateUserType(const AccountId& account_id) {
 }
 
 chromeos::PinDialogManager* GetLoginScreenPinDialogManager() {
-  DCHECK(ProfileHelper::IsSigninProfileInitialized());
+  auto* browser_context =
+      BrowserContextHelper::Get()->GetSigninBrowserContext();
+  DCHECK(browser_context);
   chromeos::CertificateProviderService* certificate_provider_service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
-          ProfileHelper::GetSigninProfile());
+          browser_context);
   return certificate_provider_service->pin_dialog_manager();
 }
 

@@ -113,11 +113,6 @@ bool ProfileHelper::IsSigninProfile(const Profile* profile) {
 }
 
 // static
-bool ProfileHelper::IsSigninProfileInitialized() {
-  return BrowserContextHelper::Get()->GetSigninBrowserContext();
-}
-
-// static
 bool ProfileHelper::IsLockScreenAppProfile(const Profile* profile) {
   return ash::IsLockScreenAppBrowserContext(const_cast<Profile*>(profile));
 }

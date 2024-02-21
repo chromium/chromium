@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/login/security_token_session_controller.h"
 #include "chrome/browser/ash/login/user_board_view_mojo.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
@@ -61,6 +60,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
@@ -80,9 +80,10 @@ namespace ash {
 namespace {
 
 chromeos::CertificateProviderService* GetLoginScreenCertProviderService() {
-  DCHECK(ProfileHelper::IsSigninProfileInitialized());
+  auto* browser_context =
+      BrowserContextHelper::Get()->GetSigninBrowserContext();
   return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
-      ProfileHelper::GetSigninProfile());
+      browser_context);
 }
 
 // Returns true iff

@@ -75,11 +75,6 @@ class ProfileHelper {
   // signin Profile.
   static bool IsSigninProfile(const Profile* profile);
 
-  // DEPRECATED. Please use ash::GetSigninBrowserContext() and see if it
-  // returns non-nullptr, instead.
-  // Returns true if the signin profile has been initialized.
-  static bool IsSigninProfileInitialized();
-
   // DEPRECATED. Please use
   // ash::BrowserContextHelper::GetLockScreenAppBrowserContextPath() instead.
   // Returns the path used for the lock screen apps profile - profile used
