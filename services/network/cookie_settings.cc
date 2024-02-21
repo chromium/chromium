@@ -193,8 +193,9 @@ void CookieSettings::set_content_settings(
 
 DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
     const {
-  if (!HasSessionOnlyOrigins())
+  if (!HasSessionOnlyOrigins()) {
     return DeleteCookiePredicate();
+  }
   ContentSettingsForOneType settings;
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
@@ -511,10 +512,8 @@ bool CookieSettings::IsThirdPartyPhaseoutEnabled() const {
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcd() const {
-  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    return true;
-  }
-  return mitigations_enabled_for_3pcd_;
+  return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
+         mitigations_enabled_for_3pcd_;
 }
 
 bool CookieSettings::IsStorageAccessApiEnabled() const {

@@ -419,14 +419,14 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
 #endif
 
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
-  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    return true;
-  }
-
   if (tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
     // Mitigations should be on iff we are not blocking all 3PC in 3PCD.
     return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
+  }
+
+  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
+    return true;
   }
 
   return false;
