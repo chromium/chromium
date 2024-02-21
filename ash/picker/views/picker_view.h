@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_category.h"
+#include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -29,6 +30,7 @@ namespace ash {
 class BubbleEventFilter;
 class PickerContentsView;
 class PickerSearchFieldView;
+class PickerPageView;
 class PickerSearchResult;
 class PickerSearchResults;
 class PickerSearchResultsView;
@@ -116,6 +118,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void AddSearchFieldView();
   void AddContentsView(PickerLayoutType layout_type);
 
+  // Sets `page_view` as the active page in `contents_view_`.
+  void SetActivePage(PickerPageView* page_view);
+
   std::optional<PickerCategory> selected_category_;
 
   // Used to close the Picker widget when the user clicks outside of it.
@@ -123,6 +128,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
 
   std::unique_ptr<SystemShadow> shadow_;
 
+  PickerKeyEventHandler key_event_handler_;
   PickerSessionMetrics session_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;
 

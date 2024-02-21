@@ -48,6 +48,12 @@ PickerZeroStateView::PickerZeroStateView(
 
 PickerZeroStateView::~PickerZeroStateView() = default;
 
+bool PickerZeroStateView::OnEnterKeyPressed() {
+  // TODO: b/322900302 - Select the highlighted item or a smart suggestion when
+  // enter key is pressed.
+  return false;
+}
+
 PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
     PickerCategory category) {
   const PickerCategoryType category_type = GetPickerCategoryType(category);

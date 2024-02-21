@@ -31,6 +31,10 @@ PickerCategoryView::PickerCategoryView(
 
 PickerCategoryView::~PickerCategoryView() = default;
 
+bool PickerCategoryView::OnEnterKeyPressed() {
+  return search_results_view_->OnEnterKeyPressed();
+}
+
 void PickerCategoryView::SetResults(const PickerSearchResults& results) {
   search_results_view_->ClearSearchResults();
   search_results_view_->AppendSearchResults(results);

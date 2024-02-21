@@ -14,6 +14,8 @@
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
+#include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/style/typography.h"
 #include "base/ranges/algorithm.h"
@@ -167,7 +169,8 @@ void PickerSectionView::AddTitleTrailingLink(
           .Build());
 }
 
-void PickerSectionView::AddListItem(std::unique_ptr<views::View> list_item) {
+void PickerSectionView::AddListItem(
+    std::unique_ptr<PickerListItemView> list_item) {
   if (list_items_container_ == nullptr) {
     list_items_container_ = AddChildView(CreateListItemsContainer());
   }
@@ -213,7 +216,7 @@ void PickerSectionView::AddImageItem(
 }
 
 void PickerSectionView::AddSmallGridItem(
-    std::unique_ptr<views::View> grid_item) {
+    std::unique_ptr<PickerItemView> grid_item) {
   if (small_items_grid_ == nullptr) {
     small_items_grid_ = AddChildView(CreateSmallItemsGrid());
     small_items_grid_->AddChildView(CreateSmallItemsGridRow());

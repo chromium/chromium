@@ -23,6 +23,11 @@ class ASH_EXPORT PickerItemView : public views::Button {
   PickerItemView(const PickerItemView&) = delete;
   PickerItemView& operator=(const PickerItemView&) = delete;
   ~PickerItemView() override;
+
+  void SelectItem();
+
+ private:
+  SelectItemCallback select_item_callback_;
 };
 
 }  // namespace ash

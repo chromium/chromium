@@ -11,18 +11,18 @@
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/views/picker_category_type.h"
+#include "ash/picker/views/picker_page_view.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
 class PickerSectionView;
 
-class ASH_EXPORT PickerZeroStateView : public views::View {
-  METADATA_HEADER(PickerZeroStateView, views::View)
+class ASH_EXPORT PickerZeroStateView : public PickerPageView {
+  METADATA_HEADER(PickerZeroStateView, PickerPageView)
 
  public:
   // Indicates the user has selected a category.
@@ -34,6 +34,9 @@ class ASH_EXPORT PickerZeroStateView : public views::View {
   PickerZeroStateView(const PickerZeroStateView&) = delete;
   PickerZeroStateView& operator=(const PickerZeroStateView&) = delete;
   ~PickerZeroStateView() override;
+
+  // PickerPageView:
+  bool OnEnterKeyPressed() override;
 
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
   section_views_for_testing() const {

@@ -22,8 +22,10 @@ class Label;
 
 namespace ash {
 
+class PickerItemView;
 class PickerEmojiItemView;
 class PickerSymbolItemView;
+class PickerListItemView;
 class PickerEmoticonItemView;
 class PickerImageItemView;
 
@@ -43,7 +45,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Adds a list item. These are displayed in a vertical list, each item
   // spanning the width of the section.
-  void AddListItem(std::unique_ptr<views::View> list_item);
+  void AddListItem(std::unique_ptr<PickerListItemView> list_item);
 
   // Adds a emoji, symbol or emoticon. These are treated collectively as small
   // grid items and are displayed in rows.
@@ -63,13 +65,19 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   const views::View* image_grid_for_testing() const { return image_grid_; }
 
-  base::span<const raw_ptr<views::View>> item_views_for_testing() const {
+  // TODO: b/322900302 - Figure out a nice way to access the item views for
+  // keyboard navigation (e.g. how to handle grid items).
+  base::span<const raw_ptr<PickerItemView>> item_views() const {
+    return item_views_;
+  }
+
+  base::span<const raw_ptr<PickerItemView>> item_views_for_testing() const {
     return item_views_;
   }
 
  private:
   // Adds a small grid item. These are displayed in rows.
-  void AddSmallGridItem(std::unique_ptr<views::View> small_grid_item);
+  void AddSmallGridItem(std::unique_ptr<PickerItemView> small_grid_item);
 
   // Width available for laying out section items. This is needed to determine
   // row and column widths for grid items in the section.
@@ -90,7 +98,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<views::View> image_grid_ = nullptr;
 
   // The views for each result item.
-  std::vector<raw_ptr<views::View>> item_views_;
+  std::vector<raw_ptr<PickerItemView>> item_views_;
 };
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -114,6 +115,14 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
           Pointee(MatchesResultSection(kUpdatedSearchResults.sections()[0]))));
 }
 
+TEST_F(PickerSearchResultsViewTest,
+       PressingEnterDoesNothingForEmptySearchResults) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+
+  EXPECT_FALSE(view.OnEnterKeyPressed());
+}
+
 struct PickerSearchResultTestCase {
   std::string test_name;
   PickerSearchResult result;
@@ -139,11 +148,28 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
               Not(IsEmpty()));
 
-  views::View* result_view =
+  PickerItemView* result_view =
       view->section_views_for_testing()[0]->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(result_view);
   LeftClickOn(result_view);
 
+  EXPECT_EQ(future.Get(), test_case.result);
+}
+
+TEST_P(PickerSearchResultsViewResultSelectionTest, PressingEnterSelectsResult) {
+  const PickerSearchResultTestCase& test_case = GetParam();
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  widget->SetFullscreen(true);
+  base::test::TestFuture<const PickerSearchResult&> future;
+  MockPickerAssetFetcher asset_fetcher;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          kPickerWidth, future.GetCallback(), &asset_fetcher));
+  view->AppendSearchResults(PickerSearchResults({{
+      PickerSearchResults::Section(u"section", {{test_case.result}}),
+  }}));
+
+  EXPECT_TRUE(view->OnEnterKeyPressed());
   EXPECT_EQ(future.Get(), test_case.result);
 }
 

@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -22,8 +24,10 @@ using PickerSearchFieldViewTest = AshTestBase;
 
 TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
+  PickerKeyEventHandler key_event_handler;
   PickerSessionMetrics metrics;
-  PickerSearchFieldView view(future.GetRepeatingCallback(), &metrics);
+  PickerSearchFieldView view(future.GetRepeatingCallback(), &key_event_handler,
+                             &metrics);
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -31,9 +35,10 @@ TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
 TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   base::test::TestFuture<const std::u16string&> future;
+  PickerKeyEventHandler key_event_handler;
   PickerSessionMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      future.GetRepeatingCallback(), &metrics));
+      future.GetRepeatingCallback(), &key_event_handler, &metrics));
 
   view->RequestFocus();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -42,8 +47,9 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
 }
 
 TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
+  PickerKeyEventHandler key_event_handler;
   PickerSessionMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), &metrics);
+  PickerSearchFieldView view(base::DoNothing(), &key_event_handler, &metrics);
 
   view.SetPlaceholderText(u"hello");
 

@@ -7,11 +7,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/views/picker_page_view.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
@@ -19,8 +19,8 @@ class PickerAssetFetcher;
 class PickerSearchResult;
 class PickerSectionView;
 
-class ASH_EXPORT PickerSearchResultsView : public views::View {
-  METADATA_HEADER(PickerSearchResultsView, views::View)
+class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
+  METADATA_HEADER(PickerSearchResultsView, PickerPageView)
 
  public:
   // Indicates the user has selected a result.
@@ -35,6 +35,9 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
   PickerSearchResultsView(const PickerSearchResultsView&) = delete;
   PickerSearchResultsView& operator=(const PickerSearchResultsView&) = delete;
   ~PickerSearchResultsView() override;
+
+  // PickerPageView:
+  bool OnEnterKeyPressed() override;
 
   // Clears the search results.
   void ClearSearchResults();

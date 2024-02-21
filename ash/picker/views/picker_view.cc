@@ -12,6 +12,8 @@
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
+#include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_page_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_strings.h"
@@ -265,17 +267,17 @@ gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
 
 void PickerView::StartSearch(const std::u16string& query) {
   if (!query.empty()) {
-    contents_view_->SetActivePage(search_results_view_);
+    SetActivePage(search_results_view_);
     published_first_results_ = false;
     delegate_->StartSearch(
         query, selected_category_,
         base::BindRepeating(&PickerView::PublishSearchResults,
                             weak_ptr_factory_.GetWeakPtr()));
   } else if (selected_category_.has_value()) {
-    contents_view_->SetActivePage(category_view_);
+    SetActivePage(category_view_);
   } else {
     search_results_view_->ClearSearchResults();
-    contents_view_->SetActivePage(zero_state_view_);
+    SetActivePage(zero_state_view_);
   }
 }
 
@@ -304,7 +306,7 @@ void PickerView::SelectCategory(PickerCategory category) {
   }
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
-  contents_view_->SetActivePage(category_view_);
+  SetActivePage(category_view_);
   delegate_->GetResultsForCategory(
       category, base::BindRepeating(&PickerView::PublishCategoryResults,
                                     weak_ptr_factory_.GetWeakPtr()));
@@ -325,7 +327,7 @@ void PickerView::AddSearchFieldView() {
   // `search_field_view_`.
   search_field_view_ = AddChildView(std::make_unique<PickerSearchFieldView>(
       base::BindRepeating(&PickerView::StartSearch, base::Unretained(this)),
-      &session_metrics_));
+      &key_event_handler_, &session_metrics_));
 }
 
 void PickerView::AddContentsView(PickerLayoutType layout_type) {
@@ -353,7 +355,12 @@ void PickerView::AddContentsView(PickerLayoutType layout_type) {
           base::BindOnce(&PickerView::SelectSearchResult,
                          base::Unretained(this)),
           delegate_->GetAssetFetcher()));
-  contents_view_->SetActivePage(zero_state_view_);
+  SetActivePage(zero_state_view_);
+}
+
+void PickerView::SetActivePage(PickerPageView* page_view) {
+  contents_view_->SetActivePage(page_view);
+  key_event_handler_.SetActiveKeyEventTarget(page_view);
 }
 
 BEGIN_METADATA(PickerView)

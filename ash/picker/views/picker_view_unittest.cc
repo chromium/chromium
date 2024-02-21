@@ -12,6 +12,7 @@
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_section_view.h"
@@ -115,13 +116,14 @@ PickerView* GetPickerViewFromWidget(views::Widget& widget) {
 }
 
 // Gets an item view that can be clicked to select a category.
-views::View* GetCategoryItemView(PickerView* picker_view) {
+PickerItemView* GetCategoryItemView(PickerView* picker_view) {
   return picker_view->zero_state_view_for_testing()
       .section_views_for_testing()
       .find(PickerCategoryType::kExpressions)
       ->second->item_views_for_testing()[0];
 }
-views::View* GetNonEmojiCategoryItemView(PickerView* picker_view) {
+
+PickerItemView* GetNonEmojiCategoryItemView(PickerView* picker_view) {
   return picker_view->zero_state_view_for_testing()
       .section_views_for_testing()
       .find(PickerCategoryType::kExpressions)
@@ -251,9 +253,9 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
                   ->item_views_for_testing(),
               Not(IsEmpty()));
 
-  views::View* result_view = view->search_results_view_for_testing()
-                                 .section_views_for_testing()[0]
-                                 ->item_views_for_testing()[0];
+  PickerItemView* result_view = view->search_results_view_for_testing()
+                                    .section_views_for_testing()[0]
+                                    ->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(result_view);
   LeftClickOn(result_view);
 
@@ -748,6 +750,50 @@ TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnEmoji) {
 
   EXPECT_TRUE(widget->IsClosed());
   EXPECT_TRUE(called);
+}
+
+TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        future.SetValue();
+        callback.Run(PickerSearchResults({{
+            PickerSearchResults::Section(u"section", {}),
+        }}));
+      }));
+  auto widget =
+      PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
+                               kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_TRUE(view->search_results_view_for_testing().GetVisible());
+  EXPECT_EQ(delegate.last_inserted_result(), std::nullopt);
+}
+
+TEST_F(PickerViewTest, PressingEnterSelectsSearchResult) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        future.SetValue();
+        callback.Run(PickerSearchResults({{
+            PickerSearchResults::Section(
+                u"section", {{PickerSearchResult::Text(u"result")}}),
+        }}));
+      }));
+  auto widget =
+      PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
+                               kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(PickerSearchResult::Text(u"result")));
 }
 
 }  // namespace

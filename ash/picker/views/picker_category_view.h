@@ -6,9 +6,9 @@
 #define ASH_PICKER_VIEWS_PICKER_CATEGORY_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/picker/views/picker_page_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
@@ -16,8 +16,8 @@ class PickerAssetFetcher;
 class PickerSearchResults;
 
 // View to show Picker results for a specific category.
-class ASH_EXPORT PickerCategoryView : public views::View {
-  METADATA_HEADER(PickerCategoryView, views::View)
+class ASH_EXPORT PickerCategoryView : public PickerPageView {
+  METADATA_HEADER(PickerCategoryView, PickerPageView)
 
  public:
   explicit PickerCategoryView(
@@ -28,6 +28,9 @@ class ASH_EXPORT PickerCategoryView : public views::View {
   PickerCategoryView(const PickerCategoryView&) = delete;
   PickerCategoryView& operator=(const PickerCategoryView&) = delete;
   ~PickerCategoryView() override;
+
+  // PickerPageView:
+  bool OnEnterKeyPressed() override;
 
   // Replaces the current results with `results`.
   void SetResults(const PickerSearchResults& results);

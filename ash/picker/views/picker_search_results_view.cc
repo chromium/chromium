@@ -16,6 +16,7 @@
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
@@ -46,6 +47,16 @@ PickerSearchResultsView::PickerSearchResultsView(
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
+
+bool PickerSearchResultsView::OnEnterKeyPressed() {
+  // TODO: b/322900302 - Select the currently highlighted item instead of the
+  // first item.
+  if (section_views_.empty() || section_views_[0]->item_views().empty()) {
+    return false;
+  }
+  section_views_[0]->item_views()[0]->SelectItem();
+  return true;
+}
 
 void PickerSearchResultsView::ClearSearchResults() {
   section_views_.clear();

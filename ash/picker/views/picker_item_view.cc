@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/style/style_util.h"
+#include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -15,7 +16,8 @@
 namespace ash {
 
 PickerItemView::PickerItemView(SelectItemCallback select_item_callback)
-    : views::Button(std::move(select_item_callback)) {
+    : views::Button(select_item_callback),
+      select_item_callback_(select_item_callback) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
@@ -25,6 +27,10 @@ PickerItemView::PickerItemView(SelectItemCallback select_item_callback)
 }
 
 PickerItemView::~PickerItemView() = default;
+
+void PickerItemView::SelectItem() {
+  select_item_callback_.Run();
+}
 
 BEGIN_METADATA(PickerItemView)
 END_METADATA
