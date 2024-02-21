@@ -357,7 +357,8 @@ public class SelectActionMenuHelper {
             if (resolveInfo.activityInfo == null || !resolveInfo.activityInfo.exported) continue;
             CharSequence title = resolveInfo.loadLabel(packageManager);
             Drawable icon;
-            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites();
+                    StrictModeContext ignored2 = StrictModeContext.allowUnbufferedIo()) {
                 icon = resolveInfo.loadIcon(packageManager);
             }
             Intent intent = createProcessTextIntentForResolveInfo(resolveInfo, isSelectionReadOnly);
