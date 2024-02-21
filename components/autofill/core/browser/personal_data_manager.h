@@ -47,7 +47,6 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -122,7 +121,6 @@ class PersonalDataManagerObserver;
 // was posted before the add operation has finished, the remove would
 // incorrectly get rejected by the PDM.
 class PersonalDataManager : public KeyedService,
-                            public AutofillWebDataServiceObserverOnUISequence,
                             public history::HistoryServiceObserver,
                             public syncer::SyncServiceObserver,
                             public signin::IdentityManager::Observer,
@@ -175,9 +173,6 @@ class PersonalDataManager : public KeyedService,
   // history::HistoryServiceObserver
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
-
-  // AutofillWebDataServiceObserverOnUISequence:
-  void OnAutofillChangedBySync(syncer::ModelType model_type) override;
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -542,9 +537,6 @@ class PersonalDataManager : public KeyedService,
   // nullptr is returned.
   const CreditCard* GetServerCardForLocalCard(
       const CreditCard* local_card) const;
-
-  // Cancels any pending queries to the server web database.
-  void CancelPendingServerQueries();
 
   bool HasPendingPaymentQueriesForTesting() const {
     return payments_data_manager_->HasPendingPaymentQueries();

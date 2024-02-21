@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace autofill {
@@ -24,7 +25,8 @@ class PaymentsDatabaseHelper;
 class PersonalDataManager;
 class TestPersonalDataManager;
 
-class PaymentsDataManager : public WebDataServiceConsumer {
+class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
+                            public WebDataServiceConsumer {
  public:
   PaymentsDataManager(scoped_refptr<AutofillWebDataService> profile_database,
                       scoped_refptr<AutofillWebDataService> account_database,
@@ -34,16 +36,25 @@ class PaymentsDataManager : public WebDataServiceConsumer {
   PaymentsDataManager& operator=(const PaymentsDataManager&) = delete;
   ~PaymentsDataManager() override;
 
+  // AutofillWebDataServiceObserverOnUISequence:
+  void OnAutofillChangedBySync(syncer::ModelType model_type) override;
+
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
+
+  // Reloads all payments data from the database.
+  void Refresh();
 
   // TODO(b/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();
   void SetUseAccountStorageForServerData(bool use_account_storage);
   bool IsUsingAccountStorageForServerData();
+
+  // Cancels any pending queries to the server web database.
+  void CancelPendingServerQueries();
 
  protected:
   // TODO(b/322170538): Remove dependency.

@@ -307,12 +307,7 @@ void PersonalDataManager::Init(
   MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
 }
 
-PersonalDataManager::~PersonalDataManager() {
-  address_data_manager_->CancelAllPendingQueries();
-  payments_data_manager_->CancelPendingLocalQuery(
-      &payments_data_manager_->pending_creditcards_query_);
-  CancelPendingServerQueries();
-}
+PersonalDataManager::~PersonalDataManager() = default;
 
 void PersonalDataManager::Shutdown() {
   if (sync_service_)
@@ -359,11 +354,6 @@ void PersonalDataManager::OnURLsDeleted(
       }
     }
   }
-}
-
-void PersonalDataManager::OnAutofillChangedBySync(
-    syncer::ModelType model_type) {
-  Refresh();
 }
 
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
@@ -1273,13 +1263,7 @@ PersonalDataManager::GetVirtualCardUsageData() const {
 
 void PersonalDataManager::Refresh() {
   address_data_manager_->LoadProfiles();
-  LoadCreditCards();
-  LoadCreditCardCloudTokenData();
-  LoadIbans();
-  LoadPaymentsCustomerData();
-  LoadAutofillOffers();
-  LoadVirtualCardUsageData();
-  LoadCreditCardBenefits();
+  payments_data_manager_->Refresh();
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
@@ -1867,24 +1851,6 @@ void PersonalDataManager::LoadVirtualCardUsageData() {
 
 void PersonalDataManager::LoadCreditCardBenefits() {
   payments_data_manager_->LoadCreditCardBenefits();
-}
-
-void PersonalDataManager::CancelPendingServerQueries() {
-  payments_data_manager_->CancelPendingServerQuery(
-      &payments_data_manager_->pending_server_creditcards_query_);
-  payments_data_manager_->CancelPendingServerQuery(
-      &payments_data_manager_->pending_customer_data_query_);
-  payments_data_manager_->CancelPendingServerQuery(
-      &payments_data_manager_
-           ->pending_server_creditcard_cloud_token_data_query_);
-  payments_data_manager_->CancelPendingServerQuery(
-      &payments_data_manager_->pending_server_ibans_query_);
-  payments_data_manager_->CancelPendingServerQuery(
-      &payments_data_manager_->pending_offer_data_query_);
-  payments_data_manager_->CancelPendingServerQuery(
-      &payments_data_manager_->pending_virtual_card_usage_data_query_);
-  payments_data_manager_->CancelPendingServerQuery(
-      &payments_data_manager_->pending_credit_card_benefit_query_);
 }
 
 void PersonalDataManager::LoadPaymentsCustomerData() {

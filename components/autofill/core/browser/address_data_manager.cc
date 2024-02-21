@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/sync/base/model_type.h"
 #include "components/webdata/common/web_data_results.h"
 
 namespace autofill {
@@ -61,10 +62,20 @@ AddressDataManager::AddressDataManager(
     webdata_service_->SetAutofillProfileChangedCallback(
         base::BindRepeating(&AddressDataManager::OnAutofillProfileChanged,
                             weak_factory_.GetWeakPtr()));
+    webdata_service_observer_.Observe(webdata_service_.get());
   }
 }
 
-AddressDataManager::~AddressDataManager() = default;
+AddressDataManager::~AddressDataManager() {
+  CancelAllPendingQueries();
+}
+
+void AddressDataManager::OnAutofillChangedBySync(syncer::ModelType model_type) {
+  if (model_type == syncer::ModelType::AUTOFILL_PROFILE ||
+      model_type == syncer::ModelType::CONTACT_INFO) {
+    LoadProfiles();
+  }
+}
 
 void AddressDataManager::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle handle,

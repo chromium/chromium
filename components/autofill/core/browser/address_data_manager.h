@@ -14,8 +14,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace autofill {
@@ -25,7 +27,8 @@ class PersonalDataManager;
 // Intended to contain all address-related logic of the `PersonalDataManager`.
 // Owned by the PDM.
 // TODO(b/322170538): Move all address-related logic from the PDM to this file.
-class AddressDataManager : public WebDataServiceConsumer {
+class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
+                           public WebDataServiceConsumer {
  public:
   // Profiles can be retrieved from the AddressDataManager in different orders.
   enum class ProfileOrder {
@@ -48,6 +51,9 @@ class AddressDataManager : public WebDataServiceConsumer {
   ~AddressDataManager() override;
   AddressDataManager(const AddressDataManager&) = delete;
   AddressDataManager& operator=(const AddressDataManager&) = delete;
+
+  // AutofillWebDataServiceObserverOnUISequence:
+  void OnAutofillChangedBySync(syncer::ModelType model_type) override;
 
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(
@@ -183,6 +189,11 @@ class AddressDataManager : public WebDataServiceConsumer {
 
   // The WebDataService used to schedule tasks on the `AddressAutofillTable`.
   scoped_refptr<AutofillWebDataService> webdata_service_;
+
+  // Make sure to get notified about changes to `AddressAutofillTable` via sync.
+  base::ScopedObservation<AutofillWebDataService,
+                          AutofillWebDataServiceObserverOnUISequence>
+      webdata_service_observer_{this};
 
   // A timely ordered list of ongoing changes for each profile.
   std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>

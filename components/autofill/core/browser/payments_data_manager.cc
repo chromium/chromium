@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/sync/base/model_type.h"
 
 namespace autofill {
 
@@ -36,12 +37,12 @@ void ReceiveLoadedDbValues(WebDataServiceBase::Handle h,
 // for server cards away from the rest of PaymentsDataManager.
 class PaymentsDatabaseHelper {
  public:
-  PaymentsDatabaseHelper(PersonalDataManager* personal_data_manager,
+  PaymentsDatabaseHelper(PaymentsDataManager* payments_data_manager,
                          scoped_refptr<AutofillWebDataService> profile_database,
                          scoped_refptr<AutofillWebDataService> account_database)
       : profile_database_(profile_database),
         account_database_(account_database),
-        personal_data_manager_(personal_data_manager) {
+        payments_data_manager_(payments_data_manager) {
     if (!profile_database_) {
       // In some tests, there are no dbs.
       return;
@@ -49,7 +50,7 @@ class PaymentsDatabaseHelper {
 
     // Start observing the profile database. Don't observe the account database
     // until we know that we should use it.
-    profile_database_->AddObserver(personal_data_manager_);
+    profile_database_->AddObserver(payments_data_manager_);
 
     // If we don't have an account_database , we always use the profile database
     // for server data.
@@ -67,12 +68,12 @@ class PaymentsDatabaseHelper {
 
   ~PaymentsDatabaseHelper() {
     if (profile_database_) {
-      profile_database_->RemoveObserver(personal_data_manager_);
+      profile_database_->RemoveObserver(payments_data_manager_);
     }
 
     // If we have a different server database, also remove its observer.
     if (server_database_ && server_database_ != profile_database_) {
-      server_database_->RemoveObserver(personal_data_manager_);
+      server_database_->RemoveObserver(payments_data_manager_);
     }
   }
 
@@ -117,18 +118,18 @@ class PaymentsDatabaseHelper {
     if (server_database_ != nullptr) {
       if (server_database_ != profile_database_) {
         // Remove the previous observer if we had any.
-        server_database_->RemoveObserver(personal_data_manager_);
+        server_database_->RemoveObserver(payments_data_manager_);
       }
-      personal_data_manager_->CancelPendingServerQueries();
+      payments_data_manager_->CancelPendingServerQueries();
     }
     server_database_ = new_server_database;
     // We don't need to add an observer if server_database_ is equal to
     // profile_database_, because we're already observing that.
     if (server_database_ != profile_database_) {
-      server_database_->AddObserver(personal_data_manager_);
+      server_database_->AddObserver(payments_data_manager_);
     }
     // Notify the manager that the database changed.
-    personal_data_manager_->Refresh();
+    payments_data_manager_->Refresh();
   }
 
  private:
@@ -139,7 +140,7 @@ class PaymentsDatabaseHelper {
   // to either profile_database_, or account_database_.
   scoped_refptr<AutofillWebDataService> server_database_;
 
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  raw_ptr<PaymentsDataManager> payments_data_manager_;
 };
 
 PaymentsDataManager::PaymentsDataManager(
@@ -148,10 +149,24 @@ PaymentsDataManager::PaymentsDataManager(
     PersonalDataManager* pdm)
     : pdm_(pdm) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
-      pdm, profile_database, account_database);
+      this, profile_database, account_database);
 }
 
-PaymentsDataManager::~PaymentsDataManager() = default;
+PaymentsDataManager::~PaymentsDataManager() {
+  CancelPendingLocalQuery(&pending_creditcards_query_);
+  CancelPendingServerQueries();
+}
+
+void PaymentsDataManager::OnAutofillChangedBySync(
+    syncer::ModelType model_type) {
+  if (model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
+      model_type == syncer::AUTOFILL_WALLET_DATA ||
+      model_type == syncer::AUTOFILL_WALLET_METADATA ||
+      model_type == syncer::AUTOFILL_WALLET_OFFER ||
+      model_type == syncer::AUTOFILL_WALLET_USAGE) {
+    Refresh();
+  }
+}
 
 void PaymentsDataManager::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
@@ -273,6 +288,16 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
   pdm_->NotifyPersonalDataObserver();
 }
 
+void PaymentsDataManager::Refresh() {
+  pdm_->LoadCreditCards();
+  pdm_->LoadCreditCardCloudTokenData();
+  pdm_->LoadIbans();
+  pdm_->LoadPaymentsCustomerData();
+  pdm_->LoadAutofillOffers();
+  pdm_->LoadVirtualCardUsageData();
+  pdm_->LoadCreditCardBenefits();
+}
+
 scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetLocalDatabase() {
   return database_helper_->GetLocalDatabase();
 }
@@ -285,6 +310,16 @@ void PaymentsDataManager::SetUseAccountStorageForServerData(
 }
 bool PaymentsDataManager::IsUsingAccountStorageForServerData() {
   return database_helper_->IsUsingAccountStorageForServerData();
+}
+
+void PaymentsDataManager::CancelPendingServerQueries() {
+  CancelPendingServerQuery(&pending_server_creditcards_query_);
+  CancelPendingServerQuery(&pending_customer_data_query_);
+  CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
+  CancelPendingServerQuery(&pending_server_ibans_query_);
+  CancelPendingServerQuery(&pending_offer_data_query_);
+  CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
+  CancelPendingServerQuery(&pending_credit_card_benefit_query_);
 }
 
 void PaymentsDataManager::LoadCreditCards() {
