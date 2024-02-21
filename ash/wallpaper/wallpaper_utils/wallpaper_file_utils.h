@@ -16,34 +16,37 @@ class FilePath;
 
 namespace gfx {
 class ImageSkia;
+class Size;
 }  // namespace gfx
 
 namespace ash {
 
 // Directory names of custom wallpapers.
-constexpr char kSmallWallpaperSubDir[] = "small";
-constexpr char kLargeWallpaperSubDir[] = "large";
-constexpr char kOriginalWallpaperSubDir[] = "original";
+inline constexpr char kSmallWallpaperSubDir[] = "small";
+inline constexpr char kLargeWallpaperSubDir[] = "large";
+inline constexpr char kOriginalWallpaperSubDir[] = "original";
 
-// Saves the wallpaper |image| to disc at the given file |path|. Returns true
-// if successfully saved and false otherwise. This function is not specific to
-// any one WallpaperType.
+// Saves the wallpaper `image` to disk at the given `path`, encoded as jpg.
+// Returns true if successfully saved and false otherwise. This function is not
+// specific to any one WallpaperType.
+//
+// The `image` may be resized first according to the `preferred_size`
+// depending on the `layout` specified.
+//
 // `image_metadata` is optional. Sets the value if it is required to store the
 // XMP metadata for the image. `image_metadata`, if not empty, should be
 // constructed as XMP format (like XML standard format). Otherwise,
 // `image_metadata` is empty by default, and no metadata is saved for the image.
-// The |image| might get resized first according to the |preferred_width| and
-// |preferred_height| depending on the |layout| specified. Afterwards, it gets
-// encoded and written to disc.
 //
-// Note this performs synchronous blocking file operations and must be called
-// from a thread or sequence that allows it.
-ASH_EXPORT bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
-                                       const base::FilePath& path,
-                                       WallpaperLayout layout,
-                                       int preferred_width,
-                                       int preferred_height,
-                                       const std::string& image_metadata = "");
+// This performs synchronous blocking file operations and must be called from a
+// thread or sequence that allows it.
+ASH_EXPORT bool ResizeAndSaveWallpaper(
+    const gfx::ImageSkia& image,
+    const base::FilePath& path,
+    WallpaperLayout layout,
+    gfx::Size preferred_size,
+    const std::string& image_metadata = std::string());
+
 }  // namespace ash
 
 #endif  // ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_FILE_UTILS_H_

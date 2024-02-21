@@ -3927,6 +3927,7 @@ test("ash_unittests") {
     "wallpaper/wallpaper_blur_manager_unittest.cc",
     "wallpaper/wallpaper_controller_unittest.cc",
     "wallpaper/wallpaper_drag_drop_delegate_unittest.cc",
+    "wallpaper/wallpaper_file_manager_unittest.cc",
     "wallpaper/wallpaper_pref_manager_unittest.cc",
     "wallpaper/wallpaper_utils/sea_pen_metadata_utils_unittest.cc",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator_unittest.cc",

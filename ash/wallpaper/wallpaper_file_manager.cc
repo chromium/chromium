@@ -18,8 +18,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
-#include "base/types/expected.h"
-#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -34,7 +32,7 @@ constexpr int kMaxSeaPenFiles = 9;
 
 // Returns the file name of the online wallpaper based on the `resolution`.
 std::string GetOnlineWallpaperFileName(const std::string& file_name,
-                                       WallpaperResolution resolution) {
+                                       const WallpaperResolution resolution) {
   if (resolution == WallpaperResolution::kSmall) {
     return base::FilePath(file_name)
         .InsertBeforeExtension(wallpaper_constants::kSmallWallpaperSuffix)
@@ -47,7 +45,7 @@ std::string GetOnlineWallpaperFileName(const std::string& file_name,
 // info and the from `wallpaper_dir` if it exists in local file system,
 // otherwise returns an empty file path. Runs on `blocking_task_runner_`
 // thread.
-base::FilePath GetExistingWallpaperPath(WallpaperType type,
+base::FilePath GetExistingWallpaperPath(const WallpaperType type,
                                         const base::FilePath& wallpaper_dir,
                                         const std::string& location) {
   base::FilePath wallpaper_path;
@@ -93,7 +91,7 @@ void EnsureWallpaperDirectoryExists(const base::FilePath& wallpaper_dir) {
 // Scans through all the images in Sea Pen wallpaper directory. Keeps only 9
 // latest sea pen images based on the last modified time, the older files are
 // removed. Returns true if the process is successful.
-bool MaybeDeleteOldSeaPenImages(base::FilePath wallpaper_dir) {
+bool MaybeDeleteOldSeaPenImages(const base::FilePath& wallpaper_dir) {
   std::vector<std::pair<base::FilePath, base::Time>> sea_pen_files;
 
   // Enumerate normal files only; directories and symlinks are skipped.
@@ -133,7 +131,7 @@ bool MaybeDeleteOldSeaPenImages(base::FilePath wallpaper_dir) {
 // Deletes the wallpaper directory and its subdirectories to store only the
 // latest selected wallpapers. Except online wallpapers for which we want to
 // retrieve the wallpapers quickly from cache instead of downloading them again.
-bool DeleteWallpaperPath(WallpaperType type,
+bool DeleteWallpaperPath(const WallpaperType type,
                          const base::FilePath& wallpaper_dir) {
   if (IsOnlineWallpaper(type)) {
     return true;
@@ -208,7 +206,7 @@ std::optional<base::Value::Dict> AsOptionalDict(
 }
 
 void ParseJsonIsolated(WallpaperController::GetSeaPenMetadataCallback callback,
-                       std::string json) {
+                       const std::string json) {
   if (json.empty()) {
     LOG(WARNING) << "JSON string is empty";
     std::move(callback).Run(std::nullopt);
@@ -227,14 +225,14 @@ base::FilePath GetCustomWallpaperDir(const base::FilePath& wallpaper_dir,
 // Saves the wallpaper to |path| (absolute path) on filesystem
 // and starts resizing operation of the wallpaper if necessary.
 // Returns the original path if it is saved successfully.
-base::FilePath SaveWallpaperToPath(WallpaperType type,
+base::FilePath SaveWallpaperToPath(const WallpaperType type,
                                    const base::FilePath& wallpaper_dir,
                                    const std::string& file_name,
-                                   WallpaperLayout layout,
-                                   gfx::ImageSkia image,
+                                   const WallpaperLayout layout,
+                                   const gfx::ImageSkia image,
                                    const std::string& image_metadata,
-                                   int resized_width = 0,
-                                   int resized_height = 0) {
+                                   const int resized_width = 0,
+                                   const int resized_height = 0) {
   const base::FilePath file_path = wallpaper_dir.Append(file_name);
   if (!DeleteWallpaperPath(type, wallpaper_dir)) {
     LOG(ERROR) << "Failed to delete wallpaper path.";
@@ -242,14 +240,16 @@ base::FilePath SaveWallpaperToPath(WallpaperType type,
   };
   EnsureWallpaperDirectoryExists(wallpaper_dir);
   const bool success = ResizeAndSaveWallpaper(
-      image, file_path, layout, resized_width ? resized_width : image.width(),
-      resized_height ? resized_height : image.height(), image_metadata);
+      image, file_path, layout,
+      {resized_width == 0 ? image.width() : resized_width,
+       resized_height == 0 ? image.height() : resized_height},
+      image_metadata);
   return success ? file_path : base::FilePath();
 }
 
 // Saves the wallpapers into the local file system with different resolution
 // sizes based on its wallpaper type.
-base::FilePath SaveWallpaperPerType(WallpaperType type,
+base::FilePath SaveWallpaperPerType(const WallpaperType type,
                                     const base::FilePath& wallpaper_dir,
                                     const std::string& wallpaper_files_id,
                                     const std::string& file_name,
@@ -320,9 +320,10 @@ scoped_refptr<base::RefCountedMemory> ReadFile(
 }  // namespace
 
 // This method is thread safe.
-base::FilePath GetOnlineWallpaperFilePath(const base::FilePath& wallpaper_dir,
-                                          const GURL& url,
-                                          WallpaperResolution resolution) {
+base::FilePath GetOnlineWallpaperFilePath(
+    const base::FilePath& wallpaper_dir,
+    const GURL& url,
+    const WallpaperResolution resolution) {
   CHECK(!wallpaper_dir.empty());
   return wallpaper_dir.Append(
       GetOnlineWallpaperFileName(url.ExtractFileName(), resolution));
@@ -335,7 +336,7 @@ WallpaperFileManager::WallpaperFileManager()
 
 WallpaperFileManager::~WallpaperFileManager() = default;
 
-void WallpaperFileManager::LoadWallpaper(WallpaperType type,
+void WallpaperFileManager::LoadWallpaper(const WallpaperType type,
                                          const base::FilePath& wallpaper_dir,
                                          const std::string& location,
                                          LoadWallpaperCallback callback) {
@@ -362,7 +363,7 @@ void WallpaperFileManager::LoadOnlineWallpaperPreview(
 }
 
 void WallpaperFileManager::SaveWallpaperToDisk(
-    WallpaperType type,
+    const WallpaperType type,
     const base::FilePath& wallpaper_dir,
     const std::string& file_name,
     const WallpaperLayout layout,

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/threading/thread_restrictions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -24,42 +25,55 @@ namespace {
 // Default quality for encoding wallpaper.
 constexpr int kDefaultEncodingQuality = 90;
 
-// Encodes jpeg image with xmp metadata.
-bool EncodeJpegImageWithXmpMetadata(const std::string& image_metadata,
-                                    const SkBitmap& src,
-                                    int quality,
-                                    std::vector<unsigned char>* output) {
+// Encodes `image_skia` to jpg with `image_metadata` encoded in the header.
+// `output` will be in an undefined state on failure.
+bool EncodeImage(const gfx::ImageSkia& image_skia,
+                 const std::string& image_metadata,
+                 scoped_refptr<base::RefCountedBytes>* output) {
+  base::AssertLongCPUWorkAllowed();
+  SkBitmap bitmap = *(image_skia.bitmap());
+  DCHECK(!bitmap.drawsNothing());
+
+  *output = base::MakeRefCounted<base::RefCountedBytes>();
+
+  if (image_metadata.empty()) {
+    return gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality,
+                                  &(*output)->data());
+  }
+
   SkPixmap pixmap;
-  if (!src.peekPixels(&pixmap)) {
+  if (!bitmap.peekPixels(&pixmap)) {
+    LOG(WARNING) << "Failed to read bitmap pixels";
     return false;
   }
 
   auto xmpMetadata = SkData::MakeWithCString(image_metadata.c_str());
 
-  return gfx::JPEGCodec::Encode(pixmap, quality,
-                                SkJpegEncoder::Downsample::k420, output,
-                                xmpMetadata.get());
+  return gfx::JPEGCodec::Encode(pixmap, kDefaultEncodingQuality,
+                                SkJpegEncoder::Downsample::k420,
+                                &(*output)->data(), xmpMetadata.get());
 }
 
-// Resizes |image| to a resolution which is nearest to |preferred_width| and
-// |preferred_height| while respecting the |layout| choice. Encodes the image to
-// JPEG and saves to |output|. Returns true on success.
-bool ResizeAndEncodeImage(const gfx::ImageSkia& image,
-                          WallpaperLayout layout,
-                          int preferred_width,
-                          int preferred_height,
-                          scoped_refptr<base::RefCountedBytes>* output,
-                          const std::string& image_metadata) {
-  int width = image.width();
-  int height = image.height();
+// Resizes `image` to a resolution which is nearest to `preferred_width` and
+// `preferred_height` while respecting the `layout` choice. Returns empty
+// `ImageSkia` on failure.
+gfx::ImageSkia ResizeImage(const gfx::ImageSkia& image_skia,
+                           const WallpaperLayout layout,
+                           const gfx::Size preferred_size) {
+  const int width = image_skia.width();
+  const int height = image_skia.height();
+  const int preferred_width = preferred_size.width();
+  const int preferred_height = preferred_size.height();
   int resized_width;
   int resized_height;
-  *output = base::MakeRefCounted<base::RefCountedBytes>();
 
   if (layout == WALLPAPER_LAYOUT_CENTER_CROPPED) {
     // Do not resize wallpaper if it is smaller than preferred size.
     if (width < preferred_width || height < preferred_height) {
-      return false;
+      DVLOG(1) << "Skip resize. Size=" << image_skia.size().ToString()
+               << " Preferred_Size="
+               << gfx::Size(preferred_width, preferred_height).ToString();
+      return gfx::ImageSkia();
     }
 
     // TODO(esum): This is the same scaling logic as what's in
@@ -83,42 +97,17 @@ bool ResizeAndEncodeImage(const gfx::ImageSkia& image,
     resized_height = height;
   }
 
-  gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
-      image, skia::ImageOperations::RESIZE_LANCZOS3,
+  return gfx::ImageSkiaOperations::CreateResizedImage(
+      image_skia, skia::ImageOperations::RESIZE_LANCZOS3,
       gfx::Size(resized_width, resized_height));
-
-  SkBitmap bitmap = *(resized_image.bitmap());
-
-  // TODO(b/318519426): consider updating the return value based on image
-  // encoding result.
-  if (image_metadata.empty()) {
-    gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality, &(*output)->data());
-    return true;
-  }
-
-  EncodeJpegImageWithXmpMetadata(image_metadata, bitmap,
-                                 kDefaultEncodingQuality, &(*output)->data());
-  return true;
 }
 
-}  // namespace
-
-bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
-                            const base::FilePath& path,
-                            WallpaperLayout layout,
-                            int preferred_width,
-                            int preferred_height,
-                            const std::string& image_metadata) {
-  DVLOG(3) << __func__ << " path=" << path;
-  if (layout == WALLPAPER_LAYOUT_CENTER) {
-    if (base::PathExists(path)) {
-      base::DeleteFile(path);
-    }
-    return false;
-  }
+bool SaveWallpaper(const gfx::ImageSkia& image,
+                   const base::FilePath& path,
+                   const std::string& image_metadata) {
   scoped_refptr<base::RefCountedBytes> data;
-  if (!ResizeAndEncodeImage(image, layout, preferred_width, preferred_height,
-                            &data, image_metadata)) {
+  if (!EncodeImage(image, image_metadata, &data)) {
+    LOG(WARNING) << "Encoding wallpaper image failed";
     return false;
   }
 
@@ -145,6 +134,33 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
   }
 
   return true;
+}
+
+}  // namespace
+
+bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
+                            const base::FilePath& path,
+                            const WallpaperLayout layout,
+                            const gfx::Size preferred_size,
+                            const std::string& image_metadata) {
+  if (layout == WALLPAPER_LAYOUT_CENTER) {
+    // TODO(b/325498873) remove this.
+    if (base::PathExists(path)) {
+      DVLOG(1) << "Deleting path " << path;
+      base::DeleteFile(path);
+    }
+    DVLOG(1) << "Skipping resize and save for WALLPAPER_LAYOUT_CENTER path "
+             << path;
+    return false;
+  }
+
+  gfx::ImageSkia resized_image = ResizeImage(image, layout, preferred_size);
+  if (resized_image.isNull()) {
+    LOG(WARNING) << "Failed to resize image";
+    return false;
+  }
+
+  return SaveWallpaper(resized_image, path, image_metadata);
 }
 
 }  // namespace ash
