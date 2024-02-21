@@ -140,10 +140,6 @@ scoped_refptr<const CalculationValue> CalculationValue::Zoom(
   return CreateSimplified(data_.expression->Zoom(factor), GetValueRange());
 }
 
-bool CalculationValue::HasAnchorQueries() const {
-  return IsExpression() && data_.expression->HasAnchorQueries();
-}
-
 bool CalculationValue::HasContentOrIntrinsicSize() const {
   return IsExpression() && data_.expression->HasContentOrIntrinsicSize();
 }

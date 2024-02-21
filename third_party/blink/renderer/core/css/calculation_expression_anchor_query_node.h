@@ -83,7 +83,6 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
         value_(value),
         side_percentage_(side_percentage),
         fallback_(fallback) {
-    has_anchor_queries_ = true;
   }
 
  private:

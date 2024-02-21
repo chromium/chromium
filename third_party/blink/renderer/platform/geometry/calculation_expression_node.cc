@@ -368,9 +368,6 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
   DCHECK_NE(result_type_, ResultType::kInvalid);
 #endif
   for (const auto& child : children_) {
-    if (child->HasAnchorQueries()) {
-      has_anchor_queries_ = true;
-    }
     if (child->HasContentOrIntrinsicSize()) {
       has_content_or_intrinsic_ = true;
     }

@@ -218,10 +218,6 @@ bool Length::IsCalculatedEqual(const Length& o) const {
           GetCalculationValue() == o.GetCalculationValue());
 }
 
-bool Length::HasAnchorQueries() const {
-  return IsCalculated() && GetCalculationValue().HasAnchorQueries();
-}
-
 String Length::ToString() const {
   StringBuilder builder;
   builder.Append("Length(");
