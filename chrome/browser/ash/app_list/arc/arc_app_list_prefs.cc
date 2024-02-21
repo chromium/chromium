@@ -2397,18 +2397,6 @@ void ArcAppListPrefs::OnNotificationsEnabledChanged(
     observer.OnNotificationsEnabledChanged(package_name, enabled);
 }
 
-bool ArcAppListPrefs::IsUnknownPackage(const std::string& package_name) const {
-  if (GetPackage(package_name))
-    return false;
-  if (sync_service_ && sync_service_->IsPackageSyncing(package_name))
-    return false;
-  if (default_apps_->HasPackage(package_name))
-    return false;
-  if (apps_installations_.count(package_name))
-    return false;
-  return true;
-}
-
 bool ArcAppListPrefs::IsDefaultPackage(const std::string& package_name) const {
   DCHECK(default_apps_ready_);
   return default_apps_->HasPackage(package_name) ||

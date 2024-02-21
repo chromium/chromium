@@ -483,13 +483,6 @@ class ArcAppListPrefs : public KeyedService,
   void SetRemoveAllCallbackForTesting(base::OnceClosure callback);
   bool is_remove_all_in_progress() { return is_remove_all_in_progress_; }
 
-  // Returns true if:
-  // 1. specified package is new in the system
-  // 2. is not installed.
-  // 3. is not scheduled to install by sync
-  // 4. Is not currently installing.
-  bool IsUnknownPackage(const std::string& package_name) const;
-
   // Returns true if the package is a default package, even it's uninstalled.
   bool IsDefaultPackage(const std::string& package_name) const;
 
