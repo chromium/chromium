@@ -35,6 +35,7 @@
 #include "device/bluetooth/dbus/bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluetooth_input_client.h"
+#include "device/bluetooth/dbus/bluetooth_le_advertising_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
 
@@ -96,6 +97,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       public bluez::BluetoothDeviceClient::Observer,
       public bluez::BluetoothInputClient::Observer,
       public bluez::BluetoothAgentManagerClient::Observer,
+      public bluez::BluetoothLEAdvertisingManagerClient::Observer,
 #if BUILDFLAG(IS_CHROMEOS)
       public bluez::BluetoothAdvertisementMonitorManagerClient::Observer,
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -57,6 +57,7 @@
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
+#include "device/bluetooth/dbus/fake_bluetooth_le_advertising_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
@@ -5324,8 +5325,30 @@ TEST_F(BluetoothBlueZTest, IsExtendedAdvertisementsAvailable) {
   BluetoothAdapterBlueZ* adapter_bluez =
       static_cast<BluetoothAdapterBlueZ*>(adapter_.get());
 
-  // TODO(b/310269227): update test logic once BlueZ extension is ready.
-  EXPECT_EQ(false, adapter_bluez->IsExtendedAdvertisementsAvailable());
+  FakeBluetoothLEAdvertisingManagerClient* client =
+      static_cast<bluez::FakeBluetoothLEAdvertisingManagerClient*>(
+          bluez::BluezDBusManager::Get()
+              ->GetBluetoothLEAdvertisingManagerClient());
+
+  BluetoothLEAdvertisingManagerClient::Properties* properties =
+      client->GetProperties(adapter_bluez->object_path());
+  ASSERT_TRUE(properties);
+
+  std::vector<std::string> supported_features = {};
+
+  properties->supported_features.ReplaceValue(supported_features);
+
+  // Empty supported feature indicates the adapter doesn't support Ext
+  // Advertising
+  EXPECT_FALSE(adapter_bluez->IsExtendedAdvertisementsAvailable());
+
+  supported_features.push_back(std::string(
+      bluetooth_advertising_manager::kSupportedFeaturesHardwareOffload));
+
+  // HardwareOffload indicates the adapter support Ext Advertising
+  properties->supported_features.ReplaceValue(supported_features);
+
+  EXPECT_TRUE(adapter_bluez->IsExtendedAdvertisementsAvailable());
 }
 
 TEST_F(BluetoothBlueZTest, GetSupportedRoles) {

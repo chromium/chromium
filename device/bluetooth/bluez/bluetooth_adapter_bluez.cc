@@ -672,8 +672,25 @@ void BluetoothAdapterBlueZ::RegisterAdvertisement(
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool BluetoothAdapterBlueZ::IsExtendedAdvertisementsAvailable() const {
-  // TODO(b/310269227): wires this to BlueZ extension.
-  return false;
+  if (!IsPresent()) {
+    return false;
+  }
+
+  BluetoothLEAdvertisingManagerClient::Properties* properties =
+      bluez::BluezDBusManager::Get()
+          ->GetBluetoothLEAdvertisingManagerClient()
+          ->GetProperties(object_path_);
+
+  if (!properties) {
+    return false;
+  }
+
+  // Based on the implementation of kernel bluez, if the controller supports Ext
+  // Advertisement, it must support HardwareOffload.
+  // (net/bluetooth/mgmt.c:get_supported_adv_flags)
+  return base::Contains(
+      properties->supported_features.value(),
+      bluetooth_advertising_manager::kSupportedFeaturesHardwareOffload);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
