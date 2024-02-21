@@ -12,15 +12,17 @@ import type {CrExpandButtonElement, CrInputElement, SettingsSyncEncryptionOption
 // <if expr="not chromeos_ash">
 import type {CrDialogElement} from 'chrome://settings/lazy_load.js';
 // </if>
+import type {IronCollapseElement} from 'chrome://settings/lazy_load.js';
 
 import type {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement} from 'chrome://settings/settings.js';
-import {PageStatus, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {OpenWindowProxyImpl, PageStatus, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 // <if expr="not chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
 // </if>
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 // <if expr="not chromeos_ash">
 import {simulateStoredAccounts} from './sync_test_util.js';
@@ -32,7 +34,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 
-suite('SyncSettingsTests', function() {
+suite('SyncSettings', function() {
   let syncPage: SettingsSyncPageElement;
   let browserProxy: TestSyncBrowserProxy;
   let encryptionElement: SettingsSyncEncryptionOptionsElement;
@@ -159,15 +161,16 @@ suite('SyncSettingsTests', function() {
     assertTrue(otherItems.classList.contains('list-frame'));
     assertEquals(otherItems.querySelectorAll('cr-expand-button').length, 1);
 
-    // <if expr="not chromeos_lacros">
-    assertEquals(otherItems.querySelectorAll('cr-link-row').length, 3);
-    // </if>
-
+    assertTrue(isChildVisible(syncPage, '#sync-advanced-row'));
     // <if expr="chromeos_lacros">
-    assertEquals(otherItems.querySelectorAll('cr-link-row').length, 4);
-    assertTrue(!!otherItems.querySelector('#os-sync-device-row'));
+    assertTrue(isChildVisible(syncPage, '#os-sync-device-row'));
     // </if>
+    // TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
+    assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV1'));
 
+    assertTrue(isChildVisible(syncPage, '#activityControlsLinkRowV2'));
+    assertFalse(isChildVisible(syncPage, '#personalizationExpandButton'));
+    assertTrue(isChildVisible(syncPage, '#syncDashboardLink'));
 
     // Test sync paused state.
     syncPage.syncStatus = {
@@ -963,4 +966,126 @@ suite('SyncSettingsTests', function() {
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
   });
   // </if>
+});
+
+suite('EEAChoiceCountry', function() {
+  let syncPage: SettingsSyncPageElement;
+  let openWindowProxy: TestOpenWindowProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      signinAllowed: true,
+      isEeaChoiceCountry: true,
+    });
+  });
+
+  setup(function() {
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    syncPage = document.createElement('settings-sync-page');
+    document.body.appendChild(syncPage);
+
+    // Start with Sync All with no encryption selected. Also, ensure
+    // that this is not a supervised user, so that Sync Passphrase is
+    // enabled.
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
+    syncPage.set('syncStatus', {
+      signedIn: true,
+      supervisedUser: false,
+      statusAction: StatusAction.NO_ACTION,
+    });
+    flush();
+  });
+
+  teardown(function() {
+    syncPage.remove();
+  });
+
+  test('personalizationControlsVisibility', function() {
+    // TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
+    assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV1'));
+
+    assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV2'));
+    assertTrue(isChildVisible(syncPage, '#personalizationExpandButton'));
+  });
+
+  test('personalizationCollapse', async function() {
+    // The collapse is collapsed by default.
+    const personalizationCollapse =
+        syncPage.shadowRoot!.querySelector<IronCollapseElement>(
+            '#personalizationCollapse');
+    assertTrue(!!personalizationCollapse);
+    assertFalse(personalizationCollapse.opened);
+
+    // Clicking the expand-button expands the collapse.
+    const expandButton = syncPage.shadowRoot!.querySelector<HTMLElement>(
+        '#personalizationExpandButton');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+    assertTrue(personalizationCollapse.opened);
+
+    // Clicking the expand-button again collapses the collapse.
+    expandButton.click();
+    await flushTasks();
+    assertFalse(personalizationCollapse.opened);
+  });
+
+  test('linkedServicesClick', async function() {
+    // The linkedServices row is only visible when the collapse is expanded.
+    const expandButton = syncPage.shadowRoot!.querySelector<HTMLElement>(
+        '#personalizationExpandButton');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+
+    const linkedServicesLinkRow =
+        syncPage.shadowRoot!.querySelector<HTMLElement>(
+            '#linkedServicesLinkRow');
+    assertTrue(!!linkedServicesLinkRow);
+    linkedServicesLinkRow.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(loadTimeData.getString('linkedServicesUrl'), url);
+  });
+});
+
+// TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
+suite('LinkedServicesDisabled', function() {
+  let syncPage: SettingsSyncPageElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      signinAllowed: true,
+      enableLinkedServicesSetting: false,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    syncPage = document.createElement('settings-sync-page');
+    document.body.appendChild(syncPage);
+
+    // Start with Sync All with no encryption selected. Also, ensure
+    // that this is not a supervised user, so that Sync Passphrase is
+    // enabled.
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
+    syncPage.set('syncStatus', {
+      signedIn: true,
+      supervisedUser: false,
+      statusAction: StatusAction.NO_ACTION,
+    });
+    flush();
+  });
+
+  teardown(function() {
+    syncPage.remove();
+  });
+
+  test('personalizationControlsVisibility', function() {
+    assertTrue(isChildVisible(syncPage, '#activityControlsLinkRowV1'));
+    assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV2'));
+    assertFalse(isChildVisible(syncPage, '#personalizationExpandButton'));
+  });
 });

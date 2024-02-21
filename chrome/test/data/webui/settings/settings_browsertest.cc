@@ -263,12 +263,30 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePageSyncControls) {
   RunTest("settings/people_page_sync_controls_test.js", "mocha.run()");
 }
 
+class PeoplePageSyncPageTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kLinkedServicesSetting};
+};
+
 // Timeout on Linux dbg bots: https://crbug.com/1394737
 #if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
-IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePageSyncPage) {
-  RunTest("settings/people_page_sync_page_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(PeoplePageSyncPageTest, SyncSettings) {
+  RunTest("settings/people_page_sync_page_test.js",
+          "runMochaSuite('SyncSettings')");
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(PeoplePageSyncPageTest, EEAChoiceCountry) {
+  RunTest("settings/people_page_sync_page_test.js",
+          "runMochaSuite('EEAChoiceCountry')");
+}
+
+// TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
+IN_PROC_BROWSER_TEST_F(PeoplePageSyncPageTest, LinkedServicesDisabled) {
+  RunTest("settings/people_page_sync_page_test.js",
+          "runMochaSuite('LinkedServicesDisabled')");
+}
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PerformanceMenu) {
   RunTest("settings/settings_performance_menu_test.js", "mocha.run()");

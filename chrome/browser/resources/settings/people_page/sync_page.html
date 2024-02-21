@@ -63,6 +63,10 @@
         padding-inline-end: 0;
         padding-inline-start: 0;
       }
+
+      iron-collapse > cr-link-row {
+        padding-inline-start: var(--cr-section-indent-padding);
+      }
     </style>
 
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
@@ -142,10 +146,41 @@
           </cr-link-row>
 </if>
 
-          <cr-link-row class="hr"
-              label="$i18n{personalizeGoogleServicesTitle}"
-              on-click="onActivityControlsClick_" external>
-          </cr-link-row>
+          <template is="dom-if" if="[[!enableLinkedServicesSetting_]]">
+            <cr-link-row class="hr" id="activityControlsLinkRowV1"
+                label="$i18n{personalizeGoogleServicesTitle}"
+                on-click="onActivityControlsClick_" external>
+            </cr-link-row>
+          </template>
+          <template is="dom-if" if="[[enableLinkedServicesSetting_]]">
+            <!-- TODO(crbug.com/324091979): Update strings. -->
+            <template is="dom-if" if="[[!isEeaChoiceCountry_]]">
+              <cr-link-row class="hr" id="activityControlsLinkRowV2"
+                  label="$i18n{privacyPageTitle}"
+                  sub-label="$i18n{privacyPageTitle}"
+                  on-click="onActivityControlsClick_" external>
+              </cr-link-row>
+            </template>
+            <template is="dom-if" if="[[isEeaChoiceCountry_]]">
+              <cr-expand-button class="hr" id="personalizationExpandButton"
+                  expanded="{{personalizationCollapseExpanded_}}">
+                $i18n{privacyPageTitle}
+                <div class="secondary">$i18n{privacyPageTitle}</div>
+              </cr-expand-button>
+              <iron-collapse id="personalizationCollapse"
+                  opened="[[personalizationCollapseExpanded_]]">
+                <cr-link-row external on-click="onActivityControlsClick_"
+                    label="$i18n{privacyPageTitle}"
+                    sub-label="$i18n{privacyPageTitle}">
+                </cr-link-row>
+                <cr-link-row external id="linkedServicesLinkRow"
+                    on-click="onLinkedServicesClick_"
+                    label="$i18n{privacyPageTitle}"
+                    sub-label="$i18n{privacyPageTitle}">
+                </cr-link-row>
+              </iron-collapse>
+            </template>
+          </template>
 
           <cr-link-row id="syncDashboardLink" class="hr"
               label="$i18n{manageSyncedDataTitle}"
