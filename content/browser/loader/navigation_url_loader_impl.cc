@@ -471,11 +471,7 @@ NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
   }
 }
 
-void NavigationURLLoaderImpl::StartImpl(
-    scoped_refptr<PrefetchedSignedExchangeCache>
-        prefetched_signed_exchange_cache,
-    scoped_refptr<network::SharedURLLoaderFactory> factory_for_webui,
-    std::string accept_langs) {
+void NavigationURLLoaderImpl::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!started_);
   started_ = true;
@@ -493,7 +489,28 @@ void NavigationURLLoaderImpl::StartImpl(
   if (!request_info_->is_pdf) {
     // Requests to WebUI scheme won't get redirected to/from other schemes
     // or be intercepted, so we just let it go here.
-    if (factory_for_webui) {
+    std::string scheme = request_info_->common_params->url.scheme();
+    if (base::Contains(URLDataManagerBackend::GetWebUISchemes(), scheme)) {
+      FrameTreeNode* frame_tree_node =
+          FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+      CHECK(frame_tree_node);
+      CHECK(frame_tree_node->navigation_request());
+
+      scoped_refptr<network::SharedURLLoaderFactory> factory_for_webui =
+          url_loader_factory::Create(
+              ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+              url_loader_factory::TerminalParams::ForNonNetwork(
+                  CreateWebUIURLLoaderFactory(
+                      frame_tree_node->current_frame_host(), scheme, {}),
+                  network::mojom::kBrowserProcessId),
+              url_loader_factory::ContentClientParams(
+                  browser_context_, frame_tree_node->current_frame_host(),
+                  frame_tree_node->current_frame_host()->GetProcess()->GetID(),
+                  url::Origin(), ukm::SourceIdObj::FromInt64(ukm_source_id_),
+                  /*bypass_redirect_checks=*/nullptr,
+                  frame_tree_node->navigation_request()->GetNavigationId(),
+                  content::GetUIThreadTaskRunner(
+                      {content::BrowserTaskType::kNavigationNetworkResponse})));
       url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
           std::move(factory_for_webui), CreateURLLoaderThrottles(),
           global_request_id_.request_id, network::mojom::kURLLoadOptionNone,
@@ -517,20 +534,18 @@ void NavigationURLLoaderImpl::StartImpl(
     }
   }
 
-  CreateInterceptors(prefetched_signed_exchange_cache, accept_langs);
+  CreateInterceptors();
   Restart();
 }
 
-void NavigationURLLoaderImpl::CreateInterceptors(
-    scoped_refptr<PrefetchedSignedExchangeCache>
-        prefetched_signed_exchange_cache,
-    const std::string& accept_langs) {
-  if (prefetched_signed_exchange_cache) {
+void NavigationURLLoaderImpl::CreateInterceptors() {
+  if (prefetched_signed_exchange_cache_) {
     std::unique_ptr<NavigationLoaderInterceptor>
         prefetched_signed_exchange_interceptor =
-            prefetched_signed_exchange_cache->MaybeCreateInterceptor(
+            prefetched_signed_exchange_cache_->MaybeCreateInterceptor(
                 url_, frame_tree_node_id_,
                 resource_request_->trusted_params->isolation_info);
+    prefetched_signed_exchange_cache_.reset();
     if (prefetched_signed_exchange_interceptor) {
       interceptors_.push_back(
           std::move(prefetched_signed_exchange_interceptor));
@@ -553,7 +568,7 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   if (signed_exchange_utils::IsSignedExchangeHandlingEnabled(
           browser_context_)) {
     interceptors_.push_back(CreateSignedExchangeRequestHandler(
-        *request_info_, network_loader_factory_, std::move(accept_langs)));
+        *request_info_, network_loader_factory_));
   }
 
   // Set up an interceptor for prefetch.
@@ -1303,8 +1318,7 @@ NavigationURLLoaderImpl::CreateURLLoaderThrottles() {
 std::unique_ptr<SignedExchangeRequestHandler>
 NavigationURLLoaderImpl::CreateSignedExchangeRequestHandler(
     const NavigationRequestInfo& request_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string accept_langs) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   // It is safe to pass the callback of CreateURLLoaderThrottles with the
   // unretained `this`, because the passed callback will be used by a
   // SignedExchangeHandler which is indirectly owned by `this` until its
@@ -1315,7 +1329,7 @@ NavigationURLLoaderImpl::CreateSignedExchangeRequestHandler(
       std::move(url_loader_factory),
       base::BindRepeating(&NavigationURLLoaderImpl::CreateURLLoaderThrottles,
                           base::Unretained(this)),
-      std::move(accept_langs));
+      GetContentClient()->browser()->GetAcceptLangs(browser_context_));
 }
 
 void NavigationURLLoaderImpl::ParseHeaders(
@@ -1409,6 +1423,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
                               frame_tree_node_id_)),
       navigation_ui_data_(std::move(navigation_ui_data)),
       interceptors_(std::move(initial_interceptors)),
+      prefetched_signed_exchange_cache_(
+          std::move(prefetched_signed_exchange_cache)),
       loader_creation_time_(base::TimeTicks::Now()),
       ukm_source_id_(FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
                          ->navigation_request()
@@ -1440,40 +1456,9 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       std::move(url_loader_network_observer), std::move(devtools_observer),
       std::move(accept_ch_frame_observer));
 
-  std::string accept_langs =
-      GetContentClient()->browser()->GetAcceptLangs(browser_context_);
-
-  // Check if a web UI scheme wants to handle this request.
-  const ukm::SourceIdObj ukm_id = ukm::SourceIdObj::FromInt64(ukm_source_id_);
-
-  const auto& schemes = URLDataManagerBackend::GetWebUISchemes();
-  std::string scheme = resource_request_->url.scheme();
-  scoped_refptr<network::SharedURLLoaderFactory> factory_for_webui;
-  if (base::Contains(schemes, scheme)) {
-    factory_for_webui = url_loader_factory::Create(
-        ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-        url_loader_factory::TerminalParams::ForNonNetwork(
-            CreateWebUIURLLoaderFactory(frame_tree_node->current_frame_host(),
-                                        scheme, {}),
-            network::mojom::kBrowserProcessId),
-        url_loader_factory::ContentClientParams(
-            browser_context_, frame_tree_node->current_frame_host(),
-            frame_tree_node->current_frame_host()->GetProcess()->GetID(),
-            url::Origin(), ukm_id,
-            /*bypass_redirect_checks=*/nullptr,
-            frame_tree_node->navigation_request()->GetNavigationId(),
-            content::GetUIThreadTaskRunner(
-                {content::BrowserTaskType::kNavigationNetworkResponse})));
-  }
-
   network_loader_factory_ = CreateNetworkLoaderFactory(
-      browser_context_, storage_partition_, frame_tree_node, ukm_id,
-      &bypass_redirect_checks_);
-
-  start_closure_ = base::BindOnce(
-      &NavigationURLLoaderImpl::StartImpl, base::Unretained(this),
-      std::move(prefetched_signed_exchange_cache), std::move(factory_for_webui),
-      std::move(accept_langs));
+      browser_context_, storage_partition_, frame_tree_node,
+      ukm::SourceIdObj::FromInt64(ukm_source_id_), &bypass_redirect_checks_);
 }
 
 // static
@@ -1596,10 +1581,6 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
     return std::move(factory_builder)
         .Finish(storage_partition->GetURLLoaderFactoryForBrowserProcess());
   }
-}
-
-void NavigationURLLoaderImpl::Start() {
-  std::move(start_closure_).Run();
 }
 
 void NavigationURLLoaderImpl::FollowRedirect(

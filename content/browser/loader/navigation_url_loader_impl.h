@@ -147,23 +147,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
                              const ukm::SourceIdObj& ukm_id,
                              bool* bypass_redirect_checks);
 
-  // Starts the loader by finalizing loader factories initialization and
-  // calling Restart().
-  // This is called only once (while Restart can be called multiple times).
-  // Sets `started_` true.
-  void StartImpl(
-      scoped_refptr<PrefetchedSignedExchangeCache>
-          prefetched_signed_exchange_cache,
-      scoped_refptr<network::SharedURLLoaderFactory> factory_for_webui,
-      std::string accept_langs);
-
   void BindAndInterceptNonNetworkURLLoaderFactoryReceiver(
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
-  void CreateInterceptors(scoped_refptr<PrefetchedSignedExchangeCache>
-                              prefetched_signed_exchange_cache,
-                          const std::string& accept_langs);
+  void CreateInterceptors();
 
   // This could be called multiple times to follow a chain of redirects.
   // This internally rather recreates another loader than actually following the
@@ -211,8 +199,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   std::unique_ptr<SignedExchangeRequestHandler>
   CreateSignedExchangeRequestHandler(
       const NavigationRequestInfo& request_info,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string accept_langs);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   void ParseHeaders(const GURL& url,
                     network::mojom::URLResponseHead* head,
@@ -253,6 +240,10 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
                  listener) override;
 
   // NavigationURLLoader implementation:
+  // Starts the loader by finalizing loader factories initialization and
+  // calling Restart().
+  // This is called only once (while Restart can be called multiple times).
+  // Sets `started_` true.
   void Start() override;
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
@@ -335,9 +326,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 
-  // Set on the constructor and runs in Start(). This is used for transferring
-  // parameters prepared in the constructor to Start().
-  base::OnceClosure start_closure_;
+  // Cleared after `Start()`.
+  scoped_refptr<PrefetchedSignedExchangeCache>
+      prefetched_signed_exchange_cache_;
 
   // While it's not expected to have two active Remote ends for the same
   // NavigationURLLoaderImpl, when a TrustedParam is copied all of the pipes are
