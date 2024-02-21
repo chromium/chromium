@@ -1441,6 +1441,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method forEach
+[Worker]     method map
 [Worker]     method subscribe
 [Worker]     method takeUntil
 [Worker]     method toArray

@@ -17,6 +17,7 @@ class ObservableInternalObserver;
 class ScriptState;
 class Subscriber;
 class SubscribeOptions;
+class V8Mapper;
 class V8SubscribeCallback;
 class V8UnionObserverOrObserverCallback;
 class V8Visitor;
@@ -55,6 +56,7 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   // Observable-returning operators. See
   // https://wicg.github.io/observable/#observable-returning-operators.
   Observable* takeUntil(ScriptState*, Observable*);
+  Observable* map(ScriptState*, V8Mapper*);
 
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.

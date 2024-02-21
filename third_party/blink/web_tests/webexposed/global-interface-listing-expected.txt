@@ -6786,6 +6786,7 @@ interface Observable
     attribute @@toStringTag
     method constructor
     method forEach
+    method map
     method subscribe
     method takeUntil
     method toArray

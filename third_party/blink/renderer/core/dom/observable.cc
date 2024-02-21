@@ -7,6 +7,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mapper.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_complete_callback.h"
@@ -203,6 +204,89 @@ class OperatorForEachInternalObserver final
   Member<AbortController> controller_;
   Member<V8Visitor> callback_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
+class OperatorMapSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorMapSubscribeDelegate(Observable* source_observable, V8Mapper* mapper)
+      : source_observable_(source_observable), mapper_(mapper) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state,
+                                                     mapper_),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+    visitor->Trace(mapper_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* subscriber,
+                           ScriptState* script_state,
+                           V8Mapper* mapper)
+        : subscriber_(subscriber),
+          script_state_(script_state),
+          mapper_(mapper) {
+      CHECK(subscriber_);
+      CHECK(script_state_);
+      CHECK(mapper_);
+    }
+
+    void Next(ScriptValue value) override {
+      // `ScriptState::Scope` can only be created in a valid context, so
+      // early-return if we're in a detached one.
+      if (!script_state_->ContextIsValid()) {
+        return;
+      }
+
+      ScriptState::Scope scope(script_state_);
+      v8::TryCatch try_catch(script_state_->GetIsolate());
+      v8::Maybe<ScriptValue> mapped_value =
+          mapper_->Invoke(nullptr, value, idx_++);
+      if (try_catch.HasCaught()) {
+        subscriber_->error(
+            script_state_,
+            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+        return;
+      }
+
+      // Since we handled the exception case above, `mapped_value` must not be
+      // `v8::Nothing`.
+      subscriber_->next(mapped_value.ToChecked());
+    }
+    void Error(ScriptState*, ScriptValue error) override {
+      subscriber_->error(script_state_, error);
+    }
+    void Complete() override { subscriber_->complete(script_state_); }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(subscriber_);
+      visitor->Trace(script_state_);
+      visitor->Trace(mapper_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    uint64_t idx_ = 0;
+    Member<Subscriber> subscriber_;
+    Member<ScriptState> script_state_;
+    Member<V8Mapper> mapper_;
+  };
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  Member<Observable> source_observable_;
+  Member<V8Mapper> mapper_;
 };
 
 class OperatorTakeUntilSubscribeDelegate final
@@ -472,6 +556,13 @@ Observable* Observable::takeUntil(ScriptState*, Observable* notifier) {
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
       MakeGarbageCollected<OperatorTakeUntilSubscribeDelegate>(this, notifier));
+  return return_observable;
+}
+
+Observable* Observable::map(ScriptState*, V8Mapper* mapper) {
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorMapSubscribeDelegate>(this, mapper));
   return return_observable;
 }
 
