@@ -24,12 +24,6 @@ export interface PTZController {
   canPan(): boolean;
 
   /**
-   * Returns whether the camera can do pan and tilt when the video is fully
-   * zoomed out.
-   */
-  canPanTiltWhenZoomedOut(): boolean;
-
-  /**
    * Returns whether tilt control is supported.
    */
   canTilt(): boolean;
@@ -48,6 +42,12 @@ export interface PTZController {
    * Returns current pan, tilt, and zoom settings.
    */
   getSettings(): PTZSettings;
+
+  /**
+   * Returns whether pan and tilt functionalities are disabled when the video is
+   * fully zoomed out.
+   */
+  isPanTiltRestricted(): boolean;
 
   /**
    * Resets to the default PTZ value.
@@ -103,17 +103,17 @@ export class MediaStreamPTZController implements PTZController {
     return this.track.getCapabilities().zoom !== undefined;
   }
 
-  canPanTiltWhenZoomedOut(): boolean {
-    return state.get(state.State.USE_FAKE_CAMERA) ||
-        (this.vidPid !== null && panTiltRestrictedCameras.has(this.vidPid));
-  }
-
   getCapabilities(): PTZCapabilities {
     return this.track.getCapabilities();
   }
 
   getSettings(): PTZSettings {
     return this.track.getSettings();
+  }
+
+  isPanTiltRestricted(): boolean {
+    return state.get(state.State.USE_FAKE_CAMERA) ||
+        (this.vidPid !== null && panTiltRestrictedCameras.has(this.vidPid));
   }
 
   async resetPTZ(): Promise<void> {

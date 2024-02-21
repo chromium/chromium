@@ -278,7 +278,7 @@ export class PTZPanel extends View {
         dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
     this.panel.style.bottom = `${window.innerHeight - bottom}px`;
     this.panel.style.left = `${right + 6}px`;
-    this.isPanTiltRestricted = ptzController.canPanTiltWhenZoomedOut();
+    this.isPanTiltRestricted = ptzController.isPanTiltRestricted();
     this.ptzController = ptzController;
 
     const canPan = ptzController.canPan();
