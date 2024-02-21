@@ -196,13 +196,11 @@ template("generate_jni_registration") {
     }
 
     if (_manual_jni_registration || _enable_jni_multiplexing) {
-      _subdir = rebase_path(target_gen_dir, root_gen_dir)
-      _jni_header_output =
-          "$jni_headers_dir/$_subdir/${target_name}_generated.h"
-      outputs += [ _jni_header_output ]
+      _header_output = invoker.header_output
+      outputs += [ _header_output ]
       args += [
         "--header-path",
-        rebase_path(_jni_header_output, root_build_dir),
+        rebase_path(_header_output, root_build_dir),
       ]
 
       public_configs = [
@@ -448,11 +446,17 @@ template("generate_jar_jni") {
 template("native_with_jni") {
   _enable_underlying_native =
       !defined(invoker.enable_target) || invoker.enable_target
-  _needs_native_dep =
-      _enable_underlying_native &&
+  _needs_header =
       ((defined(invoker.manual_jni_registration) &&
         invoker.manual_jni_registration) || allow_jni_multiplexing) &&
       !(defined(invoker.collect_inputs_only) && invoker.collect_inputs_only)
+  _needs_native_dep = _enable_underlying_native && _needs_header
+  if ((_needs_header && current_toolchain == default_toolchain) ||
+      _needs_native_dep) {
+    _subdir = rebase_path(target_gen_dir, root_gen_dir)
+    _registration_header_output =
+        "$jni_headers_dir/$_subdir/${target_name}__jni_registration_generated.h"
+  }
   if (_needs_native_dep || current_toolchain == default_toolchain) {
     _jni_registration_target_name = "${target_name}__jni_registration"
   }
@@ -468,13 +472,16 @@ template("native_with_jni") {
       }
       native_deps = invoker.deps
 
-      if (allow_jni_multiplexing) {
-        enable_jni_multiplexing = true
-      }
       if (defined(invoker.testonly) && invoker.testonly) {
         enable_native_mocks = true
         add_stubs_for_missing_jni = true
         remove_uncalled_jni = true
+      }
+      if (_needs_header) {
+        if (allow_jni_multiplexing) {
+          enable_jni_multiplexing = true
+        }
+        header_output = _registration_header_output
       }
       forward_variables_from(invoker,
                              [
@@ -504,11 +511,31 @@ template("native_with_jni") {
     }
     target(invoker.target_type, target_name) {
       deps = invoker.deps
+      if (defined(invoker.sources)) {
+        sources = invoker.sources
+      }
+
+      # Need to overwrite configs, which have defaults. We assume we have
+      # already set the correct defaults in the invoker.
+      configs = []
+      configs = invoker.configs
       if (_needs_native_dep) {
+        configs +=
+            [ "//third_party/jni_zero:jni_include_dir($default_toolchain)" ]
         deps += [ ":$_jni_registration_target_name($default_toolchain)" ]
+        if (!defined(sources)) {
+          sources = []
+        }
+        sources += [ _registration_header_output ]
       }
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "deps" ])
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [
+                                   "configs",
+                                   "deps",
+                                   "sources",
+                                 ])
     }
   } else {
     not_needed(invoker, "*")

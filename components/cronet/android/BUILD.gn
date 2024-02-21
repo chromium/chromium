@@ -42,6 +42,10 @@ generate_jni_registration("cronet_jni_registration") {
 
   # JNI generated is used for test and non-test apks.
   include_testonly = true
+
+  _subdir = rebase_path(target_gen_dir, root_gen_dir)
+  header_output =
+      "$jni_headers_dir/$_subdir/cronet_jni_registration_generated.h"
 }
 
 android_library("cronet_jni_registration_java") {
@@ -1688,6 +1692,9 @@ generate_jni_registration("cronet_tests_jni_registration") {
   manual_jni_registration = true
   testonly = true
   module_name = "cronet_tests"
+  _subdir = rebase_path(target_gen_dir, root_gen_dir)
+  header_output =
+      "$jni_headers_dir/$_subdir/cronet_tests_jni_registration_generated.h"
 }
 android_library("cronet_tests_jni_registration_java") {
   srcjar_deps = [ ":cronet_tests_jni_registration" ]
