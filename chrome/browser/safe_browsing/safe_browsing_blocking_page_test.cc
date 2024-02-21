@@ -151,20 +151,11 @@ const char kEmptyPage[] = "/empty.html";
 const char kHTTPSPage[] = "/ssl/google.html";
 const char kMaliciousPage[] = "/safe_browsing/malware.html";
 const char kCrossSiteMaliciousPage[] = "/safe_browsing/malware2.html";
-const char kCrossSiteMaliciousEmbedPage[] = "/safe_browsing/malware4.html";
-const char kPageWithCrossOriginMaliciousIframe[] =
-    "/safe_browsing/malware3.html";
-const char kCrossOriginMaliciousIframeHost[] = "malware.test";
 const char kMaliciousIframe[] = "/safe_browsing/malware_iframe.html";
-const char kMaliciousMultipleIframesPage[] =
-    "/safe_browsing/malware_multiple_iframes.html";
 const char kUnrelatedUrl[] = "https://www.google.com";
 const char kEnhancedProtectionUrl[] = "chrome://settings/security?q=enhanced";
 const char kMaliciousJsPage[] = "/safe_browsing/malware_js.html";
 const char kMaliciousJs[] = "/safe_browsing/script.js";
-const char kMaliciousFencedFrameOwner[] =
-    "/safe_browsing/malware_in_fenced_frame.html";
-const char kMaliciousFencedFrame[] = "/safe_browsing/malware_fenced_frame.html";
 
 const char kInterstitialCloseHistogram[] = "interstitial.CloseReason";
 const char kInterstitialPreCommitPageHistogramSuffix[] = ".before_page_shown";
@@ -811,33 +802,19 @@ class SafeBrowsingBlockingPageBrowserTest
   }
 
   // Adds a safebrowsing threat results to the fake safebrowsing service,
-  // navigates to a page with an iframe containing the threat site, and returns
-  // the url of the parent page.
-  GURL SetupThreatIframeWarningAndNavigate() {
-    GURL url = embedded_test_server()->GetURL(kCrossSiteMaliciousPage);
-    GURL iframe_url = embedded_test_server()->GetURL(kMaliciousIframe);
-    SetURLThreatType(iframe_url, GetThreatType());
+  // navigates to a page with a subresource containing the threat site, and
+  // returns the url of the parent page.
+  GURL SetupThreatOnSubresourceAndNavigate(base::StringPiece main_frame_url,
+                                           base::StringPiece subresource_url) {
+    GURL url = embedded_test_server()->GetURL(main_frame_url);
+    GURL embedded_url = embedded_test_server()->GetURL(subresource_url);
+    SetURLThreatType(embedded_url, GetThreatType());
 
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    EXPECT_TRUE(WaitForReady(browser()));
-    return url;
-  }
-
-  // Adds a safebrowsing threat results to the fake safebrowsing service, and
-  // navigates to a page with a cross-origin iframe containing the threat site.
-  // Returns the url of the parent page and sets |iframe_url| to the malicious
-  // cross-origin iframe.
-  GURL SetupCrossOriginThreatIframeWarningAndNavigate(GURL* iframe_url) {
-    GURL url =
-        embedded_test_server()->GetURL(kPageWithCrossOriginMaliciousIframe);
-    *iframe_url = embedded_test_server()->GetURL(kMaliciousIframe);
-    GURL::Replacements replace_host;
-    replace_host.SetHostStr(kCrossOriginMaliciousIframeHost);
-    *iframe_url = iframe_url->ReplaceComponents(replace_host);
-    SetURLThreatType(*iframe_url, GetThreatType());
-
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    EXPECT_TRUE(WaitForReady(browser()));
+    WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(
+        content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
     return url;
   }
 
@@ -1197,6 +1174,17 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, Proceed_RTL) {
                      ->tab_strip_model()
                      ->GetActiveWebContents()
                      ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, IframeNoWarning) {
+  SetupThreatOnSubresourceAndNavigate(kCrossSiteMaliciousPage,
+                                      kMaliciousIframe);
+  AssertNoInterstitial(false);
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, JsNoWarning) {
+  SetupThreatOnSubresourceAndNavigate(kMaliciousJsPage, kMaliciousJs);
+  AssertNoInterstitial(false);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -1636,102 +1624,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       1);
 }
 
-// TODO(https://crbug.com/1475285): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Histograms_MultipleDangerousIframesInterstitial_DontProceed \
-  DISABLED_Histograms_MultipleDangerousIframesInterstitial_DontProceed
-#else
-#define MAYBE_Histograms_MultipleDangerousIframesInterstitial_DontProceed \
-  Histograms_MultipleDangerousIframesInterstitial_DontProceed
-#endif
-// Test that ensures the SHOW and DONT_PROCEED buckets are logged correctly if
-// multiple subresources are flagged on the same page. Regression test for
-// https://crbug.com/1195411.
-IN_PROC_BROWSER_TEST_P(
-    SafeBrowsingBlockingPageBrowserTest,
-    MAYBE_Histograms_MultipleDangerousIframesInterstitial_DontProceed) {
-  // TODO(crbug.com/1487858): Remove this test once
-  // kSafeBrowsingSkipSubresources
-  // is fully rolled out.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  base::HistogramTester histograms;
-  SBThreatType threat_type = GetThreatType();
-
-  GURL url = embedded_test_server()->GetURL(kMaliciousMultipleIframesPage);
-  GURL iframe_url = embedded_test_server()->GetURL(kMaliciousIframe);
-  SetURLThreatType(iframe_url, threat_type);
-
-  std::string prefix = GetHistogramPrefix(threat_type);
-  const std::string decision_histogram =
-      "interstitial." + prefix + "_subresource.decision";
-  histograms.ExpectTotalCount(decision_histogram, 0);
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WaitForReady(browser()));
-
-  histograms.ExpectBucketCount(decision_histogram,
-                               security_interstitials::MetricsHelper::SHOW, 1);
-  histograms.ExpectBucketCount(
-      decision_histogram, security_interstitials::MetricsHelper::DONT_PROCEED,
-      0);
-
-  EXPECT_TRUE(ClickAndWaitForDetach("primary-button"));
-  AssertNoInterstitial(false);  // Assert the interstitial is gone
-  histograms.ExpectBucketCount(decision_histogram,
-                               security_interstitials::MetricsHelper::SHOW, 1);
-  histograms.ExpectBucketCount(
-      decision_histogram, security_interstitials::MetricsHelper::DONT_PROCEED,
-      1);
-  histograms.ExpectBucketCount(
-      decision_histogram, security_interstitials::MetricsHelper::PROCEED, 0);
-}
-
-// Test that ensures the SHOW and PROCEED buckets are logged correctly if
-// multiple subresources are flagged on the same page.
-IN_PROC_BROWSER_TEST_P(
-    SafeBrowsingBlockingPageBrowserTest,
-    Histograms_MultipleDangerousIframesInterstitial_Proceed) {
-  // TODO(crbug.com/1487858): Remove this test once
-  // kSafeBrowsingSkipSubresources
-  // is fully rolled out.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  base::HistogramTester histograms;
-  SBThreatType threat_type = GetThreatType();
-
-  GURL url = embedded_test_server()->GetURL(kMaliciousMultipleIframesPage);
-  GURL iframe_url = embedded_test_server()->GetURL(kMaliciousIframe);
-  SetURLThreatType(iframe_url, threat_type);
-
-  std::string prefix = GetHistogramPrefix(threat_type);
-  const std::string decision_histogram =
-      "interstitial." + prefix + "_subresource.decision";
-  histograms.ExpectTotalCount(decision_histogram, 0);
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WaitForReady(browser()));
-
-  histograms.ExpectBucketCount(decision_histogram,
-                               security_interstitials::MetricsHelper::SHOW, 1);
-  histograms.ExpectBucketCount(
-      decision_histogram, security_interstitials::MetricsHelper::PROCEED, 0);
-
-  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
-  AssertNoInterstitial(true);  // Assert the interstitial is gone
-  histograms.ExpectBucketCount(decision_histogram,
-                               security_interstitials::MetricsHelper::SHOW, 1);
-  histograms.ExpectBucketCount(
-      decision_histogram, security_interstitials::MetricsHelper::PROCEED, 1);
-  histograms.ExpectBucketCount(
-      decision_histogram, security_interstitials::MetricsHelper::DONT_PROCEED,
-      0);
-}
-
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, AllowlistRevisit) {
   GURL url = SetupWarningAndNavigate(browser());
 
@@ -1987,30 +1879,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   EXPECT_FALSE(IsShowingInterstitial(contents));
 }
 
-// Test that no safe browsing interstitial will be shown, if the subresource URL
-// matches enterprise safe browsing allowlist domains. Regression test for
-// https://crbug.com/1179276.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       VerifyEnterpriseAllowlistSubresource) {
-  GURL url = embedded_test_server()->GetURL(kMaliciousJsPage);
-  GURL js_url = embedded_test_server()->GetURL(kMaliciousJs);
-  // Add test server domain into the enterprise allowlist.
-  base::Value::List allowlist;
-  allowlist.Append(url.host());
-  browser()->profile()->GetPrefs()->SetList(
-      prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
-
-  SetURLThreatType(js_url, GetThreatType());
-  // Open a new tab to rebind the allowlist to the renderer.
-  chrome::NewTab(browser());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  base::RunLoop().RunUntilIdle();
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(
-      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
-  EXPECT_FALSE(IsShowingInterstitial(contents));
-}
-
 INSTANTIATE_TEST_SUITE_P(
     SafeBrowsingBlockingPageBrowserTestWithThreatTypeAndIsolationSetting,
     SafeBrowsingBlockingPageBrowserTest,
@@ -2050,63 +1918,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   WaitForReady(browser());
   AssertNoInterstitial(true);
   EXPECT_EQ(bad_url, contents->GetLastCommittedURL());
-}
-
-// Regression test for https://crbug.com/1333623.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       EmbedElementMalwareLandingInterstitial) {
-  // TODO(crbug.com/1487858): Remove this test once
-  // kSafeBrowsingSkipSubresources
-  // is fully rolled out.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  GURL url = embedded_test_server()->GetURL(kCrossSiteMaliciousEmbedPage);
-  GURL embed_url = embedded_test_server()->GetURL(kMaliciousIframe);
-  SetURLThreatType(embed_url, SB_THREAT_TYPE_URL_MALWARE);
-  SetURLThreatPatternType(embed_url, ThreatPatternType::MALWARE_LANDING);
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  base::RunLoop().RunUntilIdle();
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(
-      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
-  // Show an interstitial when the malware landing page is loaded as an <embed>
-  // element, because it can cause similar harm as <iframe>.
-  EXPECT_TRUE(IsShowingInterstitial(contents));
-}
-
-IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       JsElementInterstitial) {
-  // TODO(crbug.com/1487858): Remove this test once
-  // kSafeBrowsingSkipSubresources
-  // is fully rolled out.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  SBThreatType threat_type = GetThreatType();
-  GURL url = embedded_test_server()->GetURL(kMaliciousJsPage);
-  GURL js_url = embedded_test_server()->GetURL(kMaliciousJs);
-  SetURLThreatType(js_url, threat_type);
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
-    SetURLThreatPatternType(js_url, ThreatPatternType::MALWARE_LANDING);
-  }
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  base::RunLoop().RunUntilIdle();
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(
-      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE ||
-      threat_type == SB_THREAT_TYPE_URL_UNWANTED) {
-    // Do not show an interstitial when the malware landing page or UwS landing
-    // page is loaded as a subresource to avoid false positives.
-    EXPECT_FALSE(IsShowingInterstitial(contents));
-  } else {
-    EXPECT_TRUE(IsShowingInterstitial(contents));
-  }
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -2778,12 +2589,8 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
   }
 
   void NavigateAndAssertNoInterstitial() {
-    // Use a page that contains an iframe so that we can test both top frame
-    // and subresource warnings.
     const GURL top_frame = embedded_test_server()->GetURL("/iframe.html");
     SetURLThreatType(top_frame, SB_THREAT_TYPE_URL_PHISHING);
-    const GURL iframe = embedded_test_server()->GetURL("/title1.html");
-    SetURLThreatType(iframe, SB_THREAT_TYPE_URL_PHISHING);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_frame));
     AssertNoInterstitial(browser(), true);
@@ -3237,15 +3044,13 @@ INSTANTIATE_TEST_SUITE_P(
 // displayed.
 class SafeBrowsingBlockingPageIDNTest
     : public SecurityInterstitialIDNTest,
-      public testing::WithParamInterface<testing::tuple<bool, SBThreatType>> {
+      public testing::WithParamInterface<SBThreatType> {
  protected:
   // SecurityInterstitialIDNTest implementation
   security_interstitials::SecurityInterstitialPage* CreateInterstitial(
       content::WebContents* contents,
       const GURL& request_url) const override {
     SafeBrowsingUIManager::CreateAllowlistForTesting(contents);
-    const bool is_subresource = testing::get<0>(GetParam());
-
     SafeBrowsingService* sb_service =
         g_browser_process->safe_browsing_service();
     auto* primary_main_frame = contents->GetPrimaryMainFrame();
@@ -3254,17 +3059,15 @@ class SafeBrowsingBlockingPageIDNTest
     SafeBrowsingBlockingPage::UnsafeResource resource;
 
     resource.url = request_url;
-    resource.is_subresource = is_subresource;
-    resource.threat_type = testing::get<1>(GetParam());
+    resource.is_subresource = false;
+    resource.threat_type = GetParam();
     resource.render_process_id = primary_main_frame_id.child_id;
     resource.render_frame_token = primary_main_frame->GetFrameToken().value();
     resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
     auto* ui_manager = sb_service->ui_manager().get();
     return ui_manager->CreateBlockingPage(
-        contents,
-        is_subresource ? GURL("http://mainframe.example.com/") : request_url,
-        {resource}, /*forward_extension_event=*/false,
+        contents, request_url, {resource}, /*forward_extension_event=*/false,
         /*blocked_page_shown_timestamp=*/std::nullopt);
   }
 };
@@ -3276,13 +3079,11 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageIDNTest,
   EXPECT_TRUE(VerifyIDNDecoded());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    SafeBrowsingBlockingPageIDNTestWithThreatType,
-    SafeBrowsingBlockingPageIDNTest,
-    testing::Combine(testing::Values(false, true),
-                     testing::Values(SB_THREAT_TYPE_URL_MALWARE,
-                                     SB_THREAT_TYPE_URL_PHISHING,
-                                     SB_THREAT_TYPE_URL_UNWANTED)));
+INSTANTIATE_TEST_SUITE_P(SafeBrowsingBlockingPageIDNTestWithThreatType,
+                         SafeBrowsingBlockingPageIDNTest,
+                         testing::Values(SB_THREAT_TYPE_URL_MALWARE,
+                                         SB_THREAT_TYPE_URL_PHISHING,
+                                         SB_THREAT_TYPE_URL_UNWANTED));
 
 class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     : public policy::PolicyTest {
@@ -4411,147 +4212,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest, UnsafePrerender) {
       /*PrerenderFinalStatus::kBlockedByClient=*/28, 1);
 }
 
-// Like SafeBrowsingPrerenderBrowserTest.UnsafePrerender, but for when a
-// prerendered page has a subresource that's unsafe.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
-                       UnsafeSubresourcePrerender) {
-  // TODO(crbug.com/1487858): Remove this test once
-  // kSafeBrowsingSkipSubresources
-  // is fully rolled out.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  base::HistogramTester histograms;
-  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  const GURL prerender_url = embedded_test_server()->GetURL(kMaliciousJsPage);
-  const GURL unsafe_resource_url = embedded_test_server()->GetURL(kMaliciousJs);
-  SetURLThreatType(unsafe_resource_url, GetThreatType());
-
-  PrerenderAndExpectCancellation(prerender_url);
-
-  histograms.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      /*PrerenderFinalStatus::kInactivePageRestriction=*/41, 1);
-
-  histograms.ExpectUniqueSample(
-      "Prerender.CanceledForInactivePageRestriction.DisallowActivationReason."
-      "SpeculationRule",
-      content::DisallowActivationReasonId::kSafeBrowsingUnsafeSubresource, 1);
-}
-
-// Like SafeBrowsingPrerenderBrowserTest.UnsafePrerender, but for when a
-// prerendered page has a subframe that's unsafe.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
-                       UnsafeSubframePrerender) {
-  // TODO(crbug.com/1487858): Remove this test once
-  // kSafeBrowsingSkipSubresources
-  // is fully rolled out.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  base::HistogramTester histograms;
-  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  const GURL prerender_url =
-      embedded_test_server()->GetURL("/iframe_blank.html");
-  const GURL unsafe_iframe_url =
-      embedded_test_server()->GetURL(kMaliciousIframe);
-  SetURLThreatType(unsafe_iframe_url, GetThreatType());
-
-  auto host_id = prerender_helper().AddPrerender(prerender_url);
-  content::RenderFrameHost* prerender_rfh =
-      prerender_helper().GetPrerenderedMainFrameHost(host_id);
-  ASSERT_TRUE(prerender_rfh);
-
-  content::test::PrerenderHostObserver observer(*GetWebContents(), host_id);
-  content::ExecuteScriptAsync(
-      prerender_rfh,
-      content::JsReplace("document.getElementById('test').src = $1;",
-                         unsafe_iframe_url));
-  observer.WaitForDestroyed();
-
-  EXPECT_FALSE(IsShowingInterstitial(GetWebContents()));
-  ExpectNoSecurityIndicatorDowngrade(GetWebContents());
-
-  histograms.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      /*PrerenderFinalStatus::kBlockedByClient=*/28, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
-                       UnsafeSubresourceOfSubframePrerender) {
-  // TODO(crbug.com/1487858): Remove this test once
-  // kSafeBrowsingSkipSubresources
-  // is fully rolled out.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  base::HistogramTester histograms;
-  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  const GURL prerender_url =
-      embedded_test_server()->GetURL("/iframe_blank.html");
-  const GURL subframe_url = embedded_test_server()->GetURL(kMaliciousJsPage);
-  const GURL unsafe_resource_url = embedded_test_server()->GetURL(kMaliciousJs);
-  SetURLThreatType(unsafe_resource_url, GetThreatType());
-
-  auto host_id = prerender_helper().AddPrerender(prerender_url);
-  content::RenderFrameHost* prerender_rfh =
-      prerender_helper().GetPrerenderedMainFrameHost(host_id);
-  ASSERT_TRUE(prerender_rfh);
-
-  content::test::PrerenderHostObserver observer(*GetWebContents(), host_id);
-  content::ExecuteScriptAsync(
-      prerender_rfh,
-      content::JsReplace("document.getElementById('test').src = $1;",
-                         subframe_url));
-  observer.WaitForDestroyed();
-
-  EXPECT_FALSE(IsShowingInterstitial(GetWebContents()));
-  ExpectNoSecurityIndicatorDowngrade(GetWebContents());
-
-  histograms.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      /*PrerenderFinalStatus::kInactivePageRestriction=*/41, 1);
-
-  histograms.ExpectUniqueSample(
-      "Prerender.CanceledForInactivePageRestriction.DisallowActivationReason."
-      "SpeculationRule",
-      content::DisallowActivationReasonId::kSafeBrowsingUnsafeSubresource, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
-                       UnsafeCrossOriginSubframePrerender) {
-  // TODO(crbug.com/1487858): Remove this test once
-  // kSafeBrowsingSkipSubresources is fully rolled out.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  base::HistogramTester histograms;
-  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  const GURL prerender_url =
-      embedded_test_server()->GetURL(kPageWithCrossOriginMaliciousIframe);
-  const GURL unsafe_iframe_url = embedded_test_server()->GetURL(
-      kCrossOriginMaliciousIframeHost, kMaliciousIframe);
-  SetURLThreatType(unsafe_iframe_url, GetThreatType());
-
-  PrerenderAndExpectCancellation(prerender_url);
-
-  histograms.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      /*PrerenderFinalStatus::kBlockedByClient=*/28, 1);
-}
-
 class SafeBrowsingThreatDetailsPrerenderBrowserTest
     : public SafeBrowsingPrerenderBrowserTest {};
 
@@ -4684,181 +4344,6 @@ IN_PROC_BROWSER_TEST_P(
 
   // Activating the prerendered page causes "flush" metrics.
   prerender_helper().NavigatePrimaryPage(prerender_url);
-}
-
-// TODO(crbug.com/1487858): Remove this test once kSafeBrowsingSkipSubresources
-// is fully rolled out.
-class SafeBrowsingFencedFrameBrowserTest
-    : public SafeBrowsingBlockingPageBrowserTest {
- public:
-  SafeBrowsingFencedFrameBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        safe_browsing::kSafeBrowsingSkipSubresources);
-  }
-
-  ~SafeBrowsingFencedFrameBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    SafeBrowsingBlockingPageBrowserTest::SetUpOnMainThread();
-    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server_.Start());
-    scoped_refptr<net::X509Certificate> cert(https_server_.GetCertificate());
-    net::CertVerifyResult verify_result;
-    verify_result.verified_cert = cert;
-    verify_result.cert_status = 0;
-    mock_cert_verifier()->AddResultForCert(cert.get(), verify_result, net::OK);
-  }
-
-  void AddFencedFrameAndExpectInterstitial(const GURL& url) {
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::TestFrameNavigationObserver error_page_navigation_observer(
-        contents->GetPrimaryMainFrame());
-    // The error checking that the FencedFrameTestHelper performs is not
-    // suitable for this case. The resulting error page is an interstitial shown
-    // in the frame that owns the fenced frame, not in the fenced frame itself.
-    // So we just use our own script to create the fenced frame.
-    // TODO(1257133): Once issue 1257133 is fixed, we would then be able to use
-    // FencedFrameTestHelper::CreateFencedFrame for this case as well.
-    constexpr char kAddFencedFrameScript[] = R"({
-          const fencedFrame = document.createElement('fencedframe');
-          fencedFrame.config = new FencedFrameConfig($1);
-          document.body.appendChild(fencedFrame);
-        })";
-    EXPECT_TRUE(
-        content::ExecJs(contents->GetPrimaryMainFrame(),
-                        content::JsReplace(kAddFencedFrameScript, url)));
-    error_page_navigation_observer.Wait();
-    EXPECT_FALSE(error_page_navigation_observer.last_navigation_succeeded());
-    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
-              error_page_navigation_observer.last_net_error_code());
-    EXPECT_TRUE(IsShowingInterstitial(contents));
-  }
-
-  net::EmbeddedTestServer& https_server() { return https_server_; }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SafeBrowsingFencedFrameBrowserTest,
-    testing::Combine(
-        testing::Values(SB_THREAT_TYPE_URL_MALWARE,  // Threat types
-                        SB_THREAT_TYPE_URL_PHISHING,
-                        SB_THREAT_TYPE_URL_UNWANTED),
-        testing::Bool()));  // If isolate all sites for testing.
-
-IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest, UnsafeFencedFrame) {
-  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  const GURL fenced_frame_url =
-      https_server().GetURL("/fenced_frames/title1.html");
-  SetURLThreatType(fenced_frame_url, GetThreatType());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  ASSERT_FALSE(browser()
-                   ->tab_strip_model()
-                   ->GetActiveWebContents()
-                   ->GetPrimaryMainFrame()
-                   ->IsErrorDocument());
-  AddFencedFrameAndExpectInterstitial(fenced_frame_url);
-}
-
-// This test is modeled after IframeOptInAndReportThreatDetails above.
-// TODO(https://crbug.com/1445499): Flaky
-IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest,
-                       DISABLED_FencedFrameInThreatDetails) {
-  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
-  const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
-  const GURL initial_url = https_server().GetURL(kMaliciousFencedFrameOwner);
-  const GURL fenced_frame_url = https_server().GetURL(kMaliciousFencedFrame);
-  SetURLThreatType(fenced_frame_url, GetThreatType());
-
-  base::RunLoop threat_report_sent_run_loop;
-  if (expect_threat_details) {
-    SetReportSentCallback(threat_report_sent_run_loop.QuitClosure());
-  }
-
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  // TODO(1257133): Once issue 1257133 is fixed, and fenced frame load state
-  // is considered, we would then be able to use NavigateToURL on its own.
-  content::TestNavigationObserver error_observer(contents,
-                                                 net::ERR_BLOCKED_BY_CLIENT);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  error_observer.Wait();
-  EXPECT_TRUE(IsShowingInterstitial(contents));
-
-  ThreatDetails* threat_details = details_factory_.get_details();
-  EXPECT_EQ(expect_threat_details, threat_details != nullptr);
-  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
-  AssertNoInterstitial(true);
-  EXPECT_TRUE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
-  EXPECT_EQ(initial_url, contents->GetLastCommittedURL());
-
-  if (expect_threat_details) {
-    threat_report_sent_run_loop.Run();
-    std::string serialized = GetReportSent();
-    ClientSafeBrowsingReportRequest report;
-    ASSERT_TRUE(report.ParseFromString(serialized));
-    EXPECT_TRUE(report.complete());
-
-    // Do some basic verification of report contents.
-    EXPECT_EQ(initial_url.spec(), report.page_url());
-    EXPECT_EQ(fenced_frame_url.spec(), report.url());
-    std::vector<ClientSafeBrowsingReportRequest::Resource> resources;
-    for (auto resource : report.resources()) {
-      resources.push_back(resource);
-    }
-    // Sort resources since their order is not deterministic.
-    std::sort(resources.begin(), resources.end(),
-              [](const ClientSafeBrowsingReportRequest::Resource& a,
-                 const ClientSafeBrowsingReportRequest::Resource& b) -> bool {
-                return a.url() < b.url();
-              });
-
-    // Fenced frames loaded with configs do not have the `src` attribute set, so
-    // they do not show up on the safe browsing report.
-    // TODO(https://crbug.com/1428788): Update this once config-loaded fenced
-    // frames show up on the safe browsing report.
-    ASSERT_EQ(2U, resources.size());
-    VerifyResource(report, resources[1], initial_url.spec(), initial_url.spec(),
-                   0, "");
-    VerifyResource(report, resources[0], fenced_frame_url.spec(),
-                   initial_url.spec(), 0, "");
-
-    ASSERT_EQ(2, report.dom_size());
-    // Because the order of elements is not deterministic, we just verify the
-    // relationship that there is a FENCEDFRAME element that has a DIV as its
-    // parent.
-    int fenced_frame_node_id = -1;
-    for (const HTMLElement& elem : report.dom()) {
-      if (elem.tag() == "FENCEDFRAME") {
-        fenced_frame_node_id = elem.id();
-        VerifyElement(report, elem, "FENCEDFRAME",
-                      /*expected_child_ids_size=*/0,
-                      std::vector<mojom::AttributeNameValuePtr>());
-        break;
-      }
-    }
-    EXPECT_GT(fenced_frame_node_id, -1);
-
-    // Find the parent DIV of the FENCEDFRAME.
-    for (const HTMLElement& elem : report.dom()) {
-      if (elem.id() != fenced_frame_node_id) {
-        std::vector<mojom::AttributeNameValuePtr> attributes;
-        attributes.push_back(mojom::AttributeNameValue::New("foo", "1"));
-        VerifyElement(report, elem, "DIV", /*expected_child_ids_size=*/1,
-                      attributes);
-        // Make sure this DIV has the FENCEDFRAME as a child.
-        EXPECT_EQ(fenced_frame_node_id, elem.child_ids(0));
-      }
-    }
-  }
 }
 
 class WarningShownTimestampCSBRRDisabledBrowserTest
