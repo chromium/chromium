@@ -58,24 +58,6 @@ gfx::ShadowValues BrowserFrameViewLinux::GetShadowValues(bool active) {
   return gfx::ShadowValue::MakeMdShadowValues(elevation);
 }
 
-void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
-  auto* provider = views::WindowButtonOrderProvider::GetInstance();
-  layout_->SetButtonOrdering(provider->leading_buttons(),
-                             provider->trailing_buttons());
-
-  // We can receive OnWindowButtonOrderingChange events before we've been added
-  // to a Widget. We need a Widget because layout crashes due to dependencies
-  // on a ui::ThemeProvider().
-  if (auto* widget = GetWidget()) {
-    // A relayout on |view_| is insufficient because it would neglect
-    // a relayout of the tabstrip.  Do a full relayout to handle the
-    // frame buttons as well as open tabs.
-    views::View* root_view = widget->GetRootView();
-    root_view->DeprecatedLayoutImmediately();
-    root_view->SchedulePaint();
-  }
-}
-
 void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
 #if BUILDFLAG(IS_LINUX)
@@ -101,6 +83,24 @@ bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
   return static_cast<DesktopBrowserFrameAuraLinux*>(
              frame()->native_browser_frame())
       ->ShouldDrawRestoredFrameShadow();
+}
+
+void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
+  auto* provider = views::WindowButtonOrderProvider::GetInstance();
+  layout_->SetButtonOrdering(provider->leading_buttons(),
+                             provider->trailing_buttons());
+
+  // We can receive OnWindowButtonOrderingChange events before we've been added
+  // to a Widget. We need a Widget because layout crashes due to dependencies
+  // on a ui::ThemeProvider().
+  if (auto* widget = GetWidget()) {
+    // A relayout on |view_| is insufficient because it would neglect
+    // a relayout of the tabstrip.  Do a full relayout to handle the
+    // frame buttons as well as open tabs.
+    views::View* root_view = widget->GetRootView();
+    root_view->DeprecatedLayoutImmediately();
+    root_view->SchedulePaint();
+  }
 }
 
 float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {

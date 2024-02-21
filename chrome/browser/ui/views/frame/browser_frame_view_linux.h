@@ -45,17 +45,13 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   static gfx::ShadowValues GetShadowValues(bool active);
 
  protected:
+  // OpaqueBrowserFrameView:
+  void PaintRestoredFrameBorder(gfx::Canvas* canvas) const override;
+  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
+  bool ShouldDrawRestoredFrameShadow() const override;
+
   // ui::WindowButtonOrderObserver:
   void OnWindowButtonOrderingChange() override;
-
-  // views::View:
-  void PaintRestoredFrameBorder(gfx::Canvas* canvas) const override;
-
-  // views::NonClientFrameView:
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
-
-  // OpaqueBrowserFrameViewLayoutDelegate:
-  bool ShouldDrawRestoredFrameShadow() const override;
 
   // Gets the radius of the top corners when the window is restored.  The
   // returned value is in DIPs.  The result will be 0 if rounded corners are

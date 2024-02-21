@@ -30,16 +30,14 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   ~BrowserFrameViewLinuxNative() override;
 
+  // BrowserFrameViewLinux:
+  void Layout(PassKey) override;
+  FrameButtonStyle GetFrameButtonStyle() const override;
+  int GetTranslucentTopAreaHeight() const override;
+
  protected:
   // BrowserFrameViewLinux:
   float GetRestoredCornerRadiusDip() const override;
-  int GetTranslucentTopAreaHeight() const override;
-
-  // OpaqueBrowserFrameView:
-  void Layout(PassKey) override;
-  FrameButtonStyle GetFrameButtonStyle() const override;
-
-  // views::View:
   void PaintRestoredFrameBorder(gfx::Canvas* canvas) const override;
 
  private:

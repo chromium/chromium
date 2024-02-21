@@ -50,16 +50,6 @@ BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
 
 BrowserFrameViewLinuxNative::~BrowserFrameViewLinuxNative() = default;
 
-float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
-  return layout_->GetFrameProvider()->GetTopCornerRadiusDip();
-}
-
-int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
-  return layout_->GetFrameProvider()->IsTopFrameTranslucent()
-             ? GetTopAreaHeight()
-             : 0;
-}
-
 void BrowserFrameViewLinuxNative::Layout(PassKey) {
   // Calling MaybeUpdateCachedFrameButtonImages() here is sufficient to catch
   // all cases that could update the appearance, since
@@ -72,6 +62,16 @@ void BrowserFrameViewLinuxNative::Layout(PassKey) {
 BrowserFrameViewLinuxNative::FrameButtonStyle
 BrowserFrameViewLinuxNative::GetFrameButtonStyle() const {
   return FrameButtonStyle::kImageButton;
+}
+
+int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
+  return layout_->GetFrameProvider()->IsTopFrameTranslucent()
+             ? GetTopAreaHeight()
+             : 0;
+}
+
+float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
+  return layout_->GetFrameProvider()->GetTopCornerRadiusDip();
 }
 
 void BrowserFrameViewLinuxNative::PaintRestoredFrameBorder(
