@@ -18049,8 +18049,7 @@
     "TrackpadDropdownMenu": [
         {
             "platforms": [
-                "android",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
@@ -18065,8 +18064,7 @@
     "TrackpadGestureSupport": [
         {
             "platforms": [
-                "android",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
@@ -21004,6 +21002,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewThreadSafeMedia"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewTrackpadAndMouseTextSelectionImprovements": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240221",
+                    "enable_features": [
+                        "ConvertTrackpadEventsToMouse",
+                        "MouseAndTrackpadDropdownMenu"
                     ]
                 }
             ]
