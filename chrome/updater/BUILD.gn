@@ -297,8 +297,6 @@ if (is_win || is_mac || is_linux) {
         "win/ui/ui_ctls.h",
         "win/ui/ui_util.cc",
         "win/ui/ui_util.h",
-        "win/ui/yes_no_dialog.cc",
-        "win/ui/yes_no_dialog.h",
       ]
       deps += [
         "//build:branding_buildflags",
