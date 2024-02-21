@@ -16,7 +16,7 @@
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
 // static
-const int WebDatabase::kCurrentVersionNumber = 125;
+const int WebDatabase::kCurrentVersionNumber = 126;
 
 // TODO(crbug.com/324468207): Decide and document a process for updating this
 // number, i.e. what our deprecation strategy is for older versions of the

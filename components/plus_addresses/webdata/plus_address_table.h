@@ -14,6 +14,14 @@ namespace plus_addresses {
 // SQLite database.
 // Owned by the `WebDatabaseBackend` managing the "Web Data" database, which is
 // owned by the `WebDataServiceWrapper` keyed service.
+//
+// Schema:
+// plus_addresses     A collection of confirmed `PlusProfile`s.
+//  facet             The origin which this plus_address is associated with.
+//                    Primary key.
+//  plus_address      The email address associated with the facet. Even though
+//                    this is guaranteed to be a valid email address, the
+//                    database layer doesn't enforce this.
 class PlusAddressTable : public WebDatabaseTable {
  public:
   PlusAddressTable();
@@ -28,6 +36,15 @@ class PlusAddressTable : public WebDatabaseTable {
   WebDatabaseTable::TypeKey GetTypeKey() const override;
   bool CreateTablesIfNecessary() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
+
+ private:
+  // Creates the table of the given name in the newest version of the schema,
+  // unless it already exists. Returns true if the table exists now.
+  bool CreatePlusAddressesTable();
+
+  // Migration logic to a specific version. Returns true if the migration
+  // succeeded.
+  bool MigrateToVersion126();
 };
 
 }  // namespace plus_addresses

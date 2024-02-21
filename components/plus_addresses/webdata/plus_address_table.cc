@@ -4,9 +4,15 @@
 
 #include "components/plus_addresses/webdata/plus_address_table.h"
 
+#include "base/strings/stringprintf.h"
+
 namespace plus_addresses {
 
 namespace {
+
+constexpr char kPlusAddressTable[] = "plus_addresses";
+constexpr char kFacet[] = "facet";
+constexpr char kPlusAddress[] = "plus_address";
 
 // The `WebDatabase` manages multiple `WebDatabaseTable` in a `TypeKey` -> table
 // map. Any unique constant, such as the address of a static suffices as a key.
@@ -30,12 +36,33 @@ WebDatabaseTable::TypeKey PlusAddressTable::GetTypeKey() const {
 }
 
 bool PlusAddressTable::CreateTablesIfNecessary() {
-  return true;
+  return CreatePlusAddressesTable();
 }
 
 bool PlusAddressTable::MigrateToVersion(int version,
                                         bool* update_compatible_version) {
+  switch (version) {
+    case 126:
+      *update_compatible_version = false;
+      return MigrateToVersion126();
+  }
   return true;
+}
+
+bool PlusAddressTable::CreatePlusAddressesTable() {
+  return db_->DoesTableExist(kPlusAddressTable) ||
+         db_->Execute(
+             base::StringPrintf(
+                 "CREATE TABLE %s (%s VARCHAR PRIMARY KEY, %s VARCHAR)",
+                 kPlusAddressTable, kFacet, kPlusAddress)
+                 .c_str());
+}
+
+bool PlusAddressTable::MigrateToVersion126() {
+  return db_->Execute(
+      base::StringPrintf("CREATE TABLE %s (%s VARCHAR PRIMARY KEY, %s VARCHAR)",
+                         kPlusAddressTable, kFacet, kPlusAddress)
+          .c_str());
 }
 
 }  // namespace plus_addresses
