@@ -653,7 +653,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/cts_archive',
-              'version': 'Tonx5t-WDQ4lYRaMNn3IEzzOeyaIgtQ0d1ZAv0lRlwEC',
+              'version': 'UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC',
           },
       ],
       'condition': 'checkout_android',
@@ -827,7 +827,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '557675b15fa2c149c89a6949e019a7dc1d4d8fe4',
+    '85b135edc713157bfb865b81f2a08517022ab92b',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
