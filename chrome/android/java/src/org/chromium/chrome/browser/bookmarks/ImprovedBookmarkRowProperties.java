@@ -43,6 +43,7 @@ public class ImprovedBookmarkRowProperties {
         int NONE = 3;
     }
 
+    public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -105,6 +106,7 @@ public class ImprovedBookmarkRowProperties {
     public static final WritableIntPropertyKey FOLDER_CHILD_COUNT = new WritableIntPropertyKey();
 
     private static final PropertyKey[] IMPROVED_BOOKMARK_ROW_PROPERTIES = {
+        ENABLED,
         TITLE,
         DESCRIPTION,
         DESCRIPTION_VISIBLE,

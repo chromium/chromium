@@ -26,6 +26,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListU
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.util.ValueUtils;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** Common logic for improved bookmark and folder rows. */
@@ -132,6 +133,13 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
         mMoreButton = findViewById(R.id.more);
         mEndImageView = findViewById(R.id.end_image);
+    }
+
+    void setRowEnabled(boolean enabled) {
+        setEnabled(enabled);
+        int alphaRes = enabled ? R.dimen.default_enabled_alpha : R.dimen.default_disabled_alpha;
+        float alpha = ValueUtils.getFloat(getResources(), alphaRes);
+        mContainer.setAlpha(alpha);
     }
 
     void setTitle(String title) {

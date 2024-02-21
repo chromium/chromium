@@ -390,24 +390,13 @@ public class ImprovedBookmarkQueryHandlerTest {
                 .when(mBookmarkUiPrefs)
                 .getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(
-                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ false);
+                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
         List<BookmarkId> expected =
                 Arrays.asList(
                         fakeBookmarkModel.getDesktopFolderId(),
                         fakeBookmarkModel.getMobileFolderId(),
                         fakeBookmarkModel.getOtherFolderId(),
                         fakeBookmarkModel.getLocalOrSyncableReadingListFolder());
-        verifyBookmarkIds(expected, result);
-
-        result =
-                mHandler.buildBookmarkListForFolderSelect(
-                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ true);
-        expected =
-                Arrays.asList(
-                        fakeBookmarkModel.getDesktopFolderId(),
-                        fakeBookmarkModel.getMobileFolderId(),
-                        fakeBookmarkModel.getOtherFolderId());
         verifyBookmarkIds(expected, result);
     }
 
@@ -424,8 +413,7 @@ public class ImprovedBookmarkQueryHandlerTest {
                 .when(mBookmarkUiPrefs)
                 .getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(
-                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ false);
+                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
         List<BookmarkId> expected =
                 Arrays.asList(
                         null,
@@ -438,21 +426,6 @@ public class ImprovedBookmarkQueryHandlerTest {
                         fakeBookmarkModel.getMobileFolderId(),
                         fakeBookmarkModel.getOtherFolderId(),
                         fakeBookmarkModel.getLocalOrSyncableReadingListFolder());
-        verifyBookmarkIds(expected, result);
-
-        result =
-                mHandler.buildBookmarkListForFolderSelect(
-                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ true);
-        expected =
-                Arrays.asList(
-                        null,
-                        fakeBookmarkModel.getAccountDesktopFolderId(),
-                        fakeBookmarkModel.getAccountMobileFolderId(),
-                        fakeBookmarkModel.getAccountOtherFolderId(),
-                        null,
-                        fakeBookmarkModel.getDesktopFolderId(),
-                        fakeBookmarkModel.getMobileFolderId(),
-                        fakeBookmarkModel.getOtherFolderId());
         verifyBookmarkIds(expected, result);
     }
 
@@ -466,8 +439,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
         doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(
-                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ false);
+                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
         List<BookmarkId> expected =
                 Arrays.asList(
                         null,
@@ -480,21 +452,6 @@ public class ImprovedBookmarkQueryHandlerTest {
                         fakeBookmarkModel.getDesktopFolderId(),
                         fakeBookmarkModel.getMobileFolderId(),
                         fakeBookmarkModel.getLocalOrSyncableReadingListFolder());
-        verifyBookmarkIds(expected, result);
-
-        result =
-                mHandler.buildBookmarkListForFolderSelect(
-                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ true);
-        expected =
-                Arrays.asList(
-                        null,
-                        fakeBookmarkModel.getAccountOtherFolderId(),
-                        fakeBookmarkModel.getAccountDesktopFolderId(),
-                        fakeBookmarkModel.getAccountMobileFolderId(),
-                        null,
-                        fakeBookmarkModel.getOtherFolderId(),
-                        fakeBookmarkModel.getDesktopFolderId(),
-                        fakeBookmarkModel.getMobileFolderId());
         verifyBookmarkIds(expected, result);
     }
 

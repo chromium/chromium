@@ -207,6 +207,17 @@ public class ImprovedBookmarkRowRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testDisabled() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkRowProperties.ENABLED, false);
+                });
+        mRenderTestRule.render(mContentView, "disabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testEndImageVisibility() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

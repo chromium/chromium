@@ -68,8 +68,7 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     @Override
-    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(
-            BookmarkId parentId, boolean movingFolder) {
+    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(BookmarkId parentId) {
         List<BookmarkId> childIdList =
                 parentId.equals(mBookmarkModel.getRootFolderId())
                         ? mBookmarkModel.getTopLevelFolderIds(/* ignoreVisibility= */ true)
@@ -79,7 +78,7 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
         bookmarkListEntries =
                 bookmarkListEntries.stream()
                         .filter(this::isFolderEntry)
-                        .filter(entry -> isValidFolder(entry, movingFolder))
+                        .filter(entry -> isValidFolder(entry))
                         .collect(Collectors.toList());
         return bookmarkListEntries;
     }
@@ -92,19 +91,11 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
     /**
      * Returns whether the given {@link BookmarkListEntry} is a valid folder to add bookmarks to.
      * All entries passed to this function need to be folders, this is enfored by an assert.
-     *
-     * @param entry The {@link BookmarkListEntry} to check.
-     * @param movingFolder Whether there's a folder being moved. Will change the validity of certain
-     *     folders (e.g. reading list).
-     * @return Whether the given {@link BookmarkListEntry} is a valid folder to save to.
      */
-    private boolean isValidFolder(BookmarkListEntry entry, boolean movingFolder) {
+    private boolean isValidFolder(BookmarkListEntry entry) {
         assert entry.getBookmarkItem().isFolder();
 
         BookmarkId folderId = entry.getBookmarkItem().getId();
-        if (movingFolder) {
-            return BookmarkUtils.canAddFolderToParent(mBookmarkModel, folderId);
-        }
         return BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, folderId);
     }
 

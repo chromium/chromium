@@ -93,10 +93,9 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     @Override
-    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(
-            BookmarkId parentId, boolean movingFolder) {
+    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(BookmarkId parentId) {
         List<BookmarkListEntry> bookmarkListEntries =
-                mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId, movingFolder);
+                mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId);
         sortByStoredPref(bookmarkListEntries);
         if (parentId.equals(mBookmarkModel.getRootFolderId())) {
             sortByAccountStatus(bookmarkListEntries);

@@ -17,7 +17,9 @@ public class ImprovedBookmarkRowViewBinder {
         ImprovedBookmarkRow row = (ImprovedBookmarkRow) view;
         ImprovedBookmarkFolderView folderView =
                 (ImprovedBookmarkFolderView) view.findViewById(R.id.folder_view);
-        if (key == ImprovedBookmarkRowProperties.TITLE) {
+        if (key == ImprovedBookmarkRowProperties.ENABLED) {
+            row.setRowEnabled(model.get(ImprovedBookmarkRowProperties.ENABLED));
+        } else if (key == ImprovedBookmarkRowProperties.TITLE) {
             row.setTitle(model.get(ImprovedBookmarkRowProperties.TITLE));
         } else if (key == ImprovedBookmarkRowProperties.DESCRIPTION) {
             row.setDescription(model.get(ImprovedBookmarkRowProperties.DESCRIPTION));

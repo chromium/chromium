@@ -62,9 +62,8 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     @Override
-    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(
-            BookmarkId parentId, boolean movingFolder) {
-        return mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId, movingFolder);
+    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(BookmarkId parentId) {
+        return mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId);
     }
 
     private List<BookmarkListEntry> buildBookmarkListForRootView() {

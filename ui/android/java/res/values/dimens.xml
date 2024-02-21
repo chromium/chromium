@@ -19,6 +19,7 @@ found in the LICENSE file.
     <dimen name="text_size_small_leading" tools:ignore="UnusedResources">16sp</dimen>
 
     <!-- Common alpha values -->
+    <item name="default_enabled_alpha" format="float" type="dimen">1.0</item>
     <item name="default_disabled_alpha" format="float" type="dimen">0.38</item>
     <item name="default_pressed_alpha" format="float" type="dimen">0.06</item>
     <item name="default_focused_hovered_alpha" format="float" type="dimen">0.06</item>

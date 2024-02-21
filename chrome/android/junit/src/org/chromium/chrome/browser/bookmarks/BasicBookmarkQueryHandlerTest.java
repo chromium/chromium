@@ -197,15 +197,7 @@ public class BasicBookmarkQueryHandlerTest {
                 mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "folder 3");
 
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(
-                        mBookmarkModel.getMobileFolderId(), false);
-        assertEquals(3, result.size());
-        assertEquals(folder1, result.get(0).getBookmarkItem().getId());
-        assertEquals(folder2, result.get(1).getBookmarkItem().getId());
-        assertEquals(folder3, result.get(2).getBookmarkItem().getId());
-
-        result =
-                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getMobileFolderId(), true);
+                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getMobileFolderId());
         assertEquals(3, result.size());
         assertEquals(folder1, result.get(0).getBookmarkItem().getId());
         assertEquals(folder2, result.get(1).getBookmarkItem().getId());
@@ -215,7 +207,7 @@ public class BasicBookmarkQueryHandlerTest {
     @Test
     public void testBuildBookmarkListForFolderSelect_rootFolder() {
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId(), false);
+                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
         assertEquals(4, result.size());
         assertEquals(mBookmarkModel.getOtherFolderId(), result.get(0).getBookmarkItem().getId());
         assertEquals(mBookmarkModel.getDesktopFolderId(), result.get(1).getBookmarkItem().getId());
@@ -223,11 +215,5 @@ public class BasicBookmarkQueryHandlerTest {
         assertEquals(
                 mBookmarkModel.getLocalOrSyncableReadingListFolder(),
                 result.get(3).getBookmarkItem().getId());
-
-        result = mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId(), true);
-        assertEquals(3, result.size());
-        assertEquals(mBookmarkModel.getOtherFolderId(), result.get(0).getBookmarkItem().getId());
-        assertEquals(mBookmarkModel.getDesktopFolderId(), result.get(1).getBookmarkItem().getId());
-        assertEquals(mBookmarkModel.getMobileFolderId(), result.get(2).getBookmarkItem().getId());
     }
 }
