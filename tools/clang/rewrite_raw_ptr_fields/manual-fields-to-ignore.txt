@@ -454,16 +454,18 @@ content::responsiveness::Watcher::calculator_io_
 # End of performance-related exclusions
 #######
 
+#######
+# Recent manual exclusions
+#
+# This section contains fields that were unrewritten manually, even if they're
+# decoreated with RAW_PTR_EXCLUSION in code (e.g. perf exclusions, things that
+# don't compile or crash). The reason is that the rewriter rules change over
+# time (or code changes in a way that a rule no longer applies), hence we want
+# to run a rewrite "refresh" which ignores RAW_PTR_EXCLUSION, and we need a way
+# to keep the manual exclusions out of the picture.
+#######
 
-# This section contains exclusions that were discovered during the rewrite in
-# crrev.comc/c/5232280.
-#
-# Some of these caused compiler errors, some of these simply pertained to
-# pointers that were already marked as RAW_PTR_EXCLUSION for non-automated
-# reasons.
-#
-# We want to list them explicitly, so that future incremental rewrites that
-# ignore RAW_PTR_EXCLUSION don't try to rewrite these again and again.
+# Exclusions discovered during the rewrite in crrev.com/c/5232280.
 base::internal::BasicAutoLock::lock_
 base::internal::BasicAutoTryLock::lock_
 base::internal::BasicAutoUnlock::lock_
@@ -515,7 +517,7 @@ cc::Tile::CreateInfo::tiling
 cc::Tile::tile_manager_
 cc::Tile::tiling_
 cc::OcclusionTracker::StackObject::target
-safe_browsing::MultipartDataPipeGetter::InternalMemoryMappedFile::data_
+safe_browsing::ConnectorDataPipeGetter::InternalMemoryMappedFile::data_
 ScreenshotArea::window
 ExtensionSettingsOverriddenDialog::Params::icon
 ProfileMenuViewBase::EditButtonParams::edit_icon
@@ -531,11 +533,11 @@ media::V4L2CaptureDelegate::BufferTracker::start_
 mojo::internal::ArrayDataViewImpl::data_
 mojo::internal::ArrayDataViewImpl::message_
 mojo::MapValuesArrayView::map
-mojo::internal::ArrayIterator<Traits, MaybeConstUserType, true>::input_
-mojo::internal::ArrayIterator<Traits, MaybeConstUserType, false>::input_
+mojo::internal::ArrayIterator<type-parameter-0-0, type-parameter-0-1, true>::input_
+mojo::internal::ArrayIterator<type-parameter-0-0, type-parameter-0-1, false>::input_
 mojo::internal::MapReaderBase::input_
 mojo::internal::MessageFragment::message_
-mojo::internal::MessageFragment<Array_Data<T>>::message_
+mojo::internal::MessageFragment<Array_Data<type-parameter-0-0>>::message_
 mojo::internal::ValidationContext::message_
 mojo::ReceiverSetState::Entry::state_
 mojo::ReceiverSetState::Entry::DispatchFilter::entry_
@@ -559,3 +561,30 @@ base::internal::BinaryPredicateProjector::proj2_
 gwp_asan::internal::lud::AllocationInfo::address
 gwp_asan::internal::lud::AllocationInfo::context
 ui::EventTarget::PrioritizedHandler::handler
+
+# Exclusions discovered during the rewrite in crrev.com/c/5240446.
+blink::(anonymous namespace)::ConversionContext::StateEntry::transform
+blink::(anonymous namespace)::ConversionContext::StateEntry::clip
+blink::(anonymous namespace)::ConversionContext::StateEntry::effect
+blink::(anonymous namespace)::ConversionContext::StateEntry::previous_transform
+blink::GeometryMapperClipCache::ClipAndTransform::ancestor_clip
+blink::GeometryMapperClipCache::ClipAndTransform::ancestor_transform
+blink::GeometryMapperTransformCache::root_of_2d_translation_
+blink::WebGLRenderingContextBase::TypedExtensionTracker::extension_field_
+blink::BlinkStorageKeyTest_FromWireReturnValue_Test::TestBody()::TestCase::top_level_site
+blink::BlinkStorageKeyTest_FromWireReturnValue_Test::TestBody()::TestCase::top_level_site_if_third_party_enabled
+blink::BlinkStorageKeyTest_FromWireReturnValue_Test::TestBody()::TestCase::nonce
+
+# Excluded in crrev.com/c/5247462.
+base::(anonymous namespace)::ScopedEventSignaller::event_
+base::(anonymous namespace)::HandlerParams::event
+base::(anonymous namespace)::HandlerParams::success
+base::(anonymous namespace)::HandlerParams::context
+base::(anonymous namespace)::HandlerParams::stack_buffer
+base::(anonymous namespace)::HandlerParams::stack_copy_bottom
+base::(anonymous namespace)::HandlerParams::maybe_timestamp
+base::(anonymous namespace)::HandlerParams::stack_copier_delegate
+
+#######
+# End of recent manual exclusions
+#######
