@@ -93,11 +93,9 @@ class ASH_EXPORT PrivacyHubController {
   static bool CheckCameraLEDFallbackDirectly();
 
   // ARC++ geolocation toggle is migrating to ChromeOS. ChromeOS has 3 states
-  // for geolocation access level, while ARC++ has 2. These functions implement
-  // the mappings between ARC++ boolean values and ChromeOS's
-  // `GeolocationAccessLevel`s.
-  static GeolocationAccessLevel ArcToCrosGeolocationPermissionMapping(
-      bool enabled);
+  // for geolocation access level, while ARC++ has 2. These function implements
+  // the mapping from ChromeOS's `GeolocationAccessLevel`s to ARC++ boolean
+  // values.
   static bool CrosToArcGeolocationPermissionMapping(
       GeolocationAccessLevel access_level);
 

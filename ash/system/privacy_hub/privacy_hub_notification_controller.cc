@@ -386,10 +386,8 @@ void PrivacyHubNotificationController::
     case Sensor::kLocation: {
       // Geolocation notification asks user to allow geolocation for everything
       // (not only system services).
-      if (enabled) {
-        pref_service->SetInteger(
-            prefs::kUserGeolocationAccessLevel,
-            static_cast<int>(GeolocationAccessLevel::kAllowed));
+      if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
+        controller->SetAccessLevelAsBoolean(enabled);
       }
       break;
     }

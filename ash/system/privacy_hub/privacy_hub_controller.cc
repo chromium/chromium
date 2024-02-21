@@ -11,6 +11,7 @@
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.h"
 #include "base/feature_list.h"
@@ -104,6 +105,9 @@ void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kUserGeolocationAccessLevel,
       static_cast<int>(GeolocationAccessLevel::kAllowed));
+  registry->RegisterIntegerPref(
+      prefs::kUserPreviousGeolocationAccessLevel,
+      static_cast<int>(GeolocationAccessLevel::kDisallowed));
 }
 
 void PrivacyHubController::SetFrontend(PrivacyHubDelegate* ptr) {
@@ -159,20 +163,6 @@ bool PrivacyHubController::CheckCameraLEDFallbackDirectly() {
   CHECK(file_size_read_success);
 
   return (file_size != 0ll);
-}
-
-// static
-GeolocationAccessLevel
-PrivacyHubController::ArcToCrosGeolocationPermissionMapping(bool enabled) {
-  if (enabled) {
-    return GeolocationAccessLevel::kAllowed;
-  } else {
-    // We choose `kDisallowed` over `kOnlyAllowedForSystem` to uphold user's
-    // prior privacy preferences. This value will be used to set the initial
-    // geolocation access level when user receives the Privacy Hub geolocation
-    // feature.
-    return GeolocationAccessLevel::kDisallowed;
-  }
 }
 
 // static

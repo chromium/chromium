@@ -21,11 +21,9 @@ void LogSensorEnabledFromNotification(Sensor sensor, bool enabled) {
       // `enabled==false` it means the user just dismissed the notification, so
       // no change has happened.
       if (enabled) {
-        // Enable events originated from PWAs are processed similarly to ARC++.
-        auto access_level =
-            PrivacyHubController::ArcToCrosGeolocationPermissionMapping(
-                enabled);
-        base::UmaHistogramEnumeration(histogram, access_level);
+        const auto* controller = ash::GeolocationPrivacySwitchController::Get();
+        CHECK(controller);
+        base::UmaHistogramEnumeration(histogram, controller->AccessLevel());
       }
       return;
     }

@@ -50,14 +50,7 @@ void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
       return;
     case mojom::AndroidSetting::kGeoLocation:
     case mojom::AndroidSetting::kGeoLocationUserTriggered:
-      // This path is also executed when location change is triggered from
-      // ChromeOS. Android apps only prompt users to enable geolocation, so we
-      // can simply drop the disable events, which creates ambiguity (whether
-      // it's "Blocked for all" or "Only allowed for system services").
-      // TODO(b/310168397): Redesign to avoid "disable" event filtration.
-      if (is_enabled) {
         UpdateLocationSettings(is_enabled);
-      }
       return;
     case mojom::AndroidSetting::kUnknown:
       break;
@@ -69,11 +62,11 @@ void ChromeArcIntentHelperDelegate::UpdateLocationSettings(bool is_enabled) {
   CHECK(profile_);
   VLOG(1) << "UpdateLocation toggle called with value: " << is_enabled;
 
-  ash::GeolocationAccessLevel access_level_for_cros =
-      ash::PrivacyHubController::ArcToCrosGeolocationPermissionMapping(
-          is_enabled);
-  profile_->GetPrefs()->SetInteger(ash::prefs::kUserGeolocationAccessLevel,
-                                   static_cast<int>(access_level_for_cros));
+  if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
+    controller->SetAccessLevelAsBoolean(is_enabled);
+  } else {
+    LOG(ERROR) << "GeolocationPrivacySwitchController is not available.";
+  }
 }
 
 bool ChromeArcIntentHelperDelegate::IsInitialLocationSettingsSyncRequired() {

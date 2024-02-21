@@ -1222,6 +1222,11 @@ inline constexpr char kUserGeolocationAccessLevel[] =
 // session. Values are from `ash::GeolocationAccessLevel`.
 inline constexpr char kDeviceGeolocationAllowed[] =
     "ash.device.geolocation_allowed";
+// A pref that saves the previous geolocation access level.
+// It has to be different value than the current level saved in
+// `kUserGeolocationAccessLevel`.
+inline constexpr char kUserPreviousGeolocationAccessLevel[] =
+    "ash.user.previous_geolocation_access_level";
 
 // Double prefs storing the most recent valid geoposition, which is only used
 // when the device lacks connectivity and we're unable to retrieve a valid

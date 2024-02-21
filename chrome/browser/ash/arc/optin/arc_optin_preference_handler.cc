@@ -7,6 +7,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -172,11 +173,9 @@ void ArcOptInPreferenceHandler::EnableLocationService(bool is_enabled) {
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
     pref_service_->SetBoolean(prefs::kArcInitialLocationSettingSyncRequired,
                               false);
-    pref_service_->SetInteger(
-        ash::prefs::kUserGeolocationAccessLevel,
-        static_cast<int>(
-            ash::PrivacyHubController::ArcToCrosGeolocationPermissionMapping(
-                is_enabled)));
+    if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
+      controller->SetAccessLevelAsBoolean(is_enabled);
+    }
   }
 }
 
