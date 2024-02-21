@@ -1742,7 +1742,8 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
       /*domain_hint=*/""};
   RequestParameters request{
       std::vector<IdentityProviderParameters>{identity_provider},
-      /*rp_context=*/blink::mojom::RpContext::kSignIn};
+      /*rp_context=*/blink::mojom::RpContext::kSignIn,
+      /*rp_mode=*/blink::mojom::RpMode::kWidget};
   MockConfiguration configuration = kConfigurationValid;
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
@@ -6469,10 +6470,11 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
-  checker->SetExpectedTokenPostData(
-      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
-      "&account_id=" + std::string(kAccountId) +
-      "&disclosure_text_shown=false" + "&is_auto_selected=true");
+  checker->SetExpectedTokenPostData("client_id=" + std::string(kClientId) +
+                                    "&nonce=" + std::string(kNonce) +
+                                    "&account_id=" + std::string(kAccountId) +
+                                    "&disclosure_text_shown=false" +
+                                    "&is_auto_selected=true" + "&mode=button");
   SetNetworkRequestManager(std::move(checker));
 
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())

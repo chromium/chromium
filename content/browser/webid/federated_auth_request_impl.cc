@@ -95,6 +95,7 @@ std::string ComputeUrlEncodedTokenPostData(
     const std::string& account_id,
     bool is_sign_in,
     bool is_auto_reauthn,
+    const RpMode& rp_mode,
     const std::vector<std::string>& scope,
     const std::vector<std::string>& responseType,
     const base::flat_map<std::string, std::string>& params) {
@@ -137,6 +138,19 @@ std::string ComputeUrlEncodedTokenPostData(
       query += "&";
     }
     query += "is_auto_selected=" + is_auto_selected;
+  }
+
+  // TODO(crbug.com/40284792): ButtonMode is enabled by default on the browser
+  // side to support origin trials. To avoid sending "mode=widget" for all
+  // existing traffic, we restrict it to traffic that uses the button mode for
+  // now. We should remove this restriction before shipping the button flow.
+  if (IsFedCmButtonModeEnabled() && rp_mode == RpMode::kButton) {
+    // Shares with IdP the type of the request.
+    std::string rp_mode_str = rp_mode == RpMode::kButton ? "button" : "widget";
+    if (!query.empty()) {
+      query += "&";
+    }
+    query += "mode=" + rp_mode_str;
   }
 
   if (IsFedCmAuthzEnabled()) {
@@ -768,9 +782,17 @@ void FederatedAuthRequestImpl::RequestToken(
   start_time_ = base::TimeTicks::Now();
   // TODO(crbug.com/1307709): handle button mode with multiple IdP.
   if (IsFedCmButtonModeEnabled() &&
-      idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton &&
-      render_frame_host().HasTransientUserActivation()) {
-    rp_mode_ = RpMode::kButton;
+      idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton) {
+    if (render_frame_host().HasTransientUserActivation()) {
+      rp_mode_ = RpMode::kButton;
+    } else {
+      // TODO(crbug.com/1487270): use a more specific error.
+      CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                               TokenStatus::kUnhandledRequest,
+                               /*token_error=*/std::nullopt,
+                               /*should_delay_callback=*/true);
+      return;
+    }
   }
 
   FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
@@ -877,7 +899,6 @@ void FederatedAuthRequestImpl::RequestToken(
             return;
           }
           if (!render_frame_host().HasTransientUserActivation()) {
-            // The button flow requires user activation and a valid login_url.
             // TODO(crbug.com/1487270): use a more specific error.
             CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                      TokenStatus::kUnhandledRequest,
@@ -1930,7 +1951,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
       ComputeUrlEncodedTokenPostData(
           idp_info.provider->config->client_id, idp_info.provider->nonce,
           account_id, is_sign_in, identity_selection_type_ != kExplicit,
-          idp_info.provider->scope, idp_info.provider->responseType,
+          rp_mode_, idp_info.provider->scope, idp_info.provider->responseType,
           idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
