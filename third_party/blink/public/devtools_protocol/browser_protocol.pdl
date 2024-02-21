@@ -4053,7 +4053,7 @@ domain Emulation
       optional SensorReadingQuaternion quaternion
 
   # Tells whether emulation is supported.
-  command canEmulate
+  deprecated command canEmulate
     returns
       # True if emulation is supported.
       boolean result
@@ -4272,7 +4272,7 @@ domain Emulation
   # Overrides default host system timezone with the specified one.
   command setTimezoneOverride
     parameters
-      # The timezone identifier. List of supported timezones: 
+      # The timezone identifier. List of supported timezones:
       # https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt
       # If empty, disables the override and restores default host system timezone.
       string timezoneId
