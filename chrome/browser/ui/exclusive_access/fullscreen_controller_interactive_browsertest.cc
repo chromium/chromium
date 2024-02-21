@@ -763,6 +763,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   EXPECT_EQ(1u, browser_list->size());
   content::ExecuteScriptAsync(tab, "open('.', '', 'popup')");
   Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  ui_test_utils::WaitForBrowserSetLastActive(popup);
   EXPECT_EQ(2u, browser_list->size());
   EXPECT_EQ(popup, browser_list->GetLastActive());
   EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,

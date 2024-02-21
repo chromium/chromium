@@ -101,6 +101,8 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
   }
 
   void CreateFullscreenWindow() {
+    ui_test_utils::BrowserChangeObserver new_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     bool use_callback = false;
     browser_service()->NewFullscreenWindow(
         GURL(kNavigationUrl),
@@ -109,6 +111,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
           use_callback = true;
           EXPECT_EQ(result, CreationResult::kSuccess);
         }));
+    ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
     EXPECT_TRUE(use_callback);
   }
 
@@ -366,8 +369,11 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 
   // Profile picker does _not_ open for incognito windows. Instead, the
   // incognito window for the main profile is directly opened.
+  ui_test_utils::BrowserChangeObserver browser3_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   NewWindowSync(/*incognito=*/true, /*should_trigger_session_restore=*/false,
                 /*profile_id=*/std::nullopt, CreationResult::kSuccess);
+  ui_test_utils::WaitForBrowserSetLastActive(browser3_observer.Wait());
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
   Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();
@@ -378,8 +384,11 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   BrowserList::SetLastActive(browser2);
   // Profile picker does _not_ open if Chrome already has opened windows.
   // Instead, a new browser window for the main profile is directly opened.
+  ui_test_utils::BrowserChangeObserver browser4_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
                 /*profile_id=*/std::nullopt, CreationResult::kSuccess);
+  ui_test_utils::WaitForBrowserSetLastActive(browser4_observer.Wait());
   EXPECT_FALSE(ProfilePicker::IsOpen());
   // A new browser is created for the main profile.
   EXPECT_EQ(BrowserList::GetInstance()->GetLastActive()->profile()->GetPath(),
@@ -444,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, profile2_path);
   chrome::NewEmptyWindow(&profile2);
-  ui_test_utils::WaitForBrowserToOpen();
+  Browser* browser2 = ui_test_utils::WaitForBrowserToOpen();
+  ui_test_utils::WaitForBrowserSetLastActive(browser2);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   auto* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());

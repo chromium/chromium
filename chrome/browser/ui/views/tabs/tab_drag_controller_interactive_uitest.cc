@@ -3618,10 +3618,23 @@ namespace {
 // Invoked from the nested run loop.
 void CancelOnNewTabWhenDraggingStep2(DetachToBrowserTabDragControllerTest* test,
                                      const BrowserList* browser_list,
+                                     const Browser* default_browser,
                                      base::OnceClosure quit_closure,
                                      WebContents** contents_out) {
   ASSERT_TRUE(TabDragController::IsActive());
   ASSERT_EQ(2u, browser_list->size());
+
+  // Finds the new browser opened by the test, and waits until it becomes
+  // the last active one.
+  Browser* new_browser = nullptr;
+  for (Browser* browser : *browser_list) {
+    if (browser != default_browser) {
+      new_browser = browser;
+      break;
+    }
+  }
+  CHECK(new_browser);
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser);
 
   *contents_out = chrome::AddAndReturnTabAt(
       browser_list->GetLastActive(), GURL(url::kAboutBlankURL), 0, false);
@@ -3652,7 +3665,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(DragInputToNotifyWhenDone(
       tab_0_center + gfx::Vector2d(0, GetDetachY(tab_strip)),
       base::BindOnce(&CancelOnNewTabWhenDraggingStep2, this, browser_list,
-                     std::move(quit_closure),
+                     browser(), std::move(quit_closure),
                      base::Unretained(&web_contents))));
   run_loop.Run();
   ASSERT_TRUE(!!web_contents);
