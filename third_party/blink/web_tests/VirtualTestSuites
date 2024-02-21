@@ -995,6 +995,24 @@
     "expires": "Jan 1, 2025"
   },
   {
+    "prefix": "text-contrast-gamma",
+    "owners": ["kschmi@microsoft.com"],
+    "platforms": ["Win"],
+    "bases": [
+      "virtual/text-antialias/basic/002.html",
+      "virtual/text-antialias/basic/003.html",
+      "virtual/text-antialias/basic/004.html",
+      "virtual/text-antialias/basic/005.html",
+      "virtual/text-antialias/basic/008.html",
+      "virtual/text-antialias/basic/011.html",
+      "virtual/text-antialias/basic/012.html",
+      "virtual/text-antialias/basic/014.html"
+    ],
+    "args": ["--enable-font-antialiasing", "--enable-features=UseGammaContrastRegistrySettings",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "expires": "August 1, 2024"
+  },
+  {
     "prefix": "hdr",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
