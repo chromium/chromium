@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
-                       DialogDoesNotShowAgainAfterSettingPref) {
+                       PRE_DialogDoesNotShowAgainAfterSettingPref) {
   Profile* profile = browser()->profile();
   auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
@@ -584,16 +584,22 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
-  // Set the pref and simulate a dialog closing event.
-  service->NotifyChoiceMade(/*prepopulate_id=*/1, EntryPoint::kDialog);
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
-  histogram_tester().ExpectUniqueSample(
-      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+  // Choose the first search engine to close the dialog.
+  std::unique_ptr<TemplateURL> first_search_engine =
+      std::move(service->GetSearchEngines().at(0));
+  service->NotifyChoiceMade(first_search_engine->prepopulate_id(),
+                            EntryPoint::kDialog);
+}
 
-  // Test that the dialog doesn't get shown again after opening the browser.
-  QuitAndRestoreBrowser(browser());
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
+                       DialogDoesNotShowAgainAfterSettingPref) {
+  auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          browser()->profile()));
+  // Test that the search engine choice dialog service is null after relaunching
+  // a browser with a profile in which the search engine choice was already
+  // made.
+  EXPECT_FALSE(service);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
