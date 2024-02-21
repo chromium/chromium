@@ -1407,6 +1407,37 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                     true);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NoCrashDeviceMetricsOverrideAutoResize) {
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), GURL("data:text/html,<body></body>"), 1);
+
+  // Enable auto resize.
+  gfx::Size min_size(10, 10);
+  gfx::Size max_size(100, 100);
+
+  RenderWidgetHostImpl* rwh = static_cast<RenderWidgetHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  rwh->GetView()->EnableAutoResize(min_size, max_size);
+
+  Attach();
+
+  // Send command.
+  auto params = base::Value::Dict();
+  params.Set("width", 50);
+  params.Set("height", 50);
+  params.Set("deviceScaleFactor", 1);
+  params.Set("mobile", false);
+  ASSERT_FALSE(
+      SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params)));
+
+  // Should not crash and should return an error.
+  EXPECT_EQ(*error()->FindInt("code"),
+            static_cast<int>(crdtp::DispatchCode::SERVER_ERROR));
+  EXPECT_EQ(*error()->FindString("message"),
+            "Target does not support metrics override");
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Disabled, see http://crbug.com/469947.
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizePinchGesture) {

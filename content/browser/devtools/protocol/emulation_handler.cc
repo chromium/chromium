@@ -504,8 +504,9 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   const static double max_scale = 10;
   const static int max_orientation_angle = 360;
 
-  if (!host_)
+  if (!host_ || host_->GetRenderWidgetHost()->auto_resize_enabled()) {
     return Response::ServerError("Target does not support metrics override");
+  }
 
   if (host_->GetParentOrOuterDocument())
     return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
