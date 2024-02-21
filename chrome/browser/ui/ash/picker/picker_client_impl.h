@@ -16,6 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -103,6 +105,10 @@ class PickerClientImpl
     std::optional<GURL> last_opened_url_;
   };
 
+  void OnGifSearchResponse(PickerClientImpl::FetchGifsCallback callback,
+                           std::string gif_search_query,
+                           emoji_picker::mojom::Status status,
+                           emoji_picker::mojom::TenorGifResponsePtr response);
   void OnCrosSearchResultsUpdated(
       CrosSearchResultsCallback callback,
       ash::AppListSearchResultType result_type,
@@ -117,6 +123,7 @@ class PickerClientImpl
   PickerAppListControllerDelegate app_list_controller_delegate_;
 
   ash::GifTenorApiFetcher gif_tenor_api_fetcher_;
+  std::optional<std::string> current_gif_search_query_;
   std::unique_ptr<EndpointFetcher> current_gif_fetcher_;
 
   base::ScopedObservation<user_manager::UserManager,

@@ -48,30 +48,6 @@ namespace {
 
 constexpr int kMaxGifsToSearch = 4;
 
-void OnGifSearchResponse(PickerClientImpl::FetchGifsCallback callback,
-                         emoji_picker::mojom::Status status,
-                         emoji_picker::mojom::TenorGifResponsePtr response) {
-  if (status != emoji_picker::mojom::Status::kHttpOk) {
-    // TODO: b/325368650 - Add better handling of errors.
-    std::move(callback).Run({});
-    return;
-  }
-
-  std::vector<ash::PickerSearchResult> picker_results;
-  CHECK(response);
-  picker_results.reserve(response->results.size());
-  for (const emoji_picker::mojom::GifResponsePtr& result : response->results) {
-    CHECK(result);
-    const emoji_picker::mojom::GifUrlsPtr& urls = result->url;
-    CHECK(urls);
-    picker_results.push_back(ash::PickerSearchResult::Gif(
-        urls->preview, urls->preview_image, result->preview_size,
-        base::UTF8ToUTF16(result->content_description)));
-  }
-
-  std::move(callback).Run(std::move(picker_results));
-}
-
 int AutocompleteProviderTypes() {
   return AutocompleteProvider::TYPE_BOOKMARK |
          AutocompleteProvider::TYPE_HISTORY_QUICK |
@@ -118,13 +94,46 @@ void PickerClientImpl::FetchGifSearch(const std::string& query,
   CHECK(storage_partition);
   // This will cancel the previous in-flight request if there is one.
   current_gif_fetcher_ = gif_tenor_api_fetcher_.FetchGifSearchCancellable(
-      base::BindOnce(&OnGifSearchResponse, std::move(callback)),
+      base::BindOnce(&PickerClientImpl::OnGifSearchResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback), query),
       storage_partition->GetURLLoaderFactoryForBrowserProcess(), query,
       std::nullopt, kMaxGifsToSearch);
+  current_gif_search_query_ = query;
+}
+
+void PickerClientImpl::OnGifSearchResponse(
+    PickerClientImpl::FetchGifsCallback callback,
+    std::string gif_search_query,
+    emoji_picker::mojom::Status status,
+    emoji_picker::mojom::TenorGifResponsePtr response) {
+  if (gif_search_query != current_gif_search_query_) {
+    // Do not call the callback at all if this is an old request.
+    return;
+  }
+  if (status != emoji_picker::mojom::Status::kHttpOk) {
+    // TODO: b/325368650 - Add better handling of errors.
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::vector<ash::PickerSearchResult> picker_results;
+  CHECK(response);
+  picker_results.reserve(response->results.size());
+  for (const emoji_picker::mojom::GifResponsePtr& result : response->results) {
+    CHECK(result);
+    const emoji_picker::mojom::GifUrlsPtr& urls = result->url;
+    CHECK(urls);
+    picker_results.push_back(ash::PickerSearchResult::Gif(
+        urls->preview, urls->preview_image, result->preview_size,
+        base::UTF8ToUTF16(result->content_description)));
+  }
+
+  std::move(callback).Run(std::move(picker_results));
 }
 
 void PickerClientImpl::StopGifSearch() {
   current_gif_fetcher_.reset();
+  current_gif_search_query_.reset();
 }
 
 void PickerClientImpl::StartCrosSearch(const std::u16string& query,
