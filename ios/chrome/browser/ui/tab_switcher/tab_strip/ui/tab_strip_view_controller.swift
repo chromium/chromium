@@ -61,11 +61,14 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   /// This variable ensures that the most recent scroll event is processed.
   private var targetedScrollOffsetiOS16: CGFloat = 0
 
-  // Handles model updates.
+  /// `true` if the user is in incognito.
+  public var isIncognito: Bool = false
+
+  /// Handles model updates.
   public weak var mutator: TabStripMutator?
-  // Tab strip  delegate.
+  /// Tab strip delegate.
   public weak var delegate: TabStripViewControllerDelegate?
-  // Handles drag and drop interactions.
+  /// Handles drag and drop interactions.
   public weak var dragDropHandler: TabCollectionDragDropHandler?
 
   /// The LayoutGuideCenter.
@@ -121,6 +124,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     view.addSubview(rightStaticSeparator)
 
     newTabButton.delegate = self
+    newTabButton.isIncognito = isIncognito
     view.addSubview(newTabButton)
 
     NSLayoutConstraint.activate([

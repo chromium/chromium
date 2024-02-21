@@ -50,6 +50,7 @@
   self.tabStripViewController.overrideUserInterfaceStyle =
       browserState->IsOffTheRecord() ? UIUserInterfaceStyleDark
                                      : UIUserInterfaceStyleUnspecified;
+  self.tabStripViewController.isIncognito = browserState->IsOffTheRecord();
 
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController];

@@ -10,9 +10,18 @@ class TabStripNewTabButton: UIView {
   /// Delegate that informs the receiver of actions on the new tab button.
   public var delegate: TabStripNewTabButtonDelegate?
 
+  /// `true` if the user is in incognito.
+  public var isIncognito: Bool {
+    didSet {
+      self.updateAccessibilityIdentifier()
+    }
+  }
+
   private let button: UIButton = UIButton(type: .custom)
 
   override init(frame: CGRect) {
+    isIncognito = false
+
     super.init(frame: frame)
     translatesAutoresizingMaskIntoConstraints = false
 
@@ -54,8 +63,6 @@ class TabStripNewTabButton: UIView {
     configuration.image = closeSymbol
     configuration.baseForegroundColor = UIColor(named: kTextSecondaryColor)
     button.configuration = configuration
-    button.accessibilityLabel = L10nUtils.stringWithFixup(
-      messageId: IDS_IOS_TAB_GRID_CREATE_NEW_TAB)
     button.imageView?.contentMode = .center
     button.layer.cornerRadius = TabStripConstants.NewTabButton.cornerRadius
     button.backgroundColor = UIColor(named: kGroupedSecondaryBackgroundColor)
@@ -66,5 +73,14 @@ class TabStripNewTabButton: UIView {
     if #available(iOS 17.0, *) {
       button.hoverStyle = .init(shape: .circle)
     }
+  }
+
+  /// Updates the `accessibilityLabel` according to the current state of
+  /// `isIncognito`.
+  private func updateAccessibilityIdentifier() {
+    button.accessibilityLabel = L10nUtils.stringWithFixup(
+      messageId: isIncognito
+        ? IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB
+        : IDS_IOS_TOOLS_MENU_NEW_TAB)
   }
 }
