@@ -15,42 +15,6 @@
   },
   "thresholds": {
     "ci": {
-      "Android Release (Nexus 5X)": {
-        "_default": "_default"
-      },
-      "Android WebView O (dbg)": {
-        "_default": "_default"
-      },
-      "Android WebView P (dbg)": {
-        "_default": "_default"
-      },
-      "Android arm Builder (dbg)": {
-        "_default": "_default"
-      },
-      "Android arm64 Builder (dbg)": {
-        "_default": "_default"
-      },
-      "Android arm64 Builder All Targets (dbg)": {
-        "_default": "_default"
-      },
-      "Android x64 Builder All Targets (dbg)": {
-        "_default": "_default"
-      },
-      "Android x86 Builder (dbg)": {
-        "_default": "_default"
-      },
-      "Cast Android (dbg)": {
-        "_default": "_default"
-      },
-      "Dawn Linux x64 DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Linux x64 DEPS Release (Intel UHD 630)": {
-        "_default": "_default"
-      },
-      "Dawn Linux x64 DEPS Release (NVIDIA)": {
-        "_default": "_default"
-      },
       "Dawn Mac x64 DEPS Builder": {
         "_default": "_default"
       },
@@ -78,16 +42,10 @@
       "Dawn Win10 x86 DEPS Release (NVIDIA)": {
         "_default": "_default"
       },
-      "GPU Linux Builder": {
-        "_default": "_default"
-      },
       "GPU Mac Builder": {
         "_default": "_default"
       },
       "GPU Win x64 Builder": {
-        "_default": "_default"
-      },
-      "Linux Release (NVIDIA)": {
         "_default": "_default"
       },
       "Mac Builder": {
@@ -117,72 +75,8 @@
       "Mac13 Tests (dbg)": {
         "_default": "_default"
       },
-      "Oreo Phone Tester": {
-        "_default": "_default"
-      },
       "Win10 x64 Release (NVIDIA)": {
         "_default": "_default"
-      },
-      "android-12-x64-rel": {
-        "_default": "_default"
-      },
-      "android-cronet-arm-dbg": {
-        "_default": "_default"
-      },
-      "android-cronet-arm-rel": {
-        "_default": "_default"
-      },
-      "android-cronet-mainline-clang-x86-dbg": {
-        "_default": "_default"
-      },
-      "android-cronet-x64-dbg": {
-        "_default": "_default"
-      },
-      "android-cronet-x86-dbg": {
-        "_default": "_default"
-      },
-      "android-cronet-x86-dbg-10-tests": {
-        "_default": "_default"
-      },
-      "android-official": {
-        "_default": "_default"
-      },
-      "android-oreo-x86-rel": {
-        "_default": "_default"
-      },
-      "android-pie-arm64-dbg": {
-        "_default": "_default"
-      },
-      "android-pie-arm64-rel": {
-        "_default": "_default"
-      },
-      "chromeos-amd64-generic-dbg": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "chromeos-amd64-generic-lacros-dbg": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
       },
       "chromeos-amd64-generic-rel": {
         "build_time": {
@@ -282,172 +176,9 @@
           "p50_mins": 20
         }
       },
-      "fuchsia-official": {
-        "_default": "_default"
-      },
-      "ios-simulator": {
-        "_default": "_default"
-      },
-      "ios-simulator-full-configs": {
-        "_default": "_default"
-      },
-      "lacros-amd64-generic-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros-amd64-generic-rel-non-skylab": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros-arm-generic-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros-arm-generic-rel-skylab": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros-arm64-generic-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "lacros-arm64-generic-rel-skylab": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "linux-chromeos-dbg": {
-        "build_time": {
-          "p50_mins": 150
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
       "linux-chromeos-rel": {
         "build_time": {
           "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "linux-lacros-builder-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "linux-lacros-dbg": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "linux-lacros-tester-rel": {
-        "build_time": {
-          "p50_mins": 60
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "linux-official": {
-        "build_time": {
-          "p50_mins": 240
         },
         "fail_rate": {
           "average": 0.2
