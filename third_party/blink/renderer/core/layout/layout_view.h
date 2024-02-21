@@ -27,8 +27,6 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/hit_test_cache.h"
-#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -39,6 +37,9 @@
 
 namespace blink {
 
+class HitTestCache;
+class HitTestLocation;
+class HitTestResult;
 class LayoutViewTransitionRoot;
 class LocalFrameView;
 

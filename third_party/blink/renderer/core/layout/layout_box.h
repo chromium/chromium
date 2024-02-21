@@ -53,6 +53,7 @@ class EarlyBreak;
 class LayoutMultiColumnSpannerPlaceholder;
 class LayoutResult;
 class MeasureCache;
+class PhysicalBoxFragment;
 class ShapeOutsideInfo;
 class WritingModeConverter;
 enum class LayoutCacheStatus;

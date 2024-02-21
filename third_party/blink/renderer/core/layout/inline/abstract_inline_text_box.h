@@ -11,6 +11,7 @@
 namespace blink {
 
 class InlineCursor;
+class PhysicalBoxFragment;
 
 // High-level abstraction of a text box fragment, to allow the accessibility
 // module to get information without tight coupling.

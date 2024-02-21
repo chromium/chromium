@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"

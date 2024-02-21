@@ -2349,6 +2349,11 @@ HitTestResult LayoutObject::HitTestForOcclusion(
                                                           this, true);
 }
 
+HitTestResult LayoutObject::HitTestForOcclusion() const {
+  NOT_DESTROYED();
+  return HitTestForOcclusion(VisualRectInDocument());
+}
+
 std::ostream& operator<<(std::ostream& out, const LayoutObject& object) {
   String info;
 #if DCHECK_IS_ON()

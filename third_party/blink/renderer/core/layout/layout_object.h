@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_phase.h"
-#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object_child_list.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
@@ -80,6 +79,7 @@ class AccompaniedFragmentIterator;
 class AffineTransform;
 class HitTestLocation;
 class HitTestRequest;
+class HitTestResult;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutFlowThread;
@@ -2619,10 +2619,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Do a rect-based hit test with this object as the stop node.
   HitTestResult HitTestForOcclusion(const PhysicalRect&) const;
-  HitTestResult HitTestForOcclusion() const {
-    NOT_DESTROYED();
-    return HitTestForOcclusion(VisualRectInDocument());
-  }
+  HitTestResult HitTestForOcclusion() const;
 
   // Return the offset to the column in which the specified point (in
   // flow-thread coordinates) lives. This is used to convert a flow-thread point

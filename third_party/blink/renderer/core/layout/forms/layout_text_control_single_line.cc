@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 
 namespace blink {
 

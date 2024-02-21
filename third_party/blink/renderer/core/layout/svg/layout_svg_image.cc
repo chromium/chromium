@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 
 #include "third_party/blink/renderer/core/html/media/media_element_parser_helpers.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
