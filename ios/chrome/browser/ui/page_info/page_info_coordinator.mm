@@ -5,6 +5,10 @@
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/page_info/core/page_info_action.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -85,6 +89,10 @@
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
+
+  base::RecordAction(base::UserMetricsAction("PageInfo.Opened"));
+  base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
+                                page_info::PAGE_INFO_OPENED);
 }
 
 - (void)stop {
@@ -95,11 +103,17 @@
   [self.dispatcher stopDispatchingToTarget:self];
   self.navigationController = nil;
   self.viewController = nil;
+
+  base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
 
 #pragma mark - PageInfoPresentationCommands
 
 - (void)showSecurityPage {
+  base::RecordAction(base::UserMetricsAction("PageInfo.Security.Opened"));
+  base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
+                                page_info::PAGE_INFO_SECURITY_DETAILS_OPENED);
+
   _securityCoordinator = [[PageInfoSecurityCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:self.browser];
@@ -108,6 +122,11 @@
 }
 
 - (void)showSecurityHelpPage {
+  base::RecordAction(
+      base::UserMetricsAction("PageInfo.Security.ConnectionHelp.Opened"));
+  base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
+                                page_info::PAGE_INFO_CONNECTION_HELP_OPENED);
+
   UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kPageInfoHelpCenterURL));
   params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
@@ -117,6 +136,11 @@
 }
 
 - (void)showAboutThisSitePage:(GURL)URL {
+  base::RecordAction(base::UserMetricsAction("PageInfo.AboutThisSite.Opened"));
+  base::UmaHistogramEnumeration(
+      page_info::kWebsiteSettingsActionHistogram,
+      page_info::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
+
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);

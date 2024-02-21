@@ -21,4 +21,12 @@ extern NSString* const kPageInfoCameraSwitchAccessibilityIdentifier;
 // modal.
 extern NSString* const kPageInfoMicrophoneSwitchAccessibilityIdentifier;
 
+// Histogram name for when a permission is changed within Page Info used in all
+// platforms.
+extern const char kOriginInfoPermissionChangedHistogram[];
+
+// Histogram name for when a permission is blocked within Page Info used in all
+// platforms.
+extern const char kOriginInfoPermissionChangedBlockedHistogram[];
+
 #endif  // IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_CONSTANTS_H_

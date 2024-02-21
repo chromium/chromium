@@ -15,3 +15,9 @@ NSString* const kPageInfoCameraSwitchAccessibilityIdentifier =
 
 NSString* const kPageInfoMicrophoneSwitchAccessibilityIdentifier =
     @"kPageInfoMicrophoneSwitchAccessibilityIdentifier";
+
+const char kOriginInfoPermissionChangedHistogram[] =
+    "WebsiteSettings.OriginInfo.PermissionChanged";
+
+const char kOriginInfoPermissionChangedBlockedHistogram[] =
+    "WebsiteSettings.OriginInfo.PermissionChanged.Blocked";

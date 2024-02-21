@@ -10,8 +10,12 @@ source_set("permissions") {
     "permissions_delegate.h",
   ]
   deps = [
+    ":constants",
     ":permission_info",
     "//base:base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/page_info/core",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/web/public/permissions",
   ]

@@ -6,9 +6,14 @@
 #import <XCTest/XCTest.h>
 
 #import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/content_settings/core/browser/content_settings_uma_util.h"
+#import "components/content_settings/core/common/content_settings_types.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
+#import "components/page_info/core/page_info_action.h"
 #import "components/strings/grit/components_branded_strings.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_app_interface.h"
@@ -67,6 +72,35 @@ void AddAboutThisSiteHint(GURL url) {
                 aboutThisSiteURL:@"https://diner.com"];
 }
 
+void ExpectPageInfoActionHistograms(page_info::PageInfoAction action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:action
+          forHistogram:base::SysUTF8ToNSString(
+                           page_info::kWebsiteSettingsActionHistogram)],
+      @"WebsiteSettings.Action histogram not logged.");
+}
+
+void ExpectPermissionChangedHistograms(ContentSettingsType type) {
+  int bucket =
+      content_settings_uma_util::ContentSettingTypeToHistogramValue(type);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:1
+                       forBucket:bucket
+                    forHistogram:base::SysUTF8ToNSString(
+                                     kOriginInfoPermissionChangedHistogram)],
+                @"PermissionChanged histogram not logged.");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:bucket
+          forHistogram:base::SysUTF8ToNSString(
+                           kOriginInfoPermissionChangedBlockedHistogram)],
+      @"PermissionChanged.Blocked histogram not logged.");
+  ExpectPageInfoActionHistograms(page_info::PAGE_INFO_CHANGED_PERMISSION);
+}
+
 }  // namespace
 
 @interface PageInfoTestCase : ChromeTestCase
@@ -87,6 +121,19 @@ void AddAboutThisSiteHint(GURL url) {
       std::string("-") +
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey clearBrowsingHistory];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+}
+
+- (void)tearDown {
+  [super tearDown];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
 }
 
 // Checks that if the alert for site permissions pops up, and allow it.
@@ -151,6 +198,8 @@ void AddAboutThisSiteHint(GURL url) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI openPageInfo];
+
+  ExpectPageInfoActionHistograms(page_info::PAGE_INFO_OPENED);
 
   // Checks that the page info view has appeared.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -248,6 +297,10 @@ void AddAboutThisSiteHint(GURL url) {
     @(web::PermissionCamera) : @(web::PermissionStateNotAccessible),
     @(web::PermissionMicrophone) : @(web::PermissionStateBlocked)
   }];
+
+  // Check that the correct histograms are logged when a camera permission is
+  // changed via Page Info.
+  ExpectPermissionChangedHistograms(ContentSettingsType::MEDIASTREAM_MIC);
 }
 
 // Tests that two accessible permissions are shown in Permissions section with
@@ -293,6 +346,10 @@ void AddAboutThisSiteHint(GURL url) {
     @(web::PermissionCamera) : @(web::PermissionStateBlocked),
     @(web::PermissionMicrophone) : @(web::PermissionStateAllowed)
   }];
+
+  // Check that the correct histograms are logged when a camera permission is
+  // changed via Page Info.
+  ExpectPermissionChangedHistograms(ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 
 // Tests that rotating the device will not dismiss the navigation bar.
@@ -366,6 +423,7 @@ void AddAboutThisSiteHint(GURL url) {
   GREYAssertEqual(std::string("support.google.com"),
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center article.");
+  ExpectPageInfoActionHistograms(page_info::PAGE_INFO_CONNECTION_HELP_OPENED);
 }
 
 // Tests the security section by checking that the correct connection label is
@@ -401,6 +459,8 @@ void AddAboutThisSiteHint(GURL url) {
       selectElementWithMatcher:
           grey_accessibilityID(kPageInfoSecurityViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  ExpectPageInfoActionHistograms(page_info::PAGE_INFO_SECURITY_DETAILS_OPENED);
 }
 
 // Most of the tests for AboutThisSite section are in chrome-internal
