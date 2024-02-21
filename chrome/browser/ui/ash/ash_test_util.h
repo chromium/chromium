@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
 
-#include <string>
 #include <string_view>
 
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ui/events/event_constants.h"
 
 class Profile;
@@ -32,6 +32,12 @@ base::FilePath CreateFile(Profile* profile, std::string_view extension = "txt");
 
 // Moves mouse to `view` over `count` number of events. `count` is 1 by default.
 void MoveMouseTo(const views::View* view, size_t count = 1u);
+
+void InstallSystemAppsForTesting(Profile* profile);
+
+// Creates a system web app window (os settings, camera, files, etc.). Note that
+// a test needs to call `InstallSystemWebAppsForTesting()` prior to using this.
+void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type);
 
 }  // namespace ash::test
 

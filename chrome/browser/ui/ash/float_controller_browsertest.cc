@@ -10,14 +10,8 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/float/float_test_api.h"
 #include "ash/wm/window_state.h"
-#include "base/test/bind.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/launch_result_type.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -48,20 +42,6 @@ void TuckWindow(aura::Window* window) {
                                         base::Milliseconds(10), /*steps=*/1);
 }
 
-void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type) {
-  webapps::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-
-  base::RunLoop launch_wait;
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-      std::move(params),
-      base::BindLambdaForTesting(
-          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
-  launch_wait.Run();
-}
-
 }  // namespace
 
 using FloatControllerBrowserTest = InProcessBrowserTest;
@@ -70,17 +50,18 @@ using FloatControllerBrowserTest = InProcessBrowserTest;
 // the window to freeze. Regression test for b/278917878.
 IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
                        TuckingBrowserDoesNotFreezeWindow) {
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
-      ->InstallSystemAppsForTesting();
+  ash::test::InstallSystemAppsForTesting(browser()->profile());
 
   // Open two SWAs. The bug was a result of the window targeters installed by
   // the window tucker and immersive mode not being reinstalled in the correct
   // order. More details in b/278917878.
-  CreateSystemWebApp(browser()->profile(), ash::SystemWebAppType::FILE_MANAGER);
+  ash::test::CreateSystemWebApp(browser()->profile(),
+                                ash::SystemWebAppType::FILE_MANAGER);
   aura::Window* browser_window1 =
       BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
 
-  CreateSystemWebApp(browser()->profile(), ash::SystemWebAppType::SETTINGS);
+  ash::test::CreateSystemWebApp(browser()->profile(),
+                                ash::SystemWebAppType::SETTINGS);
   aura::Window* browser_window2 =
       BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
 

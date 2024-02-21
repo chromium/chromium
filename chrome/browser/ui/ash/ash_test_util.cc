@@ -4,14 +4,20 @@
 
 #include "chrome/browser/ui/ash/ash_test_util.h"
 
-#include <string_view>
-
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -71,6 +77,24 @@ base::FilePath CreateFile(Profile* profile, std::string_view extension) {
 void MoveMouseTo(const views::View* view, size_t count) {
   ui::test::EventGenerator(GetRootWindow(view))
       .MoveMouseTo(view->GetBoundsInScreen().CenterPoint(), count);
+}
+
+void InstallSystemAppsForTesting(Profile* profile) {
+  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+}
+
+void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type) {
+  webapps::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+
+  base::RunLoop launch_wait;
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
+      std::move(params),
+      base::BindLambdaForTesting(
+          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
+  launch_wait.Run();
 }
 
 }  // namespace ash::test
