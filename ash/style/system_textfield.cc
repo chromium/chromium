@@ -322,6 +322,11 @@ void SystemTextfield::OnFocus() {
 }
 
 void SystemTextfield::OnBlur() {
+  // TODO(b/323054951): Remove this when we can correctly handle our peculiar
+  // blur logic.
+  UpdateCursorVisibility();
+
+  // Call SetActive last because some callbacks might delete `this`.
   SetActive(false);
 }
 
