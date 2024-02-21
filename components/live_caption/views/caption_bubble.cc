@@ -683,7 +683,7 @@ void CaptionBubble::Init() {
       views::style::CONTEXT_DIALOG_BODY_TEXT);
 
   // Make the whole text view behave as a link for accessibility.
-  media_foundation_renderer_error_text->GetViewAccessibility().OverrideRole(
+  media_foundation_renderer_error_text->GetViewAccessibility().SetRole(
       ax::mojom::Role::kLink);
 
   const std::u16string link =
