@@ -641,6 +641,22 @@ TEST_F(CrdAdminSessionControllerTest, ShouldReturnAccessCode) {
 }
 
 TEST_F(CrdAdminSessionControllerTest,
+       ShouldSurvive2CallsToHostStateReceivedAccessCode) {
+  InitWithNoReconnectableSession(session_controller());
+  SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+  observer.OnHostStateReceivedAccessCode("the-access-code", base::Days(1));
+  // This can happen if the client tried to connect and the access is denied,
+  // see `It2MeHost::OnClientAccessDenied`.
+  // The system should not crash when receiving the access code twice.
+  observer.OnHostStateReceivedAccessCode("the-access-code", base::Days(1));
+
+  Response response = WaitForResponse();
+  ASSERT_TRUE(response.HasAccessCode());
+  EXPECT_EQ("the-access-code", response.access_code());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
        ShouldStartSessionIfAccessCodeFetchSucceeds) {
   InitWithNoReconnectableSession(session_controller());
   session_controller().SetOAuthTokenForTesting("test-oauth-token");
