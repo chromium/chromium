@@ -45,8 +45,6 @@ constexpr std::array<std::string_view, kCategoryBlockListCount>
                        "/m/0chbx",      "/m/02c66t"};
 
 namespace {
-// Maximum number of sessions we're going to display on the NTP
-const size_t kMaxSessionsToShow = 10;
 // Name of preference to track list of dismissed tabs.
 const char kDismissedTabsPrefName[] = "NewTabPage.TabResumption.DismissedTabs";
 
@@ -80,10 +78,10 @@ history::mojom::TabPtr SessionTabToMojom(
   auto tab_mojom = history::mojom::Tab::New();
   tab_mojom->device_type =
       history::mojom::DeviceType(static_cast<int>(device_type));
-  tab_mojom->session_name = session_name;
   base::Value::Dict dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, current_navigation.title(),
                                     tab_url);
+  tab_mojom->session_name = session_name;
   tab_mojom->url = GURL(*dictionary.FindString("url"));
   tab_mojom->title = *dictionary.FindString("title");
 
@@ -157,10 +155,8 @@ void TabResumptionPageHandler::OnQueryURLsComplete(
     std::vector<history::QueryURLResult> results) {
   history::VisitVector visit_rows;
   for (auto result : results) {
-    if ((base::Time::Now() - result.row.last_visit()).InHours() < time_limit_) {
-      for (auto visit : result.visits) {
-        visit_rows.push_back(visit);
-      }
+    for (auto visit : result.visits) {
+      visit_rows.push_back(visit);
     }
   }
   auto* history_service = HistoryServiceFactory::GetForProfile(
@@ -228,9 +224,7 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
     std::vector<history::mojom::TabPtr> tabs_mojom;
     const int kSampleSessionsCount = 3;
     for (int i = 0; i < kSampleSessionsCount; i++) {
-      auto session_tabs_mojom = SessionToMojom(
-          SampleSession(("Test Name " + base::NumberToString(i)).c_str(), 3, 1)
-              .get());
+      auto session_tabs_mojom = SessionToMojom(SampleSession("", 3, 1).get());
       for (auto& tab_mojom : session_tabs_mojom) {
         tabs_mojom.push_back(std::move(tab_mojom));
       }
@@ -242,9 +236,7 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   auto tabs_mojom = GetForeignTabs();
   std::vector<GURL> urls;
   for (const auto& tab : tabs_mojom) {
-    if (tab->url.is_valid()) {
-      urls.push_back(tab->url);
-    }
+    urls.push_back(tab->url);
   }
 
   if (urls.empty()) {
@@ -283,26 +275,15 @@ std::vector<history::mojom::TabPtr> TabResumptionPageHandler::GetForeignTabs() {
 
   std::vector<history::mojom::TabPtr> tabs_mojom;
   if (open_tabs && open_tabs->GetAllForeignSessions(&sessions)) {
-    // Use a pref to keep track of sessions that were collapsed by the user.
-    // To prevent the pref from accumulating stale sessions, clear it each time
-    // and only add back sessions that are still current.
-    ScopedDictPrefUpdate pref_update(profile_->GetPrefs(),
-                                     prefs::kNtpCollapsedForeignSessions);
-    base::Value::Dict& current_collapsed_sessions = pref_update.Get();
-    base::Value::Dict collapsed_sessions = current_collapsed_sessions.Clone();
-    current_collapsed_sessions.clear();
-
     // Note: we don't own the SyncedSessions themselves.
-    for (size_t i = 0; i < sessions.size() && i < kMaxSessionsToShow; ++i) {
+    for (size_t i = 0; i < sessions.size(); ++i) {
       const sync_sessions::SyncedSession* session(sessions[i]);
       auto session_tabs_mojom = SessionToMojom(session);
-      const std::string& session_tag = session->GetSessionTag();
-      bool is_collapsed = collapsed_sessions.Find(session_tag);
-      if (is_collapsed) {
-        current_collapsed_sessions.Set(session_tag, true);
-      }
       for (auto& tab_mojom : session_tabs_mojom) {
-        tabs_mojom.push_back(std::move(tab_mojom));
+        if ((tab_mojom->relative_time).InHours() < time_limit_ &&
+            !tab_mojom->url.is_empty()) {
+          tabs_mojom.push_back(std::move(tab_mojom));
+        }
       }
     }
   }
