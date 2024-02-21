@@ -2818,6 +2818,11 @@ const char kPasswordManagerShadowDomSupportName[] =
 const char kPasswordManagerShadowDomSupportDescription[] =
     "Enables form filling and saving for password forms in shadow DOM.";
 
+extern const char kPasswordManualFallbackAvailableName[] =
+    "Password manual fallback";
+extern const char kPasswordManualFallbackAvailableDescription[] =
+    "Enables triggering password suggestions through the context menu";
+
 const char kPasswordParsingOnSaveUsesPredictionsName[] =
     "Use server predictions for password form parsing on saving";
 const char kPasswordParsingOnSaveUsesPredictionsDescription[] =

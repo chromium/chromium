@@ -19150,6 +19150,7 @@ from previous Chrome versions.
   <int value="-718884399" label="NewTabPageUIMd:enabled"/>
   <int value="-718626298" label="SysInternals:enabled"/>
   <int value="-718485659" label="OmniboxGroupingFrameworkForNonZPS:enabled"/>
+  <int value="-716973822" label="PasswordManualFallbackAvailable:disabled"/>
   <int value="-716965886" label="NtpRealboxRoundedCorners:disabled"/>
   <int value="-716953514" label="disable-password-separated-signin-flow"/>
   <int value="-716272467" label="AssistantAppSupport:disabled"/>
@@ -24184,6 +24185,7 @@ from previous Chrome versions.
   <int value="1604914671" label="eol-reset-dismissed-prefs"/>
   <int value="1605398303" label="MacSystemMediaPermissionsInfoUI:enabled"/>
   <int value="1605611615" label="enable-webrtc-srtp-aes-gcm"/>
+  <int value="1605929915" label="PasswordManualFallbackAvailable:enabled"/>
   <int value="1607484807" label="AutofillEnableSupportForLandmark:enabled"/>
   <int value="1607541874" label="SettingsLandingPageRedesign:enabled"/>
   <int value="1609059016" label="CupsIppPrintingBackend:enabled"/>

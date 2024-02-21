@@ -10967,6 +10967,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kShadowDomSupport)},
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"password-manual-fallback-available",
+     flag_descriptions::kPasswordManualFallbackAvailableName,
+     flag_descriptions::kPasswordManualFallbackAvailableDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordManualFallbackAvailable)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
     {"force-signin-flows-profile-picker",
      flag_descriptions::kForceSigninFlowInProfilePickerName,
      flag_descriptions::kForceSigninFlowInProfilePickerDescription,
