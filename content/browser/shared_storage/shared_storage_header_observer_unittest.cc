@@ -833,7 +833,7 @@ TEST_P(SharedStorageHeaderObserverTest, SkipInvalidParams) {
   set_bypass_shared_storage_allowed_count(1);
 
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
-  const std::string kLong(1025, 'x');
+  const std::string kLong(2621441, 'x');
 
   std::vector<OperationPtr> operations = MakeOperationVector({
       std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,

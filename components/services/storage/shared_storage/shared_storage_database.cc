@@ -215,8 +215,9 @@ SharedStorageDatabase::SharedStorageDatabase(
       special_storage_policy_(std::move(special_storage_policy)),
       // We DCHECK that these `options` fields are all positive in the
       // constructor for `SharedStorageOptions`.
-      max_entries_per_origin_(int64_t{options->max_entries_per_origin}),
-      max_string_length_(static_cast<size_t>(options->max_string_length)),
+      max_bytes_per_origin_(int64_t{options->max_bytes_per_origin}),
+      max_string_length_(
+          static_cast<size_t>(options->max_bytes_per_origin / 2)),
       max_init_tries_(static_cast<size_t>(options->max_init_tries)),
       max_iterator_batch_size_(
           static_cast<size_t>(options->max_iterator_batch_size)),
@@ -328,20 +329,14 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Set(
     }
     return OperationResult::kIgnored;
   }
-  if (get_result.result == OperationResult::kNotFound &&
-      !HasCapacity(origin_str)) {
-    return OperationResult::kNoCapacity;
-  }
 
   std::optional<std::u16string> previous_value =
       (get_result.result == OperationResult::kNotFound)
           ? std::nullopt
           : std::optional<std::u16string>(std::move(get_result.data));
-  if (!UpdateValuesMapping(origin_str, key, value, std::move(previous_value))) {
-    return OperationResult::kSqlError;
-  }
 
-  return OperationResult::kSet;
+  return InternalSetOrAppend(origin_str, key, value, get_result.result,
+                             std::move(previous_value));
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Append(
@@ -372,24 +367,18 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Append(
     new_value = std::move(get_result.data);
     new_value.append(tail_value);
 
-    if (new_value.size() > max_string_length_)
+    if (new_value.size() > max_string_length_) {
       return OperationResult::kInvalidAppend;
+    }
   } else if (get_result.result == OperationResult::kExpired) {
     previous_value = std::move(get_result.data);
     new_value = std::move(tail_value);
   } else {
     new_value = std::move(tail_value);
-
-    if (!HasCapacity(origin_str))
-      return OperationResult::kNoCapacity;
   }
 
-  if (!UpdateValuesMapping(origin_str, key, new_value,
-                           std::move(previous_value))) {
-    return OperationResult::kSqlError;
-  }
-
-  return OperationResult::kSet;
+  return InternalSetOrAppend(origin_str, key, new_value, get_result.result,
+                             std::move(previous_value));
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Delete(
@@ -1400,6 +1389,62 @@ bool SharedStorageDatabase::Purge(const std::string& context_origin) {
   return transaction.Commit();
 }
 
+SharedStorageDatabase::OperationResult
+SharedStorageDatabase::InternalSetOrAppend(
+    const std::string& context_origin,
+    const std::u16string& key,
+    const std::u16string& value,
+    OperationResult result_for_get,
+    std::optional<std::u16string> previous_value) {
+  int64_t delta_bytes = 2 * value.size();
+  delta_bytes += (result_for_get == OperationResult::kNotFound)
+                     ? 2 * key.size()
+                     : -2 * static_cast<int64_t>(previous_value->size());
+
+  if (delta_bytes <= 0 ||
+      (delta_bytes > 0 &&
+       HasCapacityIncludingExpired(context_origin, delta_bytes))) {
+    // Either we are decreasing the total number of bytes used by
+    // `context_origin`, or else a quick capacity check based on the value in
+    // the `num_bytes` column in `per_origin_mapping` for `context_origin` says
+    // that there should be enough quota left for the additional bytes. So we go
+    // ahead and try to set the value.
+    if (!UpdateValuesMapping(context_origin, key, value,
+                             std::move(previous_value))) {
+      return OperationResult::kSqlError;
+    }
+    return OperationResult::kSet;
+  }
+
+  CHECK_GT(delta_bytes, 0);
+  if (NumBytesUsedManualCountExcludeExpired(context_origin) + delta_bytes >
+      max_bytes_per_origin_) {
+    // There is not enough capacity for this delta even after recounting the
+    // bytes used manually and excluding any expired entries.
+    return OperationResult::kNoCapacity;
+  }
+
+  // In theory there will be enough capacity after we purge expired entries in
+  // `values_mapping` for `context_origin`.
+  if (!ManualPurgeExpiredValues(context_origin)) {
+    return OperationResult::kSqlError;
+  }
+
+  if (result_for_get == OperationResult::kExpired) {
+    // If the previous value was expired, it has now been manually purged. So
+    // the `UpdateValuesMapping()` call below should see the previous value as
+    // nonexistent, i.e. std::nullopt.
+    previous_value = std::nullopt;
+  }
+
+  if (!UpdateValuesMapping(context_origin, key, value,
+                           std::move(previous_value))) {
+    return OperationResult::kSqlError;
+  }
+
+  return OperationResult::kSet;
+}
+
 int64_t SharedStorageDatabase::NumEntriesIncludeExpired(
     const std::string& context_origin) {
   // In theory, there ought to be at most one entry found. But we make no
@@ -1607,8 +1652,8 @@ bool SharedStorageDatabase::UpdateValuesMappingWithTime(
       return false;
     }
 
-    delta_bytes =
-        static_cast<int64_t>(2 * (value.size() - previous_value->size()));
+    delta_bytes = 2 * (static_cast<int64_t>(value.size()) -
+                       static_cast<int64_t>(previous_value->size()));
     if (!UpdateLength(context_origin, /*delta_length=*/0,
                       /*delta_bytes=*/delta_bytes)) {
       return false;
@@ -1711,8 +1756,77 @@ bool SharedStorageDatabase::UpdatePerOriginMapping(
   return true;
 }
 
-bool SharedStorageDatabase::HasCapacity(const std::string& context_origin) {
-  return NumEntriesIncludeExpired(context_origin) < max_entries_per_origin_;
+bool SharedStorageDatabase::HasCapacityIncludingExpired(
+    const std::string& context_origin,
+    int64_t delta_bytes) {
+  CHECK_GT(delta_bytes, 0);
+
+  return NumBytesUsedIncludeExpired(context_origin) + delta_bytes <=
+         max_bytes_per_origin_;
+}
+
+bool SharedStorageDatabase::ManualPurgeExpiredValues(
+    const std::string& context_origin) {
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  static constexpr char kDeleteEntriesSql[] =
+      "DELETE FROM values_mapping "
+      "WHERE context_origin=? AND last_used_time<?";
+
+  sql::Statement delete_entries_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteEntriesSql));
+  delete_entries_statement.BindString(0, context_origin);
+  delete_entries_statement.BindTime(1, clock_->Now() - staleness_threshold_);
+
+  // Delete expired entries.
+  if (!delete_entries_statement.Run()) {
+    return false;
+  }
+
+  // Recalculate the `length` and `num_bytes` for `context_origin`.
+  static constexpr char kSelectSql[] =
+      "SELECT COUNT(*), SUM(LENGTH(key) + LENGTH(value)) FROM values_mapping "
+      "WHERE context_origin=?";
+
+  sql::Statement select_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  select_statement.BindString(0, context_origin);
+
+  int64_t length = 0;
+  int64_t num_bytes = 0;
+  if (select_statement.Step()) {
+    length = select_statement.ColumnInt64(0);
+    num_bytes = select_statement.ColumnInt64(1);
+  }
+
+  if (!select_statement.Succeeded()) {
+    return false;
+  }
+
+  // There are no entries left for `context_origin`, so remove it from
+  // `per_origin_mapping`.
+  if (!length) {
+    return DeleteFromPerOriginMapping(context_origin) && transaction.Commit();
+  }
+
+  // Update the `per_origin_mapping` row for `context_origin`.
+  static constexpr char kUpdateSql[] =
+      "UPDATE per_origin_mapping SET length=?, num_bytes=? "
+      "WHERE context_origin=?";
+  sql::Statement update_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
+  update_statement.BindInt64(0, static_cast<int64_t>(length));
+  update_statement.BindInt64(1, static_cast<int64_t>(num_bytes));
+  update_statement.BindString(2, context_origin);
+
+  if (!update_statement.Run()) {
+    return false;
+  }
+
+  return transaction.Commit();
 }
 
 void SharedStorageDatabase::LogInitHistograms() {

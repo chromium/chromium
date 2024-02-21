@@ -1256,7 +1256,10 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
 
   const std::string kInvalidValue(
       static_cast<size_t>(
-          blink::features::kMaxSharedStorageStringLength.Get()) +
+          // Divide the byte limit by two to get the character limit for a key
+          // or value.
+          blink::features::kMaxSharedStorageBytesPerOrigin.Get()) /
+              2 +
           1,
       '*');
 

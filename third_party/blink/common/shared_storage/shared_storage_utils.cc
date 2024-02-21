@@ -11,6 +11,16 @@
 
 namespace blink {
 
+namespace {
+
+size_t MaxChar16StringLength() {
+  // Each char16_t takes 2 bytes.
+  return static_cast<size_t>(features::kMaxSharedStorageBytesPerOrigin.Get()) /
+         2;
+}
+
+}  // namespace
+
 bool IsValidSharedStorageURLsArrayLength(size_t length) {
   return length > 0u &&
          length <=
@@ -20,14 +30,11 @@ bool IsValidSharedStorageURLsArrayLength(size_t length) {
 }
 
 bool IsValidSharedStorageKeyStringLength(size_t length) {
-  return length > 0u &&
-         length <=
-             static_cast<size_t>(features::kMaxSharedStorageStringLength.Get());
+  return length > 0u && length <= MaxChar16StringLength();
 }
 
 bool IsValidSharedStorageValueStringLength(size_t length) {
-  return length <=
-         static_cast<size_t>(features::kMaxSharedStorageStringLength.Get());
+  return length <= MaxChar16StringLength();
 }
 
 void LogSharedStorageWorkletError(SharedStorageWorkletErrorType error_type) {

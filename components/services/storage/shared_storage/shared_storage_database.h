@@ -120,7 +120,6 @@ class SharedStorageDatabase {
     kTooManyFound = 8,  // Result if the number of keys/entries retrieved for
                         // `Keys()`/`Entries()` exceeds INT_MAX.
     kExpired = 9,       // Result if the retrieved entry is expired.
-    // Update `kMaxValue` when adding a new value to the enum.
     kMaxValue = kExpired,
   };
 
@@ -259,10 +258,11 @@ class SharedStorageDatabase {
   // Returns an enum indicating whether or not a new entry is added, the request
   // is ignored, or if there is an error.
   //
-  // Note that `key` and `value` assumed to be each of length at
-  // most `max_string_length_`, with the burden on the caller to handle errors
-  // for strings that exceed this length. Moreover, if `Length(context_origin)`
-  // equals `max_entries_per_origin_`, `Set()` will return a value of
+  // Note that `key` and `value` are assumed to be each of length at most
+  // `max_string_length_`, with the burden on the caller to handle errors for
+  // strings that exceed this length. Moreover, if `BytesUsed(context_origin)`
+  // plus any additional bytes to be stored by this call would exceed
+  // `max_bytes_per_origin_`, `Set()` will return a value of
   // `OperationResult::kNoCapacity` and the table will not be modified.
   [[nodiscard]] OperationResult Set(
       url::Origin context_origin,
@@ -277,24 +277,26 @@ class SharedStorageDatabase {
   // after deleting the expired entry. Returns an enum indicating whether or not
   // an entry is added/modified or if there is an error.
   //
-  // Note that `key` and `value` are assumed to be each of length
-  // at most `max_string_length_`, with the burden on the caller to handle
-  // errors for strings that exceed this length. Moreover, if the length of the
-  // string obtained by concatening the current `value` (if one exists)
-  // and `tail_value` exceeds `max_string_length_`, or if
-  // `Length(context_origin)` equals `max_entries_per_origin_`, `Append()` will
+  // Note that `key` and `tail_value` are assumed to be each of length at most
+  // `max_string_length_`, with the burden on the caller to handle errors for
+  // strings that exceed this length. Moreover, if the length of the string
+  // obtained by concatening the current `value` (if one exists) and
+  // `tail_value` exceeds `max_string_length_`, `Append()` will return a value
+  // of `OperationResult::kInvalidAppend` and the table will not be modified.
+  // Similarly,if `BytesUsed(context_origin)` plus any additional bytes to be
+  // stored by this call would exceed `max_bytes_per_origin_`, `Append()` will
   // return a value of `OperationResult::kNoCapacity` and the table will not be
   // modified.
   [[nodiscard]] OperationResult Append(url::Origin context_origin,
                                        std::u16string key,
                                        std::u16string tail_value);
 
-  // Deletes the entry for `context_origin` and `key`. Returns
-  // whether the deletion is successful.
+  // Deletes the entry for `context_origin` and `key`. Returns whether the
+  // deletion is successful.
   //
-  // Note that `key` is assumed to be of length at most
-  // `max_string_length_`, with the burden on the caller to handle errors for
-  // strings that exceed this length.
+  // Note that `key` is assumed to be of length at most `max_string_length_`,
+  // with the burden on the caller to handle errors for strings that exceed this
+  // length.
   [[nodiscard]] OperationResult Delete(url::Origin context_origin,
                                        std::u16string key);
 
@@ -474,6 +476,15 @@ class SharedStorageDatabase {
   [[nodiscard]] bool Purge(const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Performs the common last steps for calls to `Set()` or `Append()`.
+  [[nodiscard]] OperationResult InternalSetOrAppend(
+      const std::string& context_origin,
+      const std::u16string& key,
+      const std::u16string& value,
+      OperationResult result_for_get,
+      std::optional<std::u16string> previous_value)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Returns the total number of entries for `context_origin`, including any
   // expired entries for `context_origin` that have not yet been purged. Returns
   // 0 if there is a database error.
@@ -592,9 +603,18 @@ class SharedStorageDatabase {
                                             bool origin_exists)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Returns whether the `length` for `context_origin` is less than
-  // `max_entries_per_origin_`.
-  [[nodiscard]] bool HasCapacity(const std::string& context_origin)
+  // Returns whether the `num_bytes` for `context_origin` in
+  // `per_origin_mapping` is less than or equal to `max_bytes_per_origin_ -
+  // delta_bytes`. This byte count includes the bytes for any expired but
+  // unpurged entries for `context_origin`.
+  [[nodiscard]] bool HasCapacityIncludingExpired(
+      const std::string& context_origin,
+      int64_t delta_bytes) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Purges expired rows from `values_mapping` for `context_origin`, then
+  // updates `context_origin`'s row in `per_origin_mapping`. Returns true on
+  // success, false on database error.
+  [[nodiscard]] bool ManualPurgeExpiredValues(const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Logs following initialization various histograms, including e.g. the number
@@ -622,8 +642,8 @@ class SharedStorageDatabase {
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Maximum allowed number of entries per origin.
-  const int64_t max_entries_per_origin_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Maximum allowed number of total bytes in database entries per origin.
+  const int64_t max_bytes_per_origin_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Maximum size of a string input from any origin's script. Applies
   // separately to both script keys and script values.

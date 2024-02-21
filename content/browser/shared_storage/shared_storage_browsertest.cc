@@ -4074,10 +4074,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      await sharedStorage.set('key0', 'a'.repeat(1024));
+      await sharedStorage.set('k', 'a'.repeat(2621439));
 
-      // This will fail due to the would-be length being too big.
-      await sharedStorage.append('key0', 'a');
+      // This will fail due to the storage quota being reached.
+      await sharedStorage.append('k', 'a');
     )",
                          &out_script_url);
 
@@ -4098,10 +4098,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForRun("test-operation",
                                                blink::CloneableMessage())},
        {AccessType::kWorkletSet, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForSet("key0", std::string(1024, 'a'),
+        SharedStorageEventParams::CreateForSet("k", std::string(2621439, 'a'),
                                                false)},
        {AccessType::kWorkletAppend, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAppend("key0", "a")}});
+        SharedStorageEventParams::CreateForAppend("k", "a")}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInWorklet) {
@@ -9786,17 +9786,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
   FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  std::string long_str(1025, 'x');
   WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
-      {base::StrCat(
-          {"Shared-Storage-Write: clear, set;key=", long_str,
-           ";value=v,set;key=k;value=", long_str, ",append;key=k;value=",
-           long_str, ",append;key=", long_str, ";value=v,delete;key=", long_str,
-           ",set;key=\"\";value=v,append;key=\"\";value=v,delete;key=\"\","
-           "clear"})});
+      {base::StrCat({"Shared-Storage-Write: clear, ",
+                     "set;key=\"\";value=v,append;key=\"\";value=v,",
+                     "delete;key=\"\",clear"})});
 
   ASSERT_TRUE(observer_);
   observer_->WaitForOperations(2);
@@ -9805,8 +9801,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   EXPECT_EQ(observer_->header_results().front().first,
             subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, false, false, false, false, false,
-                                   false, false, false, true));
+              testing::ElementsAre(true, false, false, false, true));
   EXPECT_THAT(
       observer_->operations(),
       testing::ElementsAre(ClearOperation(subresource_or_subframe_origin_,

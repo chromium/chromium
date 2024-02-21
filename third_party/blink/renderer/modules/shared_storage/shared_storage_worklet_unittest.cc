@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -55,6 +56,7 @@ namespace blink {
 namespace {
 
 constexpr char kModuleScriptSource[] = "https://foo.com/module_script.js";
+constexpr char kMaxChar16StringLengthPlusOneLiteral[] = "2621441";
 
 struct VoidOperationResult {
   bool success = true;
@@ -1454,15 +1456,19 @@ TEST_F(SharedStorageWorkletTest, Set_InvalidKey_Empty) {
 }
 
 TEST_F(SharedStorageWorkletTest, Set_InvalidKey_TooLong) {
-  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+  AddModuleResult add_module_result = AddModule(
+      /*script_content=*/base::ReplaceStringPlaceholders(
+          R"(
       class TestClass {
         async run() {
-          await sharedStorage.set("a".repeat(1025), "value");
+          await sharedStorage.set("a".repeat($1), "value");
         }
       }
 
       register("test-operation", TestClass);
-  )");
+  )",
+          {kMaxChar16StringLengthPlusOneLiteral},
+          /*offsets=*/nullptr));
 
   EXPECT_TRUE(add_module_result.success);
 
@@ -1499,15 +1505,19 @@ TEST_F(SharedStorageWorkletTest, Set_MissingValue) {
 }
 
 TEST_F(SharedStorageWorkletTest, Set_InvalidValue_TooLong) {
-  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+  AddModuleResult add_module_result = AddModule(
+      /*script_content=*/base::ReplaceStringPlaceholders(
+          R"(
       class TestClass {
         async run() {
-          await sharedStorage.set("key", "a".repeat(1025));
+          await sharedStorage.set("key", "a".repeat($1));
         }
       }
 
       register("test-operation", TestClass);
-  )");
+  )",
+          {kMaxChar16StringLengthPlusOneLiteral},
+          /*offsets=*/nullptr));
 
   EXPECT_TRUE(add_module_result.success);
 
@@ -1757,15 +1767,19 @@ TEST_F(SharedStorageWorkletTest, Append_InvalidKey_Empty) {
 }
 
 TEST_F(SharedStorageWorkletTest, Append_InvalidKey_TooLong) {
-  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+  AddModuleResult add_module_result = AddModule(
+      /*script_content=*/base::ReplaceStringPlaceholders(
+          R"(
       class TestClass {
         async run() {
-          await sharedStorage.append("a".repeat(1025), "value");
+          await sharedStorage.append("a".repeat($1), "value");
         }
       }
 
       register("test-operation", TestClass);
-  )");
+  )",
+          {kMaxChar16StringLengthPlusOneLiteral},
+          /*offsets=*/nullptr));
 
   EXPECT_TRUE(add_module_result.success);
 
@@ -1802,15 +1816,19 @@ TEST_F(SharedStorageWorkletTest, Append_MissingValue) {
 }
 
 TEST_F(SharedStorageWorkletTest, Append_InvalidValue_TooLong) {
-  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+  AddModuleResult add_module_result = AddModule(
+      /*script_content=*/base::ReplaceStringPlaceholders(
+          R"(
       class TestClass {
         async run() {
-          await sharedStorage.append("key", "a".repeat(1025));
+          await sharedStorage.append("key", "a".repeat($1));
         }
       }
 
       register("test-operation", TestClass);
-  )");
+  )",
+          {kMaxChar16StringLengthPlusOneLiteral},
+          /*offsets=*/nullptr));
 
   EXPECT_TRUE(add_module_result.success);
 
@@ -1919,15 +1937,19 @@ TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_Empty) {
 }
 
 TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_TooLong) {
-  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+  AddModuleResult add_module_result = AddModule(
+      /*script_content=*/base::ReplaceStringPlaceholders(
+          R"(
       class TestClass {
         async run() {
-          await sharedStorage.delete("a".repeat(1025), "value");
+          await sharedStorage.delete("a".repeat($1), "value");
         }
       }
 
       register("test-operation", TestClass);
-  )");
+  )",
+          {kMaxChar16StringLengthPlusOneLiteral},
+          /*offsets=*/nullptr));
 
   EXPECT_TRUE(add_module_result.success);
 
@@ -2079,15 +2101,19 @@ TEST_F(SharedStorageWorkletTest, Get_InvalidKey_Empty) {
 }
 
 TEST_F(SharedStorageWorkletTest, Get_InvalidKey_TooLong) {
-  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+  AddModuleResult add_module_result = AddModule(
+      /*script_content=*/base::ReplaceStringPlaceholders(
+          R"(
       class TestClass {
         async run() {
-          await sharedStorage.get("a".repeat(1025), "value");
+          await sharedStorage.get("a".repeat($1), "value");
         }
       }
 
       register("test-operation", TestClass);
-  )");
+  )",
+          {kMaxChar16StringLengthPlusOneLiteral},
+          /*offsets=*/nullptr));
 
   EXPECT_TRUE(add_module_result.success);
 

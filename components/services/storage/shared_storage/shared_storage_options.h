@@ -22,8 +22,7 @@ struct SharedStorageOptions {
 
   SharedStorageOptions(int max_page_size,
                        int max_cache_size,
-                       int max_entries_per_origin,
-                       int max_string_length,
+                       int max_bytes_per_origin,
                        int max_init_tries,
                        int max_iterator_batch_size,
                        int bit_budget,
@@ -43,11 +42,8 @@ struct SharedStorageOptions {
   // Maximum size of the database cache, in pages.
   const int max_cache_size;
 
-  // Maximum number of entries allowed per origin.
-  const int max_entries_per_origin;
-
-  // Maximum allowed string length for each script key or script value.
-  const int max_string_length;
+  // Maximum number of total bytes in database entries allowed per origin.
+  const int max_bytes_per_origin;
 
   // Maximum number of times that `SharedStorageDatabase` will try to
   // initialize the SQL database.
@@ -86,8 +82,7 @@ struct SharedStorageOptions {
 struct SharedStorageDatabaseOptions {
   SharedStorageDatabaseOptions(int max_page_size,
                                int max_cache_size,
-                               int max_entries_per_origin,
-                               int max_string_length,
+                               int max_bytes_per_origin,
                                int max_init_tries,
                                int max_iterator_batch_size,
                                int bit_budget,
@@ -101,11 +96,8 @@ struct SharedStorageDatabaseOptions {
   // Maximum size of the database cache, in pages.
   const int max_cache_size;
 
-  // Maximum number of entries allowed per origin.
-  const int max_entries_per_origin;
-
-  // Maximum allowed string length for each script key or script value.
-  const int max_string_length;
+  // Maximum number of total bytes in database entries allowed per origin.
+  const int max_bytes_per_origin;
 
   // Maximum number of times that `SharedStorageDatabase` will try to
   // initialize the SQL database.

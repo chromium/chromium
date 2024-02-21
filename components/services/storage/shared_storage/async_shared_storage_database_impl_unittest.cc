@@ -58,8 +58,7 @@ using DBType = SharedStorageTestDBType;
 const int kBudgetIntervalHours = 24;
 const int kStalenessThresholdDays = 1;
 const int kBitBudget = 8;
-const int kMaxEntriesPerOrigin = 5;
-const int kMaxStringLength = 100;
+const int kMaxBytesPerOrigin = 100;
 
 }  // namespace
 
@@ -843,10 +842,8 @@ class AsyncSharedStorageDatabaseImplParamTest
   void InitSharedStorageFeature() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageEntriesPerOrigin",
-          base::NumberToString(kMaxEntriesPerOrigin)},
-         {"MaxSharedStorageStringLength",
-          base::NumberToString(kMaxStringLength)},
+        {{"MaxSharedStorageBytesPerOrigin",
+          base::NumberToString(kMaxBytesPerOrigin)},
          {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
          {"SharedStorageBudgetInterval",
           TimeDeltaToString(base::Hours(kBudgetIntervalHours))},
@@ -2061,10 +2058,8 @@ class AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest
   void InitSharedStorageFeature() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageEntriesPerOrigin",
-          base::NumberToString(kMaxEntriesPerOrigin)},
-         {"MaxSharedStorageStringLength",
-          base::NumberToString(kMaxStringLength)}});
+        {{"MaxSharedStorageBytesPerOrigin",
+          base::NumberToString(kMaxBytesPerOrigin)}});
   }
 };
 

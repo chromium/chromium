@@ -1257,13 +1257,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPI);
 // runURLSelectionOperation().
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit;
-// Maximum length of Shared Storage script key and script value.
+// Maximum number of total bytes in database entries at a time that any single
+// origin is permitted.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxSharedStorageStringLength;
-// Maximum number of database entries at a time that any single origin is
-// permitted.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxSharedStorageEntriesPerOrigin;
+    kMaxSharedStorageBytesPerOrigin;
 // Maximum database page size in bytes. Must be a power of two between
 // 512 and 65536, inclusive.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>

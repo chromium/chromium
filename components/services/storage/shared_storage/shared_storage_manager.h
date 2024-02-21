@@ -108,11 +108,13 @@ class SharedStorageManager {
   void OnOperationResult(OperationResult result);
 
   // Retrieves the `value` for `context_origin` and `key`. `callback` is called
-  // with a string `value` if one is found, std::nullopt otherwise.
+  // with a struct bundling a string `value` in its data field if one is found,
+  // `std::nullopt` otherwise, and a OperationResult to indicate whether the
+  // transaction was free of database errors.
   //
   // `key` must be of length at most
-  // `SharedStorageDatabaseOptions::max_string_length`, with the burden on the
-  // caller to handle errors for strings that exceed this length.
+  // `SharedStorageDatabase::max_string_length_`, with the burden on the caller
+  // to handle errors for strings that exceed this length.
   void Get(url::Origin context_origin,
            std::u16string key,
            base::OnceCallback<void(GetResult)> callback);
@@ -120,13 +122,15 @@ class SharedStorageManager {
   // Sets an entry for `context_origin` and `key` to have `value`.
   // If `behavior` is `kIgnoreIfPresent` and an entry already exists for
   // `context_origin` and `key`, then the database table is not modified.
-  // The parameter of `callback` reports whether or not any entry is added.
+  // The parameter of `callback` reports whether or not any entry is added, the
+  // request is ignored, or if there is an error.
   //
-  // `key` and `value` must be each of length at most
-  // `SharedStorageDatabaseOptions::max_string_length`, with the burden on the
-  // caller to handle errors for strings that exceed this length. Moreover, if
-  // the length retrieved by `Length(context_origin, callback)` equals
-  // `SharedStorageDatabaseOptions::max_entries_per_origin_`, `Set()` will fail
+  // `key` and `value` must each be of length at most
+  // `SharedStorageDatabase::max_string_length_`, with the burden on the caller
+  // to handle errors for strings that exceed these lengths. Moreover, if the
+  // bytes used retrieved by `BytesUsed(context_origin, callback)` plus any
+  // additional bytes to be stored by this call would exceed
+  // `SharedStorageDatabaseOptions::max_bytes_per_origin_`, `Set()` will fail
   // and the table will not be modified.
   void Set(url::Origin context_origin,
            std::u16string key,
@@ -137,17 +141,18 @@ class SharedStorageManager {
   // Appends `value` to the end of the current `value` for `context_origin` and
   // `key`, if `key` exists. If `key` does not exist, creates an entry for `key`
   // with value `value`. The parameter of `callback` reports whether or not any
-  // entry is added or modified.
+  // entry is added or modified or if there is an error.
   //
-  // `key` and `value` must be each of length at most
-  // `SharedStorageDatabaseOptions::max_string_length`, with the burden on the
-  // caller to handle errors for strings that exceed this length. Moreover, if
-  // the length of the string obtained by concatening the current `script_value`
-  // (if one exists) and `value` exceeds
-  // `SharedStorageDatabaseOptions::max_string_length`, or if the length
-  // retrieved by `Length(context_origin, callback)` equals
-  // `SharedStorageDatabaseOptions::max_entries_per_origin_`, `Append()` will
-  // fail and the database table will not be modified.
+  // `key` and `value` must each be of length at most
+  // `SharedStorageDatabase::max_string_length_`, with the burden on the caller
+  // to handle errors for strings that exceed these lengths. Moreover, if the
+  // length of the string obtained by concatening the current `script_value` (if
+  // one exists) and `value` exceeds
+  // `SharedStorageDatabase::max_string_length_`, or if the bytes used retrieved
+  // by `ByresUsed(context_origin, callback)` plus any additional bytes to be
+  // stored by this call would exceed
+  // `SharedStorageDatabaseOptions::max_bytes_per_origin_`, `Append()` will fail
+  // and the database table will not be modified.
   void Append(url::Origin context_origin,
               std::u16string key,
               std::u16string value,
@@ -157,8 +162,8 @@ class SharedStorageManager {
   // `callback` reports whether the deletion is successful.
   //
   // `key` must be of length at most
-  // `SharedStorageDatabaseOptions::max_string_length`, with the burden on the
-  // caller to handle errors for strings that exceed this length.
+  // `SharedStorageDatabase::max_string_length_`, with the burden on the caller
+  // to handle errors for strings that exceed this length.
   void Delete(url::Origin context_origin,
               std::u16string key,
               base::OnceCallback<void(OperationResult)> callback);

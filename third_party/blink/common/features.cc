@@ -1981,10 +1981,9 @@ BASE_FEATURE(kSharedStorageAPI,
 const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit{
         &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 8};
-const base::FeatureParam<int> kMaxSharedStorageStringLength = {
-    &kSharedStorageAPI, "MaxSharedStorageStringLength", 1024};
-const base::FeatureParam<int> kMaxSharedStorageEntriesPerOrigin = {
-    &kSharedStorageAPI, "MaxSharedStorageEntriesPerOrigin", 10000};
+// We use a max of 5 MB = 5 * 1024 * 1024 B = 5242880 B.
+const base::FeatureParam<int> kMaxSharedStorageBytesPerOrigin = {
+    &kSharedStorageAPI, "MaxSharedStorageBytesPerOrigin", 5242880};
 const base::FeatureParam<int> kMaxSharedStoragePageSize = {
     &kSharedStorageAPI, "MaxSharedStoragePageSize", 4096};
 const base::FeatureParam<int> kMaxSharedStorageCacheSize = {

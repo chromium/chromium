@@ -24,8 +24,7 @@ std::unique_ptr<SharedStorageOptions> SharedStorageOptions::Create() {
   return std::make_unique<SharedStorageOptions>(
       blink::features::kMaxSharedStoragePageSize.Get(),
       blink::features::kMaxSharedStorageCacheSize.Get(),
-      blink::features::kMaxSharedStorageEntriesPerOrigin.Get(),
-      blink::features::kMaxSharedStorageStringLength.Get(),
+      blink::features::kMaxSharedStorageBytesPerOrigin.Get(),
       blink::features::kMaxSharedStorageInitTries.Get(),
       blink::features::kMaxSharedStorageIteratorBatchSize.Get(),
       blink::features::kSharedStorageBitBudget.Get(),
@@ -38,8 +37,7 @@ std::unique_ptr<SharedStorageOptions> SharedStorageOptions::Create() {
 SharedStorageOptions::SharedStorageOptions(
     int max_page_size,
     int max_cache_size,
-    int max_entries_per_origin,
-    int max_string_length,
+    int max_bytes_per_origin,
     int max_init_tries,
     int max_iterator_batch_size,
     int bit_budget,
@@ -49,8 +47,7 @@ SharedStorageOptions::SharedStorageOptions(
     base::TimeDelta staleness_threshold)
     : max_page_size(max_page_size),
       max_cache_size(max_cache_size),
-      max_entries_per_origin(max_entries_per_origin),
-      max_string_length(max_string_length),
+      max_bytes_per_origin(max_bytes_per_origin),
       max_init_tries(max_init_tries),
       max_iterator_batch_size(max_iterator_batch_size),
       bit_budget(bit_budget),
@@ -59,8 +56,7 @@ SharedStorageOptions::SharedStorageOptions(
       stale_purge_recurring_interval(stale_purge_recurring_interval),
       staleness_threshold(staleness_threshold) {
   DCHECK(IsValidPageSize(max_page_size));
-  DCHECK_GT(max_entries_per_origin, 0);
-  DCHECK_GT(max_string_length, 0);
+  DCHECK_GT(max_bytes_per_origin, 0);
   DCHECK_GT(max_init_tries, 0);
   DCHECK_GT(max_iterator_batch_size, 0);
   DCHECK_GT(bit_budget, 0);
@@ -73,16 +69,15 @@ SharedStorageOptions::SharedStorageOptions(
 std::unique_ptr<SharedStorageDatabaseOptions>
 SharedStorageOptions::GetDatabaseOptions() {
   return std::make_unique<SharedStorageDatabaseOptions>(
-      max_page_size, max_cache_size, max_entries_per_origin, max_string_length,
-      max_init_tries, max_iterator_batch_size, bit_budget, budget_interval,
+      max_page_size, max_cache_size, max_bytes_per_origin, max_init_tries,
+      max_iterator_batch_size, bit_budget, budget_interval,
       staleness_threshold);
 }
 
 SharedStorageDatabaseOptions::SharedStorageDatabaseOptions(
     int max_page_size,
     int max_cache_size,
-    int max_entries_per_origin,
-    int max_string_length,
+    int max_bytes_per_origin,
     int max_init_tries,
     int max_iterator_batch_size,
     int bit_budget,
@@ -90,16 +85,14 @@ SharedStorageDatabaseOptions::SharedStorageDatabaseOptions(
     base::TimeDelta staleness_threshold)
     : max_page_size(max_page_size),
       max_cache_size(max_cache_size),
-      max_entries_per_origin(max_entries_per_origin),
-      max_string_length(max_string_length),
+      max_bytes_per_origin(max_bytes_per_origin),
       max_init_tries(max_init_tries),
       max_iterator_batch_size(max_iterator_batch_size),
       bit_budget(bit_budget),
       budget_interval(budget_interval),
       staleness_threshold(staleness_threshold) {
   DCHECK(IsValidPageSize(max_page_size));
-  DCHECK_GT(max_entries_per_origin, 0);
-  DCHECK_GT(max_string_length, 0);
+  DCHECK_GT(max_bytes_per_origin, 0);
   DCHECK_GT(max_init_tries, 0);
   DCHECK_GT(max_iterator_batch_size, 0);
   DCHECK_GT(bit_budget, 0);
