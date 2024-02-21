@@ -43,6 +43,9 @@ async def create_blocked_request(websocket, context_id: str, url: str,
     await create_request_via_fetch(websocket, context_id, url)
 
     event_response = await wait_for_event(websocket, event)
+
+    assert event_response["params"]["isBlocked"]
+
     network_id = event_response["params"]["request"]["request"]
 
     return network_id
