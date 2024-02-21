@@ -4293,7 +4293,10 @@ if (!is_android) {
         "../browser/ash/crosapi/vpn_extension_observer_ash_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
       ]
-      deps += [ "//components/global_media_controls:test_support" ]
+      deps += [
+        "//chrome/browser/ash/mahi:mahi_ash",
+        "//components/global_media_controls:test_support",
+      ]
 
       if (!is_official_build) {
         sources += [ "../browser/ash/crosapi/sharesheet_ash_browsertest.cc" ]

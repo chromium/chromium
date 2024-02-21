@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/test/ash_test_helper.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -34,11 +35,15 @@ class MahiManagerImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     ash_test_helper_.SetUp();
+    crosapi_environment_.SetUp();
 
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
   }
 
-  void TearDown() override { ash_test_helper_.TearDown(); }
+  void TearDown() override {
+    crosapi_environment_.TearDown();
+    ash_test_helper_.TearDown();
+  }
 
   views::Widget* GetMahiPanelWidget() {
     if (!mahi_manager_impl_->mahi_panel_widget_) {
@@ -51,6 +56,8 @@ class MahiManagerImplTest : public testing::Test {
   // This instance is needed for setting up `ash_test_helper_`.
   // See //docs/threading_and_tasks_testing.md.
   content::BrowserTaskEnvironment task_environment_;
+
+  crosapi::TestCrosapiEnvironment crosapi_environment_;
 
   // Need this to set up `Shell` and display.
   AshTestHelper ash_test_helper_;

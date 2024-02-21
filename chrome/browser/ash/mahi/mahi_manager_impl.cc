@@ -10,6 +10,9 @@
 
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
@@ -32,7 +35,14 @@ void MahiManagerImpl::OpenMahiPanel(int64_t display_id) {
 }
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
-  std::move(callback).Run(u"summary text");
+  auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
+                                        ->crosapi_ash()
+                                        ->mahi_browser_delegate_ash();
+  CHECK(mahi_browser_delegate_ash);
+  mahi_browser_delegate_ash->GetContentFromClient(
+      current_page_info_->client_id, current_page_info_->page_id,
+      base::BindOnce(&MahiManagerImpl::OnGetPageContent,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MahiManagerImpl::SetCurrentFocusedPageInfo(
@@ -57,6 +67,16 @@ void MahiManagerImpl::OnContextMenuClicked(
     case MahiContextMenuActionType::kNone:
       return;
   }
+}
+
+void MahiManagerImpl::OnGetPageContent(
+    MahiSummaryCallback callback,
+    crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
+  if (!mahi_content_ptr) {
+    std::move(callback).Run(u"summary text");
+    return;
+  }
+  std::move(callback).Run(mahi_content_ptr->page_content);
 }
 
 }  // namespace ash

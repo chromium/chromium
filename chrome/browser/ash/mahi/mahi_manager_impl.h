@@ -30,11 +30,16 @@ class MahiManagerImpl : public chromeos::MahiManager {
  private:
   friend class MahiManagerImplTest;
 
+  void OnGetPageContent(MahiSummaryCallback callback,
+                        crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
+
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();
 
   // The widget contains the Mahi main panel.
   views::UniqueWidgetPtr mahi_panel_widget_;
+
+  base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
