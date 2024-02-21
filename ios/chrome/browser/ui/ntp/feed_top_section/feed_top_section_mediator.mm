@@ -260,6 +260,8 @@ using base::UserMetricsAction;
               signin::ConsentLevel::kSignin);
       service->SetPreference(identity.gaiaID,
                              PushNotificationClientId::kContent, true);
+      service->SetPreference(identity.gaiaID, PushNotificationClientId::kSports,
+                             true);
     }
     [self updateFeedTopSectionWhenClosed];
   });
@@ -423,7 +425,8 @@ using base::UserMetricsAction;
   [self logHistogramForEntrypoint:entrypoint];
   [ProvisionalPushNotificationUtil
       enrollUserToProvisionalNotificationsForClientIds:
-          {PushNotificationClientId::kContent}
+          {PushNotificationClientId::kContent,
+           PushNotificationClientId::kSports}
                                        withAuthService:
                                            self.authenticationService];
 }

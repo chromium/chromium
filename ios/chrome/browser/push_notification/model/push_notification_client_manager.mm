@@ -95,6 +95,7 @@ PushNotificationClientManager::GetClients() {
       PushNotificationClientId::kCommerce};
   if (IsContentPushNotificationsEnabled()) {
     client_ids.push_back(PushNotificationClientId::kContent);
+    client_ids.push_back(PushNotificationClientId::kSports);
   }
   if (IsIOSTipsNotificationsEnabled()) {
     client_ids.push_back(PushNotificationClientId::kTips);
@@ -119,6 +120,9 @@ std::string PushNotificationClientManager::PushNotificationClientIdToString(
     }
     case PushNotificationClientId::kTips: {
       return kTipsNotificationKey;
+    }
+    case PushNotificationClientId::kSports: {
+      return kSportsNotificationKey;
     }
   }
 }

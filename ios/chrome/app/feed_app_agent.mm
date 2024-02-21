@@ -82,7 +82,8 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
           AuthenticationServiceFactory::GetForBrowserState(
               self.appState.mainBrowserState);
       std::vector<PushNotificationClientId> clientIds = {
-          PushNotificationClientId::kContent};
+          PushNotificationClientId::kContent,
+          PushNotificationClientId::kSports};
       [ProvisionalPushNotificationUtil
           enrollUserToProvisionalNotificationsForClientIds:clientIds
                                            withAuthService:authService];

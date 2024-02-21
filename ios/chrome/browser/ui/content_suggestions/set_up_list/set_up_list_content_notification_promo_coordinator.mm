@@ -109,6 +109,8 @@ using base::UserMetricsAction;
       GetApplicationContext()->GetPushNotificationService();
   service->SetPreference(identity.gaiaID, PushNotificationClientId::kContent,
                          true);
+  service->SetPreference(identity.gaiaID, PushNotificationClientId::kSports,
+                         true);
   _markItemComplete = YES;
 
   __weak SetUpListContentNotificationPromoCoordinator* weakSelf = self;

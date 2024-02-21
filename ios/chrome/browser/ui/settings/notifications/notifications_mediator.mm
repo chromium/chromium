@@ -323,7 +323,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     }
     case PushNotificationClientId::kTips:
-    case PushNotificationClientId::kContent: {
+    case PushNotificationClientId::kContent:
+    case PushNotificationClientId::kSports: {
       break;
     }
   }
@@ -347,6 +348,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case PushNotificationClientId::kTips:
       return _tipsNotificationsItem;
     case PushNotificationClientId::kCommerce:
+    case PushNotificationClientId::kSports:
       // Not a switch.
       NOTREACHED_NORETURN();
   }

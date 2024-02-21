@@ -14,6 +14,9 @@ extern const char kCommerceNotificationKey[];
 // Key of content notification used in pref kFeaturePushNotificationPermissions.
 extern const char kContentNotificationKey[];
 
+// Key of sports notification used in pref kFeaturePushNotificationPermissions.
+extern const char kSportsNotificationKey[];
+
 // Key of tips notification used in pref kFeaturePushNotificationPermissions.
 extern const char kTipsNotificationKey[];
 

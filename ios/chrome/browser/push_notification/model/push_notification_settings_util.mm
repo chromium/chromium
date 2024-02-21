@@ -65,16 +65,9 @@ ClientPermissionState GetClientPermissionState(
 
       return ClientPermissionState::INDETERMINANT;
     }
-    case PushNotificationClientId::kContent: {
-      BOOL mobile_notifications =
-          GetMobileNotificationPermissionStatusForClient(client_id, gaia_id);
-
-      if (mobile_notifications) {
-        return ClientPermissionState::ENABLED;
-      }
-      return ClientPermissionState::DISABLED;
-    }
-    case PushNotificationClientId::kTips: {
+    case PushNotificationClientId::kContent:
+    case PushNotificationClientId::kTips:
+    case PushNotificationClientId::kSports: {
       BOOL mobile_notifications =
           GetMobileNotificationPermissionStatusForClient(client_id, gaia_id);
 

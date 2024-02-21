@@ -50,6 +50,9 @@ bool GetIsItemComplete(SetUpListItemType type,
                    .FindBool(kTipsNotificationKey)
                    .value_or(false) ||
                prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
+                   .FindBool(kSportsNotificationKey)
+                   .value_or(false) ||
+               prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
                    .FindBool(kCommerceNotificationKey)
                    .value_or(false);
       } else {

@@ -126,6 +126,10 @@ TEST_F(PushNotificationSettingsUtilTest, TestPermissionState) {
   TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
   state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
+  TurnNotificationForKey(YES, kSportsNotificationKey, pref_service_);
+  state = GetNotificationPermissionState(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
   // Start disabling in a different order.
   TurnAppLevelNotificationForKey(NO, kTipsNotificationKey);
@@ -141,6 +145,10 @@ TEST_F(PushNotificationSettingsUtilTest, TestPermissionState) {
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnEmailNotifications(NO, pref_service_);
+  state = GetNotificationPermissionState(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
+  TurnNotificationForKey(NO, kSportsNotificationKey, pref_service_);
   state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
@@ -198,6 +206,30 @@ TEST_F(PushNotificationSettingsUtilTest,
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnNotificationForKey(YES, kContentNotificationKey, pref_service_);
   state = GetClientPermissionState(PushNotificationClientId::kContent,
+                                   base::SysNSStringToUTF8(fake_id_.gaiaID),
+                                   pref_service_);
+  EXPECT_EQ(ClientPermissionState::ENABLED, state);
+}
+
+TEST_F(PushNotificationSettingsUtilTest,
+       TestMobileNotificationsEnabledForSports) {
+  BOOL isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_FALSE(isMobileNotificationsEnabled);
+  TurnNotificationForKey(YES, kSportsNotificationKey, pref_service_);
+  isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_TRUE(isMobileNotificationsEnabled);
+}
+
+TEST_F(PushNotificationSettingsUtilTest,
+       TestGetClientPermissionStateForSports) {
+  ClientPermissionState state = GetClientPermissionState(
+      PushNotificationClientId::kSports,
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_EQ(ClientPermissionState::DISABLED, state);
+  TurnNotificationForKey(YES, kSportsNotificationKey, pref_service_);
+  state = GetClientPermissionState(PushNotificationClientId::kSports,
                                    base::SysNSStringToUTF8(fake_id_.gaiaID),
                                    pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);

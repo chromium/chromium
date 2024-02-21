@@ -17,6 +17,7 @@ enum class PushNotificationClientId {
   kCommerce = 1,
   kContent = 2,
   kTips = 3,
+  kSports = 4,
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_ID_H_
