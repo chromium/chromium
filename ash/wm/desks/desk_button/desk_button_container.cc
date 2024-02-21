@@ -4,9 +4,9 @@
 
 #include "ash/wm/desks/desk_button/desk_button_container.h"
 
+#include <vector>
+
 #include "ash/public/cpp/desk_profiles_delegate.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/screen_util.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -16,7 +16,6 @@
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -24,10 +23,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
-#include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
-#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -196,10 +192,6 @@ bool DeskButtonContainer::IsHorizontalShelf() const {
 }
 
 bool DeskButtonContainer::IsForcedZeroState() const {
-  if (gfx::NativeWindow native_window = GetWidget()->GetNativeWindow()) {
-    return screen_util::GetDisplayBoundsWithShelf(native_window).width() <
-           kDeskButtonLargeDisplayThreshold;
-  }
   return false;
 }
 

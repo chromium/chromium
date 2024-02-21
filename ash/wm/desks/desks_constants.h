@@ -90,7 +90,6 @@ inline constexpr base::TimeDelta kDeskBarEnterExitPresentationMaxLatency =
 // Constant values used by the desk button.
 inline constexpr int kDeskButtonCornerRadius = 28;
 inline constexpr int kDeskButtonFocusRingHaloInset = -3;
-inline constexpr int kDeskButtonLargeDisplayThreshold = 1280;
 inline constexpr int kDeskButtonHeightVertical = 36;
 inline constexpr int kDeskButtonWidthVertical = 36;
 inline constexpr int kDeskButtonHeightHorizontal = 28;
