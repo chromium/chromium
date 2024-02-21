@@ -31,7 +31,8 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   FrameResource& operator=(const FrameResource&) = delete;
 
   // Allows safe downcasting to an VideoFrameResource, which has a VideoFrame
-  // accessor that is needed by encoders.
+  // accessor that is needed by encoders. The returned pointer is only valid as
+  // long as |this| is alive.
   virtual VideoFrameResource* AsVideoFrameResource();
 
   // Unique identifier for this video frame generated at construction time. The

@@ -70,7 +70,10 @@ class VideoFrameResource : public FrameResource {
   // GetMutableVideoFrame() and GetVideoFrame() return a pointer to the
   // underlying VideoFrame. This lets VideoFrameResource be used to adapt code
   // to work on both VideoFrame and FrameResource types without code
-  // duplication.
+  // duplication. The methods share ownership of the underlying VideoFrame, so
+  // the VideoFrame pointed to by the returned scoped_refptr can outlive |this|.
+  // Conversely, the underlying VideoFrame is guaranteed to remain alive as long
+  // as |this| lives.
   scoped_refptr<VideoFrame> GetMutableVideoFrame();
   scoped_refptr<const VideoFrame> GetVideoFrame() const;
 
