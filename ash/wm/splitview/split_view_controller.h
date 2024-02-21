@@ -251,10 +251,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // two windows will be swapped together with their bounds.
   void SwapWindows();
 
-  // |window| should be |primary_window_| or |secondary_window_|, and this
-  // function returns |LEFT| or |RIGHT| accordingly.
-  SnapPosition GetPositionOfSnappedWindow(const aura::Window* window) const;
-
   // |position| should be |LEFT| or |RIGHT|, and this function returns
   // |primary_window_| or |secondary_window_| accordingly.
   aura::Window* GetSnappedWindow(SnapPosition position);
@@ -270,15 +266,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // will occupy, adjusted to accommodate the minimum size of
   // |window_for_minimum_size| if |window_for_minimum_size| is not null.
   gfx::Rect GetSnappedWindowBoundsInParent(
-      SnapPosition snap_position,
-      aura::Window* window_for_minimum_size,
-      float snap_ratio);
-
-  // Gets snapped bounds in screen coordinates based on `snap_position` and
-  // `snap_ratio`. The snapped bounds are updated to accommodate for the
-  // `split_view_divider_` so that the windows and `split_view_divider_` are not
-  // overlapped.
-  gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size,
       float snap_ratio);
@@ -390,7 +377,14 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void StartResizeWithDivider(const gfx::Point& location_in_screen) override;
   void UpdateResizeWithDivider(const gfx::Point& location_in_screen) override;
   void EndResizeWithDivider(const gfx::Point& location_in_screen) override;
+  void OnResizeEnding() override;
+  gfx::Rect GetSnappedWindowBoundsInScreen(
+      SnapPosition snap_position,
+      aura::Window* window_for_minimum_size,
+      float snap_ratio) const override;
   aura::Window::Windows GetLayoutWindows() const override;
+  SnapPosition GetPositionOfSnappedWindow(
+      const aura::Window* window) const override;
 
  private:
   friend class SplitViewControllerTest;
@@ -521,11 +515,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // snapped windows.
   void ModifyPositionRatios(std::vector<float>* out_position_ratios);
 
-  // Gets the expected end drag position for |window| depending on current
-  // screen orientation and split divider position.
-  gfx::Point GetEndDragLocationInScreen(aura::Window* window,
-                                        const gfx::Point& location_in_screen);
-
   // Restores |window| transform to identity transform if applicable.
   void RestoreTransformIfApplicable(aura::Window* window);
 
@@ -554,10 +543,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Inserts |window| into overview window grid if overview mode is active. Do
   // nothing if overview mode is inactive at the moment.
   void InsertWindowToOverview(aura::Window* window, bool animate = true);
-
-  // Finalizes and cleans up after stopping dragging the divider bar to resize
-  // snapped windows.
-  void FinishWindowResizing(aura::Window* window);
 
   // Finalizes and cleans up divider dragging/animating. Called when the divider
   // snapping animation completes or is interrupted or totally skipped.

@@ -5,6 +5,7 @@
 #ifndef ASH_WM_SPLITVIEW_LAYOUT_DIVIDER_CONTROLLER_H_
 #define ASH_WM_SPLITVIEW_LAYOUT_DIVIDER_CONTROLLER_H_
 
+#include "ash/wm/splitview/split_view_types.h"
 #include "ui/aura/window.h"
 
 namespace gfx {
@@ -26,6 +27,25 @@ class LayoutDividerController {
   virtual void UpdateResizeWithDivider(
       const gfx::Point& location_in_screen) = 0;
   virtual void EndResizeWithDivider(const gfx::Point& location_in_screen) = 0;
+
+  // Called when the divider is about to end resizing by finishing window
+  // resizing and cleaning up drag details.
+  virtual void OnResizeEnding() = 0;
+
+  // Gets snapped bounds in screen coordinates based on `snap_position` and
+  // `snap_ratio`. The snapped bounds are updated to accommodate for the
+  // `SplitViewDivider` so that the windows and `SplitViewDivider` are not
+  // overlapped.
+  virtual gfx::Rect GetSnappedWindowBoundsInScreen(
+      SnapPosition snap_position,
+      aura::Window* window_for_minimum_size,
+      float snap_ratio) const = 0;
+
+  // `window` should be `primary_window_` or `secondary_window_` of this
+  // delegate, and this function returns `SnapPosition::kPrimary` or
+  // `SnapPosition::kSecondary` accordingly.
+  virtual SnapPosition GetPositionOfSnappedWindow(
+      const aura::Window* window) const = 0;
 
   // Returns the windows associated with this delegate.
   virtual aura::Window::Windows GetLayoutWindows() const = 0;
