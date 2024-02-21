@@ -297,11 +297,32 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 
 void PickerView::SelectCategory(PickerCategory category) {
   selected_category_ = category;
-  if (category == PickerCategory::kEmojis) {
+  std::optional<ui::EmojiPickerCategory> emoji_picker_category;
+  switch (category) {
+    case PickerCategory::kEmojis:
+      emoji_picker_category = ui::EmojiPickerCategory::kEmojis;
+      break;
+    case PickerCategory::kSymbols:
+      emoji_picker_category = ui::EmojiPickerCategory::kSymbols;
+      break;
+    case PickerCategory::kEmoticons:
+      emoji_picker_category = ui::EmojiPickerCategory::kEmoticons;
+      break;
+    case PickerCategory::kGifs:
+      emoji_picker_category = ui::EmojiPickerCategory::kGifs;
+      break;
+    default:
+      // do nothing - this isn't a category supported by the emoji picker;
+      break;
+  }
+  if (emoji_picker_category) {
     if (auto* widget = GetWidget()) {
-      widget->Close();
+      // TODO(b/316936394): Correctly handle opening of emoji picker. Probably
+      // best to wait for the IME on focus event, or save some coordinates and
+      // open emoji picker in the correct location in some other way.
+      widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
-    ui::ShowEmojiPanel();
+    ui::ShowEmojiPanelInSpecificMode(*emoji_picker_category);
     return;
   }
   search_field_view_->SetPlaceholderText(

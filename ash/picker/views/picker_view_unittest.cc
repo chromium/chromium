@@ -39,6 +39,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
 
@@ -126,8 +127,8 @@ PickerItemView* GetCategoryItemView(PickerView* picker_view) {
 PickerItemView* GetNonEmojiCategoryItemView(PickerView* picker_view) {
   return picker_view->zero_state_view_for_testing()
       .section_views_for_testing()
-      .find(PickerCategoryType::kExpressions)
-      ->second->item_views_for_testing()[1];
+      .find(PickerCategoryType::kLinks)
+      ->second->item_views_for_testing()[0];  // Should be open tabs
 }
 
 TEST_F(PickerViewTest, CreateWidgetHasCorrectHierarchy) {
@@ -272,6 +273,8 @@ TEST_F(PickerViewTest, SwitchesToCategoryView) {
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetNonEmojiCategoryItemView(picker_view);
+
+  category_item_view->ScrollViewToVisible();
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
 
@@ -289,14 +292,17 @@ TEST_F(PickerViewTest, SelectingCategoryUpdatesSearchFieldPlaceholderText) {
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetNonEmojiCategoryItemView(picker_view);
+
+  category_item_view->ScrollViewToVisible();
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
 
-  EXPECT_THAT(picker_view->search_field_view_for_testing()
-                  .textfield_for_testing()
-                  .GetPlaceholderText(),
-              Eq(l10n_util::GetStringUTF16(
-                  IDS_PICKER_SYMBOLS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT)));
+  EXPECT_THAT(
+      picker_view->search_field_view_for_testing()
+          .textfield_for_testing()
+          .GetPlaceholderText(),
+      Eq(l10n_util::GetStringUTF16(
+          IDS_PICKER_OPEN_TABS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT)));
 }
 
 TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
@@ -309,6 +315,8 @@ TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
   // Switch to category view.
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetNonEmojiCategoryItemView(picker_view);
+
+  category_item_view->ScrollViewToVisible();
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
   // Type something into the search field.
@@ -329,6 +337,8 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   // Switch to category view.
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetNonEmojiCategoryItemView(picker_view);
+
+  category_item_view->ScrollViewToVisible();
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
   // Type something into the search field.
