@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -1385,6 +1387,12 @@ class PeopleHandlerSignoutTest : public BrowserWithTestWindowTest {
     handler_ = std::make_unique<TestingPeopleHandler>(&web_ui_, profile());
   }
 
+  void SimulateSignout(const base::Value::List& args) {
+    handler()->HandleSignout(args);
+  }
+
+  content::WebUI* web_ui() { return handler()->web_ui(); }
+
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -1441,7 +1449,7 @@ TEST_F(PeopleHandlerSignoutTest, RevokeSyncNotAllowed) {
   CreatePeopleHandler();
   base::Value::List args;
   args.Append(/*delete_profile=*/false);
-  EXPECT_DEATH(handler()->HandleSignout(args), ".*");
+  EXPECT_DEATH(SimulateSignout(args), ".*");
 }
 
 TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff) {
@@ -1460,7 +1468,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff) {
 
   base::Value::List args;
   args.Append(/*delete_profile=*/false);
-  EXPECT_DEATH(handler()->HandleSignout(args), ".*");
+  EXPECT_DEATH(SimulateSignout(args), ".*");
 }
 #endif  // DCHECK_IS_ON()
 
@@ -1484,7 +1492,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn) {
 
   base::Value::List args;
   args.Append(/*delete_profile=*/false);
-  handler()->HandleSignout(args);
+  SimulateSignout(args);
 
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -1512,7 +1520,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOff) {
 
   base::Value::List args;
   args.Append(/*delete_profile=*/false);
-  handler()->HandleSignout(args);
+  SimulateSignout(args);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_EQ(web_contents()->GetVisibleURL(),
             GaiaUrls::GetInstance()->service_logout_url());
@@ -1536,15 +1544,14 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
 
   CreatePeopleHandler();
 
-  EXPECT_NE(handler()->web_ui(), nullptr);
-  EXPECT_NE(nullptr, handler()->web_ui()->GetWebContents());
+  EXPECT_NE(web_ui(), nullptr);
+  EXPECT_NE(nullptr, web_ui()->GetWebContents());
 
-  EXPECT_TRUE(
-      chrome::FindBrowserWithTab(handler()->web_ui()->GetWebContents()));
+  EXPECT_TRUE(chrome::FindBrowserWithTab(web_ui()->GetWebContents()));
 
   base::Value::List args;
   args.Append(/*delete_profile=*/false);
-  handler()->HandleSignout(args);
+  SimulateSignout(args);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_EQ(web_contents()->GetVisibleURL(),
@@ -1557,4 +1564,29 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class ExplicitBrowserSigninPeopleHandlerSignoutTest
+    : public PeopleHandlerSignoutTest {
+ private:
+  base::test::ScopedFeatureList features_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+};
+
+TEST_F(ExplicitBrowserSigninPeopleHandlerSignoutTest, Signout) {
+  auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
+      "a@gmail.com", ConsentLevel::kSignin);
+  auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
+
+  CreatePeopleHandler();
+
+  base::Value::List args;
+  args.Append(/*delete_profile=*/false);
+  SimulateSignout(args);
+  EXPECT_EQ(web_contents()->GetVisibleURL(),
+            GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL()));
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }  // namespace settings

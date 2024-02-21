@@ -119,8 +119,6 @@ class PrimaryAccountMutator {
   // Removes the primary account and revokes the sync consent, but keep the
   // accounts signed in to the web and the tokens. Returns true if the action
   // was successful and false if there was no primary account set.
-  // DISCLAIMER: This function is only used temporarily, until the Sync feature
-  // is removed. Do not add other calls.
   virtual bool RemovePrimaryAccountButKeepTokens(
       signin_metrics::ProfileSignout source_metric,
       signin_metrics::SignoutDelete delete_metric) = 0;

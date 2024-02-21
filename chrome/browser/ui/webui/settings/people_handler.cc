@@ -696,11 +696,25 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
 #else
     Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
     if (browser) {
+      // Clearing the primary account isn't sufficient to signout SAML accounts,
+      // see http://crbug.com/1114646.
       browser->signin_view_controller()->ShowGaiaLogoutTab(
           signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
     }
 
-    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+            switches::ExplicitBrowserSigninPhase::kFull) &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      // In Uno, Gaia logout tab invalidating the account will lead to a sign in
+      // paused state. Unset the primary account to ensure it is removed from
+      // chrome. The `AccountReconcilor` will revoke refresh tokens for accounts
+      // not in the Gaia cookie on next reconciliation.
+      identity_manager->GetPrimaryAccountMutator()
+          ->RemovePrimaryAccountButKeepTokens(
+              signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+              delete_metric);
+    } else if (identity_manager->HasPrimaryAccount(
+                   signin::ConsentLevel::kSync)) {
       // Only revoke the sync consent.
       // * If the primary account is still valid, then it will be removed by
       // the Gaia logout tab (see http://crbug.com/1068978).

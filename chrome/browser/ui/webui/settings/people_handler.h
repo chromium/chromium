@@ -130,12 +130,7 @@ class PeopleHandler : public SettingsPageUIHandler,
                            GetStoredAccountsList);
 #if DCHECK_IS_ON()
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, DeleteProfileCrashes);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSignoutTest, RevokeSyncNotAllowed);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff);
 #endif
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSignoutTest, SignoutWithSyncOff);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSignoutTest, SignoutWithSyncOn);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
