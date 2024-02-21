@@ -1128,12 +1128,9 @@ bool AttributionStorageSql::FindMatchingSourceForTriggerM2M(
   statement.BindString(0, net::SchemefulSite(querying_origin).Serialize());
   statement.BindInt64(1, SerializeUint64(attribution_window.epoch_start()));
   statement.BindInt64(2, SerializeUint64(attribution_window.epoch_end()));
-
-  LOG(INFO) << "Running sql";
   
   while (statement.Step()) {
       source_ids_to_attribute.push_back(StoredSource::Id(statement.ColumnInt64(0)));
-      LOG(INFO) << statement.ColumnInt64(0);
   }
   return statement.Succeeded();
 }

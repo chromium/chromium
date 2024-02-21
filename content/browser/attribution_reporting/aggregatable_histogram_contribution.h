@@ -14,7 +14,7 @@ namespace content {
 
 class CONTENT_EXPORT AggregatableHistogramContribution {
  public:
-  AggregatableHistogramContribution(absl::uint128 key, uint32_t value);
+  AggregatableHistogramContribution(absl::uint128 key, double value);
   AggregatableHistogramContribution(const AggregatableHistogramContribution&) =
       default;
   AggregatableHistogramContribution& operator=(
@@ -27,14 +27,14 @@ class CONTENT_EXPORT AggregatableHistogramContribution {
 
   absl::uint128 key() const { return key_; }
 
-  uint32_t value() const { return value_; }
+  double value() const { return value_; }
 
   friend bool operator==(const AggregatableHistogramContribution&,
                          const AggregatableHistogramContribution&) = default;
 
  private:
   absl::uint128 key_;
-  uint32_t value_;
+  double value_;
 };
 
 }  // namespace content

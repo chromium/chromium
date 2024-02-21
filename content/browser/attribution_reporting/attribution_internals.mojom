@@ -31,7 +31,7 @@ struct WebUIReportEventLevelData {
 struct AggregatableHistogramContribution {
   // Hex-encoded unsigned 128-bit integer.
   string key;
-  uint32 value;
+  double value;
 };
 
 // Contains aggregatable attribution data to be displayed.
