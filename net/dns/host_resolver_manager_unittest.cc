@@ -7580,7 +7580,80 @@ TEST_F(HostResolverManagerDnsTest, NoCheckIpv6OnWifi) {
                   testing::ElementsAre(CreateExpected("::2", 80))))));
 }
 
-TEST_F(HostResolverManagerDnsTest, NotFoundTTL) {
+TEST_F(HostResolverManagerDnsTest, NotFoundTtl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey,
+                            features::kUseHostResolverCache},
+      /*disabled_features=*/{});
+
+  CreateResolver();
+  set_allow_fallback_to_systemtask(false);
+  ChangeDnsConfig(CreateValidDnsConfig());
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  // NODATA
+  ResolveHostResponseHelper no_data_response(resolver_->CreateRequest(
+      HostPortPair("empty", 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  EXPECT_THAT(no_data_response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(no_data_response.request()->GetAddressResults(),
+              AnyOf(nullptr, Pointee(IsEmpty())));
+  EXPECT_THAT(no_data_response.request()->GetEndpointResults(),
+              AnyOf(nullptr, Pointee(IsEmpty())));
+  EXPECT_THAT(
+      resolve_context_->host_resolver_cache()->Lookup(
+          "empty", kNetworkAnonymizationKey, DnsQueryType::A,
+          HostResolverSource::DNS, /*secure=*/false),
+      Pointee(ExpectHostResolverInternalErrorResult(
+          "empty", DnsQueryType::A, HostResolverInternalResult::Source::kDns,
+          Optional(base::TimeTicks::Now() + base::Days(1)),
+          Optional(base::Time::Now() + base::Days(1)), ERR_NAME_NOT_RESOLVED)));
+  EXPECT_THAT(
+      resolve_context_->host_resolver_cache()->Lookup(
+          "empty", kNetworkAnonymizationKey, DnsQueryType::AAAA,
+          HostResolverSource::DNS, /*secure=*/false),
+      Pointee(ExpectHostResolverInternalErrorResult(
+          "empty", DnsQueryType::AAAA, HostResolverInternalResult::Source::kDns,
+          Optional(base::TimeTicks::Now() + base::Days(1)),
+          Optional(base::Time::Now() + base::Days(1)), ERR_NAME_NOT_RESOLVED)));
+
+  // NXDOMAIN
+  ResolveHostResponseHelper no_domain_response(resolver_->CreateRequest(
+      HostPortPair("nodomain", 80), kNetworkAnonymizationKey,
+      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+  EXPECT_THAT(no_domain_response.result_error(),
+              IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(no_domain_response.request()->GetAddressResults(),
+              AnyOf(nullptr, Pointee(IsEmpty())));
+  EXPECT_THAT(no_domain_response.request()->GetEndpointResults(),
+              AnyOf(nullptr, Pointee(IsEmpty())));
+  EXPECT_THAT(
+      resolve_context_->host_resolver_cache()->Lookup(
+          "nodomain", kNetworkAnonymizationKey, DnsQueryType::A,
+          HostResolverSource::DNS, /*secure=*/false),
+      Pointee(ExpectHostResolverInternalErrorResult(
+          "nodomain", DnsQueryType::A, HostResolverInternalResult::Source::kDns,
+          Optional(base::TimeTicks::Now() + base::Days(1)),
+          Optional(base::Time::Now() + base::Days(1)), ERR_NAME_NOT_RESOLVED)));
+  EXPECT_THAT(
+      resolve_context_->host_resolver_cache()->Lookup(
+          "nodomain", kNetworkAnonymizationKey, DnsQueryType::AAAA,
+          HostResolverSource::DNS, /*secure=*/false),
+      Pointee(ExpectHostResolverInternalErrorResult(
+          "nodomain", DnsQueryType::AAAA,
+          HostResolverInternalResult::Source::kDns,
+          Optional(base::TimeTicks::Now() + base::Days(1)),
+          Optional(base::Time::Now() + base::Days(1)), ERR_NAME_NOT_RESOLVED)));
+}
+
+TEST_F(HostResolverManagerDnsTest, NotFoundTtlWithHostCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kUseHostResolverCache);
+
   CreateResolver();
   set_allow_fallback_to_systemtask(false);
   ChangeDnsConfig(CreateValidDnsConfig());
@@ -13783,25 +13856,35 @@ TEST_F(HostResolverManagerDnsTest, ResultsSortedAsUnreachableWithHostCache) {
 }
 
 TEST_F(HostResolverManagerDnsTest, SortFailure) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey,
+                            features::kUseHostResolverCache},
+      /*disabled_features=*/{});
+
+  constexpr std::string_view kHost = "host.test";
+  constexpr base::TimeDelta kMinTtl = base::Minutes(10);
 
   // Fail the AAAA sort. Don't expect resolver to even attempt to sort A.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
   sorter->ExpectCallAndFailSort(
       {CreateExpected("::1", 0), CreateExpected("2001:4860:4860::8888", 0)});
 
-  DnsResponse a_response =
-      BuildTestDnsAddressResponse("host.test", IPAddress::IPv4Localhost());
+  DnsResponse a_response = BuildTestDnsAddressResponse(
+      std::string(kHost), IPAddress::IPv4Localhost());
   DnsResponse aaaa_response = BuildTestDnsResponse(
-      "host.test", dns_protocol::kTypeAAAA,
-      {BuildTestAddressRecord("host.test", IPAddress::IPv6Localhost()),
+      std::string(kHost), dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord(std::string(kHost), IPAddress::IPv6Localhost(),
+                              kMinTtl),
        BuildTestAddressRecord(
-           "host.test",
-           IPAddress::FromIPLiteral("2001:4860:4860::8888").value())});
+           std::string(kHost),
+           IPAddress::FromIPLiteral("2001:4860:4860::8888").value(),
+           base::Minutes(15))});
   MockDnsClientRuleList rules;
-  AddDnsRule(&rules, "host.test", dns_protocol::kTypeA, std::move(a_response),
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             std::move(a_response),
              /*delay=*/false);
-  AddDnsRule(&rules, "host.test", dns_protocol::kTypeAAAA,
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
              std::move(aaaa_response), /*delay=*/false);
 
   CreateResolver();
@@ -13809,16 +13892,111 @@ TEST_F(HostResolverManagerDnsTest, SortFailure) {
   dns_client_->SetAddressSorterForTesting(std::move(sorter));
   set_allow_fallback_to_systemtask(false);
 
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
   ResolveHostResponseHelper response(resolver_->CreateRequest(
-      HostPortPair("host.test", 80), NetworkAnonymizationKey(),
-      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
 
   EXPECT_THAT(response.result_error(), IsError(ERR_DNS_SORT_ERROR));
 
-  // Expect error is cached (because pre-sort results had a TTL).
-  EXPECT_TRUE(!!GetCacheHit(HostCache::Key(
-      "host.test", DnsQueryType::UNSPECIFIED, /*host_resolver_flags=*/0,
-      HostResolverSource::ANY, NetworkAnonymizationKey())));
+  // Expect error is cached with same TTL as results that failed to sort.
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey, DnsQueryType::A, HostResolverSource::DNS,
+      /*secure=*/false));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalErrorResult(
+                  std::string(kHost), DnsQueryType::AAAA,
+                  HostResolverInternalResult::Source::kUnknown,
+                  Optional(base::TimeTicks::Now() + kMinTtl),
+                  Optional(base::Time::Now() + kMinTtl), ERR_DNS_SORT_ERROR)));
+}
+
+// Test for if a transaction sort fails after another transaction has already
+// succeeded.
+TEST_F(HostResolverManagerDnsTest, PartialSortFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey,
+                            features::kUseHostResolverCache},
+      /*disabled_features=*/{});
+
+  constexpr std::string_view kHost = "host.test";
+  constexpr base::TimeDelta kMinTtl = base::Minutes(3);
+
+  // Successfully sort A. Fail to sort AAAA.
+  auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
+  sorter->ExpectCall({IPEndPoint(IPAddress::IPv4Localhost(), 0)},
+                     {IPEndPoint(IPAddress::IPv4Localhost(), 0)});
+  sorter->ExpectCallAndFailSort({IPEndPoint(IPAddress::IPv6Localhost(), 0),
+                                 CreateExpected("2001:4860:4860::8888", 0)});
+
+  DnsResponse a_response = BuildTestDnsAddressResponse(
+      std::string(kHost), IPAddress::IPv4Localhost());
+  DnsResponse aaaa_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord(std::string(kHost), IPAddress::IPv6Localhost(),
+                              kMinTtl),
+       BuildTestAddressRecord(
+           std::string(kHost),
+           IPAddress::FromIPLiteral("2001:4860:4860::8888").value(),
+           base::Minutes(7))});
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             std::move(a_response),
+             /*delay=*/false);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             std::move(aaaa_response), /*delay=*/true);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  dns_client_->SetAddressSorterForTesting(std::move(sorter));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Expect the successful A result to be cached immediately on receipt.
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::A,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::A,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv4Localhost(), 0)))));
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA));
+
+  dns_client_->CompleteDelayedTransactions();
+  EXPECT_THAT(response.result_error(), IsError(ERR_DNS_SORT_ERROR));
+
+  // Expect error is cached with same TTL as results that failed to sort.
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::A,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::A,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv4Localhost(), 0)))));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalErrorResult(
+                  std::string(kHost), DnsQueryType::AAAA,
+                  HostResolverInternalResult::Source::kUnknown,
+                  Optional(base::TimeTicks::Now() + kMinTtl),
+                  Optional(base::Time::Now() + kMinTtl), ERR_DNS_SORT_ERROR)));
 }
 
 TEST_F(HostResolverManagerDnsTest, SortFailureWithHostCache) {
@@ -13956,6 +14134,649 @@ TEST_F(HostResolverManagerDnsTest, HostResolverCacheContainsAliasChains) {
                   "alias2.test", DnsQueryType::A,
                   HostResolverInternalResult::Source::kDns, _, _,
                   ElementsAre(IPEndPoint(IPAddress::IPv4Localhost(), 0)))));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       HostResolverCacheContainsAliasChainsWithErrors) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUseHostResolverCache,
+                            features::kSplitHostCacheByNetworkIsolationKey},
+      /*disabled_features=*/{});
+
+  constexpr base::StringPiece kHost = "host.test";
+  constexpr base::TimeDelta kTtl = base::Minutes(30);
+
+  MockDnsClientRuleList rules;
+  DnsResponse a_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeA,
+      /*answers=*/
+      {BuildTestCnameRecord(std::string(kHost), "alias1.test"),
+       BuildTestCnameRecord("alias1.test", "alias2.test")},
+      /*authority=*/
+      {BuildTestDnsRecord("authority.test", dns_protocol::kTypeSOA,
+                          "fake rdata", kTtl)});
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             std::move(a_response),
+             /*delay=*/false);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kEmpty, /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  ASSERT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+
+  // Expect each alias link and the result error to be separately cached with
+  // the aliases cached under the original query type.
+  EXPECT_THAT(
+      resolve_context_->host_resolver_cache()->Lookup(
+          kHost, kNetworkAnonymizationKey, DnsQueryType::A,
+          HostResolverSource::DNS, /*secure=*/false),
+      Pointee(ExpectHostResolverInternalAliasResult(
+          std::string(kHost), DnsQueryType::A,
+          HostResolverInternalResult::Source::kDns, _, _, "alias1.test")));
+  EXPECT_THAT(
+      resolve_context_->host_resolver_cache()->Lookup(
+          "alias1.test", kNetworkAnonymizationKey, DnsQueryType::A,
+          HostResolverSource::DNS, /*secure=*/false),
+      Pointee(ExpectHostResolverInternalAliasResult(
+          "alias1.test", DnsQueryType::A,
+          HostResolverInternalResult::Source::kDns, _, _, "alias2.test")));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  "alias2.test", kNetworkAnonymizationKey, DnsQueryType::A,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalErrorResult(
+                  "alias2.test", DnsQueryType::A,
+                  HostResolverInternalResult::Source::kDns,
+                  Optional(base::TimeTicks::Now() + kTtl),
+                  Optional(base::Time::Now() + kTtl), ERR_NAME_NOT_RESOLVED)));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       HostResolverCacheContainsAliasChainsWithNoTtlErrors) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUseHostResolverCache,
+                            features::kSplitHostCacheByNetworkIsolationKey},
+      /*disabled_features=*/{});
+
+  constexpr base::StringPiece kHost = "host.test";
+
+  MockDnsClientRuleList rules;
+  // No SOA authority record, so NODATA error is not cacheable.
+  DnsResponse a_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeA,
+      /*answers=*/
+      {BuildTestCnameRecord(std::string(kHost), "alias1.test"),
+       BuildTestCnameRecord("alias1.test", "alias2.test")});
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             std::move(a_response),
+             /*delay=*/false);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kEmpty, /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  ASSERT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+
+  // Expect each alias link to be separately cached under the original query
+  // type. No cache entry for the NODATA error because there was no SOA record
+  // to contain the NODATA TTL.
+  EXPECT_THAT(
+      resolve_context_->host_resolver_cache()->Lookup(
+          kHost, kNetworkAnonymizationKey, DnsQueryType::A,
+          HostResolverSource::DNS, /*secure=*/false),
+      Pointee(ExpectHostResolverInternalAliasResult(
+          std::string(kHost), DnsQueryType::A,
+          HostResolverInternalResult::Source::kDns, _, _, "alias1.test")));
+  EXPECT_THAT(
+      resolve_context_->host_resolver_cache()->Lookup(
+          "alias1.test", kNetworkAnonymizationKey, DnsQueryType::A,
+          HostResolverSource::DNS, /*secure=*/false),
+      Pointee(ExpectHostResolverInternalAliasResult(
+          "alias1.test", DnsQueryType::A,
+          HostResolverInternalResult::Source::kDns, _, _, "alias2.test")));
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      "alias2.test", kNetworkAnonymizationKey, DnsQueryType::A,
+      HostResolverSource::DNS, /*secure=*/false));
+}
+
+TEST_F(HostResolverManagerDnsTest, NetworkErrorsNotSavedInHostCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey},
+      /*disabled_features=*/{features::kUseHostResolverCache});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Network failures for all result types.
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_CONNECTION_REFUSED),
+                     /*delay=*/false);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kFail,
+                                /*response=*/std::nullopt,
+                                ERR_CONNECTION_REFUSED),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  ASSERT_THAT(response.result_error(), IsError(ERR_CONNECTION_REFUSED));
+
+  // Expect result not cached because network errors have no TTL.
+  EXPECT_FALSE(GetCacheHit(HostCache::Key(
+      std::string(kHost), DnsQueryType::UNSPECIFIED, /*host_resolver_flags=*/0,
+      HostResolverSource::ANY, kNetworkAnonymizationKey)));
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+}
+
+// Test for if a DNS transaction fails with network error after another
+// transaction has already succeeded.
+TEST_F(HostResolverManagerDnsTest, PartialNetworkErrorsNotSavedInHostCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey},
+      /*disabled_features=*/{features::kUseHostResolverCache});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Return a successful AAAA response before a delayed failure A response.
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_CONNECTION_REFUSED),
+                     /*delay=*/true);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+  dns_client_->CompleteDelayedTransactions();
+  ASSERT_THAT(response.result_error(), IsError(ERR_CONNECTION_REFUSED));
+
+  // Even if some transactions have already received results successfully, a
+  // network failure means the entire request fails and nothing should be cached
+  // to the HostCache.
+  EXPECT_FALSE(GetCacheHit(HostCache::Key(
+      std::string(kHost), DnsQueryType::UNSPECIFIED, /*host_resolver_flags=*/0,
+      HostResolverSource::ANY, kNetworkAnonymizationKey)));
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+}
+
+TEST_F(HostResolverManagerDnsTest, NetworkErrorsNotSavedInHostResolverCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey,
+                            features::kUseHostResolverCache},
+      /*disabled_features=*/{});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Network failures for all result types.
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_CONNECTION_REFUSED),
+                     /*delay=*/false);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kFail,
+                                /*response=*/std::nullopt,
+                                ERR_CONNECTION_REFUSED),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  ASSERT_THAT(response.result_error(), IsError(ERR_CONNECTION_REFUSED));
+
+  // Expect result not cached because network errors have no TTL.
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey));
+}
+
+// Test for if a DNS transaction fails with network error after another
+// transaction has already succeeded.
+TEST_F(HostResolverManagerDnsTest,
+       PartialNetworkErrorsNotSavedInHostResolverCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey,
+                            features::kUseHostResolverCache},
+      /*disabled_features=*/{});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Return a successful AAAA response before a delayed failure A response.
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(
+                         MockDnsClientRule::ResultType::kFail,
+                         /*response=*/std::nullopt, ERR_CONNECTION_REFUSED),
+                     /*delay=*/true);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Expect AAAA result to be cached immediately on receipt.
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey, DnsQueryType::A));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::AAAA,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 0)))));
+
+  dns_client_->CompleteDelayedTransactions();
+  ASSERT_THAT(response.result_error(), IsError(ERR_CONNECTION_REFUSED));
+
+  // Expect same cache contents, as network errors are not cacheable.
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey, DnsQueryType::A));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::AAAA,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 0)))));
+}
+
+TEST_F(HostResolverManagerDnsTest, MalformedResponsesNotSavedInHostCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey},
+      /*disabled_features=*/{features::kUseHostResolverCache});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Malformed responses for all result types.
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kMalformed),
+      /*delay=*/false);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kMalformed),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  ASSERT_THAT(response.result_error(), IsError(ERR_DNS_MALFORMED_RESPONSE));
+
+  // Expect result not cached because malformed responses have no TTL.
+  EXPECT_FALSE(GetCacheHit(HostCache::Key(
+      std::string(kHost), DnsQueryType::UNSPECIFIED, /*host_resolver_flags=*/0,
+      HostResolverSource::ANY, kNetworkAnonymizationKey)));
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+}
+
+// Test for if a DNS transaction fails with a malformed response after another
+// transaction has already succeeded.
+TEST_F(HostResolverManagerDnsTest,
+       PartialMalformedResponsesNotSavedInHostCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey},
+      /*disabled_features=*/{features::kUseHostResolverCache});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Return a successful AAAA response before a delayed failure A response.
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kMalformed),
+      /*delay=*/true);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+  dns_client_->CompleteDelayedTransactions();
+  ASSERT_THAT(response.result_error(), IsError(ERR_DNS_MALFORMED_RESPONSE));
+
+  // Even if some transactions have already received results successfully, a
+  // malformed response means the entire request fails and nothing should be
+  // cached to the HostCache.
+  EXPECT_FALSE(GetCacheHit(HostCache::Key(
+      std::string(kHost), DnsQueryType::UNSPECIFIED, /*host_resolver_flags=*/0,
+      HostResolverSource::ANY, kNetworkAnonymizationKey)));
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       MalformedResponsesNotSavedInHostResolverCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey,
+                            features::kUseHostResolverCache},
+      /*disabled_features=*/{});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Network failures for all result types.
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kMalformed),
+      /*delay=*/false);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kMalformed),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  ASSERT_THAT(response.result_error(), IsError(ERR_DNS_MALFORMED_RESPONSE));
+
+  // Expect result not cached because malformed responses have no TTL.
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey));
+}
+
+// Test for if a DNS transaction fails with malformed response after another
+// transaction has already succeeded.
+TEST_F(HostResolverManagerDnsTest,
+       PartialMalformedResponsesNotSavedInHostResolverCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey,
+                            features::kUseHostResolverCache},
+      /*disabled_features=*/{});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Return a successful AAAA response before a delayed failure A response.
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kMalformed),
+      /*delay=*/true);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kHost, 80), kNetworkAnonymizationKey, NetLogWithSource(),
+      std::nullopt, resolve_context_.get()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Expect the successful AAAA result to be cached immediately on receipt.
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey, DnsQueryType::A));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::AAAA,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 0)))));
+
+  dns_client_->CompleteDelayedTransactions();
+  ASSERT_THAT(response.result_error(), IsError(ERR_DNS_MALFORMED_RESPONSE));
+
+  // Expect same cache contents, as malformed responses are not cacheable.
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey, DnsQueryType::A));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::AAAA,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 0)))));
+}
+
+TEST_F(HostResolverManagerDnsTest, HttpToHttpsUpgradeSavedInHostCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey},
+      /*disabled_features=*/{features::kUseHostResolverCache});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Return successful A/AAAA responses before HTTPS to ensure they are not
+  // cached.
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {BuildTestHttpsAliasRecord(
+      std::string(kHost), "alias.test", /*ttl=*/base::Days(20))};
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeHttps, /*secure=*/false,
+      MockDnsClientRule::Result(BuildTestDnsResponse(
+          std::string(kHost), dns_protocol::kTypeHttps, records)),
+      /*delay=*/true);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(
+      resolver_->CreateRequest(url::SchemeHostPort(url::kHttpScheme, kHost, 80),
+                               kNetworkAnonymizationKey, NetLogWithSource(),
+                               std::nullopt, resolve_context_.get()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+  dns_client_->CompleteDelayedTransactions();
+  ASSERT_THAT(response.result_error(), IsError(ERR_DNS_NAME_HTTPS_ONLY));
+
+  // Even if some transactions have already received results successfully, an
+  // HTTPS record means the entire request fails and the upgrade failure should
+  // be cached for the TTL from the HTTPS response.
+  const std::pair<const HostCache::Key, HostCache::Entry>* cache_result =
+      GetCacheHit(
+          HostCache::Key(url::SchemeHostPort(url::kHttpScheme, kHost, 80),
+                         DnsQueryType::UNSPECIFIED, /*host_resolver_flags=*/0,
+                         HostResolverSource::ANY, kNetworkAnonymizationKey));
+  ASSERT_TRUE(cache_result);
+  ASSERT_TRUE(cache_result->second.has_ttl());
+  EXPECT_EQ(cache_result->second.ttl(), base::Days(20));
+}
+
+// Test cache behavior for when an HTTPS response indicating http->https upgrade
+// is received after successful address responses.
+TEST_F(HostResolverManagerDnsTest,
+       HttpToHttpsUpgradeAfterAddressesSavedInHostResolverCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSplitHostCacheByNetworkIsolationKey,
+                            features::kUseHostResolverCache},
+      /*disabled_features=*/{});
+
+  constexpr std::string_view kHost = "host.test";
+
+  // Return successful A/AAAA responses before HTTPS.
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {BuildTestHttpsAliasRecord(
+      std::string(kHost), "alias.test", /*ttl=*/base::Days(20))};
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeHttps, /*secure=*/false,
+      MockDnsClientRule::Result(BuildTestDnsResponse(
+          std::string(kHost), dns_protocol::kTypeHttps, records)),
+      /*delay=*/true);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+
+  const SchemefulSite kSite(GURL("https://site.test/"));
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+
+  ResolveHostResponseHelper response(
+      resolver_->CreateRequest(url::SchemeHostPort(url::kHttpScheme, kHost, 80),
+                               kNetworkAnonymizationKey, NetLogWithSource(),
+                               std::nullopt, resolve_context_.get()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  // Expect successful address responses to be cached immediately on receipt.
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::A,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::A,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv4Localhost(), 0)))));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::AAAA,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 0)))));
+  EXPECT_FALSE(resolve_context_->host_resolver_cache()->Lookup(
+      kHost, kNetworkAnonymizationKey, DnsQueryType::HTTPS,
+      HostResolverSource::DNS, /*secure=*/false));
+
+  dns_client_->CompleteDelayedTransactions();
+  ASSERT_THAT(response.result_error(), IsError(ERR_DNS_NAME_HTTPS_ONLY));
+
+  // All responses cached, including the full metadata result because it is
+  // still a usable result when requested for https://.
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::A,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::A,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv4Localhost(), 0)))));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::AAAA,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalDataResult(
+                  std::string(kHost), DnsQueryType::AAAA,
+                  HostResolverInternalResult::Source::kDns, _, _,
+                  ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 0)))));
+  EXPECT_THAT(resolve_context_->host_resolver_cache()->Lookup(
+                  kHost, kNetworkAnonymizationKey, DnsQueryType::HTTPS,
+                  HostResolverSource::DNS, /*secure=*/false),
+              Pointee(ExpectHostResolverInternalMetadataResult(
+                  std::string(kHost), DnsQueryType::HTTPS,
+                  HostResolverInternalResult::Source::kDns,
+                  Optional(base::TimeTicks::Now() + base::Days(20)),
+                  Optional(base::Time::Now() + base::Days(20)))));
 }
 
 class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {

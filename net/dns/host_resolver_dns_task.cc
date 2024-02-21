@@ -489,19 +489,6 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     }
   }
 
-  // Trigger HTTP->HTTPS upgrade if an HTTPS record is received for an "http"
-  // or "ws" request.
-  if (transaction_info.type == DnsQueryType::HTTPS &&
-      ShouldTriggerHttpToHttpsUpgrade(results.value())) {
-    // Disallow fallback. Otherwise DNS could be reattempted without HTTPS
-    // queries, and that would hide this error instead of triggering upgrade.
-    OnFailure(ERR_DNS_NAME_HTTPS_ONLY, /*allow_fallback=*/false,
-              HostCache::Entry::TtlFromInternalResults(
-                  results.value(), base::Time::Now(), tick_clock_->NowTicks()),
-              transaction_info.type);
-    return;
-  }
-
   switch (transaction_info.type) {
     case DnsQueryType::A:
       a_record_end_time_ = now;
@@ -649,24 +636,35 @@ void HostResolverDnsTask::OnTransactionSorted(
   TransactionInfo transaction_info =
       std::move(transactions_in_progress_.extract(transaction_info_it).value());
 
-  if (!success) {
-    OnFailure(
-        ERR_DNS_SORT_ERROR, /*allow_fallback=*/true,
-        HostCache::Entry::TtlFromInternalResults(
-            transaction_results, base::Time::Now(), tick_clock_->NowTicks()),
-        transaction_info.type);
-    return;
-  }
+  // Expect exactly one data result.
+  auto data_result_it = base::ranges::find_if(
+      transaction_results,
+      [](const std::unique_ptr<HostResolverInternalResult>& result) {
+        return result->type() == HostResolverInternalResult::Type::kData;
+      });
+  CHECK(data_result_it != transaction_results.end());
+  DCHECK_EQ(base::ranges::count_if(
+                transaction_results,
+                [](const std::unique_ptr<HostResolverInternalResult>& result) {
+                  return result->type() ==
+                         HostResolverInternalResult::Type::kData;
+                }),
+            1);
 
-  if (sorted.empty()) {
+  if (!success) {
+    // If sort failed, replace data result with a TTL-containing error result.
+    auto error_replacement = std::make_unique<HostResolverInternalErrorResult>(
+        (*data_result_it)->domain_name(), (*data_result_it)->query_type(),
+        (*data_result_it)->expiration(), (*data_result_it)->timed_expiration(),
+        HostResolverInternalResult::Source::kUnknown, ERR_DNS_SORT_ERROR);
+    CHECK(error_replacement->expiration().has_value());
+    CHECK(error_replacement->timed_expiration().has_value());
+
+    transaction_results.erase(data_result_it);
+    transaction_results.insert(std::move(error_replacement));
+  } else if (sorted.empty()) {
     // Sorter prunes unusable destinations. If all addresses are pruned,
     // remove the data result and replace with TTL-containing error result.
-    auto data_result_it = base::ranges::find_if(
-        transaction_results,
-        [](const std::unique_ptr<HostResolverInternalResult>& result) {
-          return result->type() == HostResolverInternalResult::Type::kData;
-        });
-    CHECK(data_result_it != transaction_results.end());
     auto error_replacement = std::make_unique<HostResolverInternalErrorResult>(
         (*data_result_it)->domain_name(), (*data_result_it)->query_type(),
         (*data_result_it)->expiration(), (*data_result_it)->timed_expiration(),
@@ -677,16 +675,7 @@ void HostResolverDnsTask::OnTransactionSorted(
     transaction_results.erase(data_result_it);
     transaction_results.insert(std::move(error_replacement));
   } else {
-    bool replaced = false;  // Should find exactly one data result to replace.
-    for (const std::unique_ptr<HostResolverInternalResult>& result :
-         transaction_results) {
-      if (result->type() == HostResolverInternalResult::Type::kData) {
-        CHECK(!replaced);
-        result->AsData().set_endpoints(std::move(sorted));
-        replaced = true;
-      }
-    }
-    CHECK(replaced);
+    (*data_result_it)->AsData().set_endpoints(std::move(sorted));
   }
 
   HandleTransactionResults(std::move(transaction_info),
@@ -707,6 +696,44 @@ void HostResolverDnsTask::HandleTransactionResults(
           result->Clone(), anonymization_key_, HostResolverSource::DNS,
           secure_);
     }
+  }
+
+  // Trigger HTTP->HTTPS upgrade if an HTTPS record is received for an "http"
+  // or "ws" request.
+  if (transaction_info.type == DnsQueryType::HTTPS &&
+      ShouldTriggerHttpToHttpsUpgrade(transaction_results)) {
+    // Disallow fallback. Otherwise DNS could be reattempted without HTTPS
+    // queries, and that would hide this error instead of triggering upgrade.
+    OnFailure(
+        ERR_DNS_NAME_HTTPS_ONLY, /*allow_fallback=*/false,
+        HostCache::Entry::TtlFromInternalResults(
+            transaction_results, base::Time::Now(), tick_clock_->NowTicks()),
+        transaction_info.type);
+    return;
+  }
+
+  // Failures other than ERR_NAME_NOT_RESOLVED cannot be merged with other
+  // transactions.
+  auto failure_result_it = base::ranges::find_if(
+      transaction_results,
+      [](const std::unique_ptr<HostResolverInternalResult>& result) {
+        return result->type() == HostResolverInternalResult::Type::kError;
+      });
+  DCHECK_LE(base::ranges::count_if(
+                transaction_results,
+                [](const std::unique_ptr<HostResolverInternalResult>& result) {
+                  return result->type() ==
+                         HostResolverInternalResult::Type::kError;
+                }),
+            1);
+  if (failure_result_it != transaction_results.end() &&
+      (*failure_result_it)->AsError().error() != ERR_NAME_NOT_RESOLVED) {
+    OnFailure(
+        (*failure_result_it)->AsError().error(), /*allow_fallback=*/true,
+        HostCache::Entry::TtlFromInternalResults(
+            transaction_results, base::Time::Now(), tick_clock_->NowTicks()),
+        transaction_info.type);
+    return;
   }
 
   // TODO(crbug.com/1381506): Use new results type directly instead of
