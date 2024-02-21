@@ -3288,7 +3288,7 @@
           '--test-launcher-jobs=3',
         ],
         'swarming': {
-          'shards': 6,
+          'shards': 9,
         },
       },
       'win-rel-cft': {
@@ -5230,6 +5230,11 @@
   },
   'webkit_unit_tests_v2':{
     'modifications': {
+      'win-asan': {
+        'swarming': {
+          'shards': 6,  # crbug.com/326231701
+        },
+      },
       'win10-code-coverage': {
         'swarming': {
           'shards': 6,
