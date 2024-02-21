@@ -5,6 +5,7 @@
 #include "remoting/protocol/jingle_messages.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -93,23 +94,28 @@ bool ParseIceCandidate(const jingle_xmpp::XmlElement* element,
 
   int port;
   unsigned priority;
-  int generation;
+  uint32_t generation;
   if (name.empty() || foundation.empty() || address.empty() ||
       !base::StringToInt(port_str, &port) || port < kPortMin ||
       port > kPortMax || type.empty() || protocol.empty() ||
       !base::StringToUint(priority_str, &priority) ||
-      !base::StringToInt(generation_str, &generation)) {
+      !base::StringToUint(generation_str, &generation)) {
     return false;
   }
 
   candidate->name = name;
-
-  candidate->candidate.set_foundation(foundation);
-  candidate->candidate.set_address(rtc::SocketAddress(address, port));
-  candidate->candidate.set_type(type);
-  candidate->candidate.set_protocol(protocol);
-  candidate->candidate.set_priority(priority);
-  candidate->candidate.set_generation(generation);
+  // Construct a new candidate instance and assign to `candidate->candidate`.
+  // The reason for this is to avoid depending on setters that are being
+  // deprecated.
+  candidate->candidate = {candidate->candidate.component(),
+                          protocol,
+                          rtc::SocketAddress(address, port),
+                          priority,
+                          candidate->candidate.username(),
+                          candidate->candidate.password(),
+                          type,
+                          generation,
+                          foundation};
 
   return true;
 }
@@ -124,6 +130,20 @@ XmlElement* FormatIceCredentials(
   return result;
 }
 
+// The type names "local" and "stun" are not standard but JingleMessage has
+// used them from the start. So in order to remain backwards compatible,
+// we check specifically for those types and override the candidate type name
+// in those cases.
+std::string_view GetLegacyTypeName(const cricket::Candidate& c) {
+  if (c.is_local()) {
+    return "local";
+  }
+  if (c.is_stun()) {
+    return "stun";
+  }
+  return c.type_name();
+}
+
 XmlElement* FormatIceCandidate(
     const IceTransportInfo::NamedCandidate& candidate) {
   XmlElement* result =
@@ -135,7 +155,8 @@ XmlElement* FormatIceCandidate(
                   candidate.candidate.address().ipaddr().ToString());
   result->SetAttr(QName(kEmptyNamespace, "port"),
                   base::NumberToString(candidate.candidate.address().port()));
-  result->SetAttr(QName(kEmptyNamespace, "type"), candidate.candidate.type());
+  result->SetAttr(QName(kEmptyNamespace, "type"),
+                  GetLegacyTypeName(candidate.candidate));
   result->SetAttr(QName(kEmptyNamespace, "protocol"),
                   candidate.candidate.protocol());
   result->SetAttr(QName(kEmptyNamespace, "priority"),
