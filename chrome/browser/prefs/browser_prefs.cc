@@ -1007,6 +1007,10 @@ constexpr char kHatsSmartLockDeviceIsSelected[] =
     "hats_smartlock_device_is_selected";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 02/2024
+constexpr char kResetCheckDefaultBrowser[] =
+    "browser.should_reset_check_default_browser";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1420,6 +1424,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterInt64Pref(kHatsUnlockSurveyCycleEndTs, 0);
   registry->RegisterBooleanPref(kHatsUnlockDeviceIsSelected, false);
 #endif
+
+  // Deprecated 02/2024
+  registry->RegisterBooleanPref(kResetCheckDefaultBrowser, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2685,6 +2692,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsUnlockSurveyCycleEndTs);
   profile_prefs->ClearPref(kHatsUnlockDeviceIsSelected);
 #endif
+
+  // Deprecated 02/2024
+  profile_prefs->ClearPref(kResetCheckDefaultBrowser);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

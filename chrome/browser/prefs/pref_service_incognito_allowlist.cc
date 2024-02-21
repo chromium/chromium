@@ -143,7 +143,6 @@ const char* const kPersistentPrefNames[] = {
     prefs::kBrowserSuppressDefaultBrowserPrompt,
     prefs::kDefaultBrowserLastDeclined,
     prefs::kDefaultBrowserSettingEnabled,
-    prefs::kResetCheckDefaultBrowser,
 
     // Devtools preferences are stored cross profiles as they are not storing
     // user data and just keep debugging environment settings.

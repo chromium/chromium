@@ -1330,10 +1330,6 @@ inline constexpr char kPluginsAlwaysOpenPdfExternally[] =
 // infobar was last dismissed by the user.
 inline constexpr char kDefaultBrowserLastDeclined[] =
     "browser.default_browser_infobar_last_declined";
-// Boolean that indicates whether the kDefaultBrowserLastDeclined preference
-// should be reset on start-up.
-inline constexpr char kResetCheckDefaultBrowser[] =
-    "browser.should_reset_check_default_browser";
 
 // Policy setting whether default browser check should be disabled and default
 // browser registration should take place.

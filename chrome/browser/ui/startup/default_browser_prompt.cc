@@ -130,13 +130,6 @@ void ShowDefaultBrowserPrompt(Profile* profile) {
     return;
   }
 
-  PrefService* prefs = profile->GetPrefs();
-  // Reset preferences if kResetCheckDefaultBrowser is true.
-  if (prefs->GetBoolean(prefs::kResetCheckDefaultBrowser)) {
-    prefs->SetBoolean(prefs::kResetCheckDefaultBrowser, false);
-    ResetDefaultBrowserPrompt(profile);
-  }
-
   scoped_refptr<shell_integration::DefaultBrowserWorker>(
       new shell_integration::DefaultBrowserWorker())
       ->StartCheckIsDefault(
