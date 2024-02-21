@@ -332,6 +332,7 @@ build_webui_tests("build") {
     "os_settings_main/managed_footnote_test.ts",
     "os_settings_main/os_settings_main_test.ts",
 
+    "os_settings_menu/menu_item_test.ts",
     "os_settings_menu/os_settings_menu_test.ts",
     "os_settings_menu/os_settings_menu_revamp_test.ts",
 

@@ -1669,6 +1669,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsSettingsMenuRevamp) {
   RunSettingsTest("os_settings_menu/os_settings_menu_revamp_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsSettingsMenuItem) {
+  RunSettingsTest("os_settings_menu/menu_item_test.js");
+}
+
 using OsSettingsTestSearchBox = OSSettingsMochaTest;
 
 IN_PROC_BROWSER_TEST_F(OsSettingsTestSearchBox, AllBuilds) {
