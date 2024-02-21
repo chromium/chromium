@@ -6565,15 +6565,13 @@ crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history
 
 # The following tests should fail with third-party cookie not blocked.
 external/wpt/cookies/third-party-cookies/third-party-cookies.tentative.https.html [ Failure ]
-external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure ]
+crbug.com/326123298 external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure Timeout ]
 http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js [ Failure ]
 
 # Gardener 2023-09-29
-crbug.com/1481694 [ Win11 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure ]
 crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [ Failure Pass ]
 
 # Gardener 2023-10-02
-crbug.com/1481694 [ Win10.20h2 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure ]
 [ Release Win10.20h2 ] http/tests/inspector-protocol/fedcm/fedcm-open-url.js [ Failure Pass ]
 
 # TODO(crbug.com/1428024): These tests should be updated because of the migration to new data engine
@@ -6596,7 +6594,6 @@ crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-
 crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-selection-with-non-primary-mouse-button.tentative.html?secondary [ Failure ]
 
 # Gardener 2023-10-13
-crbug.com/1481694 [ Linux ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
 crbug.com/1492371 [ Mac ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/event-breakpoints.js [ Pass Timeout ]
 
 
@@ -6714,12 +6711,6 @@ crbug.com/1511492 [ Debug Linux ] external/wpt/pointerevents/pointerevent_contex
 crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
 crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
 
-# Gardener 2023-12-20
-[ Debug Mac13-arm64 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
-[ Mac11 Release ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
-[ Mac12 Release ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
-[ Mac13 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
-
 # Gardener 2023-12-21
 crbug.com/1508113 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/automatic-lazy-frame-loading.sub.html [ Failure Pass Timeout ]
 crbug.com/1470053 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-traversal.html [ Failure Pass ]
@@ -6822,3 +6813,7 @@ crbug.com/326067598 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/326067978 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326066872 [ Win11-arm64 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?prefetch=true [ Failure Pass Timeout ] # Flaky
 crbug.com/40943541 [ Win11-arm64 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326123178 accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326123298 virtual/third-party-cookie-phaseout-enabled/external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure Pass Timeout ]
+crbug.com/40899204 accessibility/scroll-div-horiz-sends-notification.html [ Failure Pass Timeout ] # Flaky
+crbug.com/326125688 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/redirect/redirect-location.any.serviceworker.html [ Failure Pass Timeout ] # Flaky
