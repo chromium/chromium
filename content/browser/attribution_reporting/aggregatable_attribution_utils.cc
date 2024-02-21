@@ -8,7 +8,10 @@
 #include <optional>
 #include <utility>
 #include <vector>
+#include "base/logging.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "base/check.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
@@ -38,6 +41,9 @@
 namespace content {
 
 namespace {
+
+// using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
+
 
 // Note: use the same time serialization as in aggregatable_report.cc.
 // Consider sharing logic if more call-sites need this.
@@ -123,52 +129,61 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
 
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogramM2M(
     std::string attribution_logic,
-    const std::unordered_map<uint64_t, uint64_t>& source_id_counts,
-    const attribution_reporting::AggregationKeys& keys,
+    const base::flat_map<std::string, 
+        base::flat_map<absl::uint128, uint32_t>>& keypiece_counter,
+    double total_count,
     const std::vector<attribution_reporting::AggregatableTriggerData>&
         aggregatable_trigger_data,
     const attribution_reporting::AggregatableValues& aggregatable_values) {
   
-
-  // Collect regular bucket from key (only one allowed)
-  attribution_reporting::AggregationKeys::Keys buckets = keys.keys();
-
-  // one bucket for every source_key e.g. 'purchaseValue'
-  for (const auto& data : aggregatable_trigger_data) {
-    for (const auto& source_key : data.source_keys()) {
-      auto bucket = buckets.find(source_key);
-      if (bucket == buckets.end()) {
-        continue;
-      }
-
-      bucket->second |= data.key_piece();
-    }
-  }
-
-  // due to assertions we only have one bucket until this points
   const attribution_reporting::AggregatableValues::Values& values =
       aggregatable_values.values();
 
-  // assert only one value
+  std::vector<absl::uint128> contribution_keys;
+  std::vector<double> contribution_values;
+  base::flat_map<std::string, std::vector<absl::uint128>> source_keys_to_buckets;
 
-  // assert(attribution_logic == "uniform");
+  // Assign contribution values to each bucket
+  for (auto& outer : keypiece_counter) {
+    auto source_key = outer.first;
+    auto trigger_value = values.find(source_key);
+    // if (trigger_value == values.end()) {
+      // return AggregatableResult::kInternalError; 
+    // }
+    for (auto& inner : outer.second) {
+      source_keys_to_buckets[source_key].push_back(inner.first);
+      contribution_values.push_back((inner.second / total_count) * trigger_value->second);
+    }
+  }
+
+  // Extend the key_pieces of source_keys
+  for (const auto& data : aggregatable_trigger_data) {
+    for (const auto& source_key : data.source_keys()) {
+      auto buckets = source_keys_to_buckets.find(source_key);
+      if (buckets == source_keys_to_buckets.end()) {
+        continue;
+      }
+      // Append key_piece to all these buckets
+      for (auto& bucket : buckets->second) {
+          bucket |= data.key_piece();
+      }
+    }
+  }
+
+  for (auto& pair : source_keys_to_buckets) {
+    for (auto bucket_key : pair.second) {
+        contribution_keys.push_back(bucket_key);
+    }
+  }
 
   std::vector<AggregatableHistogramContribution> contributions;
-  for (const auto& [key_id, key] : buckets) {
-    auto value = values.find(key_id);
-    if (value == values.end()) {
-      continue;
-    }
+  assert(contribution_keys.size() == contribution_values.size());
 
-    contributions.emplace_back(key, value->second);
+  for (uint32_t i=0; i<contribution_keys.size(); ++i) {
+    LOG(INFO) << contribution_keys[i] << ", " << contribution_values[i];
+    contributions.emplace_back(contribution_keys[i], 
+            contribution_values[i]);
   }
-
-  // Continue by appending the [source_id, contribution_values] according to the <attribution_logic>
-  // assuming attribution logic is always uniform 
-  for (const auto& pair : source_id_counts) {
-      contributions.emplace_back(pair.first, pair.second);
-  }
-
   return contributions;
 }
 

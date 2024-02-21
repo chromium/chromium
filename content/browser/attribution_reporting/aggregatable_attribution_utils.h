@@ -9,6 +9,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "base/metrics/histogram_functions.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/common/content_export.h"
 
@@ -43,8 +45,9 @@ CreateAggregatableHistogram(
 CONTENT_EXPORT std::vector<AggregatableHistogramContribution>
 CreateAggregatableHistogramM2M(
     std::string attribution_logic,
-    const std::unordered_map<uint64_t, uint64_t>& source_id_counts,
-    const attribution_reporting::AggregationKeys& keys,
+    const base::flat_map<std::string, 
+        base::flat_map<absl::uint128, uint32_t>>& keypiece_counter,
+    double total_count,
     const std::vector<attribution_reporting::AggregatableTriggerData>&,
     const attribution_reporting::AggregatableValues&);
 // These values are persisted to logs. Entries should not be renumbered and

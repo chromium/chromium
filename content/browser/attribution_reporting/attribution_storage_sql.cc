@@ -523,76 +523,78 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const base::Time source_time = base::Time::Now();
 
-  if (StoreSourceResult result = CheckDestinationRateLimit(source, source_time);
-      !absl::holds_alternative<StoreSourceResult::Success>(result.result())) {
-    return result;
-  }
+  // TODO(kelly): re-enable deleting sources (when is it OK to delete a source?)
+
+  // if (StoreSourceResult result = CheckDestinationRateLimit(source, source_time);
+  //     !absl::holds_alternative<StoreSourceResult::Success>(result.result())) {
+  //   return result;
+  // }
 
   // Only delete expired impressions periodically to avoid excessive DB
   // operations.
-  const base::TimeDelta delete_frequency =
-      delegate_->GetDeleteExpiredSourcesFrequency();
-  DCHECK_GE(delete_frequency, base::TimeDelta());
-  if (source_time - last_deleted_expired_sources_ >= delete_frequency) {
-    if (!DeleteExpiredSources()) {
-      return StoreSourceResult::InternalError();
-    }
-    last_deleted_expired_sources_ = source_time;
-  }
+  // const base::TimeDelta delete_frequency =
+  //     delegate_->GetDeleteExpiredSourcesFrequency();
+  // DCHECK_GE(delete_frequency, base::TimeDelta());
+  // if (source_time - last_deleted_expired_sources_ >= delete_frequency) {
+  //   if (!DeleteExpiredSources()) {
+  //     return StoreSourceResult::InternalError();
+  //   }
+  //   last_deleted_expired_sources_ = source_time;
+  // }
 
   const CommonSourceInfo& common_info = source.common_info();
 
   const std::string serialized_source_origin =
       common_info.source_origin().Serialize();
-  if (!HasCapacityForStoringSource(serialized_source_origin, source_time)) {
-    if (int64_t file_size = StorageFileSizeKB(path_to_database_);
-        file_size > -1) {
-      base::UmaHistogramCounts10M(
-          "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2",
-          file_size);
-      std::optional<int64_t> number_of_sources = NumberOfSources();
-      if (number_of_sources.has_value()) {
-        CHECK_GT(*number_of_sources, 0);
-        base::UmaHistogramCounts1M(
-            "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
-            "PerSource",
-            file_size * 1024 / *number_of_sources);
-      }
-    }
-    return StoreSourceResult::InsufficientSourceCapacity(
-        delegate_->GetMaxSourcesPerOrigin());
-  }
+  // if (!HasCapacityForStoringSource(serialized_source_origin, source_time)) {
+  //   if (int64_t file_size = StorageFileSizeKB(path_to_database_);
+  //       file_size > -1) {
+  //     base::UmaHistogramCounts10M(
+  //         "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2",
+  //         file_size);
+  //     std::optional<int64_t> number_of_sources = NumberOfSources();
+  //     if (number_of_sources.has_value()) {
+  //       CHECK_GT(*number_of_sources, 0);
+  //       base::UmaHistogramCounts1M(
+  //           "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
+  //           "PerSource",
+  //           file_size * 1024 / *number_of_sources);
+  //     }
+  //   }
+  //   return StoreSourceResult::InsufficientSourceCapacity(
+  //       delegate_->GetMaxSourcesPerOrigin());
+  // }
 
-  switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source,
-                                                             source_time)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
-      return StoreSourceResult::InsufficientUniqueDestinationCapacity(
-          delegate_->GetMaxDestinationsPerSourceSiteReportingSite());
-    case RateLimitResult::kError:
-      return StoreSourceResult::InternalError();
-  }
+  // switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source,
+  //                                                            source_time)) {
+  //   case RateLimitResult::kAllowed:
+  //     break;
+  //   case RateLimitResult::kNotAllowed:
+  //     return StoreSourceResult::InsufficientUniqueDestinationCapacity(
+  //         delegate_->GetMaxDestinationsPerSourceSiteReportingSite());
+  //   case RateLimitResult::kError:
+  //     return StoreSourceResult::InternalError();
+  // }
 
-  switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
-                                                                 source_time)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
-      return StoreSourceResult::ExcessiveReportingOrigins();
-    case RateLimitResult::kError:
-      return StoreSourceResult::InternalError();
-  }
+  // switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
+  //                                                                source_time)) {
+  //   case RateLimitResult::kAllowed:
+  //     break;
+  //   case RateLimitResult::kNotAllowed:
+  //     return StoreSourceResult::ExcessiveReportingOrigins();
+  //   case RateLimitResult::kError:
+  //     return StoreSourceResult::InternalError();
+  // }
 
-  switch (rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
-      &db_, source, source_time)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
-      return StoreSourceResult::ReportingOriginsPerSiteLimitReached();
-    case RateLimitResult::kError:
-      return StoreSourceResult::InternalError();
-  }
+  // switch (rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
+  //     &db_, source, source_time)) {
+  //   case RateLimitResult::kAllowed:
+  //     break;
+  //   case RateLimitResult::kNotAllowed:
+  //     return StoreSourceResult::ReportingOriginsPerSiteLimitReached();
+  //   case RateLimitResult::kError:
+  //     return StoreSourceResult::InternalError();
+  // }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1020,27 +1022,17 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReportM2M(
   }
   
   for (auto source_id_to_attribute : source_ids_to_attribute) {
-    sources_to_attribute.push_back(ReadSourceToAttribute(source_id_to_attribute)->source);
+    StoredSource source_to_attribute = ReadSourceToAttribute(source_id_to_attribute)->source;
+    if (source_to_attribute.filter_data().MatchesM2M(trigger_registration.filters)) {
+      sources_to_attribute.push_back(source_to_attribute);
+    }
   }
-  // This is only possible if there is a corrupt DB.
+
   if (sources_to_attribute.empty()) {
-    return assemble_report_result(AggregatableResult::kInternalError);    
+    return generate_null_reports_and_assemble_report_result(
+            AggregatableResult::kNoMatchingSourceFilterData);    
   }
-
-  bool top_level_filters_match;
-  for (auto source_to_attribute : sources_to_attribute) {
-      top_level_filters_match =
-          source_to_attribute.filter_data().Matches(
-              source_to_attribute.common_info().source_type(),
-              source_to_attribute.source_time(), trigger_time,
-              trigger_registration.filters);
-
-      if (!top_level_filters_match) {
-        return generate_null_reports_and_assemble_report_result(
-            AggregatableResult::kNoMatchingSourceFilterData);
-      }
-  }
-
+  
   if (!aggregatable_status.has_value()) {
     if (AggregatableResult create_aggregatable_status =
             MaybeCreateAggregatableAttributionReportM2M(
@@ -1129,24 +1121,10 @@ bool AttributionStorageSql::FindMatchingSourceForTriggerM2M(
   const attribution_reporting::AttributionWindow attribution_window = 
       trigger_registration.attribution_window;
 
-  std::ostringstream oss;
-  oss << \
-    "SELECT I.source_id "
-      "FROM sources I "
-      "JOIN source_destinations D "
-      "ON D.source_id=I.source_id AND D.destination_site=? "
-      "WHERE I.source_epoch>=? "
-      "AND I.source_epoch<=? "
-      "AND I.source_event_id IN (";
-
-  auto items = trigger_registration.source_id_candidates;
-  if (!items.empty()) {
-    std::copy(items.begin(), items.end() - 1, std::ostream_iterator<uint64_t>(oss, ", "));
-    oss << items.back();
-  }
-  oss << ")";
+  // Get all sources from this attribution window - will filter them later
+  sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, attribution_queries::kGetMatchingSourcesSqlM2M));
   
-  sql::Statement statement(db_.GetUniqueStatement(oss.str().c_str()));
   statement.BindString(0, net::SchemefulSite(querying_origin).Serialize());
   statement.BindInt64(1, SerializeUint64(attribution_window.epoch_start()));
   statement.BindInt64(2, SerializeUint64(attribution_window.epoch_end()));
@@ -1170,39 +1148,58 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
- // Initialize dict with source_id_candidates and set their counts to 0
-  std::unordered_map<uint64_t, uint64_t> source_id_counts;
-  for (uint64_t source_id_candidate : trigger_registration.source_id_candidates) {
-      source_id_counts[source_id_candidate] = 0;
+  // {source_key -> {key_piece -> count}}
+  base::flat_map<std::string, 
+        base::flat_map<absl::uint128, uint32_t>> keypiece_counter;
+
+  for (auto& pair : trigger_registration.aggregatable_values.values()) {
+    keypiece_counter[pair.first] = {};
   }
 
-  // Update counters while iterating attributable sources
-  for (const StoredSource& source_to_attribute : sources_to_attribute) {
-    // assert(source_to_attribute.aggregation_keys().keys().size() == 1);
-    auto it = source_id_counts.find(source_to_attribute.source_event_id());
-    if (it == source_id_counts.end()) {
-     return AggregatableResult::kInternalError; 
+  assert(keypiece_counter.size() == 
+          trigger_registration.aggregatable_values.values().size());
+
+  for (const auto& outerPair : keypiece_counter) {
+      LOG(INFO) << "Outer Key: " << outerPair.first << std::endl;
+  }
+
+  double total_count = sources_to_attribute.size();
+
+  for (const auto& pair : keypiece_counter) {
+    auto source_key = pair.first;
+
+    for (const StoredSource& source_to_attribute : sources_to_attribute) {
+      auto aggregation_keys = source_to_attribute.aggregation_keys().keys();
+      // Every source_key from trigger_data must exist in source too
+      auto it = aggregation_keys.find(source_key);
+      if (it == aggregation_keys.end()) {
+        return AggregatableResult::kInternalError; 
+      }
+
+      auto& source_key_piece = aggregation_keys[source_key];
+    
+      auto iit = keypiece_counter[source_key].find(source_key_piece);
+      if (iit == keypiece_counter[source_key].end()) {
+        keypiece_counter[source_key][source_key_piece] = 0;
+      }
+      keypiece_counter[source_key][source_key_piece]++; 
     }
-    source_id_counts[source_to_attribute.source_event_id()]++;
   }
+
 // assert here that total_count == sum(source_id_counts[*])
-
-  for (auto source_id_candidate : trigger_registration.source_id_candidates) {
-      LOG(INFO) << base::NumberToString(source_id_candidate);
-      LOG(INFO) << base::NumberToString(source_id_counts[source_id_candidate]);
-      LOG(INFO) << "\n";
+  for (const auto& outerPair : keypiece_counter) {
+      LOG(INFO) << "Outer Key: " << outerPair.first << std::endl;
+      for (const auto& innerPair : outerPair.second) {
+          LOG(INFO) << "  Inner Key: " << innerPair.first << ", Value: " << innerPair.second << std::endl;
+      }
   }
-
-  // Aggregation-Key will be the same across all sources (assert that)
-  // sources won't be empty (assert that)
-  // assert !sources_to_attribute.empty()
 
   // Use the vector of key,values to store pairs of <source-id, contribution-value> instead
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogramM2M(
           trigger_registration.attribution_logic,
-          source_id_counts,
-          sources_to_attribute[0].aggregation_keys(),
+          keypiece_counter,
+          total_count,
           trigger_registration.aggregatable_trigger_data,
           trigger_registration.aggregatable_values);
   if (contributions.empty()) {

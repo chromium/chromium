@@ -58,6 +58,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
                const base::Time& trigger_time,
                const FilterPair&) const;
 
+  bool MatchesM2M(const FilterPair&) const;
+
   bool MatchesForTesting(mojom::SourceType,
                          const base::Time& source_time,
                          const base::Time& trigger_time,
@@ -73,6 +75,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
                const base::Time& source_time,
                const base::Time& trigger_time,
                const FiltersDisjunction&,
+               bool negated) const;
+
+  bool MatchesM2M(const FiltersDisjunction&,
                bool negated) const;
 
   FilterValues filter_values_;

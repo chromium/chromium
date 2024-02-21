@@ -318,6 +318,45 @@ bool FilterData::Matches(mojom::SourceType source_type,
   });
 }
 
+bool FilterData::MatchesM2M(const FiltersDisjunction& filters, bool negated) const {
+  if (filters.empty()) {
+    return true;
+  }
+
+  return base::ranges::any_of(filters, [&](const FilterConfig& config) {
+    return base::ranges::all_of(
+        config.filter_values(), [&](const auto& trigger_filter) {
+
+          auto source_filter = filter_values_.find(trigger_filter.first);
+          if (source_filter == filter_values_.end()) {
+            return true;
+          }
+
+          // Desired behavior is to treat any empty set of values as a
+          // single unique value itself. This means:
+          //  - x:[] match x:[] is false when negated, and true otherwise.
+          //  - x:[1,2,3] match x:[] is true when negated, and false
+          //  otherwise.
+          if (trigger_filter.second.empty()) {
+            return negated != source_filter->second.empty();
+          }
+
+          bool has_intersection = base::ranges::any_of(
+              trigger_filter.second, [&](const std::string& value) {
+                return base::Contains(source_filter->second, value);
+              });
+          // Negating filters are considered matched if the intersection of
+          // the filter values is empty.
+          return negated != has_intersection;
+        });
+  });
+}
+
+bool FilterData::MatchesM2M(const FilterPair& filters) const {
+  return MatchesM2M(filters.positive, /*negated=*/false) &&
+         MatchesM2M(filters.negative, /*negated=*/true);
+}
+
 bool FilterData::MatchesForTesting(mojom::SourceType source_type,
                                    const base::Time& source_time,
                                    const base::Time& trigger_time,
