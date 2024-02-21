@@ -71,7 +71,7 @@ public class BookmarkMoveSnackbarManagerTest {
     private BookmarkId mBookmarkId1;
     private BookmarkId mBookmarkId2;
     private BookmarkId mBookmarkId3;
-    private BookmarkId mFolderId;
+    private BookmarkId mLongTextFolderId;
     private BookmarkId mMobileFolderId;
     private BookmarkId mAccountMobileFolderId;
     private BookmarkModelObserver mBookmarkModelObserver;
@@ -116,9 +116,13 @@ public class BookmarkMoveSnackbarManagerTest {
                         () ->
                                 bookmarkModel.addBookmark(
                                         mMobileFolderId, 0, "bookmark 3", new GURL("test3.com")));
-        mFolderId =
+        mLongTextFolderId =
                 runOnUiThreadBlockingNoException(
-                        () -> bookmarkModel.addFolder(mMobileFolderId, 0, "local folder"));
+                        () ->
+                                bookmarkModel.addFolder(
+                                        mMobileFolderId,
+                                        0,
+                                        "Very long folder title which gets cut off at some point"));
 
         return bookmarkModel;
     }
@@ -159,7 +163,7 @@ public class BookmarkMoveSnackbarManagerTest {
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
         assertEquals(
-                "Bookmark saved to Mobile bookmarks. It is only saved to this device.",
+                "Bookmark saved to \"Mobile bookmarks\". It is only saved to this device.",
                 snackbar.getTextForTesting());
     }
 
@@ -180,7 +184,7 @@ public class BookmarkMoveSnackbarManagerTest {
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
         assertEquals(
-                "Bookmark saved to Mobile bookmarks in your account, test@gmail.com.",
+                "Bookmark saved to \"Mobile bookmarks\" in your account, test@gmail.com.",
                 snackbar.getTextForTesting());
     }
 
@@ -201,7 +205,7 @@ public class BookmarkMoveSnackbarManagerTest {
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
         assertEquals(
-                "Bookmarks saved to Mobile bookmarks. It is only saved to this device.",
+                "Bookmarks saved to \"Mobile bookmarks\". It is only saved to this device.",
                 snackbar.getTextForTesting());
     }
 
@@ -224,7 +228,7 @@ public class BookmarkMoveSnackbarManagerTest {
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
         assertEquals(
-                "Bookmarks saved to Mobile bookmarks in your account, test@gmail.com.",
+                "Bookmarks saved to \"Mobile bookmarks\" in your account, test@gmail.com.",
                 snackbar.getTextForTesting());
     }
 
@@ -263,7 +267,28 @@ public class BookmarkMoveSnackbarManagerTest {
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
         assertEquals(
-                "Bookmark saved to Mobile bookmarks. It is only saved to this device.",
+                "Bookmark saved to \"Mobile bookmarks\". It is only saved to this device.",
+                snackbar.getTextForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testMovementToFolderWithALongName() {
+        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId1);
+
+        mBookmarkModelObserver.bookmarkNodeMoved(
+                mBookmarkModel.getBookmarkById(mAccountMobileFolderId),
+                0,
+                mBookmarkModel.getBookmarkById(mLongTextFolderId),
+                0);
+        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+
+        ArgumentCaptor<Snackbar> mSnackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+        assertEquals(
+                "Bookmark saved to \"Very long folder title which get...\". It is only saved to"
+                        + " this device.",
                 snackbar.getTextForTesting());
     }
 }

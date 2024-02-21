@@ -39,6 +39,7 @@ import java.util.List;
  * <p>Note: This class can be used for multiple launches of BookmarkFolderPickerActivity.
  */
 public class BookmarkMoveSnackbarManager implements ActivityStateListener {
+    static final int FOLDER_CHARACTER_LIMIT = 32;
     private final BookmarkModelObserver mBookmarkModelObserver =
             new BookmarkModelObserver() {
                 @Override
@@ -52,10 +53,10 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
                     }
 
                     // TODO(crbug.com/1523319): Consider handling the edge cases here where one or
-                    // multiple
-                    // bookmarks fail to move. For now, just roll with any of the bookmarks being
-                    // moved.
+                    // multiple bookmarks fail to move. For now, just roll with any of the bookmarks
+                    // being moved.
                     String message;
+                    String folderTitle = getShortenedFolderTitle(newParent);
                     Resources res = mContext.getResources();
                     if (newParent.isAccountBookmark()) {
                         String accountEmail =
@@ -66,14 +67,14 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
                                 res.getQuantityString(
                                         R.plurals.account_bookmark_move_snackbar_message,
                                         mBookmarkIds.size(),
-                                        newParent.getTitle(),
+                                        folderTitle,
                                         accountEmail);
                     } else {
                         message =
                                 res.getQuantityString(
                                         R.plurals.local_bookmark_move_snackbar_message,
                                         mBookmarkIds.size(),
-                                        newParent.getTitle());
+                                        folderTitle);
                     }
 
                     mPendingSnackbar =
@@ -154,6 +155,16 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
             mSnackbarManager.showSnackbar(mPendingSnackbar);
             mPendingSnackbar = null;
         }
+    }
+
+    /** Truncates folder titles that are too long so they fit into the snackbar. */
+    String getShortenedFolderTitle(BookmarkItem item) {
+        String title = item.getTitle();
+        if (title.length() > FOLDER_CHARACTER_LIMIT) {
+            title = title.substring(0, FOLDER_CHARACTER_LIMIT);
+            title += "...";
+        }
+        return title;
     }
 
     // Testing-specific methods.
