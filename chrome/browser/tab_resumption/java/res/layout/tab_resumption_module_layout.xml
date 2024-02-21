@@ -27,6 +27,7 @@ found in the LICENSE file.
         android:id="@+id/tab_resumption_title_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/tab_resumption_module_title_margin_bottom"
         android:gravity="start"
         android:singleLine="true"
         android:textAlignment="viewStart"
