@@ -1738,7 +1738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.iOS.SurfaceVisit"
-    enum="PasswordManager.SurfaceVisit" expires_after="2024-03-31">
+    enum="PasswordManager.SurfaceVisit" expires_after="2025-03-31">
   <owner>eic@google.com</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
