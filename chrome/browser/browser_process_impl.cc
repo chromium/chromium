@@ -699,7 +699,7 @@ void BrowserProcessImpl::EndSession() {
   // http://crbug.com/125207
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The browser is already shutting down, so the DeleteFile inside
   // DeleteCrashpadIsReadyFile cannot causing UI jank. Also, this code
   // cannot use other MayBlock threads, as the process will be disappearing
