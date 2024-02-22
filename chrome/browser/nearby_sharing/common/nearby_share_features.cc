@@ -7,8 +7,9 @@
 
 namespace features {
 
-// Enables Quick Share branding.
-BASE_FEATURE(kIsNameEnabled, "IsNameEnabled", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIsNameEnabled,
+             "IsNameEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Nearby Sharing functionality.
 BASE_FEATURE(kNearbySharing, "NearbySharing", base::FEATURE_ENABLED_BY_DEFAULT);
