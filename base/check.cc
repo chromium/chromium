@@ -32,7 +32,13 @@ namespace logging {
 namespace {
 
 LogSeverity GetDumpSeverity() {
+#if BUILDFLAG(USE_FUZZING_ENGINE)
+  // Crash in fuzzing builds because non-fatal CHECKs will eventually be
+  // migrated to fatal CHECKs.
+  return LOGGING_FATAL;
+#else
   return DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR;
+#endif
 }
 
 LogSeverity GetNotFatalUntilSeverity(base::NotFatalUntil fatal_milestone) {
