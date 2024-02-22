@@ -54,10 +54,6 @@ gfx::NativeWindow TestBrowserAccessibilityDelegate::GetTopLevelNativeWindow() {
   return gfx::NativeWindow();
 }
 
-bool TestBrowserAccessibilityDelegate::CanFireAccessibilityEvents() const {
-  return true;
-}
-
 bool TestBrowserAccessibilityDelegate::AccessibilityIsRootFrame() const {
   return is_root_frame_;
 }

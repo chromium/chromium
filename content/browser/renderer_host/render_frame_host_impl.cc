@@ -2988,10 +2988,6 @@ gfx::NativeWindow RenderFrameHostImpl::GetTopLevelNativeWindow() {
                       : gfx::NativeWindow();
 }
 
-bool RenderFrameHostImpl::CanFireAccessibilityEvents() const {
-  return IsActive();
-}
-
 bool RenderFrameHostImpl::AccessibilityIsRootFrame() const {
   // Do not use is_main_frame() or IsOutermostMainFrame().
   // Frame trees may be nested so it can be the case that is_main_frame() is

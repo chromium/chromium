@@ -221,7 +221,8 @@ bool BrowserAccessibilityManager::CanFireEvents() const {
   // Rationale for the back/forward cache behavior:
   // https://docs.google.com/document/d/1_jaEAXurfcvriwcNU-5u0h8GGioh0LelagUIIGFfiuU/
   return !delegate_ ||  // Can be null in unit tests.
-         delegate_->CanFireAccessibilityEvents();
+         !delegate_->AccessibilityRenderFrameHost() ||
+         !delegate_->AccessibilityRenderFrameHost()->IsInBackForwardCache();
 }
 
 void BrowserAccessibilityManager::FireGeneratedEvent(
