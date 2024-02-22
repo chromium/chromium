@@ -26,7 +26,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -463,10 +462,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // manager.
 - (void)testPromoShownWhenSyncDataNotRemovedWithBookmarksUpload {
   // Add last syncing account to mimic signing out without clearing data.
-  [ChromeEarlGreyAppInterface
-      setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaID
-         forUserPref:base::SysUTF8ToNSString(
-                         prefs::kGoogleServicesLastSyncingGaiaId)];
+  [ChromeEarlGrey setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaID
+                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
 
   OpenReadingList();
   [SigninEarlGreyUI

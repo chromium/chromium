@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
@@ -506,9 +505,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // kSafeBrowsingProceedAnywayDisabled is enabled.
 - (void)testProceedAlwaysDisabled {
   // Enable the pref.
-  NSString* prefName =
-      base::SysUTF8ToNSString(prefs::kSafeBrowsingProceedAnywayDisabled);
-  [ChromeEarlGreyAppInterface setBoolValue:YES forUserPref:prefName];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kSafeBrowsingProceedAnywayDisabled];
 
   // Load the a malware safe browsing error page.
   [ChromeEarlGrey loadURL:_malwareURL];
@@ -530,7 +528,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       [ElementSelector selectorWithScript:selector
                       selectorDescription:description];
   GREYAssert(
-      [ChromeEarlGreyAppInterface webStateContainsElement:proceedLink],
+      [ChromeEarlGrey webStateContainsElement:proceedLink],
       @"Proceed anyway link shown despite kSafeBrowsingProceedAnywayDisabled");
 }
 

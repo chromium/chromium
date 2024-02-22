@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -84,8 +83,7 @@ void WaitForPreferenceValue(int pref_value) {
 }
 
 - (void)tearDown {
-  [ChromeEarlGreyAppInterface
-      clearUserPrefWithName:base::SysUTF8ToNSString(kTestSyncablePref)];
+  [ChromeEarlGrey clearUserPrefWithName:kTestSyncablePref];
   [ChromeEarlGrey clearFakeSyncServerData];
 
   WaitForEntitiesOnFakeServer(0);
@@ -111,8 +109,7 @@ void WaitForPreferenceValue(int pref_value) {
                   kTestPrefValue1, @"Incorrect local pref value.");
 
   // Remove from local store.
-  [ChromeEarlGreyAppInterface
-      clearUserPrefWithName:base::SysUTF8ToNSString(kTestSyncablePref)];
+  [ChromeEarlGrey clearUserPrefWithName:kTestSyncablePref];
 
   // Sign in again to validate the value is not set from the server.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];

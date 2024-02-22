@@ -30,7 +30,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -315,7 +314,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
 
   password_manager_test_utils::SavePasswordFormToAccountStore(
       @"password", @"user", @"https://example.com");
@@ -338,7 +337,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Re-connect the fake sync server to the network to be able to sign-in when
   // the test gets run repeatedly.
-  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+  [ChromeEarlGrey connectFakeSyncServerNetwork];
 }
 
 // Tests the unsynced data dialog shows when there are unsynced readinglist
@@ -355,7 +354,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
 
   reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
 
@@ -377,7 +376,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Re-connect the fake sync server to the network to be able to sign-in when
   // the test gets run repeatedly.
-  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+  [ChromeEarlGrey connectFakeSyncServerNetwork];
 }
 
 // Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
@@ -398,7 +397,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                           /*enabled=*/YES)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
 
   SaveBookmark(@"foo", @"https://www.foo.com");
 
@@ -411,7 +410,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Re-connect the fake sync server to the network to be able to sign-in when
   // the test gets run repeatedly.
-  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+  [ChromeEarlGrey connectFakeSyncServerNetwork];
 }
 
 // Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
@@ -432,7 +431,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                           /*enabled=*/YES)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
 
   SaveBookmark(@"foo", @"https://www.foo.com");
 
@@ -446,7 +445,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Re-connect the fake sync server to the network to be able to sign-in when
   // the test gets run repeatedly.
-  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+  [ChromeEarlGrey connectFakeSyncServerNetwork];
 }
 
 // Tests that data type settings carry over signing out.

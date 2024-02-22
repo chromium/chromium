@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -604,9 +603,8 @@ enum class TestType {
   [self assertFailedUpgrade:1];
 
   // Check tab count prior to tapping the link.
-  NSUInteger oldRegularTabCount = [ChromeEarlGreyAppInterface mainTabCount];
-  NSUInteger oldIncognitoTabCount =
-      [ChromeEarlGreyAppInterface incognitoTabCount];
+  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
+  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
 
   [ChromeEarlGrey tapWebStateElementWithID:@"learn-more-link"];
 

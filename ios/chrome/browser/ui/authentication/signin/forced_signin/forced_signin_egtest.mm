@@ -32,7 +32,6 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
@@ -187,7 +186,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Simulates opening `URL` from another application.
 void SimulateExternalAppURLOpeningWithURL(NSURL* URL) {
-  [ChromeEarlGreyAppInterface simulateExternalAppURLOpeningWithURL:URL];
+  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:URL];
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
@@ -336,7 +335,7 @@ void CompleteSigninFlow() {
   // triggered again when tearing down because the browser is signed out. Making
   // sure that sign-out is done and that the sign-in screen animation is done
   // before tearing down avoids the conflict.
-  [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:nil];
+  [ChromeEarlGrey signOutAndClearIdentities];
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 
   [super tearDown];
@@ -885,7 +884,7 @@ void CompleteSigninFlow() {
   SimulateExternalAppURLOpeningWithURL(URLToOpen);
 
   // Make sure that the page loading of the intent hasn't started yet.
-  GREYAssertFalse([ChromeEarlGreyAppInterface isLoading],
+  GREYAssertFalse([ChromeEarlGrey isLoading],
                   @"Page should not have been loaded yet");
 
   // Sign in account without enabling sync.

@@ -36,7 +36,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
@@ -336,10 +335,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // reset even if the test failed.
   if ([self isRunningTest:@selector
             (testTabGridItemContextMenuAddToBookmarkGreyed)]) {
-    [ChromeEarlGreyAppInterface
-        setBoolValue:YES
-         forUserPref:base::SysUTF8ToNSString(
-                         bookmarks::prefs::kEditBookmarksEnabled)];
+    [ChromeEarlGrey setBoolValue:YES
+                     forUserPref:bookmarks::prefs::kEditBookmarksEnabled];
   }
 
   // Shutdown network process after tests run to avoid hanging from
@@ -875,10 +872,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that Add to Bookmarks action is greyed out when editBookmarksEnabled
 // pref is set to false.
 - (void)testTabGridItemContextMenuAddToBookmarkGreyed {
-  [ChromeEarlGreyAppInterface
-      setBoolValue:NO
-       forUserPref:base::SysUTF8ToNSString(
-                       bookmarks::prefs::kEditBookmarksEnabled)];
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:bookmarks::prefs::kEditBookmarksEnabled];
 
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
@@ -891,10 +886,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                                    grey_accessibilityTrait(
                                        UIAccessibilityTraitNotEnabled),
                                    nil)];
-  [ChromeEarlGreyAppInterface
-      setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(
-                       bookmarks::prefs::kEditBookmarksEnabled)];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:bookmarks::prefs::kEditBookmarksEnabled];
 }
 
 // Tests the Share action on a tab grid item's context menu.

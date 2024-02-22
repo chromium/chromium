@@ -41,6 +41,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // will properly synchronize the UI for Earl Grey tests.
 @interface ChromeEarlGreyImpl : BaseEGTestHelperImpl
 
+// Reloads the page without waiting for the page to load.
+- (void)startReloading;
+
 #pragma mark - Test Utilities
 
 // Wait until `matcher` is accessible (not nil) on the device.
@@ -199,6 +202,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - Sync Utilities (EG2)
 
+- (BOOL)isFakeSyncServerSetUp;
+
+// Undoes the effects of disconnectFakeSyncServerNetwork.
+- (void)connectFakeSyncServerNetwork;
+
+// Forces every request to fail in a way that simulates a network failure.
+- (void)disconnectFakeSyncServerNetwork;
+
 // Signs in with `identity` without sync consent.
 - (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
 
@@ -313,6 +324,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)openNewTab;
 
 // Simulates opening `url` from another application.
+- (void)simulateExternalAppURLOpeningWithURL:(NSURL*)url;
 - (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url;
 
 // Simulates opening the add account sign-in flow from the web.
@@ -583,6 +595,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Induces a GREYAssert if the operation fails.
 - (void)submitWebStateFormWithID:(const std::string&)formID;
 
+// Returns YES if the current WebState contains an element matching `selector`.
+- (BOOL)webStateContainsElement:(ElementSelector*)selector;
+
 // Waits for the current web state to contain `UTF8Text`. If the condition is
 // not met within a timeout a GREYAssert is induced.
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text;
@@ -747,6 +762,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Resets the desktop content setting to its default value.
 - (void)resetDesktopContentSetting;
 
+// Sets the preference value of a content settings type for the original browser
+// state.
+- (void)setContentSetting:(ContentSetting)setting
+    forContentSettingsType:(ContentSettingsType)type;
+
 #pragma mark - Keyboard utilities
 
 // The count of key commands registered with the currently active BVC.
@@ -772,6 +792,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (id)userDefaultsObjectForKey:(NSString*)key;
 
 #pragma mark - Pref Utilities (EG2)
+
+// Commit synchronously the pending user prefs write. Waits until the disk write
+// operation is done.
+- (void)commitPendingUserPrefsWrite;
 
 // Gets the value of a local state pref.
 - (bool)localStateBooleanPref:(const std::string&)prefName;
@@ -804,6 +828,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (std::string)userStringPref:(const std::string&)prefName;
 
 // Sets the value of a user pref in the original browser state.
+- (void)setStringValue:(NSString*)value
+           forUserPref:(const std::string&)UTF8PrefName;
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
 - (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
 
@@ -886,6 +912,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Clear the watcher list, stopping monitoring.
 - (void)stopWatcher;
 
+#pragma mark - Default Browser Promo Utilities
+
+// Clears default browser promo data to restart capping for the promos.
+- (void)clearDefaultBrowserPromoData;
+
+// Copies a chrome:// URL that doesn't require internet connection.
+- (void)copyURLToPasteBoard;
+
 #pragma mark - ActivitySheet utilities
 
 // Induces a GREYAssert if the activity sheet is not visible.
@@ -908,6 +942,18 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Taps the element with `buttonText` within the activity sheet. A GREYAssert
 // is induced on failure.
 - (void)tapButtonInActivitySheetWithID:(NSString*)buttonText;
+
+#pragma mark - First Run Utilities
+
+// Writes the First Run Sentinel file, used to record that First Run has
+// completed.
+- (void)writeFirstRunSentinel;
+
+// Removes the FirstRun sentinel file.
+- (void)removeFirstRunSentinel;
+
+// Whether the first run sentinel exists.
+- (bool)hasFirstRunSentinel;
 
 @end
 

@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
@@ -121,7 +120,7 @@ bool IsMockAuthenticationSetUp() {
   // `SetUpMockAuthentication` enables the fake sync server so checking
   // `isFakeSyncServerSetUp` here is sufficient to determine mock authentication
   // state.
-  return [ChromeEarlGreyAppInterface isFakeSyncServerSetUp];
+  return [ChromeEarlGrey isFakeSyncServerSetUp];
 }
 
 void SetUpMockAuthentication() {

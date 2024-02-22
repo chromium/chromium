@@ -11,7 +11,6 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -60,18 +59,18 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
+  [ChromeEarlGrey clearDefaultBrowserPromoData];
 }
 
 - (void)tearDown {
   [super tearDown];
-  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
+  [ChromeEarlGrey clearDefaultBrowserPromoData];
 }
 
 // Test that a non modal default modal promo appears when it is triggered by
 // pasting a copied link.
 - (void)testNonModalAppears {
-  [ChromeEarlGreyAppInterface copyURLToPasteBoard];
+  [ChromeEarlGrey copyURLToPasteBoard];
   [[EarlGrey selectElementWithMatcher:FakeOmniboxMatcher()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:LinkYouCopiedMatcher()]

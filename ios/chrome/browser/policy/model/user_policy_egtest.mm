@@ -40,7 +40,6 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -136,15 +135,12 @@ void VerifyThatPoliciesAreNotSet() {
 
 void ClearUserPolicyPrefs() {
   // Clears the user policy notification pref.
-  [ChromeEarlGreyAppInterface
-      clearUserPrefWithName:
-          base::SysUTF8ToNSString(
-              policy::policy_prefs::kUserPolicyNotificationWasShown)];
+  [ChromeEarlGrey clearUserPrefWithName:policy::policy_prefs::
+                                            kUserPolicyNotificationWasShown];
   // Clears the pref used used to determine the fetch interval.
-  [ChromeEarlGreyAppInterface
-      clearUserPrefWithName:base::SysUTF8ToNSString(
-                                policy::policy_prefs::kLastPolicyCheckTime)];
-  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+  [ChromeEarlGrey
+      clearUserPrefWithName:policy::policy_prefs::kLastPolicyCheckTime];
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
 }
 
 void VerifyTheNotificationUI() {
@@ -346,7 +342,7 @@ void WaitForVisibleChromeManagementURL() {
   VerifyThatPoliciesAreSet();
 
   // Verify that the policies are cleared on sign out.
-  [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:nil];
+  [ChromeEarlGrey signOutAndClearIdentities];
   VerifyThatPoliciesAreNotSet();
 }
 
@@ -407,7 +403,7 @@ void WaitForVisibleChromeManagementURL() {
                    name:@"Fake Managed"];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
 
-  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
 
   // Restart the browser while keeping Sync ON by preserving the identity of the
   // managed account.

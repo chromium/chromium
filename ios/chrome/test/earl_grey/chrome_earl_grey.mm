@@ -107,6 +107,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Test Utilities
 
+- (void)startReloading {
+  [ChromeEarlGreyAppInterface startReloading];
+}
+
 - (void)waitForMatcher:(id<GREYMatcher>)matcher {
   ConditionBlock condition = ^{
     NSError* error = nil;
@@ -303,6 +307,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface openNewTab];
   [self waitForPageToFinishLoading];
   GREYWaitForAppToIdle(@"App failed to idle");
+}
+
+- (void)simulateExternalAppURLOpeningWithURL:(NSURL*)url {
+  [ChromeEarlGreyAppInterface simulateExternalAppURLOpeningWithURL:url];
 }
 
 - (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url {
@@ -686,6 +694,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface submitWebStateFormWithID:formID]);
 }
 
+- (BOOL)webStateContainsElement:(ElementSelector*)selector {
+  return [ChromeEarlGreyAppInterface webStateContainsElement:selector];
+}
+
 - (void)waitForWebStateVisible {
   NSString* errorString =
       [NSString stringWithFormat:@"Failed waiting for web state to be visible"];
@@ -808,6 +820,19 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 }
 
 #pragma mark - Sync Utilities (EG2)
+
+// Whether or not the fake sync server has been setup.
+- (BOOL)isFakeSyncServerSetUp {
+  return [ChromeEarlGreyAppInterface isFakeSyncServerSetUp];
+}
+
+- (void)disconnectFakeSyncServerNetwork {
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+}
+
+- (void)connectFakeSyncServerNetwork {
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+}
 
 - (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity {
   [ChromeEarlGreyAppInterface signInWithoutSyncWithIdentity:identity];
@@ -1407,6 +1432,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface resetDesktopContentSetting];
 }
 
+- (void)setContentSetting:(ContentSetting)setting
+    forContentSettingsType:(ContentSettingsType)type {
+  [ChromeEarlGreyAppInterface setContentSetting:setting
+                         forContentSettingsType:type];
+}
+
 #pragma mark - Keyboard utilities
 
 - (NSInteger)registeredKeyCommandCount {
@@ -1433,6 +1464,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 }
 
 #pragma mark - Pref Utilities (EG2)
+
+- (void)commitPendingUserPrefsWrite {
+  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+}
 
 // Returns a base::Value representation of the requested pref.
 - (std::unique_ptr<base::Value>)localStatePrefValue:
@@ -1529,6 +1564,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName {
   NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
   return [ChromeEarlGreyAppInterface setBoolValue:value forUserPref:prefName];
+}
+
+- (void)setStringValue:(NSString*)value
+           forUserPref:(const std::string&)UTF8PrefName {
+  NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
+  return [ChromeEarlGreyAppInterface setStringValue:value forUserPref:prefName];
 }
 
 - (void)setIntegerValue:(int)value
@@ -1698,6 +1739,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface stopWatcher];
 }
 
+#pragma mark - Default Browser Promo Utilities
+
+- (void)clearDefaultBrowserPromoData {
+  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
+}
+
+- (void)copyURLToPasteBoard {
+  [ChromeEarlGreyAppInterface copyURLToPasteBoard];
+}
+
 #pragma mark - ActivitySheet utilities
 
 - (void)verifyActivitySheetVisible {
@@ -1801,4 +1852,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   }
 }
 
+#pragma mark - First Run Utilities
+
+- (void)writeFirstRunSentinel {
+  [ChromeEarlGreyAppInterface writeFirstRunSentinel];
+}
+
+- (void)removeFirstRunSentinel {
+  [ChromeEarlGreyAppInterface removeFirstRunSentinel];
+}
+
+- (bool)hasFirstRunSentinel {
+  return [ChromeEarlGreyAppInterface hasFirstRunSentinel];
+}
 @end

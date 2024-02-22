@@ -24,7 +24,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -94,7 +93,7 @@ void ClearRelevantData() {
   // Ensure that all of the changes made are flushed to disk before the app is
   // terminated.
   [ChromeEarlGrey flushFakeSyncServerToDisk];
-  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
   [BookmarkEarlGrey commitPendingWrite];
   // Note that the ReadingListModel immediately writes pending changes to disk,
   // so no need for an explicit "flush" there.
@@ -179,7 +178,7 @@ void ClearRelevantData() {
   // state to disk.
   [ChromeEarlGrey flushFakeSyncServerToDisk];
   // Also make sure any pending prefs and bookmarks changes are written to disk.
-  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
   [BookmarkEarlGrey commitPendingWrite];
 
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -860,9 +859,9 @@ void ClearRelevantData() {
   [self disableTypeForSyncTheFeature:kSyncReadingListIdentifier];
 
   // Disconnect the fake server, simulating a network/connection issue.
-  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
   [self setTearDownHandler:^{
-    [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+    [ChromeEarlGrey connectFakeSyncServerNetwork];
   }];
 
   // Re-enable the data type that was previously disabled. This causes a
@@ -884,7 +883,7 @@ void ClearRelevantData() {
                                 syncTimeout:kSyncOperationTimeout];
 
   // Resolve the network error and wait for Sync to become active.
-  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+  [ChromeEarlGrey connectFakeSyncServerNetwork];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 

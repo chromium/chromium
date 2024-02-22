@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -66,11 +65,11 @@
     [ChromeEarlGrey verifyActivitySheetVisible];
     [ChromeEarlGrey tapButtonInActivitySheetWithID:@"EGOpenExtension"];
 
-    GREYCondition* tabCountCheck = [GREYCondition
-        conditionWithName:@"Tab count"
-                    block:^{
-                      return [ChromeEarlGreyAppInterface mainTabCount] == 2;
-                    }];
+    GREYCondition* tabCountCheck =
+        [GREYCondition conditionWithName:@"Tab count"
+                                   block:^{
+                                     return [ChromeEarlGrey mainTabCount] == 2;
+                                   }];
     if (![tabCountCheck
             waitWithTimeout:base::test::ios::kWaitForUIElementTimeout
                                 .InSecondsF()]) {
