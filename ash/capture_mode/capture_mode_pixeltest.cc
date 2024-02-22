@@ -14,6 +14,8 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 
@@ -60,6 +62,11 @@ class DisplayParameterizedCaptureModePixelTest
   }
 
   void SetUp() override {
+    scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
+                                       ::features::kChromeRefreshSecondary2023,
+                                       ::features::kChromeRefresh2023NTB},
+                                      {});
+
     AshTestBase::SetUp();
     test_api_ = std::make_unique<NotificationCenterTestApi>();
 
@@ -98,6 +105,8 @@ class DisplayParameterizedCaptureModePixelTest
   std::unique_ptr<aura::Window> window2_;
 
   std::unique_ptr<NotificationCenterTestApi> test_api_;
+
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(DisplaySize,
@@ -155,7 +164,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"video_capture_notification_popup_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/1, notification_popup_view));
+      /*revision_number=*/2, notification_popup_view));
 
   test_api()->ToggleBubble();
   auto* notification_view =
@@ -163,7 +172,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"video_capture_notification_view_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/1, notification_view));
+      /*revision_number=*/2, notification_view));
 }
 
 }  // namespace ash
