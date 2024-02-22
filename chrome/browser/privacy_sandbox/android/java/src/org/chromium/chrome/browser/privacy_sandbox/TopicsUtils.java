@@ -22,16 +22,16 @@ public class TopicsUtils {
     public static int getIconResourceIdForTopic(Context context, Topic topic) {
         // Check all the previous taxonomy versions as well, in case the version is increased.
         int taxonomyVersion = topic.getTaxonomyVersion();
-        Log.d(TAG, "Taxonomy version = " + String.valueOf(taxonomyVersion));
+        Log.w(TAG, "Taxonomy version = " + String.valueOf(taxonomyVersion));
         if (taxonomyVersion < 1) taxonomyVersion = 1;
         for (int version = taxonomyVersion; version > 0; version--) {
             String iconName = String.format("topic_taxonomy_%s_id_%s", version, topic.getTopicId());
-            Log.d(TAG, "Icon file lookup: " + iconName);
+            Log.w(TAG, "Icon file lookup: " + iconName);
             int iconId =
                     context.getResources()
                             .getIdentifier(iconName, "drawable", context.getPackageName());
             if (iconId != 0) return iconId;
-            Log.d(TAG, "Icon not found: " + iconName);
+            Log.w(TAG, "Icon not found: " + iconName);
         }
         return 0;
     }
