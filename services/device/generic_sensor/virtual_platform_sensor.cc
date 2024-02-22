@@ -55,8 +55,9 @@ void VirtualPlatformSensor::SimulateSensorRemoval() {
 
 bool VirtualPlatformSensor::StartSensor(
     const PlatformSensorConfiguration& optimal_configuration) {
+  const bool is_already_running = optimal_configuration_.has_value();
   optimal_configuration_ = optimal_configuration;
-  if (current_reading_.has_value()) {
+  if (!is_already_running && current_reading_.has_value()) {
     AddReading(*current_reading_);
   }
   return true;
