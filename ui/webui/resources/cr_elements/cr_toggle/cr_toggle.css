@@ -42,8 +42,10 @@
           var(--cr-fallback-color-outline));
   --cr-toggle-disabled-opacity: 1;
 
-  --cr-toggle-checked-ripple-color: var(--cr-active-background-color);
-  --cr-toggle-unchecked-ripple-color: var(--cr-active-background-color);
+  --cr-toggle-checked-ripple-color: var(
+    --cr-active-neutral-on-subtle-background-color);
+  --cr-toggle-unchecked-ripple-color: var(
+      --cr-active-neutral-on-subtle-background-color);
 
   --cr-toggle-ripple-diameter: 20px;
 
@@ -247,13 +249,13 @@
 }
 
 :host-context([chrome-refresh-2023]):host(:hover) #knob::before {
-  background-color: var(--cr-hover-background-color);
+  background-color: var(--cr-hover-on-subtle-background-color);
   border-radius: 50%;
   content: '';
   height: var(--cr-toggle-ripple-diameter);
-  left: calc(var(--cr-toggle-knob-diameter) / 2);
+  left: 50%;
   position: absolute;
-  top: calc(var(--cr-toggle-knob-diameter) / 2);
+  top: 50%;
   transform: translate(-50%, -50%);
   width: var(--cr-toggle-ripple-diameter);
 }
