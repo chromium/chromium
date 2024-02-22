@@ -3,8 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Runs tests with Xvfb and Openbox or Weston on Linux and normally on other
-   platforms."""
+"""Runs tests with Xvfb or Xorg and Openbox or Weston on Linux and normally on
+other platforms."""
 
 from __future__ import print_function
 
@@ -30,9 +30,8 @@ DEFAULT_XVFB_WHD = '1280x800x24'
 # pylint: disable=useless-object-inheritance
 
 
-class _XvfbProcessError(Exception):
-  """Exception raised when Xvfb cannot start."""
-
+class _X11ProcessError(Exception):
+  """Exception raised when Xvfb or Xorg cannot start."""
 
 class _WestonProcessError(Exception):
   """Exception raised when Weston cannot start."""
@@ -102,8 +101,8 @@ def launch_dbus(env): # pylint: disable=inconsistent-return-statements
 def run_executable(
     cmd, env, stdoutfile=None, use_openbox=True, use_xcompmgr=True,
     xvfb_whd=None, cwd=None):
-  """Runs an executable within Weston or Xvfb on Linux or normally on other
-     platforms.
+  """Runs an executable within Weston, Xvfb or Xorg on Linux or normally on
+     other platforms.
 
   The method sets SIGUSR1 handler for Xvfb to return SIGUSR1
   when it is ready for connections.
@@ -136,87 +135,143 @@ def run_executable(
     use_xvfb = False
     cmd.remove('--no-xvfb')
 
+  # Xorg is mostly a drop in replacement to Xvfb but has better support for
+  # dummy drivers and multi-screen testing (See: crbug.com/40257169 and
+  # http://tinyurl.com/4phsuupf). Requires Xorg binaries
+  # (package: xserver-xorg-core)
+  use_xorg = False
+  if '--use-xorg' in cmd:
+    use_xvfb = False
+    use_xorg = True
+    cmd.remove('--use-xorg')
+
   # Tests that run on Linux platforms with Ozone/Wayland backend require
   # a Weston instance. However, it is also required to disable xvfb so
   # that Weston can run in a pure headless environment.
   use_weston = False
   if '--use-weston' in cmd:
-    if use_xvfb:
-      print('Unable to use Weston with xvfb.\n', file=sys.stderr)
+    if use_xvfb or use_xorg:
+      print('Unable to use Weston with xvfb or Xorg.\n', file=sys.stderr)
       return 1
     use_weston = True
     cmd.remove('--use-weston')
 
-  if sys.platform.startswith('linux') and use_xvfb:
-    return _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
-      xvfb_whd or DEFAULT_XVFB_WHD, cwd)
+  if sys.platform.startswith('linux') and (use_xvfb or use_xorg):
+    return _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
+      use_xorg, xvfb_whd or DEFAULT_XVFB_WHD, cwd)
   if use_weston:
     return _run_with_weston(cmd, env, stdoutfile, cwd)
   return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
 
-def _run_with_xvfb(cmd, env, stdoutfile, use_openbox,
-                   use_xcompmgr, xvfb_whd, cwd):
+def _make_xorg_config(whd):
+  """Generates an Xorg config file based on the specified WxHxD string and
+  returns the file path. See:
+  https://www.x.org/releases/current/doc/man/man5/xorg.conf.5.xhtml"""
+  (width, height, depth) = whd.split('x')
+  modeline = subprocess.check_output(
+    ['cvt', width, height, '60'], stderr=subprocess.STDOUT, text=True)
+  modeline_label = re.search(
+    'Modeline "(.*)"', modeline, re.IGNORECASE).group(1)
+  config = f"""
+Section "Monitor"
+  Identifier "Monitor0"
+  {modeline}
+EndSection
+Section "Device"
+  Identifier "Device0"
+  # Dummy driver requires package `xserver-xorg-video-dummy`.
+  Driver "dummy"
+  VideoRam 256000
+EndSection
+Section "Screen"
+  DefaultDepth {depth}
+  Identifier "Screen0"
+  Device "Device0"
+  Monitor "Monitor0"
+  SubSection "Display"
+    Depth {depth}
+    Modes "{modeline_label}"
+  EndSubSection
+EndSection
+  """
+  config_file = os.path.join(tempfile.gettempdir(), 'xorg.config')
+  with open(config_file, 'w') as f:
+    f.write(config)
+  return config_file
+
+def _run_with_x11(cmd, env, stdoutfile, use_openbox,
+                   use_xcompmgr, use_xorg, xvfb_whd, cwd):
+  """Runs with an X11 server. Uses Xvfb by default and Xorg when use_xorg is
+  True."""
   openbox_proc = None
   openbox_ready = MutableBoolean()
   def set_openbox_ready(*_):
     openbox_ready.setvalue(True)
 
   xcompmgr_proc = None
-  xvfb_proc = None
-  xvfb_ready = MutableBoolean()
-  def set_xvfb_ready(*_):
-    xvfb_ready.setvalue(True)
+  x11_proc = None
+  x11_ready = MutableBoolean()
+  def set_x11_ready(*_):
+    x11_ready.setvalue(True)
 
   dbus_pid = None
+  x11_binary = 'Xorg' if use_xorg else 'Xvfb'
+  xorg_config_file = _make_xorg_config(xvfb_whd) if use_xorg else None
   try:
-    signal.signal(signal.SIGTERM, raise_xvfb_error)
-    signal.signal(signal.SIGINT, raise_xvfb_error)
+    signal.signal(signal.SIGTERM, raise_x11_error)
+    signal.signal(signal.SIGINT, raise_x11_error)
 
-    # Before [1], the maximum number of X11 clients was 256.  After, the default
-    # limit is 256 with a configurable maximum of 512.  On systems with a large
-    # number of CPUs, the old limit of 256 may be hit for certain test suites
-    # [2] [3], so we set the limit to 512 when possible.  This flag is not
-    # available on Ubuntu 16.04 or 18.04, so a feature check is required.  Xvfb
-    # does not have a '-version' option, so checking the '-help' output is
-    # required.
-    #
-    # [1] d206c240c0b85c4da44f073d6e9a692afb6b96d2
-    # [2] https://crbug.com/1187948
-    # [3] https://crbug.com/1120107
-    xvfb_help = subprocess.check_output(
-      ['Xvfb', '-help'], stderr=subprocess.STDOUT).decode('utf8')
+    xvfb_help = None
+    if not use_xorg:
+      # Before [1], the maximum number of X11 clients was 256.  After, the
+      # default limit is 256 with a configurable maximum of 512.  On systems
+      # with a large number of CPUs, the old limit of 256 may be hit for certain
+      # test suites [2] [3], so we set the limit to 512 when possible.  This
+      # flag is not available on Ubuntu 16.04 or 18.04, so a feature check is
+      # required.  Xvfb does not have a '-version' option, so checking the
+      # '-help' output is required.
+      #
+      # [1] d206c240c0b85c4da44f073d6e9a692afb6b96d2
+      # [2] https://crbug.com/1187948
+      # [3] https://crbug.com/1120107
+      xvfb_help = subprocess.check_output(
+        ['Xvfb', '-help'], stderr=subprocess.STDOUT).decode('utf8')
 
-    # Due to race condition for display number, Xvfb might fail to run.
+    # Due to race condition for display number, Xvfb/Xorg might fail to run.
     # If it does fail, try again up to 10 times, similarly to xvfb-run.
     for _ in range(10):
-      xvfb_ready.setvalue(False)
+      x11_ready.setvalue(False)
       display = find_display()
 
-      xvfb_cmd = ['Xvfb', display, '-screen', '0', xvfb_whd, '-ac',
-                  '-nolisten', 'tcp', '-dpi', '96', '+extension', 'RANDR']
-      if '-maxclients' in xvfb_help:
-        xvfb_cmd += ['-maxclients', '512']
+      x11_cmd = None
+      if use_xorg:
+        x11_cmd = ['Xorg', display, '-config', xorg_config_file]
+      else:
+        x11_cmd = ['Xvfb', display, '-screen', '0', xvfb_whd, '-ac',
+                    '-nolisten', 'tcp', '-dpi', '96', '+extension', 'RANDR']
+        if '-maxclients' in xvfb_help:
+          x11_cmd += ['-maxclients', '512']
 
-      # Sets SIGUSR1 to ignore for Xvfb to signal current process
+      # Sets SIGUSR1 to ignore for Xvfb/Xorg to signal current process
       # when it is ready. Due to race condition, USR1 signal could be sent
       # before the process resets the signal handler, we cannot rely on
       # signal handler to change on time.
       signal.signal(signal.SIGUSR1, signal.SIG_IGN)
-      xvfb_proc = subprocess.Popen(xvfb_cmd, stderr=subprocess.STDOUT, env=env)
-      signal.signal(signal.SIGUSR1, set_xvfb_ready)
+      x11_proc = subprocess.Popen(x11_cmd, stderr=subprocess.STDOUT, env=env)
+      signal.signal(signal.SIGUSR1, set_x11_ready)
       for _ in range(30):
-        time.sleep(.1)  # gives Xvfb time to start or fail.
-        if xvfb_ready.getvalue() or xvfb_proc.poll() is not None:
-          break  # xvfb sent ready signal, or already failed and stopped.
+        time.sleep(.1)  # gives Xvfb/Xorg time to start or fail.
+        if x11_ready.getvalue() or x11_proc.poll() is not None:
+          break  # xvfb/xorg sent ready signal, or already failed and stopped.
 
-      if xvfb_proc.poll() is None:
-        if xvfb_ready.getvalue():
-          break  # xvfb is ready
-        kill(xvfb_proc, 'Xvfb')  # still not ready, give up and retry
+      if x11_proc.poll() is None:
+        if x11_ready.getvalue():
+          break  # xvfb/xorg is ready
+        kill(x11_proc, x11_binary)  # still not ready, give up and retry
 
-    if xvfb_proc.poll() is not None:
-      raise _XvfbProcessError('Failed to start after 10 tries')
+    if x11_proc.poll() is not None:
+      raise _X11ProcessError('Failed to start after 10 tries')
 
     env['DISPLAY'] = display
     # Set dummy variable for scripts.
@@ -244,7 +299,7 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox,
           break  # openbox sent ready signal, or failed and stopped.
 
       if openbox_proc.poll() is not None or not openbox_ready.getvalue():
-        raise _XvfbProcessError('Failed to start OpenBox.')
+        raise _X11ProcessError('Failed to start OpenBox.')
 
     if use_xcompmgr:
       xcompmgr_proc = subprocess.Popen(
@@ -252,15 +307,18 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox,
 
     return test_env.run_executable(cmd, env, stdoutfile, cwd)
   except OSError as e:
-    print('Failed to start Xvfb or Openbox: %s\n' % str(e), file=sys.stderr)
+    print('Failed to start %s or Openbox: %s\n' % (x11_binary, str(e)),
+          file=sys.stderr)
     return 1
-  except _XvfbProcessError as e:
-    print('Xvfb fail: %s\n' % str(e), file=sys.stderr)
+  except _X11ProcessError as e:
+    print('%s fail: %s\n' % (x11_binary, str(e)), file=sys.stderr)
     return 1
   finally:
     kill(openbox_proc, 'openbox')
     kill(xcompmgr_proc, 'xcompmgr')
-    kill(xvfb_proc, 'Xvfb')
+    kill(x11_proc, x11_binary)
+    if xorg_config_file != None:
+      os.remove(xorg_config_file)
 
     # dbus-daemon is not a subprocess, so we can't SIGTERM+waitpid() on it.
     # To ensure it exits, use SIGKILL which should be safe since all other
@@ -468,8 +526,8 @@ class MutableBoolean(object):
     return self._val
 
 
-def raise_xvfb_error(*_):
-  raise _XvfbProcessError('Terminated')
+def raise_x11_error(*_):
+  raise _X11ProcessError('Terminated')
 
 
 def raise_weston_error(*_):
@@ -486,7 +544,7 @@ def find_display():
     A string of a random available display number for Xvfb ':{99-119}'.
 
   Raises:
-    _XvfbProcessError: Raised when displays 99 through 119 are unavailable.
+    _X11ProcessError: Raised when displays 99 through 119 are unavailable.
   """
 
   available_displays = [
@@ -495,7 +553,7 @@ def find_display():
   ]
   if available_displays:
     return ':{}'.format(random.choice(available_displays))
-  raise _XvfbProcessError('Failed to find display number')
+  raise _X11ProcessError('Failed to find display number')
 
 
 def _set_xdg_runtime_dir(env):
@@ -509,7 +567,9 @@ def _set_xdg_runtime_dir(env):
 
 
 def main():
-  usage = 'Usage: xvfb.py [command [--no-xvfb or --use-weston] args...]'
+  usage = ('Usage: xvfb.py '
+           '[command [--no-xvfb or --use_xorg or --use-weston] args...]')
+  # TODO(crbug.com/326283384): Argparse-ify this.
   if len(sys.argv) < 2:
     print(usage + '\n', file=sys.stderr)
     return 2
