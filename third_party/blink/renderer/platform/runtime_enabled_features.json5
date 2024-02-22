@@ -3037,10 +3037,6 @@
       name: "QuotaChange",
       status: "experimental",
     },
-    {
-      name: "ReadableStreamTeeCloneForBranch2",
-      status: "stable",
-    },
     // If enabled, the Accept-Language header will be reduced.
     {
       name: "ReduceAcceptLanguage",

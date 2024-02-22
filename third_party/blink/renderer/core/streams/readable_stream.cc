@@ -718,11 +718,7 @@ void ReadableStream::Tee(ScriptState* script_state,
                          bool clone_for_branch2,
                          ExceptionState& exception_state) {
   auto* engine = MakeGarbageCollected<TeeEngine>();
-  engine->Start(
-      script_state, this,
-      clone_for_branch2 &&
-          RuntimeEnabledFeatures::ReadableStreamTeeCloneForBranch2Enabled(),
-      exception_state);
+  engine->Start(script_state, this, clone_for_branch2, exception_state);
   if (exception_state.HadException()) {
     return;
   }

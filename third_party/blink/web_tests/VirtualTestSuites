@@ -2307,14 +2307,6 @@
     "expires": "Apr 1, 2024"
   },
   {
-    "prefix": "clone-for-branch2-disabled",
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/fetch/api/response"],
-    "args": ["--disable-features=ReadableStreamTeeCloneForBranch2",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Aug 1, 2023"
-  },
-  {
     "prefix": "longtask-from-loaf",
     "platforms": ["Linux"],
     "bases": ["external/wpt/longtask-timing"],
