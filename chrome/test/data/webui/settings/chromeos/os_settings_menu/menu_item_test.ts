@@ -7,6 +7,7 @@ import 'chrome://os-settings/os_settings.js';
 import {OsSettingsMenuItemElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
 
@@ -47,7 +48,6 @@ suite('<os-settings-menu-item>', () => {
 
   test('Label is reflected to the aria-label attribute', async () => {
     await createMenuItem('Foo');
-
     assertEquals('Foo', menuItem.getAttribute('aria-label'));
     menuItem.label = 'Bar';
     assertEquals('Bar', menuItem.getAttribute('aria-label'));
@@ -55,9 +55,22 @@ suite('<os-settings-menu-item>', () => {
 
   test('Sublabel is reflected to the aria-description attribute', async () => {
     await createMenuItem('Foo', 'Bar');
-
     assertEquals('Bar', menuItem.getAttribute('aria-description'));
     menuItem.sublabel = 'Baz';
     assertEquals('Baz', menuItem.getAttribute('aria-description'));
+  });
+
+  test('Pressing Spacebar key triggers click', async () => {
+    await createMenuItem('Foo');
+    const clickEventPromise = eventToPromise('click', window);
+    menuItem.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+    await clickEventPromise;
+  });
+
+  test('Pressing Enter key triggers click', async () => {
+    await createMenuItem('Foo');
+    const clickEventPromise = eventToPromise('click', window);
+    menuItem.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await clickEventPromise;
   });
 });

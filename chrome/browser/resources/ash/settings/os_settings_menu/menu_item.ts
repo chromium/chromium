@@ -108,6 +108,9 @@ export class OsSettingsMenuItemElement extends PolymerElement {
     return this.sublabel;
   }
 
+  /**
+   * Simulate a click only when the Enter or Space key is pressed.
+   */
   private onKeyDown_(event: KeyboardEvent): void {
     if (event.key !== ' ' && event.key !== 'Enter') {
       return;
@@ -120,10 +123,8 @@ export class OsSettingsMenuItemElement extends PolymerElement {
     }
 
     // Simulate click
-    if (event.key === 'Enter') {
-      this.dispatchEvent(
-          new CustomEvent('click', {bubbles: true, composed: true}));
-    }
+    this.dispatchEvent(
+        new CustomEvent('click', {bubbles: true, composed: true}));
   }
 }
 
