@@ -564,8 +564,15 @@ class AuthenticatorRequestDialogModel
   // using passkeys.
   void OnGPMOnboardingAccepted();
 
-  // These functions are currently placeholders.
-  void OnGPMCreate() {}
+  // Called when the user accepts passkey creation in the GPM bubble.
+  // TODO(enclave): Add transition to authentication or bootstrapping device.
+  void OnGPMCreatePasskey() {}
+
+  // Called when the user enters the GPM pin in the UI (during initial setup or
+  // authentication).
+  void OnGPMPinEntered(const std::u16string& pin);
+
+  // Called when the user accepts enrolling a device to use passkeys.
   void OnTrustThisComputer();
 
   // Adds or removes an authenticator to the list of known authenticators. The

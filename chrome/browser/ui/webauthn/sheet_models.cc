@@ -1641,5 +1641,5 @@ std::u16string AuthenticatorGPMPinSheetModel::GetAcceptButtonLabel() const {
 }
 
 void AuthenticatorGPMPinSheetModel::OnAccept() {
-  dialog_model()->OnGPMCreate();
+  dialog_model()->OnGPMPinEntered(pin_);
 }

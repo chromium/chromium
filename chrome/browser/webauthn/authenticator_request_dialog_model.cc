@@ -1263,6 +1263,15 @@ void AuthenticatorRequestDialogModel::OnTrustThisComputer() {
   SetCurrentStep(Step::kRecoverSecurityDomain);
 }
 
+void AuthenticatorRequestDialogModel::OnGPMPinEntered(
+    const std::u16string& pin) {
+  DCHECK(current_step() == Step::kGPMCreatePin ||
+         current_step() == Step::kGPMEnterPin);
+  // TODO(enclave): For kGPMCreatePin - upload pin and handle passkey creation.
+  // TODO(enclave): For kGPMEnterPin - verify pin and handle sign-in or setting
+  // up biometrics (if available).
+}
+
 void AuthenticatorRequestDialogModel::AddAuthenticator(
     const device::FidoAuthenticator& authenticator) {
   // Only the webauthn.dll authenticator omits a transport completely. This

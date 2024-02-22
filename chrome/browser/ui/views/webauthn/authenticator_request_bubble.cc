@@ -47,7 +47,7 @@ constexpr BubbleContents kGPMTouchID = {
     .title = u"Touch ID to proceed (UNTRANSLATED)",
     .body = nullptr,
     .show_footer = false,
-    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreate,
+    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
 };
 
 constexpr BubbleContents kGPMCreatePasskeyContents = {
@@ -55,7 +55,7 @@ constexpr BubbleContents kGPMCreatePasskeyContents = {
     .title = u"Create passkey for example.com? (UNTRANSLATED)",
     .body = nullptr,
     .show_footer = true,
-    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreate,
+    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
 };
 
 constexpr BubbleContents kTrustThisComputerContents = {
