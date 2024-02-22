@@ -7743,7 +7743,7 @@
   {
     "name": "system-color-chooser",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 126
   },
   {
     "name": "system-keyboard-lock",
