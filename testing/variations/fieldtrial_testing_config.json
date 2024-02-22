@@ -16720,16 +16720,17 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledContextualLensPanel_20231129",
+                    "name": "EnableCompanionChromeOS_20240222",
                     "params": {
-                        "open-companion-for-image-search": "true",
+                        "open-companion-for-image-search": "false",
                         "open-companion-for-web-search": "false",
-                        "open-contextual-lens-panel": "true",
+                        "open-contextual-lens-panel": "false",
                         "open-links-in-current-tab": "false"
                     },
                     "enable_features": [
                         "SidePanelCompanion",
-                        "VisualSearchSuggestions"
+                        "SidePanelCompanionChromeOS",
+                        "VisualQuerySuggestions"
                     ],
                     "disable_features": [
                         "CompanionEnableNewBadgesInContextMenu",
