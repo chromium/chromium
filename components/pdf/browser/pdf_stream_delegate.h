@@ -60,12 +60,6 @@ class PdfStreamDelegate {
   // `nullptr`.
   virtual std::optional<StreamInfo> GetStreamInfo(
       content::RenderFrameHost* embedder_frame) = 0;
-
-  // Determines whether navigation attempts in the PDF frames should be allowed.
-  // Navigation attempts in PDF frames should be canceled if they are not
-  // related to PDF viewer setup.
-  virtual bool ShouldAllowPdfFrameNavigation(
-      content::NavigationHandle* navigation_handle) = 0;
 };
 
 }  // namespace pdf

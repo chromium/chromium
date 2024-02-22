@@ -27,17 +27,10 @@ class FakePdfStreamDelegate : public PdfStreamDelegate {
       content::NavigationHandle& navigation_handle) override;
   std::optional<StreamInfo> GetStreamInfo(
       content::RenderFrameHost* embedder_frame) override;
-  bool ShouldAllowPdfFrameNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   void clear_stream_info() { stream_info_.reset(); }
 
-  void set_should_allow_pdf_frame_navigation(bool should_allow) {
-    should_allow_pdf_frame_navigation_ = should_allow;
-  }
-
  private:
-  bool should_allow_pdf_frame_navigation_ = true;
   std::optional<StreamInfo> stream_info_;
 };
 

@@ -85,7 +85,6 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
-#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -3934,81 +3933,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesIframe) {
 
   EXPECT_EQ(true,
             content::EvalJs(web_contents, kNestedWindowFramesUndefinedCheck));
-}
-
-class PDFExtensionOopifBlockNonPdfNavigationTest
-    : public PDFExtensionOopifTest {
- public:
-  void TestBlockNonPdfNavigation() {
-    const GURL other_url = embedded_test_server()->GetURL("/simple.html");
-
-    // Fail to navigate in the content frame.
-    content::RenderFrameHost* content_host =
-        pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
-    ASSERT_TRUE(content_host);
-    // Navigate to a different HTML page.
-    content::TestFrameNavigationObserver content_nav_observer(content_host);
-    ASSERT_TRUE(content::ExecJs(
-        content_host, content::JsReplace("location = $1", other_url)));
-    content_nav_observer.Wait();
-    EXPECT_FALSE(content_nav_observer.last_navigation_succeeded());
-    EXPECT_TRUE(content_host->IsErrorDocument());
-    // The last committed URL still changes, even if the navigation fails.
-    EXPECT_EQ(other_url, content_host->GetLastCommittedURL());
-
-    // Fail to navigate in the extension frame.
-    content::RenderFrameHost* extension_host =
-        pdf_extension_test_util::GetOnlyPdfExtensionHost(
-            GetActiveWebContents());
-    ASSERT_TRUE(extension_host);
-    // Navigate to a different HTML page.
-    content::TestFrameNavigationObserver extension_nav_observer(extension_host);
-    ASSERT_TRUE(content::ExecJs(
-        extension_host, content::JsReplace("location = $1", other_url)));
-    extension_nav_observer.Wait();
-    EXPECT_FALSE(extension_nav_observer.last_navigation_succeeded());
-    EXPECT_TRUE(extension_host->IsErrorDocument());
-    // The last committed URL still changes, even if the navigation fails.
-    EXPECT_EQ(other_url, extension_host->GetLastCommittedURL());
-  }
-};
-
-// Test that navigations in the inner PDF frames fail if they aren't for PDF
-// viewer setup in a full page PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockNonPdfNavigationTest, FullPage) {
-  // Load a direct PDF URL full page.
-  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
-  ASSERT_TRUE(LoadPdf(pdf_url));
-
-  TestBlockNonPdfNavigation();
-}
-
-// Test that navigations in the inner PDF frames fail if they aren't for PDF
-// viewer setup in an embed-embedded PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockNonPdfNavigationTest, Embed) {
-  // Load the HTML containing an embed embedding a PDF.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-
-  auto* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
-                  ->WaitUntilPdfLoadedInFirstChild());
-
-  TestBlockNonPdfNavigation();
-}
-
-// Test that navigations in the inner PDF frames fail if they aren't for PDF
-// viewer setup in an iframe-embedded PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockNonPdfNavigationTest, Iframe) {
-  // Load the HTML containing an iframe embedding a PDF.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
-
-  auto* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
-                  ->WaitUntilPdfLoadedInFirstChild());
-
-  TestBlockNonPdfNavigation();
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
