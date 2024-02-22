@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -520,12 +519,6 @@ class PersonalDataManager : public KeyedService,
   // Returns all virtual card usage data linked to the credit card.
   virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
 
-  // De-dupe credit card to suggest. Full server cards are preferred over their
-  // local duplicates, and local cards are preferred over their masked server
-  // card duplicate.
-  static void DedupeCreditCardToSuggest(
-      std::list<CreditCard*>* cards_to_suggest);
-
   // Check if `credit_card` has a duplicate card present in either Local or
   // Server card lists.
   bool IsCardPresentAsBothLocalAndServerCards(const CreditCard& credit_card);
@@ -828,11 +821,6 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
-
-  template <typename T>
-  std::optional<T> GetCreditCardBenefitByInstrumentId(
-      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-      base::FunctionRef<bool(T&)> filter = [](T&) { return true; });
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;

@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -2039,7 +2040,7 @@ TEST_F(PersonalDataManagerTest,
   full_server_card.set_use_date(AutofillClock::Now() - base::Days(15));
   credit_cards.push_back(&full_server_card);
 
-  PersonalDataManager::DedupeCreditCardToSuggest(&credit_cards);
+  PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
   ASSERT_EQ(1U, credit_cards.size());
 
   const CreditCard* deduped_card = credit_cards.front();
@@ -2071,7 +2072,7 @@ TEST_F(PersonalDataManagerTest,
     masked_card.SetNetworkForMaskedCard(kVisaCard);
     credit_cards.push_back(&masked_card);
 
-    PersonalDataManager::DedupeCreditCardToSuggest(&credit_cards);
+    PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
     ASSERT_EQ(1U, credit_cards.size());
 
     const CreditCard* deduped_card = credit_cards.front();
@@ -2104,7 +2105,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_FullServerAndMasked) {
   masked_card.SetNetworkForMaskedCard(kVisaCard);
   credit_cards.push_back(&masked_card);
 
-  PersonalDataManager::DedupeCreditCardToSuggest(&credit_cards);
+  PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
   EXPECT_EQ(2U, credit_cards.size());
 }
 
@@ -2140,7 +2141,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
   full_server_card.set_use_date(AutofillClock::Now() - base::Days(15));
   credit_cards.push_back(&full_server_card);
 
-  PersonalDataManager::DedupeCreditCardToSuggest(&credit_cards);
+  PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
   EXPECT_EQ(3U, credit_cards.size());
 }
 

@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
@@ -58,6 +60,84 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Reloads all payments data from the database.
   void Refresh();
 
+  // Returns the IBAN with the specified `guid`, or nullptr if there is no IBAN
+  // with the specified `guid`.
+  const Iban* GetIbanByGUID(const std::string& guid) const;
+
+  // Returns the IBAN if any cached IBAN in `server_ibans_` has the same
+  // `instrument_id` as the given `instrument_id`, otherwise returns nullptr.
+  const Iban* GetIbanByInstrumentId(int64_t instrument_id) const;
+
+  // Returns the credit card with the specified |guid|, or nullptr if there is
+  // no credit card with the specified |guid|.
+  virtual CreditCard* GetCreditCardByGUID(const std::string& guid);
+
+  // Returns the credit card with the specified `number`, or nullptr if there is
+  // no credit card with the specified `number`.
+  CreditCard* GetCreditCardByNumber(const std::string& number);
+
+  // Returns the credit card with the specified |instrument_id|, or nullptr if
+  // there is no credit card with the specified |instrument_id|.
+  CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id);
+
+  // Returns the credit card with the given server id, or nullptr if there is no
+  // match.
+  CreditCard* GetCreditCardByServerId(const std::string& server_id);
+
+  // Return the first valid flat rate benefit linked with the card with the
+  // specific `instrument_id`.
+  std::optional<CreditCardFlatRateBenefit> GetFlatRateBenefitByInstrumentId(
+      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id);
+
+  // Return the first valid category benefit for the specific
+  // `benefit_category` and linked with the card with the specific
+  // `instrument_id`.
+  std::optional<CreditCardCategoryBenefit>
+  GetCategoryBenefitByInstrumentIdAndCategory(
+      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
+      CreditCardCategoryBenefit::BenefitCategory benefit_category);
+
+  // Return the first valid merchant benefit for the specific
+  // `merchant_origin` and linked with the card with the specific
+  // `instrument_id`.
+  std::optional<CreditCardMerchantBenefit>
+  GetMerchantBenefitByInstrumentIdAndOrigin(
+      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
+      const url::Origin& merchant_origin);
+
+  // Returns just LOCAL_CARD cards.
+  virtual std::vector<CreditCard*> GetLocalCreditCards() const;
+  // Returns just server cards.
+  virtual std::vector<CreditCard*> GetServerCreditCards() const;
+  // Returns all credit cards, server and local.
+  virtual std::vector<CreditCard*> GetCreditCards() const;
+
+  // Returns local IBANs.
+  virtual std::vector<const Iban*> GetLocalIbans() const;
+  // Returns server IBANs.
+  virtual std::vector<const Iban*> GetServerIbans() const;
+  // Returns all IBANs, server and local.
+  virtual std::vector<const Iban*> GetIbans() const;
+  // Returns all IBANs, server and local. All local IBANs that share the same
+  // prefix, suffix, and length as any existing server IBAN will be considered a
+  // duplicate IBAN. These duplicate IBANs will not be returned in the list.
+  virtual std::vector<const Iban*> GetIbansToSuggest() const;
+
+  // Returns the Payments customer data. Returns nullptr if no data is present.
+  virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
+
+  // Returns the credit card cloud token data.
+  virtual std::vector<CreditCardCloudTokenData*> GetCreditCardCloudTokenData()
+      const;
+
+  // Returns autofill offer data, including card-linked and promo code offers.
+  virtual std::vector<AutofillOfferData*> GetAutofillOffers() const;
+
+  // Returns autofill offer data, but only promo code offers that are not
+  // expired and that are for the given |origin|.
+  std::vector<const AutofillOfferData*>
+  GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
+
   // Return the URL for the card art image, if available.
   GURL GetCardArtURL(const CreditCard& credit_card) const;
 
@@ -66,6 +146,21 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // image and this function will return nullptr.
   virtual gfx::Image* GetCreditCardArtImageForUrl(
       const GURL& card_art_url) const;
+
+  // Returns all virtual card usage data linked to the credit card.
+  virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
+
+  // Returns the credit cards to suggest to the user. Those have been deduped
+  // and ordered by frecency with the expired cards put at the end of the
+  // vector.
+  const std::vector<CreditCard*> GetCreditCardsToSuggest() const;
+
+  // De-dupe credit card to suggest. Full server cards are preferred over their
+  // local duplicates, and local cards are preferred over their masked server
+  // card duplicate.
+  // TODO(b/326408802): Move to suggestion generator?
+  static void DedupeCreditCardToSuggest(
+      std::list<CreditCard*>* cards_to_suggest);
 
   // Returns the cached card art image for the |card_art_url| if it was synced
   // locally to the client. This function is called within
@@ -182,6 +277,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the number of server credit cards that have a valid credit card art
   // image.
   size_t GetServerCardWithArtImageCount() const;
+
+  template <typename T>
+  std::optional<T> GetCreditCardBenefitByInstrumentId(
+      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
+      base::FunctionRef<bool(T&)> filter = [](T&) { return true; });
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;

@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
@@ -17,11 +19,61 @@
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/model_type.h"
 
 namespace autofill {
 
 namespace {
+
+// Checks the order of preference of the `original_card` with the
+// `duplicate_card` and returns whether to dedupe/erase the `duplicate_card`
+// based on the order of preference. We assume that both the cards in params are
+// duplicates of each other.
+//
+// This function returns true in the following situations:
+// Case 1: `original_card` = RecordType::kLocalCard
+//         `duplicate_card` = RecordType::kMaskedServerCard
+//         `should_suggest_server_cards_for_deduped_cards` = false
+//
+// Case 2: `original_card` = RecordType::kFullServerCard
+//         `duplicate_card` = RecordType::kLocalCard
+//         `should_suggest_server_cards_for_deduped_cards` = irrelevant
+//
+// Case 3: `original_card` = RecordType::kMaskedServerCard
+//         `duplicate_card` = RecordType::kLocalCard
+//         `should_suggest_server_cards_for_deduped_cards` = true
+bool ShouldDedupeDuplicateCard(CreditCard* original_card,
+                               CreditCard* duplicate_card) {
+  // FULL_SERVER_CARDs have the highest priority and should never be removed
+  // from the suggestion list.
+  if (duplicate_card->record_type() ==
+      CreditCard::RecordType::kFullServerCard) {
+    return false;
+  }
+  const bool should_suggest_server_cards_for_deduped_cards =
+      base::FeatureList::IsEnabled(
+          features::kAutofillSuggestServerCardInsteadOfLocalCard);
+
+  // Delete duplicated MASKED_SERVER_CARD if the original_card is a LOCAL_CARD
+  // and we are NOT suggesting MASKED_SERVER_CARD for duplicates.
+  if (duplicate_card->record_type() ==
+          CreditCard::RecordType::kMaskedServerCard &&
+      original_card->record_type() == CreditCard::RecordType::kLocalCard &&
+      !should_suggest_server_cards_for_deduped_cards) {
+    return true;
+  }
+  // Delete duplicated LOCAL_CARD if the original_card is a FULL_SERVER_CARD
+  // or we are suggesting MASKED_SERVER_CARD for duplicates.
+  if (duplicate_card->record_type() == CreditCard::RecordType::kLocalCard &&
+      (original_card->record_type() ==
+           CreditCard::RecordType::kFullServerCard ||
+       should_suggest_server_cards_for_deduped_cards)) {
+    return true;
+  }
+  return false;
+}
 
 // Receives the loaded profiles from the web data service and stores them in
 // |*dest|. The pending handle is the address of the pending handle
@@ -37,6 +89,14 @@ void ReceiveLoadedDbValues(WebDataServiceBase::Handle h,
 
   *dest = std::move(
       static_cast<WDResult<std::vector<ValueType>>*>(result)->GetValue());
+}
+
+template <typename T>
+typename std::vector<T>::const_iterator FindElementByGUID(
+    const std::vector<T>& container,
+    std::string_view guid) {
+  return base::ranges::find(
+      container, guid, [](const auto& element) { return element->guid(); });
 }
 
 }  // namespace
@@ -310,6 +370,227 @@ void PaymentsDataManager::Refresh() {
   pdm_->LoadCreditCardBenefits();
 }
 
+const Iban* PaymentsDataManager::GetIbanByGUID(const std::string& guid) const {
+  auto iter = FindElementByGUID(local_ibans_, guid);
+  return iter != local_ibans_.end() ? iter->get() : nullptr;
+}
+
+const Iban* PaymentsDataManager::GetIbanByInstrumentId(
+    int64_t instrument_id) const {
+  for (const Iban* iban : GetServerIbans()) {
+    if (iban->instrument_id() == instrument_id) {
+      return iban;
+    }
+  }
+  return nullptr;
+}
+
+CreditCard* PaymentsDataManager::GetCreditCardByGUID(const std::string& guid) {
+  const std::vector<CreditCard*>& credit_cards = GetCreditCards();
+  auto iter = FindElementByGUID(credit_cards, guid);
+  return iter != credit_cards.end() ? *iter : nullptr;
+}
+
+CreditCard* PaymentsDataManager::GetCreditCardByNumber(
+    const std::string& number) {
+  CreditCard numbered_card;
+  numbered_card.SetNumber(base::ASCIIToUTF16(number));
+  for (CreditCard* credit_card : GetCreditCards()) {
+    DCHECK(credit_card);
+    if (credit_card->MatchingCardDetails(numbered_card)) {
+      return credit_card;
+    }
+  }
+  return nullptr;
+}
+
+CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
+    int64_t instrument_id) {
+  const std::vector<CreditCard*> credit_cards = GetCreditCards();
+  for (CreditCard* credit_card : credit_cards) {
+    if (credit_card->instrument_id() == instrument_id) {
+      return credit_card;
+    }
+  }
+  return nullptr;
+}
+
+CreditCard* PaymentsDataManager::GetCreditCardByServerId(
+    const std::string& server_id) {
+  const std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
+  for (CreditCard* credit_card : server_credit_cards) {
+    if (credit_card->server_id() == server_id) {
+      return credit_card;
+    }
+  }
+  return nullptr;
+}
+
+template <typename T>
+std::optional<T> PaymentsDataManager::GetCreditCardBenefitByInstrumentId(
+    CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
+    base::FunctionRef<bool(T&)> filter) {
+  if (!pdm_->IsAutofillWalletImportEnabled() ||
+      !pdm_->IsAutofillPaymentMethodsEnabled()) {
+    return std::nullopt;
+  }
+  base::Time now = AutofillClock::Now();
+  for (CreditCardBenefit& benefit : credit_card_benefits_) {
+    if (auto* b = absl::get_if<T>(&benefit);
+        b && b->linked_card_instrument_id() == instrument_id &&
+        b->start_time() <= now && now < b->expiry_time() && filter(*b)) {
+      return *b;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<CreditCardFlatRateBenefit>
+PaymentsDataManager::GetFlatRateBenefitByInstrumentId(
+    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) {
+  return GetCreditCardBenefitByInstrumentId<CreditCardFlatRateBenefit>(
+      instrument_id);
+}
+
+std::optional<CreditCardCategoryBenefit>
+PaymentsDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
+    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
+    const CreditCardCategoryBenefit::BenefitCategory benefit_category) {
+  return GetCreditCardBenefitByInstrumentId<CreditCardCategoryBenefit>(
+      instrument_id, [&benefit_category](CreditCardCategoryBenefit& b) {
+        return b.benefit_category() == benefit_category;
+      });
+}
+
+std::optional<CreditCardMerchantBenefit>
+PaymentsDataManager::GetMerchantBenefitByInstrumentIdAndOrigin(
+    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
+    const url::Origin& merchant_origin) {
+  return GetCreditCardBenefitByInstrumentId<CreditCardMerchantBenefit>(
+      instrument_id, [&merchant_origin](CreditCardMerchantBenefit& b) {
+        return b.merchant_domains().contains(merchant_origin);
+      });
+}
+
+std::vector<CreditCard*> PaymentsDataManager::GetLocalCreditCards() const {
+  std::vector<CreditCard*> result;
+  result.reserve(local_credit_cards_.size());
+  for (const auto& card : local_credit_cards_) {
+    result.push_back(card.get());
+  }
+  return result;
+}
+
+std::vector<CreditCard*> PaymentsDataManager::GetServerCreditCards() const {
+  std::vector<CreditCard*> result;
+  result.reserve(server_credit_cards_.size());
+  for (const auto& card : server_credit_cards_) {
+    result.push_back(card.get());
+  }
+  return result;
+}
+
+std::vector<CreditCard*> PaymentsDataManager::GetCreditCards() const {
+  std::vector<CreditCard*> result;
+  result.reserve(local_credit_cards_.size() + server_credit_cards_.size());
+  for (const auto& card : local_credit_cards_) {
+    result.push_back(card.get());
+  }
+  if (pdm_->IsAutofillWalletImportEnabled()) {
+    for (const auto& card : server_credit_cards_) {
+      result.push_back(card.get());
+    }
+  }
+  return result;
+}
+
+std::vector<const Iban*> PaymentsDataManager::GetLocalIbans() const {
+  std::vector<const Iban*> result;
+  result.reserve(local_ibans_.size());
+  for (const auto& iban : local_ibans_) {
+    result.push_back(iban.get());
+  }
+  return result;
+}
+
+std::vector<const Iban*> PaymentsDataManager::GetServerIbans() const {
+  std::vector<const Iban*> result;
+  result.reserve(server_ibans_.size());
+  for (const std::unique_ptr<Iban>& iban : server_ibans_) {
+    result.push_back(iban.get());
+  }
+  return result;
+}
+
+std::vector<const Iban*> PaymentsDataManager::GetIbans() const {
+  std::vector<const Iban*> result;
+  result.reserve(local_ibans_.size() + server_ibans_.size());
+  if (pdm_->IsAutofillWalletImportEnabled()) {
+    for (const std::unique_ptr<Iban>& iban : server_ibans_) {
+      result.push_back(iban.get());
+    }
+  }
+
+  for (const std::unique_ptr<Iban>& iban : local_ibans_) {
+    result.push_back(iban.get());
+  }
+  return result;
+}
+
+std::vector<const Iban*> PaymentsDataManager::GetIbansToSuggest() const {
+  std::vector<const Iban*> ibans_to_suggest =
+      pdm_->ShouldSuggestServerPaymentMethods() ? GetIbans() : GetLocalIbans();
+  // Remove any IBAN from the returned list if it's a local IBAN and its
+  // prefix, suffix, and length matches any existing server IBAN.
+  std::erase_if(ibans_to_suggest, [this](const Iban* iban) {
+    return iban->record_type() == Iban::kLocalIban &&
+           base::ranges::any_of(
+               server_ibans_, [&](const std::unique_ptr<Iban>& server_iban) {
+                 return server_iban->MatchesPrefixSuffixAndLength(*iban);
+               });
+  });
+
+  return ibans_to_suggest;
+}
+
+PaymentsCustomerData* PaymentsDataManager::GetPaymentsCustomerData() const {
+  return payments_customer_data_ ? payments_customer_data_.get() : nullptr;
+}
+
+std::vector<CreditCardCloudTokenData*>
+PaymentsDataManager::GetCreditCardCloudTokenData() const {
+  std::vector<CreditCardCloudTokenData*> result;
+  result.reserve(server_credit_card_cloud_token_data_.size());
+  for (const auto& data : server_credit_card_cloud_token_data_) {
+    result.push_back(data.get());
+  }
+  return result;
+}
+
+std::vector<AutofillOfferData*> PaymentsDataManager::GetAutofillOffers() const {
+  std::vector<AutofillOfferData*> result;
+  result.reserve(autofill_offer_data_.size());
+  for (const auto& data : autofill_offer_data_) {
+    result.push_back(data.get());
+  }
+  return result;
+}
+
+std::vector<const AutofillOfferData*>
+PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
+    GURL origin) const {
+  std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
+  base::ranges::for_each(
+      autofill_offer_data_,
+      [&](const std::unique_ptr<AutofillOfferData>& autofill_offer_data) {
+        if (autofill_offer_data.get()->IsPromoCodeOffer() &&
+            autofill_offer_data.get()->IsActiveAndEligibleForOrigin(origin)) {
+          promo_code_offers_for_origin.push_back(autofill_offer_data.get());
+        }
+      });
+  return promo_code_offers_for_origin;
+}
+
 GURL PaymentsDataManager::GetCardArtURL(const CreditCard& credit_card) const {
   if (credit_card.record_type() == CreditCard::RecordType::kMaskedServerCard) {
     return credit_card.card_art_url();
@@ -359,6 +640,79 @@ gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
 
   // The cache does not contain the image, return nullptr.
   return nullptr;
+}
+
+std::vector<VirtualCardUsageData*>
+PaymentsDataManager::GetVirtualCardUsageData() const {
+  std::vector<VirtualCardUsageData*> result;
+  result.reserve(autofill_virtual_card_usage_data_.size());
+  for (const auto& data : autofill_virtual_card_usage_data_) {
+    result.push_back(data.get());
+  }
+  return result;
+}
+
+const std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest()
+    const {
+  std::vector<CreditCard*> credit_cards;
+  if (pdm_->ShouldSuggestServerPaymentMethods()) {
+    credit_cards = GetCreditCards();
+  } else {
+    credit_cards = GetLocalCreditCards();
+  }
+
+  std::list<CreditCard*> cards_to_dedupe(credit_cards.begin(),
+                                         credit_cards.end());
+
+  DedupeCreditCardToSuggest(&cards_to_dedupe);
+
+  std::vector<CreditCard*> cards_to_suggest(
+      std::make_move_iterator(std::begin(cards_to_dedupe)),
+      std::make_move_iterator(std::end(cards_to_dedupe)));
+
+  // Rank the cards by ranking score (see AutofillDataModel for details). All
+  // expired cards should be suggested last, also by ranking score.
+  base::Time comparison_time = AutofillClock::Now();
+  if (cards_to_suggest.size() > 1) {
+    std::sort(cards_to_suggest.begin(), cards_to_suggest.end(),
+              [comparison_time](const CreditCard* a, const CreditCard* b) {
+                const bool a_is_expired = a->IsExpired(comparison_time);
+                if (a_is_expired != b->IsExpired(comparison_time)) {
+                  return !a_is_expired;
+                }
+
+                return a->HasGreaterRankingThan(b, comparison_time);
+              });
+  }
+
+  return cards_to_suggest;
+}
+
+// The priority ranking for deduping a duplicate card is:
+// 1. RecordType::kFullServerCard
+// 2. RecordType::kLocalCard
+// 3. RecordType::kMaskedServerCard
+// Note: 2 & 3 are swapped if experiment
+// kAutofillSuggestServerCardInsteadOfLocalCard is enabled.
+// static
+void PaymentsDataManager::DedupeCreditCardToSuggest(
+    std::list<CreditCard*>* cards_to_suggest) {
+  for (auto outer_it = cards_to_suggest->begin();
+       outer_it != cards_to_suggest->end(); ++outer_it) {
+    for (auto inner_it = cards_to_suggest->begin();
+         inner_it != cards_to_suggest->end();) {
+      auto inner_it_copy = inner_it++;
+      if (outer_it == inner_it_copy) {
+        continue;
+      }
+      // Check if the cards are local or server duplicate of each other. If yes,
+      // then check if we can dedupe/erase the duplicate card.
+      if ((*inner_it_copy)->IsLocalOrServerDuplicateOf(**outer_it) &&
+          ShouldDedupeDuplicateCard(*outer_it, *inner_it_copy)) {
+        cards_to_suggest->erase(inner_it_copy);
+      }
+    }
+  }
 }
 
 scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetLocalDatabase() {
