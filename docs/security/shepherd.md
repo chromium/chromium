@@ -131,7 +131,7 @@ that, our goal is to pass them actionable reports with little ambiguity.
   by the [Security FAQ](faq.md), such as those related physically local attacks
   or inputting JavaScript in the URL bar or running Javascript directly in
   DevTools not being an indication of an XSS vulnerability. Mark as WontFix and
-  update the 'Issue access level' to `Default Visibility` so the issue is
+  update the 'Issue access level' to `Default access` so the issue is
   publicly visible.
 * **Mark as duplicate** – we want exactly one bug per root cause problem. Please
   check for duplicate issues of a given issue from that or other reporters /
@@ -152,16 +152,15 @@ that, our goal is to pass them actionable reports with little ambiguity.
   Type=Vulnerability to Type=Bug. Do NOT remove security@chromium.org from
   collaborators first (as this will result in orphaning the bug), but update the
   'Issue Access Level' to the appropriate visibility. You may consider adding
-  other visibility restrictions, such as `Limited Visibility + Googlers` and
-  select / add edit-bug-access@chromium.org to the 'Add collaborator groups'
-  (this is similar to 'Restrict-View-EditAccess' in the legacy issue tracker)
-  if the immediate disclosure could result in potential abuse (e.g. denial of
-  service issue).
+  other visibility restrictions, such as `Limited visibility + Googlers` and add
+  edit-bug-access@chromium.org to CC (this is similar to
+  'Restrict-View-EditAccess' in the legacy issue tracker) if the immediate
+  disclosure could result in potential abuse (e.g. denial of service issue).
 * **Convert to a privacy bug** - privacy issues (such as issues with incognito)
   are not considered security bugs, but functional privacy issues.
   Convert to Type=Bug and add the Privacy component. Add yourself and any other
   security team members who may potentially need access to the cc: line.
-  Update the 'Issue access level' to `Limited Visibility + Googlers` and
+  Update the 'Issue access level' to `Limited visibility + Googlers` and
   deselect / remove security@chromium.org from the 'add collaborator groups'.
 * **Add the `Needs-Feedback` hotlist (hotlistID: 5433459) and set a Next Action
   date of 24-48 hours for more information** if there is no response, close the
