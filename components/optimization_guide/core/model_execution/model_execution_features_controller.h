@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -79,6 +80,10 @@ class ModelExecutionFeaturesController
 
   // Removes `observer`.
   void RemoveObserver(SettingsEnabledObserver* observer);
+
+  base::WeakPtr<ModelExecutionFeaturesController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   // Enumerates the reasons an user is invalid.
@@ -154,6 +159,10 @@ class ModelExecutionFeaturesController
       features_allowed_for_unsigned_user_;
 
   THREAD_CHECKER(thread_checker_);
+
+  // Used to get `weak_ptr_` to self.
+  base::WeakPtrFactory<ModelExecutionFeaturesController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace optimization_guide

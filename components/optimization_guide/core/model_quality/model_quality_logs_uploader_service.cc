@@ -182,6 +182,14 @@ ModelQualityLogsUploaderService::ModelQualityLogsUploaderService(
 
 ModelQualityLogsUploaderService::~ModelQualityLogsUploaderService() = default;
 
+bool ModelQualityLogsUploaderService::CanUploadLogs(
+    optimization_guide::proto::ModelExecutionFeature feature) {
+  return false;
+}
+
+void ModelQualityLogsUploaderService::SetSystemProfileProto(
+    proto::LoggingMetadata* logging_metadata) {}
+
 void ModelQualityLogsUploaderService::UploadModelQualityLogs(
     std::unique_ptr<ModelQualityLogEntry> log_entry) {
   if (!log_entry) {

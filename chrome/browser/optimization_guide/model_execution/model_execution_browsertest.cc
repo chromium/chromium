@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
   // The logs shouldn't be uploaded because there is no metrics consent.
   histogram_tester_.ExpectBucketCount(
-      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 1);
 }
 
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   // The logs should be attempted to be uploaded but flagged behind enterprise
   // check.
   histogram_tester_.ExpectBucketCount(
-      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       optimization_guide::ModelQualityLogsUploadStatus::
           kDisabledDueToEnterprisePolicy,
       1);
@@ -858,7 +858,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // The logs should be disabled via enterprise policy.
   histogram_tester_.ExpectBucketCount(
-      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       optimization_guide::ModelQualityLogsUploadStatus::
           kDisabledDueToEnterprisePolicy,
       1);

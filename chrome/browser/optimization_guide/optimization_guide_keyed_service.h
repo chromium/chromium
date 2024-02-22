@@ -45,7 +45,6 @@ class ModelExecutionLiveTest;
 class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogEntry;
-class ModelQualityLogsUploaderService;
 class ModelValidatorKeyedService;
 class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
@@ -56,6 +55,7 @@ class PredictionModelStoreBrowserTestBase;
 class PushNotificationManager;
 class TabUrlProvider;
 class TopHostProvider;
+class ChromeModelQualityLogsUploaderService;
 }  // namespace optimization_guide
 
 class ChromeBrowserMainExtraPartsOptimizationGuide;
@@ -174,6 +174,11 @@ class OptimizationGuideKeyedService
 
   OptimizationGuideLogger* GetOptimizationGuideLogger() {
     return optimization_guide_logger_.get();
+  }
+
+  optimization_guide::ChromeModelQualityLogsUploaderService*
+  GetChromeModelQualityLogsUploaderServiceForTesting() {
+    return model_quality_logs_uploader_service_.get();
   }
 
  private:
@@ -295,7 +300,7 @@ class OptimizationGuideKeyedService
 
   // Manages the model quality logs uploader service. Not created for off the
   // record profiles.
-  std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
+  std::unique_ptr<optimization_guide::ChromeModelQualityLogsUploaderService>
       model_quality_logs_uploader_service_;
 
   // Used to observe profile initialization event.

@@ -963,6 +963,8 @@ static_library("browser") {
     "optimization_guide/chrome_browser_main_extra_parts_optimization_guide.h",
     "optimization_guide/chrome_hints_manager.cc",
     "optimization_guide/chrome_hints_manager.h",
+    "optimization_guide/chrome_model_quality_logs_uploader_service.cc",
+    "optimization_guide/chrome_model_quality_logs_uploader_service.h",
     "optimization_guide/chrome_prediction_model_store.cc",
     "optimization_guide/chrome_prediction_model_store.h",
     "optimization_guide/model_execution/chrome_on_device_model_service_controller.cc",

@@ -36,7 +36,15 @@ class ModelQualityLogsUploaderService {
   ModelQualityLogsUploaderService& operator=(
       const ModelQualityLogsUploaderService&) = delete;
 
-  ~ModelQualityLogsUploaderService();
+  virtual ~ModelQualityLogsUploaderService();
+
+  // Does various checks like metrics consent, enterprise check before uploading
+  // the logs.
+  virtual bool CanUploadLogs(
+      optimization_guide::proto::ModelExecutionFeature feature);
+
+  // Sets system profile proto corresponding to the logging_metadata.
+  virtual void SetSystemProfileProto(proto::LoggingMetadata* logging_metadata);
 
   void UploadModelQualityLogs(std::unique_ptr<ModelQualityLogEntry> log_entry);
 
