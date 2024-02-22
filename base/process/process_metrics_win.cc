@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/process/process_metrics_iocounters.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
@@ -193,22 +192,6 @@ TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
   const double process_time_seconds = process_cycle_time / tsc_ticks_per_second;
   return Seconds(process_time_seconds);
 #endif  // !defined(ARCH_CPU_ARM64)
-}
-
-bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  if (!process_.is_valid())
-    return false;
-
-  return GetProcessIoCounters(process_.get(), io_counters) != FALSE;
-}
-
-uint64_t ProcessMetrics::GetCumulativeDiskUsageInBytes() {
-  IoCounters counters;
-  if (!GetIOCounters(&counters))
-    return 0;
-
-  return counters.ReadTransferCount + counters.WriteTransferCount +
-         counters.OtherTransferCount;
 }
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process) {

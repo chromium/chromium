@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/process/process_metrics_iocounters.h"
 
 namespace base {
 
@@ -24,9 +23,5 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process,
       last_absolute_idle_wakeups_(0),
       last_absolute_package_idle_wakeups_(0),
       port_provider_(port_provider) {}
-
-bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  return false;
-}
 
 }  // namespace base

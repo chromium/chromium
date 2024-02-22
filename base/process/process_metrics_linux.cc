@@ -26,7 +26,6 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
-#include "base/process/process_metrics_iocounters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -117,37 +116,6 @@ bool ProcessMetrics::GetCumulativeCPUUsagePerThread(
       });
 
   return !cpu_per_thread.empty();
-}
-
-// For the /proc/self/io file to exist, the Linux kernel must have
-// CONFIG_TASK_IO_ACCOUNTING enabled.
-bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  StringPairs pairs;
-  if (!internal::ReadProcFileToTrimmedStringPairs(process_, "io", &pairs)) {
-    return false;
-  }
-
-  io_counters->OtherOperationCount = 0;
-  io_counters->OtherTransferCount = 0;
-
-  for (const auto& pair : pairs) {
-    const std::string& key = pair.first;
-    const std::string& value_str = pair.second;
-    uint64_t* target_counter = nullptr;
-    if (key == "syscr")
-      target_counter = &io_counters->ReadOperationCount;
-    else if (key == "syscw")
-      target_counter = &io_counters->WriteOperationCount;
-    else if (key == "rchar")
-      target_counter = &io_counters->ReadTransferCount;
-    else if (key == "wchar")
-      target_counter = &io_counters->WriteTransferCount;
-    if (!target_counter)
-      continue;
-    bool converted = StringToUint64(value_str, target_counter);
-    DCHECK(converted);
-  }
-  return true;
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

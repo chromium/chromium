@@ -47,9 +47,6 @@
 
 namespace base {
 
-// Full declaration is in process_metrics_iocounters.h.
-struct IoCounters;
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Minor and major page fault counts since the process creation.
 // Both counts are process-wide, and exclude child processes.
@@ -197,17 +194,6 @@ class BASE_EXPORT ProcessMetrics {
   // auto-refresh), place interconnects into lower-power states etc"
   int GetPackageIdleWakeupsPerSecond();
 #endif
-
-  // Retrieves accounting information for all I/O operations performed by the
-  // process.
-  // If IO information is retrieved successfully, the function returns true
-  // and fills in the IO_COUNTERS passed in. The function returns false
-  // otherwise.
-  bool GetIOCounters(IoCounters* io_counters) const;
-
-  // Returns the cumulative disk usage in bytes across all threads of the
-  // process since process start.
-  uint64_t GetCumulativeDiskUsageInBytes();
 
 #if BUILDFLAG(IS_POSIX)
   // Returns the number of file descriptors currently open by the process, or

@@ -32,7 +32,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_storage.h"
 #include "base/numerics/safe_conversions.h"
@@ -40,7 +39,6 @@
 #include "base/process/launch.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
-#include "base/process/process_metrics.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1562,12 +1560,6 @@ int SetupMain() {
                             base::saturated_cast<base::HistogramBase::Sample>(
                                 pmc.PeakWorkingSetSize / 1024));
   }
-  auto process_metrics = base::ProcessMetrics::CreateCurrentProcessMetrics();
-  auto disk_usage = process_metrics->GetCumulativeDiskUsageInBytes();
-  base::UmaHistogramMemoryMB(
-      "Setup.Install.CumulativeDiskUsage2",
-      base::saturated_cast<int>(base::ClampAdd(disk_usage, 1024 * 1024 / 2) /
-                                (1024 * 1024)));
 
   int return_code = 0;
   // MSI demands that custom actions always return 0 (ERROR_SUCCESS) or it will

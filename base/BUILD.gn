@@ -564,7 +564,6 @@ component("base") {
     "process/process_handle.cc",
     "process/process_handle.h",
     "process/process_info.h",
-    "process/process_metrics_iocounters.h",
     "profiler/frame.cc",
     "profiler/frame.h",
     "profiler/metadata_recorder.cc",

@@ -9466,18 +9466,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Setup.Install.CumulativeDiskUsage2" units="MB"
-    expires_after="never">
-<!-- expires-never: used to monitor memory usage of setup installer.  -->
-
-  <owner>etiennep@chromium.org</owner>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    The cumulative disk usage in MB during install or uninstall attempt,
-    recorded right after the install/uninstall attempt on windows only.
-  </summary>
-</histogram>
-
 <histogram name="Setup.Install.LzmaUnPackStatus" enum="UnPackStatus"
     expires_after="2024-04-28">
   <owner>zmin@chromium.org</owner>
