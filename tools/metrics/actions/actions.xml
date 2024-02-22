@@ -8267,6 +8267,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.HighConfidence.Opened">
+  <obsolete>
+    Deprecated as of 02/2024 (replaced by
+    TrackingProtection.UserBypass.Animated.Opened).
+  </obsolete>
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
@@ -8275,6 +8279,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.HighConfidence.Shown">
+  <obsolete>
+    Deprecated as of 02/2024 (replaced by
+    TrackingProtection.UserBypass.Animated).
+  </obsolete>
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
@@ -8283,6 +8291,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.LowConfidence.Opened">
+  <obsolete>Deprecated as of 02/2024.</obsolete>
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
@@ -8291,6 +8300,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.LowConfidence.Shown">
+  <obsolete>Deprecated as of 02/2024.</obsolete>
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
@@ -8299,6 +8309,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.MediumConfidence.Opened">
+  <obsolete>
+    Deprecated as of 02/2024 (replaced by
+    TrackingProtection.UserBypass.Shown.Opened).
+  </obsolete>
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
@@ -8307,6 +8321,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CookieControls.MediumConfidence.Shown">
+  <obsolete>
+    Deprecated as of 02/2024 (replaced by TrackingProtection.UserBypass.Shown).
+  </obsolete>
   <owner>kmg@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
@@ -39498,6 +39515,32 @@ should be able to be added at any place in this file.
   <owner>koilos@google.com</owner>
   <description>
     User is shown the Tracking Protection onboarding notice.
+  </description>
+</action>
+
+<action name="TrackingProtection.UserBypass.Animated">
+  <owner>alvingo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>User bypass icon was animated.</description>
+</action>
+
+<action name="TrackingProtection.UserBypass.Animated.Opened">
+  <owner>alvingo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>User bypass icon was animated and clicked on.</description>
+</action>
+
+<action name="TrackingProtection.UserBypass.Shown">
+  <owner>alvingo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>User bypass icon was shown and not animated.</description>
+</action>
+
+<action name="TrackingProtection.UserBypass.Shown.Opened">
+  <owner>alvingo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User bypass icon was shown and clicked on (without animation).
   </description>
 </action>
 
