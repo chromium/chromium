@@ -386,14 +386,14 @@ ReservedTexture WebGPUImplementation::ReserveTexture(
     optionalDesc = &placeholderDesc;
   }
 
-  auto reservation =
+  auto reserved =
       dawn_wire_->wire_client()->ReserveTexture(device, optionalDesc);
   ReservedTexture result;
-  result.texture = reservation.texture;
-  result.id = reservation.id;
-  result.generation = reservation.generation;
-  result.deviceId = reservation.deviceId;
-  result.deviceGeneration = reservation.deviceGeneration;
+  result.texture = reserved.texture;
+  result.id = reserved.handle.id;
+  result.generation = reserved.handle.generation;
+  result.deviceId = reserved.deviceHandle.id;
+  result.deviceGeneration = reserved.deviceHandle.generation;
   return result;
 #else
   NOTREACHED();

@@ -1128,7 +1128,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   wire_server_ = DawnWireServer::Create(
       this, wire_serializer_.get(), memory_transfer_service_.get(), wire_procs);
 
-  wire_server_->InjectInstance(dawn_instance_->Get(), 1, 0);
+  wire_server_->InjectInstance(dawn_instance_->Get(), {1, 0});
 
   // If there is no isolation key provider we don't want to wait for an
   // isolation key to come when processing device requests. Therefore, we can
@@ -2040,8 +2040,8 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   // Inject the texture in the dawn::wire::Server and remember which shared
   // image it is associated with.
   if (!wire_server_->InjectTexture(representation_and_access->texture().Get(),
-                                   id, generation, device_id,
-                                   device_generation)) {
+                                   {id, generation},
+                                   {device_id, device_generation})) {
     DLOG(ERROR) << "AssociateMailbox: Invalid texture ID";
     return error::kInvalidArguments;
   }
