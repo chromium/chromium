@@ -44,7 +44,7 @@ generate_jni_registration("cronet_jni_registration") {
   include_testonly = true
 
   _subdir = rebase_path(target_gen_dir, root_gen_dir)
-  header_output =
+  cpp_codegen_output =
       "$jni_headers_dir/$_subdir/cronet_jni_registration_generated.h"
 }
 
@@ -1693,7 +1693,7 @@ generate_jni_registration("cronet_tests_jni_registration") {
   testonly = true
   module_name = "cronet_tests"
   _subdir = rebase_path(target_gen_dir, root_gen_dir)
-  header_output =
+  cpp_codegen_output =
       "$jni_headers_dir/$_subdir/cronet_tests_jni_registration_generated.h"
 }
 android_library("cronet_tests_jni_registration_java") {

@@ -196,15 +196,16 @@ template("generate_jni_registration") {
     }
 
     if (_manual_jni_registration || _enable_jni_multiplexing) {
-      _header_output = invoker.header_output
-      outputs += [ _header_output ]
+      _cpp_codegen_output = invoker.cpp_codegen_output
+      outputs += [ _cpp_codegen_output ]
       args += [
         "--header-path",
-        rebase_path(_header_output, root_build_dir),
+        rebase_path(_cpp_codegen_output, root_build_dir),
       ]
 
       public_configs = [
-        # This gives targets depending on this registration access to our generated header.
+        # This gives targets depending on this registration access to our
+        # generated C++ file.
         "//third_party/jni_zero:jni_include_dir",
       ]
     }
@@ -446,16 +447,25 @@ template("generate_jar_jni") {
 template("native_with_jni") {
   _enable_underlying_native =
       !defined(invoker.enable_target) || invoker.enable_target
-  _needs_header =
-      ((defined(invoker.manual_jni_registration) &&
-        invoker.manual_jni_registration) || allow_jni_multiplexing) &&
+  _manual_jni_registration = defined(invoker.manual_jni_registration) &&
+                             invoker.manual_jni_registration
+  _needs_cpp_codegen =
+      (_manual_jni_registration || allow_jni_multiplexing) &&
       !(defined(invoker.collect_inputs_only) && invoker.collect_inputs_only)
-  _needs_native_dep = _enable_underlying_native && _needs_header
-  if ((_needs_header && current_toolchain == default_toolchain) ||
+  _needs_native_dep = _enable_underlying_native && _needs_cpp_codegen
+  if ((_needs_cpp_codegen && current_toolchain == default_toolchain) ||
       _needs_native_dep) {
     _subdir = rebase_path(target_gen_dir, root_gen_dir)
-    _registration_header_output =
-        "$jni_headers_dir/$_subdir/${target_name}__jni_registration_generated.h"
+    _registration_cpp_codegen_output =
+        "$jni_headers_dir/$_subdir/${target_name}__jni_registration_generated"
+
+    # Make it a header for jni_registration (where we need to #include it) and
+    # .cc when it's multiplexing.
+    if (_manual_jni_registration) {
+      _registration_cpp_codegen_output += ".h"
+    } else {
+      _registration_cpp_codegen_output += ".cc"
+    }
   }
   if (_needs_native_dep || current_toolchain == default_toolchain) {
     _jni_registration_target_name = "${target_name}__jni_registration"
@@ -477,11 +487,11 @@ template("native_with_jni") {
         add_stubs_for_missing_jni = true
         remove_uncalled_jni = true
       }
-      if (_needs_header) {
+      if (_needs_cpp_codegen) {
         if (allow_jni_multiplexing) {
           enable_jni_multiplexing = true
         }
-        header_output = _registration_header_output
+        cpp_codegen_output = _registration_cpp_codegen_output
       }
       forward_variables_from(invoker,
                              [
@@ -526,7 +536,7 @@ template("native_with_jni") {
         if (!defined(sources)) {
           sources = []
         }
-        sources += [ _registration_header_output ]
+        sources += [ _registration_cpp_codegen_output ]
       }
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker,
