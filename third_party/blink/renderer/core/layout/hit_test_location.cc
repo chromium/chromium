@@ -50,6 +50,29 @@ bool PointInRectangleStroke(const gfx::PointF& point,
          (half_height - half_stroke_width <= abs_delta_y);
 }
 
+bool QuadIntersectsRectangleStroke(const gfx::QuadF& quad,
+                                   const gfx::RectF& rect,
+                                   float stroke_width) {
+  const float half_stroke_width = stroke_width / 2;
+  gfx::RectF outer_edge(rect);
+  outer_edge.Outset(half_stroke_width);
+  // If the outer edge does not intersect the quad, then neither will the inner.
+  if (!quad.IntersectsRect(outer_edge)) {
+    return false;
+  }
+  gfx::RectF inner_edge(rect);
+  inner_edge.Inset(half_stroke_width);
+  // If all the points of the quad is contained within the inner edge,
+  // then the quad does not intersect.
+  if (inner_edge.InclusiveContains(quad.p1()) &&
+      inner_edge.InclusiveContains(quad.p2()) &&
+      inner_edge.InclusiveContains(quad.p3()) &&
+      inner_edge.InclusiveContains(quad.p4())) {
+    return false;
+  }
+  return true;
+}
+
 bool PointInEllipse(const gfx::PointF& point,
                     const gfx::PointF& center,
                     const gfx::SizeF& radii) {
@@ -63,13 +86,37 @@ bool PointInEllipse(const gfx::PointF& point,
   return xr_x * xr_x + yr_y * yr_y <= 1.0;
 }
 
+float DistanceBetween(const gfx::PointF& from, const gfx::PointF& to) {
+  return (to - from).Length();
+}
+
 bool PointInCircleStroke(const gfx::PointF& point,
                          const gfx::PointF& center,
                          float radius,
                          float stroke_width) {
-  const gfx::Vector2dF center_offset = center - point;
   const float half_stroke_width = stroke_width / 2;
-  return std::abs(center_offset.Length() - radius) <= half_stroke_width;
+  return std::abs(DistanceBetween(point, center) - radius) <= half_stroke_width;
+}
+
+bool QuadIntersectsCircleStroke(const gfx::QuadF& quad,
+                                const gfx::PointF& center,
+                                float radius,
+                                float stroke_width) {
+  const float half_stroke_width = stroke_width / 2;
+  // If the outer edge does not intersect the quad, then neither will the inner.
+  if (!quad.IntersectsCircle(center, radius + half_stroke_width)) {
+    return false;
+  }
+  // If all the points of the quad is contained within the inner edge,
+  // then the quad does not intersect.
+  const float inner_edge_radius = radius - half_stroke_width;
+  if (DistanceBetween(quad.p1(), center) < inner_edge_radius &&
+      DistanceBetween(quad.p2(), center) < inner_edge_radius &&
+      DistanceBetween(quad.p3(), center) < inner_edge_radius &&
+      DistanceBetween(quad.p4(), center) < inner_edge_radius) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -206,32 +253,43 @@ bool HitTestLocation::ContainsPoint(const gfx::PointF& point) const {
 }
 
 bool HitTestLocation::Intersects(const Path& path) const {
-  // TODO(fs): Support rect-based hit-test.
+  if (is_rect_based_) {
+    return path.Intersects(transformed_rect_);
+  }
   return path.Contains(transformed_point_);
 }
 
 bool HitTestLocation::Intersects(const Path& path,
                                  WindRule winding_rule) const {
-  // TODO(fs): Support rect-based hit-test.
+  if (is_rect_based_) {
+    return path.Intersects(transformed_rect_, winding_rule);
+  }
   return path.Contains(transformed_point_, winding_rule);
 }
 
 bool HitTestLocation::IntersectsStroke(const gfx::RectF& rect,
                                        float stroke_width) const {
-  // TODO(fs): Support rect-based hit-test.
+  if (is_rect_based_) {
+    return QuadIntersectsRectangleStroke(transformed_rect_, rect, stroke_width);
+  }
   return PointInRectangleStroke(transformed_point_, rect, stroke_width);
 }
 
 bool HitTestLocation::IntersectsEllipse(const gfx::PointF& center,
                                         const gfx::SizeF& radii) const {
-  // TODO(fs): Support rect-based hit-test.
+  if (is_rect_based_) {
+    return transformed_rect_.IntersectsEllipse(center, radii);
+  }
   return PointInEllipse(transformed_point_, center, radii);
 }
 
 bool HitTestLocation::IntersectsCircleStroke(const gfx::PointF& center,
                                              float radius,
                                              float stroke_width) const {
-  // TODO(fs): Support rect-based hit-test.
+  if (is_rect_based_) {
+    return QuadIntersectsCircleStroke(transformed_rect_, center, radius,
+                                      stroke_width);
+  }
   return PointInCircleStroke(transformed_point_, center, radius, stroke_width);
 }
 
