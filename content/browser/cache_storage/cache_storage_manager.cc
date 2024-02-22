@@ -33,7 +33,6 @@
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
-#include "components/services/storage/public/mojom/storage_usage_info.mojom-forward.h"
 #include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage.pb.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
@@ -64,59 +63,19 @@ void DeleteBucketDidDeleteDir(
                         : blink::mojom::QuotaStatusCode::kErrorAbort));
 }
 
-void DeleteStorageKeyDidDeleteAllData(
+void DidDeleteAllBuckets(
     storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
     std::vector<blink::mojom::QuotaStatusCode> results) {
-  // On scheduler sequence.
+  auto status = blink::mojom::QuotaStatusCode::kOk;
   for (auto result : results) {
     if (result != blink::mojom::QuotaStatusCode::kOk) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), result));
-      return;
+      status = result;
+      break;
     }
   }
+  // On scheduler sequence.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), blink::mojom::QuotaStatusCode::kOk));
-}
-
-// Calculate the sum of all cache sizes in this store, but only if all sizes are
-// known. If one or more sizes are not known then return kSizeUnknown.
-int64_t GetCacheStorageSize(const base::FilePath& base_path,
-                            const base::Time& index_time,
-                            const proto::CacheStorageIndex& index) {
-  // Note, do not use the base path time modified to invalidate the index file.
-  // On some platforms the directory modified time will be slightly later than
-  // the last modified time of a file within it.  This means any write to the
-  // index file will also update the directory modify time slightly after
-  // immediately invalidating it.  To avoid this we only look at the cache
-  // directories and not the base directory containing the index itself.
-  int64_t storage_size = 0;
-  for (int i = 0, max = index.cache_size(); i < max; ++i) {
-    const proto::CacheStorageIndex::Cache& cache = index.cache(i);
-    if (!cache.has_cache_dir() || !cache.has_size() ||
-        cache.size() == CacheStorage::kSizeUnknown || !cache.has_padding() ||
-        cache.padding() == CacheStorage::kSizeUnknown) {
-      return CacheStorage::kSizeUnknown;
-    }
-
-    // Check the modified time on each cache directory.  If one of the
-    // directories has the same or newer modified time as the index file, then
-    // its size is most likely not accounted for in the index file.  The
-    // cache can have a newer time here in spite of our base path time check
-    // above since simple disk_cache writes to these directories from a
-    // different thread.
-    base::FilePath path = base_path.AppendASCII(cache.cache_dir());
-    base::File::Info file_info;
-    if (!base::GetFileInfo(path, &file_info) ||
-        file_info.last_modified >= index_time) {
-      return CacheStorage::kSizeUnknown;
-    }
-
-    storage_size += (cache.size() + cache.padding());
-  }
-
-  return storage_size;
+      FROM_HERE, base::BindOnce(std::move(callback), status));
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -170,23 +129,17 @@ base::FilePath ConstructOriginPath(const base::FilePath& profile_path,
   return first_party_default_root_path.AppendASCII(origin_hash_hex);
 }
 
-void ValidateAndAddUsageFromPath(
+void ValidateAndAddBucketFromPath(
     const base::FilePath& index_file_directory_path,
     storage::mojom::CacheStorageOwner owner,
     const base::FilePath& profile_path,
-    std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>>& usage_tuples,
+    std::vector<storage::BucketLocator>& buckets,
     bool is_origin_path = false) {
   if (!base::PathExists(index_file_directory_path)) {
     return;
   }
   base::FilePath index_path =
       index_file_directory_path.AppendASCII(CacheStorage::kIndexFileName);
-  base::File::Info file_info;
-  base::Time index_last_modified;
-  if (GetFileInfo(index_path, &file_info)) {
-    index_last_modified = file_info.last_modified;
-  }
   std::string protobuf;
   base::ReadFileToString(index_path, &protobuf);
 
@@ -247,7 +200,7 @@ void ValidateAndAddUsageFromPath(
     if (is_origin_path) {
       // For paths corresponding to the legacy Cache Storage directory structure
       // (where the bucket ID is not in the path),
-      // `ValidateAndAddUsageFromPath()` can get called with an
+      // `ValidateAndAddBucketFromPath()` can get called with an
       // `index_file_directory_path` that corresponds to a Cache Storage
       // instance from a different `owner`. That is valid and expected because
       // the directory entries from different owners are stored alongside each
@@ -256,7 +209,7 @@ void ValidateAndAddUsageFromPath(
       // two possible origin paths here and compare. If the path doesn't match
       // the calculated path for either `owner` then it is invalid. With the new
       // directory structure for non-default buckets and third-party contexts,
-      // we only call `ValidateAndAddUsageFromPath()` with Cache Storage
+      // we only call `ValidateAndAddBucketFromPath()` with Cache Storage
       // instances for the appropriate owner, so this check isn't needed in that
       // case. We return early if this instance corresponds to another owner to
       // avoid recording an index validation error and polluting the metrics
@@ -275,51 +228,19 @@ void ValidateAndAddUsageFromPath(
     return;
   }
 
-  int64_t storage_size = GetCacheStorageSize(index_file_directory_path,
-                                             index_last_modified, index);
-
-  usage_tuples.emplace_back(
-      bucket_locator, storage::mojom::StorageUsageInfo::New(
-                          storage_key, storage_size, file_info.last_modified));
+  buckets.emplace_back(bucket_locator);
   RecordIndexValidationResult(IndexResult::kOk);
 }
 
-void GetStorageKeyAndLastModifiedGotBucket(
-    storage::mojom::StorageUsageInfoPtr info,
-    base::OnceCallback<void(std::tuple<storage::BucketLocator,
-                                       storage::mojom::StorageUsageInfoPtr>)>
-        callback,
-    storage::QuotaErrorOr<storage::BucketInfo> result) {
-  storage::BucketLocator bucket_locator{};
-  if (result.has_value()) {
-    bucket_locator = result->ToBucketLocator();
-    DCHECK_EQ(info->storage_key, result->storage_key);
-  }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          std::move(callback),
-          std::make_tuple(bucket_locator,
-                          storage::mojom::StorageUsageInfo::New(
-                              info->storage_key, info->total_size_bytes,
-                              info->last_modified))));
-}
-
 // Open the various cache directories' index files and extract their bucket
-// locators, sizes (if current), and last modified times.
-void GetStorageKeysAndLastModifiedOnTaskRunner(
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+// locators.
+void GetBucketsFromDiskOnTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-    std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>> usage_tuples,
-
+    std::vector<storage::BucketLocator> buckets,
     base::FilePath profile_path,
     storage::mojom::CacheStorageOwner owner,
-    base::OnceCallback<
-        void(std::vector<std::tuple<storage::BucketLocator,
-                                    storage::mojom::StorageUsageInfoPtr>>)>
-        callback) {
-  // Add entries to `usage_tuples` from the directory for default buckets
+    base::OnceCallback<void(std::vector<storage::BucketLocator>)> callback) {
+  // Add entries to `buckets` from the directory for default buckets
   // corresponding to first-party contexts.
   {
     base::FilePath first_party_default_buckets_root_path =
@@ -331,12 +252,12 @@ void GetStorageKeysAndLastModifiedOnTaskRunner(
 
     base::FilePath path;
     while (!(path = file_enum.Next()).empty()) {
-      ValidateAndAddUsageFromPath(path, owner, profile_path, usage_tuples,
-                                  true /* is_origin_path */);
+      ValidateAndAddBucketFromPath(path, owner, profile_path, buckets,
+                                   true /* is_origin_path */);
     }
   }
 
-  // Add entries to `usage_tuples` from the directory for non-default
+  // Add entries to `buckets` from the directory for non-default
   // buckets and for buckets corresponding to third-party contexts.
   base::FilePath third_party_and_non_default_root_path =
       CacheStorageManager::ConstructThirdPartyAndNonDefaultRootPath(
@@ -354,108 +275,15 @@ void GetStorageKeysAndLastModifiedOnTaskRunner(
       if (!base::PathExists(cache_storage_path)) {
         continue;
       }
-      ValidateAndAddUsageFromPath(cache_storage_path, owner, profile_path,
-                                  usage_tuples);
+      ValidateAndAddBucketFromPath(cache_storage_path, owner, profile_path,
+                                   buckets);
     }
   }
 
-  if (usage_tuples.empty()) {
-    scheduler_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(usage_tuples)));
-    return;
-  }
-
-  if (!quota_manager_proxy) {
-    // If we don't have a `QuotaManagerProxy` then don't attempt to resolve
-    // any missing bucket IDs.
-    scheduler_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(usage_tuples)));
-    return;
-  }
-
-  // If the quota manager proxy is available, query it for the correct
-  // bucket information regardless of whether the index file has bucket
-  // information. If we recreate a stale bucket locator here, a side effect is
-  // that our CacheStorageCache instance map could get populated with entries
-  // that map to the same file path (for instances where the bucket ID isn't a
-  // part of the directory path), triggering an infinite hang.
-  const auto barrier_callback = base::BarrierCallback<
-      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>(
-      usage_tuples.size(), std::move(callback));
-
-  for (const auto& usage_tuple : usage_tuples) {
-    const storage::BucketLocator& bucket_locator = std::get<0>(usage_tuple);
-    const storage::mojom::StorageUsageInfoPtr& info = std::get<1>(usage_tuple);
-    if (bucket_locator.is_default) {
-      quota_manager_proxy->UpdateOrCreateBucket(
-          storage::BucketInitParams::ForDefaultBucket(
-              bucket_locator.storage_key),
-          scheduler_task_runner,
-          base::BindOnce(&GetStorageKeyAndLastModifiedGotBucket,
-                         storage::mojom::StorageUsageInfo::New(
-                             info->storage_key, info->total_size_bytes,
-                             info->last_modified),
-                         barrier_callback));
-    } else {
-      quota_manager_proxy->GetBucketById(
-          bucket_locator.id, scheduler_task_runner,
-          base::BindOnce(&GetStorageKeyAndLastModifiedGotBucket,
-                         storage::mojom::StorageUsageInfo::New(
-                             info->storage_key, info->total_size_bytes,
-                             info->last_modified),
-                         barrier_callback));
-    }
-  }
-}
-
-void AllStorageKeySizesReported(
-    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback callback,
-    std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
-  // We should return only one entry per StorageKey, so condense down all
-  // results before passing them to the callback. We condense by adding total
-  // size bytes and using the latest last_modified value.
-  std::map<blink::StorageKey, int64_t> storage_key_to_total_size_bytes;
-  std::map<blink::StorageKey, base::Time> storage_key_to_last_modified;
-  for (const auto& usage : usages) {
-    storage_key_to_total_size_bytes[usage->storage_key] +=
-        usage->total_size_bytes;
-    // Save off the most recent valid last modified time.
-    if (storage_key_to_last_modified.count(usage->storage_key) == 0 ||
-        (!usage->last_modified.is_null() &&
-         (storage_key_to_last_modified[usage->storage_key].is_null() ||
-          usage->last_modified >
-              storage_key_to_last_modified[usage->storage_key]))) {
-      storage_key_to_last_modified[usage->storage_key] = usage->last_modified;
-    }
-  }
-
-  std::vector<storage::mojom::StorageUsageInfoPtr> new_usages;
-  new_usages.reserve(storage_key_to_total_size_bytes.size());
-
-  for (const auto& storage_key_usage_info : storage_key_to_total_size_bytes) {
-    new_usages.emplace_back(storage::mojom::StorageUsageInfo::New(
-        storage_key_usage_info.first, storage_key_usage_info.second,
-        storage_key_to_last_modified[storage_key_usage_info.first]));
-  }
-
-  // On scheduler sequence.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(new_usages)));
-}
-
-void OneStorageKeySizeReported(
-    base::OnceCallback<void(storage::mojom::StorageUsageInfoPtr)> callback,
-    const blink::StorageKey storage_key,
-    const base::Time last_modified,
-    int64_t size) {
-  // On scheduler sequence.
-  DCHECK_NE(size, CacheStorage::kSizeUnknown);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                storage::mojom::StorageUsageInfo::New(
-                                    storage_key, size, last_modified)));
+  // Don't attempt to resolve any missing bucket IDs.
+  scheduler_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(buckets)));
+  return;
 }
 
 // Match a bucket for deletion if its storage key matches any of the given
@@ -650,98 +478,6 @@ void CacheStorageManager::CacheStorageUnreferenced(
   // CacheStorage's state.
 }
 
-void CacheStorageManager::GetAllStorageKeysUsage(
-    storage::mojom::CacheStorageOwner owner,
-    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::vector<
-      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
-      usages;
-
-  if (IsMemoryBacked()) {
-    for (const auto& bucket_details : cache_storage_map_) {
-      if (bucket_details.first.second != owner) {
-        continue;
-      }
-      const storage::BucketLocator& bucket_locator = bucket_details.first.first;
-      usages.emplace_back(bucket_locator, storage::mojom::StorageUsageInfo::New(
-                                              bucket_locator.storage_key,
-                                              /*total_size_bytes=*/0,
-                                              /*last_modified=*/base::Time()));
-    }
-    GetAllStorageKeysUsageGetSizes(owner, std::move(callback),
-                                   std::move(usages));
-    return;
-  }
-
-  cache_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &GetStorageKeysAndLastModifiedOnTaskRunner,
-          base::WrapRefCounted(quota_manager_proxy_.get()),
-          base::WrapRefCounted(scheduler_task_runner_.get()), std::move(usages),
-          profile_path_, owner,
-          base::BindOnce(&CacheStorageManager::GetAllStorageKeysUsageGetSizes,
-                         weak_ptr_factory_.GetWeakPtr(), owner,
-                         std::move(callback))));
-}
-
-void CacheStorageManager::GetAllStorageKeysUsageGetSizes(
-    storage::mojom::CacheStorageOwner owner,
-    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback callback,
-    std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>> usage_tuples) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // The origin GURL and last modified times are set in |usages| but not the
-  // size in bytes. Call each CacheStorage's Size() function to fill that out.
-  std::vector<storage::mojom::StorageUsageInfoPtr> usages;
-  if (usage_tuples.empty()) {
-    scheduler_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(usages)));
-    return;
-  }
-
-  // If we weren't able to lookup a bucket ID that corresponds to this
-  // CacheStorage instance, skip reporting usage information about it.
-  int non_null_count = std::count_if(
-      usage_tuples.begin(), usage_tuples.end(),
-      [](const std::tuple<storage::BucketLocator,
-                          storage::mojom::StorageUsageInfoPtr>& usage_tuple) {
-        const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
-        return !bucket_locator.is_null();
-      });
-
-  const auto barrier_callback =
-      base::BarrierCallback<storage::mojom::StorageUsageInfoPtr>(
-          non_null_count,
-          base::BindOnce(&AllStorageKeySizesReported, std::move(callback)));
-
-  for (const auto& usage_tuple : usage_tuples) {
-    const storage::BucketLocator& bucket_locator = std::get<0>(usage_tuple);
-    const storage::mojom::StorageUsageInfoPtr& info = std::get<1>(usage_tuple);
-    if (bucket_locator.is_null()) {
-      continue;
-    }
-    if (info->total_size_bytes != CacheStorage::kSizeUnknown ||
-        !IsValidQuotaStorageKey(bucket_locator.storage_key)) {
-      scheduler_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(barrier_callback,
-                         storage::mojom::StorageUsageInfo::New(
-                             info->storage_key, info->total_size_bytes,
-                             info->last_modified)));
-      continue;
-    }
-    CacheStorageHandle cache_storage = OpenCacheStorage(bucket_locator, owner);
-    CacheStorage::From(cache_storage)
-        ->Size(base::BindOnce(&OneStorageKeySizeReported, barrier_callback,
-                              info->storage_key, info->last_modified));
-  }
-}
-
 void CacheStorageManager::GetBucketUsage(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
@@ -814,23 +550,13 @@ void CacheStorageManager::GetStorageKeys(
     return;
   }
 
-  std::vector<
-      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
-      usage_tuples;
-
-  // Note that we don't want `GetStorageKeysAndLastModifiedOnTaskRunner()` to
-  // call `QuotaManagerProxy::UpdateOrCreateBucket()` because doing so creates
-  // a deadlock. Specifically, `GetStorageKeys()` would wait for the bucket
-  // information to be returned and the QuotaManager won't respond with
-  // bucket information until the `GetStorageKeys()` call finishes (as part of
-  // the QuotaDatabase bootstrapping process). We don't need the bucket ID to
-  // build a list of StorageKeys anyway.
+  std::vector<storage::BucketLocator> buckets;
   cache_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &GetStorageKeysAndLastModifiedOnTaskRunner, nullptr,
+          &GetBucketsFromDiskOnTaskRunner,
           base::WrapRefCounted(scheduler_task_runner_.get()),
-          std::move(usage_tuples), profile_path_, owner,
+          std::move(buckets), profile_path_, owner,
           base::BindOnce(&CacheStorageManager::ListStorageKeysOnTaskRunner,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
@@ -838,39 +564,24 @@ void CacheStorageManager::GetStorageKeys(
 void CacheStorageManager::DeleteOriginsDataGotAllBucketInfo(
     const std::set<url::Origin>& origins,
     storage::mojom::CacheStorageOwner owner,
-    base::OnceCallback<void(std::vector<blink::mojom::QuotaStatusCode>)>
-        callback,
-    std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>> usage_tuples) {
+    base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback,
+    std::vector<storage::BucketLocator> buckets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (usage_tuples.empty()) {
-    std::vector<blink::mojom::QuotaStatusCode> results{
-        blink::mojom::QuotaStatusCode::kOk};
+  if (buckets.empty()) {
     scheduler_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::mojom::QuotaStatusCode::kOk));
     return;
   }
 
-  int instance_count = 0;
-  for (const std::tuple<storage::BucketLocator,
-                        storage::mojom::StorageUsageInfoPtr>& usage_tuple :
-       usage_tuples) {
-    const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
-    if (!BucketMatchesOriginsForDeletion(bucket_locator, origins)) {
-      continue;
-    }
-    instance_count += 1;
-  }
-
   const auto barrier_callback =
-      base::BarrierCallback<blink::mojom::QuotaStatusCode>(instance_count,
-                                                           std::move(callback));
+      base::BarrierCallback<blink::mojom::QuotaStatusCode>(
+          buckets.size(),
+          base::BindOnce(&DidDeleteAllBuckets, std::move(callback)));
 
-  for (const std::tuple<storage::BucketLocator,
-                        storage::mojom::StorageUsageInfoPtr>& usage_tuple :
-       usage_tuples) {
-    const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
+  for (const storage::BucketLocator& bucket_locator : buckets) {
     if (!BucketMatchesOriginsForDeletion(bucket_locator, origins)) {
+      barrier_callback.Run(blink::mojom::QuotaStatusCode::kOk);
       continue;
     }
     if (!bucket_locator.is_null()) {
@@ -890,27 +601,6 @@ void CacheStorageManager::DeleteOriginsDataGotAllBucketInfo(
   }
 }
 
-void CacheStorageManager::DeleteStorageKeyData(
-    const blink::StorageKey& storage_key,
-    storage::mojom::CacheStorageOwner owner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DeleteStorageKeyData(storage_key, owner, base::DoNothing());
-}
-
-void CacheStorageManager::DeleteStorageKeyData(
-    const blink::StorageKey& storage_key,
-    storage::mojom::CacheStorageOwner owner,
-    storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(https://crbug.com/1376071#c12): This function isn't
-  // actually deleting data for a single key, but rather for
-  // the origin of the key.
-
-  std::set<url::Origin> origin_set{storage_key.origin()};
-  DeleteOriginData(origin_set, owner, std::move(callback));
-}
-
 void CacheStorageManager::DeleteOriginData(
     const std::set<url::Origin>& origins,
     storage::mojom::CacheStorageOwner owner,
@@ -925,9 +615,7 @@ void CacheStorageManager::DeleteOriginData(
   }
 
   if (IsMemoryBacked()) {
-    std::vector<
-        std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
-        to_delete;
+    std::vector<storage::BucketLocator> to_delete;
     to_delete.reserve(origins.size());
 
     // Note: since the number of CacheStorage instances is usually small, just
@@ -937,41 +625,25 @@ void CacheStorageManager::DeleteOriginData(
       if (key_value.first.second != owner) {
         continue;
       }
-      const storage::BucketLocator& bucket_locator = key_value.first.first;
-      if (!BucketMatchesOriginsForDeletion(bucket_locator, origins)) {
-        continue;
-      }
-      to_delete.emplace_back(bucket_locator,
-                             storage::mojom::StorageUsageInfo::New(
-                                 bucket_locator.storage_key, 0, base::Time()));
+      to_delete.emplace_back(key_value.first.first);
     }
 
-    DeleteOriginsDataGotAllBucketInfo(
-        origins, owner,
-        base::BindOnce(&DeleteStorageKeyDidDeleteAllData, std::move(callback)),
-        std::move(to_delete));
+    DeleteOriginsDataGotAllBucketInfo(origins, owner, std::move(callback),
+                                      std::move(to_delete));
     return;
   }
-  // Note that we can't call `QuotaManagerProxy::GetBucket()` and then use the
-  // same steps as `DeleteBucketData()` here because this method is called
-  // during shutdown and the quota code might be at various stages of shutting
-  // down as well. Instead, build a list of cache storage instances from disk
-  // and either use the bucket locators from index files or directly delete any
-  // unmigrated cache storage origin paths.
-  std::vector<
-      std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
-      usage_tuples;
+
+  std::vector<storage::BucketLocator> buckets;
   cache_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &GetStorageKeysAndLastModifiedOnTaskRunner, nullptr,
+          &GetBucketsFromDiskOnTaskRunner,
           base::WrapRefCounted(scheduler_task_runner_.get()),
-          std::move(usage_tuples), profile_path_, owner,
+          std::move(buckets), profile_path_, owner,
           base::BindOnce(
               &CacheStorageManager::DeleteOriginsDataGotAllBucketInfo,
               weak_ptr_factory_.GetWeakPtr(), origins, owner,
-              base::BindOnce(&DeleteStorageKeyDidDeleteAllData,
-                             std::move(callback)))));
+              std::move(callback))));
 }
 
 void CacheStorageManager::DeleteBucketData(
@@ -1169,14 +841,10 @@ base::FilePath CacheStorageManager::ConstructThirdPartyAndNonDefaultRootPath(
 // of buckets.
 void CacheStorageManager::ListStorageKeysOnTaskRunner(
     storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-    std::vector<std::tuple<storage::BucketLocator,
-                           storage::mojom::StorageUsageInfoPtr>> usage_tuples) {
-  // Note that bucket IDs will not be populated in the `usage_tuples` entries.
+    std::vector<storage::BucketLocator> buckets) {
+  // Note that bucket IDs will not be populated in the `buckets` entries.
   std::vector<blink::StorageKey> out_storage_keys;
-  for (const std::tuple<storage::BucketLocator,
-                        storage::mojom::StorageUsageInfoPtr>& usage_tuple :
-       usage_tuples) {
-    const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
+  for (const storage::BucketLocator& bucket_locator : buckets) {
     if (!bucket_locator.is_default) {
       continue;
     }

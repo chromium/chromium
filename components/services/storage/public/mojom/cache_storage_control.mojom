@@ -48,13 +48,6 @@ interface CacheStorageControl {
       CacheStorageOwner owner,
       pending_receiver<blink.mojom.CacheStorage> receiver);
 
-  // Deletes the data for a given storage key.
-  DeleteForStorageKey(blink.mojom.StorageKey storage_key);
-
-  // Used in response to browsing data and quota manager requests to get
-  // the per-StorageKey size and last time used data.
-  GetAllStorageKeysInfo() => (array<StorageUsageInfo> usage_info);
-
   // Adds an observer that will receive cache change callbacks.
   AddObserver(pending_remote<CacheStorageObserver> observer);
 

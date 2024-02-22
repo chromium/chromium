@@ -131,21 +131,6 @@ void CacheStorageContextImpl::AddReceiver(
   }
 }
 
-void CacheStorageContextImpl::GetAllStorageKeysInfo(
-    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_manager_->GetAllStorageKeysUsage(
-      storage::mojom::CacheStorageOwner::kCacheAPI, std::move(callback));
-}
-
-void CacheStorageContextImpl::DeleteForStorageKey(
-    const blink::StorageKey& storage_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_manager_->DeleteStorageKeyData(
-      storage_key, storage::mojom::CacheStorageOwner::kCacheAPI);
-}
-
 void CacheStorageContextImpl::AddObserver(
     mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

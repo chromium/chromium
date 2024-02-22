@@ -2765,14 +2765,6 @@ class CacheStorageControlForBadOrigin
     // is bad.
     NOTREACHED();
   }
-  void DeleteForStorageKey(const blink::StorageKey& storage_key) override {
-    NOTREACHED();
-  }
-  void GetAllStorageKeysInfo(
-      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-          callback) override {
-    NOTREACHED();
-  }
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                        observer) override {
     NOTREACHED();

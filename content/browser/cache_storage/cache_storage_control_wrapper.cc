@@ -77,21 +77,6 @@ void CacheStorageControlWrapper::AddReceiver(
                                       owner, std::move(receiver));
 }
 
-void CacheStorageControlWrapper::DeleteForStorageKey(
-    const blink::StorageKey& storage_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  cache_storage_control_->DeleteForStorageKey(storage_key);
-}
-
-void CacheStorageControlWrapper::GetAllStorageKeysInfo(
-    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  cache_storage_control_->GetAllStorageKeysInfo(std::move(callback));
-}
-
 void CacheStorageControlWrapper::AddObserver(
     mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
