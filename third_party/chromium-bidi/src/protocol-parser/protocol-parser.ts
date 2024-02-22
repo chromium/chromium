@@ -350,9 +350,13 @@ export namespace Permissions {
   export function parseSetPermissionsParams(
     params: unknown
   ): Protocol.Permissions.SetPermissionParameters {
-    return parseObject(
-      params,
-      WebDriverBidiPermissions.Permissions.SetPermissionParametersSchema
-    ) as Protocol.Permissions.SetPermissionParameters;
+    return {
+      // TODO: remove once "goog:" attributes are not needed.
+      ...(params as object),
+      ...(parseObject(
+        params,
+        WebDriverBidiPermissions.Permissions.SetPermissionParametersSchema
+      ) as Protocol.Permissions.SetPermissionParameters),
+    };
   }
 }
