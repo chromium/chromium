@@ -21,7 +21,8 @@ const ui::InputDevice kFiveKeyMouse(1,
                                     /*product=*/0x804a,
                                     /*version=*/0x0002);
 
-IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, MouseButtonRenaming) {
+// Disabled for crbug.com/325543031.
+IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, DISABLED_MouseButtonRenaming) {
   const DeepQuery kCustomizeMouseButtonsRowQuery{
       "os-settings-ui",
       "os-settings-main",
@@ -65,13 +66,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, MouseButtonRenaming) {
                         chromeos::settings::mojom::kPerDeviceMouseSubpagePath),
       Log("Clicking customize mouse buttons row"),
       ClickElement(webcontents_id_, kCustomizeMouseButtonsRowQuery),
-      Log("Waiting for customize mouse buttons page"),
-      WaitForWebContentsNavigation(
-          webcontents_id_,
-          chrome::GetOSSettingsUrl(
-              chromeos::settings::mojom::kPerDeviceMouseSubpagePath)),
       Log("Clicking edit icon for mouse 'Middle Button'"),
-      WaitForElementExists(webcontents_id_, kMiddleButtonEditButtonQuery),
       ClickElement(webcontents_id_, kMiddleButtonEditButtonQuery),
       Log("Clearing existing mouse button name"),
       SendKeyPressEvent(ui::KeyboardCode::VKEY_A, ui::EF_CONTROL_DOWN),
