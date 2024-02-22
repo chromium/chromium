@@ -81,6 +81,8 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
           # Context loss tests don't like being run in parallel on Windows
           # arm64.
           'Pixel_Video_Context_Loss_VP9',
+          'Pixel_WebGLContextRestored',
+          'Pixel_WebGLSadCanvas',
       }
 
     return serial_tests
