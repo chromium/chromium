@@ -114,24 +114,26 @@ class BottomAlignedBoxLayout : public views::BoxLayout {
   ~BottomAlignedBoxLayout() override {}
 
  private:
-  void Layout(View* host) override {
-    if (host->height() >= host->GetPreferredSize().height() ||
+  void LayoutImpl() override {
+    if (host_view()->height() >= host_view()->GetPreferredSize().height() ||
         !bubble_view_->is_gesture_dragging()) {
-      BoxLayout::Layout(host);
+      views::BoxLayout::LayoutImpl();
       return;
     }
 
     int consumed_height = 0;
-    for (auto i = host->children().rbegin();
-         i != host->children().rend() && consumed_height < host->height();
+    for (auto i = host_view()->children().rbegin();
+         i != host_view()->children().rend() &&
+         consumed_height < host_view()->height();
          ++i) {
       View* child = *i;
       if (!child->GetVisible()) {
         continue;
       }
       gfx::Size size = child->GetPreferredSize();
-      child->SetBounds(0, host->height() - consumed_height - size.height(),
-                       host->width(), size.height());
+      child->SetBounds(0,
+                       host_view()->height() - consumed_height - size.height(),
+                       host_view()->width(), size.height());
       consumed_height += size.height();
     }
   }

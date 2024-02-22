@@ -508,7 +508,6 @@ void FocusModeDetailedView::CreateToggleView() {
       toggle_view_->tri_view()->box_layout();
   toggle_view_tri_view_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  toggle_view_tri_view_layout->InvalidateLayout();
 }
 
 void FocusModeDetailedView::UpdateToggleButtonAccessibility(
@@ -793,7 +792,6 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
       toggle_row->tri_view()->box_layout();
   toggle_view_tri_view_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  toggle_view_tri_view_layout->InvalidateLayout();
 }
 
 void FocusModeDetailedView::OnDoNotDisturbToggleClicked() {
