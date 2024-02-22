@@ -16,6 +16,7 @@ struct TestResult;
 }
 
 namespace content {
+class BrowserMainParts;
 class ContentMainDelegate;
 struct ContentMainParams;
 
@@ -33,6 +34,8 @@ class TestLauncherDelegate {
   // harness to use, and do not go through ContentMain() in TestLauncher.
   virtual ContentMainDelegate* CreateContentMainDelegate() = 0;
 #endif
+
+  virtual void CreatedBrowserMainParts(BrowserMainParts* browser_main_parts) {}
 
   // Called prior to running each test.
   //

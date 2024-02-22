@@ -72,6 +72,36 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/test_controller_ash.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class TestControllerSetupMainExtraParts : public ChromeBrowserMainExtraParts {
+ public:
+  TestControllerSetupMainExtraParts() = default;
+
+  void PostBrowserStart() override {
+    crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
+        &test_controller_ash_);
+  }
+
+  void PostMainMessageLoopRun() override {
+    crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
+        nullptr);
+  }
+
+ private:
+  crosapi::TestControllerAsh test_controller_ash_;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}  // namespace
+
 // static
 int ChromeTestSuiteRunner::RunTestSuiteInternal(ChromeTestSuite* test_suite) {
   // Browser tests are expected not to tear-down various globals.
@@ -219,6 +249,14 @@ ChromeTestLauncherDelegate::CreateContentMainDelegate() {
   return new ChromeTestChromeMainDelegate(base::TimeTicks::Now());
 }
 #endif
+
+void ChromeTestLauncherDelegate::CreatedBrowserMainParts(
+    content::BrowserMainParts* browser_main_parts) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static_cast<ChromeBrowserMainParts*>(browser_main_parts)
+      ->AddParts(std::make_unique<TestControllerSetupMainExtraParts>());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 void ChromeTestLauncherDelegate::PreSharding() {
 #if BUILDFLAG(IS_WIN)

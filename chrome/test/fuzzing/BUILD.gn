@@ -24,7 +24,10 @@ if (fuzzing_engine_supports_custom_main) {
       ":in_process_fuzzer_buildflags",
       "//testing/libfuzzer:fuzzing_engine_no_main",
     ]
-    public_deps = [ "//chrome/test:test_support" ]
+    public_deps = [
+      "//chrome/test:chrome_test_launcher",
+      "//chrome/test:test_support",
+    ]
   }
 
   buildflag_header("in_process_fuzzer_buildflags") {

@@ -114,6 +114,24 @@ if (is_android) {
   }
 }
 
+static_library("chrome_test_launcher") {
+  testonly = true
+  sources = [
+    "base/chrome_test_launcher.cc",
+    "base/chrome_test_launcher.h",
+  ]
+
+  deps = [ ":test_support" ]
+
+  if (is_mac) {
+    deps += [ "//chrome/app_shim" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/crosapi:test_support" ]
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("test_support") {
@@ -177,8 +195,6 @@ static_library("test_support") {
     "base/chrome_render_view_host_test_harness.h",
     "base/chrome_render_view_test.cc",
     "base/chrome_render_view_test.h",
-    "base/chrome_test_launcher.cc",
-    "base/chrome_test_launcher.h",
     "base/chrome_test_suite.cc",
     "base/chrome_test_suite.h",
     "base/chrome_test_utils.cc",
@@ -1188,6 +1204,7 @@ if (is_android) {
       ":android_browsertests_assets",
       ":android_browsertests_java",
       ":browser_tests_runner",
+      ":chrome_test_launcher",
       ":sync_integration_test_support",
       ":sync_integration_test_support_java",
       ":test_support",
@@ -1471,6 +1488,7 @@ if (is_android) {
       ":android_browsertests_assets",
       ":android_browsertests_java",
       ":browser_tests_runner",
+      ":chrome_test_launcher",
       ":sync_integration_test_support",
       ":sync_integration_test_support_java",
       ":test_support",
@@ -1595,6 +1613,7 @@ static_library("browser_tests_runner") {
   sources = []
 
   deps = [
+    ":chrome_test_launcher",
     ":test_support",
     "//ui/gfx:gfx_switches",  # Used by Fuchsia.
   ]
@@ -10615,6 +10634,7 @@ if (!is_android) {
       ldflags = []
 
       deps = [
+        ":chrome_test_launcher",
         ":test_support",
         ":test_support_ui",
         "//build:chromeos_buildflags",
@@ -10810,6 +10830,7 @@ if (!is_android && !is_chromeos_device) {
     ldflags = []
 
     deps = [
+      ":chrome_test_launcher",
       ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
@@ -11926,6 +11947,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
+      ":chrome_test_launcher",
       ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
@@ -12042,6 +12064,7 @@ if (!is_android) {
     ldflags = []
 
     deps = [
+      ":chrome_test_launcher",
       ":test_support",
       ":test_support_ui",
       "//chrome:packed_resources",
