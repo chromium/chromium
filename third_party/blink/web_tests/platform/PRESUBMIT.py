@@ -40,7 +40,8 @@ def _CheckForExtraPlatformBaselines(input_api, output_api):
     port_factory = Host().port_factory
     all_ports_with_builders = [
         port_factory.get(port_name)
-        for port_name in port_factory.all_port_names() + ['ios']
+        for port_name in port_factory.all_port_names() +
+        ['android', 'ios', 'webview']
     ]
     # get any additional supported versions (that might not currently have
     # builders)

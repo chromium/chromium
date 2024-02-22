@@ -1,4 +1,5 @@
-# tags: [ Release Debug Webview ]
+# tags: [ Webview Android ]
+# tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Skip ]
 # conflict_resolution: Override
 

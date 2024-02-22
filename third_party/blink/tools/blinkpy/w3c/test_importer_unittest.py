@@ -22,7 +22,6 @@ from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL
 from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.web_tests.builder_list import BuilderList
-from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
 from unittest.mock import patch
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
@@ -73,7 +72,6 @@ class TestImporterTest(LoggingTestCase):
         })
         port = host.port_factory.get()
         MANIFEST_INSTALL_CMD[0] = port.python3_command()
-        host.filesystem.write_text_file(ANDROID_DISABLED_TESTS, '')
         return host
 
     def _get_test_importer(self, host, github=None):
