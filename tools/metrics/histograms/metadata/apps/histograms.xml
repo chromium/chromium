@@ -800,13 +800,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.NumberOfNonSystemFolders" units="count"
-    expires_after="2023-10-08">
+    expires_after="2025-02-22">
   <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     The number of folders that users have in their launcher. Does not include
     system-created folders like the OEM folder and the Linux apps folder.
-    Recorded every 30 minutes.
+    Recorded every 30 minutes. Warning: this histogram was expired from
+    2023-10-08 to 2025-02-22; data may be missing.
   </summary>
 </histogram>
 
@@ -1317,15 +1319,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.SuccessfulFirstUsageByNewUsers{TabletOrClamshell}"
-    enum="Boolean" expires_after="2023-06-19">
-  <owner>gzadina@google.com</owner>
+    enum="Boolean" expires_after="2025-02-18">
   <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Whether the user successfully used the launcher when they opened it for the
     first time. Successful usage entails launching an app, or search result from
     the launcher UI. Only recorded in user session started after creating a new
     account on the device. Split by whether the launcher was first shown in
-    clamshell or tablet mode.
+    clamshell or tablet mode. Warning: this histogram was expired from
+    2023-06-19 to 2025-02-22; data may be missing.
   </summary>
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
@@ -1377,27 +1381,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.TimeToUserAction{TabletOrClamshell}" units="ms"
-    expires_after="2023-06-19">
-  <owner>gzadina@google.com</owner>
+    expires_after="2025-02-22">
   <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Amount of time passed from when the launcher was shown to the user
     performing a launcher workflow action, which includes launching an app from
     the apps grid, launching an app from recent apps section, opening a search
     result, or opening a task in continue section. Logged when the user performs
-    an action. Recorded for {TabletOrClamshell}.
+    an action. Recorded for {TabletOrClamshell}. Warning: this histogram was
+    expired from 2023-06-19 to 2025-02-22; data may be missing.
   </summary>
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.AppList.UserAction{TabletOrClamshell}"
     enum="LauncherUserAction" expires_after="2025-02-22">
-  <owner>gzadina@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Tracks different launcher worflow actions the user performs in the launcher.
     Logged when the user performs an action. Recorded for {TabletOrClamshell}.
-    Warning: this histogram was expired from 2023-06-19 to 2024-02-22; data may
+    Warning: this histogram was expired from 2023-06-19 to 2025-02-22; data may
     be missing.
   </summary>
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
@@ -1625,25 +1632,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListBubbleAppMovingType" enum="AppListAppMovingType"
-    expires_after="2023-12-17">
+    expires_after="2025-02-22">
   <owner>tbarzic@chromium.org</owner>
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     The different ways to move an app in app list's apps grid, specifically for
     the scrollable apps grid in bubble launcher. Logged when the app moving
-    succeeds.
+    succeeds. Warning: this histogram was expired from 2023-12-17 to 2025-02-22;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppListBubbleCreationTime" units="ms"
-    expires_after="2023-12-17">
+    expires_after="2025-02-22">
   <owner>tbarzic@chromium.org</owner>
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     The amount of time it takes to build the app list bubble UI. This is logged
-    each time the app list bubble gets shown.
+    each time the app list bubble gets shown.. Warning: this histogram was
+    expired from 2023-12-17 to 2025-02-22; data may be missing.
   </summary>
 </histogram>
 
@@ -1662,24 +1671,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListContinueTaskOpenType" enum="AppListSearchResult"
-    expires_after="2023-08-08">
+    expires_after="2025-02-22">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
-  <owner>anasalazar@chromium.org</owner>
+  <owner>anasalazar@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     The type of app list continue search result that was opened by the user.
-    This is gathered per continue section task opened.
+    This is gathered per continue section task opened. Warning: this histogram
+    was expired from 2023-08-08 to 2025-02-22; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppListCreationTime" units="ms"
-    expires_after="2023-06-25">
+    expires_after="2025-02-22">
   <owner>tbarzic@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     The amount of time it takes to build the app list UI. This is logged each
-    time the app list is built from scratch.
+    time the app list is built from scratch. Warning: this histogram was expired
+    from 2023-05-25 to 2025-02-22; data may be missing.
   </summary>
 </histogram>
 
@@ -1700,7 +1713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListFolder.ShowHide.AnimationSmoothness" units="%"
-    expires_after="2023-09-10">
+    expires_after="2025-02-22">
   <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1711,8 +1724,8 @@ chromium-metrics-reviews@google.com.
     This metric is recorded exactly once when the user starts the folder
     animation in the launcher.
 
-    Warning: this histogram was expired from 2021-08-29 to 2021-09-28; data may
-    be missing.
+    Warning: this histogram was expired from 2021-08-29 to 2021-09-28 and from
+    2023-09-10 to 2025-02-22; data may be missing.
   </summary>
 </histogram>
 
@@ -1743,14 +1756,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListHide.InputLatency" units="ms"
-    expires_after="2023-06-01">
+    expires_after="2025-02-22">
   <owner>newcomer@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Elapsed time from the input event to hide the launcher UI. This is logged
     each time the launcher is dismissed by pressing search key, clicking shelf
-    button, or focusing out side of the launcher.
+    button, or focusing out side of the launcher. Warning: this histogram was
+    expired from 2023-06-01 to 2025-02-22; data may be missing.
   </summary>
 </histogram>
 
@@ -2691,14 +2706,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.TimeBetweenAppInstallAndLaunch{TabletOrClamshell}"
-    units="ms" expires_after="M120">
+    units="ms" expires_after="2025-02-22">
   <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     Time between when an app is installed and when the user launches the app.
     Recorded the first time the user launches the app. The clamshell or tablet
-    mode state is the state when the app is launched.
+    mode state is the state when the app is launched. Warning: this histogram
+    was expired from M120 to M122; data may be missing.
   </summary>
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>

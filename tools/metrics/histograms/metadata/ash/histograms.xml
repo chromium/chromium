@@ -3974,14 +3974,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.HotseatTransition.AnimationSmoothness{HotseatTransitionType}"
-    units="%" expires_after="2023-09-06">
-  <owner>anasalazar@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
+    units="%" expires_after="2025-02-22">
+  <owner>anasalazar@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Tracks the animation smoothness for the ShelfWidget's animating background
     during transitions of the hotseat to shown, extended, and hidden hotseat
     states. Check Ash.HotseatWidgetAnimation.AnimationSmoothness for smoothness
-    of the HotseatWidget. {HotseatTransitionType}
+    of the HotseatWidget. {HotseatTransitionType} Warning: this histogram was
+    expired from 2023-09-06 to 2025-02-22; data may be missing.
   </summary>
   <token key="HotseatTransitionType" variants="HotseatTransitionType"/>
 </histogram>
@@ -3998,13 +3999,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.HotseatTransition.Drag.PresentationTime.MaxLatency"
-    units="ms" expires_after="2023-10-25">
-  <owner>anasalazar@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
+    units="ms" expires_after="2025-02-22">
+  <owner>anasalazar@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Maximum latency of the presentation time in ms of the hotseat when it
     changes between the hidden and the extended state as a result of a drag
-    action. Recorded when the drag action is finished.
+    action. Recorded when the drag action is finished. Warning: this histogram
+    was expired from 2023-10-25 to 2025-02-22; data may be missing.
   </summary>
 </histogram>
 
@@ -4555,9 +4557,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NavigationWidget.AnimationSmoothness{HotseatTransitionType}"
-    units="%" expires_after="2024-03-27">
-  <owner>anasalazar@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
+    units="%" expires_after="2025-02-22">
+  <owner>anasalazar@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Relative smoothness of animations of the navigation widget's elements, which
     are the widget itself and its child views. 100% represents ideally smooth 60
@@ -4571,9 +4573,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NavigationWidget.{NavigationWidgetElement}AnimationSmoothness"
-    units="%" expires_after="2024-03-27">
-  <owner>anasalazar@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
+    units="%" expires_after="2025-02-22">
+  <owner>anasalazar@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Relative smoothness of animations of the navigation widget's elements, which
     are the widget itself and its child views. 100% represents ideally smooth 60
@@ -6596,12 +6598,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
-    expires_after="2023-08-13">
-  <owner>anasalazar@chromium.org</owner>
+    expires_after="2025-02-22">
+  <owner>anasalazar@google.com</owner>
   <owner>mmourgos@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     Tracks the number of menu items that are enabled in a shelf item's secondary
-    menu. This metric is only recorded when a menu item is selected.
+    menu. This metric is only recorded when a menu item is selected. Warning:
+    this histogram was expired from 2023-08-13 to 2025-02-22; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -6616,9 +6621,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.NumberOfItems" units="Icons"
-    expires_after="2024-03-24">
-  <owner>anasalazar@chromium.org</owner>
+    expires_after="2025-02-22">
+  <owner>anasalazar@google.com</owner>
   <owner>mmourgos@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
   <summary>
     The number of icons in the shelf, not including the App Launcher icon. This
     metric is recorded every 30 minutes.
