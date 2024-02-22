@@ -338,7 +338,8 @@ class AutofillCapturedSitesInteractiveTest
                                {}},
                               {features::kAutofillParsingPatternProvider,
                                {{"prediction_source", "nextgen"}}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kAutofillOverwritePlaceholdersOnly,
+                               features::kAutofillSkipPreFilledFields});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
     AutofillUiTest::SetUpCommandLine(command_line);
