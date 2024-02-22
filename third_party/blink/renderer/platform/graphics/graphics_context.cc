@@ -538,10 +538,9 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
           gfx::RectFToSkRect(GetRectForTextLine(pt, width, StrokeThickness()));
       DrawRect(r, *paint_flags, auto_dark_mode);
     } else {
-      cc::PaintFlags flags;
-      flags = ImmutableState()->FillFlags();
+      cc::PaintFlags flags = ImmutableState()->FillFlags();
       // Text lines are drawn using the stroke color.
-      flags.setColor(StrokeColor().toSkColor4f());
+      flags.setColor(ImmutableState()->StrokeFlags().getColor4f());
       SkRect r = gfx::RectFToSkRect(
           GetRectForTextLine(pt, width, RoundDownThickness(StrokeThickness())));
       DrawRect(r, flags, auto_dark_mode);
