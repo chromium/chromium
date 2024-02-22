@@ -57,7 +57,8 @@ std::optional<EventInfo> GetEventInfo(const StructuredEventProto& proto) {
 
   // This will not fail.
   const auto* project_validator =
-      *validators->GetProjectValidator(*project_name);
+      validators->GetProjectValidator(*project_name);
+  CHECK(project_validator);
 
   const auto event_name =
       project_validator->GetEventName(proto.event_name_hash());
@@ -67,7 +68,7 @@ std::optional<EventInfo> GetEventInfo(const StructuredEventProto& proto) {
 
   // This will not fail.
   const auto* event_validator =
-      *project_validator->GetEventValidator(*event_name);
+      project_validator->GetEventValidator(*event_name);
   CHECK(event_validator);
 
   return EventInfo{.project_name = *project_name,

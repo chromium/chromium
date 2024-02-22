@@ -29,8 +29,7 @@ class ProjectValidator {
 
   // Returns the event validator if |event_name| is a valid event for this
   // project.
-  std::optional<const EventValidator*> GetEventValidator(
-      base::StringPiece event_name) const;
+  const EventValidator* GetEventValidator(base::StringPiece event_name) const;
 
   std::optional<base::StringPiece> GetEventName(uint64_t event_name_hash) const;
 

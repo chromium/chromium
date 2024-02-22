@@ -418,21 +418,20 @@ bool StructuredMetricsRecorder::CanForceRecord(const Event& event) const {
 
 std::optional<std::pair<const ProjectValidator*, const EventValidator*>>
 StructuredMetricsRecorder::GetEventValidators(const Event& event) const {
-  auto maybe_project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(event.project_name());
 
-  DCHECK(maybe_project_validator.has_value());
-  if (!maybe_project_validator.has_value()) {
-    return {};
+  if (!project_validator) {
+    return std::nullopt;
   }
-  const auto* project_validator = maybe_project_validator.value();
-  const auto maybe_event_validator =
+
+  const auto* event_validator =
       project_validator->GetEventValidator(event.event_name());
-  DCHECK(maybe_event_validator.has_value());
-  if (!maybe_event_validator.has_value()) {
-    return {};
+
+  if (!event_validator) {
+    return std::nullopt;
   }
-  const auto* event_validator = maybe_event_validator.value();
+
   return std::make_pair(project_validator, event_validator);
 }
 

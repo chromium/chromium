@@ -33,9 +33,12 @@ std::optional<uint64_t> TestKeyDataProvider::GetId(
     const std::string& project_name) {
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
-  auto maybe_project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
-  const auto* project_validator = maybe_project_validator.value();
+
+  if (!project_validator) {
+    return std::nullopt;
+  }
 
   switch (project_validator->id_scope()) {
     case IdScope::kPerProfile: {
@@ -65,13 +68,11 @@ std::optional<uint64_t> TestKeyDataProvider::GetId(
 
 std::optional<uint64_t> TestKeyDataProvider::GetSecondaryId(
     const std::string& project_name) {
-  auto maybe_project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
-  if (!maybe_project_validator.has_value()) {
+  if (!project_validator) {
     return std::nullopt;
   }
-
-  const auto* project_validator = maybe_project_validator.value();
 
   // Only SEQUENCE types have secondary ids.
   if (project_validator->event_type() !=
@@ -90,12 +91,11 @@ std::optional<uint64_t> TestKeyDataProvider::GetSecondaryId(
 KeyData* TestKeyDataProvider::GetKeyData(const std::string& project_name) {
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
-  auto maybe_project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
-  if (!maybe_project_validator.has_value()) {
+  if (!project_validator) {
     return nullptr;
   }
-  const auto* project_validator = maybe_project_validator.value();
 
   switch (project_validator->id_scope()) {
     case IdScope::kPerProfile: {

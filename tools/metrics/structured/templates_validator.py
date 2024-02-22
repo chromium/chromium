@@ -33,7 +33,7 @@ public:
 
   void Initialize();
 
-  std::optional<const ProjectValidator*>
+  const ProjectValidator*
     GetProjectValidator(base::StringPiece project_name) const;
 
   std::optional<base::StringPiece>
@@ -96,11 +96,11 @@ void Validators::Initialize() {{
   {name_map};
 }}
 
-std::optional<const ProjectValidator*>
+const ProjectValidator*
   Validators::GetProjectValidator(base::StringPiece project_name) const {{
     const auto it = validators_.find(project_name);
     if (it == validators_.end())
-      return std::nullopt;
+      return nullptr;
     return it->second.get();
 }}
 

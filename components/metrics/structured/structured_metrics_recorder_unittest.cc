@@ -828,20 +828,21 @@ TEST_F(StructuredMetricsRecorderTest, EventMetadataLookupCorrectly) {
   constexpr std::string_view kMetricOneName = "TestMetricOne";
   constexpr std::string_view kMetricTwoName = "TestMetricTwo";
 
-  validator::Validators* validators = validator::Validators::Get();
+  const validator::Validators* validators = validator::Validators::Get();
 
   ASSERT_EQ(validators->GetProjectName(kProjectOneHash), kProjectName);
 
-  auto project_validator = validators->GetProjectValidator(kProjectName);
-  ASSERT_TRUE(project_validator.has_value());
+  const auto* project_validator = validators->GetProjectValidator(kProjectName);
+  ASSERT_NE(project_validator, nullptr);
 
-  ASSERT_EQ((*project_validator)->GetEventName(kEventOneHash), kEventName);
+  ASSERT_EQ(project_validator->GetEventName(kEventOneHash), kEventName);
 
-  auto event_validator = (*project_validator)->GetEventValidator(kEventName);
-  ASSERT_TRUE(event_validator.has_value());
+  const auto* event_validator =
+      project_validator->GetEventValidator(kEventName);
+  ASSERT_NE(event_validator, nullptr);
 
-  ASSERT_EQ((*event_validator)->GetMetricName(kMetricOneHash), kMetricOneName);
-  ASSERT_EQ((*event_validator)->GetMetricName(kMetricTwoHash), kMetricTwoName);
+  ASSERT_EQ(event_validator->GetMetricName(kMetricOneHash), kMetricOneName);
+  ASSERT_EQ(event_validator->GetMetricName(kMetricTwoHash), kMetricTwoName);
 }
 
 class TestWatcher : public StructuredMetricsRecorder::Observer {

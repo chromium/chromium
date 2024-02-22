@@ -24,11 +24,11 @@ ProjectValidator::ProjectValidator(uint64_t project_hash,
 
 ProjectValidator::~ProjectValidator() = default;
 
-std::optional<const EventValidator*> ProjectValidator::GetEventValidator(
+const EventValidator* ProjectValidator::GetEventValidator(
     base::StringPiece event_name) const {
   const auto it = event_validators_.find(event_name);
   if (it == event_validators_.end()) {
-    return std::nullopt;
+    return nullptr;
   }
   return it->second.get();
 }

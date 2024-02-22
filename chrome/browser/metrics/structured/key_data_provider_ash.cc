@@ -72,17 +72,15 @@ std::optional<uint64_t> KeyDataProviderAsh::GetId(
 
 std::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
     const std::string& project_name) {
-  auto maybe_project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
-  if (!maybe_project_validator.has_value()) {
+  if (!project_validator) {
     return std::nullopt;
   }
 
   // If |project_name| is not of type sequence, return std::nullopt as it
   // should not have a corresponding secondary ID.
-  const auto* project_validator = maybe_project_validator.value();
-  if (project_validator->event_type() !=
-      StructuredEventProto_EventType_SEQUENCE) {
+  if (project_validator->event_type() != StructuredEventProto::SEQUENCE) {
     return std::nullopt;
   }
 
@@ -118,12 +116,11 @@ void KeyDataProviderAsh::Purge() {
 
 KeyDataProvider* KeyDataProviderAsh::GetKeyDataProvider(
     const std::string& project_name) {
-  auto maybe_project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
-  if (!maybe_project_validator.has_value()) {
+  if (!project_validator) {
     return nullptr;
   }
-  const auto* project_validator = maybe_project_validator.value();
 
   switch (project_validator->id_scope()) {
     case IdScope::kPerProfile: {
@@ -134,8 +131,7 @@ KeyDataProvider* KeyDataProviderAsh::GetKeyDataProvider(
     }
     case IdScope::kPerDevice: {
       // Retrieve the profile key if the type is a sequence.
-      if (project_validator->event_type() ==
-          StructuredEventProto_EventType_SEQUENCE) {
+      if (project_validator->event_type() == StructuredEventProto::SEQUENCE) {
         return profile_key_ ? profile_key_.get() : nullptr;
       }
       if (device_key_) {
