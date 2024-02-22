@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -33,7 +35,9 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "url/gurl.h"
 
 namespace {
@@ -312,4 +316,73 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerMenuItemInteractiveTest,
                               GURL("chrome://password-manager/passwords")),
       PressButton(kToolbarAppMenuButtonElementId),
       EnsureNotPresent(AppMenuModel::kPasswordManagerMenuItem));
+}
+
+class CastExperimentAppMenuModelInteractiveTest
+    : public AppMenuModelInteractiveTest {
+ public:
+  CastExperimentAppMenuModelInteractiveTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kCastAppMenuExperiment,
+          {{features::kCastListedFirst.name, "false"}}},
+         {features::kChromeRefresh2023, {}}},
+        /*disabled_features=*/{});
+  }
+  CastExperimentAppMenuModelInteractiveTest(
+      const CastExperimentAppMenuModelInteractiveTest&) = delete;
+  void operator=(const CastExperimentAppMenuModelInteractiveTest&) = delete;
+
+  ~CastExperimentAppMenuModelInteractiveTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(CastExperimentAppMenuModelInteractiveTest,
+                       SaveShareCastSubMenuItemText) {
+  if (!media_router::MediaRouterEnabled(browser()->profile())) {
+    GTEST_SKIP()
+        << "The cast experiment tested here only exists if cast is enabled.";
+  }
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+      CheckViewProperty(
+          AppMenuModel::kSaveAndShareMenuItem, &views::MenuItemView::title,
+          l10n_util::GetStringUTF16(IDS_SAVE_SHARE_AND_CAST_MENU)));
+}
+
+class CastListedFirstExperimentAppMenuModelInteractiveTest
+    : public AppMenuModelInteractiveTest {
+ public:
+  CastListedFirstExperimentAppMenuModelInteractiveTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kCastAppMenuExperiment,
+          {{features::kCastListedFirst.name, "true"}}},
+         {features::kChromeRefresh2023, {}}},
+        /*disabled_features=*/{});
+  }
+  CastListedFirstExperimentAppMenuModelInteractiveTest(
+      const CastListedFirstExperimentAppMenuModelInteractiveTest&) = delete;
+  void operator=(const CastListedFirstExperimentAppMenuModelInteractiveTest&) =
+      delete;
+
+  ~CastListedFirstExperimentAppMenuModelInteractiveTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(CastListedFirstExperimentAppMenuModelInteractiveTest,
+                       CastSaveShareSubMenuItemText) {
+  if (!media_router::MediaRouterEnabled(browser()->profile())) {
+    GTEST_SKIP()
+        << "The cast experiment tested here only exists if cast is enabled.";
+  }
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+      CheckViewProperty(
+          AppMenuModel::kSaveAndShareMenuItem, &views::MenuItemView::title,
+          l10n_util::GetStringUTF16(IDS_CAST_SAVE_AND_SHARE_MENU)),
+      SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
+      EnsurePresent(AppMenuModel::kCastTitleItem));
 }

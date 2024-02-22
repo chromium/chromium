@@ -29,6 +29,17 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
+#if !defined(ANDROID)
+// Enables experiment were the cast item in the app menu may be reordered and
+// its subgroup renamed.
+BASE_FEATURE(kCastAppMenuExperiment,
+             "CastAppMenuExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kCastListedFirst{&kCastAppMenuExperiment,
+                                                "cast_listed_first", false};
+
+#endif
+
 // Enables icon in titlebar for web apps.
 BASE_FEATURE(kWebAppIconInTitlebar,
              "WebAppIconInTitlebar",

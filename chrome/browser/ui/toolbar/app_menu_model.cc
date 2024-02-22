@@ -144,6 +144,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
@@ -547,6 +549,17 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
     Browser* browser)
     : SimpleMenuModel(delegate) {
+  if (media_router::MediaRouterEnabled(browser->profile()) &&
+      base::FeatureList::IsEnabled(features::kCastAppMenuExperiment) &&
+      features::kCastListedFirst.Get()) {
+    AddTitle(l10n_util::GetStringUTF16(IDS_SAVE_AND_SHARE_MENU_CAST));
+    SetElementIdentifierAt(GetItemCount() - 1, AppMenuModel::kCastTitleItem);
+    AddItemWithStringIdAndIcon(
+        IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+        ui::ImageModel::FromVectorIcon(kCastChromeRefreshIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
+    AddSeparator(ui::NORMAL_SEPARATOR);
+  }
   AddTitle(l10n_util::GetStringUTF16(IDS_SAVE_AND_SHARE_MENU_SAVE));
   AddItemWithStringIdAndIcon(
       IDC_SAVE_PAGE, IDS_SAVE_PAGE,
@@ -588,7 +601,10 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
           ui::ImageModel::FromVectorIcon(kQrCodeChromeRefreshIcon,
                                          ui::kColorMenuIcon, kDefaultIconSize));
     }
-    if (media_router::MediaRouterEnabled(browser->profile())) {
+
+    if (media_router::MediaRouterEnabled(browser->profile()) &&
+        (!base::FeatureList::IsEnabled(features::kCastAppMenuExperiment) ||
+         !features::kCastListedFirst.Get())) {
       AddItemWithStringIdAndIcon(
           IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
           ui::ImageModel::FromVectorIcon(kCastChromeRefreshIcon,
@@ -1686,8 +1702,16 @@ void AppMenuModel::Build() {
 
     sub_menus_.push_back(
         std::make_unique<SaveAndShareSubMenuModel>(this, browser_));
-    AddSubMenuWithStringId(IDC_SAVE_AND_SHARE_MENU, IDS_SAVE_AND_SHARE_MENU,
+    int string_id =
+        media_router::MediaRouterEnabled(browser()->profile()) &&
+                base::FeatureList::IsEnabled(features::kCastAppMenuExperiment)
+            ? (features::kCastListedFirst.Get() ? IDS_CAST_SAVE_AND_SHARE_MENU
+                                                : IDS_SAVE_SHARE_AND_CAST_MENU)
+            : IDS_SAVE_AND_SHARE_MENU;
+    AddSubMenuWithStringId(IDC_SAVE_AND_SHARE_MENU, string_id,
                            sub_menus_.back().get());
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_SAVE_AND_SHARE_MENU).value(),
+                           kSaveAndShareMenuItem);
   } else {
     if (base::FeatureList::IsEnabled(
             performance_manager::features::kPerformanceControlsSidePanel)) {
