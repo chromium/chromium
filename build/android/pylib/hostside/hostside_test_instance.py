@@ -15,6 +15,7 @@ class HostsideTestInstance(test_instance.TestInstance):
     self.adb_path = args.tradefed_adb_path or ''
     self.additional_apks = args.additional_apks
     self.use_webview_provider = args.use_webview_provider
+    self.max_tries = 1 if args.repeat else args.num_retries + 1
 
   #override
   def TestType(self):

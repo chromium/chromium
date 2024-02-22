@@ -100,6 +100,10 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
         '-m',
         self.TestPackage(),
     ] + mode_args + [
+        '--retry-strategy',
+        'RETRY_ANY_FAILURE',
+        '--max-testcase-run-count',
+        str(self._test_instance.max_tries),
         '--template:map',
         'reporters=../../build/android/pylib/local/machine/'
         'local_machine_hostside_tradefed_config.xml',
