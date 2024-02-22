@@ -25,7 +25,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -132,22 +131,6 @@ public class SuggestionLayoutUnitTest {
         assertFalse(
                 "Clipping should be disabled when rounding is not in use",
                 mLayout.getClipToOutline());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @Config(qualifiers = "sw600dp")
-    public void suggestionPadding_modernUiDisabled() {
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-
-        int startSpace =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_start_padding);
-        int endSpace =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding);
-        assertEquals(startSpace, mLayout.getPaddingStart());
-        assertEquals(endSpace, mLayout.getPaddingEnd());
     }
 
     @Test

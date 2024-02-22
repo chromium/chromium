@@ -186,41 +186,6 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
     @Test
     @Config(qualifiers = "ldltr-sw600dp")
-    public void testRecalculateOmniboxAlignment_tablet_ltr() {
-        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
-        mImpl.recalculateOmniboxAlignment();
-        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(
-                new OmniboxAlignment(
-                        0,
-                        ANCHOR_HEIGHT + ANCHOR_TOP,
-                        ANCHOR_WIDTH,
-                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
-                        ALIGNMENT_LEFT,
-                        ANCHOR_WIDTH - ALIGNMENT_WIDTH - ALIGNMENT_LEFT),
-                alignment);
-    }
-
-    @Test
-    @Config(qualifiers = "ldrtl-sw600dp")
-    public void testRecalculateOmniboxAlignment_tablet_rtl() {
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mAnchorView).getLayoutDirection();
-        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
-        mImpl.recalculateOmniboxAlignment();
-        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(
-                new OmniboxAlignment(
-                        0,
-                        ANCHOR_HEIGHT + ANCHOR_TOP,
-                        ANCHOR_WIDTH,
-                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
-                        ALIGNMENT_LEFT,
-                        ANCHOR_WIDTH - ALIGNMENT_WIDTH - ALIGNMENT_LEFT),
-                alignment);
-    }
-
-    @Test
-    @Config(qualifiers = "ldltr-sw600dp")
     @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     @CommandLineFlags.Add({
         "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
@@ -315,38 +280,6 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
         mImpl.onConfigurationChanged(newConfig);
         assertFalse(mImpl.isTablet());
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    public void testRecalculateOmniboxAlignment_tabletToPhoneSwitch_revampDisabled() {
-        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
-        mImpl.recalculateOmniboxAlignment();
-        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(
-                new OmniboxAlignment(
-                        0,
-                        ANCHOR_HEIGHT + ANCHOR_TOP,
-                        ANCHOR_WIDTH,
-                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
-                        ALIGNMENT_LEFT,
-                        ANCHOR_WIDTH - ALIGNMENT_WIDTH - ALIGNMENT_LEFT),
-                alignment);
-
-        Configuration newConfig = getConfiguration();
-        newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
-        mImpl.onConfigurationChanged(newConfig);
-        assertFalse(mImpl.isTablet());
-        OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
-        assertEquals(
-                new OmniboxAlignment(
-                        0,
-                        ANCHOR_HEIGHT + ANCHOR_TOP,
-                        ANCHOR_WIDTH,
-                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
-                        0,
-                        0),
-                newAlignment);
     }
 
     @Test

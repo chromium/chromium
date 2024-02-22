@@ -31,7 +31,7 @@ public class OmniboxFeatures {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "enable_modernize_visual_update_on_tablet",
-                    false);
+                    true);
 
     public static final BooleanCachedFieldTrialParameter
             MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX =
