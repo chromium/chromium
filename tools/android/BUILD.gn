@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
 # Intermediate target grouping the android tools needed to run native
@@ -20,6 +21,9 @@ group("android_tools") {
   ]
   if (is_asan) {
     deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
+  }
+  if (use_full_mte) {
+    deps += [ "//tools/android/mte:mte_device_setup" ]
   }
 }
 

@@ -1626,6 +1626,7 @@ class MetaBuildWrapper:
     msan = 'is_msan=true' in vals['gn_args']
     tsan = 'is_tsan=true' in vals['gn_args']
     cfi_diag = 'use_cfi_diag=true' in vals['gn_args']
+    full_mte = 'use_full_mte=true' in vals['gn_args']
     # Treat sanitizer warnings as test case failures (crbug/1442587).
     fail_on_san_warnings = 'fail_on_san_warnings=true' in vals['gn_args']
     clang_coverage = 'use_clang_coverage=true' in vals['gn_args']
@@ -1678,6 +1679,8 @@ class MetaBuildWrapper:
     if is_android and test_type != 'script':
       if asan:
         cmdline += [os.path.join('bin', 'run_with_asan'), '--']
+      if full_mte:
+        cmdline += [os.path.join('bin', 'run_with_mte'), '--']
       cmdline += [
           vpython_exe, '../../build/android/test_wrapper/logdog_wrapper.py',
           '--target', target, '--logdog-bin-cmd',

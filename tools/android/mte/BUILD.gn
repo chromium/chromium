@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/clang/clang.gni")
+import("//build/util/generate_wrapper.gni")
+
+generate_wrapper("mte_device_setup") {
+  testonly = true
+  executable = "with_mte.py"
+  wrapper_script = "$root_out_dir/bin/run_with_mte"
+
+  _adb_path = "${public_android_sdk_root}/platform-tools/adb"
+  data = [
+    "with_mte.py",
+    _adb_path,
+  ]
+
+  data_deps = [
+    "//build/android:devil_chromium_py",
+    "//third_party/catapult/devil",
+  ]
+
+  _rebased_adb_path = rebase_path(_adb_path, root_build_dir)
+
+  executable_args = [
+    "--adb",
+    "@WrappedPath(${_rebased_adb_path})",
+  ]
+}
