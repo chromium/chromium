@@ -51,8 +51,6 @@ void HelpAppNotificationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kHelpAppNotificationLastShownMilestone,
                                 -10);
-  registry->RegisterIntegerPref(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
 }
 
 HelpAppNotificationController::HelpAppNotificationController(Profile* profile)

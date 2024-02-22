@@ -621,9 +621,6 @@
         <message name="IDS_HELP_APP_PERKS" desc="Name of a tab in the Help app that offers users additional perks like apps or drive storage space.">
           Perks
         </message>
-        <message name="IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP" desc="Text for the suggestion chip to view a magazine showing the user tools they can use for creating movies on a Chromebook. [CHAR_LIMIT=24]">
-          Create your own movie
-        </message>
         <message name="IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP" desc="Text for the suggestion chip to view updated patch notes are available. [CHAR_LIMIT=24]">
           What's new with ChromeOS
         </message>

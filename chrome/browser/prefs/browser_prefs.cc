@@ -991,6 +991,10 @@ constexpr std::array<const char*, 6u>
         "ash.welcome_tour.interaction_time.Search.first_time_bucket",
         "ash.welcome_tour.interaction_time.SettingsApp.first_time_bucket",
 };
+
+// Deprecated 02/2024.
+constexpr char kDiscoverTabSuggestionChipTimesLeftToShow[] =
+    "times_left_to_show_discover_tab_suggestion_chip";
 #endif
 
 // Deprecated 02/2024
@@ -1415,6 +1419,9 @@ void RegisterProfilePrefsForMigration(
   for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
     registry->RegisterIntegerPref(pref, -1);
   }
+
+  // Deprecated 02/2024.
+  registry->RegisterIntegerPref(kDiscoverTabSuggestionChipTimesLeftToShow, 0);
 #endif
 
   // Deprecated 02/2024.
@@ -2683,6 +2690,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
     profile_prefs->ClearPref(pref);
   }
+
+  // Deprecated 02/2024.
+  profile_prefs->ClearPref(kDiscoverTabSuggestionChipTimesLeftToShow);
 #endif
 
   // Deprecated 02/2024.

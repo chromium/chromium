@@ -32,24 +32,7 @@
 namespace app_list {
 namespace {
 
-constexpr char kHelpAppDiscoverResult[] = "help-app://discover";
 constexpr char kHelpAppUpdatesResult[] = "help-app://updates";
-
-// Decrements the times left to show the Discover Tab suggestion chip in
-// PrefService.
-void DecreaseTimesLeftToShowDiscoverTabSuggestionChip(Profile* profile) {
-  const int times_left_to_show = profile->GetPrefs()->GetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow);
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, times_left_to_show - 1);
-}
-
-// Sets the times left to show the Discover Tab suggestion chip to 0 in
-// PrefService.
-void StopShowingDiscoverTabSuggestionChip(Profile* profile) {
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
-}
 
 }  // namespace
 
@@ -69,9 +52,7 @@ HelpAppZeroStateResult::HelpAppZeroStateResult(Profile* profile,
   SetResultType(ResultType::kZeroStateHelpApp);
   SetDisplayType(display_type);
   // Some chips have different metrics types.
-  if (id == kHelpAppDiscoverResult) {
-    SetMetricsType(ash::HELP_APP_DISCOVER);
-  } else if (id == kHelpAppUpdatesResult) {
+  if (id == kHelpAppUpdatesResult) {
     SetMetricsType(ash::HELP_APP_UPDATES);
   } else {
     SetMetricsType(ash::HELP_APP_DEFAULT);
@@ -83,19 +64,7 @@ HelpAppZeroStateResult::~HelpAppZeroStateResult() = default;
 
 void HelpAppZeroStateResult::Open(int event_flags) {
   // Note: event_flags is ignored, LaunchSWA doesn't need it.
-  if (id() == kHelpAppDiscoverResult) {
-    StopShowingDiscoverTabSuggestionChip(profile_);
-
-    // Launch discover tab suggestion chip.
-    ash::SystemAppLaunchParams params;
-    params.url = GURL("chrome://help-app/discover");
-    params.launch_source = apps::LaunchSource::kFromAppListRecommendation;
-    ash::LaunchSystemWebAppAsync(
-        profile_, ash::SystemWebAppType::HELP, params,
-        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
-    // NOTE: Launching the result may dismiss the app list, which may delete
-    // this result.
-  } else if (id() == kHelpAppUpdatesResult) {
+  if (id() == kHelpAppUpdatesResult) {
     // Launch release notes suggestion chip.
     base::RecordAction(
         base::UserMetricsAction("ReleaseNotes.SuggestionChipLaunched"));
@@ -180,9 +149,7 @@ void HelpAppZeroStateProvider::OnImpression(
   }
 
   for (const auto& result : results) {
-    if (result.id == kHelpAppDiscoverResult) {
-      DecreaseTimesLeftToShowDiscoverTabSuggestionChip(profile_);
-    } else if (result.id == kHelpAppUpdatesResult) {
+    if (result.id == kHelpAppUpdatesResult) {
       ash::ReleaseNotesStorage(profile_)
           .DecreaseTimesLeftToShowSuggestionChip();
     }

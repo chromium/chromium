@@ -165,8 +165,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "DRIVE_SEARCH";
     case ash::SearchResultType::HELP_APP_UPDATES:
       return "HELP_APP_UPDATES";
-    case ash::SearchResultType::HELP_APP_DISCOVER:
-      return "HELP_APP_DISCOVER";
+    case ash::SearchResultType::HELP_APP_DISCOVER_DEPRECATED:
+      return "HELP_APP_DISCOVER_DEPRECATED";
     case ash::SearchResultType::KEYBOARD_SHORTCUT:
       return "KEYBOARD_SHORTCUT";
     case ash::SearchResultType::OPEN_TAB:
