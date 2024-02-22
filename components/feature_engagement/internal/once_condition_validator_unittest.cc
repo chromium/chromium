@@ -239,4 +239,46 @@ TEST_F(OnceConditionValidatorTest, DoNotTriggerForInvalidConfig) {
                   .NoErrors());
 }
 
+TEST_F(OnceConditionValidatorTest,
+       EnabledFeatureShouldTriggerAgainAfterSessionReset) {
+  // Only the first call to MeetsConditions() should lead to enlightenment.
+  EXPECT_TRUE(validator_
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
+                                   event_model_, availability_model_,
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
+                  .NoErrors());
+  validator_.NotifyIsShowing(kOnceTestFeatureFoo, FeatureConfig(), {""});
+  validator_.NotifyDismissed(kOnceTestFeatureFoo);
+
+  // Do not show before session reset.
+  ConditionValidator::Result result = validator_.MeetsConditions(
+      kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.session_rate_ok);
+  EXPECT_FALSE(result.trigger_ok);
+
+  // Reset the session.
+  validator_.ResetSession();
+
+  // Can show again after session reset.
+  result = validator_.MeetsConditions(
+      kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.session_rate_ok);
+  EXPECT_TRUE(result.trigger_ok);
+  validator_.NotifyIsShowing(kOnceTestFeatureFoo, FeatureConfig(), {""});
+  validator_.NotifyDismissed(kOnceTestFeatureFoo);
+
+  // The second call should fail.
+  result = validator_.MeetsConditions(
+      kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.session_rate_ok);
+  EXPECT_FALSE(result.trigger_ok);
+}
+
 }  // namespace feature_engagement

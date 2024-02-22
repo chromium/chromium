@@ -46,6 +46,7 @@ class NeverConditionValidator : public ConditionValidator {
   void SetPriorityNotification(
       const std::optional<std::string>& feature) override;
   std::optional<std::string> GetPendingPriorityNotification() override;
+  void ResetSession() override;
 };
 
 }  // namespace feature_engagement

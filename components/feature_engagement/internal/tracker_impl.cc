@@ -109,7 +109,7 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
       std::make_unique<NeverAvailabilityModel>(), std::move(configuration),
       std::make_unique<NoopDisplayLockController>(),
       std::make_unique<OnceConditionValidator>(),
-      std::make_unique<SystemTimeProvider>(), nullptr);
+      std::make_unique<SystemTimeProvider>(), nullptr, nullptr);
 }
 
 // This method is declared in //components/feature_engagement/public/
@@ -121,7 +121,8 @@ Tracker* Tracker::Create(
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     base::WeakPtr<TrackerEventExporter> event_exporter,
-    const ConfigurationProviderList& configuration_providers) {
+    const ConfigurationProviderList& configuration_providers,
+    std::unique_ptr<SessionController> session_controller) {
   DVLOG(2) << "Creating Tracker";
   if (base::FeatureList::IsEnabled(kIPHDemoMode)) {
     // GetFieldTrialParamValueByFeature returns an empty string if the param is
@@ -173,7 +174,8 @@ Tracker* Tracker::Create(
   return new TrackerImpl(
       std::move(event_model), std::move(availability_model),
       std::move(configuration), std::make_unique<DisplayLockControllerImpl>(),
-      std::move(condition_validator), std::move(time_provider), event_exporter);
+      std::move(condition_validator), std::move(time_provider), event_exporter,
+      std::move(session_controller));
 }
 
 TrackerImpl::TrackerImpl(
@@ -183,7 +185,8 @@ TrackerImpl::TrackerImpl(
     std::unique_ptr<DisplayLockController> display_lock_controller,
     std::unique_ptr<ConditionValidator> condition_validator,
     std::unique_ptr<TimeProvider> time_provider,
-    base::WeakPtr<TrackerEventExporter> event_exporter)
+    base::WeakPtr<TrackerEventExporter> event_exporter,
+    std::unique_ptr<SessionController> session_controller)
     : event_model_(std::move(event_model)),
       availability_model_(std::move(availability_model)),
       configuration_(std::move(configuration)),
@@ -191,6 +194,7 @@ TrackerImpl::TrackerImpl(
       condition_validator_(std::move(condition_validator)),
       time_provider_(std::move(time_provider)),
       event_exporter_(event_exporter),
+      session_controller_(std::move(session_controller)),
       event_model_initialization_finished_(false),
       availability_model_initialization_finished_(false) {
   event_model_->Initialize(
@@ -256,6 +260,9 @@ bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
 
 TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
     const base::Feature& feature) {
+  if (session_controller_ && session_controller_->ShouldResetSession()) {
+    condition_validator_->ResetSession();
+  }
   if (IsFeatureBlockedByTest(feature)) {
     return TriggerDetails(false, false);
   }
@@ -314,6 +321,10 @@ TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
 }
 
 bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
+  if (session_controller_ && session_controller_->ShouldResetSession()) {
+    condition_validator_->ResetSession();
+  }
+
   if (IsFeatureBlockedByTest(feature)) {
     return false;
   }

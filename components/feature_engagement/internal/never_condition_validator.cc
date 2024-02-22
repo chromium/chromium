@@ -39,4 +39,6 @@ NeverConditionValidator::GetPendingPriorityNotification() {
   return std::nullopt;
 }
 
+void NeverConditionValidator::ResetSession() {}
+
 }  // namespace feature_engagement
