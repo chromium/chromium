@@ -972,6 +972,7 @@ TEST_F(
       SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
+
 TEST_F(SafeBrowsingMetricsCollectorTest,
        NewProtegoRequestLogsWithTokenWhenNoPingWasSendWithinLast24HRS) {
   base::HistogramTester histograms;
@@ -987,6 +988,64 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
+      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       ProtegoRequestLogsWithTokenWhenWithTokenWasSentWithinLast7Days) {
+  // This test shows that a ping within the last 7 days is logged to the
+  // histogram and that the logic records a ping with a token preferrentially
+  // over a ping without a token.
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+                        base::Time::Now() - base::Days(7) + base::Seconds(1));
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Minutes(10));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
+      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       ProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSentWithinLast7Days) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Days(7) + base::Seconds(1));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
+      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       ProtegoRequestLogsNoneWhenNoPingWasSentWithinLast7Days) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Days(7));
+  pref_service_.SetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+                        base::Time::Now() - base::Days(7));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
       SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
       /* expected_count */ 1);
 }

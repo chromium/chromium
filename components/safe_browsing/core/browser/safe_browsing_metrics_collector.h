@@ -176,6 +176,15 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(
       SafeBrowsingMetricsCollectorTest,
       NewProtegoRequestLogsWithTokenWhenNoPingWasSendWithinLast24HRS);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsWithTokenWhenWithTokenWasSentWithinLast7Days);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSentWithinLast7Days);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsNoneWhenNoPingWasSentWithinLast7Days);
 
   // The type of Protego ping that was sent by an enhanced protection
   // user. These values are persisted to logs. Entries should not be renumbered
@@ -194,7 +203,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
   // For daily metrics.
   void LogMetricsAndScheduleNextLogging();
-  void MaybeLogDailyEsbProtegoPingSentLast24Hours();
+  void MaybeLogDailyEsbProtegoPingSent();
   void ScheduleNextLoggingAfterInterval(base::TimeDelta interval);
   void LogDailyOptInMetrics();
   void LogDailyEventMetrics();
