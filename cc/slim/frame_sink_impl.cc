@@ -181,9 +181,9 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   CHECK(uploaded_resource.shared_image);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-  GLenum texture_target = gpu::GetBufferTextureTarget(
+  GLenum texture_target = uploaded_resource.shared_image->GetTextureTarget(
       gfx::BufferUsage::SCANOUT,
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format), caps);
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::MakeGpu(
           uploaded_resource.shared_image, texture_target, sync_token,
