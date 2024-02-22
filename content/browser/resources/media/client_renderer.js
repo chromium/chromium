@@ -14,7 +14,9 @@ const ClientRendererCss = {
   NO_PLAYERS_SELECTED: 'no-players-selected',
   NO_COMPONENTS_SELECTED: 'no-components-selected',
   SELECTABLE_BUTTON: 'selectable-button',
-  DESTRUCTED_PLAYER: 'destructed-player',
+  ERRORED_PLAYER: 'errored-player',
+  ENDED_PLAYER: 'ended-player',
+  ACTIVE_PLAYER: 'active-player',
 };
 
 function removeChildren(element) {
@@ -24,7 +26,7 @@ function removeChildren(element) {
 }
 
 function createSelectableButton(
-    id, groupName, buttonLabel, select_cb, isDestructed) {
+    id, groupName, buttonLabel, selectCb, playerState) {
   // For CSS styling.
   const radioButton = document.createElement('input');
   radioButton.classList.add(ClientRendererCss.SELECTABLE_BUTTON);
@@ -33,8 +35,12 @@ function createSelectableButton(
   radioButton.name = groupName;
 
   buttonLabel.classList.add(ClientRendererCss.SELECTABLE_BUTTON);
-  if (isDestructed) {
-    buttonLabel.classList.add(ClientRendererCss.DESTRUCTED_PLAYER);
+  if (playerState === 'errored') {
+    buttonLabel.classList.add(ClientRendererCss.ERRORED_PLAYER);
+  } else if (playerState === 'ended') {
+    buttonLabel.classList.add(ClientRendererCss.ENDED_PLAYER);
+  } else {
+    buttonLabel.classList.add(ClientRendererCss.ACTIVE_PLAYER);
   }
   buttonLabel.setAttribute('for', radioButton.id);
 
@@ -44,9 +50,7 @@ function createSelectableButton(
 
   // Listen to 'change' rather than 'click' to keep styling in sync with
   // button behavior.
-  radioButton.addEventListener('change', function() {
-    select_cb();
-  });
+  radioButton.addEventListener('change', selectCb);
 
   return fragment;
 }
@@ -247,8 +251,12 @@ export class ClientRenderer {
       this.drawProperties_(player.properties, this.playerPropertiesTable);
       this.drawLog_();
     }
-    if (key === 'event' && value === 'WEBMEDIAPLAYER_DESTROYED') {
-      player.destructed = true;
+    if (key === 'error') {
+      player.playerState = 'errored';
+    } else if (
+        key === 'event' && value === 'kWebMediaPLayerDestroyed' &&
+        player.playerState !== 'errored') {
+      player.playerState = 'ended';
     }
     if ([
           'url',
@@ -259,6 +267,7 @@ export class ClientRenderer {
           'width',
           'height',
           'event',
+          'error',
         ].includes(key)) {
       this.redrawPlayerList_(players);
     }
@@ -472,7 +481,7 @@ export class ClientRenderer {
       const li = document.createElement('li');
       const buttonCb = this.selectPlayer_.bind(this, player);
       li.appendChild(createSelectableButton(
-          id, buttonGroupName, label, buttonCb, player.destructed));
+          id, buttonGroupName, label, buttonCb, player.playerState));
       fragment.appendChild(li);
     }
     removeChildren(this.playerListElement);
