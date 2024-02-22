@@ -17,6 +17,7 @@ source_set("push_notification") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/push_notification/protos:proto",
     "//components/cross_device/logging:logging",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core:core",

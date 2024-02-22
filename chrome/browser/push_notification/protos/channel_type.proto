@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/notifications/frontend/data/channel_type.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/528833710.
+
+syntax = "proto2";
+
+package push_notification.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// The channels supported for delivery in the notifications pipeline.
+// Chrome Desktop currently only supports GCM_DEVICE_PUSH, all other
+// options have been removed. If a new ChannelType is needed, it can
+// be copied here from the google3 version of this proto.
+enum ChannelType {
+  GCM_DEVICE_PUSH = 3;
+}

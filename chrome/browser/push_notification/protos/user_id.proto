@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/notifications/frontend/data/user_id.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/507740861.
+
+syntax = "proto2";
+
+package push_notification.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Representation of a user on the device.
+message UserId {
+  required GaiaUserCredentials gaia_credentials = 1;
+}
+
+// Credentials for Gaia user.
+message GaiaUserCredentials {
+  // OAuth token for a Gaia user.
+  // Chrome clients can obtain this token via PrimaryAccountAccessTokenFetcher.
+  // See go/oauth2-developer-guide for more information.
+  optional string oauth_token = 1;
+}
