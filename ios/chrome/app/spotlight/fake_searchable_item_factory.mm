@@ -48,6 +48,7 @@
 }
 
 - (void)cancelItemsGeneration {
+  self.cancelItemsGenerationCallCount++;
 }
 
 @end

@@ -17,6 +17,16 @@
     _isShuttingDown = NO;
     _spotlightInterface = spotlightInterface;
     _searchableItemFactory = searchableItemFactory;
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(appDidEnterBackground)
+               name:UIApplicationDidEnterBackgroundNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(appWillEnterForeground)
+               name:UIApplicationWillEnterForegroundNotification
+             object:nil];
   }
   return self;
 }
@@ -24,6 +34,15 @@
 - (void)shutdown {
   [self.searchableItemFactory cancelItemsGeneration];
   _isShuttingDown = YES;
+}
+
+- (void)appDidEnterBackground {
+  self.isAppInBackground = YES;
+  [self.searchableItemFactory cancelItemsGeneration];
+}
+
+- (void)appWillEnterForeground {
+  self.isAppInBackground = NO;
 }
 
 @end

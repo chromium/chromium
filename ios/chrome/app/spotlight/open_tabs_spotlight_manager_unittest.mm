@@ -302,3 +302,53 @@ TEST_F(OpenTabsSpotlightManagerTest, TestCloseTab) {
       fakeSpotlightInterface_.deleteSearchableItemsWithIdentifiersCallsCount,
       1u);
 }
+
+// Tests that when the app is in background, any model updates don't cause an
+// immediate effect.
+TEST_F(OpenTabsSpotlightManagerTest, TestBackgroundUpdatesPostponed) {
+  browserList_->AddBrowser(browser_.get());
+
+  FakeWebState* tab1 = CreateWebState(browser_.get()->GetWebStateList());
+  tab1->LoadURL(GURL(kDummyHttpURL1));
+  FakeWebState* tab2 = CreateWebState(browser_.get()->GetWebStateList());
+  tab2->LoadURL(GURL(kDummyHttpURL2));
+
+  // We expect that we will index the added tabs.
+  EXPECT_EQ(fakeSpotlightInterface_.indexSearchableItemsCallsCount, 2u);
+
+  // Enter background
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  // Close a tab.
+  browser_.get()->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::CLOSE_USER_ACTION);
+
+  // We expect to NOT delete the closed tab (since it was the unique tab that
+  // has the loaded url).
+  EXPECT_EQ(
+      fakeSpotlightInterface_.deleteSearchableItemsWithIdentifiersCallsCount,
+      0u);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  // Since we're expecting the manager to treat any model updates in background
+  // as impossible to process immediately, the individual item should not be
+  // deleted by ID.
+  EXPECT_EQ(
+      fakeSpotlightInterface_.deleteSearchableItemsWithIdentifiersCallsCount,
+      0u);
+  // The manager instead removes everything in its domain.
+  EXPECT_EQ(fakeSpotlightInterface_
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+  // Now the manager schedules a reindexing of the only remaining open tab.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    return fakeSpotlightInterface_.indexSearchableItemsCallsCount == 3;
+  }));
+}
