@@ -109,7 +109,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
                             int event_target_id);
 
   // Callback from BrowserAccessibilityManager for all generated events.
-  void OnGeneratedEvent(BrowserAccessibilityManager* manager,
+  void OnGeneratedEvent(RenderFrameHostImpl* render_frame_host,
                         ui::AXEventGenerator::Event event,
                         ui::AXNodeID event_target_id);
 

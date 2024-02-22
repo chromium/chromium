@@ -202,10 +202,10 @@ void AccessibilityNotificationWaiter::BindOnLocationsChanged(
 }
 
 void AccessibilityNotificationWaiter::OnGeneratedEvent(
-    BrowserAccessibilityManager* manager,
+    RenderFrameHostImpl* render_frame_host,
     ui::AXEventGenerator::Event event,
     ui::AXNodeID event_target_id) {
-  DCHECK(manager);
+  DCHECK(render_frame_host);
   DCHECK_NE(event_target_id, ui::kInvalidAXNodeID);
   VLOG(1) << "OnGeneratedEvent " << event;
 
@@ -214,7 +214,8 @@ void AccessibilityNotificationWaiter::OnGeneratedEvent(
 
   if (generated_event_to_wait_for_ == event) {
     event_target_id_ = event_target_id;
-    event_browser_accessibility_manager_ = manager;
+    event_browser_accessibility_manager_ =
+        render_frame_host->GetOrCreateBrowserAccessibilityManager();
     notification_count_++;
     if (notification_count_ == frame_count_) {
       notification_received_ = true;
@@ -236,10 +237,11 @@ void AccessibilityNotificationWaiter::OnLocationsChanged() {
 void AccessibilityNotificationWaiter::OnFocusChanged() {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents());
-  BrowserAccessibilityManager* manager =
+  const BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
   if (manager && manager->delegate() && manager->GetFocus()) {
-    OnGeneratedEvent(manager, ui::AXEventGenerator::Event::FOCUS_CHANGED,
+    OnGeneratedEvent(manager->delegate()->AccessibilityRenderFrameHost(),
+                     ui::AXEventGenerator::Event::FOCUS_CHANGED,
                      manager->GetFocus()->GetId());
   }
 }

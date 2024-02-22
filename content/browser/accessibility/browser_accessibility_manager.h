@@ -58,11 +58,9 @@ class BrowserAccessibilityManagerMac;
 
 // To be called when a BrowserAccessibilityManager fires a generated event.
 // Provides the host, the event fired, and which node id the event was for.
-class BrowserAccessibilityManager;
-using GeneratedEventCallbackForTesting =
-    base::RepeatingCallback<void(BrowserAccessibilityManager*,
-                                 ui::AXEventGenerator::Event,
-                                 ui::AXNodeID)>;
+class RenderFrameHostImpl;
+using GeneratedEventCallbackForTesting = base::RepeatingCallback<
+    void(RenderFrameHostImpl*, ui::AXEventGenerator::Event, ui::AXNodeID)>;
 
 CONTENT_EXPORT ui::AXTreeUpdate MakeAXTreeUpdateForTesting(
     const ui::AXNodeData& node,
