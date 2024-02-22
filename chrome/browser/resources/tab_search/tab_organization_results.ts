@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
@@ -14,6 +15,7 @@ import './tab_search_item.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -32,7 +34,6 @@ export interface TabOrganizationResultsElement {
   $: {
     feedbackButtons: CrFeedbackButtonsElement,
     header: HTMLElement,
-    input: CrInputElement,
     learnMore: HTMLElement,
     scrollable: HTMLElement,
     selector: IronSelectorElement,
@@ -59,6 +60,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
       },
 
       isLastOrganization: Boolean,
+      multiTabOrganization: Boolean,
 
       organizationId: {
         type: Number,
@@ -69,6 +71,8 @@ export class TabOrganizationResultsElement extends PolymerElement {
         type: Number,
         value: 0,
       },
+
+      showInput_: Boolean,
 
       showRefresh_: {
         type: Boolean,
@@ -93,9 +97,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
   name: string;
   availableHeight: number;
   isLastOrganization: boolean;
+  multiTabOrganization: boolean;
   organizationId: number;
 
   private lastFocusedIndex_: number;
+  private showInput_: boolean;
   private showRefresh_: boolean;
   private tabDatas_: TabData[];
   private feedbackSelectedOption_: CrFeedbackOption;
@@ -104,13 +110,30 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return getTemplate();
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.showInput_ = !this.multiTabOrganization;
+  }
+
   announceHeader() {
     this.$.header.textContent = '';
     this.$.header.textContent = this.getTitle_();
   }
 
   focusInput() {
-    this.$.input.focus();
+    const input = this.getInput_();
+    if (input) {
+      input.focus();
+    }
+  }
+
+  private getInput_(): CrInputElement|null {
+    if (!this.showInput_) {
+      return null;
+    }
+    const id = this.multiTabOrganization ? '#multiOrganizationInput' :
+                                           '#singleOrganizationInput';
+    return this.shadowRoot!.querySelector<CrInputElement>(id);
   }
 
   private computeTabDatas_() {
@@ -156,13 +179,26 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   private onInputFocus_() {
-    this.$.input.select();
+    const input = this.getInput_();
+    if (input) {
+      input.select();
+    }
+  }
+
+  private onInputBlur_() {
+    if (this.multiTabOrganization) {
+      this.showInput_ = false;
+    }
   }
 
   private onInputKeyDown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.stopPropagation();
-      this.$.input.blur();
+      if (this.multiTabOrganization) {
+        this.showInput_ = false;
+      } else {
+        this.getInput_()!.blur();
+      }
     }
   }
 
@@ -177,7 +213,12 @@ export class TabOrganizationResultsElement extends PolymerElement {
       // Explicitly focus the element prior to the list in focus order and
       // override the default behavior, which would be to focus the row that
       // the currently focused close button is in.
-      this.$.input.focus();
+      if (this.multiTabOrganization) {
+        this.shadowRoot!.querySelector<CrIconButtonElement>(
+                            `#rejectButton`)!.focus();
+      } else {
+        this.getInput_()!.focus();
+      }
       handled = true;
     } else if (!event.shiftKey) {
       if (event.key === 'ArrowUp') {
@@ -226,6 +267,17 @@ export class TabOrganizationResultsElement extends PolymerElement {
     // selection should move to another element in the list, this will be done
     // in onTabFocus_.
     this.$.selector.selectIndex(-1);
+  }
+
+  private onEditClick_() {
+    this.showInput_ = true;
+  }
+
+  private onRejectGroupClick_() {
+    this.dispatchEvent(new CustomEvent('reject-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onRefreshClick_() {

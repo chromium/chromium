@@ -252,7 +252,7 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.apiProxy_.requestTabOrganization();
   }
 
-  private onRefreshClick_() {
+  private onRejectClick_() {
     this.apiProxy_.rejectTabOrganization(this.sessionId_, this.organizationId_);
   }
 

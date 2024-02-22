@@ -52,6 +52,7 @@ suite('TabOrganizationPageTest', () => {
     TabSearchSyncBrowserProxyImpl.setInstance(testSyncProxy);
 
     tabOrganizationResults = document.createElement('tab-organization-results');
+    tabOrganizationResults.multiTabOrganization = false;
     tabOrganizationResults.name =
         mojoString16ToString(session.organizations[0]!.name);
     tabOrganizationResults.tabs = session.organizations[0]!.tabs;
@@ -116,9 +117,11 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('requestTabOrganization'));
   });
 
-  test('Input blurs on enter', async () => {
+  test('Single organization input blurs on enter', async () => {
     await tabOrganizationResultsSetup();
-    const input = tabOrganizationResults.$.input;
+    const input = tabOrganizationResults.shadowRoot!.querySelector<HTMLElement>(
+        '#singleOrganizationInput');
+    assertTrue(!!input);
     assertFalse(input.hasAttribute('focused_'));
 
     input.focus();
@@ -126,6 +129,35 @@ suite('TabOrganizationPageTest', () => {
 
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     assertFalse(input.hasAttribute('focused_'));
+  });
+
+  test('Multi organization input toggles on enter/edit', async () => {
+    await tabOrganizationResultsSetup();
+    tabOrganizationResults.multiTabOrganization = true;
+    await flushTasks();
+
+    const input = tabOrganizationResults.shadowRoot!.querySelector<HTMLElement>(
+        '#multiOrganizationInput');
+    assertTrue(!!input);
+
+    assertTrue(isVisible(input));
+
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    assertFalse(isVisible(input));
+
+    const editButton =
+        tabOrganizationResults.shadowRoot!.querySelector<HTMLElement>(
+            '.icon-edit');
+    assertTrue(!!editButton);
+    assertTrue(isVisible(editButton));
+
+    editButton.click();
+    await flushTasks();
+
+    assertTrue(isVisible(input));
+    assertFalse(isVisible(editButton));
   });
 
   test('Tab close removes from tab list', async () => {
@@ -239,6 +271,31 @@ suite('TabOrganizationPageTest', () => {
     await flushTasks();
 
     assertEquals(1, testApiProxy.getCallCount('acceptTabOrganization'));
+  });
+
+  test('Group cancel button rejects organization', async () => {
+    loadTimeData.overrideValues({
+      multiTabOrganizationEnabled: true,
+    });
+
+    await tabOrganizationPageSetup();
+
+    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        createSession({state: TabOrganizationState.kSuccess}));
+    await flushTasks();
+
+    assertEquals(0, testApiProxy.getCallCount('rejectTabOrganization'));
+
+    const results = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-results');
+    assertTrue(!!results);
+    const cancelButton =
+        results.shadowRoot!.querySelector<HTMLElement>('#rejectButton');
+    assertTrue(!!cancelButton);
+    cancelButton.click();
+    await flushTasks();
+
+    assertEquals(1, testApiProxy.getCallCount('rejectTabOrganization'));
   });
 
   test('Refresh rejects organization', async () => {
