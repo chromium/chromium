@@ -247,8 +247,10 @@ CGFloat const kSpacingAfterTitle = 4;
     cell.userInteractionEnabled = YES;
     return;
   }
-  // If only one suggestion exists, the item should not be selectable.
+  // If only one suggestion exists, the item should not be selectable,
+  // but mark the cell as selected for the user.
   cell.userInteractionEnabled = NO;
+  cell.accessoryType = UITableViewCellAccessoryCheckmark;
 }
 
 // Long press open context menu.
