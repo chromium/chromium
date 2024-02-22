@@ -114,10 +114,10 @@ enum CloseReason {
 enum UserFeedback {
   // Unspecified.
   kUserFeedbackUnspecified,
-  // A thumbs up.
-  kUserFeedbackPositive,
   // A thumbs down.
   kUserFeedbackNegative,
+  // A thumbs up.
+  kUserFeedbackPositive,
 };
 
 // Interface for calls from the untrusted Compose dialog JS into the Browser
