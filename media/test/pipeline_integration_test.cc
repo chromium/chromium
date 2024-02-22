@@ -2951,15 +2951,6 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
-// Ensures audio-video playback with missing or negative timestamps fails
-// instead of crashing.  See http://crbug.com/396864.  Flaky in local tests.
-TEST_F(PipelineIntegrationTest, DISABLED_BasicPlaybackChainedOggVideo) {
-  base::test::ScopedFeatureList enable_theora{kTheoraVideoCodec};
-  ASSERT_EQ(PIPELINE_OK, Start("double-bear.ogv", kUnreliableDuration));
-  Play();
-  EXPECT_EQ(PIPELINE_ERROR_DECODE, WaitUntilEndedOrError());
-}
-
 // Tests that we signal ended even when audio runs longer than video track.
 TEST_F(PipelineIntegrationTest, BasicPlaybackAudioLongerThanVideo) {
   ASSERT_EQ(PIPELINE_OK, Start("bear_audio_longer_than_video_vp8.ogv"));

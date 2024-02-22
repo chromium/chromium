@@ -37,32 +37,6 @@ class MediaColorTest : public MediaBrowserTest {
   }
 };
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pTheora) {
-  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
-    RunColorTest("yuv420p.ogv");
-  } else {
-    GTEST_SKIP() << "Theora isn't supported";
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pTheora) {
-  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
-    RunColorTest("yuv422p.ogv");
-  } else {
-    GTEST_SKIP() << "Theora isn't supported";
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pTheora) {
-  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
-    RunColorTest("yuv444p.ogv");
-  } else {
-    GTEST_SKIP() << "Theora isn't supported";
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pVp8) {
   RunColorTest("yuv420p.webm");
 }

@@ -280,7 +280,6 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
       enabled_features);
   std::vector<base::test::FeatureRef> combined_disabled_features(
       disabled_features);
-  combined_disabled_features.push_back(media::kFFmpegDecodeOpaqueVP8);
 #if BUILDFLAG(USE_VAAPI)
   // TODO(crbug.com/828482): remove once enabled by default.
   combined_enabled_features.push_back(media::kVaapiLowPowerEncoderGen9x);

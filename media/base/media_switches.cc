@@ -302,11 +302,6 @@ const base::FeatureParam<base::TimeDelta>
         &kAudioRendererAlgorithmParameters, "starting_capacity_for_encrypted",
         base::Milliseconds(500)};
 
-// Prefer FFmpeg to LibVPX for Vp8 decoding with opaque alpha mode.
-BASE_FEATURE(kFFmpegDecodeOpaqueVP8,
-             "FFmpegDecodeOpaqueVP8",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
 BASE_FEATURE(kOverlayFullscreenVideo,
              "overlay-fullscreen-video",
@@ -1757,19 +1752,12 @@ BASE_FEATURE(kLibaomUseChromeThreads,
              "LibaomUseChromeThreads",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-// Allows decoding of theora / vp3 content.
-BASE_FEATURE(kTheoraVideoCodec,
-             "TheoraVideoCodec",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(IS_CHROMEOS)
 // Allows demuxing of AVI and decoding of MPEG4 streams. These should not be
 // allowed through the web in Chrome, but may be enabled by the local file app.
 BASE_FEATURE(kCrOSLegacyMediaFormats,
              "CrOSLegacyMediaFormats",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 #endif
 
 #if BUILDFLAG(IS_WIN)

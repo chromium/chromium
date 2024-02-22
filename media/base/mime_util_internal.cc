@@ -309,12 +309,6 @@ void MimeUtil::AddSupportedMediaFormats() {
   const CodecSet ogg_audio_codecs{FLAC, OPUS, VORBIS};
 
   CodecSet ogg_video_codecs{VP8};
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  if (base::FeatureList::IsEnabled(kTheoraVideoCodec)) {
-    ogg_video_codecs.emplace(THEORA);
-  }
-#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-
   CodecSet ogg_codecs(ogg_audio_codecs);
   ogg_codecs.insert(ogg_video_codecs.begin(), ogg_video_codecs.end());
 

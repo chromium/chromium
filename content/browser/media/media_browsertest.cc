@@ -212,25 +212,6 @@ class MediaTest : public testing::WithParamInterface<bool>,
   }
 };
 
-// Android doesn't support Theora.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearTheora) {
-  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
-    PlayVideo("bear.ogv");
-  } else {
-    GTEST_SKIP() << "Theora isn't supported";
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentTheora) {
-  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
-    PlayVideo("bear_silent.ogv");
-  } else {
-    GTEST_SKIP() << "Theora isn't supported";
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWebm) {
   PlayVideo("bear.webm");
 }

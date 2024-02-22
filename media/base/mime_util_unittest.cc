@@ -480,24 +480,8 @@ TEST(MimeUtilTest, ParseVideoCodecString_SimpleCodecsHaveProfiles) {
     EXPECT_EQ(VideoColorSpace::REC709(), result->color_space);
   }
 
-  const bool kHaveTheoraCodec =
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-      base::FeatureList::IsEnabled(kTheoraVideoCodec);
-#else
-      false;
-#endif
-
   // Valid Theora string.
-  if (kHaveTheoraCodec) {
-    auto result = ParseVideoCodecString("video/ogg", "theora");
-    ASSERT_TRUE(result);
-    EXPECT_EQ(VideoCodec::kTheora, result->codec);
-    EXPECT_EQ(THEORAPROFILE_ANY, result->profile);
-    EXPECT_EQ(kNoVideoCodecLevel, result->level);
-    EXPECT_EQ(VideoColorSpace::REC709(), result->color_space);
-  } else {
-    EXPECT_FALSE(ParseVideoCodecString("video/ogg", "theora"));
-  }
+  EXPECT_FALSE(ParseVideoCodecString("video/ogg", "theora"));
 }
 
 TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {

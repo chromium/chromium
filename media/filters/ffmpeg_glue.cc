@@ -158,12 +158,6 @@ const char* FFmpegGlue::GetAllowedVideoDecoders() {
   // This should match the configured lists in //third_party/ffmpeg.
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
     std::vector<std::string> allowed_decoders;
-    if (base::FeatureList::IsEnabled(kTheoraVideoCodec)) {
-      allowed_decoders.push_back("theora");
-    }
-    if (base::FeatureList::IsEnabled(kFFmpegDecodeOpaqueVP8)) {
-      allowed_decoders.push_back("vp8");
-    }
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     allowed_decoders.push_back("h264");
 #if BUILDFLAG(IS_CHROMEOS)

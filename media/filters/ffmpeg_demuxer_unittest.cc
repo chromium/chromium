@@ -443,8 +443,6 @@ TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
   EXPECT_EQ(2u, demuxer_->GetAllStreams().size());
 }
 
-// Android has no Theora support, so this test doesn't work.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   // Open a file containing the following streams:
   //   Stream #0: Video (VP8)
@@ -458,8 +456,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
       demuxer_->GetAllStreams();
 
-  const size_t kExpectedStreamCount =
-      base::FeatureList::IsEnabled(kTheoraVideoCodec) ? 4 : 3;
+  const size_t kExpectedStreamCount = 3;
   ASSERT_EQ(kExpectedStreamCount, streams.size());
 
   // Stream #0 should be VP8 video.
@@ -496,7 +493,6 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
     EXPECT_EQ(AudioCodec::kPCM, stream->audio_decoder_config().codec());
   }
 }
-#endif
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(FFmpegDemuxerTest, Initialize_Multitrack_Disabled) {
@@ -712,48 +708,6 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNoStartTime) {
     event.RunAndWaitForStatus(PIPELINE_OK);
   }
 }
-
-// Android has no Theora support, so these tests doesn't work. Recreating this
-// clip with vp8 instead of Theora doesn't end up testing the right things.
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Bear) {
-  base::test::ScopedFeatureList scoped_enable(kTheoraVideoCodec);
-  // Many ogg files have negative starting timestamps, so ensure demuxing and
-  // seeking work correctly with a negative start time.
-  CreateDemuxer("bear.ogv");
-  InitializeDemuxer();
-
-  // Attempt a read from the video stream and run the message loop until done.
-  DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
-  DemuxerStream* audio = GetStream(DemuxerStream::AUDIO);
-
-  // Run the test once (should be twice..., see note) with a seek in between.
-  //
-  // TODO(dalecurtis): We only run the test once since FFmpeg does not currently
-  // guarantee the order of demuxed packets in OGG containers. See
-  // http://crbug.com/387996.
-  for (int i = 0; i < 1; ++i) {
-    Read(audio, FROM_HERE, 40, 0, true, DemuxerStream::Status::kOk,
-         kInfiniteDuration);
-    Read(audio, FROM_HERE, 41, 2903, true, DemuxerStream::Status::kOk,
-         kInfiniteDuration);
-    Read(audio, FROM_HERE, 173, 5805, true, DemuxerStream::Status::kOk,
-         base::Microseconds(10159));
-
-    Read(audio, FROM_HERE, 148, 18866, true);
-    EXPECT_EQ(base::Microseconds(-15964), demuxer_->start_time());
-
-    Read(video, FROM_HERE, 5751, 0, true);
-    Read(video, FROM_HERE, 846, 33367, false);
-    Read(video, FROM_HERE, 1255, 66733, false);
-
-    // Seek back to the beginning and repeat the test.
-    WaitableMessageLoopEvent event;
-    demuxer_->Seek(base::TimeDelta(), event.GetPipelineStatusCB());
-    event.RunAndWaitForStatus(PIPELINE_OK);
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Same test above, but using sync2.ogv which has video stream muxed before the
 // audio stream, so seeking based only on start time will fail since ffmpeg is
@@ -1186,9 +1140,6 @@ TEST_F(FFmpegDemuxerTest, Mp3WithVideoStreamID3TagData) {
 // Ensure a video with an unsupported audio track still results in the video
 // stream being demuxed. Because we disable the speex parser for ogg, the audio
 // track won't even show up to the demuxer.
-//
-// Android has no Theora support, so this test doesn't work.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(FFmpegDemuxerTest, UnsupportedAudioSupportedVideoDemux) {
   CreateDemuxerWithStrictMediaLog("speex_audio_vorbis_video.ogv");
 
@@ -1207,7 +1158,6 @@ TEST_F(FFmpegDemuxerTest, UnsupportedAudioSupportedVideoDemux) {
   EXPECT_TRUE(GetStream(DemuxerStream::VIDEO));
   EXPECT_FALSE(GetStream(DemuxerStream::AUDIO));
 }
-#endif
 
 // Ensure a video with an unsupported video track still results in the audio
 // stream being demuxed.

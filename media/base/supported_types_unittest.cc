@@ -25,14 +25,6 @@ const bool kPropCodecsEnabled = true;
 const bool kPropCodecsEnabled = false;
 #endif
 
-bool IsTheoraSupported() {
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  return base::FeatureList::IsEnabled(kTheoraVideoCodec);
-#else
-  return false;
-#endif
-}
-
 bool IsMPEG4Supported() {
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
   return base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats);
@@ -53,8 +45,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, kColorSpace}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, kColorSpace}));
-  EXPECT_EQ(
-      IsTheoraSupported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 
@@ -308,8 +299,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_EQ(
-      IsTheoraSupported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
 
@@ -326,8 +316,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_EQ(
-      IsTheoraSupported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(
@@ -340,8 +329,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_EQ(
-      IsTheoraSupported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
   // HDR10 metadata only works with the PQ transfer.
@@ -367,11 +355,7 @@ TEST(SupportedTypesTest, IsBuiltInVideoCodec) {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
         // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  EXPECT_EQ(IsTheoraSupported(), IsBuiltInVideoCodec(VideoCodec::kTheora));
-#else
   EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kTheora));
-#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || BUILDFLAG(ENABLE_LIBVPX)
   EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kVP8));
