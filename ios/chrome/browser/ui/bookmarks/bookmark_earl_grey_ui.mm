@@ -203,7 +203,11 @@ id<GREYMatcher> SearchIconButton() {
              @"Waiting for bookmark to go away");
 }
 
-- (void)waitForUndoToastToGoAway {
+- (void)closeUndoSnackbarAndWait {
+  id<GREYMatcher> snackbar_matcher =
+      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier");
+  [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+      performAction:grey_tap()];
   // Wait until it's gone.
   ConditionBlock condition = ^{
     NSError* error = nil;
@@ -580,8 +584,7 @@ id<GREYMatcher> SearchIconButton() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(editorId)]
       assertWithMatcher:grey_notVisible()];
 
-  // Wait for Undo toast to go away from screen.
-  [BookmarkEarlGreyUI waitForUndoToastToGoAway];
+  [BookmarkEarlGreyUI closeUndoSnackbarAndWait];
 }
 
 - (void)tapOnLongPressContextMenuButton:(id<GREYMatcher>)actionMatcher

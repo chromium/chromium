@@ -751,8 +751,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Verify all folder flow UI is now closed.
   [BookmarkEarlGreyUI verifyFolderFlowIsClosed];
 
-  // Wait for Undo toast to go away from screen.
-  [BookmarkEarlGreyUI waitForUndoToastToGoAway];
+  [BookmarkEarlGreyUI closeUndoSnackbarAndWait];
 
   // Verify edit mode is closed (context bar back to default state).
   [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES
@@ -818,8 +817,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Verify all folder flow UI is now closed.
   [BookmarkEarlGreyUI verifyFolderFlowIsClosed];
 
-  // Wait for Undo toast to go away from screen.
-  [BookmarkEarlGreyUI waitForUndoToastToGoAway];
+  [BookmarkEarlGreyUI closeUndoSnackbarAndWait];
 
   // Verify edit mode is closed (context bar back to default state).
   [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES

@@ -90,8 +90,8 @@ id<GREYMatcher> SearchIconButton();
 // Waits for the disparition of the given `title` in the UI.
 - (void)waitForDeletionOfBookmarkWithTitle:(NSString*)title;
 
-// Wait for Undo toast to go away.
-- (void)waitForUndoToastToGoAway;
+// Tap on the snackbar to make it go away.
+- (void)closeUndoSnackbarAndWait;
 
 // Rename folder title to `folderTitle`. Must be in edit folder UI.
 - (void)renameBookmarkFolderWithFolderTitle:(NSString*)folderTitle;

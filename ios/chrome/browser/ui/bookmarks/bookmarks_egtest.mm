@@ -739,8 +739,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                    [BookmarkEarlGreyUI contextBarDeleteString])]
       performAction:grey_tap()];
 
-  // Wait for Undo toast to go away from screen.
-  [BookmarkEarlGreyUI waitForUndoToastToGoAway];
+  [BookmarkEarlGreyUI closeUndoSnackbarAndWait];
 
   // Verify edit mode is close automatically (context bar switched back to
   // default state) and select button is disabled.
