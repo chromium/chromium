@@ -3524,6 +3524,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_INSTALL_PWA_BUTTON_LABEL" desc="Text for button that installs a web app to the operating system.">
         Install
       </message>
+      <message name="IDS_INSTALL_PWA_DIALOG_TITLE" desc="Title for dialog that shows up when a web app needs to be installed to the operating system.">
+        Install app
+      </message>
 
       <message name="IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a bookmark app, read by spoken feedback.">
         Shortcut name

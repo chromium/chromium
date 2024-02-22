@@ -72,7 +72,6 @@
 
 namespace {
 
-constexpr int kIconSize = 32;
 constexpr int kSpacingBetweenImages = 8;
 
 // Custom layout that sets host_size to be same as the child view's size.
@@ -109,7 +108,7 @@ class ScrollButton : public views::ImageButton {
     ConfigureVectorImageButton(this);
 
     SetBackground(views::CreateThemedRoundedRectBackground(
-        ui::kColorButtonBackground, kIconSize / 2));
+        ui::kColorButtonBackground, web_app::kIconSize / 2));
 
     views::HighlightPathGenerator::Install(
         this,
@@ -266,12 +265,12 @@ class ImageCarouselView : public views::View {
       trailing_button_visibility_set_up_ = true;
     }
 
-    leading_button_container_->SetBounds(kSpacingBetweenImages, 0, kIconSize,
-                                         fixed_height);
+    leading_button_container_->SetBounds(kSpacingBetweenImages, 0,
+                                         web_app::kIconSize, fixed_height);
 
     trailing_button_container_->SetBounds(
-        width() - kSpacingBetweenImages - kIconSize, 0, kIconSize,
-        fixed_height);
+        width() - kSpacingBetweenImages - web_app::kIconSize, 0,
+        web_app::kIconSize, fixed_height);
   }
 
  private:

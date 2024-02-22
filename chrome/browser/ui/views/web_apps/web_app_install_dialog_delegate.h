@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,10 +39,14 @@ enum InstallDialogType {
   kMaxValue = kDetailed
 };
 
+inline constexpr int kIconSize = 32;
+
 class WebAppInstallDialogDelegate
     : public ui::DialogModelDelegate,
       public content::WebContentsObserver {
  public:
+  // dialog_coordinator is std::optional since the detailed install dialog uses
+  // this delegate but is not tracked by the PWA action view.
   WebAppInstallDialogDelegate(
       content::WebContents* web_contents,
       std::unique_ptr<WebAppInstallInfo> install_info,
@@ -50,7 +55,9 @@ class WebAppInstallDialogDelegate
       PwaInProductHelpState iph_state,
       PrefService* prefs,
       feature_engagement::Tracker* tracker,
-      InstallDialogType dialog_type);
+      InstallDialogType dialog_type,
+      std::optional<base::WeakPtr<web_app::WebAppInstallDialogCoordinator>>
+          dialog_coordinator = std::nullopt);
 
   ~WebAppInstallDialogDelegate() override;
 
@@ -80,6 +87,8 @@ class WebAppInstallDialogDelegate
   raw_ptr<PrefService> prefs_;
   raw_ptr<feature_engagement::Tracker> tracker_;
   InstallDialogType dialog_type_;
+  std::optional<base::WeakPtr<web_app::WebAppInstallDialogCoordinator>>
+      dialog_coordinator_;
 
   base::WeakPtrFactory<WebAppInstallDialogDelegate> weak_ptr_factory_{
       this};

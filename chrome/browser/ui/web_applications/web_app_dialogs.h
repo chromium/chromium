@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -170,6 +171,10 @@ void ShowWebAppDetailedInstallDialog(
 // Sets whether |ShowPWAInstallBubble| should accept immediately without any
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
+
+// Sets whether the bubble should close when it is not in an active window
+// during testing.
+base::AutoReset<bool> SetDontCloseOnDeactivateForTesting();
 
 // Shows the Isolated Web App manual install wizard.
 IsolatedWebAppInstallerCoordinator* LaunchIsolatedWebAppInstaller(

@@ -229,13 +229,18 @@ views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
     return nullptr;
   }
 
-  views::BubbleDialogDelegate* bubble =
-      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser)
-          ->GetBubbleView();
+  auto* dialog_coordinator =
+      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser);
+  if (!dialog_coordinator) {
+    return nullptr;
+  }
+
+  auto* bubble = dialog_coordinator->GetBubbleView();
   // Only return the active bubble if it's anchored to `this`. (This check takes
   // the more generic approach of verifying that it's the same widget as to
   // avoid depending too heavily on the exact details of how anchoring works.)
-  if (bubble && (bubble->GetAnchorView()->GetWidget() == GetWidget())) {
+  if (bubble && bubble->GetAnchorView() &&
+      (bubble->GetAnchorView()->GetWidget() == GetWidget())) {
     return bubble;
   }
 

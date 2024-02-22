@@ -3,36 +3,42 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_user_data.h"
-#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
-#include "ui/views/view_tracker.h"
-#include "ui/views/view_utils.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace web_app {
 
-WebAppInstallDialogCoordinator::~WebAppInstallDialogCoordinator() = default;
+WebAppInstallDialogCoordinator::~WebAppInstallDialogCoordinator() {
+  dialog_delegate_ = nullptr;
+}
 
 bool WebAppInstallDialogCoordinator::IsShowing() {
-  return install_dialog_tracker_.view() != nullptr;
+  return dialog_delegate_ != nullptr;
 }
 
-PWAConfirmationBubbleView* WebAppInstallDialogCoordinator::GetBubbleView() {
-  return IsShowing() ? views::AsViewClass<PWAConfirmationBubbleView>(
-                           install_dialog_tracker_.view())
-                     : nullptr;
+views::BubbleDialogDelegate* WebAppInstallDialogCoordinator::GetBubbleView() {
+  return IsShowing() ? dialog_delegate_ : nullptr;
 }
 
-void WebAppInstallDialogCoordinator::StartTracking(views::View* bubble_view) {
-  CHECK(!IsShowing()) << "Cannot track a new install dialog if it an existing "
+void WebAppInstallDialogCoordinator::StartTracking(
+    views::BubbleDialogDelegate* bubble_view) {
+  CHECK(!IsShowing()) << "Cannot track a new install dialog if an existing "
                          "one is already open";
-  install_dialog_tracker_.SetView(bubble_view);
+  dialog_delegate_ = bubble_view;
 }
 
 void WebAppInstallDialogCoordinator::StopTracking() {
   CHECK(IsShowing()) << "Cannot stop tracking install dialog when it was not "
                         "being tracked previously";
-  install_dialog_tracker_.SetView(nullptr);
+  dialog_delegate_ = nullptr;
+}
+
+base::WeakPtr<WebAppInstallDialogCoordinator>
+WebAppInstallDialogCoordinator::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 WebAppInstallDialogCoordinator::WebAppInstallDialogCoordinator(Browser* browser)

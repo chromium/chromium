@@ -72,7 +72,6 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
-#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
@@ -1339,7 +1338,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   auto dont_close_bubble_on_deactivate =
-      PWAConfirmationBubbleView::SetDontCloseOnDeactivateForTesting();
+      web_app::SetDontCloseOnDeactivateForTesting();
 
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
 
@@ -1402,7 +1401,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
       }));
 
   auto dont_close_bubble_on_deactivate =
-      PWAConfirmationBubbleView::SetDontCloseOnDeactivateForTesting();
+      web_app::SetDontCloseOnDeactivateForTesting();
 
   BrowserAddedWaiter browser_added_waiter;
   ASSERT_TRUE(pwa_install_view()->GetVisible());

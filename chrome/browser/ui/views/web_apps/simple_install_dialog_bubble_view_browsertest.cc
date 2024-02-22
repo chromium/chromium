@@ -6,9 +6,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -33,20 +33,30 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 namespace {
 
-class PWAConfirmationBubbleViewBrowserTest
-    : public WebAppControllerBrowserTest {
+class SimpleInstallDialogBubbleViewBrowserTest
+    : public WebAppControllerBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  PWAConfirmationBubbleViewBrowserTest()
+  SimpleInstallDialogBubbleViewBrowserTest()
       : prevent_close_on_deactivate_(
-            PWAConfirmationBubbleView::SetDontCloseOnDeactivateForTesting()) {
-    scoped_feature_list_.InitWithFeatures(
-        {feature_engagement::kIPHDesktopPwaInstallFeature}, {});
+            web_app::SetDontCloseOnDeactivateForTesting()) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    enabled_features.push_back(
+        feature_engagement::kIPHDesktopPwaInstallFeature);
+    if (UniversalInstallEnabled()) {
+      enabled_features.push_back(features::kWebAppUniversalInstall);
+    } else {
+      disabled_features.push_back(features::kWebAppUniversalInstall);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
-  ~PWAConfirmationBubbleViewBrowserTest() override = default;
+  ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
 
   std::unique_ptr<WebAppInstallInfo> GetAppInfo() {
     auto app_info = std::make_unique<WebAppInstallInfo>();
@@ -67,18 +77,19 @@ class PWAConfirmationBubbleViewBrowserTest
   }
 
  protected:
-  PWAConfirmationBubbleView* GetBubbleView(Browser* browser) {
+  views::BubbleDialogDelegate* GetBubbleView(Browser* browser) {
     return WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser)
         ->GetBubbleView();
   }
 
+  bool UniversalInstallEnabled() { return GetParam(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
   base::AutoReset<bool> prevent_close_on_deactivate_;
 };
 
-IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                        ShowBubbleInPWAWindow) {
   auto app_info = std::make_unique<WebAppInstallInfo>(
       GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
@@ -98,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        base::DoNothing());
 }
 
-IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelledDialogReportsMetrics) {
   auto app_info = GetAppInfo();
 
@@ -120,12 +131,16 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   GetBubbleView(browser())->CancelDialog();
   loop.Run();
 
-  histograms.ExpectUniqueSample(
-      "WebApp.InstallConfirmation.CloseReason",
-      views::Widget::ClosedReason::kCancelButtonClicked, 1);
+  // TOOD(b/326418546): Figure out a way to support widget close reason in new
+  // install dialog.
+  if (!UniversalInstallEnabled()) {
+    histograms.ExpectUniqueSample(
+        "WebApp.InstallConfirmation.CloseReason",
+        views::Widget::ClosedReason::kCancelButtonClicked, 1);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelledDialogReportsIphIgnored) {
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url;
@@ -172,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                        AcceptDialogResetIphCounters) {
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url;
@@ -216,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelFromNavigation) {
   std::optional<bool> dialog_accepted_ = std::nullopt;
 
@@ -241,9 +256,22 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   ASSERT_TRUE(dialog_accepted_);
   ASSERT_FALSE(dialog_accepted_.value());
 
-  histograms.ExpectUniqueSample("WebApp.InstallConfirmation.CloseReason",
-                                views::Widget::ClosedReason::kUnspecified, 1);
+  // TOOD(b/326418546): Figure out a way to support widget close reason in new
+  // install dialog.
+  if (!UniversalInstallEnabled()) {
+    histograms.ExpectUniqueSample("WebApp.InstallConfirmation.CloseReason",
+                                  views::Widget::ClosedReason::kUnspecified, 1);
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SimpleInstallDialogBubbleViewBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "WebAppSimpleInstallDialogUniversal"
+                                      : "PWAConfirmationBubbleView";
+                         });
 
 }  // namespace
 }  // namespace web_app

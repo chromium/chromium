@@ -147,8 +147,7 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
         CreateNameLabel(base::UTF8ToUTF16(registrar.GetAppShortName(app_id_)))
             .release());
     app_name_publisher_view->AddChildView(
-        CreateOriginLabel(
-            url::Origin::Create(registrar.GetAppStartUrl(app_id_)), true)
+        CreateOriginLabelFromStartUrl(registrar.GetAppStartUrl(app_id_), true)
             .release());
     app_info_view->AddChildView(std::move(app_name_publisher_view));
 

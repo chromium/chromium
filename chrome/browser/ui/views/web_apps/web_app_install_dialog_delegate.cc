@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -55,7 +56,9 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
-    InstallDialogType dialog_type)
+    InstallDialogType dialog_type,
+    std::optional<base::WeakPtr<web_app::WebAppInstallDialogCoordinator>>
+        dialog_coordinator)
     : content::WebContentsObserver(web_contents),
       web_contents_(web_contents),
       install_info_(std::move(web_app_info)),
@@ -64,7 +67,8 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
       iph_state_(std::move(iph_state)),
       prefs_(prefs),
       tracker_(tracker),
-      dialog_type_(dialog_type) {
+      dialog_type_(dialog_type),
+      dialog_coordinator_(dialog_coordinator) {
   CHECK(install_info_);
   CHECK(install_info_->manifest_id.is_valid());
   CHECK(install_tracker_);
@@ -72,6 +76,11 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
 }
 
 WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
+  if (dialog_coordinator_.has_value() &&
+      dialog_coordinator_.value()->IsShowing()) {
+    dialog_coordinator_.value()->StopTracking();
+  }
+
   // TODO(crbug.com/1327363): move this to dialog->SetHighlightedButton.
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
@@ -170,6 +179,11 @@ void WebAppInstallDialogDelegate::CloseDialogAsIgnored() {
 }
 
 void WebAppInstallDialogDelegate::MeasureIphOnDialogClose() {
+  if (dialog_coordinator_.has_value() &&
+      dialog_coordinator_.value()->IsShowing()) {
+    dialog_coordinator_.value()->StopTracking();
+  }
+
   if (callback_.is_null()) {
     return;
   }
