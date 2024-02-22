@@ -187,6 +187,11 @@ class SVGTransformListChecker : public InterpolationType::ConversionChecker {
   explicit SVGTransformListChecker(const InterpolationValue& underlying)
       : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
 
+  void Trace(Visitor* visitor) const final {
+    InterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_);
+  }
+
   bool IsValid(const InterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
     // TODO(suzyh): change maybeConvertSingle so we don't have to recalculate
@@ -204,7 +209,7 @@ class SVGTransformListChecker : public InterpolationType::ConversionChecker {
   }
 
  private:
-  const Persistent<const InterpolationValueGCed> underlying_;
+  const Member<const InterpolationValueGCed> underlying_;
 };
 
 }  // namespace
@@ -256,7 +261,7 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertSingle(
       interpolable_parts.push_back(underlying.interpolable_value->Clone());
     }
     conversion_checkers.push_back(
-        std::make_unique<SVGTransformListChecker>(underlying));
+        MakeGarbageCollected<SVGTransformListChecker>(underlying));
   } else {
     DCHECK(!keyframe.IsNeutral());
   }

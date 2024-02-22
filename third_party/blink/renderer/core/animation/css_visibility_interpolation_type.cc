@@ -119,7 +119,7 @@ InterpolationValue CSSVisibilityInterpolationType::MaybeConvertNeutral(
       To<CSSVisibilityNonInterpolableValue>(*underlying.non_interpolable_value)
           .Visibility(underlying_fraction);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingVisibilityChecker>(underlying_visibility));
+      MakeGarbageCollected<UnderlyingVisibilityChecker>(underlying_visibility));
   return CreateVisibilityValue(underlying_visibility);
 }
 
@@ -136,7 +136,7 @@ InterpolationValue CSSVisibilityInterpolationType::MaybeConvertInherit(
     return nullptr;
   EVisibility inherited_visibility = state.ParentStyle()->Visibility();
   conversion_checkers.push_back(
-      std::make_unique<InheritedVisibilityChecker>(inherited_visibility));
+      MakeGarbageCollected<InheritedVisibilityChecker>(inherited_visibility));
   return CreateVisibilityValue(inherited_visibility);
 }
 

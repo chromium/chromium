@@ -201,8 +201,8 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertInherit(
   std::optional<StyleColor> inherited_color =
       ColorPropertyFunctions::GetUnvisitedColor(CssProperty(),
                                                 *state.ParentStyle());
-  conversion_checkers.push_back(
-      std::make_unique<InheritedColorChecker>(CssProperty(), inherited_color));
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedColorChecker>(
+      CssProperty(), inherited_color));
   return ConvertStyleColorPair(inherited_color, inherited_color);
 }
 

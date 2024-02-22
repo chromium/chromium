@@ -113,7 +113,7 @@ InterpolationValue CSSDisplayInterpolationType::MaybeConvertNeutral(
       To<CSSDisplayNonInterpolableValue>(*underlying.non_interpolable_value)
           .Display(underlying_fraction);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingDisplayChecker>(underlying_display));
+      MakeGarbageCollected<UnderlyingDisplayChecker>(underlying_display));
   return CreateDisplayValue(underlying_display);
 }
 
@@ -132,7 +132,7 @@ InterpolationValue CSSDisplayInterpolationType::MaybeConvertInherit(
   }
   EDisplay inherited_display = state.ParentStyle()->Display();
   conversion_checkers.push_back(
-      std::make_unique<InheritedDisplayChecker>(inherited_display));
+      MakeGarbageCollected<InheritedDisplayChecker>(inherited_display));
   return CreateDisplayValue(inherited_display);
 }
 

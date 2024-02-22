@@ -121,7 +121,8 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertNeutral(
       const_cast<NonInterpolableValue*>(
           underlying.non_interpolable_value.get());
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingCompatibilityChecker>(non_interpolable_value));
+      MakeGarbageCollected<UnderlyingCompatibilityChecker>(
+          non_interpolable_value));
   return InterpolationValue(
       basic_shape_interpolation_functions::CreateNeutralValue(
           *underlying.non_interpolable_value),
@@ -142,7 +143,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   const BasicShape* shape = GetBasicShape(CssProperty(), *state.ParentStyle());
   conversion_checkers.push_back(
-      std::make_unique<InheritedShapeChecker>(CssProperty(), shape));
+      MakeGarbageCollected<InheritedShapeChecker>(CssProperty(), shape));
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
       shape, state.ParentStyle()->EffectiveZoom());
 }

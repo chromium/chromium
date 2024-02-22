@@ -57,7 +57,8 @@ InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInherit(
   FontSelectionValue inherited_font_stretch =
       state.ParentStyle()->GetFontStretch();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontStretchChecker>(inherited_font_stretch));
+      MakeGarbageCollected<InheritedFontStretchChecker>(
+          inherited_font_stretch));
   return CreateFontStretchValue(inherited_font_stretch);
 }
 

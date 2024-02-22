@@ -92,6 +92,11 @@ class InheritedFilterListChecker
         filter_operations_wrapper_(
             MakeGarbageCollected<FilterOperationsWrapper>(filter_operations)) {}
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(filter_operations_wrapper_);
+  }
+
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
     const FilterOperations& filter_operations =
@@ -101,7 +106,7 @@ class InheritedFilterListChecker
 
  private:
   const CSSProperty& property_;
-  Persistent<FilterOperationsWrapper> filter_operations_wrapper_;
+  Member<FilterOperationsWrapper> filter_operations_wrapper_;
 };
 
 InterpolationValue ConvertFilterList(const FilterOperations& filter_operations,
@@ -135,7 +140,7 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertNeutral(
   const auto* interpolable_list =
       To<InterpolableList>(underlying.interpolable_value.Get());
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingFilterListChecker>(interpolable_list));
+      MakeGarbageCollected<UnderlyingFilterListChecker>(interpolable_list));
   // The neutral value for composition for a filter list is the empty list, as
   // the additive operator is concatenation, so concat(underlying, []) ==
   // underlying.
@@ -156,8 +161,9 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   const FilterOperations& inherited_filter_operations =
       GetFilterList(CssProperty(), *state.ParentStyle());
-  conversion_checkers.push_back(std::make_unique<InheritedFilterListChecker>(
-      CssProperty(), inherited_filter_operations));
+  conversion_checkers.push_back(
+      MakeGarbageCollected<InheritedFilterListChecker>(
+          CssProperty(), inherited_filter_operations));
   return ConvertFilterList(inherited_filter_operations,
                            state.StyleBuilder().EffectiveZoom());
 }
@@ -290,7 +296,8 @@ CSSFilterListInterpolationType::PreInterpolationCompositeIfNeeded(
   // to disable that caching in this case.
   // TODO(crbug.com/1009230): Remove this once our interpolation code isn't
   // caching composited values.
-  conversion_checkers.push_back(std::make_unique<AlwaysInvalidateChecker>());
+  conversion_checkers.push_back(
+      MakeGarbageCollected<AlwaysInvalidateChecker>());
 
   // The non_interpolable_value can be non-null, for example, it contains a
   // single frame url().

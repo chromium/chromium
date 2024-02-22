@@ -126,7 +126,7 @@ InterpolationValue CSSContentVisibilityInterpolationType::MaybeConvertNeutral(
           *underlying.non_interpolable_value)
           .ContentVisibility(underlying_fraction);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingContentVisibilityChecker>(
+      MakeGarbageCollected<UnderlyingContentVisibilityChecker>(
           underlying_content_visibility));
   return CreateContentVisibilityValue(underlying_content_visibility);
 }
@@ -146,7 +146,7 @@ InterpolationValue CSSContentVisibilityInterpolationType::MaybeConvertInherit(
   EContentVisibility inherited_content_visibility =
       state.ParentStyle()->ContentVisibility();
   conversion_checkers.push_back(
-      std::make_unique<InheritedContentVisibilityChecker>(
+      MakeGarbageCollected<InheritedContentVisibilityChecker>(
           inherited_content_visibility));
   return CreateContentVisibilityValue(inherited_content_visibility);
 }

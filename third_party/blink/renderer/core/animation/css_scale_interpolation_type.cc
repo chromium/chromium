@@ -170,7 +170,7 @@ InterpolationValue CSSScaleInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   Scale inherited_scale(state.ParentStyle()->Scale());
   conversion_checkers.push_back(
-      std::make_unique<InheritedScaleChecker>(inherited_scale));
+      MakeGarbageCollected<InheritedScaleChecker>(inherited_scale));
   return inherited_scale.CreateInterpolationValue();
 }
 

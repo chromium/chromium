@@ -162,7 +162,7 @@ InterpolationValue CSSIntrinsicLengthInterpolationType::MaybeConvertInherit(
   StyleIntrinsicLength inherited_intrinsic_dimension =
       GetIntrinsicDimension(*state.ParentStyle());
   conversion_checkers.push_back(
-      std::make_unique<InheritedIntrinsicDimensionChecker>(
+      MakeGarbageCollected<InheritedIntrinsicDimensionChecker>(
           CssProperty().PropertyID() == CSSPropertyID::kContainIntrinsicWidth,
           inherited_intrinsic_dimension));
   if (inherited_intrinsic_dimension.IsNoOp()) {

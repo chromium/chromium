@@ -106,6 +106,11 @@ class UnderlyingGridTrackListChecker final
       : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
   ~UnderlyingGridTrackListChecker() final = default;
 
+  void Trace(Visitor* visitor) const final {
+    InterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_);
+  }
+
  private:
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
@@ -119,7 +124,7 @@ class UnderlyingGridTrackListChecker final
                    *underlying.non_interpolable_value));
   }
 
-  const Persistent<const InterpolationValueGCed> underlying_;
+  const Member<const InterpolationValueGCed> underlying_;
 };
 
 class InheritedGridTrackListChecker
@@ -191,7 +196,7 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingGridTrackListChecker>(underlying));
+      MakeGarbageCollected<UnderlyingGridTrackListChecker>(underlying));
   return InterpolationValue(underlying.interpolable_value->CloneAndZero(),
                             underlying.non_interpolable_value);
 }
@@ -219,8 +224,9 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertInherit(
   const NGGridTrackList& parent_track_list =
       parent_computed_grid_track_list.track_list;
 
-  conversion_checkers.push_back(std::make_unique<InheritedGridTrackListChecker>(
-      parent_track_list, property_id_));
+  conversion_checkers.push_back(
+      MakeGarbageCollected<InheritedGridTrackListChecker>(parent_track_list,
+                                                          property_id_));
   return InterpolationValue(
       CreateInterpolableGridTrackList(parent_track_list,
                                       parent_style->EffectiveZoom()),

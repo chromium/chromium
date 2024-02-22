@@ -200,7 +200,7 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   OptionalRotation inherited_rotation = GetRotation(*state.ParentStyle());
   conversion_checkers.push_back(
-      std::make_unique<InheritedRotationChecker>(inherited_rotation));
+      MakeGarbageCollected<InheritedRotationChecker>(inherited_rotation));
   return ConvertRotation(inherited_rotation);
 }
 

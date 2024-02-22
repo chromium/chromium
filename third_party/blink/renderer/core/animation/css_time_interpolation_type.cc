@@ -140,8 +140,8 @@ InterpolationValue CSSTimeInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
   std::optional<double> inherited_seconds = GetSeconds(*state.ParentStyle());
-  conversion_checkers.push_back(
-      std::make_unique<InheritedTimeChecker>(CssProperty(), inherited_seconds));
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedTimeChecker>(
+      CssProperty(), inherited_seconds));
   if (!inherited_seconds)
     return nullptr;
   return CreateTimeValue(*inherited_seconds);

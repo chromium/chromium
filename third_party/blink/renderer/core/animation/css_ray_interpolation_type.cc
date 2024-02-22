@@ -231,7 +231,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertNeutral(
   const RayMode& underlying_mode =
       To<CSSRayNonInterpolableValue>(*underlying.non_interpolable_value).Mode();
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingRayModeChecker>(underlying_mode));
+      MakeGarbageCollected<UnderlyingRayModeChecker>(underlying_mode));
   return CreateNeutralValue(underlying_mode);
 }
 
@@ -253,7 +253,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertInherit(
     return nullptr;
 
   conversion_checkers.push_back(
-      std::make_unique<InheritedRayChecker>(inherited_ray, coord_box));
+      MakeGarbageCollected<InheritedRayChecker>(inherited_ray, coord_box));
   return CreateValue(*inherited_ray, coord_box,
                      state.ParentStyle()->EffectiveZoom());
 }

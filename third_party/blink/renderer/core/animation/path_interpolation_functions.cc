@@ -107,17 +107,17 @@ class UnderlyingPathSegTypesChecker final
  public:
   ~UnderlyingPathSegTypesChecker() final = default;
 
-  static std::unique_ptr<UnderlyingPathSegTypesChecker> Create(
+  static UnderlyingPathSegTypesChecker* Create(
       const InterpolationValue& underlying) {
-    return base::WrapUnique(new UnderlyingPathSegTypesChecker(
-        GetPathSegTypes(underlying), GetWindRule(underlying)));
+    return MakeGarbageCollected<UnderlyingPathSegTypesChecker>(
+        GetPathSegTypes(underlying), GetWindRule(underlying));
   }
 
- private:
   UnderlyingPathSegTypesChecker(const Vector<SVGPathSegType>& path_seg_types,
                                 WindRule wind_rule)
       : path_seg_types_(path_seg_types), wind_rule_(wind_rule) {}
 
+ private:
   static const Vector<SVGPathSegType>& GetPathSegTypes(
       const InterpolationValue& underlying) {
     return To<SVGPathNonInterpolableValue>(*underlying.non_interpolable_value)

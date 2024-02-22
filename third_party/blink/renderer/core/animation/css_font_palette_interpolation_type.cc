@@ -59,7 +59,8 @@ InterpolationValue CSSFontPaletteInterpolationType::MaybeConvertInherit(
   scoped_refptr<const FontPalette> inherited_font_palette =
       state.ParentStyle()->GetFontPalette();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontPaletteChecker>(inherited_font_palette));
+      MakeGarbageCollected<InheritedFontPaletteChecker>(
+          inherited_font_palette));
   return ConvertFontPalette(inherited_font_palette);
 }
 

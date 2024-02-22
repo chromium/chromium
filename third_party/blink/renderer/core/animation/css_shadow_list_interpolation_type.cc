@@ -95,8 +95,9 @@ InterpolationValue CSSShadowListInterpolationType::MaybeConvertInherit(
     return nullptr;
   const ShadowList* inherited_shadow_list =
       GetShadowList(CssProperty(), *state.ParentStyle());
-  conversion_checkers.push_back(std::make_unique<InheritedShadowListChecker>(
-      CssProperty(), inherited_shadow_list));  // Take ref.
+  conversion_checkers.push_back(
+      MakeGarbageCollected<InheritedShadowListChecker>(CssProperty(),
+                                                       inherited_shadow_list));
   return ConvertShadowList(inherited_shadow_list,
                            state.ParentStyle()->EffectiveZoom());
 }
@@ -207,7 +208,8 @@ CSSShadowListInterpolationType::PreInterpolationCompositeIfNeeded(
   // to disable that caching in this case.
   // TODO(crbug.com/1009230): Remove this once our interpolation code isn't
   // caching composited values.
-  conversion_checkers.push_back(std::make_unique<AlwaysInvalidateChecker>());
+  conversion_checkers.push_back(
+      MakeGarbageCollected<AlwaysInvalidateChecker>());
   auto* interpolable_list =
       To<InterpolableList>(value.interpolable_value.Release());
   if (composite == EffectModel::CompositeOperation::kCompositeAdd) {

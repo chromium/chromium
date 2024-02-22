@@ -119,7 +119,7 @@ InterpolationValue CSSOverlayInterpolationType::MaybeConvertNeutral(
       To<CSSOverlayNonInterpolableValue>(*underlying.non_interpolable_value)
           .Overlay(underlying_fraction);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingOverlayChecker>(underlying_overlay));
+      MakeGarbageCollected<UnderlyingOverlayChecker>(underlying_overlay));
   return CreateOverlayValue(underlying_overlay);
 }
 
@@ -138,7 +138,7 @@ InterpolationValue CSSOverlayInterpolationType::MaybeConvertInherit(
   }
   EOverlay inherited_overlay = state.ParentStyle()->Overlay();
   conversion_checkers.push_back(
-      std::make_unique<InheritedOverlayChecker>(inherited_overlay));
+      MakeGarbageCollected<InheritedOverlayChecker>(inherited_overlay));
   return CreateOverlayValue(inherited_overlay);
 }
 

@@ -107,11 +107,11 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInherit(
   StyleColor parent_color;
   if (!GetColor(CssProperty(), *state.ParentStyle(), parent_color)) {
     conversion_checkers.push_back(
-        std::make_unique<InheritedPaintChecker>(CssProperty()));
+        MakeGarbageCollected<InheritedPaintChecker>(CssProperty()));
     return nullptr;
   }
   conversion_checkers.push_back(
-      std::make_unique<InheritedPaintChecker>(CssProperty(), parent_color));
+      MakeGarbageCollected<InheritedPaintChecker>(CssProperty(), parent_color));
   return InterpolationValue(
       CSSColorInterpolationType::CreateInterpolableColor(parent_color));
 }

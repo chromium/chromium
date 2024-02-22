@@ -39,6 +39,12 @@ class ResolvedVariableChecker : public CSSInterpolationType::ConversionChecker {
         variable_reference_(variable_reference),
         resolved_value_(resolved_value) {}
 
+  void Trace(Visitor* visitor) const final {
+    CSSInterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(variable_reference_);
+    visitor->Trace(resolved_value_);
+  }
+
  private:
   bool IsValid(const InterpolationEnvironment& environment,
                const InterpolationValue&) const final {
@@ -51,8 +57,8 @@ class ResolvedVariableChecker : public CSSInterpolationType::ConversionChecker {
   }
 
   CSSPropertyID property_;
-  Persistent<const CSSValue> variable_reference_;
-  Persistent<const CSSValue> resolved_value_;
+  Member<const CSSValue> variable_reference_;
+  Member<const CSSValue> resolved_value_;
 };
 
 class InheritedCustomPropertyChecker
@@ -67,6 +73,12 @@ class InheritedCustomPropertyChecker
         inherited_value_(inherited_value),
         initial_value_(initial_value) {}
 
+  void Trace(Visitor* visitor) const final {
+    CSSInterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(inherited_value_);
+    visitor->Trace(initial_value_);
+  }
+
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
@@ -80,8 +92,8 @@ class InheritedCustomPropertyChecker
 
   AtomicString name_;
   const bool is_inherited_property_;
-  Persistent<const CSSValue> inherited_value_;
-  Persistent<const CSSValue> initial_value_;
+  Member<const CSSValue> inherited_value_;
+  Member<const CSSValue> initial_value_;
 };
 
 class ResolvedRegisteredCustomPropertyChecker
@@ -94,6 +106,11 @@ class ResolvedRegisteredCustomPropertyChecker
       : property_(property),
         value_(value),
         resolved_tokens_(std::move(resolved_tokens)) {}
+
+  void Trace(Visitor* visitor) const final {
+    CSSInterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(value_);
+  }
 
  private:
   bool IsValid(const InterpolationEnvironment& environment,
@@ -109,7 +126,7 @@ class ResolvedRegisteredCustomPropertyChecker
   }
 
   PropertyHandle property_;
-  Persistent<const CSSValue> value_;
+  Member<const CSSValue> value_;
   scoped_refptr<CSSVariableData> resolved_tokens_;
 };
 
@@ -125,6 +142,11 @@ class RevertChecker : public CSSInterpolationType::ConversionChecker {
                 const CSSValue* resolved_value)
       : property_handle_(property_handle), resolved_value_(resolved_value) {}
 
+  void Trace(Visitor* visitor) const final {
+    CSSInterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(resolved_value_);
+  }
+
  private:
   bool IsValid(const InterpolationEnvironment& environment,
                const InterpolationValue&) const final {
@@ -136,7 +158,7 @@ class RevertChecker : public CSSInterpolationType::ConversionChecker {
   }
 
   PropertyHandle property_handle_;
-  Persistent<const CSSValue> resolved_value_;
+  Member<const CSSValue> resolved_value_;
 };
 
 CSSInterpolationType::CSSInterpolationType(
@@ -185,7 +207,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingleInternal(
         css_environment.Resolve(GetProperty(), value);
 
     DCHECK(resolved_value);
-    conversion_checkers.push_back(std::make_unique<ResolvedVariableChecker>(
+    conversion_checkers.push_back(MakeGarbageCollected<ResolvedVariableChecker>(
         CssProperty().PropertyID(), value, resolved_value));
     value = resolved_value;
   }
@@ -194,15 +216,15 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingleInternal(
     value = css_environment.Resolve(GetProperty(), value);
     DCHECK(value);
     conversion_checkers.push_back(
-        std::make_unique<RevertChecker<cssvalue::CSSRevertValue>>(GetProperty(),
-                                                                  value));
+        MakeGarbageCollected<RevertChecker<cssvalue::CSSRevertValue>>(
+            GetProperty(), value));
   }
 
   if (value->IsRevertLayerValue()) {
     value = css_environment.Resolve(GetProperty(), value);
     DCHECK(value);
     conversion_checkers.push_back(
-        std::make_unique<RevertChecker<cssvalue::CSSRevertLayerValue>>(
+        MakeGarbageCollected<RevertChecker<cssvalue::CSSRevertLayerValue>>(
             GetProperty(), value));
   }
 
@@ -233,12 +255,12 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
 
   if (declaration.IsRevertValue()) {
     conversion_checkers.push_back(
-        std::make_unique<RevertChecker<cssvalue::CSSRevertValue>>(GetProperty(),
-                                                                  value));
+        MakeGarbageCollected<RevertChecker<cssvalue::CSSRevertValue>>(
+            GetProperty(), value));
   }
   if (declaration.IsRevertLayerValue()) {
     conversion_checkers.push_back(
-        std::make_unique<RevertChecker<cssvalue::CSSRevertLayerValue>>(
+        MakeGarbageCollected<RevertChecker<cssvalue::CSSRevertLayerValue>>(
             GetProperty(), value));
   }
   if (const auto* resolved_declaration =
@@ -247,7 +269,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
     // references were substituted.
     if (resolved_declaration != &declaration) {
       conversion_checkers.push_back(
-          std::make_unique<ResolvedRegisteredCustomPropertyChecker>(
+          MakeGarbageCollected<ResolvedRegisteredCustomPropertyChecker>(
               GetProperty(), declaration,
               resolved_declaration->VariableDataValue()));
     }
@@ -274,8 +296,8 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
       value = initial_value;
     }
     conversion_checkers.push_back(
-        std::make_unique<InheritedCustomPropertyChecker>(name, is_inherited,
-                                                         value, initial_value));
+        MakeGarbageCollected<InheritedCustomPropertyChecker>(
+            name, is_inherited, value, initial_value));
   }
 
   if (const auto* resolved_declaration =

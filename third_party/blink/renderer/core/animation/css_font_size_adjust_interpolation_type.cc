@@ -113,7 +113,7 @@ InterpolationValue CSSFontSizeAdjustInterpolationType::MaybeConvertInherit(
   FontSizeAdjust inherited_font_size_adjust =
       state.ParentStyle()->FontSizeAdjust();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontSizeAdjustChecker>(
+      MakeGarbageCollected<InheritedFontSizeAdjustChecker>(
           inherited_font_size_adjust));
   return CreateFontSizeAdjustValue(inherited_font_size_adjust);
 }

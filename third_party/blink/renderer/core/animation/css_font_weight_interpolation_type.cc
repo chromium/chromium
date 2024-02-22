@@ -55,7 +55,7 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertInherit(
   FontSelectionValue inherited_font_weight =
       state.ParentStyle()->GetFontWeight();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontWeightChecker>(inherited_font_weight));
+      MakeGarbageCollected<InheritedFontWeightChecker>(inherited_font_weight));
   return CreateFontWeightValue(inherited_font_weight);
 }
 
@@ -70,7 +70,8 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
     CSSValueID keyword = identifier_value->GetValueID();
     if (keyword == CSSValueID::kBolder || keyword == CSSValueID::kLighter) {
       conversion_checkers.push_back(
-          std::make_unique<InheritedFontWeightChecker>(inherited_font_weight));
+          MakeGarbageCollected<InheritedFontWeightChecker>(
+              inherited_font_weight));
     }
   }
   return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(

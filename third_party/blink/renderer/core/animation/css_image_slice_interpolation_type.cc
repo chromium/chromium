@@ -167,7 +167,7 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertNeutral(
   SliceTypes underlying_types =
       UnderlyingSliceTypesChecker::GetUnderlyingSliceTypes(underlying);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingSliceTypesChecker>(underlying_types));
+      MakeGarbageCollected<UnderlyingSliceTypesChecker>(underlying_types));
   LengthBox zero_box(
       underlying_types.is_number[kSideTop] ? Length::Fixed(0)
                                            : Length::Percent(0),
@@ -195,8 +195,9 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertInherit(
   const ImageSlice& inherited_image_slice =
       ImageSlicePropertyFunctions::GetImageSlice(CssProperty(),
                                                  *state.ParentStyle());
-  conversion_checkers.push_back(std::make_unique<InheritedSliceTypesChecker>(
-      CssProperty(), SliceTypes(inherited_image_slice)));
+  conversion_checkers.push_back(
+      MakeGarbageCollected<InheritedSliceTypesChecker>(
+          CssProperty(), SliceTypes(inherited_image_slice)));
   return ConvertImageSlice(inherited_image_slice,
                            state.ParentStyle()->EffectiveZoom());
 }

@@ -103,7 +103,7 @@ InterpolationValue CSSTranslateInterpolationType::MaybeConvertInherit(
   TranslateTransformOperation* inherited_translate =
       state.ParentStyle()->Translate();
   conversion_checkers.push_back(
-      std::make_unique<InheritedTranslateChecker>(inherited_translate));
+      MakeGarbageCollected<InheritedTranslateChecker>(inherited_translate));
   return ConvertTranslateOperation(inherited_translate,
                                    state.ParentStyle()->EffectiveZoom());
 }

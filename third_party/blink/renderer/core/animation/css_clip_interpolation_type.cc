@@ -56,18 +56,17 @@ struct ClipAutos {
 
 class InheritedClipChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
-  static std::unique_ptr<InheritedClipChecker> Create(
-      const ComputedStyle& parent_style) {
+  static InheritedClipChecker* Create(const ComputedStyle& parent_style) {
     Vector<Length> inherited_length_list;
     GetClipLengthList(parent_style, inherited_length_list);
-    return base::WrapUnique(
-        new InheritedClipChecker(std::move(inherited_length_list)));
+    return MakeGarbageCollected<InheritedClipChecker>(
+        std::move(inherited_length_list));
   }
 
- private:
   InheritedClipChecker(const Vector<Length>&& inherited_length_list)
       : inherited_length_list_(std::move(inherited_length_list)) {}
 
+ private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     Vector<Length> inherited_length_list;
@@ -176,7 +175,7 @@ InterpolationValue CSSClipInterpolationType::MaybeConvertNeutral(
   ClipAutos underlying_autos =
       UnderlyingAutosChecker::GetUnderlyingAutos(underlying);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingAutosChecker>(underlying_autos));
+      MakeGarbageCollected<UnderlyingAutosChecker>(underlying_autos));
   if (underlying_autos.is_auto)
     return nullptr;
   LengthBox neutral_box(

@@ -130,7 +130,7 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInherit(
   std::optional<StyleScrollbarColor> inherited_scrollbar_color =
       state.ParentStyle()->ScrollbarColor();
   conversion_checkers.push_back(
-      std::make_unique<InheritedScrollbarColorChecker>(
+      MakeGarbageCollected<InheritedScrollbarColorChecker>(
           inherited_scrollbar_color));
 
   if (!inherited_scrollbar_color.has_value()) {

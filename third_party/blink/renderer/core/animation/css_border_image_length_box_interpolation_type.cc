@@ -285,7 +285,7 @@ CSSBorderImageLengthBoxInterpolationType::MaybeConvertNeutral(
     ConversionCheckers& conversion_checkers) const {
   SideTypes underlying_side_types(underlying);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingSideTypesChecker>(underlying_side_types));
+      MakeGarbageCollected<UnderlyingSideTypesChecker>(underlying_side_types));
   return InterpolationValue(underlying.interpolable_value->CloneAndZero(),
                             underlying.non_interpolable_value);
 }
@@ -306,7 +306,7 @@ CSSBorderImageLengthBoxInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   const BorderImageLengthBox& inherited =
       GetBorderImageLengthBox(CssProperty(), *state.ParentStyle());
-  conversion_checkers.push_back(std::make_unique<InheritedSideTypesChecker>(
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedSideTypesChecker>(
       CssProperty(), SideTypes(inherited)));
   return ConvertBorderImageLengthBox(inherited,
                                      state.ParentStyle()->EffectiveZoom());

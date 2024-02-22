@@ -53,7 +53,7 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInherit(
   DCHECK(state.ParentStyle());
   FontSelectionValue inherited_font_style = state.ParentStyle()->GetFontStyle();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontStyleChecker>(inherited_font_style));
+      MakeGarbageCollected<InheritedFontStyleChecker>(inherited_font_style));
   return CreateFontStyleValue(inherited_font_style);
 }
 
