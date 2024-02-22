@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -213,24 +212,18 @@ bool ReplacePrefix(std::string* s,
                    const std::string& prefix,
                    const std::string& replacement);
 
-// Converts the given `path` into a string suitable for display in settings.
+// Convert path into a string suitable for display in settings.
 // Replacements:
-// * /home/chronos/user/MyFiles/Downloads        => Downloads
-// * /home/chronos/u-<hash>/MyFiles/Downloads    => Downloads
-// * /home/chronos/user/MyFiles                  => My files
-// * /home/chronos/u-<hash>/MyFiles              => My files
-// * /media/fuse/drivefs-<hash>/root             => My Drive
+// * /home/chronos/user/Downloads                => Downloads
+// * /home/chronos/u-<hash>/Downloads            => Downloads
+// * /media/fuse/drivefs-<hash>/root             => Google Drive
 // * /media/fuse/drivefs-<hash>/team_drives      => Team Drives
 // * /media/fuse/drivefs-<hash>/Computers        => Computers
-// * /media/fuse/drivefs-<hash>/.files-by-id     => Shared With Me
-// * /media/fuse/drivefs-<hash>/.shortcut-targets-by-id => Shared With Me
 // * /run/arc/sdcard/write/emulated/0            => Play files
 // * /media/fuse/crostini_<hash>_termina_penguin => Linux files
-// * /media/archive/<id>                         => <id>
-// * /media/removable/<id>                       => <id>
-// * '/' with ' › ' (angled quote sign) for display purposes.
+// * '/' with ' \u203a ' (angled quote sign) for display purposes.
 std::string GetPathDisplayTextForSettings(Profile* profile,
-                                          std::string_view path);
+                                          const std::string& path);
 
 // Extracts |mount_name|, |file_system_name|, and |full_path| from given
 // |absolute_path|.
