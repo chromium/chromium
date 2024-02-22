@@ -336,7 +336,13 @@ gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect) {
 
 void MoveFocusToView(OverviewFocusableView* target_view) {
   auto* overview_session = OverviewController::Get()->overview_session();
-  CHECK(overview_session);
+  // Events should not be processed on overview widgets after it has shutdown.
+  // However, there are some edge cases where the gesture stream has started
+  // almost immediately before overview shutdown, and the rest of the stream
+  // still reaches the widget. See http://b/302708219.
+  if (!overview_session) {
+    return;
+  }
 
   auto* focus_cycler = overview_session->focus_cycler();
   CHECK(focus_cycler);
