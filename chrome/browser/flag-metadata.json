@@ -3464,11 +3464,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "enable-reader-mode",
-    "owners": [ "katie@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "enable-reader-mode-in-cct",
     "owners": [ "mdjones@chromium.org", "wychen@chromium.org" ],
     // This flag is a utility for disabling Reader Mode in CCT without using

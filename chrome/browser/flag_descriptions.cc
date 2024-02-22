@@ -5050,11 +5050,6 @@ const char kNtpWideModulesName[] = "NTP Wide Modules";
 const char kNtpWideModulesDescription[] =
     "Shows wide NTP modules if NTP provides enough space.";
 
-const char kEnableReaderModeName[] = "Enable Reader Mode";
-const char kEnableReaderModeDescription[] =
-    "Allows viewing of simplified web pages by selecting 'Customize and "
-    "control Chrome'>'Distill page'";
-
 const char kHappinessTrackingSurveysForDesktopDemoName[] =
     "Happiness Tracking Surveys Demo";
 const char kHappinessTrackingSurveysForDesktopDemoDescription[] =

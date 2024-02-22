@@ -632,18 +632,6 @@ const FeatureEntry::FeatureVariation
          std::size(kOptimizationGuidePersonalizedFetchingAllowPageInsights),
          nullptr}};
 
-#else   // BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kReaderModeOfferInSettings[] = {
-    {switches::kReaderModeDiscoverabilityParamName,
-     switches::kReaderModeOfferInSettings}};
-
-const FeatureEntry::FeatureVariation kReaderModeDiscoverabilityVariations[] = {
-    {"available in settings", kReaderModeOfferInSettings,
-     std::size(kReaderModeOfferInSettings), nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-
 const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_NewTab[] = {
     {"default_segment", "new-tab"},
     {"show_ui_only_after_ready", "false"},
@@ -3741,13 +3729,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-webrtc-hw-encoding", flag_descriptions::kWebrtcHwEncodingName,
      flag_descriptions::kWebrtcHwEncodingDescription, kOsAndroid | kOsCrOS,
      SINGLE_DISABLE_VALUE_TYPE(switches::kDisableWebRtcHWEncoding)},
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-reader-mode", flag_descriptions::kEnableReaderModeName,
-     flag_descriptions::kEnableReaderModeDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(dom_distiller::kReaderMode,
-                                    kReaderModeDiscoverabilityVariations,
-                                    "ReaderMode")},
-#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-lacros-in-chrome-kiosk",
      flag_descriptions::kChromeKioskEnableLacrosName,

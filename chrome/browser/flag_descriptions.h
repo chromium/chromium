@@ -2936,9 +2936,6 @@ extern const char kNtpWallpaperSearchButtonDescription[];
 extern const char kNtpWideModulesName[];
 extern const char kNtpWideModulesDescription[];
 
-extern const char kEnableReaderModeName[];
-extern const char kEnableReaderModeDescription[];
-
 extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
