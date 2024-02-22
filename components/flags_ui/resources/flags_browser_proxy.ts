@@ -34,8 +34,12 @@ export interface ExperimentalFeaturesData {
   needsRestart: boolean;
   showBetaChannelPromotion: boolean;
   showDevChannelPromotion: boolean;
+  // <if expr="chromeos_ash">
   showOwnerWarning: boolean;
+  // </if>
+  // <if expr="chromeos_lacros or chromeos_ash">
   showSystemFlagsLink: boolean;
+  // </if>
 }
 
 export interface FlagsBrowserProxy {
