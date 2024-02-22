@@ -1761,8 +1761,8 @@ extern const char kQuickIntensiveWakeUpThrottlingAfterLoadingDescription[];
 extern const char kQuickDeleteForAndroidName[];
 extern const char kQuickDeleteForAndroidDescription[];
 
-extern const char kQuickDeleteAndroidAnimationName[];
-extern const char kQuickDeleteAndroidAnimationDescription[];
+extern const char kQuickDeleteAndroidFollowupName[];
+extern const char kQuickDeleteAndroidFollowupDescription[];
 
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];

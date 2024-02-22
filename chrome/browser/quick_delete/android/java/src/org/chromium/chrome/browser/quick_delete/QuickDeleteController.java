@@ -110,10 +110,10 @@ public class QuickDeleteController {
     }
 
     /**
-     * @return True, if quick delete animation feature flag is enabled, false otherwise
+     * @return True, if quick delete follow up is enabled, false otherwise
      */
-    public static boolean isQuickDeleteAnimationEnabled() {
-        return ChromeFeatureList.sQuickDeleteAndroidAnimation.isEnabled();
+    public static boolean isQuickDeleteFollowupEnabled() {
+        return isQuickDeleteEnabled() && ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
     }
 
     /** A method called when the user confirms or cancels the dialog. */
@@ -144,7 +144,7 @@ public class QuickDeleteController {
 
     private void maybeShowQuickDeleteAnimation(@TimePeriod int timePeriod) {
         mDeleteTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
-        if (isQuickDeleteAnimationEnabled()) {
+        if (isQuickDeleteFollowupEnabled()) {
             List<Tab> tabs = mDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
             mDelegate.showQuickDeleteAnimation(() -> showPostDeleteFeedback(timePeriod), tabs);
         } else {

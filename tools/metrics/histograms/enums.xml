@@ -16988,6 +16988,7 @@ from previous Chrome versions.
   <int value="-1699908146" label="NtpRealboxCr23ConsistentRowHeight:enabled"/>
   <int value="-1699700244"
       label="VirtualKeyboardMultipasteSuggestion:disabled"/>
+  <int value="-1699505493" label="QuickDeleteAndroidFollowup:enabled"/>
   <int value="-1698438797" label="TabGroupsCollapseFreezing:enabled"/>
   <int value="-1696778023"
       label="HappinessTrackingSurveysForDesktopSettings:disabled"/>
@@ -22093,6 +22094,7 @@ from previous Chrome versions.
   <int value="632631179" label="ArcIdleManager:enabled"/>
   <int value="633442161" label="ExperimentalUi:disabled"/>
   <int value="634789085" label="LayeredAPI:disabled"/>
+  <int value="635032392" label="QuickDeleteAndroidFollowup:disabled"/>
   <int value="635076832" label="MarkHttpAs:disabled"/>
   <int value="635533110" label="ReleaseNotes:disabled"/>
   <int value="635947051" label="DesktopRestructuredLanguageSettings:enabled"/>

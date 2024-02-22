@@ -8409,10 +8409,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQuickDeleteForAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kQuickDeleteForAndroid)},
 
-    {"quick-delete-android-animation",
-     flag_descriptions::kQuickDeleteAndroidAnimationName,
-     flag_descriptions::kQuickDeleteAndroidAnimationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kQuickDeleteAndroidAnimation)},
+    {"quick-delete-android-followup",
+     flag_descriptions::kQuickDeleteAndroidFollowupName,
+     flag_descriptions::kQuickDeleteAndroidFollowupDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kQuickDeleteAndroidFollowup)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"pwa-update-dialog-for-icon",
