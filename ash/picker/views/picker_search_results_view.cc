@@ -19,6 +19,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/bind.h"
@@ -134,6 +135,13 @@ void PickerSearchResultsView::AddResultToSection(
             item_view->SetPrimaryText(data.title);
             item_view->SetSecondaryText(base::UTF8ToUTF16(data.url.spec()));
             item_view->SetLeadingIcon(data.icon);
+            section_view->AddListItem(std::move(item_view));
+          },
+          [&](const PickerSearchResult::CategoryData& data) {
+            // TODO: b/325973235: Style this correctly.
+            auto item_view =
+                std::make_unique<PickerListItemView>(base::DoNothing());
+            item_view->SetPrimaryText(GetLabelForPickerCategory(data.category));
             section_view->AddListItem(std::move(item_view));
           },
       },

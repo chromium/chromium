@@ -49,6 +49,9 @@ bool PickerSearchResult::GifData::operator==(
 bool PickerSearchResult::BrowsingHistoryData::operator==(
     const PickerSearchResult::BrowsingHistoryData&) const = default;
 
+bool PickerSearchResult::CategoryData::operator==(const CategoryData&) const =
+    default;
+
 PickerSearchResult::~PickerSearchResult() = default;
 
 PickerSearchResult::PickerSearchResult(const PickerSearchResult&) = default;
@@ -85,6 +88,10 @@ PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,
                                                        ui::ImageModel icon) {
   return PickerSearchResult(BrowsingHistoryData{
       .url = url, .title = std::move(title), .icon = std::move(icon)});
+}
+
+PickerSearchResult PickerSearchResult::Category(PickerCategory category) {
+  return PickerSearchResult(CategoryData{.category = category});
 }
 
 bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;

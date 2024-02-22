@@ -12,7 +12,9 @@
 #include <vector>
 
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/search/picker_category_search.h"
 #include "ash/picker/search/picker_date_search.h"
+#include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_client.h"
@@ -23,6 +25,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "ui/base/models/image_model.h"
@@ -48,9 +51,13 @@ base::span<const std::string> FirstNOrLessElements(
 
 }  // namespace
 
-PickerSearchController::PickerSearchController(PickerClient* client,
-                                               base::TimeDelta burn_in_period)
+PickerSearchController::PickerSearchController(
+    PickerClient* client,
+    base::span<const PickerCategory> available_categories,
+    base::TimeDelta burn_in_period)
     : client_(CHECK_DEREF(client)),
+      available_categories_(available_categories.begin(),
+                            available_categories.end()),
       burn_in_period_(burn_in_period),
       gif_search_debouncer_(kGifDebouncingDelay) {}
 
@@ -69,6 +76,8 @@ void PickerSearchController::StartSearch(
   burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
                        &PickerSearchController::PublishBurnInResults);
 
+  // TODO: b/326166751 - Use `available_categories_` to decide what searches to
+  // do.
   if (!category.has_value() || (category == PickerCategory::kBrowsingHistory ||
                                 category == PickerCategory::kBookmarks ||
                                 category == PickerCategory::kOpenTabs)) {
@@ -89,6 +98,10 @@ void PickerSearchController::StartSearch(
 
     // Date results is currently synchronous.
     HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
+
+    // Category results are currently synchronous.
+    HandleCategorySearchResults(
+        PickerCategorySearch(available_categories_, query));
   }
 }
 
@@ -135,6 +148,10 @@ void PickerSearchController::PublishBurnInResults() {
     sections.push_back(
         PickerSearchResults::Section(u"Suggested", suggested_results_));
   }
+  if (!category_results_.empty()) {
+    sections.push_back(PickerSearchResults::Section(
+        u"Matching categories", std::move(category_results_)));
+  }
   if (!emoji_results_.empty()) {
     sections.push_back(PickerSearchResults::Section(u"Matching expressions",
                                                     std::move(emoji_results_)));
@@ -160,6 +177,11 @@ void PickerSearchController::AppendPostBurnInResults(
   if (!section.results().empty()) {
     current_callback_.Run(PickerSearchResults({{std::move(section)}}));
   }
+}
+
+void PickerSearchController::HandleCategorySearchResults(
+    std::vector<PickerSearchResult> results) {
+  category_results_ = std::move(results);
 }
 
 void PickerSearchController::HandleCrosSearchResults(

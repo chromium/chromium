@@ -27,8 +27,10 @@ class PickerClient;
 
 class ASH_EXPORT PickerSearchController {
  public:
-  explicit PickerSearchController(PickerClient* client,
-                                  base::TimeDelta burn_in_period);
+  explicit PickerSearchController(
+      PickerClient* client,
+      base::span<const PickerCategory> available_categories,
+      base::TimeDelta burn_in_period);
   PickerSearchController(const PickerSearchController&) = delete;
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
@@ -59,6 +61,8 @@ class ASH_EXPORT PickerSearchController {
   void ResetResults();
   void PublishBurnInResults();
   void AppendPostBurnInResults(PickerSearchResults::Section section);
+
+  void HandleCategorySearchResults(std::vector<PickerSearchResult> results);
   void HandleCrosSearchResults(ash::AppListSearchResultType type,
                                std::vector<PickerSearchResult> results);
   void HandleGifSearchResults(std::string query,
@@ -67,6 +71,7 @@ class ASH_EXPORT PickerSearchController {
   void HandleDateSearchResults(std::optional<PickerSearchResult> result);
 
   const raw_ref<PickerClient> client_;
+  std::vector<PickerCategory> available_categories_;
 
   base::TimeDelta burn_in_period_;
   base::OneShotTimer burn_in_timer_;
@@ -76,6 +81,7 @@ class ASH_EXPORT PickerSearchController {
   std::string current_query_;
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
+  std::vector<PickerSearchResult> category_results_;
   std::vector<PickerSearchResult> suggested_results_;
   std::vector<PickerSearchResult> omnibox_results_;
   std::vector<PickerSearchResult> gif_results_;

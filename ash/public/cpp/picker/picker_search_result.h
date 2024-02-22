@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -77,12 +78,19 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const BrowsingHistoryData&) const;
   };
 
+  struct CategoryData {
+    PickerCategory category;
+
+    bool operator==(const CategoryData&) const;
+  };
+
   using Data = std::variant<TextData,
                             EmojiData,
                             SymbolData,
                             EmoticonData,
                             GifData,
-                            BrowsingHistoryData>;
+                            BrowsingHistoryData,
+                            CategoryData>;
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
@@ -99,6 +107,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                 const GURL& preview_image_url,
                                 const gfx::Size& dimensions,
                                 std::u16string content_description);
+  static PickerSearchResult Category(PickerCategory category);
 
   const Data& data() const;
 

@@ -13,7 +13,10 @@
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_client.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -44,6 +47,16 @@ using testing::SaveArg;
 using testing::VariantWith;
 
 constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
+
+constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
+    PickerCategory::kEmojis,
+    PickerCategory::kSymbols,
+    PickerCategory::kEmoticons,
+    PickerCategory::kGifs,
+    PickerCategory::kOpenTabs,
+    PickerCategory::kBrowsingHistory,
+    PickerCategory::kBookmarks,
+}};
 
 // Matcher for the last element of a collection.
 MATCHER_P(LastElement, matcher, "") {
@@ -131,7 +144,7 @@ class PickerSearchControllerTest : public testing::Test {
 
 TEST_F(PickerSearchControllerTest, DoesNotPublishResultsWhileSearching) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
@@ -143,7 +156,7 @@ TEST_F(PickerSearchControllerTest, DoesNotPublishResultsWhileSearching) {
 
 TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client, StartCrosSearch(Eq(u"cat"), _)).Times(1);
 
@@ -155,7 +168,7 @@ TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
 
 TEST_F(PickerSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client,
+  PickerSearchController controller(&client, kAllCategories,
                                     /*burn_in_period=*/base::Milliseconds(100));
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
@@ -174,7 +187,7 @@ TEST_F(PickerSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
 
 TEST_F(PickerSearchControllerTest, ShowsResultsFromCrosSearch) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   // Catch-all to prevent unexpected gMock call errors. See
   // https://google.github.io/googletest/gmock_cook_book.html#uninteresting-vs-unexpected
@@ -214,7 +227,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromCrosSearch) {
 
 TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> first_search_results_callback;
   NiceMock<MockSearchResultsCallback> second_search_results_callback;
   // CrOS search calls `StopSearch()` automatically on starting a search.
@@ -288,7 +301,7 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
 
 TEST_F(PickerSearchControllerTest, DoesNotSendQueryToGifSearchImmediately) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client, FetchGifSearch(Eq("cat"), _)).Times(0);
 
@@ -300,7 +313,7 @@ TEST_F(PickerSearchControllerTest, DoesNotSendQueryToGifSearchImmediately) {
 
 TEST_F(PickerSearchControllerTest, SendsQueryToGifSearchAfterDelay) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client, FetchGifSearch(Eq("cat"), _)).Times(1);
 
@@ -313,7 +326,7 @@ TEST_F(PickerSearchControllerTest, SendsQueryToGifSearchAfterDelay) {
 
 TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -356,7 +369,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
 
 TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   PickerClient::FetchGifsCallback old_gif_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -402,7 +415,7 @@ TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
 
 TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -450,7 +463,7 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
 
 TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -514,7 +527,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
 
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -543,7 +556,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
 
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -571,7 +584,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
 
 TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -611,7 +624,7 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
 
 TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client, kBurnInPeriod);
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   EXPECT_CALL(client, StartCrosSearch(Eq(u"ant"), _)).Times(1);
   EXPECT_CALL(client, StartCrosSearch(Eq(u"bat"), _)).Times(1);
   EXPECT_CALL(client, StartCrosSearch(Eq(u"cat"), _)).Times(1);
