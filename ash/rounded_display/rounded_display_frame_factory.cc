@@ -13,7 +13,6 @@
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "ash/rounded_display/rounded_display_gutter.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -102,10 +101,6 @@ viz::TextureDrawQuad::RoundedDisplayMasksInfo MapToRoundedDisplayMasksInfo(
                                     is_horizontally_positioned);
 }
 
-BASE_FEATURE(kUseMappableSIInRoundedDisplayFrameFactory,
-             "UseMappableSIInRoundedDisplayFrameFactory",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -129,23 +124,6 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
   auto resource = std::make_unique<RoundedDisplayUiResource>();
 
   auto buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-  if (!base::FeatureList::IsEnabled(
-          kUseMappableSIInRoundedDisplayFrameFactory)) {
-    resource->gpu_memory_buffer =
-        aura::Env::GetInstance()
-            ->context_factory()
-            ->GetGpuMemoryBufferManager()
-            ->CreateGpuMemoryBuffer(
-                size,
-                viz::SinglePlaneSharedImageFormatToBufferFormat(
-                    kSharedImageFormat),
-                buffer_usage, gpu::kNullSurfaceHandle, nullptr);
-
-    if (!resource->gpu_memory_buffer) {
-      LOG(ERROR) << "Failed to create GPU memory buffer";
-      return nullptr;
-    }
-  }
 
   if (!resource->context_provider) {
     resource->context_provider = aura::Env::GetInstance()
@@ -166,25 +144,15 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  if (base::FeatureList::IsEnabled(
-          kUseMappableSIInRoundedDisplayFrameFactory)) {
-    auto client_shared_image = sii->CreateSharedImage(
-        format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, "RoundedDisplayFrameUi",
-        gpu::kNullSurfaceHandle, buffer_usage);
-    if (!client_shared_image) {
-      LOG(ERROR) << "Failed to create MappableSharedImage";
-      return nullptr;
-    }
-    resource->SetClientSharedImage(std::move(client_shared_image));
-  } else {
-    auto client_shared_image = sii->CreateSharedImage(
-        format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, "RoundedDisplayFrameUi",
-        resource->gpu_memory_buffer->CloneHandle());
-    CHECK(client_shared_image);
-    resource->SetClientSharedImage(std::move(client_shared_image));
+  auto client_shared_image = sii->CreateSharedImage(
+      format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, usage, "RoundedDisplayFrameUi",
+      gpu::kNullSurfaceHandle, buffer_usage);
+  if (!client_shared_image) {
+    LOG(ERROR) << "Failed to create MappableSharedImage";
+    return nullptr;
   }
+  resource->SetClientSharedImage(std::move(client_shared_image));
 
   resource->sync_token = sii->GenVerifiedSyncToken();
   resource->damaged = true;
@@ -312,42 +280,23 @@ void RoundedDisplayFrameFactory::Paint(
   gfx::Canvas canvas(gutter.bounds().size(), 1.0, true);
   gutter.Paint(&canvas);
 
-  if (base::FeatureList::IsEnabled(
-          kUseMappableSIInRoundedDisplayFrameFactory)) {
-    DCHECK(!buffer);
-    CHECK(resource->client_shared_image());
-    mapping = resource->client_shared_image()->Map();
-    if (!mapping) {
-      return;
-    }
-
-    uint8_t* data = static_cast<uint8_t*>(mapping->Memory(0));
-    int stride = mapping->Stride(0);
-
-    canvas.GetBitmap().readPixels(
-        SkImageInfo::MakeN32Premul(mapping->Size().width(),
-                                   mapping->Size().height()),
-        data, stride, 0, 0);
-  } else {
-    DCHECK(buffer);
-
-    if (!buffer->Map()) {
-      return;
-    }
-
-    uint8_t* data = static_cast<uint8_t*>(buffer->memory(0));
-    int stride = buffer->stride(0);
-
-    canvas.GetBitmap().readPixels(
-        SkImageInfo::MakeN32Premul(buffer->GetSize().width(),
-                                   buffer->GetSize().height()),
-        data, stride, 0, 0);
+  DCHECK(!buffer);
+  CHECK(resource->client_shared_image());
+  mapping = resource->client_shared_image()->Map();
+  if (!mapping) {
+    return;
   }
 
+  uint8_t* data = static_cast<uint8_t*>(mapping->Memory(0));
+  int stride = mapping->Stride(0);
+
+  canvas.GetBitmap().readPixels(
+      SkImageInfo::MakeN32Premul(mapping->Size().width(),
+                                 mapping->Size().height()),
+      data, stride, 0, 0);
+
   // Unmap to flush writes to buffer.
-  base::FeatureList::IsEnabled(kUseMappableSIInRoundedDisplayFrameFactory)
-      ? mapping.reset()
-      : buffer->Unmap();
+  mapping.reset();
 }
 
 void RoundedDisplayFrameFactory::AppendQuad(
