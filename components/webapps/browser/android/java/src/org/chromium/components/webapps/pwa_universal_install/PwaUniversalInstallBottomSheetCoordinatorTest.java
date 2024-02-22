@@ -70,7 +70,9 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
                         this::onOpenAppCalled,
                         /* appInstalled= */ false,
                         mBottomSheetControllerMock,
-                        0);
+                        /* arrowId= */ 0,
+                        /* installOverlayId= */ 0,
+                        /* shortcutOverlayId= */ 0);
 
         View view = coordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
