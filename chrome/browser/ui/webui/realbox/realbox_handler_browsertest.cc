@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"

@@ -39,14 +39,18 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/search_engines/template_url.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
+#endif
 
 using bookmarks::BookmarkModel;
 
@@ -498,6 +502,7 @@ void OmniboxPageHandler::StartOmniboxQuery(const std::string& input_string,
 }
 
 void OmniboxPageHandler::GetMlModelVersion(GetMlModelVersionCallback callback) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (auto* service = GetMlService()) {
     auto version = service->GetModelVersion();
     if (version == -1) {
@@ -510,10 +515,14 @@ void OmniboxPageHandler::GetMlModelVersion(GetMlModelVersionCallback callback) {
   } else {
     std::move(callback).Run(-1);
   }
+#else
+  std::move(callback).Run(-1);
+#endif
 }
 
 void OmniboxPageHandler::StartMl(mojom::SignalsPtr mojom_signals,
                                  StartMlCallback callback) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (auto* service = GetMlService()) {
     AutocompleteMatch::ScoringSignals signals =
         mojo::ConvertTo<AutocompleteMatch::ScoringSignals>(mojom_signals);
@@ -523,6 +532,9 @@ void OmniboxPageHandler::StartMl(mojom::SignalsPtr mojom_signals,
   } else {
     std::move(callback).Run(-1);
   }
+#else
+  std::move(callback).Run(-1);
+#endif
 }
 
 std::unique_ptr<AutocompleteController> OmniboxPageHandler::CreateController(
@@ -547,8 +559,12 @@ OmniboxPageHandler::GetAutocompleteControllerType(
 }
 
 AutocompleteScoringModelService* OmniboxPageHandler::GetMlService() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return OmniboxFieldTrial::IsMlUrlScoringEnabled()
              ? AutocompleteScoringModelServiceFactory::GetInstance()
                    ->GetForProfile(profile_)
              : nullptr;
+#else
+  return nullptr;
+#endif
 }
