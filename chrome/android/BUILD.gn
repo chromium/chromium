@@ -375,6 +375,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/contextmenu:java",
       "//chrome/browser/creator/android:java",
       "//chrome/browser/data_sharing:factory_java",
+      "//chrome/browser/data_sharing:java",
       "//chrome/browser/dependency_injection:java",
       "//chrome/browser/device:java",
       "//chrome/browser/device_reauth/android:java",

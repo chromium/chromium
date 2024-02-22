@@ -158,7 +158,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         View recyclerView = new View(getActivity());
         recyclerView.setVisibility(View.GONE);
 
-        mTabGridDialogView.resetDialog(toolbarView, recyclerView);
+        mTabGridDialogView.resetDialog(toolbarView, recyclerView, null);
 
         // It should contain four child views: top tool bar, recyclerview, ungroup bar and undo bar
         // container.
@@ -180,10 +180,12 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         mTabGridDialogContainer.removeAllViews();
         View toolbarView = new View(getActivity());
         View recyclerView = new View(getActivity());
+        View shareBar =
+                LayoutInflater.from(getActivity()).inflate(R.layout.data_sharing_group_bar, null);
         recyclerView.setVisibility(View.GONE);
 
         mTabGridDialogView.updateShouldShowShare(true);
-        mTabGridDialogView.resetDialog(toolbarView, recyclerView);
+        mTabGridDialogView.resetDialog(toolbarView, recyclerView, shareBar);
 
         // It should contain five child views: top tool bar, recyclerview, ungroup bar, data sharing
         // bar and undo bar container.
@@ -202,7 +204,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
                     mTabGridDialogContainer.removeAllViews();
                     View toolbarView = new View(getActivity());
                     View recyclerView = new View(getActivity());
-                    mTabGridDialogView.resetDialog(toolbarView, recyclerView);
+                    mTabGridDialogView.resetDialog(toolbarView, recyclerView, null);
                 });
 
         // From hide to show.

@@ -14,7 +14,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -27,6 +26,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -35,7 +35,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -44,6 +43,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -821,22 +821,35 @@ public class TabGridDialogView extends FrameLayout {
      *
      * @param toolbarView The toolbarview to be added to dialog.
      * @param recyclerView The recyclerview to be added to dialog.
+     * @param shareBar The sharing bottom toolbar to be added to dialog.
      */
-    void resetDialog(View toolbarView, View recyclerView) {
+    void resetDialog(View toolbarView, View recyclerView, @Nullable View shareBar) {
         mDialogContainerView.removeAllViews();
         mDialogContainerView.addView(toolbarView);
         mDialogContainerView.addView(recyclerView);
         mDialogContainerView.addView(mUngroupBar);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)
-                && mShouldShowShare) {
-            // Add the data sharing bottom toolbar view.
-            LayoutInflater inflater = LayoutInflater.from(mDialogContainerView.getContext());
-            View shareBar =
-                    inflater.inflate(R.layout.data_sharing_group_bar, mDialogContainerView, true);
 
-            // TODO(b/325082444): Set visibility depending on shared state.
-            shareBar.findViewById(R.id.dialog_share_invite_button).setVisibility(View.VISIBLE);
+        // The shareBar will not be initiated if the feature is not enabled.
+        if (shareBar != null && mShouldShowShare) {
+            // Add the data sharing bottom toolbar view.
+            mDialogContainerView.addView(shareBar);
+
+            ViewGroup manageBar = shareBar.findViewById(R.id.dialog_data_sharing_manage);
+            ButtonCompat inviteButton = shareBar.findViewById(R.id.dialog_share_invite_button);
+
+            // TODO(b/325082444): Update |isTabGroupShared| by asking data sharing service about if
+            // the tab group is shared.
+            boolean isTabGroupShared = false;
+            if (isTabGroupShared) {
+                manageBar.setVisibility(View.VISIBLE);
+                inviteButton.setVisibility(View.GONE);
+            } else {
+                manageBar.setVisibility(View.GONE);
+                inviteButton.setVisibility(View.VISIBLE);
+            }
         }
+
+        // The snackbar need to be added last to appear on top of any bottom toolbar.
         mDialogContainerView.addView(mSnackBarContainer);
 
         RelativeLayout.LayoutParams params =

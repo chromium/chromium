@@ -55,14 +55,17 @@ class TabGridPanelViewBinder {
         public final TabGroupUiToolbarView toolbarView;
         public final RecyclerView contentView;
         @Nullable public TabGridDialogView dialogView;
+        @Nullable public View shareBar;
 
         ViewHolder(
                 TabGroupUiToolbarView toolbarView,
                 RecyclerView contentView,
-                @Nullable TabGridDialogView dialogView) {
+                @Nullable TabGridDialogView dialogView,
+                @Nullable View shareBar) {
             this.toolbarView = toolbarView;
             this.contentView = contentView;
             this.dialogView = dialogView;
+            this.shareBar = shareBar;
         }
     }
 
@@ -131,7 +134,8 @@ class TabGridPanelViewBinder {
             viewHolder.dialogView.setScrimClickRunnable(model.get(SCRIMVIEW_CLICK_RUNNABLE));
         } else if (IS_DIALOG_VISIBLE == propertyKey) {
             if (model.get(IS_DIALOG_VISIBLE)) {
-                viewHolder.dialogView.resetDialog(viewHolder.toolbarView, viewHolder.contentView);
+                viewHolder.dialogView.resetDialog(
+                        viewHolder.toolbarView, viewHolder.contentView, viewHolder.shareBar);
                 viewHolder.dialogView.showDialog();
             } else {
                 viewHolder.dialogView.hideDialog();

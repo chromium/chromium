@@ -102,6 +102,7 @@ android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
     "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/data_sharing:java_resources",
   ]
 }
 

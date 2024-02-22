@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.data_sharing.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -54,6 +57,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private TabGridDialogView mDialogView;
     private @Nullable SnackbarManager mSnackbarManager;
+    private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
 
     TabGridDialogCoordinator(
             Activity activity,
@@ -95,11 +99,26 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 mDialogView = containerView.findViewById(R.id.dialog_parent_view);
                 mDialogView.setupScrimCoordinator(scrimCoordinator);
             }
+
             if (!activity.isDestroyed() && !activity.isFinishing()) {
                 mSnackbarManager =
                         new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
             } else {
                 mSnackbarManager = null;
+            }
+
+            View shareBar = null;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+                shareBar =
+                        LayoutInflater.from(activity)
+                                .inflate(
+                                        R.layout.data_sharing_group_bar,
+                                        mDialogView.findViewById(R.id.dialog_container_view),
+                                        false);
+                ViewGroup manageBar = shareBar.findViewById(R.id.dialog_data_sharing_manage);
+                mSharedImageTilesCoordinator =
+                        new SharedImageTilesCoordinator(mDialogView.getContext());
+                manageBar.addView(mSharedImageTilesCoordinator.getView(), 0);
             }
 
             mMediator =
@@ -159,7 +178,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     PropertyModelChangeProcessor.create(
                             mModel,
                             new TabGridPanelViewBinder.ViewHolder(
-                                    toolbarView, recyclerView, mDialogView),
+                                    toolbarView, recyclerView, mDialogView, shareBar),
                             TabGridPanelViewBinder::bind);
             mBackPressChangedSupplier.set(isVisible());
             mModel.addObserver((source, key) -> mBackPressChangedSupplier.set(isVisible()));

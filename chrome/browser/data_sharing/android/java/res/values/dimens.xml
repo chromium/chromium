@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Dimens for shared_image_tiles view -->
+    <dimen name="shared_image_tiles_icon_height">36dp</dimen>
+    <dimen name="shared_image_tiles_icon_corner_radius">18dp</dimen>
+    <dimen name="shared_image_tiles_overlap_margin">10dp</dimen>
+    <dimen name="shared_image_tiles_overlap_margin_negative">-10dp</dimen>
+</resources>

@@ -141,7 +141,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                             PropertyModelChangeProcessor.create(
                                     mModel,
                                     new TabGridPanelViewBinder.ViewHolder(
-                                            mToolbarView, mContentView, mTabGridDialogView),
+                                            mToolbarView, mContentView, mTabGridDialogView, null),
                                     TabGridPanelViewBinder::bind);
                 });
     }

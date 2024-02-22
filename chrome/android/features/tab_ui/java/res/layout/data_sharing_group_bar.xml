@@ -33,16 +33,21 @@ found in the LICENSE file.
         style="@style/TextButton" />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/bottom_sheet_peek_height"
         android:id="@+id/dialog_data_sharing_manage"
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:visibility="gone">
+        <!-- This view will push to right align all following buttons without changing each element's width. -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
         <org.chromium.ui.widget.ChromeImageButton
             android:src="@drawable/ic_person_add_40dp"
-            android:layout_gravity="end"
-            android:layout_height="@dimen/bottom_sheet_peek_height"
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:background="@android:color/transparent"
             android:tint="@color/default_icon_color_secondary_tint_list" />

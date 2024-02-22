@@ -23,6 +23,30 @@ if (is_android) {
     ]
   }
 
+  android_resources("java_resources") {
+    sources = [
+      "android/java/res/layout/shared_image_tiles.xml",
+      "android/java/res/layout/shared_image_tiles_icon.xml",
+      "android/java/res/values/dimens.xml",
+    ]
+  }
+
+  android_library("java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing"
+    sources = [
+      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesCoordinator.java",
+      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesMediator.java",
+      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesProperties.java",
+      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesViewBinder.java",
+    ]
+
+    deps = [
+      ":java_resources",
+      "//third_party/android_sdk:android_window_extensions_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
+
   android_library("javatests") {
     testonly = true
 
