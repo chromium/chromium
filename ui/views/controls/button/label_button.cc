@@ -628,7 +628,7 @@ gfx::Size LabelButton::GetUnclampedSizeWithoutLabel() const {
 
 Button::ButtonState LabelButton::GetVisualState() const {
   const auto* widget = GetWidget();
-  if (!widget || !widget->CanActivate() ||
+  if (!widget || !widget->ShouldViewsStyleFollowWidgetActivation() ||
       !appear_disabled_in_inactive_widget_) {
     return GetState();
   }
