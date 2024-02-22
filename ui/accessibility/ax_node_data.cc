@@ -175,6 +175,8 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
     case ax::mojom::IntAttribute::kDropeffectDeprecated:
     case ax::mojom::IntAttribute::kDOMNodeId:
+    case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
+    case ax::mojom::IntAttribute::kAriaNotificationPriority:
       return false;
   }
 
@@ -1646,6 +1648,31 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::IntAttribute::kDOMNodeId:
         result += " dom_node_id=" + value;
+        break;
+      case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
+        switch (static_cast<ax::mojom::AriaNotificationInterrupt>(
+            int_attribute.second)) {
+          case ax::mojom::AriaNotificationInterrupt::kNone:
+            result += " aria_notification_interrupt=none";
+            break;
+          case ax::mojom::AriaNotificationInterrupt::kAll:
+            result += " aria_notification_interrupt=all";
+            break;
+          case ax::mojom::AriaNotificationInterrupt::kPending:
+            result += " aria_notification_interrupt=pending";
+            break;
+        }
+        break;
+      case ax::mojom::IntAttribute::kAriaNotificationPriority:
+        switch (static_cast<ax::mojom::AriaNotificationPriority>(
+            int_attribute.second)) {
+          case ax::mojom::AriaNotificationPriority::kNone:
+            result += " aria_notification_priority=none";
+            break;
+          case ax::mojom::AriaNotificationPriority::kImportant:
+            result += " aria_notification_priority=important";
+            break;
+        }
         break;
       case ax::mojom::IntAttribute::kNone:
         break;

@@ -1551,6 +1551,10 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "nextWindowFocusId";
     case ax::mojom::IntAttribute::kPreviousWindowFocusId:
       return "previousWindowFocusId";
+    case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
+      return "ariaNotificationInterrupt";
+    case ax::mojom::IntAttribute::kAriaNotificationPriority:
+      return "ariaNotificationPriority";
   }
 
   return "";
@@ -1685,6 +1689,10 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
     return ax::mojom::IntAttribute::kNextWindowFocusId;
   } else if (int_attribute == "kPreviousWindowFocusId") {
     return ax::mojom::IntAttribute::kPreviousWindowFocusId;
+  } else if (int_attribute == "kAriaNotificationInterrupt") {
+    return ax::mojom::IntAttribute::kAriaNotificationInterrupt;
+  } else if (int_attribute == "kAriaNotificationPriority") {
+    return ax::mojom::IntAttribute::kAriaNotificationPriority;
   }
 
   NOTREACHED() << "An invalid IntAttribute was provided: " << int_attribute;
@@ -2521,6 +2529,30 @@ const char* ToString(ax::mojom::Dropeffect dropeffect) {
       return "popup";
     case ax::mojom::Dropeffect::kNone:
       return "none";
+  }
+
+  return "";
+}
+
+const char* ToString(ax::mojom::AriaNotificationInterrupt interrupt) {
+  switch (interrupt) {
+    case ax::mojom::AriaNotificationInterrupt::kNone:
+      return "none";
+    case ax::mojom::AriaNotificationInterrupt::kAll:
+      return "all";
+    case ax::mojom::AriaNotificationInterrupt::kPending:
+      return "pending";
+  }
+
+  return "";
+}
+
+const char* ToString(ax::mojom::AriaNotificationPriority priority) {
+  switch (priority) {
+    case ax::mojom::AriaNotificationPriority::kNone:
+      return "none";
+    case ax::mojom::AriaNotificationPriority::kImportant:
+      return "important";
   }
 
   return "";

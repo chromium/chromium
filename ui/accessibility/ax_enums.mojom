@@ -626,8 +626,8 @@ enum StringAttribute {
   kVirtualContent = 30,
 };
 
-// Next version: 3
-// Next value: 64
+// Next version: 4
+// Next value: 66
 [Extensible, Stable, Uuid="c350e50f-5177-405d-b155-79868449ba7b"]
 enum IntAttribute {
   [Default]kNone = 0,
@@ -774,6 +774,10 @@ enum IntAttribute {
   [MinVersion=1] kIsPopup = 61,
   [MinVersion=2] kNextWindowFocusId = 62,
   [MinVersion=2] kPreviousWindowFocusId = 63,
+
+  // ARIA notification options.
+  [MinVersion=3] kAriaNotificationInterrupt = 64,
+  [MinVersion=3] kAriaNotificationPriority = 65,
 };
 
 // Next version: 2
@@ -1455,4 +1459,15 @@ enum Dropeffect {
   kLink,
   kMove,
   kPopup,
+};
+
+enum AriaNotificationInterrupt {
+  kNone,
+  kAll,
+  kPending,
+};
+
+enum AriaNotificationPriority {
+  kNone,
+  kImportant,
 };
