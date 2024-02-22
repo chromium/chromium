@@ -34,6 +34,14 @@ ITfInputScope* CreateInputScope(TextInputType text_input_type,
                                 TextInputMode text_input_mode,
                                 bool should_do_learning);
 
+// Initializes the TSF for input scopes. It loads the tsf dll and get the
+// function pointer for setting the input scope in TSF.
+COMPONENT_EXPORT(UI_BASE_IME_WIN) void InitializeForSetInputScope();
+
+// A wrapper of the SetInputScope API exported by msctf.dll.
+COMPONENT_EXPORT(UI_BASE_IME_WIN)
+void SetPrivateInputScope(HWND window_handle);
+
 }  // namespace tsf_inputscope
 }  // namespace ui
 

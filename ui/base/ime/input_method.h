@@ -86,6 +86,11 @@ class InputMethod {
 
   // Called when a frame with a committed Url has received focus.
   virtual void OnUrlChanged() = 0;
+
+  // Notify TSF about incognito mode so Windows respects the privacy of that
+  // window
+  virtual void SetPrivateInputScope(HWND hwnd) {}
+
 #endif
 
   // Sets the text input client which receives text input events such as

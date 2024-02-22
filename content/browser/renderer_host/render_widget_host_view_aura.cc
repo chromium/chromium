@@ -889,6 +889,12 @@ void RenderWidgetHostViewAura::ShowWithVisibility(
       legacy_render_widget_host_HWND_) {
     legacy_render_widget_host_HWND_->Hide();
   }
+
+  if (window_->GetHost() && GetInputMethod() && !ShouldDoLearning()) {
+    GetInputMethod()->SetPrivateInputScope(
+        RenderWidgetHostViewAura::GetHostWindowHWND());
+  }
+
 #endif  // BUILDFLAG(IS_WIN)
 }
 
