@@ -24,7 +24,6 @@
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/stateless/utils.h"
-#include "media/gpu/v4l2/v4l2_utils.h"
 
 // This has not been accepted upstream.
 #ifndef V4L2_PIX_FMT_AV1
@@ -489,8 +488,6 @@ bool Device::QueueBuffer(const Buffer& buffer,
     v4l2_buffer.request_fd = request_fd.get();
   }
 
-  DVLOGF(4) << V4L2BufferToString(v4l2_buffer);
-
   return IoctlDevice(VIDIOC_QBUF, &v4l2_buffer);
 }
 
@@ -597,6 +594,7 @@ Device::~Device() {}
 
 bool Device::Ioctl(const base::ScopedFD& fd, uint64_t request, void* arg) {
   DCHECK(fd.is_valid());
+  constexpr int kIoctlOk = 0;
   const int ret = HANDLE_EINTR(ioctl(fd.get(), request, arg));
   if (ret != kIoctlOk) {
     const logging::SystemErrorCode err = logging::GetLastSystemErrorCode();
