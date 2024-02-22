@@ -560,7 +560,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDeferTabSwitcherLayoutCreation =
             newCachedFlag(DEFER_TAB_SWITCHER_LAYOUT_CREATION, true);
     public static final CachedFlag sDelayTempStripRemoval =
-            newCachedFlag(DELAY_TEMP_STRIP_REMOVAL, true);
+            newCachedFlag(DELAY_TEMP_STRIP_REMOVAL, false);
     public static final CachedFlag sDragDropIntoOmnibox =
             newCachedFlag(DRAG_DROP_INTO_OMNIBOX, false);
     public static final CachedFlag sDownloadsMigrateToJobsAPI =
