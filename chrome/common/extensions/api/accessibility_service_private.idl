@@ -15,7 +15,7 @@ namespace accessibilityServicePrivate {
     // Called when Select to Speak in ChromeOS should speak the current
     // text selection; fired when the context menu option was clicked in
     // a selection context.
-    [supportsPromises] static void speakSelectedText(
+    static void speakSelectedText(
       optional VoidCallback callback);
   };
 

@@ -64,7 +64,7 @@ namespace brailleDisplayPrivate {
 
   interface Functions {
     // Gets the current display state.
-    [supportsPromises] static void getDisplayState(
+    static void getDisplayState(
         DisplayStateCallback callback);
 
     // Write the given dot patterns to the display.  The buffer contains one

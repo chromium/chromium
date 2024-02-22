@@ -131,7 +131,7 @@ namespace identity {
     // present on the profile.
     //
     // <code>getAccounts</code> is only supported on dev channel.
-    [supportsPromises] static void getAccounts(GetAccountsCallback callback);
+    static void getAccounts(GetAccountsCallback callback);
 
     // Gets an OAuth2 access token using the client ID and scopes
     // specified in the <a
@@ -159,7 +159,7 @@ namespace identity {
     // <code>grantedScopes</code> parameter is populated since Chrome 87. When
     // available, this parameter contains the list of granted scopes
     // corresponding with the returned token.
-    [supportsPromises] static void getAuthToken(
+    static void getAuthToken(
         optional TokenDetails details,
         optional GetAuthTokenCallback callback);
 
@@ -177,7 +177,7 @@ namespace identity {
     // |callback|: Called with the <code>ProfileUserInfo</code> of the primary
     // Chrome account, of an empty <code>ProfileUserInfo</code> if the account
     // with given <code>details</code> doesn't exist.
-    [supportsPromises] static void getProfileUserInfo(
+    static void getProfileUserInfo(
         optional ProfileDetails details,
         GetProfileUserInfoCallback callback);
 
@@ -190,7 +190,7 @@ namespace identity {
     //
     // |details| : Token information.
     // |callback| : Called when the token has been removed from the cache.
-    [supportsPromises] static void removeCachedAuthToken(
+    static void removeCachedAuthToken(
         InvalidTokenDetails details,
         optional InvalidateAuthTokenCallback callback);
 
@@ -202,7 +202,7 @@ namespace identity {
     // </ul>
     //
     // |callback| : Called when the state has been cleared.
-    [supportsPromises] static void clearAllCachedAuthTokens(
+    static void clearAllCachedAuthTokens(
         ClearAllCachedAuthTokensCallback callback);
 
     // Starts an auth flow at the specified URL.
@@ -223,7 +223,7 @@ namespace identity {
     //
     // |details| : WebAuth flow options.
     // |callback| : Called with the URL redirected back to your application.
-    [supportsPromises] static void launchWebAuthFlow(
+    static void launchWebAuthFlow(
         WebAuthFlowDetails details,
         LaunchWebAuthFlowCallback callback);
 

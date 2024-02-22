@@ -308,7 +308,7 @@ namespace autofillPrivate {
     // Gets currently signed-in user profile info, no value is returned if
     // the user is not signed-in.
     // |callback|: Callback which will be called with the info.
-    [supportsPromises] static void getAccountInfo(
+    static void getAccountInfo(
         GetAccountInfoCallback callback);
 
     // Saves the given address. If |address| has an empty string as its ID, it
@@ -318,7 +318,7 @@ namespace autofillPrivate {
 
     // Gets the list of all countries.
     // |callback|: Callback which will be called with the countries.
-    [supportsPromises] static void getCountryList(
+    static void getCountryList(
         GetCountryListCallback callback);
 
     // Gets the address components for a given country code.
@@ -326,13 +326,13 @@ namespace autofillPrivate {
     //     whose components should be returned. See autofill_country.cc for a
     //     list of valid codes.
     // |callback|: Callback which will be called with components.
-    [supportsPromises] static void getAddressComponents(
+    static void getAddressComponents(
         DOMString countryCode,
         GetAddressComponentsCallback callback);
 
     // Gets the list of addresses.
     // |callback|: Callback which will be called with the list of addresses.
-    [supportsPromises] static void getAddressList(
+    static void getAddressList(
         GetAddressListCallback callback);
 
     // Saves the given credit card. If |card| has an empty string as its
@@ -351,18 +351,18 @@ namespace autofillPrivate {
 
     // Gets the list of credit cards.
     // |callback|: Callback which will be called with the list of credit cards.
-    [supportsPromises] static void getCreditCardList(
+    static void getCreditCardList(
         GetCreditCardListCallback callback);
 
     // Gets the list of IBANs.
     // `callback`: Callback which will be called with the list of IBANs.
-    [supportsPromises] static void getIbanList(
+    static void getIbanList(
         GetIbanListCallback callback);
 
     // Returns true if the given `ibanValue` is a valid IBAN.
     // `callback`: Callback which will be called with the result of IBAN
     // validation.
-    [supportsPromises] static void isValidIban(
+    static void isValidIban(
         DOMString ibanValue, IsValidIbanCallback callback);
 
     // Clears the data associated with a wallet card which was saved
@@ -398,12 +398,12 @@ namespace autofillPrivate {
     // Returns the local card based on the `guid` provided. The user could
     // also be challenged with a reauth if that is enabled. For a successful
     // auth, the local card is returned otherwise return a null object.
-    [supportsPromises] static void getLocalCard(
+    static void getLocalCard(
         DOMString guid, GetCreditCardCallback callback);
 
     // Returns true if there is authentication available on this device
     // (biometric or screen lock), false otherwise.
-    [supportsPromises] static void checkIfDeviceAuthAvailable(
+    static void checkIfDeviceAuthAvailable(
         CheckForDeviceAuthCallback callback);
 
     // Bulk delete all the CVCs (server and local) from the local webdata

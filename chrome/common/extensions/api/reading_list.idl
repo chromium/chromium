@@ -74,30 +74,31 @@ namespace readingList{
     // Adds an entry to the reading list if it does not exist.
     // |entry|: The entry to add to the reading list.
     // |callback|: Invoked once the entry has been added.
-    [supportsPromises] static void addEntry(
-                                      AddEntryOptions entry,
-                                      optional AddEntryCallback callback);
+    static void addEntry(
+        AddEntryOptions entry,
+        optional AddEntryCallback callback);
 
     // Removes an entry from the reading list if it exists.
     // |info|: The entry to remove from the reading list.
     // |callback|: Invoked once the entry has been removed.
-    [supportsPromises] static void removeEntry(
-                                      RemoveOptions info,
-                                      optional RemoveEntryCallback callback);
+    static void removeEntry(
+        RemoveOptions info,
+        optional RemoveEntryCallback callback);
 
     // Updates a reading list entry if it exists.
     // |info|: The entry to update.
     // |callback|: Invoked once the matched entries have been updated.
-    [supportsPromises] static void updateEntry(
-                                      UpdateEntryOptions info,
-                                      optional UpdateEntryCallback callback);
+    static void updateEntry(
+        UpdateEntryOptions info,
+        optional UpdateEntryCallback callback);
 
     // Retrieves all entries that match the <code>QueryInfo</code> properties.
     // Properties that are not provided will not be matched.
     // |info|: The properties to search for.
     // |callback|: Invoked once the entries have been matched.
-    [supportsPromises] static void query(QueryInfo info,
-                                         QueryCallback callback);
+    static void query(
+        QueryInfo info,
+        QueryCallback callback);
   };
 
   interface Events {

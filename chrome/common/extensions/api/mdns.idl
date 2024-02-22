@@ -30,7 +30,7 @@ namespace mdns {
     // Immediately issues a multicast DNS query for all service types.
     // |callback| is invoked immediately. At a later time, queries will be
     // sent, and any service events will be fired.
-    [supportsPromises] static void forceDiscovery(VoidCallback callback);
+    static void forceDiscovery(VoidCallback callback);
   };
 
   interface Properties {

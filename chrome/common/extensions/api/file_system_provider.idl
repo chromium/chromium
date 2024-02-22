@@ -580,8 +580,9 @@ namespace fileSystemProvider {
     //
     // In case of an error, $(ref:runtime.lastError) will be set with a
     // corresponding error code.
-    [supportsPromises] static void mount(MountOptions options,
-                                         optional ResultCallback callback);
+    static void mount(
+        MountOptions options,
+        optional ResultCallback callback);
 
     // Unmounts a file system with the given <code>fileSystemId</code>. It
     // must be called after $(ref:onUnmountRequested) is invoked. Also,
@@ -590,16 +591,18 @@ namespace fileSystemProvider {
     //
     // In case of an error, $(ref:runtime.lastError) will be set with a
     // corresponding error code.
-    [supportsPromises] static void unmount(UnmountOptions options,
-                                           optional ResultCallback callback);
+    static void unmount(
+        UnmountOptions options,
+        optional ResultCallback callback);
 
     // Returns all file systems mounted by the extension.
-    [supportsPromises] static void getAll(GetAllCallback callback);
+    static void getAll(GetAllCallback callback);
 
     // Returns information about a file system with the passed
     // <code>fileSystemId</code>.
-    [supportsPromises] static void get(DOMString fileSystemId,
-                                       GetCallback callback);
+    static void get(
+        DOMString fileSystemId,
+        GetCallback callback);
 
     // Notifies about changes in the watched directory at
     // <code>observedPath</code> in <code>recursive</code> mode. If the file
@@ -630,8 +633,9 @@ namespace fileSystemProvider {
     //
     // In case of an error, $(ref:runtime.lastError) will be set
     // will a corresponding error code.
-    [supportsPromises] static void notify(NotifyOptions options,
-                                          optional ResultCallback callback);
+    static void notify(
+        NotifyOptions options,
+        optional ResultCallback callback);
   };
 
   interface Events {

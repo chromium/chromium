@@ -202,7 +202,7 @@ namespace scripting {
     // |callback|: Invoked upon completion of the injection. The resulting
     // array contains the result of execution for each frame where the
     // injection succeeded.
-    [supportsPromises] static void executeScript(
+    static void executeScript(
         ScriptInjection injection,
         optional ScriptInjectionCallback callback);
 
@@ -210,7 +210,7 @@ namespace scripting {
     // If multiple frames are specified, unsuccessful injections are ignored.
     // |injection|: The details of the styles to insert.
     // |callback|: Invoked upon completion of the insertion.
-    [supportsPromises] static void insertCSS(
+    static void insertCSS(
         CSSInjection injection,
         optional CSSInjectionCallback callback);
 
@@ -221,7 +221,7 @@ namespace scripting {
     // must exactly match the stylesheet inserted through $(ref:insertCSS).
     // Attempting to remove a non-existent stylesheet is a no-op.
     // |callback|: A callback to be invoked upon the completion of the removal.
-    [supportsPromises] static void removeCSS(
+    static void removeCSS(
         CSSInjection injection,
         optional CSSInjectionCallback callback);
 
@@ -231,7 +231,7 @@ namespace scripting {
     // already exist, then no scripts are registered.
     // |callback|: A callback to be invoked once scripts have been fully
     // registered or if an error has occurred.
-    [supportsPromises] static void registerContentScripts(
+    static void registerContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);
 
@@ -239,7 +239,7 @@ namespace scripting {
     // that match the given filter.
     // |filter|: An object to filter the extension's dynamically registered
     // scripts.
-    [supportsPromises] static void getRegisteredContentScripts(
+    static void getRegisteredContentScripts(
         optional ContentScriptFilter filter,
         GetRegisteredContentScriptsCallback callback);
 
@@ -249,7 +249,7 @@ namespace scripting {
     // scripts are unregistered.
     // |callback|: A callback to be invoked once scripts have been unregistered
     // or if an error has occurred.
-    [supportsPromises] static void unregisterContentScripts(
+    static void unregisterContentScripts(
         optional ContentScriptFilter filter,
         optional UnregisterContentScriptsCallback callback);
 
@@ -261,7 +261,7 @@ namespace scripting {
     // are updated.
     // |callback|: A callback to be invoked once scripts have been updated or
     // if an error has occurred.
-    [supportsPromises] static void updateContentScripts(
+    static void updateContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);
   };

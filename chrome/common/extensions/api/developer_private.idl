@@ -650,62 +650,64 @@ namespace developerPrivate {
   interface Functions {
     // Runs auto update for extensions and apps immediately.
     // |callback| : Called after update check completes.
-    [supportsPromises] static void autoUpdate(optional VoidCallback callback);
+    static void autoUpdate(optional VoidCallback callback);
 
     // Returns information of all the extensions and apps installed.
     // |options| : Options to restrict the items returned.
     // |callback| : Called with extensions info.
-    [supportsPromises] static void getExtensionsInfo(
+    static void getExtensionsInfo(
         optional GetExtensionsInfoOptions options,
         optional ExtensionInfosCallback callback);
 
     // Returns information of a particular extension.
     // |id| : The id of the extension.
     // |callback| : Called with the result.
-    [supportsPromises] static void getExtensionInfo(
+    static void getExtensionInfo(
         DOMString id,
         optional ExtensionInfoCallback callback);
 
     // Returns the size of a particular extension on disk (already formatted).
     // |id| : The id of the extension.
     // |callback| : Called with the result.
-    [supportsPromises] static void getExtensionSize(DOMString id,
-                                                    StringCallback callback);
+    static void getExtensionSize(
+        DOMString id,
+        StringCallback callback);
 
     // Returns the current profile's configuration.
-    [supportsPromises] static void getProfileConfiguration(
+    static void getProfileConfiguration(
         ProfileInfoCallback callback);
 
     // Updates the active profile.
     // |update| : The parameters for updating the profile's configuration.  Any
     //     properties omitted from |update| will not be changed.
-    [supportsPromises] static void updateProfileConfiguration(
+    static void updateProfileConfiguration(
         ProfileConfigurationUpdate update,
         optional VoidCallback callback);
 
     // Reloads a given extension.
     // |extensionId| : The id of the extension to reload.
     // |options| : Additional configuration parameters.
-    [supportsPromises] static void reload(DOMString extensionId,
-                                          optional ReloadOptions options,
-                                          optional LoadErrorCallback callback);
+    static void reload(
+        DOMString extensionId,
+        optional ReloadOptions options,
+        optional LoadErrorCallback callback);
 
     // Modifies an extension's current configuration.
     // |update| : The parameters for updating the extension's configuration.
     //     Any properties omitted from |update| will not be changed.
-    [supportsPromises] static void updateExtensionConfiguration(
+    static void updateExtensionConfiguration(
         ExtensionConfigurationUpdate update,
         optional VoidCallback callback);
 
     // Loads a user-selected unpacked item.
     // |options| : Additional configuration parameters.
-    [supportsPromises] static void loadUnpacked(
+    static void loadUnpacked(
         optional LoadUnpackedOptions options,
         optional LoadErrorCallback callback);
 
     // Installs the file that was dragged and dropped onto the associated
     // page.
-    [supportsPromises] static void installDroppedFile(
+    static void installDroppedFile(
         optional VoidCallback callback);
 
     // Notifies the browser that a user began a drag in order to install an
@@ -714,7 +716,7 @@ namespace developerPrivate {
 
     // Loads an extension / app.
     // |directory| : The directory to load the extension from.
-    [supportsPromises] static void loadDirectory(
+    static void loadDirectory(
         [instanceOf=DirectoryEntry] object directory,
         StringCallback callback);
 
@@ -723,66 +725,69 @@ namespace developerPrivate {
     // |fileType| : Required file type. For example, pem type is for private
     // key and load type is for an unpacked item.
     // |callback| : called with selected item's path.
-    [supportsPromises] static void choosePath(SelectType selectType,
-                                              FileType fileType,
-                                              StringCallback callback);
+    static void choosePath(
+        SelectType selectType,
+        FileType fileType,
+        StringCallback callback);
 
     // Pack an extension.
     // |rootPath| : The path of the extension.
     // |privateKeyPath| : The path of the private key, if one is given.
     // |flags| : Special flags to apply to the loading process, if any.
     // |callback| : called with the success result string.
-    [supportsPromises] static void packDirectory(
+    static void packDirectory(
         DOMString path,
         optional DOMString privateKeyPath,
         optional long flags,
         optional PackCallback callback);
 
     // Returns true if the profile is managed.
-    [supportsPromises] static void isProfileManaged(BooleanCallback callback);
+    static void isProfileManaged(BooleanCallback callback);
 
     // Reads and returns the contents of a file related to an extension which
     // caused an error.
-    [supportsPromises] static void requestFileSource(
+    static void requestFileSource(
         RequestFileSourceProperties properties,
         RequestFileSourceCallback callback);
 
     // Open the developer tools to focus on a particular error.
-    [supportsPromises] static void openDevTools(
+    static void openDevTools(
         OpenDevToolsProperties properties,
         optional VoidCallback callback);
 
     // Delete reported extension errors.
     // |properties| : The properties specifying the errors to remove.
-    [supportsPromises] static void deleteExtensionErrors(
+    static void deleteExtensionErrors(
         DeleteExtensionErrorsProperties properties,
         optional VoidCallback callback);
 
     // Repairs the extension specified.
     // |extensionId| : The id of the extension to repair.
-    [supportsPromises] static void repairExtension(
+    static void repairExtension(
         DOMString extensionId,
         optional VoidCallback callback);
 
     // Shows the options page for the extension specified.
     // |extensionId| : The id of the extension to show the options page for.
-    [supportsPromises] static void showOptions(DOMString extensionId,
-                                               optional VoidCallback callback);
+    static void showOptions(
+        DOMString extensionId,
+        optional VoidCallback callback);
 
     // Shows the path of the extension specified.
     // |extensionId| : The id of the extension to show the path for.
-    [supportsPromises] static void showPath(DOMString extensionId,
-                                            optional VoidCallback callback);
+    static void showPath(
+        DOMString extensionId,
+        optional VoidCallback callback);
 
     // (Un)suspends global shortcut handling.
     // |isSuspended| : Whether or not shortcut handling should be suspended.
-    [supportsPromises] static void setShortcutHandlingSuspended(
+    static void setShortcutHandlingSuspended(
         boolean isSuspended,
         optional VoidCallback callback);
 
     // Updates an extension command.
     // |update| : The parameters for updating the extension command.
-    [supportsPromises] static void updateExtensionCommand(
+    static void updateExtensionCommand(
         ExtensionCommandUpdate update,
         optional VoidCallback callback);
 
@@ -790,7 +795,7 @@ namespace developerPrivate {
     // have access to the host if it is within the requested permissions.
     // |extensionId|: The id of the extension to modify.
     // |host|: The host to add.
-    [supportsPromises] static void addHostPermission(
+    static void addHostPermission(
         DOMString extensionId,
         DOMString host,
         optional VoidCallback callback);
@@ -799,50 +804,50 @@ namespace developerPrivate {
     // with a host that the extension has access to.
     // |extensionId|: The id of the extension to modify.
     // |host|: The host to remove.
-    [supportsPromises] static void removeHostPermission(
+    static void removeHostPermission(
         DOMString extensionId,
         DOMString host,
         optional VoidCallback callback);
 
     // Returns the user specified site settings (which origins can extensions
     // always/never run on) for the current profile.
-    [supportsPromises] static void getUserSiteSettings(
+    static void getUserSiteSettings(
         UserSiteSettingsCallback callback);
 
     // Adds hosts to the set of user permitted or restricted sites. If any hosts
     // are in the other set than what's specified in `options`, then they are
     // removed from that set.
-    [supportsPromises] static void addUserSpecifiedSites(
+    static void addUserSpecifiedSites(
         UserSiteSettingsOptions options,
         optional VoidCallback callback);
 
     // Removes hosts from the specified set of user permitted or restricted
     // sites.
-    [supportsPromises] static void removeUserSpecifiedSites(
+    static void removeUserSpecifiedSites(
         UserSiteSettingsOptions options,
         optional VoidCallback callback);
 
     // Returns all hosts specified by user site settings, grouped by each host's
     // eTLD+1.
-    [supportsPromises] static void getUserAndExtensionSitesByEtld(
+    static void getUserAndExtensionSitesByEtld(
         UserAndExtensionSitesByEtldCallback callback);
 
     // Returns a list of extensions which have at least one matching site in
     // common between its set of host permissions and `site`.
-    [supportsPromises] static void getMatchingExtensionsForSite(
+    static void getMatchingExtensionsForSite(
         DOMString site,
         GetMatchingExtensionsForSiteCallback callback);
 
     // Updates the site access settings for multiple extensions for the given
     // `site` and calls `callback` once all updates have been finished.
     // Each update species an extension id an a new HostAccess setting.
-    [supportsPromises] static void updateSiteAccess(
+    static void updateSiteAccess(
         DOMString site,
         ExtensionSiteAccessUpdate[] updates,
         optional VoidCallback callback);
 
     // Removes multiple installed extensions.
-    [supportsPromises] static void removeMultipleExtensions(
+    static void removeMultipleExtensions(
         DOMString[] extensionIds,
         optional VoidCallback callback);
 

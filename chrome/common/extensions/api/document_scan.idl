@@ -506,15 +506,16 @@ namespace documentScan {
     // sent to the callback.
     // |options| : Object containing scan parameters.
     // |callback| : Called with the result and data from the scan.
-    [supportsPromises] static void scan(ScanOptions options,
-                                        ScanCallback callback);
+    static void scan(
+        ScanOptions options,
+        ScanCallback callback);
 
     // Gets the list of available scanners.  On success, the list will be
     // sent to the callback.
     // |filter| : <code>DeviceFilter</code> indicating which types of scanners
     // should be returned.
     // |callback| : Called with the result and list of scanners.
-    [nodoc, supportsPromises] static void getScannerList(
+    [nodoc] static void getScannerList(
         DeviceFilter filter, GetScannerListCallback callback);
 
     // Opens a scanner for exclusive access.  On success, the response containing
@@ -522,7 +523,7 @@ namespace documentScan {
     // |scannerId| : Scanner id previously returned from <code>getScannerList</code>
     // indicating which scanner should be opened.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void openScanner(
+    [nodoc] static void openScanner(
         DOMString scannerId, OpenScannerCallback callback);
 
     // Gets the group names and member options from a scanner handle previously
@@ -530,7 +531,7 @@ namespace documentScan {
     // |scannerHandle| : Open scanner handle previously returned from
     // <code>openScanner</code>.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void getOptionGroups(
+    [nodoc] static void getOptionGroups(
         DOMString scannerHandle, GetOptionGroupsCallback callback);
 
     // Closes a previously opened scanner handle.  A response indicating the
@@ -540,7 +541,7 @@ namespace documentScan {
     // |scannerHandle| : Open scanner handle previously returned from
     // <code>openScanner</code>.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void closeScanner(
+    [nodoc] static void closeScanner(
         DOMString scannerHandle, CloseScannerCallback callback);
 
     // Sends the list of new option values in <code>options</code> as a bundle
@@ -553,7 +554,7 @@ namespace documentScan {
     // |options| : A list of <code>OptionSetting</code>s that will be applied to
     // <code>scannerHandle</code>.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void setOptions(
+    [nodoc] static void setOptions(
         DOMString scannerHandle, OptionSetting[] options,
         SetOptionsCallback callback);
 
@@ -567,7 +568,7 @@ namespace documentScan {
     // be used for the scan.  <code>StartScanOptions.format</code> must match
     // one of the entries returned in the scanner's <code>ScannerInfo</code>.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void startScan(
+    [nodoc] static void startScan(
         DOMString scannerHandle, StartScanOptions options,
         StartScanCallback callback);
 
@@ -576,7 +577,7 @@ namespace documentScan {
     // |job| : An active scan job previously returned from
     // <code>startScan</code>.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void cancelScan(
+    [nodoc] static void cancelScan(
         DOMString job, CancelScanCallback callback);
 
     // Reads the next chunk of available image data from an active job handle.
@@ -594,7 +595,7 @@ namespace documentScan {
     // |job| : Active job handle previously returned from
     // <code>startScan</code>.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void readScanData(
+    [nodoc] static void readScanData(
         DOMString job, ReadScanDataCallback callback);
   };
 };

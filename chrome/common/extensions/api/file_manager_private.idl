@@ -1521,7 +1521,6 @@ interface Functions {
   // Gets the MIME type of an entry.
   // |entry| The entry to be checked.
   // |callback|
-  [supportsPromises]
   static void getMimeType(DOMString url,
                           GetMimeTypeCallback callback);
 

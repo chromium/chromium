@@ -28,7 +28,7 @@ namespace enterprise.kioskInput {
   //            $(ref:SetCurrentInputMethodOptions).
   // |callback|: Called when the input method is changed or if
   // there is an error.
-  [supportsPromises] static void setCurrentInputMethod(
+  static void setCurrentInputMethod(
       SetCurrentInputMethodOptions options,
       SetCurrentInputMethodCallback callback);
 };
