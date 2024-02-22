@@ -145,6 +145,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                                                  base::RepeatingClosure action);
   void AddProfileManagementManagedHint(const gfx::VectorIcon& icon,
                                        const std::u16string& text);
+  void AddProfileManagementFeaturesSeparator();
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
                                          const std::u16string& text,
                                          base::RepeatingClosure action);
@@ -218,6 +219,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   raw_ptr<views::View> profile_mgmt_heading_container_ = nullptr;
   raw_ptr<views::View> selectable_profiles_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_shortcut_features_container_ = nullptr;
+  raw_ptr<views::View> profile_mgmt_features_separator_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_features_container_ = nullptr;
 
   // Child components of `identity_info_container_`.

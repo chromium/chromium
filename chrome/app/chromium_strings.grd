@@ -1093,6 +1093,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PROFILE_MENU_PROFILES_LIST_TITLE" desc="Title in the profile menu for the list of 'other Chromium profiles'.">
           Other Chromium profiles
         </message>
+        <message name="IDS_PROFILE_MENU_MANAGE_PROFILES" desc="The text label of the Manage Chromium Profiles item in the Profile Menu.">
+          Manage Chromium profiles
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON" desc="The text label of the Customize Chromium button in the Profile Menu.">
@@ -1100,6 +1103,9 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_PROFILE_MENU_PROFILES_LIST_TITLE" desc="Title in the profile menu for the list of 'other Chromium profiles'.">
           Other Chromium Profiles
+        </message>
+        <message name="IDS_PROFILE_MENU_MANAGE_PROFILES" desc="The text label of the Manage Chromium Profiles item in the Profile Menu.">
+          Manage Chromium Profiles
         </message>
       </if>
 

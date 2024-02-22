@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -1033,6 +1034,17 @@ void ProfileMenuViewBase::AddProfileManagementManagedHint(
   icon_button->SetTooltipText(text);
 }
 
+void ProfileMenuViewBase::AddProfileManagementFeaturesSeparator() {
+  // Add separator before profile management features.
+  profile_mgmt_features_separator_container_->RemoveAllChildViews();
+  profile_mgmt_features_separator_container_->SetLayoutManager(
+      std::make_unique<views::FillLayout>());
+  profile_mgmt_features_separator_container_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(kDefaultMargin, 0)));
+  profile_mgmt_features_separator_container_->AddChildView(
+      std::make_unique<views::Separator>());
+}
+
 void ProfileMenuViewBase::AddProfileManagementFeatureButton(
     const gfx::VectorIcon& icon,
     const std::u16string& text,
@@ -1118,6 +1130,11 @@ void ProfileMenuViewBase::Reset() {
   // Third, add the profile management buttons.
   selectable_profiles_container_ =
       components->AddChildView(std::make_unique<views::View>());
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
+    profile_mgmt_features_separator_container_ =
+        components->AddChildView(std::make_unique<views::View>());
+  }
   profile_mgmt_features_container_ =
       components->AddChildView(std::make_unique<views::View>());
   first_profile_button_ = nullptr;

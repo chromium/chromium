@@ -138,6 +138,9 @@
       other {Close this profile (# windows)}
       }
     </message>
+    <message name="IDS_PROFILE_MENU_ADD_NEW_PROFILE" desc="The text label of the add new profile item in the profile menu.">
+      Add new profile
+    </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
@@ -157,6 +160,9 @@
       =1 {Close This Profile}
       other {Close This Profile (# Windows)}
       }
+    </message>
+    <message name="IDS_PROFILE_MENU_ADD_NEW_PROFILE" desc="The text label of the add new profile item in the profile menu.">
+      Add New Profile
     </message>
   </if>
   <message name="IDS_PROFILES_MANAGED_BY" desc="Label shown under the avatar in the avatar menu bubble view stating that the account is managed.">

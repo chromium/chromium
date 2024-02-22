@@ -1074,6 +1074,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PROFILE_MENU_PROFILES_LIST_TITLE" desc="Title in the profile menu for the list of 'other Chrome profiles'.">
           Other Chrome profiles
         </message>
+        <message name="IDS_PROFILE_MENU_MANAGE_PROFILES" desc="The text label of the Manage Chrome Profiles item in the Profile Menu.">
+          Manage Chrome profiles
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON" desc="The text label of the Customize Chrome button in the Profile Menu.">
@@ -1081,6 +1084,9 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_PROFILE_MENU_PROFILES_LIST_TITLE" desc="Title in the profile menu for the list of 'other  profiles'.">
           Other Chrome Profiles
+        </message>
+        <message name="IDS_PROFILE_MENU_MANAGE_PROFILES" desc="The text label of the Manage Chrome Profiles item in the Profile Menu.">
+          Manage Chrome Profiles
         </message>
       </if>
 

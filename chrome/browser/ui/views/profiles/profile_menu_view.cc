@@ -849,27 +849,56 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   profiles_selectable = profiles::AreSecondaryProfilesAllowed();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  if (profiles_selectable) {
-    AddProfileManagementShortcutFeatureButton(
-        features::IsChromeRefresh2023()
-            ? vector_icons::kSettingsChromeRefreshIcon
-            : vector_icons::kSettingsIcon,
-        l10n_util::GetStringUTF16(IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP),
-        base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
-                            base::Unretained(this)));
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
+    if (profiles_selectable || profiles::IsProfileCreationAllowed()) {
+      AddProfileManagementFeaturesSeparator();
+    }
+
+    if (profiles::IsProfileCreationAllowed()) {
+      AddProfileManagementFeatureButton(
+          kAccountAddChromeRefreshIcon,
+          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_ADD_NEW_PROFILE),
+          base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
+                              base::Unretained(this)));
+    }
+
+    if (profiles_selectable) {
+      AddProfileManagementFeatureButton(
+          kAccountManageChromeRefreshIcon,
+          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_MANAGE_PROFILES),
+          base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
+                              base::Unretained(this)));
+    } else {
+      AddProfileManagementManagedHint(
+          vector_icons::kBusinessIcon,
+          l10n_util::GetStringUTF16(
+              IDS_PROFILES_MANAGE_PROFILES_MANAGED_TOOLTIP));
+    }
   } else {
-    AddProfileManagementManagedHint(
-        vector_icons::kBusinessIcon,
-        l10n_util::GetStringUTF16(
-            IDS_PROFILES_MANAGE_PROFILES_MANAGED_TOOLTIP));
-  }
-  if (profiles::IsProfileCreationAllowed()) {
-    AddProfileManagementFeatureButton(
-        features::IsChromeRefresh2023() ? vector_icons::kAddChromeRefreshIcon
-                                        : kAddIcon,
-        l10n_util::GetStringUTF16(IDS_ADD),
-        base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
-                            base::Unretained(this)));
+    if (profiles_selectable) {
+      AddProfileManagementShortcutFeatureButton(
+          features::IsChromeRefresh2023()
+              ? vector_icons::kSettingsChromeRefreshIcon
+              : vector_icons::kSettingsIcon,
+          l10n_util::GetStringUTF16(
+              IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP),
+          base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
+                              base::Unretained(this)));
+    } else {
+      AddProfileManagementManagedHint(
+          vector_icons::kBusinessIcon,
+          l10n_util::GetStringUTF16(
+              IDS_PROFILES_MANAGE_PROFILES_MANAGED_TOOLTIP));
+    }
+    if (profiles::IsProfileCreationAllowed()) {
+      AddProfileManagementFeatureButton(
+          features::IsChromeRefresh2023() ? vector_icons::kAddChromeRefreshIcon
+                                          : kAddIcon,
+          l10n_util::GetStringUTF16(IDS_ADD),
+          base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
+                              base::Unretained(this)));
+    }
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
