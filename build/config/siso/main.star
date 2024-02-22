@@ -82,8 +82,20 @@ def __use_large_b289968566(ctx, step_config):
         "./ash_clang_x64/obj/chrome/browser/browser/chrome_content_browser_client.o",
         "./ash_clang_x64/obj/content/browser/browser/browser_interface_binders.o",
 
-        # Fallback with unknown build configs.
+        # Fallback happens with follwoing args.gn (try/android_compile_dbg).
+        # Fallback may happen in other build config too.
+        # debuggable_apks = false
+        # ffmpeg_branding = "Chrome"
+        # is_component_build = true
+        # is_debug = true
+        # proprietary_codecs = true
+        # symbol_level = 0
+        # target_cpu = "arm64"
+        # target_os = "android"
+        # use_remoteexec = true
         "./android_clang_arm/obj/content/browser/browser/browser_interface_binders.o",
+
+        # Fallback with unknown build configs.
         "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
         "./ash_clang_x64/obj/chrome/browser/ash/ash/user_session_manager.o",
         "./ash_clang_x64/obj/chrome/test/test_support_ui/offer_notification_bubble_views_test_base.o",
