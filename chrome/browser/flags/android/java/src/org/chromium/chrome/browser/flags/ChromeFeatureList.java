@@ -260,9 +260,6 @@ public abstract class ChromeFeatureList {
     public static final String DATA_SHARING = "DataSharing";
     public static final String DATA_SHARING_ANDROID = "DataSharingAndroid";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID = "DefaultBrowserPromoAndroid";
-    public static final String DEFER_KEEP_SCREEN_ON_DURING_GESTURE =
-            "DeferKeepScreenOnDuringGesture";
-    public static final String DEFER_NOTIFY_IN_MOTION = "DeferNotifyInMotion";
     public static final String DEFER_TAB_SWITCHER_LAYOUT_CREATION =
             "DeferTabSwitcherLayoutCreation";
     public static final String DELAY_TEMP_STRIP_REMOVAL = "DelayTempStripRemoval";
@@ -778,10 +775,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, true);
     public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
-    public static final MutableFlagWithSafeDefault sDeferKeepScreenOnDuringGesture =
-            newMutableFlagWithSafeDefault(DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
-    public static final MutableFlagWithSafeDefault sDeferNotifyInMotion =
-            newMutableFlagWithSafeDefault(DEFER_NOTIFY_IN_MOTION, false);
     public static final MutableFlagWithSafeDefault sIncognitoNtpRevamp =
             newMutableFlagWithSafeDefault(INCOGNITO_NTP_REVAMP, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =

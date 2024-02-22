@@ -205,8 +205,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchSuppressShortView,
     &kContextualSearchThinWebViewImplementation,
-    &kDeferKeepScreenOnDuringGesture,
-    &kDeferNotifyInMotion,
     &kDeferTabSwitcherLayoutCreation,
     &kDelayTempStripRemoval,
     &kDragDropIntoOmnibox,
@@ -590,14 +588,6 @@ BASE_FEATURE(kDataSharingAndroid,
 BASE_FEATURE(kDefaultBrowserPromoAndroid,
              "DefaultBrowserPromoAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDeferKeepScreenOnDuringGesture,
-             "DeferKeepScreenOnDuringGesture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDeferNotifyInMotion,
-             "DeferNotifyInMotion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeferTabSwitcherLayoutCreation,
              "DeferTabSwitcherLayoutCreation",

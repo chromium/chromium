@@ -760,16 +760,13 @@ public class CompositorViewHolder extends FrameLayout
             mInGesture = false;
             tryUpdateControlsAndWebContentsSizing();
         }
-        if (!ChromeFeatureList.sDeferNotifyInMotion.isEnabled()) {
-            updateInMotion();
-        }
     }
 
     private void updateInMotion() {
         // TODO(https://crbug.com/1378716): Track fling as well.
         boolean inMotion = mInGesture || mContentViewScrolling;
         mInMotionSupplier.set(inMotion);
-        if (ChromeFeatureList.sDeferKeepScreenOnDuringGesture.isEnabled() && mContentView != null) {
+        if (mContentView != null) {
             mContentView.setDeferKeepScreenOnChanges(inMotion);
         }
     }
@@ -831,9 +828,7 @@ public class CompositorViewHolder extends FrameLayout
         // notifying in motion, should be done after this.
         boolean handled = super.dispatchTouchEvent(e);
 
-        if (ChromeFeatureList.sDeferNotifyInMotion.isEnabled()) {
-            updateInMotion();
-        }
+        updateInMotion();
         return handled;
     }
 
