@@ -289,7 +289,7 @@ BASE_FEATURE(kSwitchToKeyMintOnTOverride,
 // requests.
 BASE_FEATURE(kSyncInstallPriority,
              "ArcSyncInstallPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, touch screen emulation for compatibility is enabled on specific
 // apps.
