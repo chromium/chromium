@@ -206,6 +206,13 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
     this.isUpdateMandatory = visible;
   }
 
+  onBeforeHide(): void {
+    const animation = this.shadowRoot?.querySelector('#checkingAnimation');
+    if (animation instanceof OobeCrLottie) {
+      animation.playing = false;
+    }
+  }
+
   /**
    * Decline to use cellular data.
    */
