@@ -61,8 +61,6 @@ struct SameSizeAsFontDescription {
 
 ASSERT_SIZE(FontDescription, SameSizeAsFontDescription);
 
-TypesettingFeatures FontDescription::default_typesetting_features_ = 0;
-
 bool FontDescription::use_subpixel_text_positioning_ = false;
 
 // static
@@ -105,7 +103,7 @@ FontDescription::FontDescription()
   fields_.synthetic_bold_ = false;
   fields_.synthetic_italic_ = false;
   fields_.subpixel_text_position_ = use_subpixel_text_positioning_;
-  fields_.typesetting_features_ = default_typesetting_features_;
+  fields_.typesetting_features_ = 0;
   fields_.variant_numeric_ = FontVariantNumeric().fields_as_unsigned_;
   fields_.subpixel_ascent_descent_ = false;
   fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
@@ -296,17 +294,8 @@ FontCacheKey FontDescription::CacheKey(
   return cache_key;
 }
 
-void FontDescription::SetDefaultTypesettingFeatures(
-    TypesettingFeatures typesetting_features) {
-  default_typesetting_features_ = typesetting_features;
-}
-
-TypesettingFeatures FontDescription::DefaultTypesettingFeatures() {
-  return default_typesetting_features_;
-}
-
 void FontDescription::UpdateTypesettingFeatures() {
-  fields_.typesetting_features_ = default_typesetting_features_;
+  fields_.typesetting_features_ = 0;
 
   switch (TextRendering()) {
     case kAutoTextRendering:

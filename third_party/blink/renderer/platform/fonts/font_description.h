@@ -467,9 +467,6 @@ class PLATFORM_EXPORT FontDescription {
     return GetHashCategory() == kHashDeletedValue;
   }
 
-  static void SetDefaultTypesettingFeatures(TypesettingFeatures);
-  static TypesettingFeatures DefaultTypesettingFeatures();
-
   unsigned StyleHashWithoutFamilyList() const;
   unsigned GetHash() const;
 
@@ -576,8 +573,6 @@ class PLATFORM_EXPORT FontDescription {
     BitFields fields_;
     FieldsAsUnsignedType fields_as_unsigned_;
   };
-
-  static TypesettingFeatures default_typesetting_features_;
 
   static bool use_subpixel_text_positioning_;
 };
