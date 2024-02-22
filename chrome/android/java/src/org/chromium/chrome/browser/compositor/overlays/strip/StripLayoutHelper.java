@@ -2250,7 +2250,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 mStripTabs, mMultiStepTabCloseAnimRunning, mTabCreating, mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
-        mStripStacker.performOcclusionPass(mStripTabs, mWidth);
+        mStripStacker.performOcclusionPass(mStripTabs, 0, mWidth);
 
         // 5. Create render list.
         createRenderList();

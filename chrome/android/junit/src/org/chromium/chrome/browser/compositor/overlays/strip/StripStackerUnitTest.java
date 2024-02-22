@@ -34,7 +34,7 @@ public class StripStackerUnitTest {
     private static final float BUTTON_WIDTH = 10;
     private static final float TOUCH_OFFSET = 5;
 
-    private StripStacker mTarget = new DummyStacker();
+    private StripStacker mTarget = new TestStacker();
 
     @Mock private StripLayoutTab mTab1;
     @Mock private StripLayoutTab mTab2;
@@ -106,7 +106,7 @@ public class StripStackerUnitTest {
         assertThat("New Tab button offset does not match", result, is(expected_res));
     }
 
-    class DummyStacker extends StripStacker {
+    static class TestStacker extends StripStacker {
         @Override
         public void setTabOffsets(
                 StripLayoutTab[] indexOrderedTabs,
@@ -115,6 +115,7 @@ public class StripStackerUnitTest {
                 float cachedTabWidth) {}
 
         @Override
-        public void performOcclusionPass(StripLayoutTab[] indexOrderedTabs, float stripWidth) {}
+        public void performOcclusionPass(
+                StripLayoutTab[] indexOrderedTabs, float xOffset, float visibleWidth) {}
     }
 }

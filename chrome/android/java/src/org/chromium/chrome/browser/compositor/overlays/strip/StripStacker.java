@@ -159,8 +159,11 @@ public abstract class StripStacker {
     /**
      * Performs an occlusion pass, setting the visibility on tabs. This is relegated to this
      * interface because the implementing class knows the proper visual order to optimize this pass.
+     *
      * @param indexOrderedTabs A list of tabs ordered by index.
-     * @param stripWidth The width of the tab strip.
+     * @param xOffset The xOffset for the start of the strip.
+     * @param visibleWidth The width of the visible space on the tab strip.
      */
-    public abstract void performOcclusionPass(StripLayoutTab[] indexOrderedTabs, float stripWidth);
+    public abstract void performOcclusionPass(
+            StripLayoutTab[] indexOrderedTabs, float xOffset, float visibleWidth);
 }
