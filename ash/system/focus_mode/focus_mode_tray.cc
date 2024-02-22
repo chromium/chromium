@@ -193,6 +193,10 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
             // `kProgressComplete` is only returned by an ending moment, so that
             // we can know when the pulse animation is done.
             if (controller->in_ending_moment()) {
+              if (!view->bounce_in_animation_finished_) {
+                return ProgressIndicator::kForcedShow;
+              }
+
               bool is_animating = false;
               if (auto* progress_ring_animation =
                       view->progress_indicator_->animation_registry()
@@ -374,6 +378,20 @@ void FocusModeTray::OnThemeChanged() {
   UpdateTrayIcon();
 }
 
+void FocusModeTray::OnAnimationEnded() {
+  TrayBackgroundView::OnAnimationEnded();
+
+  // The bounce-in animation can happen on a session start or on an ending
+  // moment start. Only for the bounce-in animation during the ending moment, we
+  // will set `bounce_in_animation_finished_` to tell the progress callback the
+  // animation was ended.
+  if (!visible_preferred() || !FocusModeController::Get()->in_ending_moment()) {
+    return;
+  }
+
+  bounce_in_animation_finished_ = true;
+}
+
 void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
   UpdateProgressRing();
   show_progress_ring_after_animation_ = false;
@@ -389,6 +407,9 @@ void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
 
   if (bubble_) {
     UpdateBubbleViews(session_snapshot_.value());
+  } else if (session_snapshot_->state == FocusModeSession::State::kEnding) {
+    bounce_in_animation_finished_ = false;
+    BounceInAnimation();
   }
 }
 

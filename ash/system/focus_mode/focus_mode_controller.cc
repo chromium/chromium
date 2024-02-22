@@ -415,6 +415,7 @@ void FocusModeController::OnTimerTick() {
                      &FocusModeController::ResetFocusSession,
                      base::TimeTicks::Now());
         MaybeUpdateDndNotification();
+        // TODO(b/325346740): Show nudge after tray bounce-in animation.
         ShowEndingMomentNudge();
       } else {
         current_session_->set_persistent_ending();

@@ -47,6 +47,7 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   void ShowBubble() override;
   void UpdateTrayItemColor(bool is_active) override;
   void OnThemeChanged() override;
+  void OnAnimationEnded() override;
 
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
@@ -129,6 +130,11 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // True to show the progress ring after the pulse animation of
   // `progress_indicator_`.
   bool show_progress_ring_after_animation_ = false;
+
+  // True when the bounce in animation of the tray is done during the ending
+  // moment; it will be reset to false when starting or ending a focus session,
+  // or extending a focus session during the ending moment.
+  bool bounce_in_animation_finished_ = false;
 
   base::WeakPtrFactory<FocusModeTray> weak_ptr_factory_{this};
 };

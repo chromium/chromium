@@ -18,7 +18,7 @@ namespace focus_mode_util {
 
 constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
-constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(6);
+constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(9);
 
 // The amount of time to extend the focus session duration by during a currently
 // active focus session.
