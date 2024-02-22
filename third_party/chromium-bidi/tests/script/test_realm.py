@@ -149,6 +149,9 @@ async def test_realm_realmDestroyed_sandbox(websocket, context_id):
     } == response
 
 
+# This test is flaky, as it take some time before the `script.realmDestroyed`
+# event. Increase the timeout to avoid flakiness.
+@pytest.mark.timeout(30)
 @pytest.mark.asyncio
 async def test_realm_dedicated_worker(websocket, context_id, html):
     worker_url = 'data:application/javascript,while(true){}'
