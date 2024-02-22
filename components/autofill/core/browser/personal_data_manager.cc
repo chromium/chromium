@@ -50,7 +50,6 @@
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
-#include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
@@ -242,7 +241,8 @@ void PersonalDataManager::Init(
   }
   if (!payments_data_manager_) {
     payments_data_manager_ = std::make_unique<PaymentsDataManager>(
-        profile_database, account_database, image_fetcher, this);
+        profile_database, account_database, image_fetcher,
+        std::move(shared_storage_handler), this);
   }
 
   SetPrefService(pref_service);
@@ -264,8 +264,6 @@ void PersonalDataManager::Init(
     identity_manager_->AddObserver(this);
 
   SetSyncService(sync_service);
-
-  shared_storage_handler_ = std::move(shared_storage_handler);
 
   AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
   AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
@@ -297,7 +295,6 @@ void PersonalDataManager::Init(
   address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
       *this, sync_service, CHECK_DEREF(pref_service),
       alternative_state_name_map_updater_.get());
-  payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(this);
 
   // Potentially import profiles for testing. `Init()` is called whenever the
   // corresponding Chrome profile is created. This is either during start-up or
@@ -323,7 +320,6 @@ void PersonalDataManager::Shutdown() {
   // Make sure that the `address_data_cleaner_` sync observer gets destroyed
   // before the SyncService's `Shutdown()`.
   address_data_cleaner_.reset();
-  payments_data_cleaner_.reset();
 }
 
 void PersonalDataManager::OnURLsDeleted(
@@ -1907,20 +1903,6 @@ std::string PersonalDataManager::SaveImportedCreditCard(
   return guid;
 }
 
-void PersonalDataManager::LogStoredPaymentsDataMetrics() const {
-  AutofillMetrics::LogStoredCreditCardMetrics(
-      payments_data_manager_->local_credit_cards_,
-      payments_data_manager_->server_credit_cards_,
-      GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
-  autofill_metrics::LogStoredIbanMetrics(payments_data_manager_->local_ibans_,
-                                         payments_data_manager_->server_ibans_,
-                                         kDisusedDataModelTimeDelta);
-  autofill_metrics::LogStoredOfferMetrics(
-      payments_data_manager_->autofill_offer_data_);
-  autofill_metrics::LogStoredVirtualCardUsageCount(
-      payments_data_manager_->autofill_virtual_card_usage_data_.size());
-}
-
 void PersonalDataManager::EnableAutofillPrefChanged() {
   default_country_code_.clear();
 
@@ -2036,21 +2018,6 @@ void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {}
 scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {
   DCHECK(payments_data_manager_->database_helper_);
   return payments_data_manager_->GetLocalDatabase();
-}
-
-void PersonalDataManager::OnServerCreditCardsRefreshed() {
-  payments_data_manager_->ProcessCardArtUrlChanges();
-  if (shared_storage_handler_) {
-    shared_storage_handler_->OnServerCardDataRefreshed(
-        payments_data_manager_->server_credit_cards_);
-  }
-}
-
-size_t PersonalDataManager::GetServerCardWithArtImageCount() const {
-  return base::ranges::count_if(
-      payments_data_manager_->server_credit_cards_.begin(),
-      payments_data_manager_->server_credit_cards_.end(),
-      [](const auto& card) { return card->card_art_url().is_valid(); });
 }
 
 }  // namespace autofill

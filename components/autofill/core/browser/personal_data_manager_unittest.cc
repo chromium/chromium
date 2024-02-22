@@ -2292,8 +2292,6 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
   base::HistogramTester histogram_tester;
   ResetPersonalDataManager();
 
-  EXPECT_EQ(personal_data_->GetServerCardWithArtImageCount(), 1U);
-
   ASSERT_EQ(4U, personal_data_->GetCreditCards().size());
 
   // Validate the basic count metrics for both local and server cards. Deep

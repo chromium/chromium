@@ -37,7 +37,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
@@ -735,7 +734,6 @@ class PersonalDataManager : public KeyedService,
  protected:
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddAndGetCreditCardArtImage);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
 
   friend class PaymentsDataCleaner;
   // TODO(b/322170538): The `PaymentsDataManager` shouldn't depend on the PDM
@@ -784,10 +782,6 @@ class PersonalDataManager : public KeyedService,
   // Loads the credit card benefits from the web database.
   virtual void LoadCreditCardBenefits();
 
-  // The first time this is called, logs a UMA metrics about the user's credit
-  // card, offer and IBAN.
-  void LogStoredPaymentsDataMetrics() const;
-
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
   virtual bool ShouldSuggestServerPaymentMethods() const;
@@ -835,13 +829,6 @@ class PersonalDataManager : public KeyedService,
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
 
-  // Invoked when server credit card cache is refreshed.
-  void OnServerCreditCardsRefreshed();
-
-  // Returns the number of server credit cards that have a valid credit card art
-  // image.
-  size_t GetServerCardWithArtImageCount() const;
-
   template <typename T>
   std::optional<T> GetCreditCardBenefitByInstrumentId(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
@@ -866,9 +853,6 @@ class PersonalDataManager : public KeyedService,
   // necessary to ensure it always has a value.
   mutable std::string experiment_country_code_;
 
-  // The shared storage handler this instance uses.
-  std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler_;
-
   // The PrefService that this instance uses. Must outlive this instance.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
@@ -880,11 +864,10 @@ class PersonalDataManager : public KeyedService,
   // Pref registrar for managing the change observers.
   PrefChangeRegistrar pref_registrar_;
 
-  // The *DataCleaner classes are used to apply various address and payment
-  // cleanups (e.g. deduplication, disused data removal) at browser startup or
-  // when the sync starts.
+  // The AddressDataCleaner is used to apply various cleanups (e.g.
+  // deduplication, disused address removal) at browser startup or when the sync
+  // starts.
   std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
-  std::unique_ptr<PaymentsDataCleaner> payments_data_cleaner_;
 
   // The identity manager that this instance uses. Must outlive this instance.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

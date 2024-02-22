@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -35,10 +36,12 @@ class TestPersonalDataManager;
 class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
                             public WebDataServiceConsumer {
  public:
-  PaymentsDataManager(scoped_refptr<AutofillWebDataService> profile_database,
-                      scoped_refptr<AutofillWebDataService> account_database,
-                      AutofillImageFetcherBase* image_fetcher,
-                      PersonalDataManager* pdm);
+  PaymentsDataManager(
+      scoped_refptr<AutofillWebDataService> profile_database,
+      scoped_refptr<AutofillWebDataService> account_database,
+      AutofillImageFetcherBase* image_fetcher,
+      std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
+      PersonalDataManager* pdm);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
   PaymentsDataManager& operator=(const PaymentsDataManager&) = delete;
@@ -121,6 +124,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Asks `image_fetcher_` to fetch images.
   void FetchImagesForURLs(base::span<const GURL> updated_urls) const;
 
+  // The first time this is called, logs a UMA metrics about the user's credit
+  // card, offer and IBAN.
+  void LogStoredPaymentsDataMetrics() const;
+
   // Stores the PaymentsCustomerData obtained from the database.
   std::unique_ptr<PaymentsCustomerData> payments_customer_data_;
 
@@ -169,6 +176,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // image based on the url.
   void ProcessCardArtUrlChanges();
 
+  // Invoked when server credit card cache is refreshed.
+  void OnServerCreditCardsRefreshed();
+
+  // Returns the number of server credit cards that have a valid credit card art
+  // image.
+  size_t GetServerCardWithArtImageCount() const;
+
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;
 
@@ -191,6 +205,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // The image fetcher to fetch customized images for Autofill data.
   raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
+
+  // The shared storage handler this instance uses.
+  std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler_;
 
   base::WeakPtrFactory<PaymentsDataManager> weak_factory_{this};
 };

@@ -23,7 +23,7 @@ TestPersonalDataManager::TestPersonalDataManager()
                           base::Unretained(this)));
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       /*profile_database=*/nullptr, /*account_database=*/nullptr,
-      /*image_fetcher=*/nullptr, this);
+      /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr, this);
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;

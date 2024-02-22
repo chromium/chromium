@@ -7,7 +7,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
+#include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -150,8 +155,11 @@ PaymentsDataManager::PaymentsDataManager(
     scoped_refptr<AutofillWebDataService> profile_database,
     scoped_refptr<AutofillWebDataService> account_database,
     AutofillImageFetcherBase* image_fetcher,
+    std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     PersonalDataManager* pdm)
-    : pdm_(pdm), image_fetcher_(image_fetcher) {
+    : pdm_(pdm),
+      image_fetcher_(image_fetcher),
+      shared_storage_handler_(std::move(shared_storage_handler)) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
 }
@@ -215,7 +223,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
           ReceiveLoadedDbValues(h, result.get(),
                                 &pending_server_creditcards_query_,
                                 &server_credit_cards_);
-          pdm_->OnServerCreditCardsRefreshed();
+          OnServerCreditCardsRefreshed();
         }
         break;
       case AUTOFILL_CLOUDTOKEN_RESULT:
@@ -285,8 +293,8 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
 
   if (!is_payments_data_loaded_) {
     is_payments_data_loaded_ = true;
-    pdm_->LogStoredPaymentsDataMetrics();
-    pdm_->payments_data_cleaner_->CleanupPaymentsData();
+    LogStoredPaymentsDataMetrics();
+    PaymentsDataCleaner(pdm_).CleanupPaymentsData();
   }
 
   pdm_->NotifyPersonalDataObserver();
@@ -501,6 +509,17 @@ void PaymentsDataManager::FetchImagesForURLs(
                                    weak_factory_.GetMutableWeakPtr()));
 }
 
+void PaymentsDataManager::LogStoredPaymentsDataMetrics() const {
+  AutofillMetrics::LogStoredCreditCardMetrics(
+      local_credit_cards_, server_credit_cards_,
+      GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
+  autofill_metrics::LogStoredIbanMetrics(local_ibans_, server_ibans_,
+                                         kDisusedDataModelTimeDelta);
+  autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
+  autofill_metrics::LogStoredVirtualCardUsageCount(
+      autofill_virtual_card_usage_data_.size());
+}
+
 bool PaymentsDataManager::HasPendingPaymentQueries() const {
   return pending_creditcards_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
@@ -537,6 +556,19 @@ void PaymentsDataManager::ProcessCardArtUrlChanges() {
   if (!updated_urls.empty()) {
     pdm_->FetchImagesForURLs(updated_urls);
   }
+}
+
+void PaymentsDataManager::OnServerCreditCardsRefreshed() {
+  ProcessCardArtUrlChanges();
+  if (shared_storage_handler_) {
+    shared_storage_handler_->OnServerCardDataRefreshed(server_credit_cards_);
+  }
+}
+
+size_t PaymentsDataManager::GetServerCardWithArtImageCount() const {
+  return base::ranges::count_if(
+      server_credit_cards_.begin(), server_credit_cards_.end(),
+      [](const auto& card) { return card->card_art_url().is_valid(); });
 }
 
 }  // namespace autofill
