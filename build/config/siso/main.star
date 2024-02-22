@@ -54,6 +54,7 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/chrome/test/browser_tests/full_restore_app_launch_handler_browsertest.o",
         "./obj/chrome/test/browser_tests/remote_apps_manager_browsertest.o",
         "./obj/chrome/test/browser_tests/safe_browsing_blocking_page_test.o",
+        "./obj/chrome/test/browser_tests/scalable_iph_browsertest.o",
         "./obj/chrome/test/browser_tests/spoken_feedback_browsertest.o",
         "./obj/chrome/test/interactive_ui_tests/local_card_migration_uitest.o",
         "./obj/chrome/test/interactive_ui_tests/system_web_app_interactive_uitest.o",
