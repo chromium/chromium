@@ -57,7 +57,7 @@ constexpr char kFakeGifsResponse[] = R"json(
               339
             ],
             "url": "https://tenor.com/view/media.tenor.com/full_url0",
-            "preview": "https://tenor.com/view/media.tenor.com/full_image_url0"
+            "preview": ""
           },
           "tinygif": {
             "dims": [
@@ -65,7 +65,15 @@ constexpr char kFakeGifsResponse[] = R"json(
               150
             ],
             "url": "https://tenor.com/view/media.tenor.com/preview_url0",
-            "preview": "https://tenor.com/view/media.tenor.com/preview_image_url0"
+            "preview": ""
+          },
+          "tinygifpreview": {
+            "dims": [
+              220,
+              150
+            ],
+            "url": "https://tenor.com/view/media.tenor.com/preview_image_url0",
+            "preview": ""
           }
         }
       },
@@ -79,7 +87,7 @@ constexpr char kFakeGifsResponse[] = R"json(
               498
             ],
             "url": "https://tenor.com/view/media.tenor.com/full_url1",
-            "preview": "https://tenor.com/view/media.tenor.com/full_image_url1"
+            "preview": ""
           },
           "tinygif": {
             "dims": [
@@ -87,7 +95,15 @@ constexpr char kFakeGifsResponse[] = R"json(
               220
             ],
             "url": "https://tenor.com/view/media.tenor.com/preview_url1",
-            "preview": "https://tenor.com/view/media.tenor.com/preview_image_url1"
+            "preview": ""
+          },
+          "tinygifpreview": {
+            "dims": [
+              220,
+              220
+            ],
+            "url": "https://tenor.com/view/media.tenor.com/preview_image_url1",
+            "preview": ""
           }
         }
       }

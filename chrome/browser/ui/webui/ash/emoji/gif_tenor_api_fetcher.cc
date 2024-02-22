@@ -46,7 +46,7 @@ constexpr char kArRangeName[] = "ar_range";
 constexpr char kArRangeValue[] = "wide";
 
 constexpr char kMediaFilterName[] = "media_filter";
-constexpr char kMediaFilterValue[] = "gif,tinygif";
+constexpr char kMediaFilterValue[] = "gif,tinygif,tinygifpreview";
 
 constexpr char kClientKeyName[] = "client_key";
 constexpr char kClientKeyValue[] = "chromeos";
@@ -190,20 +190,27 @@ std::vector<emoji_picker::mojom::GifResponsePtr> ParseGifs(
       continue;
     }
 
-    const std::string* preview_image = preview_gif->FindString("preview");
-    if (!preview_image) {
+    const base::Value::Dict* tiny_gif_preview =
+        media_formats->FindDict("tinygifpreview");
+    if (!tiny_gif_preview) {
       continue;
     }
 
-    const GURL preview_image_gurl = GURL(preview_image->c_str());
-    if (!preview_gurl.is_valid()) {
+    const std::string* tiny_gif_preview_url =
+        tiny_gif_preview->FindString("url");
+    if (!tiny_gif_preview_url) {
+      continue;
+    }
+
+    const GURL tiny_gif_preview_gurl = GURL(*tiny_gif_preview_url);
+    if (!tiny_gif_preview_gurl.is_valid()) {
       continue;
     }
 
     gifs.push_back(emoji_picker::mojom::GifResponse::New(
         *id, *content_description,
         emoji_picker::mojom::GifUrls::New(full_gurl, preview_gurl,
-                                          preview_image_gurl),
+                                          tiny_gif_preview_gurl),
         gfx::Size(width.value(), height.value())));
   }
   return gifs;
