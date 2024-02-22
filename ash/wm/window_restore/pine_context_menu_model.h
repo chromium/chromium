@@ -15,6 +15,9 @@ namespace ash {
 class ASH_EXPORT PineContextMenuModel : public ui::SimpleMenuModel,
                                         public ui::SimpleMenuModel::Delegate {
  public:
+  // Used to identify the `views::Label` appended to the menu.
+  static constexpr int kDescriptionId = -1;
+
   PineContextMenuModel();
   PineContextMenuModel(const PineContextMenuModel&) = delete;
   PineContextMenuModel& operator=(const PineContextMenuModel&) = delete;

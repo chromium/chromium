@@ -15,12 +15,14 @@ namespace ash {
 
 PineContextMenuModel::PineContextMenuModel() : ui::SimpleMenuModel(this) {
   const int group = 0;
+  AddTitle(u"Continue where you left off");
   AddRadioItem(static_cast<int>(full_restore::RestoreOption::kAskEveryTime),
                u"Ask every time", group);
   AddRadioItem(static_cast<int>(full_restore::RestoreOption::kAlways),
                u"Always restore", group);
   AddRadioItem(static_cast<int>(full_restore::RestoreOption::kDoNotRestore),
                u"Off", group);
+  AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 }
 
 PineContextMenuModel::~PineContextMenuModel() = default;

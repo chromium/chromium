@@ -92,6 +92,8 @@ constexpr int kContentsTitleFontSize = 22;
 constexpr int kContentsDescriptionFontSize = 14;
 constexpr int kLeftContentsChildSpacing = 20;
 constexpr int kSettingsIconSize = 24;
+constexpr int kContextMenuMaxWidth = 285;
+constexpr gfx::Insets kContextMenuLabelInsets = gfx::Insets::VH(0, 16);
 
 // Represents an app that will be shown in the pine widget. Contains the app
 // title and app icon. Optionally contains a couple favicons depending on the
@@ -567,6 +569,22 @@ void PineContentsView::OnSettingsButtonPressed() {
   const int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                         views::MenuRunner::CONTEXT_MENU |
                         views::MenuRunner::FIXED_ANCHOR;
+
+  // Add a custom view to the bottom of the menu to inform users that changes
+  // will not take place until the next time they sign in.
+  views::MenuItemView* container =
+      root_menu_item->AppendMenuItem(PineContextMenuModel::kDescriptionId);
+  std::unique_ptr<views::Label> context_label = std::make_unique<views::Label>(
+      u"Change will be applied next time when you sign in. You can also change "
+      u"settings in Settings > System preferences > On startup.");
+  context_label->SetMultiLine(true);
+  context_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  context_label->SizeToFit(kContextMenuMaxWidth);
+  context_label->SetBorder(views::CreateEmptyBorder(kContextMenuLabelInsets));
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                        *context_label);
+  context_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  container->AddChildView(std::move(context_label));
 
   menu_runner_ =
       std::make_unique<views::MenuRunner>(std::move(root_menu_item), run_types);
