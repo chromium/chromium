@@ -45,6 +45,7 @@
 #include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/input_disposition_handler.h"
 #include "content/common/input/input_router_impl.h"
+#include "content/common/input/render_input_router.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_controller.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -102,6 +103,7 @@ class FlingSchedulerBase;
 class FrameTree;
 class InputRouter;
 class MockRenderWidgetHost;
+class MockRenderWidgetHostImpl;
 class PeakGpuMemoryTracker;
 class RenderWidgetHostOwnerDelegate;
 class SiteInstanceGroup;
@@ -676,7 +678,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Don't check whether we expected a resize ack during web tests.
   static void DisableResizeAckCheckForTesting();
 
-  InputRouter* input_router() { return input_router_.get(); }
+  InputRouter* input_router();
 
   void SetForceEnableZoom(bool);
 
@@ -1016,6 +1018,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   bool IsPointerLocked() const;
 
+  std::unique_ptr<FlingSchedulerBase> MakeFlingScheduler();
+
+  virtual RenderInputRouter* GetRenderInputRouter();  // virtual for testing.
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FullscreenDetectionTest,
                            EncompassingDivNotFullscreen);
@@ -1058,6 +1064,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostInputEventRouterTest,
                            EnsureRendererDestroyedHandlesUnAckedTouchEvents);
   friend class MockRenderWidgetHost;
+  friend class MockRenderWidgetHostImpl;
   friend class OverscrollNavigationOverlayTest;
   friend class RenderViewHostTester;
   friend class TestRenderViewHost;
@@ -1193,6 +1200,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // getting an ack from the renderer.
   void OnInputEventAckTimeout();
 
+  void SetupRenderInputRouter();
   void SetupInputRouter();
 
   // Start intercepting system keyboard events.
@@ -1442,13 +1450,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // awkward.
   std::unique_ptr<SyntheticGestureController> synthetic_gesture_controller_;
 
-  // Must be declared before `input_router_`. The latter is constructed by
-  // borrowing a reference to this object, so it must be deleted first.
-  std::unique_ptr<FlingSchedulerBase> fling_scheduler_;
-
-  // Receives and handles all input events.
-  // Depends on `fling_scheduler` above, so it must be declared last.
-  std::unique_ptr<InputRouter> input_router_;
+  // Receives and handles input events.
+  std::unique_ptr<RenderInputRouter> render_input_router_;
 
   base::OneShotTimer input_event_ack_timeout_;
 
@@ -1496,16 +1499,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue_;
 
-  mojo::Remote<blink::mojom::WidgetInputHandler> widget_input_handler_;
-  mojo::AssociatedRemote<blink::mojom::FrameWidgetInputHandler>
-      frame_widget_input_handler_;
   mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;
 
   std::optional<uint16_t> screen_orientation_angle_for_testing_;
   std::optional<display::mojom::ScreenOrientation>
       screen_orientation_type_for_testing_;
-
-  bool force_enable_zoom_ = false;
 
   RenderFrameMetadataProviderImpl render_frame_metadata_provider_;
   bool surface_id_allocation_suppressed_ = false;

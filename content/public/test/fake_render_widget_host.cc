@@ -132,7 +132,10 @@ void FakeRenderWidgetHost::AutoscrollEnd() {}
 blink::mojom::WidgetInputHandler*
 FakeRenderWidgetHost::GetWidgetInputHandler() {
   if (!widget_input_handler_) {
-    widget_remote_->GetWidgetInputHandler(
+    widget_remote_->SetupRenderInputRouterConnections(
+        client_remote_.BindNewPipeAndPassReceiver());
+
+    client_remote_->GetWidgetInputHandler(
         widget_input_handler_.BindNewPipeAndPassReceiver(),
         widget_input_handler_host_.BindNewPipeAndPassRemote());
   }

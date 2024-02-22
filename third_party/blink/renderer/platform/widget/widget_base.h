@@ -72,8 +72,10 @@ class WidgetScheduler;
 //
 // Co-orindates handled in this class can be in the "blink coordinate space"
 // which is scaled DSF baked in.
-class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
-                                   public LayerTreeViewDelegate {
+class PLATFORM_EXPORT WidgetBase
+    : public mojom::blink::Widget,
+      public LayerTreeViewDelegate,
+      public mojom::blink::RenderInputRouterClient {
  public:
   WidgetBase(
       WidgetBaseClient* client,
@@ -130,11 +132,13 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       base::OnceCallback<void(gfx::CALayerResult)> callback);
 #endif
 
-  // mojom::blink::Widget overrides:
-  void ForceRedraw(mojom::blink::Widget::ForceRedrawCallback callback) override;
+  // mojom::blink::RenderInputRouterClient overrides;
   void GetWidgetInputHandler(
       mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
       mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) override;
+
+  // mojom::blink::Widget overrides:
+  void ForceRedraw(mojom::blink::Widget::ForceRedrawCallback callback) override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
   void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
@@ -148,6 +152,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelSuccessfulPresentationTimeRequest() override;
+  void SetupRenderInputRouterConnections(
+      mojo::PendingReceiver<mojom::blink::RenderInputRouterClient> request)
+      override;
 
   // LayerTreeViewDelegate overrides:
   // Applies viewport related properties during a commit from the compositor
@@ -461,6 +468,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_;
   mojo::AssociatedReceiver<mojom::blink::Widget> receiver_;
 
+  mojo::Receiver<mojom::blink::RenderInputRouterClient> input_receiver_{this};
+
   std::unique_ptr<LayerTreeView> layer_tree_view_;
   scoped_refptr<WidgetInputHandlerManager> widget_input_handler_manager_;
   scoped_refptr<scheduler::WidgetScheduler> widget_scheduler_;
@@ -560,6 +569,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Indicates that we shouldn't bother generated paint events.
   bool is_hidden_;
+
+  // The task_runner on which Widget mojo interfaces are bound.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Delayed callback to ensure we have only one delayed ScheduleAnimation()
   // call going at a time.

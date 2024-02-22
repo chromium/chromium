@@ -41,6 +41,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "content/test/mock_render_input_router.h"
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/mock_widget_input_handler.h"
 #include "content/test/stub_render_widget_host_owner_delegate.h"
@@ -322,79 +323,6 @@ id MockSmartMagnifyEvent() {
   return event;
 }
 
-class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
- public:
-  MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
-                           base::SafeRef<SiteInstanceGroup> site_instance_group,
-                           int32_t routing_id,
-                           bool for_frame_widget)
-      : RenderWidgetHostImpl(
-            /*frame_tree=*/nullptr,
-            /*self_owned=*/false,
-            DefaultFrameSinkId(*site_instance_group, routing_id),
-            delegate,
-            std::move(site_instance_group),
-            routing_id,
-            /*hidden=*/false,
-            /*renderer_initiated_creation=*/false,
-            std::make_unique<FrameTokenMessageQueue>()) {
-    mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
-    BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-                         TestRenderWidgetHost::CreateStubWidgetRemote());
-    if (for_frame_widget) {
-      mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-      BindFrameWidgetInterfaces(
-          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-          TestRenderWidgetHost::CreateStubFrameWidgetRemote());
-    }
-    RendererWidgetCreated(for_frame_widget);
-
-    ON_CALL(*this, Focus())
-        .WillByDefault(
-            testing::Invoke(this, &MockRenderWidgetHostImpl::FocusImpl));
-    ON_CALL(*this, Blur())
-        .WillByDefault(
-            testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
-  }
-
-  MockRenderWidgetHostImpl(const MockRenderWidgetHostImpl&) = delete;
-  MockRenderWidgetHostImpl& operator=(const MockRenderWidgetHostImpl&) = delete;
-
-  ~MockRenderWidgetHostImpl() override = default;
-
-  // Extracts |latency_info| and stores it in |last_wheel_event_latency_info_|.
-  void ForwardWheelEventWithLatencyInfo(
-      const blink::WebMouseWheelEvent& wheel_event,
-      const ui::LatencyInfo& ui_latency) override {
-    RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(wheel_event,
-                                                           ui_latency);
-    last_wheel_event_latency_info_ = ui::LatencyInfo(ui_latency);
-  }
-
-  MOCK_METHOD0(Focus, void());
-  MOCK_METHOD0(Blur, void());
-
-  MockWidgetInputHandler* input_handler() { return &input_handler_; }
-  MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
-    return input_handler_.GetAndResetDispatchedMessages();
-  }
-
-  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override {
-    return &input_handler_;
-  }
-
-  const ui::LatencyInfo& LastWheelEventLatencyInfo() const {
-    return last_wheel_event_latency_info_;
-  }
-
- private:
-  void FocusImpl() { RenderWidgetHostImpl::Focus(); }
-  void BlurImpl() { RenderWidgetHostImpl::Blur(); }
-
-  ui::LatencyInfo last_wheel_event_latency_info_;
-  MockWidgetInputHandler input_handler_;
-};
-
 // Generates the |length| of composition rectangle vector and save them to
 // |output|. It starts from |origin| and each rectangle contains |unit_size|.
 void GenerateCompositionRectArray(const gfx::Point& origin,
@@ -483,6 +411,91 @@ class MockRenderWidgetHostOwnerDelegate
 };
 
 }  // namespace
+
+class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
+ public:
+  MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
+                           base::SafeRef<SiteInstanceGroup> site_instance_group,
+                           int32_t routing_id,
+                           bool for_frame_widget)
+      : RenderWidgetHostImpl(
+            /*frame_tree=*/nullptr,
+            /*self_owned=*/false,
+            DefaultFrameSinkId(*site_instance_group, routing_id),
+            delegate,
+            std::move(site_instance_group),
+            routing_id,
+            /*hidden=*/false,
+            /*renderer_initiated_creation=*/false,
+            std::make_unique<FrameTokenMessageQueue>()) {
+    SetupMockRenderInputRouter();
+
+    mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
+    BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+                         TestRenderWidgetHost::CreateStubWidgetRemote());
+    if (for_frame_widget) {
+      mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+      BindFrameWidgetInterfaces(
+          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+          TestRenderWidgetHost::CreateStubFrameWidgetRemote());
+    }
+    RendererWidgetCreated(for_frame_widget);
+
+    ON_CALL(*this, Focus())
+        .WillByDefault(
+            testing::Invoke(this, &MockRenderWidgetHostImpl::FocusImpl));
+    ON_CALL(*this, Blur())
+        .WillByDefault(
+            testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
+  }
+
+  MockRenderWidgetHostImpl(const MockRenderWidgetHostImpl&) = delete;
+  MockRenderWidgetHostImpl& operator=(const MockRenderWidgetHostImpl&) = delete;
+
+  ~MockRenderWidgetHostImpl() override = default;
+
+  // Extracts |latency_info| and stores it in |last_wheel_event_latency_info_|.
+  void ForwardWheelEventWithLatencyInfo(
+      const blink::WebMouseWheelEvent& wheel_event,
+      const ui::LatencyInfo& ui_latency) override {
+    RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(wheel_event,
+                                                           ui_latency);
+    last_wheel_event_latency_info_ = ui::LatencyInfo(ui_latency);
+  }
+
+  MOCK_METHOD0(Focus, void());
+  MOCK_METHOD0(Blur, void());
+
+  MockWidgetInputHandler* input_handler() {
+    return mock_render_input_router_->mock_widget_input_handler_.get();
+  }
+
+  MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
+    return input_handler()->GetAndResetDispatchedMessages();
+  }
+
+  RenderInputRouter* GetRenderInputRouter() override {
+    return mock_render_input_router_.get();
+  }
+
+  const ui::LatencyInfo& LastWheelEventLatencyInfo() const {
+    return last_wheel_event_latency_info_;
+  }
+
+ private:
+  void FocusImpl() { RenderWidgetHostImpl::Focus(); }
+  void BlurImpl() { RenderWidgetHostImpl::Blur(); }
+
+  void SetupMockRenderInputRouter() {
+    mock_render_input_router_ = std::make_unique<MockRenderInputRouter>(
+        this, this, MakeFlingScheduler(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    SetupInputRouter();
+  }
+
+  std::unique_ptr<MockRenderInputRouter> mock_render_input_router_;
+  ui::LatencyInfo last_wheel_event_latency_info_;
+};
 
 class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
  public:
