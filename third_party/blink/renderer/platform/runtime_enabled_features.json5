@@ -2048,8 +2048,10 @@
     {
       // http://crbug.com/1478969
       // https://github.com/whatwg/html/pull/9538
+      // https://chromestatus.com/feature/6560361081995264
+      // Enabled by default in M123, should be safe to remove in M127
       name: "HTMLUnsafeMethods",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ImplicitRootScroller",
