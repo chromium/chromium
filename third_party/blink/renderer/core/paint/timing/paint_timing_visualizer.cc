@@ -35,6 +35,14 @@ void CreateQuad(TracedValue* value, const char* name, const gfx::QuadF& quad) {
 
 }  // namespace
 
+PaintTimingVisualizer::PaintTimingVisualizer() {
+  trace_event::AddEnabledStateObserver(this);
+}
+
+PaintTimingVisualizer::~PaintTimingVisualizer() {
+  trace_event::RemoveEnabledStateObserver(this);
+}
+
 void PaintTimingVisualizer::RecordRects(const gfx::Rect& rect,
                                         std::unique_ptr<TracedValue>& value) {
   CreateQuad(value.get(), "rect", gfx::QuadF(gfx::RectF(rect)));
@@ -109,5 +117,11 @@ bool PaintTimingVisualizer::IsTracingEnabled() {
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("loading", &enabled);
   return enabled;
 }
+
+void PaintTimingVisualizer::OnTraceLogEnabled() {
+  need_recording_viewport = true;
+}
+
+void PaintTimingVisualizer::OnTraceLogDisabled() {}
 
 }  // namespace blink
