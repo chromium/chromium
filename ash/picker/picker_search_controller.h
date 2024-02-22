@@ -11,7 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_search_results.h"
-#include "ash/picker/picker_search_debouncer.h"
+#include "ash/picker/search/picker_search_debouncer.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"

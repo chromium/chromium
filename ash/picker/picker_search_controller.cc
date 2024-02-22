@@ -14,6 +14,7 @@
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/search/picker_category_search.h"
 #include "ash/picker/search/picker_date_search.h"
+#include "ash/picker/search/picker_search_debouncer.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"

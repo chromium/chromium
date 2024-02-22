@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PICKER_PICKER_SEARCH_DEBOUNCER_H_
-#define ASH_PICKER_PICKER_SEARCH_DEBOUNCER_H_
+#ifndef ASH_PICKER_SEARCH_PICKER_SEARCH_DEBOUNCER_H_
+#define ASH_PICKER_SEARCH_PICKER_SEARCH_DEBOUNCER_H_
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
@@ -27,4 +27,4 @@ class ASH_EXPORT PickerSearchDebouncer {
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_PICKER_SEARCH_DEBOUNCER_H_
+#endif  // ASH_PICKER_SEARCH_PICKER_SEARCH_DEBOUNCER_H_
