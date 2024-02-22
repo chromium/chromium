@@ -479,6 +479,17 @@ void BM_Group_MaskEmptyOrDeleted(benchmark::State& state) {
 }
 BENCHMARK(BM_Group_MaskEmptyOrDeleted);
 
+void BM_Group_MaskNonFull(benchmark::State& state) {
+  std::array<ctrl_t, Group::kWidth> group;
+  Iota(group.begin(), group.end(), -4);
+  Group g{group.data()};
+  for (auto _ : state) {
+    ::benchmark::DoNotOptimize(g);
+    ::benchmark::DoNotOptimize(g.MaskNonFull());
+  }
+}
+BENCHMARK(BM_Group_MaskNonFull);
+
 void BM_Group_CountLeadingEmptyOrDeleted(benchmark::State& state) {
   std::array<ctrl_t, Group::kWidth> group;
   Iota(group.begin(), group.end(), -2);
@@ -500,6 +511,17 @@ void BM_Group_MatchFirstEmptyOrDeleted(benchmark::State& state) {
   }
 }
 BENCHMARK(BM_Group_MatchFirstEmptyOrDeleted);
+
+void BM_Group_MatchFirstNonFull(benchmark::State& state) {
+  std::array<ctrl_t, Group::kWidth> group;
+  Iota(group.begin(), group.end(), -2);
+  Group g{group.data()};
+  for (auto _ : state) {
+    ::benchmark::DoNotOptimize(g);
+    ::benchmark::DoNotOptimize(g.MaskNonFull().LowestBitSet());
+  }
+}
+BENCHMARK(BM_Group_MatchFirstNonFull);
 
 void BM_DropDeletes(benchmark::State& state) {
   constexpr size_t capacity = (1 << 20) - 1;

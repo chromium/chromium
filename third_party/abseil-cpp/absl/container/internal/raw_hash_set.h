@@ -657,6 +657,14 @@ struct GroupSse2Impl {
         static_cast<uint16_t>(_mm_movemask_epi8(ctrl) ^ 0xffff));
   }
 
+  // Returns a bitmask representing the positions of non full slots.
+  // Note: this includes: kEmpty, kDeleted, kSentinel.
+  // It is useful in contexts when kSentinel is not present.
+  auto MaskNonFull() const {
+    return BitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(ctrl)));
+  }
+
   // Returns a bitmask representing the positions of empty or deleted slots.
   NonIterableBitMask<uint16_t, kWidth> MaskEmptyOrDeleted() const {
     auto special = _mm_set1_epi8(static_cast<char>(ctrl_t::kSentinel));
@@ -719,6 +727,18 @@ struct GroupAArch64Impl {
   auto MaskFull() const {
     uint64_t mask = vget_lane_u64(
         vreinterpret_u64_u8(vcge_s8(vreinterpret_s8_u8(ctrl),
+                                    vdup_n_s8(static_cast<int8_t>(0)))),
+        0);
+    return BitMask<uint64_t, kWidth, /*Shift=*/3,
+                   /*NullifyBitsOnIteration=*/true>(mask);
+  }
+
+  // Returns a bitmask representing the positions of non full slots.
+  // Note: this includes: kEmpty, kDeleted, kSentinel.
+  // It is useful in contexts when kSentinel is not present.
+  auto MaskNonFull() const {
+    uint64_t mask = vget_lane_u64(
+        vreinterpret_u64_u8(vclt_s8(vreinterpret_s8_u8(ctrl),
                                     vdup_n_s8(static_cast<int8_t>(0)))),
         0);
     return BitMask<uint64_t, kWidth, /*Shift=*/3,
@@ -795,6 +815,13 @@ struct GroupPortableImpl {
   // original and mirrored.
   BitMask<uint64_t, kWidth, 3> MaskFull() const {
     return BitMask<uint64_t, kWidth, 3>((ctrl ^ kMsbs8Bytes) & kMsbs8Bytes);
+  }
+
+  // Returns a bitmask representing the positions of non full slots.
+  // Note: this includes: kEmpty, kDeleted, kSentinel.
+  // It is useful in contexts when kSentinel is not present.
+  auto MaskNonFull() const {
+    return BitMask<uint64_t, kWidth, 3>(ctrl  & kMsbs8Bytes);
   }
 
   NonIterableBitMask<uint64_t, kWidth, 3> MaskEmptyOrDeleted() const {
@@ -2822,8 +2849,7 @@ class raw_hash_set {
   template <class K = key_type>
   const_iterator find(const key_arg<K>& key) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    prefetch_heap_block();
-    return find(key, hash_ref()(key));
+    return const_cast<raw_hash_set*>(this)->find(key);
   }
 
   template <class K = key_type>

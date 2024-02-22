@@ -307,6 +307,25 @@ TEST(Group, MaskFull) {
   }
 }
 
+TEST(Group, MaskNonFull) {
+  if (Group::kWidth == 16) {
+    ctrl_t group[] = {
+        ctrl_t::kEmpty, CtrlT(1),          ctrl_t::kDeleted,  CtrlT(3),
+        ctrl_t::kEmpty, CtrlT(5),          ctrl_t::kSentinel, CtrlT(7),
+        CtrlT(7),       CtrlT(5),          ctrl_t::kDeleted,  CtrlT(1),
+        CtrlT(1),       ctrl_t::kSentinel, ctrl_t::kEmpty,    CtrlT(1)};
+    EXPECT_THAT(Group{group}.MaskNonFull(),
+                ElementsAre(0, 2, 4, 6, 10, 13, 14));
+  } else if (Group::kWidth == 8) {
+    ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), ctrl_t::kEmpty,
+                      ctrl_t::kDeleted,  CtrlT(2), ctrl_t::kSentinel,
+                      ctrl_t::kSentinel, CtrlT(1)};
+    EXPECT_THAT(Group{group}.MaskNonFull(), ElementsAre(0, 2, 3, 5, 6));
+  } else {
+    FAIL() << "No test coverage for Group::kWidth==" << Group::kWidth;
+  }
+}
+
 TEST(Group, MaskEmptyOrDeleted) {
   if (Group::kWidth == 16) {
     ctrl_t group[] = {ctrl_t::kEmpty,   CtrlT(1), ctrl_t::kEmpty,    CtrlT(3),
