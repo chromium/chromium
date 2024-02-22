@@ -30,6 +30,7 @@ void BirchRecentTabsProvider::GetRecentTabs() {
       remote_sessions;
 
   if (!open_tabs || !open_tabs->GetAllForeignSessions(&remote_sessions)) {
+    Shell::Get()->birch_model()->SetRecentTabItems({});
     return;
   }
 
