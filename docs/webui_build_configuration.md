@@ -677,6 +677,7 @@ ts_tsconfig_base: See |tsconfig_base| in ts_library(). Optional parameter. If
                   '//chrome/test/data/webui/tsconfig_base.json' is used.
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Required parameter.
+ts_extra_deps: See |extra_deps| in ts_library(). Optional parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
 
 Grit (generate_grd()) related params:

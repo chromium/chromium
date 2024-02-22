@@ -66,6 +66,17 @@ preprocess_if_expr("preprocess_src") {
   ]
 }
 
+# Copy ts_definitions to the generated directory. Generating these
+# files in a target allows them to be properly tracked as dependencies
+# for TS targets that depend on them.
+copy("copy_definitions") {
+  sources = [
+    "authenticator.d.ts",
+    "saml_password_attributes.d.ts",
+  ]
+  outputs = [ "${target_gen_dir}/{{source_file_part}}" ]
+}
+
 grit("resources") {
   defines = chrome_grit_defines
 

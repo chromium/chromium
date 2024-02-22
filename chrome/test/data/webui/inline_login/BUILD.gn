@@ -14,7 +14,7 @@ build_webui_tests("build") {
 
   ts_path_mappings = [
     "chrome://chrome-signin/gaia_auth_host/*|" +
-        rebase_path("//chrome/browser/resources/gaia_auth_host/*",
+        rebase_path("$root_gen_dir/chrome/browser/resources/gaia_auth_host/*",
                     target_gen_dir),
     "chrome://chrome-signin/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/inline_login/tsc/*",
@@ -26,4 +26,7 @@ build_webui_tests("build") {
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  ts_extra_deps =
+      [ "//chrome/browser/resources/gaia_auth_host:copy_definitions" ]
 }

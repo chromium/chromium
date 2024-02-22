@@ -19,7 +19,7 @@ import node
 import node_modules
 
 from path_mappings import GetDepToPathMappings
-from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget, isInAshFolder, isDependencyAllowed, isMappingAllowed, getTargetPath
+from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget, isInAshFolder, isDependencyAllowed, isMappingAllowed, getTargetPath, validateMapping
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
@@ -194,6 +194,11 @@ def main(argv):
     for m in args.path_mappings:
       mapping = m.split('|')
       mapping_path = os.path.relpath(mapping[1], args.root_src_dir)
+      assert validateMapping(mapping_path, mapping[0], args.root_gen_dir,
+                             args.root_src_dir, args.platform == 'ios'), \
+          f'{mapping_path} is not in root_gen_dir. |path_mappings| should ' \
+          'only map to generated directories, so that a corresponding target ' \
+          f'can be added in in |deps|.'
       assert isMappingAllowed(is_ash_target, target_path, mapping_path), \
           f'Cannot use mapping to Ash-specific folder {mapping_path} from ' \
           f'non-Ash target {target_path}'

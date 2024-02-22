@@ -299,3 +299,43 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
 
   return False, f'Error: root_dir ({root_dir}) should be within {gen_dir} ' + \
       f'or {target_path_src}.'
+
+
+# Note: This validation method is added to prevent remote execution build
+# issues that result from mapped files not being added to |inputs| for gn. To
+# ensure gn is able to correctly track target dependencies as required for such
+# builds, we require all mappings to point to generated directories. This way a
+# dependency can be added to the target generating the files (usually a
+# ts_library() target) such that the inputs are correctly  tracked. A few
+# exceptions are annotated below. DO NOT add new exceptions here; instead,
+# create a build target that is responsible for generating  any files in the
+# mapped directory and add this target in deps or extra_deps.
+def validateMapping(mapping_path, mapping_url, root_gen_dir, root_src_dir,
+                    is_ios):
+  # Broad exception for ios platform since its base compile_ts.gni build
+  # rule maps to the entire src/ directory.
+  if is_ios:
+    return True
+
+  allowed_src_mappings = [
+      # Each of these mappings corresponds to a target that lists all .d.ts
+      # files in the mapped folder as inputs, and each mapping is only added
+      # if a dependency to that target is present.
+      '/tools/typescript/definitions/*',
+      '//resources/polymer/v3_0/*',
+      '//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
+      # Existing infra-related violations, that may or may not be safe.
+      'lit/index.js',
+      'lit-html',
+      '@lit/reactive-element',
+      # Infra-related violations on ChromeOS only.
+      '@material/*',
+      'lit',
+      'lit/*',
+      'tslib',
+      # Violation in ui/file_manager.
+      'chrome://resources/mwc/*',
+  ]
+  gen_dir_from_src = os.path.relpath(root_gen_dir, root_src_dir)
+  return mapping_path.startswith(gen_dir_from_src) or \
+      mapping_url in allowed_src_mappings
