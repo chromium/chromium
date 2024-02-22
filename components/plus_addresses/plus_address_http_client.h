@@ -7,6 +7,7 @@
 
 #include <list>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
@@ -37,9 +38,11 @@ class PrimaryAccountAccessTokenFetcher;
 namespace plus_addresses {
 
 // This endpoint is used for most plus-address operations.
-constexpr char kServerPlusProfileEndpoint[] = "v1/profiles";
-constexpr char kServerReservePlusAddressEndpoint[] = "v1/profiles/reserve";
-constexpr char kServerCreatePlusAddressEndpoint[] = "v1/profiles/create";
+inline constexpr std::string_view kServerPlusProfileEndpoint = "v1/profiles";
+inline constexpr std::string_view kServerReservePlusAddressEndpoint =
+    "v1/profiles/reserve";
+inline constexpr std::string_view kServerCreatePlusAddressEndpoint =
+    "v1/profiles/create";
 
 // A move-only class for communicating with a remote plus-address server.
 class PlusAddressHttpClient {
