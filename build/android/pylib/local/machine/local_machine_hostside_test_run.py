@@ -92,6 +92,28 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
           f'{self.TestPackage()}[instant]',
       ]
 
+    filter_args = []
+    for combined_filter in self._test_instance.test_filters:
+      pattern_groups = combined_filter.split('-')
+      negative_pattern = pattern_groups[1] if len(pattern_groups) > 1 else None
+      positive_pattern = pattern_groups[0]
+      if negative_pattern:
+        for exclude_filter in negative_pattern.split(':'):
+          filter_args.extend([
+              '--exclude-filter',
+              self.TestPackage()
+              + '[instant]' * self._test_instance.instant_mode
+              + ' ' + '#'.join(exclude_filter.rsplit('.', 1)),
+          ])
+      if positive_pattern:
+        for include_filter in positive_pattern.split(':'):
+          filter_args.extend([
+              '--include-filter',
+              self.TestPackage()
+              + '[instant]' * self._test_instance.instant_mode
+              + ' ' + '#'.join(include_filter.rsplit('.', 1)),
+          ])
+
     cmd = [
         self._test_instance.tradefed_executable,
         'run',
@@ -99,7 +121,7 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
         'cts',
         '-m',
         self.TestPackage(),
-    ] + mode_args + [
+    ] + mode_args + filter_args + [
         '--retry-strategy',
         'RETRY_ANY_FAILURE',
         '--max-testcase-run-count',

@@ -2127,6 +2127,8 @@ targets.binaries.script(
         "apks/TrichromeLibrary64.apk",
         "--use-webview-provider",
         "apks/TrichromeWebView64.apk",
+        "--module-apk",
+        "CtsHostsideWebViewTests.apk",
     ],
 )
 

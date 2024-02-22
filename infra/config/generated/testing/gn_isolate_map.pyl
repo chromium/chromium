@@ -1956,6 +1956,8 @@
       "apks/TrichromeLibrary64.apk",
       "--use-webview-provider",
       "apks/TrichromeWebView64.apk",
+      "--module-apk",
+      "CtsHostsideWebViewTests.apk",
     ],
   },
   "webview_trichrome_64_cts_tests": {
