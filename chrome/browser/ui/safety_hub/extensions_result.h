@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/values.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
@@ -23,11 +24,6 @@ class SafetyHubExtensionsResult : public SafetyHubService::Result {
   explicit SafetyHubExtensionsResult(
       std::set<extensions::ExtensionId> triggering_extensions,
       bool is_unpublished_extensions_only);
-
-  // Creates a Result based on the provided Dict. This should only be used for
-  // results that only capture the unpublished extensions, to be used in the
-  // menu notifications.
-  explicit SafetyHubExtensionsResult(const base::Value::Dict& dict);
 
   SafetyHubExtensionsResult(const SafetyHubExtensionsResult&);
   SafetyHubExtensionsResult& operator=(const SafetyHubExtensionsResult&);
@@ -53,7 +49,8 @@ class SafetyHubExtensionsResult : public SafetyHubService::Result {
 
   bool IsTriggerForMenuNotification() const override;
 
-  bool WarrantsNewMenuNotification(const Result& previousResult) const override;
+  bool WarrantsNewMenuNotification(
+      const base::Value::Dict& previous_result_dict) const override;
 
   std::u16string GetNotificationString() const override;
 

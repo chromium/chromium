@@ -21,11 +21,6 @@ class PasswordStatusCheckResult : public SafetyHubService::Result {
  public:
   PasswordStatusCheckResult();
 
-  // 'dict' should be a base::Value::List that holds the origins as the format
-  // below:
-  // {kSafetyHubPasswordCheckOriginsKey: ["example1.com", "example2.com"]}
-  explicit PasswordStatusCheckResult(const base::Value::Dict& dict);
-
   PasswordStatusCheckResult(const PasswordStatusCheckResult&);
   PasswordStatusCheckResult& operator=(const PasswordStatusCheckResult&);
 
@@ -45,7 +40,8 @@ class PasswordStatusCheckResult : public SafetyHubService::Result {
 
   bool IsTriggerForMenuNotification() const override;
 
-  bool WarrantsNewMenuNotification(const Result& previousResult) const override;
+  bool WarrantsNewMenuNotification(
+      const base::Value::Dict& previous_result_dict) const override;
 
   std::u16string GetNotificationString() const override;
 

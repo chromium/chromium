@@ -48,12 +48,6 @@ SafetyHubSafeBrowsingResult::GetResult(const PrefService* pref_service) {
       SafeBrowsingState::kDisabledByUser);
 }
 
-SafetyHubSafeBrowsingResult::SafetyHubSafeBrowsingResult(
-    const base::Value::Dict& dict) {
-  status_ = static_cast<SafeBrowsingState>(
-      dict.FindInt(safety_hub::kSafetyHubSafeBrowsingStatusKey).value());
-}
-
 std::unique_ptr<SafetyHubService::Result> SafetyHubSafeBrowsingResult::Clone()
     const {
   return std::make_unique<SafetyHubSafeBrowsingResult>(*this);
@@ -71,7 +65,7 @@ bool SafetyHubSafeBrowsingResult::IsTriggerForMenuNotification() const {
 }
 
 bool SafetyHubSafeBrowsingResult::WarrantsNewMenuNotification(
-    const Result& previousResult) const {
+    const base::Value::Dict& previous_result_dict) const {
   return true;
 }
 

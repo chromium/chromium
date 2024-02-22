@@ -48,7 +48,7 @@ class SafetyHubService : public KeyedService {
     // just based on the comparison of the two results, and thus irrelevant to
     // how frequently a menu notification has already been shown.
     virtual bool WarrantsNewMenuNotification(
-        const Result& previousResult) const = 0;
+        const base::Value::Dict& previous_result_dict) const = 0;
 
     // Returns the string for the notification that will be shown in the
     // three-dot menu.
@@ -66,7 +66,6 @@ class SafetyHubService : public KeyedService {
 
    protected:
     explicit Result(base::Time timestamp = base::Time::Now());
-    explicit Result(const base::Value::Dict& dict);
     Result(const Result&) = default;
     Result& operator=(const Result&) = default;
 

@@ -34,9 +34,6 @@ class PrefChangeRegistrar;
 class PrefService;
 
 constexpr char kUnusedSitePermissionsResultKey[] = "permissions";
-constexpr char kUnusedSitePermissionsResultPermissionTypesKey[] =
-    "permissionTypes";
-constexpr char kUnusedSitePermissionsResultExpirationKey[] = "expiration";
 
 namespace url {
 class Origin;
@@ -79,8 +76,6 @@ class UnusedSitePermissionsService final : public SafetyHubService,
    public:
     UnusedSitePermissionsResult();
 
-    explicit UnusedSitePermissionsResult(const base::Value::Dict& dict);
-
     UnusedSitePermissionsResult(const UnusedSitePermissionsResult&);
     UnusedSitePermissionsResult& operator=(const UnusedSitePermissionsResult&) =
         default;
@@ -92,6 +87,9 @@ class UnusedSitePermissionsService final : public SafetyHubService,
     using UnusedPermissionMap =
         std::map<std::string, std::list<ContentSettingEntry>>;
 
+    // Adds a revoked permission, defined by origin, a set of permission types
+    // and the expiration until the user is made aware of the revoked
+    // permission.
     void AddRevokedPermission(ContentSettingsPattern origin,
                               std::set<ContentSettingsType> permission_types,
                               base::Time expiration);
@@ -114,7 +112,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
     bool IsTriggerForMenuNotification() const override;
 
     bool WarrantsNewMenuNotification(
-        const Result& previousResult) const override;
+        const base::Value::Dict& previous_result_dict) const override;
 
     std::u16string GetNotificationString() const override;
 

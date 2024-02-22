@@ -23,14 +23,6 @@ void PasswordStatusCheckResult::AddToCompromisedOrigins(std::string origin) {
   compromised_origins_.insert(std::move(origin));
 }
 
-PasswordStatusCheckResult::PasswordStatusCheckResult(
-    const base::Value::Dict& dict) {
-  for (const base::Value& origin :
-       *dict.FindList(kSafetyHubPasswordCheckOriginsKey)) {
-    AddToCompromisedOrigins(origin.GetString());
-  }
-}
-
 std::unique_ptr<SafetyHubService::Result> PasswordStatusCheckResult::Clone()
     const {
   return std::make_unique<PasswordStatusCheckResult>(*this);
@@ -51,10 +43,12 @@ bool PasswordStatusCheckResult::IsTriggerForMenuNotification() const {
 }
 
 bool PasswordStatusCheckResult::WarrantsNewMenuNotification(
-    const Result& previousResult) const {
-  const auto& previous =
-      static_cast<const PasswordStatusCheckResult&>(previousResult);
-  const std::set<std::string>& old_origins = previous.GetCompromisedOrigins();
+    const base::Value::Dict& previous_result_dict) const {
+  std::set<std::string> old_origins;
+  for (const base::Value& origin :
+       *previous_result_dict.FindList(kSafetyHubPasswordCheckOriginsKey)) {
+    old_origins.insert(origin.GetString());
+  }
   const std::set<std::string>& new_origins = GetCompromisedOrigins();
   return !base::ranges::includes(old_origins, new_origins);
 }

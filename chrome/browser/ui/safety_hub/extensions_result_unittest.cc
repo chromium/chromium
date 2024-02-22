@@ -23,7 +23,7 @@ class SafetyHubExtensionsResultTest : public testing::Test {
   TestingProfile profile_;
 };
 
-TEST_F(SafetyHubExtensionsResultTest, ResultToFromDictAndClone) {
+TEST_F(SafetyHubExtensionsResultTest, CloneResult) {
   // Create a result with two triggering extensions. Using unpublished
   // extensions only, as this is the only type that can serialized into a Dict.
   std::set<extensions::ExtensionId> extension_ids;
@@ -34,15 +34,8 @@ TEST_F(SafetyHubExtensionsResultTest, ResultToFromDictAndClone) {
   EXPECT_TRUE(result->IsTriggerForMenuNotification());
   EXPECT_EQ(2U, result->GetNumTriggeringExtensions());
 
-  // Serialize and de-serialize the result should result in the same triggering
-  // extensions.
-  auto new_result =
-      std::make_unique<SafetyHubExtensionsResult>(result->ToDictValue());
-  EXPECT_TRUE(new_result->IsTriggerForMenuNotification());
-  EXPECT_EQ(2U, new_result->GetNumTriggeringExtensions());
-
   // Cloning the result should also result in the same triggering result.
-  std::unique_ptr<SafetyHubService::Result> cloned_result = new_result->Clone();
+  std::unique_ptr<SafetyHubService::Result> cloned_result = result->Clone();
   auto* cloned_extensions_result =
       static_cast<SafetyHubExtensionsResult*>(cloned_result.get());
   EXPECT_TRUE(cloned_extensions_result->IsTriggerForMenuNotification());

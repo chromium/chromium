@@ -16,8 +16,6 @@ class SafetyHubSafeBrowsingResult : public SafetyHubService::Result {
 
   explicit SafetyHubSafeBrowsingResult(SafeBrowsingState status);
 
-  explicit SafetyHubSafeBrowsingResult(const base::Value::Dict& dict);
-
   SafetyHubSafeBrowsingResult(const SafetyHubSafeBrowsingResult&);
   SafetyHubSafeBrowsingResult& operator=(const SafetyHubSafeBrowsingResult&);
 
@@ -34,7 +32,8 @@ class SafetyHubSafeBrowsingResult : public SafetyHubService::Result {
 
   bool IsTriggerForMenuNotification() const override;
 
-  bool WarrantsNewMenuNotification(const Result& previousResult) const override;
+  bool WarrantsNewMenuNotification(
+      const base::Value::Dict& previous_result_dict) const override;
 
   std::u16string GetNotificationString() const override;
 

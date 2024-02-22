@@ -26,7 +26,7 @@ class SafeBrowsingResultTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
 };
 
-TEST_F(SafeBrowsingResultTest, ResultToFromDictAndClone) {
+TEST_F(SafeBrowsingResultTest, CloneResult) {
   // When creating a result where the status is set to disabled, which is a
   // trigger for a menu notification, it should remain as such even after it was
   // turned into Dict.
@@ -34,11 +34,7 @@ TEST_F(SafeBrowsingResultTest, ResultToFromDictAndClone) {
       SafeBrowsingState::kDisabledByUser);
   EXPECT_TRUE(result->IsTriggerForMenuNotification());
 
-  auto new_result =
-      std::make_unique<SafetyHubSafeBrowsingResult>(result->ToDictValue());
-  EXPECT_TRUE(new_result->IsTriggerForMenuNotification());
-
-  auto cloned_result = new_result->Clone();
+  auto cloned_result = result->Clone();
   EXPECT_TRUE(cloned_result->IsTriggerForMenuNotification());
 }
 

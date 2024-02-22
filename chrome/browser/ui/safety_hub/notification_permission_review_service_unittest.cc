@@ -270,17 +270,14 @@ TEST_F(NotificationPermissionReviewServiceTest,
                 kSafetyHubNotificationInfoString));
 }
 
-TEST_F(NotificationPermissionReviewServiceTest, ResultToFromDict) {
+TEST_F(NotificationPermissionReviewServiceTest, ResultToDict) {
   auto origin = ContentSettingsPattern::FromString("https://example1.com:443");
   const int notification_count = 1337;
 
   auto result = std::make_unique<
       NotificationPermissionsReviewService::NotificationPermissionsResult>();
   result->AddNotificationPermission(origin, notification_count);
-  EXPECT_EQ(1U, result->GetNotificationPermissions().size());
-  EXPECT_EQ(origin, result->GetNotificationPermissions().front().first);
-  EXPECT_EQ(notification_count,
-            result->GetNotificationPermissions().front().second);
+  EXPECT_THAT(result->GetOrigins(), testing::ElementsAre(origin));
 
   // When converting to dict, the values of the notification permissions should
   // be correctly converted to base::Value.
@@ -293,19 +290,6 @@ TEST_F(NotificationPermissionReviewServiceTest, ResultToFromDict) {
       notification_perms_list->front().GetDict();
   EXPECT_EQ(origin.ToString(),
             *notification_perm.FindString(kSafetyHubOriginKey));
-  EXPECT_EQ(notification_count,
-            notification_perm.FindInt(kSafetyHubNotificationCount));
-
-  // When the Dict is restored into a NotificationPermissionsResult, the values
-  // should be correctly created.
-  auto new_result = std::make_unique<
-      NotificationPermissionsReviewService::NotificationPermissionsResult>(
-      dict);
-  std::vector<std::pair<ContentSettingsPattern, int>> new_notification_perms =
-      new_result->GetNotificationPermissions();
-  EXPECT_EQ(1U, new_notification_perms.size());
-  EXPECT_EQ(origin, new_notification_perms.front().first);
-  EXPECT_EQ(notification_count, new_notification_perms.front().second);
 }
 
 TEST_F(NotificationPermissionReviewServiceTest, ResultGetOrigins) {
@@ -341,20 +325,25 @@ TEST_F(NotificationPermissionReviewServiceTest, ResultWarrantsNewNotification) {
       NotificationPermissionsReviewService::NotificationPermissionsResult>();
   auto new_result = std::make_unique<
       NotificationPermissionsReviewService::NotificationPermissionsResult>();
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result.get()->ToDictValue()));
   // origin1 revoked in new, but not in old -> warrants notification
   new_result->AddNotificationPermission(origin1, 12);
-  EXPECT_TRUE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_TRUE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 in both new and old -> no notification
   old_result->AddNotificationPermission(origin1, 34);
   ;
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 in both, origin2 in new -> warrants notification
   new_result->AddNotificationPermission(origin2, 56);
-  EXPECT_TRUE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_TRUE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 and origin2 in both new and old -> no notification
   old_result->AddNotificationPermission(origin2, 78);
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
 }
 
 TEST_F(NotificationPermissionReviewServiceTest, UpdateAsync) {

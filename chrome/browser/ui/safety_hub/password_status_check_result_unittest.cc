@@ -17,7 +17,7 @@ constexpr char kOrigin2[] = "https://example2.com/";
 
 }  // namespace
 
-TEST(PasswordStatusCheckResultTest, ResultToFromDict) {
+TEST(PasswordStatusCheckResultTest, ResultToDict) {
   auto result = std::make_unique<PasswordStatusCheckResult>();
   result->AddToCompromisedOrigins(kOrigin1);
   EXPECT_THAT(result->GetCompromisedOrigins(), testing::ElementsAre(kOrigin1));
@@ -29,12 +29,6 @@ TEST(PasswordStatusCheckResultTest, ResultToFromDict) {
       dict.FindList(kSafetyHubPasswordCheckOriginsKey);
   EXPECT_EQ(1U, compromised_origins_list->size());
   EXPECT_EQ(kOrigin1, compromised_origins_list->front().GetString());
-
-  // When the Dict is restored into a PasswordStatusCheckResult, the values
-  // should be correctly created.
-  auto new_result = std::make_unique<PasswordStatusCheckResult>(dict);
-  EXPECT_THAT(new_result->GetCompromisedOrigins(),
-              testing::ElementsAre(kOrigin1));
 }
 
 TEST(PasswordStatusCheckResultTest, ResultIsTrigger) {
@@ -52,14 +46,17 @@ TEST(PasswordStatusCheckResultTest, ResultIsTrigger) {
 TEST(PasswordStatusCheckResultTest, ResultWarrantsNewNotification) {
   auto old_result = std::make_unique<PasswordStatusCheckResult>();
   auto new_result = std::make_unique<PasswordStatusCheckResult>();
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
 
   // kOrigin1 is set in new, but not in old -> warrants notification
   new_result->AddToCompromisedOrigins(kOrigin1);
-  EXPECT_TRUE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_TRUE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // kOrigin1 is in both new and old -> no notification
   old_result->AddToCompromisedOrigins(kOrigin1);
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   EXPECT_EQ(
       new_result->GetNotificationString(),
       l10n_util::GetPluralStringFUTF16(
@@ -67,10 +64,12 @@ TEST(PasswordStatusCheckResultTest, ResultWarrantsNewNotification) {
 
   // kOrigin2 is added in new, but not in old -> warrants notification
   new_result->AddToCompromisedOrigins(kOrigin2);
-  EXPECT_TRUE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_TRUE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // kOrigin2 is also in both new and old -> no notification
   old_result->AddToCompromisedOrigins(kOrigin2);
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   EXPECT_EQ(
       new_result->GetNotificationString(),
       l10n_util::GetPluralStringFUTF16(

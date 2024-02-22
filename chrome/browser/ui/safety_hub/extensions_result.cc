@@ -77,17 +77,6 @@ SafetyHubExtensionsResult::SafetyHubExtensionsResult(
       is_unpublished_extensions_only_(is_unpublished_extensions_only) {}
 
 SafetyHubExtensionsResult::SafetyHubExtensionsResult(
-    const base::Value::Dict& dict) {
-  for (const base::Value& extension_id :
-       *dict.FindList(safety_hub::kSafetyHubTriggeringExtensionIdsKey)) {
-    triggering_extensions_.insert(extension_id.GetString());
-  }
-  // Only results that contain unpublished extensions should be created with
-  // this constructor.
-  is_unpublished_extensions_only_ = true;
-}
-
-SafetyHubExtensionsResult::SafetyHubExtensionsResult(
     const SafetyHubExtensionsResult&) = default;
 SafetyHubExtensionsResult& SafetyHubExtensionsResult::operator=(
     const SafetyHubExtensionsResult&) = default;
@@ -155,16 +144,18 @@ unsigned int SafetyHubExtensionsResult::GetNumTriggeringExtensions() const {
 }
 
 bool SafetyHubExtensionsResult::WarrantsNewMenuNotification(
-    const Result& previousResult) const {
-  const auto& previous =
-      static_cast<const SafetyHubExtensionsResult&>(previousResult);
+    const base::Value::Dict& previous_result_dict) const {
+  std::set<extensions::ExtensionId> previous_triggering_extensions;
+  for (const base::Value& extension_id : *previous_result_dict.FindList(
+           safety_hub::kSafetyHubTriggeringExtensionIdsKey)) {
+    previous_triggering_extensions.insert(extension_id.GetString());
+  }
   // Only results that are for unpublished extensions can result in a menu
   // notification.
-  if (!is_unpublished_extensions_only_ ||
-      !previous.is_unpublished_extensions_only_) {
+  if (!is_unpublished_extensions_only_) {
     return false;
   }
-  return !base::ranges::includes(previous.triggering_extensions_,
+  return !base::ranges::includes(previous_triggering_extensions,
                                  triggering_extensions_);
 }
 

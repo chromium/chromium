@@ -28,9 +28,6 @@ class MockSafetyHubResult : public SafetyHubService::Result {
       : SafetyHubService::Result(timestamp) {}
   ~MockSafetyHubResult() override = default;
 
-  explicit MockSafetyHubResult(const base::Value::Dict& dict)
-      : SafetyHubService::Result(dict) {}
-
   std::unique_ptr<SafetyHubService::Result> Clone() const override {
     return std::make_unique<MockSafetyHubResult>(*this);
   }
@@ -40,7 +37,7 @@ class MockSafetyHubResult : public SafetyHubService::Result {
   bool IsTriggerForMenuNotification() const override { return true; }
 
   bool WarrantsNewMenuNotification(
-      const Result& previousResult) const override {
+      const base::Value::Dict& previousResult) const override {
     return true;
   }
 
@@ -232,15 +229,11 @@ TEST_F(SafetyHubServiceTest, GetCachedResult) {
   EXPECT_EQ(result->GetVal(), 42);
 }
 
-TEST_F(SafetyHubServiceTest, ResultBaseToFromDict) {
+TEST_F(SafetyHubServiceTest, ResultBaseToDict) {
   base::Time time = base::Time::Now() - base::Days(5);
   auto result = std::make_unique<MockSafetyHubResult>(time);
   EXPECT_EQ(result->timestamp(), time);
   // The timestamp saved in the dict should be the Value of time.
   base::Value::Dict dict = result->ToDictValue();
   EXPECT_EQ(*dict.Find(kSafetyHubTimestampResultKey), base::TimeToValue(time));
-  // When in the future we update from the dict again, the timestamp should be
-  // set to whatever is in the dict.
-  auto new_result = std::make_unique<MockSafetyHubResult>(dict);
-  EXPECT_EQ(result->timestamp(), time);
 }

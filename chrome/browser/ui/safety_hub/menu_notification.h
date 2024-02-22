@@ -91,10 +91,6 @@ class SafetyHubMenuNotification {
   // Returns whether any notification for the same type of result has been
   // shown.
   bool HasAnyNotificationBeenShown() const;
-  // Returns a result based on the values defined in the provided dictionary.
-  static std::unique_ptr<SafetyHubService::Result> GetResultFromDict(
-      const base::Value::Dict& dict,
-      safety_hub::SafetyHubModuleType type);
 
   // Indicates whether the notification is actively being shown.
   bool is_currently_active_ = false;
@@ -109,8 +105,13 @@ class SafetyHubMenuNotification {
   // Indicates the last time that a notification was shown, even when it is
   // related to a different result.
   std::optional<base::Time> last_impression_time_;
-  // The result for which the notification may be shown.
-  std::unique_ptr<SafetyHubService::Result> result_ = nullptr;
+  // The result for which the notification may be shown. Initially, this is a
+  // nullptr but its value is updated before any notification will be shown.
+  std::unique_ptr<SafetyHubService::Result> current_result_ = nullptr;
+  // The previous result that was persisted on disk. This will only be set when
+  // the menu notification is created from a Dict value (originating from
+  // prefs).
+  base::Value::Dict prev_stored_result_;
   // Menu notifications should only be shown after this time.
   std::optional<base::Time> show_only_after_;
   // The total number of time in total that a notification has been shown.

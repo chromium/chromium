@@ -911,33 +911,9 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
   // When converting to dict, the values of the revoked permissions should be
   // correctly converted to base::Value.
   base::Value::Dict dict = result->ToDictValue();
-  auto* revoked_perms_list = dict.FindList(kUnusedSitePermissionsResultKey);
-  EXPECT_EQ(1U, revoked_perms_list->size());
-  base::Value::Dict& revoked_perm = revoked_perms_list->front().GetDict();
-  EXPECT_EQ(url1, *revoked_perm.FindString(kSafetyHubOriginKey));
-  EXPECT_EQ(
-      1U, revoked_perm.FindList(kUnusedSitePermissionsResultPermissionTypesKey)
-              ->size());
-  auto* registry = content_settings::WebsiteSettingsRegistry::GetInstance();
-  EXPECT_EQ(
-      registry->Get(ContentSettingsType::GEOLOCATION)->name(),
-      revoked_perm.FindList(kUnusedSitePermissionsResultPermissionTypesKey)
-          ->front());
-  EXPECT_EQ(base::TimeToValue(expiration),
-            *revoked_perm.Find(kUnusedSitePermissionsResultExpirationKey));
-
-  // When the Dict is restored into a UnusedSitePermissionsResult, the values
-  // should be correctly created.
-  auto new_result = std::make_unique<
-      UnusedSitePermissionsService::UnusedSitePermissionsResult>(dict);
-  std::list<UnusedSitePermissionsService::RevokedPermission> new_revoked_perms =
-      new_result->GetRevokedPermissions();
-  EXPECT_EQ(1U, new_revoked_perms.size());
-  EXPECT_EQ(origin, new_revoked_perms.front().origin);
-  EXPECT_EQ(1U, new_revoked_perms.front().permission_types.size());
-  EXPECT_EQ(ContentSettingsType::GEOLOCATION,
-            *new_revoked_perms.front().permission_types.begin());
-  EXPECT_EQ(expiration, new_revoked_perms.front().expiration);
+  auto* revoked_origins_list = dict.FindList(kUnusedSitePermissionsResultKey);
+  EXPECT_EQ(1U, revoked_origins_list->size());
+  EXPECT_EQ(url1, revoked_origins_list->front().GetString());
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, ResultGetRevokedOrigins) {
@@ -983,19 +959,24 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultWarrantsNewMenuNotification) {
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
   auto new_result = std::make_unique<
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 revoked in new, but not in old -> warrants notification
   new_result->AddRevokedPermission(origin1, permission_types, expiration);
-  EXPECT_TRUE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_TRUE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 in both new and old -> no notification
   old_result->AddRevokedPermission(origin1, permission_types, expiration);
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 in both, origin2 in new -> warrants notification
   new_result->AddRevokedPermission(origin2, permission_types, expiration);
-  EXPECT_TRUE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_TRUE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
   // origin1 and origin2 in both new and old -> no notification
   old_result->AddRevokedPermission(origin2, permission_types, expiration);
-  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  EXPECT_FALSE(
+      new_result->WarrantsNewMenuNotification(old_result->ToDictValue()));
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, AutoRevocationSetting) {

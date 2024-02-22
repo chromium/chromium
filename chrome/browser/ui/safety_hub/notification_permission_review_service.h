@@ -19,7 +19,6 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 
 constexpr char kSafetyHubNotificationInfoString[] = "notificationInfoString";
-constexpr char kSafetyHubNotificationCount[] = "notificationCount";
 constexpr char kSafetyHubNotificationPermissionsResultKey[] =
     "notificationPermissions";
 
@@ -47,8 +46,6 @@ class NotificationPermissionsReviewService : public SafetyHubService,
   class NotificationPermissionsResult : public SafetyHubService::Result {
    public:
     NotificationPermissionsResult();
-
-    explicit NotificationPermissionsResult(const base::Value::Dict& dict);
 
     NotificationPermissionsResult(const NotificationPermissionsResult&);
     NotificationPermissionsResult& operator=(
@@ -78,7 +75,7 @@ class NotificationPermissionsReviewService : public SafetyHubService,
     bool IsTriggerForMenuNotification() const override;
 
     bool WarrantsNewMenuNotification(
-        const Result& previousResult) const override;
+        const base::Value::Dict& previous_result_dict) const override;
 
     std::u16string GetNotificationString() const override;
 

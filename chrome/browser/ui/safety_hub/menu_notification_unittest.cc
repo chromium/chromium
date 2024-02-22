@@ -86,7 +86,7 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   notification->impression_count_ = 42;
   notification->first_impression_time_ = kPastTime;
   notification->last_impression_time_ = last;
-  notification->result_ =
+  notification->current_result_ =
       CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
 
   // When transforming the notification to a Dict, the properties of the
@@ -108,9 +108,9 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
       dict.FindDict(safety_hub::kSafetyHubMenuNotificationResultKey);
   EXPECT_TRUE(result_dict->contains(kUnusedSitePermissionsResultKey));
   EXPECT_EQ(1U, result_dict->FindList(kUnusedSitePermissionsResultKey)->size());
-  base::Value::Dict& revoked_perm =
-      result_dict->FindList(kUnusedSitePermissionsResultKey)->front().GetDict();
-  EXPECT_EQ(kUrl1, *revoked_perm.FindString(kSafetyHubOriginKey));
+  base::Value::List& revoked_origins =
+      *result_dict->FindList(kUnusedSitePermissionsResultKey);
+  EXPECT_EQ(kUrl1, revoked_origins.front());
 
   // Using the dict from before, we can create another menu notification object
   // that should have the same properties as when it was initially created.
@@ -121,14 +121,11 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   EXPECT_EQ(42, new_notification->impression_count_);
   EXPECT_EQ(kPastTime, new_notification->first_impression_time_);
   EXPECT_EQ(last, new_notification->last_impression_time_);
-  EXPECT_NE(nullptr, new_notification->result_);
-  // Similarly, the result should contain the same properties as the one that
-  // was transformed into a Dict.
-  auto* new_result =
-      static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
-          new_notification->result_.get());
-  EXPECT_EQ(1U, new_result->GetRevokedPermissions().size());
-  EXPECT_EQ(kUrl1, new_result->GetRevokedOrigins().begin()->ToString());
+  EXPECT_FALSE(new_notification->prev_stored_result_.empty());
+  EXPECT_EQ(kUrl1, new_notification->prev_stored_result_
+                       .FindList(kUnusedSitePermissionsResultKey)
+                       ->front()
+                       .GetString());
 }
 
 TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {

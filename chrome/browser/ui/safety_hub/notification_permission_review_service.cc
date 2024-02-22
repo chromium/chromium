@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
@@ -112,18 +113,6 @@ NotificationPermissionsReviewService::NotificationPermissionsResult::
     NotificationPermissionsResult(const NotificationPermissionsResult&) =
         default;
 
-NotificationPermissionsReviewService::NotificationPermissionsResult::
-    NotificationPermissionsResult(const base::Value::Dict& dict) {
-  for (const base::Value& permission :
-       *dict.FindList(kSafetyHubNotificationPermissionsResultKey)) {
-    const base::Value::Dict& notification_permission = permission.GetDict();
-    AddNotificationPermission(
-        ContentSettingsPattern::FromString(
-            *notification_permission.FindString(kSafetyHubOriginKey)),
-        notification_permission.FindInt(kSafetyHubNotificationCount).value());
-  }
-}
-
 void NotificationPermissionsReviewService::NotificationPermissionsResult::
     AddNotificationPermission(ContentSettingsPattern origin,
                               int notification_count) {
@@ -189,7 +178,6 @@ base::Value::Dict NotificationPermissionsReviewService::
        notification_permissions_) {
     base::Value::Dict permission_dict;
     permission_dict.Set(kSafetyHubOriginKey, permission.first.ToString());
-    permission_dict.Set(kSafetyHubNotificationCount, permission.second);
     notification_permissions.Append(std::move(permission_dict));
   }
   result.Set(kSafetyHubNotificationPermissionsResultKey,
@@ -203,19 +191,17 @@ bool NotificationPermissionsReviewService::NotificationPermissionsResult::
 }
 
 bool NotificationPermissionsReviewService::NotificationPermissionsResult::
-    WarrantsNewMenuNotification(const Result& previousResult) const {
-  const auto& previous =
-      static_cast<const NotificationPermissionsResult&>(previousResult);
-  std::set<ContentSettingsPattern> old_origins = previous.GetOrigins();
-  std::set<ContentSettingsPattern> new_origins = GetOrigins();
-  for (auto new_origin : new_origins) {
-    // A new notification should be shown whenever there is a new origin that
-    // should be reviewed.
-    if (!old_origins.contains(new_origin)) {
-      return true;
-    }
+    WarrantsNewMenuNotification(
+        const base::Value::Dict& previous_result_dict) const {
+  std::set<ContentSettingsPattern> old_origins;
+  for (const base::Value& permission : *previous_result_dict.FindList(
+           kSafetyHubNotificationPermissionsResultKey)) {
+    const base::Value::Dict& notification_permission = permission.GetDict();
+    old_origins.insert(ContentSettingsPattern::FromString(
+        *notification_permission.FindString(kSafetyHubOriginKey)));
   }
-  return false;
+  std::set<ContentSettingsPattern> new_origins = GetOrigins();
+  return !base::ranges::includes(old_origins, new_origins);
 }
 
 std::u16string NotificationPermissionsReviewService::
