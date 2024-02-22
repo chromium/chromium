@@ -1002,8 +1002,17 @@ class MediaEngagementContentsObserverPrerenderBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverPrerenderBrowserTest,
-                       DoNotSendEngagementLevelToRenderFrameInPrerendering) {
+// Flaky on Linux: http://crbug.com/325530046
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DoNotSendEngagementLevelToRenderFrameInPrerendering \
+  DISABLED_DoNotSendEngagementLevelToRenderFrameInPrerendering
+#else
+#define MAYBE_DoNotSendEngagementLevelToRenderFrameInPrerendering \
+  DoNotSendEngagementLevelToRenderFrameInPrerendering
+#endif
+IN_PROC_BROWSER_TEST_F(
+    MediaEngagementContentsObserverPrerenderBrowserTest,
+    MAYBE_DoNotSendEngagementLevelToRenderFrameInPrerendering) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL& initial_url = embedded_test_server()->GetURL("/empty.html");
