@@ -162,6 +162,36 @@ copy("colorenhancer_copy") {
   outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }
 
+if (is_chromeos_ash) {
+  webui_test_deps = [ "//chrome/test:browser_tests_runner" ]
+
+  test("colorenhancer_tests") {
+    deps = [ ":colorenhancer_js_webui_tests" ]
+    deps += webui_test_deps
+    data = js2gtest_js_libraries
+  }
+
+  js2gtest("colorenhancer_js_webui_tests") {
+    test_type = "webui"
+    sources = [
+      "colorenhancer/src/matrix_test.js",
+      "colorenhancer/src/storage_test.js",
+    ]
+    gen_include_files = [
+      "colorenhancer/src/cvd_type.js",
+      "colorenhancer/src/matrix.js",
+      "colorenhancer/src/storage.js",
+      "webstore_extension_test_base.js",
+      "//chrome/browser/resources/chromeos/accessibility/common/testing/mock_storage.js",
+    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+}
+
+#
+# High Contrast
+#
+
 group("highcontrast") {
   deps = [
     ":highcontrast_copy",
@@ -195,30 +225,40 @@ copy("highcontrast_copy") {
   outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }
 
-if (is_chromeos_ash) {
-  webui_test_deps = [ "//chrome/test:browser_tests_runner" ]
+#
+# Long Descriptions In Context Menu
+#
 
-  test("colorenhancer_tests") {
-    deps = [ ":colorenhancer_js_webui_tests" ]
-    deps += webui_test_deps
-    data = js2gtest_js_libraries
-  }
+group("longdesc") {
+  deps = [
+    ":longdesc_copy",
+    ":longdesc_strings",
+  ]
+}
 
-  js2gtest("colorenhancer_js_webui_tests") {
-    test_type = "webui"
-    sources = [
-      "colorenhancer/src/matrix_test.js",
-      "colorenhancer/src/storage_test.js",
-    ]
-    gen_include_files = [
-      "colorenhancer/src/cvd_type.js",
-      "colorenhancer/src/matrix.js",
-      "colorenhancer/src/storage.js",
-      "webstore_extension_test_base.js",
-      "//chrome/browser/resources/chromeos/accessibility/common/testing/mock_storage.js",
-    ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
+grit("longdesc_strings") {
+  source = "strings/accessibility_extensions_strings.grd"
+  outputs = locale_files
+  output_dir = "$root_out_dir/longdesc"
+  resource_ids = ""
+}
+
+longdesc_files = [
+  "longdesc/background.js",
+  "longdesc/border.css",
+  "longdesc/icon-16.png",
+  "longdesc/icon-48.png",
+  "longdesc/icon-128.png",
+  "longdesc/icon.png",
+  "longdesc/lastRightClick.js",
+  "longdesc/manifest.json",
+  "longdesc/options.html",
+  "longdesc/options.js",
+]
+
+copy("longdesc_copy") {
+  sources = longdesc_files
+  outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }
 
 #
