@@ -39,6 +39,7 @@ ts_modules = [
   "metrics.ts",
   "navigator.ts",
   "navigator_interfaces.ts",
+  "nodes/back_button_node.ts",
   "nodes/switch_access_node.ts",
   "point_scan_manager.ts",
   "settings_manager.ts",
@@ -52,7 +53,6 @@ ts_modules = [
 js_modules = [
   "action_manager.js",
   "item_scan_manager.js",
-  "nodes/back_button_node.js",
   "nodes/basic_node.js",
   "nodes/combo_box_node.js",
   "nodes/desktop_node.js",

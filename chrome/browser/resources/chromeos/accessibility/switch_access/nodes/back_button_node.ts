@@ -15,89 +15,82 @@ import {ActionResponse} from '../switch_access_constants.js';
 
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
+import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type Rect = chrome.automation.Rect;
+import RoleType = chrome.automation.RoleType;
 
 /**
  * This class handles the behavior of the back button.
  */
 export class BackButtonNode extends SAChildNode {
-  /**
-   * @param {!SARootNode} group
-   */
-  constructor(group) {
-    super();
-    /**
-     * The group that the back button is shown for.
-     * @private {!SARootNode}
-     */
-    this.group_ = group;
+  /** The group that the back button is shown for. */
+  private group_: SARootNode;
+  private locationChangedHandler_?: RepeatedEventHandler;
 
-    /** @private {!RepeatedEventHandler} */
-    this.locationChangedHandler_;
+  private static automationNode_: AutomationNode;
+  private static clickHandler_: EventHandler;
+  static locationForTesting?: Rect;
+
+  constructor(group: SARootNode) {
+    super();
+    this.group_ = group;
   }
 
   // ================= Getters and setters =================
 
-  /** @override */
-  get actions() {
+  override get actions(): MenuAction[] {
     return [MenuAction.SELECT];
   }
 
-  /** @override */
-  get automationNode() {
+  override get automationNode(): AutomationNode {
     return BackButtonNode.automationNode_;
   }
 
-  /** @override */
-  get group() {
+  override get group(): SARootNode {
     return this.group_;
   }
 
-  /** @override */
-  get location() {
+  override get location(): Rect | undefined {
     if (BackButtonNode.locationForTesting) {
       return BackButtonNode.locationForTesting;
     }
     if (this.automationNode) {
       return this.automationNode.location;
     }
+    return undefined;
   }
 
-  /** @override */
-  get role() {
-    return chrome.automation.RoleType.BUTTON;
+  override get role(): RoleType {
+    return RoleType.BUTTON;
   }
 
   // ================= General methods =================
 
-  /** @override */
-  asRootNode() {
-    return null;
+  override asRootNode(): SARootNode | undefined {
+    return undefined;
   }
 
-  /** @override */
-  equals(other) {
+  override equals(other: SAChildNode): boolean {
     return other instanceof BackButtonNode;
   }
 
-  /** @override */
-  isEquivalentTo(node) {
+  override isEquivalentTo(
+      node: SAChildNode | SARootNode | AutomationNode | null | undefined)
+      : boolean {
     return node instanceof BackButtonNode || this.automationNode === node;
   }
 
-  /** @override */
-  isGroup() {
+  override isGroup(): boolean {
     return false;
   }
 
-  /** @override */
-  isValidAndVisible() {
+  override isValidAndVisible(): boolean {
     return this.group_.isValidGroup();
   }
 
-  /** @override */
-  onFocus() {
+  override onFocus(): void {
     super.onFocus();
     chrome.accessibilityPrivate.updateSwitchAccessBubble(
         chrome.accessibilityPrivate.SwitchAccessBubble.BACK_BUTTON,
@@ -111,8 +104,7 @@ export class BackButtonNode extends SAChildNode {
         {exactMatch: true, allAncestors: true});
   }
 
-  /** @override */
-  onUnfocus() {
+  override onUnfocus(): void {
     super.onUnfocus();
     chrome.accessibilityPrivate.updateSwitchAccessBubble(
         chrome.accessibilityPrivate.SwitchAccessBubble.BACK_BUTTON,
@@ -123,8 +115,7 @@ export class BackButtonNode extends SAChildNode {
     }
   }
 
-  /** @override */
-  performAction(action) {
+  override performAction(action: MenuAction): ActionResponse {
     if (action === MenuAction.SELECT && this.automationNode) {
       BackButtonNode.onClick_();
       return ActionResponse.CLOSE_MENU;
@@ -132,15 +123,14 @@ export class BackButtonNode extends SAChildNode {
     return ActionResponse.NO_ACTION_TAKEN;
   }
 
-  /** @override */
-  ignoreWhenComputingUnionOfBoundingBoxes() {
+  override ignoreWhenComputingUnionOfBoundingBoxes(): boolean {
     return true;
   }
 
   // ================= Debug methods =================
 
-  /** @override */
-  debugString(wholeTree, prefix = '', currentNode = null) {
+  override debugString(
+      wholeTree: boolean, prefix = '', currentNode = null): string {
     if (!this.automationNode) {
       return 'BackButtonNode';
     }
@@ -149,17 +139,14 @@ export class BackButtonNode extends SAChildNode {
 
   // ================= Static methods =================
 
-  /**
-   * Looks for the back button automation node.
-   * @private
-   */
-  static findAutomationNode_() {
+  /** Looks for the back button automation node. */
+  private static findAutomationNode_(): void {
     if (BackButtonNode.automationNode_ && BackButtonNode.automationNode_.role) {
       return;
     }
     SwitchAccess.findNodeMatching(
         {
-          role: chrome.automation.RoleType.BUTTON,
+          role: RoleType.BUTTON,
           attributes: {className: 'SwitchAccessBackButtonView'},
         },
         BackButtonNode.saveAutomationNode_);
@@ -168,9 +155,8 @@ export class BackButtonNode extends SAChildNode {
   /**
    * This function defines the behavior that should be taken when the back
    * button is pressed.
-   * @private
    */
-  static onClick_() {
+  private static onClick_(): void {
     if (MenuManager.isMenuOpen()) {
       ActionManager.exitCurrentMenu();
     } else {
@@ -178,19 +164,15 @@ export class BackButtonNode extends SAChildNode {
     }
   }
 
-  /**
-   * Saves the back button automation node.
-   * @param {!AutomationNode} automationNode
-   * @private
-   */
-  static saveAutomationNode_(automationNode) {
+  /** Saves the back button automation node. */
+  private static saveAutomationNode_(automationNode: AutomationNode): void {
     BackButtonNode.automationNode_ = automationNode;
 
     if (BackButtonNode.clickHandler_) {
       BackButtonNode.clickHandler_.setNodes(automationNode);
     } else {
       BackButtonNode.clickHandler_ = new EventHandler(
-          automationNode, chrome.automation.EventType.CLICKED,
+          automationNode, EventType.CLICKED,
           BackButtonNode.onClick_);
     }
   }
