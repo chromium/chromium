@@ -1393,6 +1393,10 @@ inline constexpr char kIsDefaultPageColorsOnHighContrast[] =
     "settings.a11y.is_default_page_colors_on_high_contrast";
 #endif  // BUILDFLAG(IS_WIN)
 
+// List pref containing site urls where forced colors should not be applied.
+inline constexpr char kPageColorsBlockList[] =
+    "settings.a11y.page_colors_block_list";
+
 // Boolean that indicates whether a user prefers to have default scrollbar
 // styles.
 inline constexpr char kPrefersDefaultScrollbarStyles[] =

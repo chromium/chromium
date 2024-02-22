@@ -26,6 +26,7 @@ void PageColors::RegisterProfilePrefs(
       /*default_value=*/ui::NativeTheme::PageColors::kOff);
   registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
                                 /*default_value=*/false);
+  registry->RegisterListPref(prefs::kPageColorsBlockList);
 #if BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(prefs::kIsDefaultPageColorsOnHighContrast,
                                 /*default_value=*/true);
