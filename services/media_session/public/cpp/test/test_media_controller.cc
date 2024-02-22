@@ -14,6 +14,9 @@ TestMediaControllerImageObserver::TestMediaControllerImageObserver(
   controller->ObserveImages(mojom::MediaSessionImageType::kArtwork,
                             minimum_size_px, desired_size_px,
                             receiver_.BindNewPipeAndPassRemote());
+  controller->ObserveImages(
+      mojom::MediaSessionImageType::kChapter, minimum_size_px, desired_size_px,
+      chapter_image_observer_receiver_.BindNewPipeAndPassRemote());
   controller.FlushForTesting();
 }
 
@@ -32,6 +35,21 @@ void TestMediaControllerImageObserver::MediaControllerImageChanged(
   expected_.reset();
 }
 
+void TestMediaControllerImageObserver::MediaControllerChapterImageChanged(
+    int chapter_index,
+    const SkBitmap& bitmap) {
+  current_chapter_images_[chapter_index] = bitmap.isNull();
+
+  if (!base::Contains(expected_chapter_images_, chapter_index) ||
+      expected_chapter_images_[chapter_index] !=
+          current_chapter_images_[chapter_index]) {
+    return;
+  }
+
+  DCHECK(run_loop_);
+  run_loop_->Quit();
+}
+
 void TestMediaControllerImageObserver::WaitForExpectedImageOfType(
     mojom::MediaSessionImageType type,
     bool expect_null_image) {
@@ -41,6 +59,20 @@ void TestMediaControllerImageObserver::WaitForExpectedImageOfType(
     return;
 
   expected_ = pair;
+
+  DCHECK(!run_loop_);
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  run_loop_.reset();
+}
+
+void TestMediaControllerImageObserver::WaitForExpectedChapterImage(
+    int chapter_index,
+    bool expect_null_image) {
+  if (current_chapter_images_[chapter_index] == expect_null_image) {
+    return;
+  }
+  expected_chapter_images_[chapter_index] = expect_null_image;
 
   DCHECK(!run_loop_);
   run_loop_ = std::make_unique<base::RunLoop>();

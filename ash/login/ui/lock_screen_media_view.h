@@ -68,6 +68,8 @@ class ASH_EXPORT LockScreenMediaView
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override {}
 
   // media_message_center::MediaNotificationContainer:
   void OnExpanded(bool expanded) override {}

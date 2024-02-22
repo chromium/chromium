@@ -121,6 +121,8 @@ class ASH_EXPORT LockScreenMediaControlsView
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override {}
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;

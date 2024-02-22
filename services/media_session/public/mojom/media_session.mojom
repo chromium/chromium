@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 22
+// Next MinVersion: 23
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -49,6 +49,9 @@ enum MediaSessionImageType {
 
   // The icon associated with the source of the media session.
   kSourceIcon,
+
+  // The artwork associated with its chapters in the media session.
+  [MinVersion=22] kChapter,
 };
 
 [Stable, Extensible]

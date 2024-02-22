@@ -115,6 +115,9 @@ class MediaController : public mojom::MediaController,
   base::flat_map<mojom::MediaSessionImageType, std::vector<MediaImage>>
       session_images_;
 
+  // The current images for the chapter at the index of the chapter list.
+  base::flat_map<int, std::vector<MediaImage>> chapter_images_;
+
   // Raw pointer to the media session we are controlling.
   raw_ptr<AudioFocusRequest> session_ = nullptr;
 

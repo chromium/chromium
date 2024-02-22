@@ -54,6 +54,8 @@ class ASH_EXPORT UnifiedMediaControlsController
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override {}
 
   views::View* CreateView();
 

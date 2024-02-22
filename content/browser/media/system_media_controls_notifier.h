@@ -58,6 +58,8 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   void MediaControllerImageChanged(
       ::media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override {}
 
  private:
   friend class SystemMediaControlsNotifierTest;

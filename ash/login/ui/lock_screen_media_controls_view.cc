@@ -16,6 +16,7 @@
 #include "ash/style/ash_color_id.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -653,6 +654,11 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
             kDesiredSourceIconSize);
       }
       header_row_->SetAppIcon(session_icon);
+      break;
+    }
+    case media_session::mojom::MediaSessionImageType::kChapter: {
+      NOTREACHED() << " The chpater images should be updated in "
+                      "`MediaControllerChapterImageChanged` ";
     }
   }
 }

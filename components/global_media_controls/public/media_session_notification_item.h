@@ -99,6 +99,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override {}
 
   // media_message_center::MediaNotificationItem:
   void SetView(media_message_center::MediaNotificationView* view) override;
