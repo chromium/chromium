@@ -549,6 +549,8 @@ void ProfileMenuView::BuildIdentity() {
   } else {
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
             switches::ExplicitBrowserSigninPhase::kExperimental) &&
+        !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+            switches::ExplicitBrowserSigninPhase::kFull) &&
         account.IsEmpty()) {
       account_info =
           signin_ui_util::GetSingleAccountForPromos(identity_manager);
@@ -560,11 +562,13 @@ void ProfileMenuView::BuildIdentity() {
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
         ui::ImageModel::FromImage(
-            // If the user is in the web-only signed-in state in the UNO model,
-            // use the account image in the profile menu header.
+            // If the user is in the web-only signed-in state in the
+            // experimental version of the UNO model, use the account image in
+            // the profile menu header.
             // If the account does not have an image or it's not available yet,
             // a grey silhouette will be used.
-            // If UNO is disabled or there is no account, use the profile icon.
+            // If UNO is disabled or enabled in the full version, or there is no
+            // account, use the profile icon.
             !account_info.IsEmpty()
                 ? account_info.account_image
                 : profile_attributes->GetAvatarIcon(kIdentityImageSize)),
