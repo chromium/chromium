@@ -247,15 +247,17 @@ FocusModeTray::~FocusModeTray() {
   FocusModeController::Get()->RemoveObserver(this);
 }
 
-const views::ImageButton* FocusModeTray::GetRadioButtonForTesting() const {
-  return task_item_view_->GetRadioButton();
-}
-
-const views::Label* FocusModeTray::GetTaskTitleForTesting() const {
-  return task_item_view_->GetTaskTitle();
-}
-
 void FocusModeTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
+  Shelf* target_shelf =
+      Shelf::ForWindow(static_cast<aura::Window*>(event.target()));
+  auto* target_tray = target_shelf->status_area_widget()->focus_mode_tray();
+  // Do not reset the focus session if the located event is on a different
+  // `FocusModeTray` view.
+  if (shelf() != target_shelf && target_tray->EventTargetsTray(event)) {
+    CloseBubbleAndMaybeReset(/*should_reset=*/false);
+    return;
+  }
+
   CloseBubble();
 }
 
@@ -292,27 +294,7 @@ TrayBubbleView* FocusModeTray::GetBubbleView() {
 }
 
 void FocusModeTray::CloseBubble() {
-  if (!bubble_) {
-    return;
-  }
-
-  if (auto* bubble_view = bubble_->GetBubbleView()) {
-    bubble_view->ResetDelegate();
-  }
-
-  bubble_.reset();
-  countdown_view_ = nullptr;
-  ending_moment_view_ = nullptr;
-  task_item_view_ = nullptr;
-  bubble_view_container_ = nullptr;
-  SetIsActive(false);
-  progress_indicator_->layer()->SetOpacity(1);
-  UpdateProgressRing();
-
-  if (auto* controller = FocusModeController::Get();
-      !controller->in_focus_session()) {
-    controller->ResetFocusSession();
-  }
+  CloseBubbleAndMaybeReset(/*should_reset=*/true);
 }
 
 void FocusModeTray::ShowBubble() {
@@ -443,6 +425,14 @@ void FocusModeTray::Layout(PassKey) {
   progress_indicator_->layer()->SetBounds(progress_bounds);
 }
 
+const views::ImageButton* FocusModeTray::GetRadioButtonForTesting() const {
+  return task_item_view_->GetRadioButton();
+}
+
+const views::Label* FocusModeTray::GetTaskTitleForTesting() const {
+  return task_item_view_->GetTaskTitle();
+}
+
 void FocusModeTray::UpdateTrayIcon() {
   SkColor color;
   if (chromeos::features::IsJellyEnabled()) {
@@ -553,6 +543,40 @@ void FocusModeTray::AnimateBubbleResize() {
 void FocusModeTray::UpdateProgressRing() {
   // Schedule a repaint of the indicator.
   progress_indicator_->InvalidateLayer();
+}
+
+bool FocusModeTray::EventTargetsTray(const ui::LocatedEvent& event) const {
+  if (event.target() != GetWidget()->GetNativeWindow()) {
+    return false;
+  }
+
+  gfx::Point location_in_status_area = event.location();
+  views::View::ConvertPointFromWidget(this, &location_in_status_area);
+  return bounds().Contains(location_in_status_area);
+}
+
+void FocusModeTray::CloseBubbleAndMaybeReset(bool should_reset) {
+  if (!bubble_) {
+    return;
+  }
+
+  if (auto* bubble_view = bubble_->GetBubbleView()) {
+    bubble_view->ResetDelegate();
+  }
+
+  bubble_.reset();
+  countdown_view_ = nullptr;
+  ending_moment_view_ = nullptr;
+  task_item_view_ = nullptr;
+  bubble_view_container_ = nullptr;
+  SetIsActive(false);
+  progress_indicator_->layer()->SetOpacity(1);
+  UpdateProgressRing();
+
+  if (auto* controller = FocusModeController::Get();
+      !controller->in_focus_session() && should_reset) {
+    controller->ResetFocusSession();
+  }
 }
 
 BEGIN_METADATA(FocusModeTray)

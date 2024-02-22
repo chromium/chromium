@@ -105,6 +105,16 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // Updates the progression of the progress indicator.
   void UpdateProgressRing();
 
+  // Returns whether the event is located specifically on this focus mode tray
+  // view.
+  bool EventTargetsTray(const ui::LocatedEvent& event) const;
+
+  // Handles all the cleanup logic associated with closing the bubble, and may
+  // reset the focus session if conditions are met. This helper function is
+  // mainly used to prevent resetting the focus session when using
+  // multi-displays during the ending moment.
+  void CloseBubbleAndMaybeReset(bool should_reset);
+
   // This is used to track the current session snapshot, if any.
   std::optional<FocusModeSession::Snapshot> session_snapshot_;
 

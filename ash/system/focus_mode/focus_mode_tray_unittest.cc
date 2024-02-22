@@ -369,7 +369,7 @@ TEST_F(FocusModeTrayTest, EndingMomentPersists) {
   EXPECT_TRUE(controller->in_ending_moment());
   EXPECT_TRUE(focus_mode_tray_->GetVisible());
 
-  // Open the tray bubble and wait foran arbitrarily long time. Verify that
+  // Open the tray bubble and wait for an arbitrarily long time. Verify that
   // the bubble is not closed automatically.
   LeftClickOn(focus_mode_tray_);
   EXPECT_TRUE(focus_mode_tray_->is_active());
@@ -481,6 +481,58 @@ TEST_F(FocusModeTrayTest, EndingMomentUpdateSessionDuration) {
   EXPECT_FALSE(button->GetEnabled());
   EXPECT_EQ(focus_mode_util::kMaximumDuration,
             controller->current_session()->session_duration());
+}
+
+// Tests that the ending moment functions correctly on multiple displays and
+// does not terminate unexpectedly.
+// Regression test for b/323982290.
+TEST_F(FocusModeTrayTest, EndingMomentMultiDisplay) {
+  UpdateDisplay("800x600,800x600");
+  FocusModeTray* first_tray = focus_mode_tray_;
+  FocusModeTray* second_tray =
+      StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
+          ->focus_mode_tray();
+
+  // Start a focus session and verify both trays are visible.
+  FocusModeController* controller = FocusModeController::Get();
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(first_tray->GetVisible());
+  EXPECT_TRUE(second_tray->GetVisible());
+
+  // Trigger the ending moment.
+  AdvanceClock(controller->GetSessionDuration());
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(first_tray->GetVisible());
+  EXPECT_TRUE(second_tray->GetVisible());
+
+  // Click on the tray on the first display to open the associated tray bubble.
+  LeftClickOn(first_tray);
+  EXPECT_TRUE(first_tray->is_active());
+  EXPECT_TRUE(first_tray->GetBubbleView());
+  EXPECT_FALSE(second_tray->is_active());
+  EXPECT_FALSE(second_tray->GetBubbleView());
+
+  // Click on the tray on the second display. The ending moment should persist.
+  // This should also close the bubble on the first display and show the bubble
+  // on the second display.
+  LeftClickOn(second_tray);
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(first_tray->GetVisible());
+  EXPECT_FALSE(first_tray->is_active());
+  EXPECT_FALSE(first_tray->GetBubbleView());
+  EXPECT_TRUE(second_tray->GetVisible());
+  EXPECT_TRUE(second_tray->is_active());
+  EXPECT_TRUE(second_tray->GetBubbleView());
+
+  // Clicking the same (second) tray again should close the bubble and terminate
+  // the ending moment as well.
+  LeftClickOn(second_tray);
+  EXPECT_FALSE(controller->in_ending_moment());
+  EXPECT_FALSE(first_tray->GetVisible());
+  EXPECT_FALSE(second_tray->GetVisible());
+  EXPECT_FALSE(second_tray->GetBubbleView());
 }
 
 }  // namespace ash
