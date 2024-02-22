@@ -331,6 +331,17 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       performAction:grey_tap()];
 }
 
+- (void)tapContentNotificationsMenuButton:(id<GREYMatcher>)buttonMatcher {
+  ScopedDisableTimerTracking disabler;
+  id<GREYMatcher> interactableButtonMatcher =
+      grey_allOf(buttonMatcher, grey_interactable(), nil);
+  [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
+         usingSearchAction:ScrollDown()
+      onElementWithMatcher:chrome_test_util::
+                               SettingsContentNotificationsTableView()]
+      performAction:grey_tap()];
+}
+
 - (void)tapAccountsMenuButton:(id<GREYMatcher>)buttonMatcher {
   ScopedDisableTimerTracking disabler;
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
