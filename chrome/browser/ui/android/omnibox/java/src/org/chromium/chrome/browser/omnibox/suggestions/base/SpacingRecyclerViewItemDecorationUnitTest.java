@@ -29,9 +29,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class SpacingRecyclerViewItemDecorationUnitTest {
     private static final int LEAD_IN_SPACE = 10;
     private static final int ELEMENT_SPACE = 17;
+    private static final int ITEM_FIRST = 0;
+    private static final int ITEM_MIDDLE = 1;
+    private static final int ITEM_LAST = 2;
+    private static final int ITEM_COUNT = ITEM_LAST + 1;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock RecyclerView mRecyclerView;
+    private @Mock RecyclerView.Adapter mAdapter;
     private @Mock View mChildView;
     private SpacingRecyclerViewItemDecoration mDecoration;
     private Rect mOffsets;
@@ -39,6 +44,8 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
     @Before
     public void setUp() {
         mDecoration = new SpacingRecyclerViewItemDecoration(LEAD_IN_SPACE, ELEMENT_SPACE);
+        doReturn(mAdapter).when(mRecyclerView).getAdapter();
+        doReturn(ITEM_COUNT).when(mAdapter).getItemCount();
         mOffsets = new Rect();
     }
 
@@ -51,7 +58,7 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void testSpacing_firstElementLTR() {
-        doReturn(0).when(mRecyclerView).getChildAdapterPosition(mChildView);
+        doReturn(ITEM_FIRST).when(mRecyclerView).getChildAdapterPosition(mChildView);
         doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
@@ -62,7 +69,7 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void testSpacing_firstElementRTL() {
-        doReturn(0).when(mRecyclerView).getChildAdapterPosition(mChildView);
+        doReturn(ITEM_FIRST).when(mRecyclerView).getChildAdapterPosition(mChildView);
         doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.left);
@@ -72,8 +79,30 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
     }
 
     @Test
-    public void testSpacing_nonFirstElement() {
-        doReturn(1).when(mRecyclerView).getChildAdapterPosition(mChildView);
+    public void testSpacing_lastElementLTR() {
+        doReturn(ITEM_LAST).when(mRecyclerView).getChildAdapterPosition(mChildView);
+        doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
+        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.left);
+        assertEquals(LEAD_IN_SPACE, mOffsets.right);
+        assertEquals(0, mOffsets.top);
+        assertEquals(0, mOffsets.bottom);
+    }
+
+    @Test
+    public void testSpacing_lastElementRTL() {
+        doReturn(ITEM_LAST).when(mRecyclerView).getChildAdapterPosition(mChildView);
+        doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
+        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
+        assertEquals(LEAD_IN_SPACE, mOffsets.left);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
+        assertEquals(0, mOffsets.top);
+        assertEquals(0, mOffsets.bottom);
+    }
+
+    @Test
+    public void testSpacing_middleElement() {
+        doReturn(ITEM_MIDDLE).when(mRecyclerView).getChildAdapterPosition(mChildView);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.left);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.right);

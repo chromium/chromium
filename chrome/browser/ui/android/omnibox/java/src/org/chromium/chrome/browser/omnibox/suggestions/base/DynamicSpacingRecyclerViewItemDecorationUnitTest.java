@@ -38,24 +38,32 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
     private static final int CONTAINER_SIZE = 1000;
     private static final int LEAD_IN_SPACE = 10;
     private static final int MIN_ELEMENT_SPACE = 50;
+    private static final int ITEM_FIRST = 0;
+    private static final int ITEM_MIDDLE = 1;
+    private static final int ITEM_LAST = 2;
+    private static final int ITEM_COUNT = ITEM_LAST + 1;
 
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock RecyclerView mRecyclerView;
+    private @Mock RecyclerView.Adapter mAdapter;
     private @Mock View mFirstView;
-    private @Mock View mSecondView;
+    private @Mock View mMiddleView;
+    private @Mock View mLastView;
 
     private DynamicSpacingRecyclerViewItemDecoration mDecoration;
     private Rect mOffsets;
-    private int mMinimumSpace;
 
     @Before
     public void setUp() {
         mOffsets = new Rect();
 
-        lenient().doReturn(0).when(mRecyclerView).getChildAdapterPosition(mFirstView);
-        lenient().doReturn(1).when(mRecyclerView).getChildAdapterPosition(mSecondView);
+        lenient().doReturn(ITEM_COUNT).when(mAdapter).getItemCount();
+        lenient().doReturn(mAdapter).when(mRecyclerView).getAdapter();
+        lenient().doReturn(ITEM_FIRST).when(mRecyclerView).getChildAdapterPosition(mFirstView);
+        lenient().doReturn(ITEM_MIDDLE).when(mRecyclerView).getChildAdapterPosition(mMiddleView);
+        lenient().doReturn(ITEM_LAST).when(mRecyclerView).getChildAdapterPosition(mLastView);
         lenient().doReturn(ContextUtils.getApplicationContext()).when(mRecyclerView).getContext();
 
         doReturn(CONTAINER_SIZE).when(mRecyclerView).getMeasuredWidth();
@@ -87,9 +95,21 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
         assertEquals(expectedSpacing / 2, mOffsets.right);
 
         // Second item: same spacing on both sides.
-        mDecoration.getItemOffsets(mOffsets, mSecondView, mRecyclerView, null);
+        mDecoration.getItemOffsets(mOffsets, mMiddleView, mRecyclerView, null);
         assertEquals(expectedSpacing / 2, mOffsets.left);
         assertEquals(expectedSpacing / 2, mOffsets.right);
+
+        // Last item, RTL: lead-in space on the left.
+        doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
+        mDecoration.getItemOffsets(mOffsets, mLastView, mRecyclerView, null);
+        assertEquals(expectedSpacing / 2, mOffsets.right);
+        assertEquals(LEAD_IN_SPACE, mOffsets.left);
+
+        // Last item, LTR: lead-in space on the right.
+        doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
+        mDecoration.getItemOffsets(mOffsets, mLastView, mRecyclerView, null);
+        assertEquals(expectedSpacing / 2, mOffsets.left);
+        assertEquals(LEAD_IN_SPACE, mOffsets.right);
     }
 
     @Test

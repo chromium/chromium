@@ -35,9 +35,12 @@ public class SpacingRecyclerViewItemDecoration extends ItemDecoration {
             Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         outRect.left = outRect.right = mElementSpace / 2;
 
-        if (parent.getChildAdapterPosition(view) != 0) return;
+        int childCount = parent.getAdapter().getItemCount();
+        int itemPosition = parent.getChildAdapterPosition(view);
+        if (itemPosition != 0 && itemPosition != (childCount - 1)) return;
 
-        if (parent.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+        // Apply lead-in padding ahead of the first and after the last element.
+        if (parent.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL ^ itemPosition != 0) {
             outRect.right = mLeadInSpace;
         } else {
             outRect.left = mLeadInSpace;
