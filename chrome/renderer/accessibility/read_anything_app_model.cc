@@ -1039,7 +1039,7 @@ std::string ReadAnythingAppModel::GetAltText(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   CHECK(ax_node);
   std::string alt_text =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kImageAnnotation);
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
   return alt_text;
 }
 

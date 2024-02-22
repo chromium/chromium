@@ -788,7 +788,7 @@ TEST_F(ReadAnythingAppControllerTest, GetAltText) {
   ui::AXNodeData img_node;
   img_node.id = 2;
   img_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, img);
-  img_node.AddStringAttribute(ax::mojom::StringAttribute::kImageAnnotation,
+  img_node.AddStringAttribute(ax::mojom::StringAttribute::kName,
                               sample_alt_text);
 
   update.nodes = {img_node};
