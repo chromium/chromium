@@ -140,14 +140,6 @@ std::vector<gfx::BufferPlane> CreateGpuBufferPlanes() {
   return planes;
 }
 
-// Returns the buffer texture target used to create a `MailboxHolder` according
-// to our GPU buffer usage, buffer format, and the given `context_capabilities`.
-uint32_t CalculateBufferTextureTarget(
-    const gpu::Capabilities& context_capabilities) {
-  return gpu::GetBufferTextureTarget(GetBufferUsage(), GetBufferFormat(),
-                                     context_capabilities);
-}
-
 bool IsFatalError(media::VideoCaptureError error) {
   switch (error) {
     case media::VideoCaptureError::kCrosHalV3FailedToStartDeviceThread:
@@ -271,8 +263,6 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     DCHECK(buffer_handle->is_gpu_memory_buffer_handle());
     if (context_provider_) {
       context_provider_->AddObserver(this);
-      buffer_texture_target_ = CalculateBufferTextureTarget(
-          context_provider_->ContextCapabilities());
     }
   }
 
@@ -333,8 +323,6 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
         context_factory_->SharedMainThreadRasterContextProvider();
     if (context_provider_) {
       context_provider_->AddObserver(this);
-      buffer_texture_target_ = CalculateBufferTextureTarget(
-          context_provider_->ContextCapabilities());
     }
   }
 
@@ -456,12 +444,16 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     DCHECK(!frame_info->is_premapped);
 #endif
 
+    auto buffer_texture_target =
+        gpu::GetBufferTextureTarget(GetBufferUsage(), GetBufferFormat(),
+                                    context_provider_->ContextCapabilities());
+
     gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
     for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
       DCHECK(shared_images_[plane]);
-      mailbox_holder_array[plane] = gpu::MailboxHolder(
-          shared_images_[plane]->mailbox(), mailbox_holder_sync_token_,
-          buffer_texture_target_);
+      mailbox_holder_array[plane] =
+          gpu::MailboxHolder(shared_images_[plane]->mailbox(),
+                             mailbox_holder_sync_token_, buffer_texture_target);
     }
     mailbox_holder_sync_token_.Clear();
 
@@ -518,11 +510,6 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   gpu::GpuMemoryBufferSupport gpu_memory_buffer_support_;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;
-
-  // The texture target we use to create a `MailboxHolder`. This value is
-  // calculated for out GPU buffer format, and GPU buffer usage, and the current
-  // capabilities of `context_provider_`.
-  uint32_t buffer_texture_target_;
 
   // Contains the shared images of the video frame planes created from the GPU
   // memory buffer.
