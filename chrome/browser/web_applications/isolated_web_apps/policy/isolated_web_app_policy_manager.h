@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_POLICY_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_POLICY_MANAGER_H_
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -34,24 +36,41 @@ class IsolatedWebAppDownloader;
 
 namespace internal {
 
+enum class BulkIwaInstallerResultType {
+  kSuccess,
+  kErrorNotEphemeralSession,
+  kErrorCantCreateRootDirectory,
+  kErrorUpdateManifestDownloadFailed,
+  kErrorUpdateManifestParsingFailed,
+  kErrorWebBundleUrlCantBeDetermined,
+  kErrorCantCreateIwaDirectory,
+  kErrorCantDownloadWebBundle,
+  kErrorCantInstallFromWebBundle,
+  kUnknown,
+};
+
+class BulkIwaInstallerResult {
+ public:
+  using Type = BulkIwaInstallerResultType;
+
+  explicit BulkIwaInstallerResult(Type type, std::string message = "");
+
+  base::Value::Dict ToDebugValue() const;
+
+  Type type() const { return type_; }
+
+  std::string_view message() const { return message_; }
+
+ private:
+  Type type_;
+  std::string message_;
+};
+
 // This class installs the given collection of IWAs.
 class BulkIwaInstaller {
  public:
-  enum class EphemeralAppInstallResult {
-    kSuccess,
-    kErrorNotEphemeralSession,
-    kErrorCantCreateRootDirectory,
-    kErrorUpdateManifestDownloadFailed,
-    kErrorUpdateManifestParsingFailed,
-    kErrorWebBundleUrlCantBeDetermined,
-    kErrorCantCreateIwaDirectory,
-    kErrorCantDownloadWebBundle,
-    kErrorCantInstallFromWebBundle,
-    kUnknown,
-  };
-
-  using Result =
-      std::pair<web_package::SignedWebBundleId, EphemeralAppInstallResult>;
+  using InstallResult = BulkIwaInstallerResult;
+  using Result = std::pair<web_package::SignedWebBundleId, InstallResult>;
   using ResultCallback = base::OnceCallback<void(std::vector<Result>)>;
 
   static constexpr char kEphemeralIwaRootDirectory[] = "EphemeralIWA";
@@ -136,8 +155,8 @@ class BulkIwaInstaller {
   void WipeIwaDownloadDirectory();
   void OnIwaDownloadDirectoryWiped(bool wipe_result);
 
-  void FinishWithResult(EphemeralAppInstallResult result);
-  void SetResultForAllAndFinish(EphemeralAppInstallResult result);
+  void FinishWithResult(InstallResult result);
+  void SetResultForAllAndFinish(InstallResult result);
   void ContinueWithTheNextApp();
 
   data_decoder::mojom::JsonParser* GetJsonParserPtr();
@@ -160,6 +179,9 @@ class BulkIwaInstaller {
 
   base::WeakPtrFactory<BulkIwaInstaller> weak_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         BulkIwaInstallerResultType install_result_type);
 
 // Uninstalls a list of IWAs based on their Web Bundle IDs.
 class BulkIwaUninstaller {
@@ -200,29 +222,51 @@ class IsolatedWebAppPolicyManager {
   void Start(base::OnceClosure on_started_callback);
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
+  base::Value GetDebugValue() const;
+
  private:
   void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
 
   void Uninstall(base::OnceClosure next_step_callback);
-  void OnUninstalled(base::OnceClosure next_step_callback,
-                     std::vector<web_app::internal::BulkIwaUninstaller::Result>
-                         uninstall_results);
+  void OnUninstalled(
+      base::OnceClosure next_step_callback,
+      std::vector<internal::BulkIwaUninstaller::Result> uninstall_results);
 
   void Install(base::OnceClosure next_step_callback);
   void OnInstalled(
       base::OnceClosure next_step_callback,
-      std::vector<web_app::internal::BulkIwaInstaller::Result> install_results);
+      std::vector<internal::BulkIwaInstaller::Result> install_results);
+
+  // Keeps track of the last few processing logs for debugging purposes.
+  // Automatically discards older logs to keep at most `kMaxEntries`.
+  class ProcessLogs {
+   public:
+    static constexpr size_t kMaxEntries = 10;
+
+    ProcessLogs();
+    ~ProcessLogs();
+
+    void AppendCompletedStep(base::Value::Dict log);
+
+    base::Value ToDebugValue() const;
+
+   private:
+    base::circular_deque<base::Value::Dict> logs_;
+  };
 
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<WebAppProvider> provider_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
+  ProcessLogs process_logs_;
   std::unique_ptr<internal::BulkIwaInstaller> bulk_installer_;
   std::unique_ptr<internal::BulkIwaUninstaller> bulk_uninstaller_;
   base::OnceClosure on_started_callback_;
+
   bool reprocess_policy_needed_ = false;
   bool policy_is_being_processed_ = false;
+  base::Value::Dict current_process_log_;
 
   std::vector<IsolatedWebAppExternalInstallOptions> to_be_installed_;
   std::vector<web_package::SignedWebBundleId> to_be_removed_;

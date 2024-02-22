@@ -48,6 +48,10 @@
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -82,6 +86,9 @@ constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
 constexpr char kWebAppDirectoryDiskState[] = "WebAppDirectoryDiskState";
 constexpr char kIsolatedWebAppUpdateManager[] = "IsolatedWebAppUpdateManager";
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kIsolatedWebAppPolicyManager[] = "IsolatedWebAppPolicyManager";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
@@ -115,6 +122,9 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kAppShimRegistryLocalStorage);
 #endif
   index.Append(kIsolatedWebAppUpdateManager);
+#if BUILDFLAG(IS_CHROMEOS)
+  index.Append(kIsolatedWebAppPolicyManager);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   index.Append(kWebAppDirectoryDiskState);
 
   return root;
@@ -333,6 +343,15 @@ base::Value BuildIsolatedWebAppUpdaterManagerJson(
                               provider.iwa_update_manager().AsDebugValue()));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+base::Value BuildIsolatedWebAppPolicyManagerJson(
+    web_app::WebAppProvider& provider) {
+  return base::Value(
+      base::Value::Dict().Set(kIsolatedWebAppPolicyManager,
+                              provider.iwa_policy_manager().GetDebugValue()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void BuildDirectoryState(base::FilePath file_or_folder,
                          base::Value::Dict* folder) {
   base::File::Info info;
@@ -478,6 +497,9 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildAppShimRegistryLocalStorageJson());
 #endif
   root.Append(BuildIsolatedWebAppUpdaterManagerJson(*provider));
+#if BUILDFLAG(IS_CHROMEOS)
+  root.Append(BuildIsolatedWebAppPolicyManagerJson(*provider));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,

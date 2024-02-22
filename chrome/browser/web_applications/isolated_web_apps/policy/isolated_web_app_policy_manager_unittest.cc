@@ -41,11 +41,17 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
 namespace {
+
+using ::testing::ElementsAreArray;
+using ::testing::Eq;
+using ::testing::Pair;
+using ::testing::Property;
 
 constexpr char kUpdateManifestUrl1[] =
     "https://example.com/1/update-manifest-1.json";
@@ -207,7 +213,7 @@ class BulkIwaInstallerTest : public ::testing::Test {
                 &test_factory_)) {}
 
  protected:
-  using InstallResult = internal::BulkIwaInstaller::EphemeralAppInstallResult;
+  using InstallResult = internal::BulkIwaInstallerResult;
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -258,17 +264,18 @@ class BulkIwaInstallerTest : public ::testing::Test {
 // legitimate failures.
 TEST_F(BulkIwaInstallerTest, MgsRegularFlow) {
   auto expected_results = base::test::ToVector<
-      std::vector<std::pair<std::string_view, InstallResult>>>(
-      {{kWebBundleId1, InstallResult::kSuccess},
-       {kWebBundleId2, InstallResult::kSuccess},
-       {kWebBundleId3, InstallResult::kErrorUpdateManifestDownloadFailed},
-       {kWebBundleId4, InstallResult::kErrorUpdateManifestParsingFailed},
-       {kWebBundleId5, InstallResult::kErrorWebBundleUrlCantBeDetermined},
-       {kWebBundleId6, InstallResult::kErrorCantInstallFromWebBundle},
-       {kWebBundleId7, InstallResult::kErrorCantDownloadWebBundle}},
-      [](const auto& item) -> internal::BulkIwaInstaller::Result {
-        return {*web_package::SignedWebBundleId::Create(item.first),
-                item.second};
+      std::vector<std::pair<std::string_view, InstallResult::Type>>>(
+      {{kWebBundleId1, InstallResult::Type::kSuccess},
+       {kWebBundleId2, InstallResult::Type::kSuccess},
+       {kWebBundleId3, InstallResult::Type::kErrorUpdateManifestDownloadFailed},
+       {kWebBundleId4, InstallResult::Type::kErrorUpdateManifestParsingFailed},
+       {kWebBundleId5, InstallResult::Type::kErrorWebBundleUrlCantBeDetermined},
+       {kWebBundleId6, InstallResult::Type::kErrorCantInstallFromWebBundle},
+       {kWebBundleId7, InstallResult::Type::kErrorCantDownloadWebBundle}},
+      [](const auto& item) {
+        const auto& [id, type] = item;
+        return Pair(Eq(*web_package::SignedWebBundleId::Create(id)),
+                    Property("type", &InstallResult::type, Eq(type)));
       });
 
   base::test::TestFuture<std::vector<internal::BulkIwaInstaller::Result>>
@@ -278,11 +285,11 @@ TEST_F(BulkIwaInstallerTest, MgsRegularFlow) {
       std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
   installer.InstallEphemeralApps();
 
-  EXPECT_EQ(future.Get(), expected_results);
+  EXPECT_THAT(future.Get(), ElementsAreArray(expected_results));
 
   const base::FilePath iwa_root_dir = dir_.GetPath().Append(
       internal::BulkIwaInstaller::kEphemeralIwaRootDirectory);
-  ASSERT_TRUE(base::IsDirectoryEmpty(iwa_root_dir));
+  EXPECT_TRUE(base::IsDirectoryEmpty(iwa_root_dir));
 }
 
 // If there is no MGS we don't create root directory for the IWAs.
@@ -290,17 +297,18 @@ TEST_F(BulkIwaInstallerTest, RegularUserDirectoryForIwaNotCreated) {
   test_managed_guest_session_.reset();
 
   auto expected_results = base::test::ToVector<
-      std::vector<std::pair<std::string_view, InstallResult>>>(
-      {{kWebBundleId1, InstallResult::kErrorNotEphemeralSession},
-       {kWebBundleId2, InstallResult::kErrorNotEphemeralSession},
-       {kWebBundleId3, InstallResult::kErrorNotEphemeralSession},
-       {kWebBundleId4, InstallResult::kErrorNotEphemeralSession},
-       {kWebBundleId5, InstallResult::kErrorNotEphemeralSession},
-       {kWebBundleId6, InstallResult::kErrorNotEphemeralSession},
-       {kWebBundleId7, InstallResult::kErrorNotEphemeralSession}},
-      [](const auto& item) -> internal::BulkIwaInstaller::Result {
-        return {*web_package::SignedWebBundleId::Create(item.first),
-                item.second};
+      std::vector<std::pair<std::string_view, InstallResult::Type>>>(
+      {{kWebBundleId1, InstallResult::Type::kErrorNotEphemeralSession},
+       {kWebBundleId2, InstallResult::Type::kErrorNotEphemeralSession},
+       {kWebBundleId3, InstallResult::Type::kErrorNotEphemeralSession},
+       {kWebBundleId4, InstallResult::Type::kErrorNotEphemeralSession},
+       {kWebBundleId5, InstallResult::Type::kErrorNotEphemeralSession},
+       {kWebBundleId6, InstallResult::Type::kErrorNotEphemeralSession},
+       {kWebBundleId7, InstallResult::Type::kErrorNotEphemeralSession}},
+      [](const auto& item) {
+        const auto& [id, type] = item;
+        return Pair(Eq(*web_package::SignedWebBundleId::Create(id)),
+                    Property("type", &InstallResult::type, Eq(type)));
       });
 
   base::test::TestFuture<std::vector<internal::BulkIwaInstaller::Result>>
@@ -310,7 +318,7 @@ TEST_F(BulkIwaInstallerTest, RegularUserDirectoryForIwaNotCreated) {
       std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
   installer.InstallEphemeralApps();
 
-  EXPECT_EQ(future.Get(), expected_results);
+  EXPECT_THAT(future.Get(), ElementsAreArray(expected_results));
   EXPECT_FALSE(base::DirectoryExists(dir_.GetPath().Append(
       internal::BulkIwaInstaller::kEphemeralIwaRootDirectory)));
 }
