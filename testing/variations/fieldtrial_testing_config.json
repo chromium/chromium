@@ -20117,6 +20117,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "min_gms_core_version_no_dots": "240400000"
+                    },
                     "enable_features": [
                         "WebAuthenticationAndroidCredMan"
                     ]
