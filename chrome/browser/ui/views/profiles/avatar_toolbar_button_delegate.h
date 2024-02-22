@@ -27,6 +27,12 @@
 class Browser;
 class Profile;
 
+// Internal structures.
+namespace internal {
+class StateManager;
+enum class ButtonState;
+}  // namespace internal
+
 // Handles the business logic for AvatarToolbarButton.
 // Listens to Chrome and Profile changes in order to compute the proper state of
 // the button. This state is used to compute the information requested by
@@ -93,21 +99,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
     kShowingEnterpriseText,
   };
 
-  // States of the button ordered in priority of getting displayed.
-  enum class ButtonState {
-    kIncognitoProfile,
-    kGuestSession,
-    kExplicitTextShowing,
-    kAnimatedUserIdentity,
-    kSyncPaused,
-    // An error in sync-the-feature or sync-the-transport.
-    kSyncError,
-    kWork,
-    kSchool,
-    kNormal
-  };
-
-  ButtonState ComputeState() const;
+  internal::ButtonState ComputeState() const;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
@@ -195,11 +187,11 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   // Text to be displayed while the state is
   // `ButtonState::kExplicitTextShowing`.
+  // TODO(b/324018028): Move this info into it's own implementation of
+  // StateProvider.
   std::u16string explicit_text_;
-  // Internal pointer to the current explicit closure. This is used if multiple
-  // explicit content is trying to be shown at the same time. Priority to the
-  // last call.
-  raw_ptr<base::ScopedClosureRunner> hide_explicit_closure_ptr_ = nullptr;
+
+  std::unique_ptr<internal::StateManager> state_manager_;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
 };

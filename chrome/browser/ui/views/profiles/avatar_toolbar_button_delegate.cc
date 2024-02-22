@@ -7,7 +7,9 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
@@ -41,8 +43,161 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
+namespace internal {
+
+// States of the button ordered in priority of getting displayed.
+// The order of those values is used with the `StateManager` to make sure the
+// active state with the highest priority is shown.
+// The lower the value of the enum, the higher the priority.
+enum class ButtonState {
+  kGuestSession,
+  kIncognitoProfile,
+  kExplicitTextShowing,
+  kAnimatedUserIdentity,
+  kSyncPaused,
+  // An error in sync-the-feature or sync-the-transport.
+  kSyncError,
+  kWork,
+  kSchool,
+  kNormal
+};
+
 namespace {
 
+// Each implementation of StateProvider should be able to manage itself with the
+// appropriate initial values such as a profile and observe/listen to changes in
+// order to affect their active status.
+class StateProvider {
+ public:
+  virtual bool IsActive() const = 0;
+
+  virtual ~StateProvider() = default;
+};
+
+class GuestStateProvider : public StateProvider {
+ public:
+  explicit GuestStateProvider(Profile* profile) : profile_(profile) {}
+  ~GuestStateProvider() override = default;
+
+  bool IsActive() const override { return profile_->IsGuestSession(); }
+
+ private:
+  raw_ptr<Profile> profile_;
+};
+
+class IncognitoStateProvider : public StateProvider {
+ public:
+  explicit IncognitoStateProvider(Profile* profile) : profile_(profile) {}
+  ~IncognitoStateProvider() override = default;
+
+  bool IsActive() const override { return profile_->IsIncognitoProfile(); }
+
+ private:
+  raw_ptr<Profile> profile_;
+};
+
+class ExplicitStateProvider : public StateProvider {
+ public:
+  explicit ExplicitStateProvider(base::OnceClosure clear_avatar_text_closure)
+      : clear_avatar_text_closure_(std::move(clear_avatar_text_closure)) {}
+  ~ExplicitStateProvider() override = default;
+
+  bool IsActive() const override { return active_; }
+
+  // Used as the callback closure to the setter of the explicit state,
+  // or when overriding the explicit state by another one.
+  void Clear() {
+    if (!active_) {
+      return;
+    }
+
+    active_ = false;
+    std::move(clear_avatar_text_closure_).Run();
+  }
+
+  base::WeakPtr<ExplicitStateProvider> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool active_ = true;
+
+  base::OnceClosure clear_avatar_text_closure_;
+
+  base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
+};
+
+// TO BE USED at the end of the imlpementation.
+class NormalStateProvider : public StateProvider {
+ public:
+  // Normal state is always active.
+  bool IsActive() const override { return true; }
+};
+
+}  // namespace
+
+// Container of all the states and returns the active state with the highest
+// priority.
+// `kExplicitTextShowing` with `ExplicitStateProvider` is the only state that
+// can change dynamically.
+class StateManager {
+ public:
+  explicit StateManager(Profile* profile) {
+    // While transitioning states should be added in the right order.
+
+    // Create all the implicit states, that do not require any specific trigger.
+    states_[ButtonState::kGuestSession] =
+        std::make_unique<GuestStateProvider>(profile);
+    states_[ButtonState::kIncognitoProfile] =
+        std::make_unique<IncognitoStateProvider>(profile);
+
+    // TODO(b/324018028): The normal state should be added in the end since it
+    // is always active. While transitioning, since we use nullptr state as not
+    // implemented state yet we cannot activate this one yet.
+    // states_[ButtonState::kNormal] = std::make_unique<NormalStateProvider>();
+  }
+
+  // Returns the current active state with the highest priority.
+  // Multiple states could be active at the same time.
+  std::optional<ButtonState> GetActiveState() {
+    // Traverse the map of states sorted by their priority set in `ButtonState`.
+    for (auto& state_pair : states_) {
+      // Return the first state that is active.
+      if (state_pair.second->IsActive()) {
+        // TODO(b/324018028): this could return the state provider itself, if
+        // the information can be get from it later.
+        return state_pair.first;
+      }
+    }
+
+    // TODO(b/324018028): At the end of the implementation this should not be
+    // expected anymore and be replaced by a `NOTREACHED_NORETURN()`.
+    return std::nullopt;
+  }
+
+  // Special setter for the explicit state as it is controlled externally.
+  void SetExplicitStateProvider(
+      std::unique_ptr<ExplicitStateProvider> explicit_state_provider) {
+    if (auto it = states_.find(ButtonState::kExplicitTextShowing);
+        it != states_.end()) {
+      // Attempt to clear existing states if not already done.
+      static_cast<ExplicitStateProvider*>(it->second.get())->Clear();
+    }
+
+    states_[ButtonState::kExplicitTextShowing] =
+        std::move(explicit_state_provider);
+  }
+
+ private:
+  base::flat_map<ButtonState, std::unique_ptr<StateProvider>> states_;
+};
+
+}  // namespace internal
+
+using ButtonState = internal::ButtonState;
+using ExplicitStateProvider = internal::ExplicitStateProvider;
+
+namespace {
 constexpr base::TimeDelta kIdentityAnimationDuration = base::Seconds(3);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -66,7 +221,8 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
     : avatar_toolbar_button_(button),
       browser_(browser),
       profile_(browser->profile()),
-      last_avatar_error_(::GetAvatarSyncErrorType(profile_)) {
+      last_avatar_error_(::GetAvatarSyncErrorType(profile_)),
+      state_manager_(std::make_unique<internal::StateManager>(profile_)) {
   profile_observation_.Observe(&GetProfileAttributesStorage());
 
   if (auto* sync_service = SyncServiceFactory::GetForProfile(profile_)) {
@@ -173,23 +329,18 @@ int AvatarToolbarButtonDelegate::GetWindowCount() const {
   return BrowserList::GetOffTheRecordBrowsersActiveForProfile(profile_);
 }
 
-AvatarToolbarButtonDelegate::ButtonState
-AvatarToolbarButtonDelegate::ComputeState() const {
-  if (profile_->IsGuestSession()) {
-    return ButtonState::kGuestSession;
-  }
-
-  // Return |kIncognitoProfile| state for all OffTheRecord profile types except
-  // guest mode.
-  if (profile_->IsOffTheRecord()) {
-    return ButtonState::kIncognitoProfile;
+ButtonState AvatarToolbarButtonDelegate::ComputeState() const {
+  // TODO(b/324018028): adapt each state to be part of a `StateProvider`. When
+  // all states are migrated, remove the optional part of
+  // `StateManager::GetActiveState()` as we should always have at least one
+  // active state at all time.
+  std::optional<ButtonState> active_state = state_manager_->GetActiveState();
+  if (active_state.has_value()) {
+    return active_state.value();
   }
 
   if (button_text_state_ == TextState::kShowingName) {
     return ButtonState::kAnimatedUserIdentity;
-  }
-  if (button_text_state_ == TextState::kShowingExplicitText) {
-    return ButtonState::kExplicitTextShowing;
   }
 
   if (!last_avatar_error_ &&
@@ -478,35 +629,33 @@ base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
     const std::u16string& new_text) {
   CHECK(!new_text.empty());
 
-  // If an explicit text was already showing, enforce hiding it and invalidate
-  // its hide closure internally.
-  if (!explicit_text_.empty()) {
-    CHECK(hide_explicit_closure_ptr_);
-    // It is safe to run the scoped closure multiple times. It is a no-op after
-    // the first time.
-    hide_explicit_closure_ptr_->RunAndReset();
-  }
+  // Create the new explicit state with the clear text callback.
+  std::unique_ptr<ExplicitStateProvider> explicit_state_provider =
+      std::make_unique<ExplicitStateProvider>(
+          /*clear_avatar_text_closure=*/base::BindOnce(
+              &AvatarToolbarButtonDelegate::ClearExplicitText,
+              // This state will exist in the `StateManager` which is part of
+              // the button delegate, so `base::Unretained()` is fine.
+              base::Unretained(this)));
 
+  ExplicitStateProvider* explicit_state_provider_ptr =
+      explicit_state_provider.get();
+  // Activate the state.
+  state_manager_->SetExplicitStateProvider(std::move(explicit_state_provider));
+
+  // Prepare and update the button text.
   explicit_text_ = new_text;
-  button_text_state_ = TextState::kShowingExplicitText;
   avatar_toolbar_button_->UpdateText();
 
-  base::ScopedClosureRunner closure = base::ScopedClosureRunner(
-      base::BindOnce(&AvatarToolbarButtonDelegate::ClearExplicitText,
-                     weak_ptr_factory_.GetWeakPtr()));
-  // Keep a pointer to the current active closure in case the current explicit
-  // text was reset from another call to `ShowExplicitText()`.
-  hide_explicit_closure_ptr_ = &closure;
-  return closure;
+  return base::ScopedClosureRunner(
+      base::BindOnce(&ExplicitStateProvider::Clear,
+                     // WeakPtr is needed here since this state could be
+                     // replaced before the call to the closure.
+                     explicit_state_provider_ptr->GetWeakPtr()));
 }
 
 void AvatarToolbarButtonDelegate::ClearExplicitText() {
   explicit_text_.clear();
-  hide_explicit_closure_ptr_ = nullptr;
-  if (button_text_state_ != TextState::kShowingExplicitText) {
-    return;
-  }
-
   ShowDefaultText();
 }
 
