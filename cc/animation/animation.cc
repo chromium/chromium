@@ -140,7 +140,14 @@ void Animation::UnregisterAnimation() {
 
 void Animation::PushPropertiesTo(Animation* animation_impl) {
   std::optional<base::TimeTicks> impl_start_time;
-  if (use_start_time_from_impl_ && !GetStartTime()) {
+  if (is_replacement_ && !keyframe_effect()->keyframe_models().empty()) {
+    auto* cc_keyframe_model = KeyframeModel::ToCcKeyframeModel(
+        keyframe_effect()->keyframe_models().front().get());
+    animation_impl->keyframe_effect()->set_replaced_group(
+        cc_keyframe_model->group());
+  }
+
+  if (is_replacement_ && !GetStartTime()) {
     // If this animation is replacing an existing one before having received a
     // start time, try to get the start from the animation being replaced.
     // This is done to prevent a race where the client may cancel and restart
@@ -152,7 +159,7 @@ void Animation::PushPropertiesTo(Animation* animation_impl) {
     // pushing (and hence, the below call won't no-op).
     CHECK(keyframe_effect()->needs_push_properties());
   }
-  use_start_time_from_impl_ = false;
+  is_replacement_ = false;
 
   keyframe_effect()->PushPropertiesTo(animation_impl->keyframe_effect(),
                                       impl_start_time);
