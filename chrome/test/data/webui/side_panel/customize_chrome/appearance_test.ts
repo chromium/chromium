@@ -347,5 +347,23 @@ suite('AppearanceTest', () => {
               'NewTabPage.CustomizeChromeSidePanelAction',
               CustomizeChromeAction.EDIT_THEME_CLICKED));
     });
+
+    test('Clicking set to classic Chrome button sets metric', async () => {
+      const theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      appearanceElement.$.setClassicChromeButton.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.SET_CLASSIC_CHROME_THEME_CLICKED));
+    });
   });
 });
