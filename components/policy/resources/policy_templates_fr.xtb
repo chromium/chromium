@@ -3722,7 +3722,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="4079306023113982053">Contrôle la disponibilité de <ph name="BOREALIS_NAME" /> pour cet utilisateur.
 
       Si la règle n'est pas configurée, ou si elle est définie sur "False", <ph name="BOREALIS_NAME" /> ne sera pas disponible. Lorsque la règle est définie sur "True", <ph name="BOREALIS_NAME" /> est disponible si et seulement si aucune autre règle ou aucun autre paramètre ne la désactive.</translation>
-<translation id="408029843066770167">Autoriser l'envoi de requêtes à un service horaire de Google</translation>
+<translation id="408029843066770167">Autoriser l'envoi de requêtes à un service de temps de Google</translation>
 <translation id="408076456549153854">Activer la connexion au navigateur</translation>
 <translation id="4081127242481747676">Paramètres des capteurs</translation>
 <translation id="4082405593844340376">Indique si des restrictions doivent être appliquées aux requêtes adressées à des points de terminaison plus privés du réseau</translation>

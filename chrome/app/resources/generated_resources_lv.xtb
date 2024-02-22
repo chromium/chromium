@@ -1790,7 +1790,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2344032937402519675">Nevarēja izveidot savienojumu ar serveri. Pārbaudiet tīkla savienojumu un mēģiniet vēlreiz. Ja problēma nav novērsta, restartējiet Chromebook datoru.</translation>
 <translation id="234559068082989648">Pēc 2022. gada decembra novecojušas Chrome lietotņu versijas vairs netiks atvērtas. Sazinieties ar administratoru, lai atjauninātu šo lietotni uz jaunu versiju vai noņemtu to.</translation>
 <translation id="2345723121311404059">1 lapa nosūtīta printerim <ph name="PRINTER_NAME" /></translation>
-<translation id="2347930112185157300">Ierīce ir piesaistīta konkrētam mobilā tīkla nodrošinātājam</translation>
+<translation id="2347930112185157300">Ierīce ir piesaistīta konkrētam mobilā tīkla operatoram</translation>
 <translation id="2348176352564285430">Lietotne: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> — pieprasīta atļauja. Lai atbildētu, nospiediet vadīšanas taustiņu un uz priekšu vērsto bultiņu.</translation>
 <translation id="234889437187286781">Ielādējot datus, radās kļūda.</translation>
@@ -3917,7 +3917,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="399788104667917863">Piespraust rīkjoslai</translation>
 <translation id="3998976413398910035">Pārvaldīt printerus</translation>
 <translation id="4001540981461989979">Izcelt peles kursoru, kad tas tiek pārvietots</translation>
-<translation id="4002347779798688515">Iespējams, lejupielādēto profilu nevarēs izmantot, ja mobilā tīkla nodrošinātājs ir bloķēts. Lai saņemtu atbalstu, sazinieties ar savu nodrošinātāju.</translation>
+<translation id="4002347779798688515">Iespējams, lejupielādēto profilu nevarēs izmantot, ja mobilā tīkla operators ir bloķēts. Lai saņemtu atbalstu, sazinieties ar savu nodrošinātāju.</translation>
 <translation id="4002440992267487163">PIN koda iestatīšana</translation>
 <translation id="4005817994523282006">Laika joslas noteikšanas metode</translation>
 <translation id="4007856537951125667">Paslēpt saīsnes</translation>

@@ -780,7 +780,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5131062416352684089">Deine Familienmitglieder können jetzt deinen Nutzernamen und dein Passwort verwenden, um sich über den Google Passwortmanager auf <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> anzumelden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
-<translation id="5149188072385105201">Passwort hinzufügen</translation>
+<translation id="5149188072385105201">Passwort hinzufügen…</translation>
 <translation id="5150492518600715772">An mein Gerät senden</translation>
 <translation id="5157638238828697074">Ein Fehler ist aufgetreten. Die App konnte nicht geöffnet werden.</translation>
 <translation id="5168414296986405587">Entwickelt für iPadOS</translation>

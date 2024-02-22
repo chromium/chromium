@@ -1211,7 +1211,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="739101637685146669">What URL would you like to bookmark?</translation>
 <translation id="7396331865858820922">Password Was Not Shared</translation>
 <translation id="7398893703713203428">Create link</translation>
-<translation id="7399802613464275309">Safety Check</translation>
+<translation id="7399802613464275309">Safety check</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7402602673739047753">{count,plural, =1{1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}other{{count} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> unread articles.</translation>
