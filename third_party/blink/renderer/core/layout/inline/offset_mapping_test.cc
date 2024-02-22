@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
+#include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -1531,6 +1532,37 @@ TEST_F(OffsetMappingGetterTest, Get) {
 
   const String& text_content = mapping->GetText();
   EXPECT_EQ(text_content, "Whitespaces in this text should be collapsed.");
+}
+
+TEST_F(OffsetMappingTest, LayoutObjectConverter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=container>
+      <span id="s1">0123456</span>
+      <span id="s2">7890</span>
+    </div>
+  )HTML");
+  auto* layout_block_flow =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
+  const OffsetMapping* mapping =
+      InlineNode::GetOffsetMapping(layout_block_flow);
+  EXPECT_TRUE(mapping);
+
+  const auto* s1 = GetLayoutObjectByElementId("s1");
+  ASSERT_TRUE(s1);
+  OffsetMapping::LayoutObjectConverter converter1{mapping,
+                                                  *s1->SlowFirstChild()};
+  EXPECT_EQ(converter1.TextContentOffset(0), 0u);
+  EXPECT_EQ(converter1.TextContentOffset(3), 3u);
+  EXPECT_EQ(converter1.TextContentOffset(6), 6u);
+  EXPECT_DEATH_IF_SUPPORTED(converter1.TextContentOffset(7), "");
+
+  const auto* s2 = GetLayoutObjectByElementId("s2");
+  ASSERT_TRUE(s2);
+  OffsetMapping::LayoutObjectConverter converter2{mapping,
+                                                  *s2->SlowFirstChild()};
+  EXPECT_EQ(converter2.TextContentOffset(0), 8u);
+  EXPECT_EQ(converter2.TextContentOffset(3), 11u);
+  EXPECT_DEATH_IF_SUPPORTED(converter2.TextContentOffset(4), "");
 }
 
 }  // namespace blink
