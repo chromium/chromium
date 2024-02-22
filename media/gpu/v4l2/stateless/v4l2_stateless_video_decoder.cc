@@ -599,17 +599,15 @@ void V4L2StatelessVideoDecoder::ArmBufferMonitor() {
       &V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers,
       weak_ptr_factory_for_events_.GetWeakPtr()));
 
-  cancelable_input_queue_tracker_.PostTask(
-      input_queue_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&DequeueInput, device_, std::move(input_cb)));
+  input_queue_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DequeueInput, device_, std::move(input_cb)));
 
   auto output_cb = base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers,
       weak_ptr_factory_for_events_.GetWeakPtr()));
 
-  cancelable_output_queue_tracker_.PostTask(
-      output_queue_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&DequeueOutput, device_, std::move(output_cb)));
+  output_queue_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DequeueOutput, device_, std::move(output_cb)));
 }
 
 void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
