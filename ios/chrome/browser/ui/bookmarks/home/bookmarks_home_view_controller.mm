@@ -341,7 +341,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }
 
   NSArray<NSNumber*>* path = bookmark_utils_ios::CreateBookmarkPath(
-      _localOrSyncableBookmarkModel.get(), cachedFolderID);
+      _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get(),
+      cachedFolderID);
   if (!path) {
     return stack;
   }
