@@ -263,19 +263,19 @@ namespace downloads {
     DOMString[]? query;
 
     // Limits results to $(ref:DownloadItem) that
-    // started before the given ms since the epoch.
+    // started before the given ms in ISO 8601 format.
     DOMString? startedBefore;
 
     // Limits results to $(ref:DownloadItem) that
-    // started after the given ms since the epoch.
+    // started after the given ms in ISO 8601 format.
     DOMString? startedAfter;
 
-    // Limits results to $(ref:DownloadItem) that ended before the given ms since the
-    // epoch.
+    // Limits results to $(ref:DownloadItem) that ended before the given ms in
+    // ISO 8601 format.
     DOMString? endedBefore;
 
-    // Limits results to $(ref:DownloadItem) that ended after the given ms since the
-    // epoch.
+    // Limits results to $(ref:DownloadItem) that ended after the given ms in
+    // ISO 8601 format
     DOMString? endedAfter;
 
     // Limits results to $(ref:DownloadItem) whose
