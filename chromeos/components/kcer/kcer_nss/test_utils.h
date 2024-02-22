@@ -44,6 +44,8 @@ class TokenHolder {
   // it. The pointer should only be dereferenced on the IO thread.
   base::WeakPtr<internal::KcerToken> GetWeakPtr() { return weak_ptr_; }
 
+  uint32_t GetSlotId();
+
  private:
   base::WeakPtr<internal::KcerToken> weak_ptr_;
   std::unique_ptr<internal::KcerTokenImplNss> io_token_;

@@ -4,6 +4,8 @@
 
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
 
+#include <pk11pub.h>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -68,6 +70,10 @@ void TokenHolder::FailInitialization() {
       FROM_HERE,
       base::BindOnce(&internal::KcerToken::InitializeForNss, weak_ptr_,
                      /*nss_slot=*/nullptr));
+}
+
+uint32_t TokenHolder::GetSlotId() {
+  return PK11_GetSlotID(nss_slot_.slot());
 }
 
 //==============================================================================

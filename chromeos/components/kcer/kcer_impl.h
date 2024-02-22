@@ -61,6 +61,7 @@ class COMPONENT_EXPORT(KCER) KcerImpl : public Kcer {
                         Pkcs12Blob pkcs12_blob,
                         std::string password,
                         bool hardware_backed,
+                        bool mark_as_migrated,
                         StatusCallback callback) override;
   void ExportPkcs12Cert(scoped_refptr<const Cert> cert,
                         ExportPkcs12Callback callback) override;

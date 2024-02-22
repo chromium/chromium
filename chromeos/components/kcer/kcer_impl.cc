@@ -184,9 +184,28 @@ void KcerImpl::ImportPkcs12Cert(Token token,
                                 Pkcs12Blob pkcs12_blob,
                                 std::string password,
                                 bool hardware_backed,
+                                bool mark_as_migrated,
                                 StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(244408716): Implement.
+
+  if (init_queue_) {
+    return init_queue_->push_back(
+        base::BindOnce(&KcerImpl::ImportPkcs12Cert, weak_factory_.GetWeakPtr(),
+                       token, std::move(pkcs12_blob), std::move(password),
+                       hardware_backed, mark_as_migrated, std::move(callback)));
+  }
+
+  const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::ImportPkcs12Cert, kcer_token,
+                     std::move(pkcs12_blob), std::move(password),
+                     hardware_backed, mark_as_migrated,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void KcerImpl::ExportPkcs12Cert(scoped_refptr<const Cert> cert,

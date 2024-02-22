@@ -79,6 +79,8 @@ class KcerTokenUtils {
                   Pkcs11Id pkcs11_id,
                   std::string nickname,
                   CertDer cert_der,
+                  bool is_hardware_backed,
+                  bool mark_as_migrated,
                   base::OnceCallback<void(std::optional<Error> kcer_error,
                                           ObjectHandle cert_handle,
                                           uint32_t result_code)> callback);
@@ -86,11 +88,16 @@ class KcerTokenUtils {
   // Imports an EVP_KEY into Chaps as a pair of public and private objects.
   // Skips the actual import if the key already exists.
   struct ImportKeyTask {
-    ImportKeyTask(KeyData in_key_data, Kcer::GenerateKeyCallback in_callback);
+    ImportKeyTask(KeyData in_key_data,
+                  bool in_hardware_backed,
+                  bool in_mark_as_migrated,
+                  Kcer::GenerateKeyCallback in_callback);
     ImportKeyTask(ImportKeyTask&& other);
     ~ImportKeyTask();
 
     KeyData key_data;
+    const bool hardware_backed;
+    const bool mark_as_migrated;
     Kcer::GenerateKeyCallback callback;
     int attemps_left = 5;
   };

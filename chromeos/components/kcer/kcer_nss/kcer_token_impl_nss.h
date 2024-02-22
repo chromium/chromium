@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
+#include "chromeos/components/kcer/helpers/pkcs12_reader.h"
 #include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/kcer_token_utils.h"
@@ -84,6 +85,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   void ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                         std::string password,
                         bool hardware_backed,
+                        bool mark_as_migrated,
                         Kcer::StatusCallback callback) override;
   void ExportPkcs12Cert(scoped_refptr<const Cert> cert,
                         Kcer::ExportPkcs12Callback callback) override;
@@ -156,6 +158,48 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   // respecting SetAttributeTranslationForTesting.
   KeyPermissionsAttributeId GetKeyPermissionsAttributeId() const;
   CertProvisioningIdAttributeId GetCertProvisioningIdAttributeId() const;
+
+  struct ImportPkcs12CertTask {
+    ImportPkcs12CertTask(
+        Pkcs12Blob in_pkcs12_blob,
+        std::string in_password,
+        bool in_hardware_backed,
+        bool in_mark_as_migrated,
+        base::OnceCallback<void(bool /*did_modify*/,
+                                base::expected<void, Error> /*result*/)>
+            callback);
+    ImportPkcs12CertTask(ImportPkcs12CertTask&& other);
+    ~ImportPkcs12CertTask();
+
+    const Pkcs12Blob pkcs12_blob;
+    const std::string password;
+    const bool hardware_backed;
+    const bool mark_as_migrated;
+    base::OnceCallback<void(bool /*did_modify*/,
+                            base::expected<void, Error> /*result*/)>
+        callback;
+    int attemps_left = 5;
+  };
+  void ImportPkcs12CertImpl(ImportPkcs12CertTask task);
+  void ImportPkcs12ImportKey(ImportPkcs12CertTask task,
+                             KeyData key_data,
+                             std::vector<CertData> certs_data);
+  void ImportPkcs12DidImportKey(ImportPkcs12CertTask task,
+                                std::vector<CertData> certs_data,
+                                Pkcs11Id pkcs11_id,
+                                base::expected<PublicKey, Error> imported_key);
+  void ImportPkcs12ImportAllCerts(ImportPkcs12CertTask task,
+                                  std::vector<CertData> certs_data,
+                                  Pkcs11Id pkcs11_id,
+                                  int imports_failed);
+  void ImportPkcs12DidImportOneCert(
+      ImportPkcs12CertTask task,
+      std::vector<CertData> certs_data,
+      Pkcs11Id pkcs11_id,
+      int imports_failed,
+      std::optional<Error> kcer_error,
+      SessionChapsClient::ObjectHandle cert_handle,
+      uint32_t result_code);
 
   // Indicates whether fake attribute ids should be used (for testing).
   bool translate_attributes_for_testing_ = false;

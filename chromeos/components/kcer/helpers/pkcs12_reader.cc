@@ -11,8 +11,10 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/logging.h"
 #include "chromeos/components/kcer/helpers/key_helper.h"
 #include "crypto/nss_util.h"
+#include "crypto/openssl_util.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -54,6 +56,8 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetPkcs12KeyAndCerts(
     const std::string& password,
     bssl::UniquePtr<EVP_PKEY>& key,
     bssl::UniquePtr<STACK_OF(X509)>& certs) const {
+  crypto::ClearOpenSSLERRStack(FROM_HERE);
+
   CBS pkcs12;
   CBS_init(&pkcs12, reinterpret_cast<const uint8_t*>(pkcs12_data.data()),
            pkcs12_data.size());
@@ -66,10 +70,29 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetPkcs12KeyAndCerts(
   const int get_key_and_cert_result = PKCS12_get_key_and_certs(
       &key_ptr, certs.get(), &pkcs12, password.c_str());
   key = bssl::UniquePtr<EVP_PKEY>(key_ptr);
-  if (!get_key_and_cert_result || !key_ptr) {
+  if (get_key_and_cert_result && key_ptr) {
+    return Pkcs12ReaderStatusCode::kSuccess;
+  }
+
+  uint32_t error = ERR_get_error();
+  if (ERR_GET_LIB(error) != ERR_LIB_PKCS8) {
+    LOG(ERROR) << "Failed to parse PKCS#12, bssl error: " << error;
     return Pkcs12ReaderStatusCode::kFailedToParsePkcs12Data;
   }
-  return Pkcs12ReaderStatusCode::kSuccess;
+  switch (ERR_GET_REASON(error)) {
+    case PKCS8_R_INCORRECT_PASSWORD:
+      return Pkcs12ReaderStatusCode::kPkcs12WrongPassword;
+    case PKCS8_R_MISSING_MAC:
+      return Pkcs12ReaderStatusCode::kPkcs12InvalidMac;
+    case PKCS8_R_BAD_PKCS12_DATA:
+      return Pkcs12ReaderStatusCode::kPkcs12InvalidFile;
+    case PKCS8_R_BAD_PKCS12_VERSION:
+    case PKCS8_R_PKCS12_PUBLIC_KEY_INTEGRITY_NOT_SUPPORTED:
+      return Pkcs12ReaderStatusCode::kPkcs12UnsupportedFile;
+    default:
+      LOG(ERROR) << "Failed to parse PKCS#12, bssl error: " << error;
+      return Pkcs12ReaderStatusCode::kFailedToParsePkcs12Data;
+  }
 }
 
 Pkcs12ReaderStatusCode Pkcs12Reader::GetDerEncodedCert(

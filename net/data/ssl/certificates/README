@@ -311,3 +311,7 @@ unit tests.
 - key_usage_p256_both.pem
      Self-signed P-256 certificates with various combinations of keyUsage
      flags. Their private key is key_usage_p256.key.
+
+===== From net/data/ssl/scripts/generate-key-usage-certs.sh
+- 2_client_certs_1_key.p12
+     Key pair and two client certificates for it in a single .p12 file.

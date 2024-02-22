@@ -443,7 +443,7 @@ TEST_F(Pkcs12ReaderTest, GetPkcs12KeyAndCerts) {
 
     Pkcs12ReaderStatusCode result = pkcs12Reader_->GetPkcs12KeyAndCerts(
         wrong_pkcs12_data, kPkcs12FilePassword, key, certs);
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kFailedToParsePkcs12Data);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12InvalidFile);
   }
 
   // Not testing for normal case and for password, those cases are tested from

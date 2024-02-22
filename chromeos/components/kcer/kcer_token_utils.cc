@@ -194,6 +194,8 @@ void KcerTokenUtils::ImportCert(
     Pkcs11Id pkcs11_id,
     std::string nickname,
     CertDer cert_der,
+    bool is_hardware_backed,
+    bool mark_as_migrated,
     base::OnceCallback<void(std::optional<Error> kcer_error,
                             ObjectHandle cert_handle,
                             uint32_t result_code)> callback) {
@@ -253,6 +255,14 @@ void KcerTokenUtils::ImportCert(
   AddAttribute(
       cert_attrs, chromeos::PKCS11_CKA_SERIAL_NUMBER,
       base::make_span(serial_number_der.get(), size_t(serial_number_der_size)));
+  if (!is_hardware_backed) {
+    AddAttribute(cert_attrs, chaps::kForceSoftwareAttribute, MakeSpan(&kTrue));
+  }
+  if (mark_as_migrated) {
+    AddAttribute(cert_attrs,
+                 pkcs11_custom_attributes::kCkaChromeOsMigratedFromNss,
+                 MakeSpan(&kTrue));
+  }
 
   chaps_client_->CreateObject(
       pkcs_11_slot_id_, cert_attrs,
@@ -263,8 +273,13 @@ void KcerTokenUtils::ImportCert(
 
 KcerTokenUtils::ImportKeyTask::ImportKeyTask(
     KeyData in_key_data,
+    bool in_hardware_backed,
+    bool in_mark_as_migrated,
     Kcer::GenerateKeyCallback in_callback)
-    : key_data(std::move(in_key_data)), callback(std::move(in_callback)) {}
+    : key_data(std::move(in_key_data)),
+      hardware_backed(in_hardware_backed),
+      mark_as_migrated(in_mark_as_migrated),
+      callback(std::move(in_callback)) {}
 KcerTokenUtils::ImportKeyTask::ImportKeyTask(ImportKeyTask&& other) = default;
 KcerTokenUtils::ImportKeyTask::~ImportKeyTask() = default;
 
@@ -366,7 +381,9 @@ void KcerTokenUtils::ImportRsaKeyWithExistingKey(
   }
 
   constexpr chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
-  chromeos::PKCS11_CK_BBOOL is_software_backed = kTrue;
+  chromeos::PKCS11_CK_BBOOL is_software_backed = task.hardware_backed
+                                                     ? chromeos::PKCS11_CK_FALSE
+                                                     : chromeos::PKCS11_CK_TRUE;
   chromeos::PKCS11_CK_OBJECT_CLASS key_class = chromeos::PKCS11_CKO_PRIVATE_KEY;
   chromeos::PKCS11_CK_KEY_TYPE key_type = chromeos::PKCS11_CKK_RSA;
   chaps::AttributeList attrs;
@@ -374,8 +391,10 @@ void KcerTokenUtils::ImportRsaKeyWithExistingKey(
   AddAttribute(attrs, chromeos::PKCS11_CKA_KEY_TYPE, MakeSpan(&key_type));
   AddAttribute(attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue));
   AddAttribute(attrs, chromeos::PKCS11_CKA_SENSITIVE, MakeSpan(&kTrue));
-  AddAttribute(attrs, chaps::kForceSoftwareAttribute,
-               MakeSpan(&is_software_backed));
+  if (!task.hardware_backed) {
+    AddAttribute(attrs, chaps::kForceSoftwareAttribute,
+                 MakeSpan(&is_software_backed));
+  }
   AddAttribute(attrs, chromeos::PKCS11_CKA_EXTRACTABLE,
                MakeSpan(&is_software_backed));
   AddAttribute(attrs, chromeos::PKCS11_CKA_PRIVATE, MakeSpan(&kTrue));
@@ -395,6 +414,10 @@ void KcerTokenUtils::ImportRsaKeyWithExistingKey(
   AddAttribute(attrs, chromeos::PKCS11_CKA_EXPONENT_1, exponent_1);
   AddAttribute(attrs, chromeos::PKCS11_CKA_EXPONENT_2, exponent_2);
   AddAttribute(attrs, chromeos::PKCS11_CKA_COEFFICIENT, coefficient);
+  if (task.mark_as_migrated) {
+    AddAttribute(attrs, pkcs11_custom_attributes::kCkaChromeOsMigratedFromNss,
+                 MakeSpan(&kTrue));
+  }
 
   auto chaps_callback = base::BindOnce(
       &KcerTokenUtils::DidImportRsaPrivateKey, weak_factory_.GetWeakPtr(),
@@ -438,7 +461,13 @@ void KcerTokenUtils::DidImportRsaPrivateKey(
                kcer_public_key.GetPkcs11Id().value());
   AddAttribute(attrs, chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
                public_exponent_bytes);
-  AddAttribute(attrs, chaps::kForceSoftwareAttribute, MakeSpan(&kTrue));
+  if (!task.hardware_backed) {
+    AddAttribute(attrs, chaps::kForceSoftwareAttribute, MakeSpan(&kTrue));
+  }
+  if (task.mark_as_migrated) {
+    AddAttribute(attrs, pkcs11_custom_attributes::kCkaChromeOsMigratedFromNss,
+                 MakeSpan(&kTrue));
+  }
 
   auto chaps_callback = base::BindOnce(
       &KcerTokenUtils::DidImportKey, weak_factory_.GetWeakPtr(),
@@ -503,7 +532,9 @@ void KcerTokenUtils::ImportEcKeyWithExistingKey(
   }
 
   constexpr chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
-  chromeos::PKCS11_CK_BBOOL is_software_backed = kTrue;
+  chromeos::PKCS11_CK_BBOOL is_software_backed = task.hardware_backed
+                                                     ? chromeos::PKCS11_CK_FALSE
+                                                     : chromeos::PKCS11_CK_TRUE;
   chromeos::PKCS11_CK_OBJECT_CLASS key_class = chromeos::PKCS11_CKO_PRIVATE_KEY;
   chromeos::PKCS11_CK_KEY_TYPE key_type = chromeos::PKCS11_CKK_EC;
   chaps::AttributeList attrs;
@@ -511,8 +542,10 @@ void KcerTokenUtils::ImportEcKeyWithExistingKey(
   AddAttribute(attrs, chromeos::PKCS11_CKA_KEY_TYPE, MakeSpan(&key_type));
   AddAttribute(attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue));
   AddAttribute(attrs, chromeos::PKCS11_CKA_SENSITIVE, MakeSpan(&kTrue));
-  AddAttribute(attrs, chaps::kForceSoftwareAttribute,
-               MakeSpan(&is_software_backed));
+  if (!task.hardware_backed) {
+    AddAttribute(attrs, chaps::kForceSoftwareAttribute,
+                 MakeSpan(&is_software_backed));
+  }
   AddAttribute(attrs, chromeos::PKCS11_CKA_EXTRACTABLE,
                MakeSpan(&is_software_backed));
   AddAttribute(attrs, chromeos::PKCS11_CKA_SIGN, MakeSpan(&kTrue));
@@ -524,6 +557,10 @@ void KcerTokenUtils::ImportEcKeyWithExistingKey(
   AddAttribute(attrs, chromeos::PKCS11_CKA_EC_POINT, ec_point_der);
   AddAttribute(attrs, chromeos::PKCS11_CKA_PRIVATE, MakeSpan(&kTrue));
   AddAttribute(attrs, chromeos::PKCS11_CKA_EC_PARAMS, ec_params_der);
+  if (task.mark_as_migrated) {
+    AddAttribute(attrs, pkcs11_custom_attributes::kCkaChromeOsMigratedFromNss,
+                 MakeSpan(&kTrue));
+  }
 
   auto chaps_callback = base::BindOnce(
       &KcerTokenUtils::DidImportEcPrivateKey, weak_factory_.GetWeakPtr(),
@@ -563,7 +600,13 @@ void KcerTokenUtils::DidImportEcPrivateKey(ImportKeyTask task,
   AddAttribute(attrs, chromeos::PKCS11_CKA_EC_POINT, ec_point_der);
   AddAttribute(attrs, chromeos::PKCS11_CKA_ID,
                kcer_public_key.GetPkcs11Id().value());
-  AddAttribute(attrs, chaps::kForceSoftwareAttribute, MakeSpan(&kTrue));
+  if (!task.hardware_backed) {
+    AddAttribute(attrs, chaps::kForceSoftwareAttribute, MakeSpan(&kTrue));
+  }
+  if (task.mark_as_migrated) {
+    AddAttribute(attrs, pkcs11_custom_attributes::kCkaChromeOsMigratedFromNss,
+                 MakeSpan(&kTrue));
+  }
 
   auto chaps_callback = base::BindOnce(
       &KcerTokenUtils::DidImportKey, weak_factory_.GetWeakPtr(),

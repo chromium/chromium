@@ -9,14 +9,18 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/files/file_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/bind_post_task.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "chromeos/components/kcer/kcer_impl.h"
 #include "chromeos/components/kcer/kcer_nss/kcer_token_impl_nss.h"
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
+#include "chromeos/components/kcer/kcer_token_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,12 +33,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/pki/pem.h"
 
-// The tests here provide only the minimal coverage for the basic functionality
-// of Kcer. More thorough testing, including edge cases, will be done in a
-// fuzzer.
-// TODO(244408716): Implement the fuzzer.
-
+using testing::DoAll;
 using testing::UnorderedElementsAre;
+using ObjectHandle = kcer::SessionChapsClient::ObjectHandle;
+using SlotId = kcer::SessionChapsClient::SlotId;
+using base::test::RunOnceCallback;
+using base::test::RunOnceCallbackRepeatedly;
+using kcer::internal::MakeSpan;
+using pkcs11_custom_attributes::kCkaChromeOsMigratedFromNss;
+using testing::_;
 
 namespace kcer {
 
@@ -75,6 +82,13 @@ constexpr char kPublicKeyBase64[] =
     "eoy7MtXwSchI0e2Q8QdUneNp529Ee+pUQ5Uki1L2pE4Pnyj+j2i2x4wGFGdJgiBMSvtpvdPdF+"
     "NMfjdbVaDzTF3rcL3lNCxRb4xk3TMFXV7dQIDAQAB";
 
+// Password for client.p12 and 2_client_certs_1_key.p12 .
+constexpr char kPkcs12RsaFilePassword[] = "12345";
+// Password for client_with_ec_key.p12 .
+constexpr char kPkcs12EcFilePassword[] = "123456";
+
+constexpr int kDefaultAttempts = 5;
+
 std::string TestKeyTypeToStr(TestKeyType key_type) {
   switch (key_type) {
     case TestKeyType::kRsa:
@@ -94,6 +108,13 @@ std::vector<uint8_t> StrToBytes(const std::string& val) {
 
 scoped_refptr<base::SingleThreadTaskRunner> IOTaskRunner() {
   return content::GetIOThreadTaskRunner({});
+}
+
+bool SpanEqual(base::span<const uint8_t> s1, base::span<const uint8_t> s2) {
+  return base::ranges::equal(s1, s2);
+}
+bool SpanEqual(base::span<const char> s1, base::span<const uint8_t> s2) {
+  return base::ranges::equal(base::as_bytes(s1), s2);
 }
 
 std::string ToString(const std::vector<SigningScheme>& vec) {
@@ -313,6 +334,10 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
   kcer->ImportX509Cert(Token::kUser,
                        /*cert=*/cert_builder->GetX509Certificate(),
                        import_x509_cert_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> import_pkcs12_cert_waiter;
+  kcer->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(), "password",
+                         /*hardware_backed=*/true, /*mark_as_migrated=*/true,
+                         import_pkcs12_cert_waiter.GetCallback());
   base::test::TestFuture<base::expected<void, Error>>
       remove_key_and_certs_waiter;
   kcer->RemoveKeyAndCerts(PrivateKeyHandle(PublicKeySpki()),
@@ -366,6 +391,7 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
   EXPECT_FALSE(generate_rsa_waiter.IsReady());
   EXPECT_FALSE(list_keys_waiter.IsReady());
   EXPECT_FALSE(set_permissions_waiter.IsReady());
+  EXPECT_FALSE(import_pkcs12_cert_waiter.IsReady());
 
   // Initialize Kcer with a token. This will empty the queue in `kcer` and move
   // all the requests into the token.
@@ -377,6 +403,7 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
   EXPECT_FALSE(generate_rsa_waiter.IsReady());
   EXPECT_FALSE(list_keys_waiter.IsReady());
   EXPECT_FALSE(set_permissions_waiter.IsReady());
+  EXPECT_FALSE(import_pkcs12_cert_waiter.IsReady());
 
   // This should process and fail all the requests.
   user_token.FailInitialization();
@@ -394,6 +421,9 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(import_x509_cert_waiter.Get().has_value());
   EXPECT_EQ(import_x509_cert_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
+  ASSERT_FALSE(import_pkcs12_cert_waiter.Get().has_value());
+  EXPECT_EQ(import_pkcs12_cert_waiter.Get().error(),
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(remove_key_and_certs_waiter.Get().has_value());
   EXPECT_EQ(remove_key_and_certs_waiter.Get().error(),
@@ -1529,6 +1559,913 @@ INSTANTIATE_TEST_SUITE_P(AllKeyTypes,
                          [](const auto& info) {
                            return TestKeyTypeToStr(info.param);
                          });
+
+// These tests are different from the ones above because
+// KcerTokenImplNss::ImportPkcs12Cert communicates with both NSS and Chaps, but
+// it's difficult to implement a sufficiently realistic fake chaps for NSS to be
+// able to work with it. So instead they mostly just cover that the requests to
+// Chaps are correct and on a real device that would be enough for NSS to detect
+// the imported certs and keys. Import of PKCS#12 files is also additionally
+// covered by the CertSettingsPage* tast tests.
+using KcerNssImportPkcs12Test = KcerNssTest;
+
+std::vector<uint8_t> ReadTestFile(const std::string& file_name) {
+  base::FilePath file_path =
+      net::GetTestCertsDirectory().AppendASCII(file_name);
+  std::optional<std::vector<uint8_t>> file_data =
+      base::ReadFileToBytes(file_path);
+  if (!file_data.has_value()) {
+    ADD_FAILURE() << "Couldn't read " << file_path;
+    return {};
+  }
+  return file_data.value();
+}
+
+const std::vector<uint8_t>& GetPkcs12DataRsa() {
+  static std::vector<uint8_t> pkcs12_data = ReadTestFile("client.p12");
+  return pkcs12_data;
+}
+
+const std::vector<uint8_t>& GetPkcs12DataEc() {
+  static std::vector<uint8_t> pkcs12_data =
+      ReadTestFile("client_with_ec_key.p12");
+  return pkcs12_data;
+}
+
+const std::vector<uint8_t>& GetPkcs12DataWith2Certs() {
+  static std::vector<uint8_t> pkcs12_data =
+      ReadTestFile("2_client_certs_1_key.p12");
+  return pkcs12_data;
+}
+
+base::flat_map<uint32_t /*attribute_id*/, const chaps::Attribute*> MakeMap(
+    const chaps::AttributeList& attrs) {
+  base::flat_map<uint32_t, const chaps::Attribute*> result;
+  for (int i = 0; i < attrs.attributes_size(); ++i) {
+    result[attrs.attributes(i).type()] = &attrs.attributes(i);
+  }
+  if (base::checked_cast<size_t>(attrs.attributes_size()) != result.size()) {
+    ADD_FAILURE() << "Duplicate attributes detected";
+  }
+  return result;
+}
+
+[[nodiscard]] bool FindAttribute(chaps::AttributeList attrs,
+                                 uint32_t attribute_type,
+                                 base::span<const uint8_t> value) {
+  for (int i = 0; i < attrs.attributes_size(); ++i) {
+    const chaps::Attribute& cur_attr = attrs.attributes(i);
+    if (cur_attr.type() != attribute_type) {
+      continue;
+    }
+    // There shouldn't be two attributes with the same type and different
+    // values, if this one is not the one, return false;
+    if (!cur_attr.has_length() || !cur_attr.has_value()) {
+      return false;
+    }
+
+    return SpanEqual(base::as_byte_span(cur_attr.value()), value);
+  }
+  return false;
+}
+
+// PKCS#12 import: test that importing a file with a cert and an RSA key works.
+TEST_F(KcerNssImportPkcs12Test, CertWithRsaKeySuccess) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(slot_id, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_key_attrs),
+                      RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                         chromeos::PKCS11_CKR_OK)));
+
+  chaps::AttributeList private_key_attrs;
+  chaps::AttributeList public_key_attrs;
+  chaps::AttributeList cert_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(slot_id, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&private_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&public_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_attrs),
+                RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataRsa()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/true,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  EXPECT_TRUE(import_waiter.Get().has_value());
+
+  constexpr CK_OBJECT_CLASS kPrivKeyClass = CKO_PRIVATE_KEY;
+  constexpr CK_OBJECT_CLASS kPublicKeyClass = CKO_PUBLIC_KEY;
+  constexpr CK_OBJECT_CLASS kCertClass = CKO_CERTIFICATE;
+  constexpr CK_KEY_TYPE kKeyType = CKK_RSA;
+  constexpr CK_KEY_TYPE kCertType = CKC_X_509;
+  constexpr CK_BBOOL kTrue = CK_TRUE;
+  constexpr CK_BBOOL kFalse = CK_FALSE;
+  // At the moment of writing these key components were printed from the code
+  // under test, i.e. not guaranteed to be correct. The code was also tested
+  // on a real device, so most likely they are correct. Long term this is a
+  // regression test.
+  const std::vector<uint8_t> kModulus =
+      base::Base64Decode(
+          "1JC7k5aWwwOpqoiNzoRHLRdmzH9h4kVmFlBU/vZ5e7hCSnnIbVJilMxDB+p0b7ozw1/"
+          "bHvsRqikARkMc0OnC4EMnm6BEopqiyOnNGBy1qXwol5Mw8T8zwlzJl7FQdQdlH7pMxuI"
+          "D8hZEu8VkoEyLYJVJ1Ylaasc5BC0pHxZdNKk=")
+          .value();
+  const std::vector<uint8_t> kPkcs11Id =
+      base::Base64Decode("U65QueEa+ljfdKySfD6QbFrXEcM=").value();
+  const std::vector<uint8_t> kPublicExponent =
+      base::Base64Decode("AQAB").value();
+  const std::vector<uint8_t> kPrivateExponent =
+      base::Base64Decode(
+          "y/k2hiFy+h+BqArxSMLWKgbStlll7GL7212qsh6B5J6jviOumHj98BsyF1577"
+          "NqY4VoSQmBaSxadFM9Bz5cBT8IrKr2/FjL1AC+wgdwUvGvbD426zN4Yb59cTf/"
+          "bhNkvd2xocFPHeMDETFD6ISEcV6YLbPAtNlom7qVxlSTn1KE=")
+          .value();
+  const std::vector<uint8_t> kPrime1 =
+      base::Base64Decode(
+          "8W127p18wtuvUBxz7MtZgAPk/1OGLj1RJghuVYbHaCJ9sT5AzK8eNcRqCld/"
+          "bKABDdmYf3QHKYDx+vcrhcNF8w==")
+          .value();
+  const std::vector<uint8_t> kPrime2 =
+      base::Base64Decode(
+          "4WVKE2h5oF7HYpX2sLgHXFhM77k6Hb1MalKk1MvXSYeKLnFf1Xh4Af2tUR73RmG/Mp/"
+          "evvUMu6h4AvlGvn+18w==")
+          .value();
+  const std::vector<uint8_t> kExponent1 =
+      base::Base64Decode(
+          "SUZzCXstKaspq4PnP2B8upj0APalzBT6MzPt4PF2RknpokkFu9oOrjz9/"
+          "kOOPjbV+xEm8tAReGxVhVlNkVyyNw==")
+          .value();
+  const std::vector<uint8_t> kExponent2 =
+      base::Base64Decode(
+          "DkFqwvl7n9H+yFR1ys2I4aVQEGVlsJXVbHAXrsHJtwPUkIVpK0Y4SN/"
+          "zg0rzFsd94UTNQMSc7o2EMaP0fn3zUw==")
+          .value();
+  const std::vector<uint8_t> kCoefficient =
+      base::Base64Decode(
+          "mV2Q/My7RVOOsSZGDEouCYMcVahOFWS84IcpYRwR9ds0KZ4hKcdyMGNR5/"
+          "4ryvr9XMA+DBR/L9GBSWe6CeK3RQ==")
+          .value();
+  const std::vector<uint8_t> kCertDer =
+      base::Base64Decode(
+          "MIICpTCCAg6gAwIBAgIBATANBgkqhkiG9w0BAQUFADBWMQswCQYDVQQGEwJBVTETMBEG"
+          "A1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRk"
+          "MQ8wDQYDVQQDEwZ0ZXN0Y2EwIBcNMTAwNzMwMDEwMjEyWhgPMjA2MDA3MTcwMTAyMTJa"
+          "MFwxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRl"
+          "cm5ldCBXaWRnaXRzIFB0eSBMdGQxFTATBgNVBAMTDHRlc3R1c2VyY2VydDCBnzANBgkq"
+          "hkiG9w0BAQEFAAOBjQAwgYkCgYEA1JC7k5aWwwOpqoiNzoRHLRdmzH9h4kVmFlBU/"
+          "vZ5e7hCSnnIbVJilMxDB+p0b7ozw1/"
+          "bHvsRqikARkMc0OnC4EMnm6BEopqiyOnNGBy1qXwol5Mw8T8zwlzJl7FQdQdlH7pMxuI"
+          "D8hZEu8VkoEyLYJVJ1Ylaasc5BC0pHxZdNKkCAwEAAaN7MHkwCQYDVR0TBAIwADAsBgl"
+          "ghkgBhvhCAQ0EHxYdT3BlblNTTCBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBY"
+          "EFHqEH18NKRVbhkqTT8swZq22Dc4YMB8GA1UdIwQYMBaAFE8aGkwMhipgaDysVMfu3Ja"
+          "N29ILMA0GCSqGSIb3DQEBBQUAA4GBAKMT7cwjZtgmkFrJPAa/"
+          "oOt1cdoBD7MqErx+tdvVN62q0h0Vl6UM3a94Ic0/"
+          "sv1V8RT5TUYUyyuepr2Gm58uqkcbI3qflveVcvi96n7fCCo6NwxbKHmpVOx+"
+          "wcPlHtjfek2KGQnee3mEN0YY/HOP5Rvj0Bh302kLrfgFx3xN1G5I")
+          .value();
+  const std::vector<uint8_t> kIssuerDer =
+      base::Base64Decode(
+          "MFYxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRl"
+          "cm5l"
+          "dCBXaWRnaXRzIFB0eSBMdGQxDzANBgNVBAMTBnRlc3RjYQ==")
+          .value();
+  const std::vector<uint8_t> kSubjectDer =
+      base::Base64Decode(
+          "MFwxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRl"
+          "cm5l"
+          "dCBXaWRnaXRzIFB0eSBMdGQxFTATBgNVBAMTDHRlc3R1c2VyY2VydA==")
+          .value();
+  const std::vector<uint8_t> kSerialDer = base::Base64Decode("AgEB").value();
+  const std::string kNickname = "testusercert";
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> find_key_map =
+        MakeMap(find_key_attrs);
+
+    EXPECT_TRUE(
+        SpanEqual(find_key_map[CKA_CLASS]->value(), MakeSpan(&kPrivKeyClass)));
+    EXPECT_TRUE(SpanEqual(find_key_map[CKA_ID]->value(), kPkcs11Id));
+  }
+
+  {
+    // Use NSS constants (e.g CKA_CLASS instead of chromeos::PKCS11_CKA_CLASS)
+    // to verify that the outcome will be compatible with NSS.
+    base::flat_map<uint32_t, const chaps::Attribute*> private_key_map =
+        MakeMap(private_key_attrs);
+    EXPECT_EQ(private_key_map.size(), 19u);
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_CLASS]->value(),
+                          MakeSpan(&kPrivKeyClass)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_KEY_TYPE]->value(), MakeSpan(&kKeyType)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_TOKEN]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_SENSITIVE]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_EXTRACTABLE]->value(),
+                          MakeSpan(&kFalse)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_PRIVATE]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_UNWRAP]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_DECRYPT]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_SIGN]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_SIGN_RECOVER]->value(),
+                          MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_MODULUS]->value(), kModulus));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_ID]->value(), kPkcs11Id));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_PUBLIC_EXPONENT]->value(),
+                          kPublicExponent));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_PRIVATE_EXPONENT]->value(),
+                          kPrivateExponent));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_PRIME_1]->value(), kPrime1));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_PRIME_2]->value(), kPrime2));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_EXPONENT_1]->value(), kExponent1));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_EXPONENT_2]->value(), kExponent2));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_COEFFICIENT]->value(), kCoefficient));
+    EXPECT_FALSE(
+        base::Contains(private_key_map, chaps::kForceSoftwareAttribute));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> public_key_map =
+        MakeMap(public_key_attrs);
+    EXPECT_EQ(public_key_map.size(), 9u);
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_CLASS]->value(),
+                          MakeSpan(&kPublicKeyClass)));
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[CKA_KEY_TYPE]->value(), MakeSpan(&kKeyType)));
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[CKA_TOKEN]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_WRAP]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[CKA_ENCRYPT]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[CKA_VERIFY]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_ID]->value(), kPkcs11Id));
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_MODULUS]->value(), kModulus));
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_PUBLIC_EXPONENT]->value(),
+                          kPublicExponent));
+    EXPECT_FALSE(
+        base::Contains(public_key_map, chaps::kForceSoftwareAttribute));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> cert_map =
+        MakeMap(cert_attrs);
+    EXPECT_EQ(cert_map.size(), 9u);
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_CLASS]->value(), MakeSpan(&kCertClass)));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_CERTIFICATE_TYPE]->value(),
+                          MakeSpan(&kCertType)));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_TOKEN]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_ID]->value(), kPkcs11Id));
+    EXPECT_TRUE(
+        SpanEqual(cert_map[CKA_LABEL]->value(), base::as_byte_span(kNickname)));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_VALUE]->value(), kCertDer));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_ISSUER]->value(), kIssuerDer));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_SUBJECT]->value(), kSubjectDer));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_SERIAL_NUMBER]->value(), kSerialDer));
+  }
+}
+
+// PKCS#12 import: test that imported certs and RSA keys will be marked
+// as software-backed and migrated when necessary.
+TEST_F(KcerNssImportPkcs12Test, CertWithRsaKeyAndExtraArgsSuccess) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects(slot_id, _, _))
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList private_key_attrs;
+  chaps::AttributeList public_key_attrs;
+  chaps::AttributeList cert_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(slot_id, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&private_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&public_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_attrs),
+                RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataRsa()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/true,
+                          import_waiter.GetCallback());
+
+  EXPECT_TRUE(import_waiter.Get().has_value());
+
+  constexpr CK_BBOOL kTrue = CK_TRUE;
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> private_key_map =
+        MakeMap(private_key_attrs);
+    EXPECT_EQ(private_key_map.size(), 21u);
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[chaps::kForceSoftwareAttribute]->value(),
+                  MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_EXTRACTABLE]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(private_key_map[kCkaChromeOsMigratedFromNss]->value(),
+                          MakeSpan(&kTrue)));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> public_key_map =
+        MakeMap(public_key_attrs);
+    EXPECT_EQ(public_key_map.size(), 11u);
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[chaps::kForceSoftwareAttribute]->value(),
+                  MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(public_key_map[kCkaChromeOsMigratedFromNss]->value(),
+                          MakeSpan(&kTrue)));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> cert_map =
+        MakeMap(cert_attrs);
+    EXPECT_EQ(cert_map.size(), 11u);
+    EXPECT_TRUE(SpanEqual(cert_map[chaps::kForceSoftwareAttribute]->value(),
+                          MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(cert_map[kCkaChromeOsMigratedFromNss]->value(),
+                          MakeSpan(&kTrue)));
+  }
+}
+
+// PKCS#12 import: test that importing a file with a cert and an EC key works.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12CertEcSuccess) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(slot_id, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_key_attrs),
+                      RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                         chromeos::PKCS11_CKR_OK)));
+
+  chaps::AttributeList private_key_attrs;
+  chaps::AttributeList public_key_attrs;
+  chaps::AttributeList cert_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(slot_id, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&private_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&public_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_attrs),
+                RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataEc()),
+                          kPkcs12EcFilePassword, /*hardware_backed=*/true,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  EXPECT_TRUE(import_waiter.Get().has_value());
+
+  constexpr CK_OBJECT_CLASS kPrivKeyClass = CKO_PRIVATE_KEY;
+  constexpr CK_OBJECT_CLASS kPublicKeyClass = CKO_PUBLIC_KEY;
+  constexpr CK_OBJECT_CLASS kCertClass = CKO_CERTIFICATE;
+  constexpr CK_KEY_TYPE kKeyType = CKK_EC;
+  constexpr CK_KEY_TYPE kCertType = CKC_X_509;
+  constexpr CK_BBOOL kTrue = CK_TRUE;
+  constexpr CK_BBOOL kFalse = CK_FALSE;
+  // At the moment of writing these key components were printed from the code
+  // under test, i.e. not guaranteed to be correct. The code was also tested
+  // on a real device, so most likely they are correct. Long term this is a
+  // regression test.
+  const std::vector<uint8_t> kEcPoint =
+      base::Base64Decode(
+          "BEEE/"
+          "4hAEQ+bd7cAFAyFBpmUTTDyoiOfS0ofqNMR6RC+"
+          "0qhSEWjaczhD1UDcwuWNUXu9ptXwK4f39SQq3YUyDaIcYw==")
+          .value();
+  const std::vector<uint8_t> kEcParams =
+      base::Base64Decode("BggqhkjOPQMBBw==").value();
+  const std::vector<uint8_t> kPkcs11Id =
+      base::Base64Decode("9kVFdOhn8yYso7a/wG2uC0wdHWo=").value();
+  const std::vector<uint8_t> kPrivateKeyValue =
+      base::Base64Decode("fvWtrgVAq5JApBuCPK92IUAQQnnEoLUrBgZ/KGFhz7E=")
+          .value();
+  const std::vector<uint8_t> kCertDer =
+      base::Base64Decode(
+          "MIIB2zCCAX+"
+          "gAwIBAgIEFhkiazAMBggqhkjOPQQDBAUAMGIxCzAJBgNVBAYTAkRFMQswCQYDVQQIEwJ"
+          "CWTEMMAoGA1UEBxMDTXVjMRMwEQYDVQQKEwpDb21tZXJjaWFsMRMwEQYDVQQLEwpOZXR"
+          "3b3JraW5nMQ4wDAYDVQQDEwVDTmFtZTAeFw0yMzExMDIxODQ3MzBaFw0yNDExMDExODQ"
+          "3MzBaMGIxCzAJBgNVBAYTAkRFMQswCQYDVQQIEwJCWTEMMAoGA1UEBxMDTXVjMRMwEQY"
+          "DVQQKEwpDb21tZXJjaWFsMRMwEQYDVQQLEwpOZXR3b3JraW5nMQ4wDAYDVQQDEwVDTmF"
+          "tZTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABP+"
+          "IQBEPm3e3ABQMhQaZlE0w8qIjn0tKH6jTEekQvtKoUhFo2nM4Q9VA3MLljVF7vabV8Cu"
+          "H9/UkKt2FMg2iHGOjITAfMB0GA1UdDgQWBBT2RUV06GfzJiyjtr/"
+          "Aba4LTB0dajAMBggqhkjOPQQDBAUAA0gAMEUCIQCn1ViT++"
+          "SLXVv4sExxORcVHVGtyCp6HLVVkJW0IP+"
+          "SawIgSqGQMDoVRFHq6Zel10xDQM8AB0814PJK37LXQZMjRLg=")
+          .value();
+  const std::vector<uint8_t> kIssuerDer =
+      base::Base64Decode(
+          "MGIxCzAJBgNVBAYTAkRFMQswCQYDVQQIEwJCWTEMMAoGA1UEBxMDTXVjMRMwEQYDVQQK"
+          "EwpDb21tZXJjaWFsMRMwEQYDVQQLEwpOZXR3b3JraW5nMQ4wDAYDVQQDEwVDTmFtZQ="
+          "=")
+          .value();
+  const std::vector<uint8_t> kSubjectDer =
+      base::Base64Decode(
+          "MGIxCzAJBgNVBAYTAkRFMQswCQYDVQQIEwJCWTEMMAoGA1UEBxMDTXVjMRMwEQYDVQQK"
+          "EwpDb21tZXJjaWFsMRMwEQYDVQQLEwpOZXR3b3JraW5nMQ4wDAYDVQQDEwVDTmFtZQ="
+          "=")
+          .value();
+  const std::vector<uint8_t> kSerialDer =
+      base::Base64Decode("AgQWGSJr").value();
+  const std::string kNickname = "serverkey";
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> find_key_map =
+        MakeMap(find_key_attrs);
+
+    EXPECT_TRUE(
+        SpanEqual(find_key_map[CKA_CLASS]->value(), MakeSpan(&kPrivKeyClass)));
+    EXPECT_TRUE(SpanEqual(find_key_map[CKA_ID]->value(), kPkcs11Id));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> private_key_map =
+        MakeMap(private_key_attrs);
+    EXPECT_EQ(private_key_map.size(), 13u);
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_CLASS]->value(),
+                          MakeSpan(&kPrivKeyClass)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_KEY_TYPE]->value(), MakeSpan(&kKeyType)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_TOKEN]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_SENSITIVE]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_EXTRACTABLE]->value(),
+                          MakeSpan(&kFalse)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_PRIVATE]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_SIGN]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_SIGN_RECOVER]->value(),
+                          MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_DERIVE]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_ID]->value(), kPkcs11Id));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_EC_POINT]->value(), kEcPoint));
+    EXPECT_TRUE(SpanEqual(private_key_map[CKA_EC_PARAMS]->value(), kEcParams));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_VALUE]->value(), kPrivateKeyValue));
+
+    EXPECT_FALSE(
+        base::Contains(private_key_map, chaps::kForceSoftwareAttribute));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> public_key_map =
+        MakeMap(public_key_attrs);
+    EXPECT_EQ(public_key_map.size(), 8u);
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_CLASS]->value(),
+                          MakeSpan(&kPublicKeyClass)));
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[CKA_KEY_TYPE]->value(), MakeSpan(&kKeyType)));
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[CKA_TOKEN]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[CKA_VERIFY]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[CKA_DERIVE]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_EC_PARAMS]->value(), kEcParams));
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_EC_POINT]->value(), kEcPoint));
+    EXPECT_TRUE(SpanEqual(public_key_map[CKA_ID]->value(), kPkcs11Id));
+
+    EXPECT_FALSE(
+        base::Contains(public_key_map, chaps::kForceSoftwareAttribute));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> cert_map =
+        MakeMap(cert_attrs);
+    EXPECT_EQ(cert_map.size(), 9u);
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_CLASS]->value(), MakeSpan(&kCertClass)));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_CERTIFICATE_TYPE]->value(),
+                          MakeSpan(&kCertType)));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_TOKEN]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_ID]->value(), kPkcs11Id));
+    EXPECT_TRUE(
+        SpanEqual(cert_map[CKA_LABEL]->value(), base::as_byte_span(kNickname)));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_VALUE]->value(), kCertDer));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_ISSUER]->value(), kIssuerDer));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_SUBJECT]->value(), kSubjectDer));
+    EXPECT_TRUE(SpanEqual(cert_map[CKA_SERIAL_NUMBER]->value(), kSerialDer));
+  }
+}
+
+// PKCS#12 import: test that imported certs and EC keys will be marked
+// as software-backed and migrated when necessary.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12CertEcWithExtraArgsSuccess) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects(slot_id, _, _))
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList private_key_attrs;
+  chaps::AttributeList public_key_attrs;
+  chaps::AttributeList cert_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(slot_id, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&private_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&public_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_attrs),
+                RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataEc()),
+                          kPkcs12EcFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/true,
+                          import_waiter.GetCallback());
+
+  EXPECT_TRUE(import_waiter.Get().has_value());
+
+  constexpr CK_BBOOL kTrue = CK_TRUE;
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> private_key_map =
+        MakeMap(private_key_attrs);
+    EXPECT_EQ(private_key_map.size(), 15u);
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[chaps::kForceSoftwareAttribute]->value(),
+                  MakeSpan(&kTrue)));
+    EXPECT_TRUE(
+        SpanEqual(private_key_map[CKA_EXTRACTABLE]->value(), MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(private_key_map[kCkaChromeOsMigratedFromNss]->value(),
+                          MakeSpan(&kTrue)));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> public_key_map =
+        MakeMap(public_key_attrs);
+    EXPECT_EQ(public_key_map.size(), 10u);
+    EXPECT_TRUE(
+        SpanEqual(public_key_map[chaps::kForceSoftwareAttribute]->value(),
+                  MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(public_key_map[kCkaChromeOsMigratedFromNss]->value(),
+                          MakeSpan(&kTrue)));
+  }
+
+  {
+    base::flat_map<uint32_t, const chaps::Attribute*> cert_map =
+        MakeMap(cert_attrs);
+    EXPECT_EQ(cert_map.size(), 11u);
+    EXPECT_TRUE(SpanEqual(cert_map[chaps::kForceSoftwareAttribute]->value(),
+                          MakeSpan(&kTrue)));
+    EXPECT_TRUE(SpanEqual(cert_map[kCkaChromeOsMigratedFromNss]->value(),
+                          MakeSpan(&kTrue)));
+  }
+}
+
+// PKCS#12 import: test that the key is not imported again if it already exists.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12KeyExistsSuccess) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>{ObjectHandle(1)},
+                                   chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList cert_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_attrs),
+                RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataRsa()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  EXPECT_TRUE(import_waiter.Get().has_value());
+  constexpr CK_OBJECT_CLASS kCertClass = CKO_CERTIFICATE;
+  EXPECT_TRUE(FindAttribute(cert_attrs, CKA_CLASS, MakeSpan(&kCertClass)));
+}
+
+// PKCS#12 import: test that the import fails correctly when Chaps fails to
+// check whether the key already exists.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12FailToCheckKeyExists) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataRsa()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  ASSERT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// PKCS#12 import: test that the import is retried correctly when Chaps fails to
+// check whether the key already exists with a session error.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12RetryToCheckKeyExists) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataRsa()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  ASSERT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// PKCS#12 import: test that the import fails correctly when Chaps fails to
+// create private key.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12FailToCreatePrivKey) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataRsa()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  ASSERT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportKey);
+}
+
+// PKCS#12 import: test that the import is retried correctly when Chaps fails to
+// create private key with a session error.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12RetryToCreatePrivKey) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
+                                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          ObjectHandle(0), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataRsa()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  ASSERT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// PKCS#12 import: test that the import fails correctly when Chaps fails to
+// create private key.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12FailToCreatePubKey) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  ObjectHandle priv_key_handle(10);
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(RunOnceCallback<2>(priv_key_handle, chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+  EXPECT_CALL(chaps_client_,
+              DestroyObjectsWithRetries(
+                  slot_id, std::vector<ObjectHandle>{priv_key_handle}, _))
+      .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataRsa()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  ASSERT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportKey);
+}
+
+// PKCS#12 import: test that the import fails correctly when Chaps fails to
+// create a cert.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12FailToCreateCert) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject(slot_id, _, _))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(3),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataEc()),
+                          kPkcs12EcFilePassword, /*hardware_backed=*/true,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  EXPECT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportCertificate);
+}
+
+// PKCS#12 import: test that the import is retried correctly when Chaps fails to
+// create a cert with a session error.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12RetryToCreateCert) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  // Simulate that the key is found to skip its creation for simplicity.
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>{ObjectHandle(1)}, chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          ObjectHandle(3), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataEc()),
+                          kPkcs12EcFilePassword, /*hardware_backed=*/true,
+                          /*mark_as_migrated=*/false,
+                          import_waiter.GetCallback());
+
+  EXPECT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// PKCS#12 import: test that importing a file with two cert and a key works.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12With2CertsSuccess) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects(slot_id, _, _))
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList cert_1_attrs;
+  chaps::AttributeList cert_2_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(slot_id, _, _))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_1_attrs),
+                RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_2_attrs),
+                RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataWith2Certs()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/true,
+                          import_waiter.GetCallback());
+
+  EXPECT_TRUE(import_waiter.Get().has_value());
+
+  base::flat_map<uint32_t, const chaps::Attribute*> cert_map_1 =
+      MakeMap(cert_1_attrs);
+  base::flat_map<uint32_t, const chaps::Attribute*> cert_map_2 =
+      MakeMap(cert_2_attrs);
+  EXPECT_EQ(cert_map_1.size(), 11u);
+  EXPECT_EQ(cert_map_2.size(), 11u);
+
+  constexpr CK_OBJECT_CLASS kCertClass = CKO_CERTIFICATE;
+  EXPECT_TRUE(SpanEqual(cert_map_1[CKA_CLASS]->value(), MakeSpan(&kCertClass)));
+  EXPECT_TRUE(SpanEqual(cert_map_2[CKA_CLASS]->value(), MakeSpan(&kCertClass)));
+  // Check that two different certs were created.
+  EXPECT_NE(cert_map_1[CKA_VALUE]->value(), cert_map_2[CKA_VALUE]->value());
+}
+
+// PKCS#12 import: test that Kcer tries to import as many certs as possible and
+// returns an error if at least one failed.
+TEST_F(KcerNssImportPkcs12Test, ImportPkcs12With2CertsSemiSuccess) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects(slot_id, _, _))
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject(slot_id, _, _))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataWith2Certs()),
+                          kPkcs12RsaFilePassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/true,
+                          import_waiter.GetCallback());
+
+  EXPECT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportCertificate);
+}
+
+// PKCS#12 import: test that Kcer return the correct error when a wrong password
+// for a PKCS#12 file is provided.
+TEST_F(KcerNssImportPkcs12Test, WrongPassword) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  const char kWrongPassword[] = "00000000";
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportPkcs12Cert(Token::kUser, Pkcs12Blob(GetPkcs12DataWith2Certs()),
+                          kWrongPassword, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/true,
+                          import_waiter.GetCallback());
+
+  EXPECT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kPkcs12WrongPassword);
+}
+
+// PKCS#12 import: test that Kcer correctly handles files with empty passwords.
+// An "empty" password can mean a a zero length password or no password.
+TEST_F(KcerNssImportPkcs12Test, EmptyPassword) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>{ObjectHandle(1)}, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(ObjectHandle(1),
+                                                   chromeos::PKCS11_CKR_OK));
+
+  const char kEmptyPassword[] = "";
+
+  {
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer_->ImportPkcs12Cert(
+        Token::kUser, Pkcs12Blob(ReadTestFile("client-null-password.p12")),
+        kEmptyPassword, /*hardware_backed=*/false,
+        /*mark_as_migrated=*/true, import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+  }
+
+  {
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer_->ImportPkcs12Cert(
+        Token::kUser, Pkcs12Blob(ReadTestFile("client-empty-password.p12")),
+        kEmptyPassword, /*hardware_backed=*/false,
+        /*mark_as_migrated=*/true, import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+  }
+}
 
 }  // namespace
 }  // namespace kcer

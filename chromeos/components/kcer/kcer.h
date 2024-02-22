@@ -91,6 +91,11 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToGetIssuerName = 40,
   kFailedToGetSubjectName = 41,
   kFailedToGetSerialNumber = 42,
+  kFailedToParsePkcs12 = 43,
+  kInvalidPkcs12 = 44,
+  kPkcs12WrongPassword = 45,
+  kPkcs12InvalidMac = 46,
+
 };
 
 // Handles for tokens on ChromeOS.
@@ -322,12 +327,13 @@ class COMPONENT_EXPORT(KCER) Kcer {
                              GenerateKeyCallback callback) = 0;
 
   // Imports a key pair from bytes `key_pair` in the PKCS#8 format (DER encoded)
-  // into the `token`. It is caller's responsibility to make sure that the same
-  // key doesn't end up on several different tokens at the same time (otherwise
-  // Kcer is allowed to perform any future operations, such as RemoveKey, with
-  // only one of the keys). Returns a public key on success, an error otherwise.
-  // WARNING: With the current implementation the key can be used with most
-  // other methods, but it won't appear in the ListKeys() results.
+  // into the `token` (as software-backed). It is caller's responsibility to
+  // make sure that the same key doesn't end up on several different tokens at
+  // the same time (otherwise Kcer is allowed to perform any future operations,
+  // such as RemoveKey, with only one of the keys). Returns a public key on
+  // success, an error otherwise. WARNING: With the current implementation the
+  // key can be used with most other methods, but it won't appear in the
+  // ListKeys() results.
   // TODO(miersh): Make ListKeys() return imported keys.
   virtual void ImportKey(Token token,
                          Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
@@ -347,11 +353,13 @@ class COMPONENT_EXPORT(KCER) Kcer {
   // Imports a client certificate and its private key from `pkcs12_blob` encoded
   // in the PKCS#12 format into the `token`. If `hardware_backed` is false, the
   // key will not be hardware protected (by the TPM). Returns an error on
-  // failure.
+  // failure. If `mark_as_migrated` is true, all created objects will be marked
+  // with a special attribute to allow a rollback for b/264387231.
   virtual void ImportPkcs12Cert(Token token,
                                 Pkcs12Blob pkcs12_blob,
                                 std::string password,
                                 bool hardware_backed,
+                                bool mark_as_migrated,
                                 StatusCallback callback) = 0;
 
   // Exports an existing certificate in the PKCS#12 format. Returns a non-empty

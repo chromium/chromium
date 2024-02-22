@@ -13,6 +13,7 @@ data/quic_http_response_cache_data_with_push/test.example.com/kitten-1.jpg
 data/ssl/certificates/10_year_validity.pem
 data/ssl/certificates/11_year_validity.pem
 data/ssl/certificates/2029_globalsign_com_cert.pem
+data/ssl/certificates/2_client_certs_1_key.p12
 data/ssl/certificates/398_days_1_second_after_2020_09_01.pem
 data/ssl/certificates/398_days_after_2020_09_01.pem
 data/ssl/certificates/399_days_after_2020_09_01.pem

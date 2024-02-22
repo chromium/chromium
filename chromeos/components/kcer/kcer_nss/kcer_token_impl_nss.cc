@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
+#include "chromeos/components/kcer/helpers/pkcs12_validator.h"
 #include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/kcer_utils.h"
@@ -68,6 +69,20 @@ void RunUnblocker(base::ScopedClosureRunner unblocker) {
 std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& value) {
   return value ? std::vector<uint8_t>(value->data, value->data + value->len)
                : std::vector<uint8_t>();
+}
+
+Error ConvertPkcs12ParsingError(Pkcs12ReaderStatusCode status) {
+  switch (status) {
+    case Pkcs12ReaderStatusCode::kPkcs12WrongPassword:
+      return Error::kPkcs12WrongPassword;
+    case Pkcs12ReaderStatusCode::kPkcs12InvalidMac:
+      return Error::kPkcs12InvalidMac;
+    case Pkcs12ReaderStatusCode::kPkcs12InvalidFile:
+      return Error::kInvalidPkcs12;
+    case Pkcs12ReaderStatusCode::kPkcs12UnsupportedFile:
+    default:
+      return Error::kFailedToParsePkcs12;
+  }
 }
 
 void CleanUpAndDestroyKeys(crypto::ScopedSECKEYPublicKey public_key,
@@ -1073,13 +1088,224 @@ void KcerTokenImplNss::ImportCertFromBytes(CertDer cert_der,
                      std::move(cert_der), std::move(wrapped_callback)));
 }
 
+//==============================================================================
+
+KcerTokenImplNss::ImportPkcs12CertTask::ImportPkcs12CertTask(
+    Pkcs12Blob in_pkcs12_blob,
+    std::string in_password,
+    bool in_hardware_backed,
+    bool in_mark_as_migrated,
+    base::OnceCallback<void(bool /*did_modify*/,
+                            base::expected<void, Error> /*result*/)>
+        in_callback)
+    : pkcs12_blob(std::move(in_pkcs12_blob)),
+      password(std::move(in_password)),
+      hardware_backed(in_hardware_backed),
+      mark_as_migrated(in_mark_as_migrated),
+      callback(std::move(in_callback)) {}
+KcerTokenImplNss::ImportPkcs12CertTask::ImportPkcs12CertTask(
+    ImportPkcs12CertTask&& other) = default;
+KcerTokenImplNss::ImportPkcs12CertTask::~ImportPkcs12CertTask() = default;
+
 void KcerTokenImplNss::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                                         std::string password,
                                         bool hardware_backed,
+                                        bool mark_as_migrated,
                                         Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  }
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImplNss::ImportPkcs12Cert, weak_factory_.GetWeakPtr(),
+        std::move(pkcs12_blob), std::move(password), hardware_backed,
+        mark_as_migrated, std::move(callback)));
+  }
+
+  // Block task queue, attach queue unblocking and notification sending to the
+  // callback.
+  auto wrapped_callback = base::BindPostTask(
+      content::GetIOThreadTaskRunner({}),
+      base::BindOnce(&KcerTokenImplNss::OnCertsModified,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(callback).Then(BlockQueueGetUnblocker())));
+
+  ImportPkcs12CertImpl(ImportPkcs12CertTask(
+      std::move(pkcs12_blob), std::move(password), hardware_backed,
+      mark_as_migrated, std::move(wrapped_callback)));
 }
+
+void KcerTokenImplNss::ImportPkcs12CertImpl(ImportPkcs12CertTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(/*did_modify=*/false,
+             base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  Pkcs12Reader pkcs12_reader;
+  KeyData key_data;
+  bssl::UniquePtr<STACK_OF(X509)> certs;
+  Pkcs12ReaderStatusCode get_key_and_cert_status =
+      pkcs12_reader.GetPkcs12KeyAndCerts(task.pkcs12_blob.value(),
+                                         task.password, key_data.key, certs);
+  if (get_key_and_cert_status != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(task.callback)
+        .Run(/*did_modify=*/false, base::unexpected(ConvertPkcs12ParsingError(
+                                       get_key_and_cert_status)));
+  }
+
+  Pkcs12ReaderStatusCode enrich_key_data_result =
+      pkcs12_reader.EnrichKeyData(key_data);
+  if ((enrich_key_data_result != Pkcs12ReaderStatusCode::kSuccess) ||
+      key_data.cka_id_value.empty()) {
+    return std::move(task.callback)
+        .Run(/*did_modify=*/false, base::unexpected(Error::kFailedToGetKeyId));
+  }
+
+  std::vector<CertData> certs_data;
+  Pkcs12ReaderStatusCode prepare_certs_status = ValidateAndPrepareCertData(
+      slot_.get(), pkcs12_reader, std::move(certs), key_data, certs_data);
+  if ((prepare_certs_status != Pkcs12ReaderStatusCode::kSuccess) ||
+      certs_data.empty()) {
+    return std::move(task.callback)
+        .Run(/*did_modify=*/false, base::unexpected(Error::kInvalidPkcs12));
+  }
+
+  ImportPkcs12ImportKey(std::move(task), std::move(key_data),
+                        std::move(certs_data));
+}
+
+void KcerTokenImplNss::ImportPkcs12ImportKey(ImportPkcs12CertTask task,
+                                             KeyData key_data,
+                                             std::vector<CertData> certs_data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  bool hardware_backed = task.hardware_backed;
+  bool mark_as_migrated = task.mark_as_migrated;
+
+  // ImportKey() will use D-Bus and needs to run on the UI thread, bind the
+  // callback to the IO thread to automatically return to it.
+  auto import_key_callback = base::BindPostTask(
+      content::GetIOThreadTaskRunner({}),
+      base::BindOnce(&KcerTokenImplNss::ImportPkcs12DidImportKey,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(certs_data), Pkcs11Id(key_data.cka_id_value)));
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerTokenUtils::ImportKey,
+                     base::Unretained(kcer_utils_.get()),
+                     KcerTokenUtils::ImportKeyTask(
+                         std::move(key_data), hardware_backed, mark_as_migrated,
+                         std::move(import_key_callback))));
+}
+
+void KcerTokenImplNss::ImportPkcs12DidImportKey(
+    ImportPkcs12CertTask task,
+    std::vector<CertData> certs_data,
+    Pkcs11Id pkcs11_id,
+    base::expected<PublicKey, Error> imported_key) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (!imported_key.has_value()) {
+    return std::move(task.callback)
+        .Run(/*did_modify=*/false, base::unexpected(imported_key.error()));
+  }
+
+  ImportPkcs12ImportAllCerts(std::move(task), std::move(certs_data),
+                             std::move(pkcs11_id), /*imports_failed=*/0);
+}
+
+// Repeatedly called for each cert in `certs_data` and imports it.
+void KcerTokenImplNss::ImportPkcs12ImportAllCerts(
+    ImportPkcs12CertTask task,
+    std::vector<CertData> certs_data,
+    Pkcs11Id pkcs11_id,
+    int imports_failed) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (certs_data.empty()) {
+    base::expected<void, Error> result;
+    if (imports_failed != 0) {
+      result = base::unexpected(Error::kFailedToImportCertificate);
+    }
+    return std::move(task.callback).Run(/*did_modify=*/true, std::move(result));
+  }
+
+  CertData cur_cert = std::move(certs_data.back());
+  certs_data.pop_back();
+
+  Pkcs12Reader pkcs12_reader;
+  int cert_der_size = 0;
+  bssl::UniquePtr<uint8_t> cert_der;
+  Pkcs12ReaderStatusCode get_cert_der_result = pkcs12_reader.GetDerEncodedCert(
+      cur_cert.x509.get(), cert_der, cert_der_size);
+  if (get_cert_der_result != Pkcs12ReaderStatusCode::kSuccess) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&KcerTokenImplNss::ImportPkcs12ImportAllCerts,
+                                  weak_factory_.GetWeakPtr(), std::move(task),
+                                  std::move(certs_data), std::move(pkcs11_id),
+                                  imports_failed + 1));
+    return;
+  }
+  CertDer cert_der_typed(
+      std::vector<uint8_t>(cert_der.get(), cert_der.get() + cert_der_size));
+  bool hardware_backed = task.hardware_backed;
+  bool mark_as_migrated = task.mark_as_migrated;
+
+  // ImportCert() will use D-Bus and needs to run on the UI thread, bind the
+  // callback to the IO thread to automatically return to it.
+  auto callback = base::BindPostTask(
+      content::GetIOThreadTaskRunner({}),
+      base::BindOnce(&KcerTokenImplNss::ImportPkcs12DidImportOneCert,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(certs_data), pkcs11_id, imports_failed));
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerTokenUtils::ImportCert,
+                     base::Unretained(kcer_utils_.get()),
+                     std::move(cur_cert.x509), std::move(pkcs11_id),
+                     std::move(cur_cert.nickname), std::move(cert_der_typed),
+                     hardware_backed, mark_as_migrated, std::move(callback)));
+}
+
+// Receives the result from importing a single cert and calls back to
+// ImportPkcs12ImportAllCerts to continue with other certs in `certs_data`.
+void KcerTokenImplNss::ImportPkcs12DidImportOneCert(
+    ImportPkcs12CertTask task,
+    std::vector<CertData> certs_data,
+    Pkcs11Id pkcs11_id,
+    int imports_failed,
+    std::optional<Error> kcer_error,
+    SessionChapsClient::ObjectHandle cert_handle,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    // Try again from the beginning. If some keys or certs were imported before
+    // the session got closed, they will be found and skipped on the next
+    // attempt.
+    return ImportPkcs12CertImpl(std::move(task));
+  }
+
+  if (kcer_error.has_value() || (result_code != chromeos::PKCS11_CKR_OK)) {
+    ++imports_failed;
+  }
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&KcerTokenImplNss::ImportPkcs12ImportAllCerts,
+                                weak_factory_.GetWeakPtr(), std::move(task),
+                                std::move(certs_data), std::move(pkcs11_id),
+                                imports_failed));
+}
+
+//==============================================================================
 
 void KcerTokenImplNss::ExportPkcs12Cert(scoped_refptr<const Cert> cert,
                                         Kcer::ExportPkcs12Callback callback) {

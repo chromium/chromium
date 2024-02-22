@@ -794,7 +794,8 @@ void KcerTokenImpl::ImportKey(Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
   }
 
   kcer_utils_.ImportKey(KcerTokenUtils::ImportKeyTask(
-      std::move(key_data), std::move(unblocking_callback)));
+      std::move(key_data), /*in_hardware_backed=*/false,
+      /*in_mark_as_migrated=*/false, std::move(unblocking_callback)));
 }
 
 //==============================================================================
@@ -920,6 +921,8 @@ void KcerTokenImpl::ImportCertFromBytesWithKeyHandle(
                      weak_factory_.GetWeakPtr(), std::move(task));
   kcer_utils_.ImportCert(std::move(cert), std::move(pkcs11_id),
                          std::move(label), std::move(cert_der),
+                         /*is_hardware_backed=*/true,
+                         /*mark_as_migrated=*/false,
                          std::move(import_callback));
 }
 
@@ -947,6 +950,7 @@ void KcerTokenImpl::DidImportCertFromBytes(ImportCertFromBytesTask task,
 void KcerTokenImpl::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                                      std::string password,
                                      bool hardware_backed,
+                                     bool mark_as_migrated,
                                      Kcer::StatusCallback callback) {
   // TODO(244409232): Implement.
 }

@@ -56,6 +56,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   void ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                         std::string password,
                         bool hardware_backed,
+                        bool mark_as_migrated,
                         Kcer::StatusCallback callback) override;
   void ExportPkcs12Cert(scoped_refptr<const Cert> cert,
                         Kcer::ExportPkcs12Callback callback) override;
