@@ -18,6 +18,7 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.url.GURL;
 
 import java.util.Iterator;
@@ -175,9 +176,7 @@ public class BookmarkImageFetcher {
                             }
                         });
 
-        // This call may invoke the callback immediately if the url is cached.
-        mPageImageServiceQueue.getSalientImageUrl(
-                item.getUrl(),
+        Callback<GURL> imageUrlCallback =
                 mCallbackController.makeCancelable(
                         (imageUrl) -> {
                             if (imageUrl == null) {
@@ -192,7 +191,18 @@ public class BookmarkImageFetcher {
                                             mImageSize,
                                             mImageSize),
                                     bookmarkImageCallback);
-                        }));
+                        });
+
+        // Price-tracable bookmarks already have image URLs in their metadata. Prioritize that meta
+        // when it's available because the coverage is much higher.
+        PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(item.getId());
+        if (meta != null && meta.hasShoppingSpecifics() && meta.hasLeadImage()) {
+            imageUrlCallback.onResult(new GURL(meta.getLeadImage().getUrl()));
+            return;
+        }
+
+        // This call may invoke the callback immediately if the url is cached.
+        mPageImageServiceQueue.getSalientImageUrl(item.getUrl(), imageUrlCallback);
     }
 
     private void fetchImageUrl(GURL url, Callback<Drawable> callback) {
