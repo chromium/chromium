@@ -63,18 +63,31 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/chrome/test/unit_tests/chrome_shelf_controller_unittest.o",
         "./obj/content/browser/browser/browser_interface_binders.o",
 
-        # Fallback with unknown build configs.
-        "./android_clang_arm/obj/content/browser/browser/browser_interface_binders.o",
-        "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
+        # Fallback happens with follwoing args.gn (try/linux-lacros-rel-compilator).
+        # Fallback may happen in other build config too.
+        # also_build_ash_chrome = true
+        # chromeos_is_browser_only = true
+        # dcheck_always_on = true
+        # is_clang = true
+        # is_component_build = false
+        # is_debug = false
+        # symbol_level = 0
+        # target_os = "chromeos"
+        # use_cups = true
+        # use_remoteexec = true
         "./ash_clang_x64/obj/chrome/browser/ash/ash/autotest_private_api.o",
         "./ash_clang_x64/obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
-        "./ash_clang_x64/obj/chrome/browser/ash/ash/user_session_manager.o",
         "./ash_clang_x64/obj/chrome/browser/browser/browser_prefs.o",
         "./ash_clang_x64/obj/chrome/browser/browser/chrome_browser_interface_binders.o",
         "./ash_clang_x64/obj/chrome/browser/browser/chrome_content_browser_client.o",
+        "./ash_clang_x64/obj/content/browser/browser/browser_interface_binders.o",
+
+        # Fallback with unknown build configs.
+        "./android_clang_arm/obj/content/browser/browser/browser_interface_binders.o",
+        "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
+        "./ash_clang_x64/obj/chrome/browser/ash/ash/user_session_manager.o",
         "./ash_clang_x64/obj/chrome/test/test_support_ui/offer_notification_bubble_views_test_base.o",
         "./ash_clang_x64/obj/chrome/test/test_support_ui/web_app_integration_test_driver.o",
-        "./ash_clang_x64/obj/content/browser/browser/browser_interface_binders.o",
         "./obj/ash_clang_x64/chrome/test/test_support_ui/offer_notification_bubble_views_test_base.o",
         "./obj/chrome/browser/ash/ash/user_session_manager.o",
         "./obj/chrome/browser/ash/system_web_apps/apps/browser_tests/personalization_app_time_of_day_browsertest.o",
