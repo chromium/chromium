@@ -546,10 +546,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           performance_manager::features::kMemorySaverMultistateMode));
   html_source->AddBoolean(
-      "isDiscardExceptionsImprovementsEnabled",
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardExceptionsImprovements));
-  html_source->AddBoolean(
       "isBatterySaverModeManagedByOS",
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
 

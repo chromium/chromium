@@ -120,9 +120,6 @@ class MemorySettingsInteractiveTest
           static_cast<int>(state), expected_count);
     }));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest, MemorySaverPrefChanged) {
@@ -434,9 +431,6 @@ class BatterySettingsInteractiveTest
           static_cast<int>(state), expected_count);
     }));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
@@ -602,13 +596,6 @@ class TabDiscardExceptionsSettingsInteractiveTest
     : public MemorySaverInteractiveTestMixin<
           WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kDiscardExceptionsImprovements);
-
-    MemorySaverInteractiveTestMixin::SetUp();
-  }
-
   auto WaitForElementToHide(const ui::ElementIdentifier& contents_id,
                             const DeepQuery& element) {
     StateChange element_renders;
@@ -667,9 +654,6 @@ class TabDiscardExceptionsSettingsInteractiveTest
         {"(el) => el.disabled === ", is_disabled ? "true" : "false"});
     return WaitForStateChange(contents_id, toggle_selection_change);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabDiscardExceptionsSettingsInteractiveTest,

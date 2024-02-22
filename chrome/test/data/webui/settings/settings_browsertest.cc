@@ -657,25 +657,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageMultistateTest, ExceptionList) {
           "runMochaSuite('TabDiscardExceptionList')");
 }
 
-class SettingsPerformancePageDiscardExceptionImprovementsTest
-    : public SettingsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      performance_manager::features::kDiscardExceptionsImprovements};
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardExceptionImprovementsTest,
-                       Controls) {
-  RunTest("settings/performance_page_test.js",
-          "runMochaSuite('PerformancePage')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardExceptionImprovementsTest,
-                       ExceptionList) {
-  RunTest("settings/performance_page_test.js",
-          "runMochaSuite('TabDiscardExceptionList')");
-}
-
 class SettingsPersonalizationOptionsTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

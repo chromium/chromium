@@ -66,9 +66,6 @@ const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge{
 BASE_FEATURE(kMemoryUsageInHovercards,
              "MemoryUsageInHovercards",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kDiscardExceptionsImprovements,
-             "DiscardExceptionsImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes{
     &kMemoryUsageInHovercards,

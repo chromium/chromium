@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -129,9 +128,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
 
   AddBubbleBodyText(&dialog_model_builder, IDS_MEMORY_SAVER_DIALOG_BODY);
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardExceptionsImprovements) &&
-      !is_guest && !profile->IsIncognitoProfile()) {
+  if (!is_guest && !profile->IsIncognitoProfile()) {
     dialog_model_builder.SetSubtitle(
         base::UTF8ToUTF16(web_contents->GetURL().host()));
     const bool is_site_excluded = performance_manager::user_tuning::prefs::

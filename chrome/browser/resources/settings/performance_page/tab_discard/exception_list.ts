@@ -10,7 +10,6 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../../settings_shared.css.js';
-import './exception_add_dialog.js';
 import './exception_edit_dialog.js';
 import './exception_entry.js';
 import './exception_tabbed_add_dialog.js';
@@ -24,7 +23,6 @@ import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_r
 import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -89,20 +87,6 @@ export class ExceptionListElement extends
         value: '',
       },
 
-      isDiscardExceptionsImprovementsEnabled_: {
-        readOnly: true,
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isDiscardExceptionsImprovementsEnabled');
-        },
-      },
-
-      showAddDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
       showTabbedAddDialog_: {
         type: Boolean,
         value: false,
@@ -127,8 +111,6 @@ export class ExceptionListElement extends
   private siteList_: ExceptionEntry[];
   private overflowSiteListExpanded: boolean;
   private selectedRule_: string;
-  private isDiscardExceptionsImprovementsEnabled_: boolean;
-  private showAddDialog_: boolean;
   private showTabbedAddDialog_: boolean;
   private showEditDialog_: boolean;
   private tooltipText_: string;
@@ -156,11 +138,7 @@ export class ExceptionListElement extends
 
   private onAddClick_() {
     assert(!this.showEditDialog_);
-    if (this.isDiscardExceptionsImprovementsEnabled_) {
-      this.showTabbedAddDialog_ = true;
-    } else {
-      this.showAddDialog_ = true;
-    }
+    this.showTabbedAddDialog_ = true;
   }
 
   private onMenuClick_(e: CustomEvent<{target: HTMLElement, site: string}>) {
@@ -171,7 +149,6 @@ export class ExceptionListElement extends
 
   private onEditClick_() {
     assert(this.selectedRule_);
-    assert(!this.showAddDialog_);
     assert(!this.showTabbedAddDialog_);
     this.showEditDialog_ = true;
     this.$.menu.get().close();
@@ -182,10 +159,6 @@ export class ExceptionListElement extends
     this.metricsProxy_.recordExceptionListAction(
         MemorySaverModeExceptionListAction.REMOVE);
     this.$.menu.get().close();
-  }
-
-  private onAddDialogClose_() {
-    this.showAddDialog_ = false;
   }
 
   private onTabbedAddDialogClose_() {

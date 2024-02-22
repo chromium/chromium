@@ -9764,13 +9764,6 @@ const FeatureEntry kFeatureEntries[] = {
          kMemoryUsageInHovercardsVariations,
          "MemoryUsageInHovercards")},
 
-    {"memory-saver-discard-exceptions-improvements",
-     flag_descriptions::kMemorySaverDiscardExceptionsImprovementsName,
-     flag_descriptions::kMemorySaverDiscardExceptionsImprovementsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kDiscardExceptionsImprovements)},
-
     {"modal-memory-saver", flag_descriptions::kModalMemorySaverName,
      flag_descriptions::kModalMemorySaverDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(

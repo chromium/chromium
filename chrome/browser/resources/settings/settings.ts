@@ -78,7 +78,6 @@ export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performanc
 export {BatterySaverModeState, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export {MEMORY_SAVER_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
 export {SpeedPageElement} from './performance_page/speed_page.js';
-export {ExceptionAddDialogElement} from './performance_page/tab_discard/exception_add_dialog.js';
 export {ExceptionEditDialogElement} from './performance_page/tab_discard/exception_edit_dialog.js';
 export {ExceptionEntryElement} from './performance_page/tab_discard/exception_entry.js';
 export {ExceptionListElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE} from './performance_page/tab_discard/exception_list.js';

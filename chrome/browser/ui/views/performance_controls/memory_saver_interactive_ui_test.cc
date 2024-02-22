@@ -5,7 +5,6 @@
 #include "base/callback_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -212,13 +211,6 @@ class MemorySaverChipInteractiveTest
   MemorySaverChipInteractiveTest() = default;
   ~MemorySaverChipInteractiveTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kDiscardExceptionsImprovements);
-
-    MemorySaverInteractiveTestMixin<InteractiveBrowserTest>::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     MemorySaverInteractiveTestMixin::SetUpOnMainThread();
     SetMemorySaverModeEnabled(true);
@@ -262,9 +254,6 @@ class MemorySaverChipInteractiveTest
                            -> views::View* { return tab_strip->tab_at(index); },
                        index));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Page Action Chip should appear expanded the first three times a tab is

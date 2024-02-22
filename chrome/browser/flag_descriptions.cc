@@ -4840,13 +4840,6 @@ const char kMemorySaverMemoryUsageInHovercardsDescription[] =
     "When enabled, memory usage for active tabs can be found in their "
     "hovercards.";
 
-const char kMemorySaverDiscardExceptionsImprovementsName[] =
-    "Enable improvements to creating tab discard exceptions.";
-const char kMemorySaverDiscardExceptionsImprovementsDescription[] =
-    "When enabled, tab discard exceptions can be created from the Memory Saver "
-    "page action chip dialog and they can be created from currently open tabs "
-    "via the settings page.";
-
 const char kModalMemorySaverName[] = "Multi mode memory saver.";
 const char kModalMemorySaverDescription[] =
     "Configures which underlying Memory Saver mode is active. The mode "

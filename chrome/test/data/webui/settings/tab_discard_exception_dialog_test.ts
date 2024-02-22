@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {ExceptionAddDialogElement, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
+import type {ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, ExceptionAddDialogTabs, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -14,8 +14,7 @@ import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
 
 suite('TabDiscardExceptionsDialog', function() {
-  let dialog: ExceptionAddDialogElement|ExceptionTabbedAddDialogElement|
-      ExceptionEditDialogElement;
+  let dialog: ExceptionTabbedAddDialogElement|ExceptionEditDialogElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
 
@@ -38,8 +37,7 @@ suite('TabDiscardExceptionsDialog', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function setupDialog(dialog: ExceptionAddDialogElement|
-                       ExceptionTabbedAddDialogElement|
+  function setupDialog(dialog: ExceptionTabbedAddDialogElement|
                        ExceptionEditDialogElement) {
     dialog.set('prefs', {
       performance_tuning: {
@@ -53,13 +51,6 @@ suite('TabDiscardExceptionsDialog', function() {
     });
     document.body.appendChild(dialog);
     flush();
-  }
-
-  function setupAddDialog(): ExceptionAddDialogElement {
-    const addDialog: ExceptionAddDialogElement =
-        document.createElement('tab-discard-exception-add-dialog');
-    setupDialog(addDialog);
-    return addDialog;
   }
 
   async function setupTabbedAddDialog():
@@ -113,15 +104,6 @@ suite('TabDiscardExceptionsDialog', function() {
     assertTrue(dialog.$.actionButton.disabled);
   }
 
-  test('testExceptionAddDialogState', async function() {
-    dialog = setupAddDialog();
-    assertTrue(dialog.$.dialog.open);
-    assertFalse(dialog.$.input.$.input.invalid);
-    assertTrue(dialog.$.actionButton.disabled);
-
-    await testValidation();
-  });
-
   test('testExceptionTabbedAddDialogState', async function() {
     dialog = await setupTabbedAddDialog();
     assertTrue(dialog.$.dialog.open);
@@ -150,12 +132,6 @@ suite('TabDiscardExceptionsDialog', function() {
         [EXISTING_RULE]);
   }
 
-  test('testExceptionAddDialogCancel', async function() {
-    dialog = setupAddDialog();
-    await assertUserInputValidated(VALID_RULE);
-    assertCancel();
-  });
-
   test('testExceptionTabbedAddDialogCancel', async function() {
     dialog = await setupTabbedAddDialog();
     await assertUserInputValidated(VALID_RULE);
@@ -176,21 +152,6 @@ suite('TabDiscardExceptionsDialog', function() {
         Object.keys(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value),
         expectedRules);
   }
-
-  test('testExceptionAddDialogSubmit', async function() {
-    dialog = setupAddDialog();
-    await assertUserInputValidated(VALID_RULE);
-    assertSubmit([EXISTING_RULE, VALID_RULE]);
-    const action =
-        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(MemorySaverModeExceptionListAction.ADD_MANUAL, action);
-  });
-
-  test('testExceptionAddDialogSubmitExisting', async function() {
-    dialog = setupAddDialog();
-    await assertUserInputValidated(EXISTING_RULE);
-    assertSubmit([EXISTING_RULE]);
-  });
 
   test('testExceptionTabbedAddDialogSubmit', async function() {
     dialog = await setupTabbedAddDialog();

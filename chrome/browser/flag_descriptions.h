@@ -2802,9 +2802,6 @@ extern const char kMemorySaverMultistateModeAvailableDescription[];
 extern const char kMemorySaverMemoryUsageInHovercardsName[];
 extern const char kMemorySaverMemoryUsageInHovercardsDescription[];
 
-extern const char kMemorySaverDiscardExceptionsImprovementsName[];
-extern const char kMemorySaverDiscardExceptionsImprovementsDescription[];
-
 extern const char kModalMemorySaverName[];
 extern const char kModalMemorySaverDescription[];
 

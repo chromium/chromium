@@ -73,8 +73,6 @@ extern const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge;
 
 // This displays active memory usage in hovercards.
 BASE_DECLARE_FEATURE(kMemoryUsageInHovercards);
-// This enables improved UI for adding site exceptions for tab discarding.
-BASE_DECLARE_FEATURE(kDiscardExceptionsImprovements);
 
 // Threshold for when memory usage is labeled as "high".
 extern const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes;

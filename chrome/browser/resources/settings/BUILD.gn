@@ -108,7 +108,6 @@ build_webui("build") {
     "performance_page/battery_page.ts",
     "performance_page/performance_page.ts",
     "performance_page/speed_page.ts",
-    "performance_page/tab_discard/exception_add_dialog.ts",
     "performance_page/tab_discard/exception_add_input.ts",
     "performance_page/tab_discard/exception_current_sites_list.ts",
     "performance_page/tab_discard/exception_edit_dialog.ts",
