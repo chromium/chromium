@@ -32,6 +32,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -266,11 +267,17 @@ public class SyncErrorMessageTest {
     @LargeTest
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForAuthErrorForSignedInUsers() throws Exception {
+        HistogramWatcher watchIdentityErrorMessageShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorMessage.AuthError",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
+
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasShownMessage();
+        watchIdentityErrorMessageShownHistogram.assertExpected();
 
         // Resolving the error should dismiss the current message.
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.NONE);
@@ -281,12 +288,18 @@ public class SyncErrorMessageTest {
     @LargeTest
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForPassphraseRequiredForSignedInUsers() throws Exception {
+        HistogramWatcher watchIdentityErrorMessageShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorMessage.PassphraseRequired",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
+
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasShownMessage();
+        watchIdentityErrorMessageShownHistogram.assertExpected();
 
         // Resolving the error should dismiss the current message.
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
@@ -297,11 +310,17 @@ public class SyncErrorMessageTest {
     @LargeTest
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForClientOutOfDateForSignedInUsers() throws Exception {
+        HistogramWatcher watchIdentityErrorMessageShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorMessage.ClientOutOfDate",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
+
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasShownMessage();
+        watchIdentityErrorMessageShownHistogram.assertExpected();
 
         // Not possible to resolve this error from within chrome unlike the other
         // SyncErrorMessage-s.
@@ -312,12 +331,18 @@ public class SyncErrorMessageTest {
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForTrustedVaultKeyRequiredForSignedInUsers()
             throws Exception {
+        HistogramWatcher watchIdentityErrorMessageShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorMessage.TrustedVaultKeyRequiredForPasswords",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
+
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasShownMessage();
+        watchIdentityErrorMessageShownHistogram.assertExpected();
 
         // Resolving the error should dismiss the current message.
         mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(false);
@@ -329,12 +354,18 @@ public class SyncErrorMessageTest {
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForTrustedVaultRecoverabilityDegradedForSignedInUsers()
             throws Exception {
+        HistogramWatcher watchIdentityErrorMessageShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorMessage.TrustedVaultRecoverabilityDegradedForPasswords",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
+
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasShownMessage();
+        watchIdentityErrorMessageShownHistogram.assertExpected();
 
         // Resolving the error should dismiss the current message.
         mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(false);
@@ -361,12 +392,18 @@ public class SyncErrorMessageTest {
     @DisableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageNotShownForAuthErrorForSignedInUsersIfFeatureDisabled()
             throws Exception {
+        HistogramWatcher watchIdentityErrorMessageShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Sync.IdentityErrorMessage.AuthError")
+                        .build();
+
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
 
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasNeverShownMessage();
+        watchIdentityErrorMessageShownHistogram.assertExpected();
     }
 
     @Test
