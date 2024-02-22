@@ -26,6 +26,8 @@
 
 namespace supervised_user {
 
+// A unique prefix identifier for a household (containing parents and children)
+// from source chrome/browser/internal/resources/signin/test_accounts.json.
 using FamilyIdentifier =
     base::StrongAlias<class FamilyIdentifierTag, std::string>;
 

@@ -386,7 +386,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserExtensionsParentalControlsUiTest,
     testing::Combine(
-        testing::Values(supervised_user::FamilyIdentifier("FAMILY_DMA_ALL")),
+        testing::Values(
+            /*DMA-applicable, EU-based household without DMA consent.*/
+            supervised_user::FamilyIdentifier("FAMILY_DMA_NONE"),
+            /*DMA-applicable, EU-based household with DMA consent in all
+               options.*/
+            supervised_user::FamilyIdentifier("FAMILY_DMA_ALL"),
+            /*Non-DMA applicable, US-base household.*/
+            supervised_user::FamilyIdentifier("FAMILY")),
         /*permissions_switch_target_value=*/
         testing::Values(FamilyLinkSwitchState::kEnabled,
                         FamilyLinkSwitchState::kDisabled),
