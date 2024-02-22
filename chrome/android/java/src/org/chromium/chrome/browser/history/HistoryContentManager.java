@@ -397,7 +397,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      */
     public void openUrl(GURL url, Boolean isIncognito, boolean createNewTab) {
         if (mIsSeparateActivity) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+            if (ChromeFeatureList.sAppSpecificHistory.isEnabled()
                     && IntentUtils.safeGetBooleanExtra(
                             mActivity.getIntent(), Intent.EXTRA_RETURN_RESULT, false)) {
                 Intent intent = new Intent(ACTION_VIEW, Uri.parse(url.getSpec()));

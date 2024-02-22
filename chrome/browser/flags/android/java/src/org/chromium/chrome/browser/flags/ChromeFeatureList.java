@@ -528,6 +528,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidHub = newCachedFlag(ANDROID_HUB, false);
     public static final CachedFlag sAndroidTabGroupStableIds =
             newCachedFlag(ANDROID_TAB_GROUP_STABLE_IDS, false);
+    public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, false);
     public static final CachedFlag sArchiveTabService = newCachedFlag(ARCHIVE_TAB_SERVICE, false);
     public static final CachedFlag sBackGestureActivityTabProvider =
             newCachedFlag(BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
@@ -678,6 +679,7 @@ public abstract class ChromeFeatureList {
                     sAndroidElegantTextHeight,
                     sAndroidHub,
                     sAndroidTabGroupStableIds,
+                    sAppSpecificHistory,
                     sArchiveTabService,
                     sBackGestureActivityTabProvider,
                     sBackGestureMoveToBackDuringStartup,

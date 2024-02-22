@@ -159,8 +159,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean requestDesktopSiteVisible = true;
             boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCCT();
             boolean historyItemVisible = true;
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)
-                    || !mHasClientPackage) {
+            if (!ChromeFeatureList.sAppSpecificHistory.isEnabled() || !mHasClientPackage) {
                 historyItemVisible = false;
             }
 
