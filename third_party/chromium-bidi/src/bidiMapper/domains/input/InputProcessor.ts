@@ -17,11 +17,10 @@
 import {
   Input,
   InvalidArgumentException,
-  NoSuchFrameException,
+  NoSuchElementException,
   Script,
   UnableToSetFileInputException,
   type EmptyResult,
-  NoSuchElementException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -78,14 +77,8 @@ export class InputProcessor {
   }
 
   async setFiles(params: Input.SetFilesParameters): Promise<EmptyResult> {
-    const realm = this.#realmStorage.findRealm({
-      browsingContextId: params.context,
-    });
-    if (realm === undefined) {
-      throw new NoSuchFrameException(
-        `Could not find browsingContext ${params.context}`
-      );
-    }
+    const context = this.#browsingContextStorage.getContext(params.context);
+    const realm = await context.getOrCreateSandbox(undefined);
 
     let isFileInput;
     try {
@@ -119,17 +112,50 @@ export class InputProcessor {
       );
     }
 
+    /**
+     * The zero-length array is a special case, it seems that
+     * DOM.setFileInputFiles does not actually update the files in that case, so
+     * the solution is to eval the element value to a new FileList directly.
+     */
+    if (params.files.length === 0) {
+      // XXX: These events should converted to trusted events. Perhaps do this
+      // in `DOM.setFileInputFiles`?
+      await realm.callFunction(
+        String(function dispatchEvent(this: HTMLInputElement) {
+          if (this.files?.length === 0) {
+            this.dispatchEvent(
+              new Event('cancel', {
+                bubbles: true,
+              })
+            );
+            return;
+          }
+
+          this.files = new DataTransfer().files;
+
+          // Dispatch events for this case because it should behave akin to a user action.
+          this.dispatchEvent(
+            new Event('input', {bubbles: true, composed: true})
+          );
+          this.dispatchEvent(new Event('change', {bubbles: true}));
+        }),
+        params.element,
+        [],
+        false,
+        Script.ResultOwnership.None,
+        {},
+        false
+      );
+      return {};
+    }
+
     // Our goal here is to iterate over the input element files and get their
     // file paths.
     const paths: string[] = [];
     for (let i = 0; i < params.files.length; ++i) {
       const result: Script.EvaluateResult = await realm.callFunction(
         String(function getFiles(this: HTMLInputElement, index: number) {
-          if (!this.files) {
-            // We use `null` because `item` also returns null.
-            return null;
-          }
-          return this.files.item(index);
+          return this.files?.item(index);
         }),
         params.element,
         [{type: 'number', value: 0}],
