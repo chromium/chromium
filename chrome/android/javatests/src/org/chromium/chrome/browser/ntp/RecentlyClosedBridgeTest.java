@@ -376,7 +376,7 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                 });
     }
 
@@ -424,7 +424,7 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(0)).getSpec());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(0)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(0)));
                 });
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -444,7 +444,7 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                 });
     }
 
@@ -491,7 +491,7 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urlB[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                 });
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -509,7 +509,7 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urlA[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(2)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
                 });
     }
 
@@ -561,7 +561,7 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                 });
     }
 
@@ -617,7 +617,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     Assert.assertEquals(
                             "Bar", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
@@ -685,9 +685,9 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     Assert.assertEquals(
                             "Bar", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(2)));
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(3)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2), tabs.get(3)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
@@ -725,9 +725,9 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     Assert.assertEquals(
                             "Bar", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(2)));
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(3)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2), tabs.get(3)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
@@ -850,7 +850,7 @@ public class RecentlyClosedBridgeTest {
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(3)));
                 });
     }
 
@@ -912,7 +912,7 @@ public class RecentlyClosedBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNull(TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
@@ -938,7 +938,7 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(url[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(3)).getSpec());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(3)));
                 });
     }
 
@@ -996,12 +996,12 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(3)).getSpec());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertNull(TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
-                    Assert.assertFalse(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+                    Assert.assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(3)));
                 });
     }
 
