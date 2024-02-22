@@ -124,6 +124,9 @@ public class TabSwitcherPaneMediatorUnitTest {
                 .thenReturn(List.of(mUngroupedTab));
         when(mTabModelFilter.getRelatedTabList(GROUPED_TAB_1_ID))
                 .thenReturn(List.of(mGroupedTab1, mGroupedTab2));
+        when(mTabModelFilter.isTabInTabGroup(mUngroupedTab)).thenReturn(false);
+        when(mTabModelFilter.isTabInTabGroup(mGroupedTab1)).thenReturn(true);
+        when(mTabModelFilter.isTabInTabGroup(mGroupedTab2)).thenReturn(true);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
 
         when(mTabGridDialogController.getHandleBackPressChangedSupplier())
@@ -312,13 +315,28 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Test
     @SmallTest
     public void testOpenTabGridDialog() {
-        assertNull(mMediator.openTabGridDialog(mUngroupedTab));
-
         TabActionListener listener = mMediator.openTabGridDialog(mGroupedTab1);
         assertNotNull(listener);
         listener.run(mGroupedTab1.getId());
 
         verify(mTabGridDialogController).resetWithListOfTabs(List.of(mGroupedTab1, mGroupedTab2));
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenTabGridDialog_SingleTab() {
+        assertNull(mMediator.openTabGridDialog(mUngroupedTab));
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenTabGridDialog_SingleTabGroup() {
+        when(mTabModelFilter.isTabInTabGroup(mUngroupedTab)).thenReturn(true);
+
+        TabActionListener listener = mMediator.openTabGridDialog(mUngroupedTab);
+        assertNotNull(listener);
+        listener.run(mUngroupedTab.getId());
+        verify(mTabGridDialogController).resetWithListOfTabs(List.of(mUngroupedTab));
     }
 
     @Test

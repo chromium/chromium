@@ -313,21 +313,13 @@ public class TabSwitcherPaneMediator
         }
     }
 
-    private void recordUserSwitchedTab(Tab tab, int lastId) {
-        // TODO(crbug/1505772): Implement this.
-    }
-
     private boolean ableToOpenDialog(Tab tab) {
-        return mTabModelFilterSupplier.get().isIncognito() == tab.isIncognito()
-                && getRelatedTabs(tab.getId()).size() != 1;
-    }
-
-    private List<Tab> getRelatedTabs(int tabId) {
-        return mTabModelFilterSupplier.get().getRelatedTabList(tabId);
+        TabModelFilter filter = mTabModelFilterSupplier.get();
+        return filter.isIncognito() == tab.isIncognito() && filter.isTabInTabGroup(tab);
     }
 
     private void onTabGroupClicked(int tabId) {
-        List<Tab> relatedTabs = getRelatedTabs(tabId);
+        List<Tab> relatedTabs = mTabModelFilterSupplier.get().getRelatedTabList(tabId);
         if (relatedTabs.size() == 0) {
             relatedTabs = null;
         }
