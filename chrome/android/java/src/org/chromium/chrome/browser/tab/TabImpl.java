@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -128,9 +127,6 @@ class TabImpl implements Tab {
     // Content layer Delegates
     private TabWebContentsDelegateAndroidImpl mWebContentsDelegate;
 
-    /** Tab id to be used as a source tab in SyncedTabDelegate. */
-    private int mSourceTabId = INVALID_TAB_ID;
-
     private boolean mIsClosing;
     private boolean mIsShowingErrorPage;
 
@@ -195,7 +191,6 @@ class TabImpl implements Tab {
 
     private boolean mIsDestroyed;
 
-    private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
     private boolean mIsWebContentObscured;
     private long mTimestampMillis;
@@ -280,7 +275,7 @@ class TabImpl implements Tab {
                     }
                 };
         mTabViewManager = new TabViewManagerImpl(this);
-        mThemeColorHelper = new TabThemeColorHelper(this, this::updateThemeColor);
+        new TabThemeColorHelper(this, this::updateThemeColor);
         mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
     }
 
@@ -951,8 +946,6 @@ class TabImpl implements Tab {
                             : initializeRenderer;
             if (parent != null) {
                 mParentId = parent.getId();
-                mSourceTabId =
-                        parent.isIncognito() == isIncognito() ? parent.getId() : INVALID_TAB_ID;
             }
 
             mTabLaunchTypeAtCreation = mLaunchType;
