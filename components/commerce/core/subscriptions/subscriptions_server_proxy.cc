@@ -279,18 +279,12 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
     const std::string& http_method,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
-#if BUILDFLAG(IS_IOS)
   // If ReplaceSyncPromosWithSignInPromos is enabled - ConsentLevel::kSync is no
   // longer attainable. See crbug.com/1503156 for details.
   signin::ConsentLevel consent_level =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
-#else
-  // TODO(crbug.com/1504089): Remove ifdefs after scope checking is disabled
-  //                          on non-iOS platforms.
-  signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
-#endif
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
       std::vector<std::string>{kOAuthScope},

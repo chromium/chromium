@@ -358,6 +358,8 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
     AccountConsistencyMethod account_consistency =
         AccountConsistencyMethod::kDisabled;
+    // TODO(crbug.com/325904258): Reconsider whether completely disabling the
+    // scope checking is the right approach in the long run.
     bool should_verify_scope_access = true;
     raw_ptr<SigninClient> signin_client = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)

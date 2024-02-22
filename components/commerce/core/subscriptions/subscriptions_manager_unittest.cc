@@ -810,9 +810,6 @@ TEST_F(SubscriptionsManagerTest, TestIdentityChange) {
                                                  signin::ConsentLevel::kSync);
 }
 
-// TODO(crbug.com/1504089): Remove ifdefs after scope checking is disabled
-//                          on non-iOS platforms.
-#if BUILDFLAG(IS_IOS)
 TEST_F(SubscriptionsManagerTest,
        TestIdentityChange_ReplaceSyncPromosWithSignInPromosEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -840,7 +837,6 @@ TEST_F(SubscriptionsManagerTest,
   identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 }
-#endif
 
 TEST_F(SubscriptionsManagerTest, TestIsSubscribed) {
   SetAccountStatus(true, true);

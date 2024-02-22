@@ -92,8 +92,9 @@ struct IdentityManagerBuildParams {
 
 #if BUILDFLAG(IS_IOS)
   std::unique_ptr<DeviceAccountsProvider> device_accounts_provider;
-  bool should_verify_scope_access;
 #endif
+
+  bool should_verify_scope_access = true;
 
 #if BUILDFLAG(IS_WIN)
   base::RepeatingCallback<bool()> reauth_callback;
