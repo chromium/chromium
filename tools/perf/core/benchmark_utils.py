@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import collections
-import optparse  # pylint: disable=deprecated-module
 
 from telemetry import benchmark as b_module
+from telemetry.core import optparse_argparse_migration as oam
 from telemetry.internal.browser import browser_options
 
 
@@ -20,7 +20,7 @@ def GetBenchmarkStorySet(benchmark, exhaustive=False):
   options = browser_options.BrowserFinderOptions()
   # Add default values for any extra commandline options
   # provided by the benchmark.
-  parser = optparse.OptionParser()
+  parser = oam.CreateFromOptparseInputs()
   before, _ = parser.parse_args([])
   benchmark.AddBenchmarkCommandLineArgs(parser)
   after, _ = parser.parse_args([])
