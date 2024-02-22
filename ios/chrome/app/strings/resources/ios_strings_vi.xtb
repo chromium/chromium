@@ -1373,7 +1373,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8114753159095730575">Hiện đã có tệp tải xuống. Bạn có thể sử dụng các tùy chọn ở gần cuối màn hình.</translation>
 <translation id="81313319706244542">2. Nhấn vào Mật khẩu</translation>
 <translation id="8132598642024322408">Giá mới: <ph name="PRICE" />, giá cũ: <ph name="PREVIOUS_PRICE" />.</translation>
-<translation id="813370552429173916">Sử dụng mật khẩu khác biệt trên mỗi trang web hoặc ứng dụng. Nếu bạn sử dụng cùng một mật khẩu và có người biết được mật khẩu này thì họ có thể dùng mật khẩu này để đăng nhập vào các tài khoản khác của bạn. Nhấp để mở trang web và thay đổi mật khẩu ngay.</translation>
+<translation id="813370552429173916">Bạn nên sử dụng một mật khẩu riêng cho mỗi trang web hoặc ứng dụng. Nếu bạn sử dụng cùng một mật khẩu và có người biết được mật khẩu này thì họ có thể dùng mật khẩu này để đăng nhập vào các tài khoản khác của bạn. Hãy nhấp để mở trang web và thay đổi mật khẩu ngay.</translation>
 <translation id="8156478151976189188">Tính năng đồng bộ hóa mật khẩu hiện không hoạt động</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> tài khoản</translation>
 <translation id="8159358225423560600">vừa xong</translation>
@@ -1420,7 +1420,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8407669440184693619">Không tìm thấy mật khẩu nào cho trang web này</translation>
 <translation id="842017693807136194">Đăng nhập bằng</translation>
 <translation id="8423121072346537366">Vừa xong</translation>
-<translation id="8425693829365242963">Các mật khẩu của bạn không trùng lặp</translation>
+<translation id="8425693829365242963">Không có mật khẩu nào trùng lặp</translation>
 <translation id="8428045167754449968">Thành phố/thị trấn</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8428634594422941299">Tôi hiểu</translation>
