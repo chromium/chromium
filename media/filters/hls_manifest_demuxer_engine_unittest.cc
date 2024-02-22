@@ -171,7 +171,7 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<HlsManifestDemuxerEngine> engine_;
 
-  MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
+  base::OnceClosure pending_url_fetch_;
 
   template <typename T>
   void BindUrlToDataSource(std::string url, std::string value) {
@@ -181,7 +181,126 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
         .WillOnce(RunOnceCallback<1>(T::CreateStream(value)));
   }
 
+  template <typename T>
+  void BindUrlAssignmentThunk(std::string url, std::string value) {
+    EXPECT_CALL(*mock_dsp_,
+                ReadFromCombinedUrlQueue(
+                    SingleSegmentQueue(std::move(url), std::nullopt), _))
+        .Times(1)
+        .WillOnce([this, value = std::move(value)](
+                      HlsDataSourceProvider::SegmentQueue,
+                      HlsDataSourceProvider::ReadCb cb) {
+          pending_url_fetch_ =
+              base::BindOnce(std::move(cb), T::CreateStream(std::move(value)));
+        });
+  }
+
+  void ExpectNoNetworkRequests() {
+    EXPECT_CALL(*mock_dsp_, ReadFromCombinedUrlQueue(_, _)).Times(0);
+  }
+
+  MockHlsRendition* SetUpInterruptTest() {
+    EXPECT_CALL(*mock_mdeh_,
+                SetSequenceMode(base::StringPiece("primary"), true));
+    EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+    EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
+                                     RelaxedParserSupportedType::kMP2T));
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+    EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+    InitializeEngine();
+    task_environment_.RunUntilIdle();
+
+    auto rendition = std::make_unique<StrictMock<MockHlsRendition>>();
+    EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(base::Seconds(30)));
+    auto* rendition_ptr = rendition.get();
+    engine_->AddRenditionForTesting("primary", std::move(rendition));
+    EXPECT_CALL(*rendition_ptr, Stop());
+    task_environment_.RunUntilIdle();
+
+    return rendition_ptr;
+  }
+
+  base::OnceClosure StartAndCaptureSeek(MockHlsRendition* rendition_ptr) {
+    base::OnceClosure continue_seek;
+    EXPECT_CALL(*this, SeekFinished()).Times(0);
+    EXPECT_CALL(*rendition_ptr, Seek(_)).Times(0);
+    EXPECT_CALL(*mock_dsp_, AbortPendingReads(_))
+        .WillOnce([&continue_seek](base::OnceClosure cb) {
+          continue_seek = std::move(cb);
+        });
+
+    engine_->Seek(
+        base::Seconds(10),
+        base::BindOnce(
+            [](base::OnceClosure cb, ManifestDemuxer::SeekResponse resp) {
+              ASSERT_TRUE(resp.has_value());
+              std::move(cb).Run();
+            },
+            base::BindOnce(&HlsManifestDemuxerEngineTest::SeekFinished,
+                           base::Unretained(this))));
+    task_environment_.RunUntilIdle();
+    CHECK(continue_seek);
+    return base::BindOnce(
+        [](MockHlsRendition* rendition_ptr, base::OnceClosure cb) {
+          EXPECT_CALL(*rendition_ptr, Seek(_))
+              .WillOnce(Return(ManifestDemuxer::SeekState::kIsReady));
+          std::move(cb).Run();
+        },
+        rendition_ptr, std::move(continue_seek));
+  }
+
+  base::OnceClosure StartAndCaptureTimeUpdate(MockHlsRendition* rendition_ptr,
+                                              base::TimeDelta timestamp) {
+    ManifestDemuxer::DelayCallback finish_time_update;
+    EXPECT_CALL(*rendition_ptr, CheckState(_, _, _))
+        .WillOnce([&finish_time_update](base::TimeDelta, double,
+                                        ManifestDemuxer::DelayCallback cb) {
+          finish_time_update = std::move(cb);
+        });
+    engine_->OnTimeUpdate(
+        base::Seconds(0), 0.0,
+        base::BindOnce([](base::TimeDelta timestamp,
+                          base::TimeDelta r) { ASSERT_EQ(r, timestamp); },
+                       timestamp));
+    task_environment_.RunUntilIdle();
+    CHECK(finish_time_update);
+    return base::BindOnce(std::move(finish_time_update), timestamp);
+  }
+
+  base::OnceClosure StartAndCaptureNetworkAdaptation(
+      MockHlsRendition* rendition_ptr,
+      std::string url,
+      std::string value,
+      size_t netspeed) {
+    base::OnceClosure continue_adaptation;
+    EXPECT_CALL(*mock_dsp_, ReadFromCombinedUrlQueue(
+                                SingleSegmentQueue(url, std::nullopt), _))
+        .Times(1)
+        .WillOnce(
+            [&continue_adaptation, value](HlsDataSourceProvider::SegmentQueue,
+                                          HlsDataSourceProvider::ReadCb cb) {
+              continue_adaptation = base::BindOnce(
+                  std::move(cb),
+                  StringHlsDataSourceStreamFactory::CreateStream(value));
+            });
+    engine_->UpdateNetworkSpeed(netspeed);
+    task_environment_.RunUntilIdle();
+    CHECK(continue_adaptation);
+    return base::BindOnce(
+        [](MockHlsRendition* rendition_ptr, base::OnceClosure cb) {
+          EXPECT_CALL(*rendition_ptr, UpdatePlaylist(_, _));
+          std::move(cb).Run();
+        },
+        rendition_ptr, std::move(continue_adaptation));
+  }
+
  public:
+  MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
+  MOCK_METHOD(void, SeekFinished, (), ());
+
   HlsManifestDemuxerEngineTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
         mock_mdeh_(std::make_unique<NiceMock<MockManifestDemuxerEngineHost>>()),
@@ -413,6 +532,160 @@ TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
                   ASSERT_FALSE(resp.has_value());
                   ASSERT_EQ(std::move(resp).error(), PIPELINE_ERROR_ABORT);
                 }));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
+  auto* rendition_ptr = SetUpInterruptTest();
+
+  // Start the adaptation and hold it from finishing.
+  base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
+      rendition_ptr, "http://example.com/low.m3u8", kSimpleMediaPlaylist,
+      1380000);
+
+  // Start a seek. It should wait while the adaptation is pending.
+  EXPECT_CALL(*this, SeekFinished()).Times(0);
+  EXPECT_CALL(*rendition_ptr, Seek(_)).Times(0);
+  EXPECT_CALL(*mock_dsp_, AbortPendingReads(_)).Times(0);
+  engine_->Seek(
+      base::Seconds(10),
+      base::BindOnce(
+          [](base::OnceClosure cb, ManifestDemuxer::SeekResponse resp) {
+            ASSERT_TRUE(resp.has_value());
+            std::move(cb).Run();
+          },
+          base::BindOnce(&HlsManifestDemuxerEngineTest::SeekFinished,
+                         base::Unretained(this))));
+  task_environment_.RunUntilIdle();
+
+  // Set up final expectations for seek.
+  EXPECT_CALL(*this, SeekFinished());
+  EXPECT_CALL(*rendition_ptr, Seek(_))
+      .WillOnce(Return(ManifestDemuxer::SeekState::kIsReady));
+  EXPECT_CALL(*mock_dsp_, AbortPendingReads(_)).WillOnce(RunOnceClosure<0>());
+
+  // Finish the adaptation, seek should complete.
+  std::move(continue_adaptation).Run();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringTimeUpdate) {
+  auto* rendition_ptr = SetUpInterruptTest();
+
+  // Start the time update, and hold it from finishing.
+  base::OnceClosure continue_update =
+      StartAndCaptureTimeUpdate(rendition_ptr, base::Seconds(10));
+
+  // Start a seek. It should wait while the update is pending.
+  EXPECT_CALL(*this, SeekFinished()).Times(0);
+  EXPECT_CALL(*rendition_ptr, Seek(_)).Times(0);
+  EXPECT_CALL(*mock_dsp_, AbortPendingReads(_)).Times(0);
+  engine_->Seek(
+      base::Seconds(10),
+      base::BindOnce(
+          [](base::OnceClosure cb, ManifestDemuxer::SeekResponse resp) {
+            ASSERT_TRUE(resp.has_value());
+            std::move(cb).Run();
+          },
+          base::BindOnce(&HlsManifestDemuxerEngineTest::SeekFinished,
+                         base::Unretained(this))));
+  task_environment_.RunUntilIdle();
+
+  // Set up final expectations for seek.
+  EXPECT_CALL(*this, SeekFinished());
+  EXPECT_CALL(*rendition_ptr, Seek(_))
+      .WillOnce(Return(ManifestDemuxer::SeekState::kIsReady));
+  EXPECT_CALL(*mock_dsp_, AbortPendingReads(_)).WillOnce(RunOnceClosure<0>());
+
+  // Finish the update, seek should complete.
+  std::move(continue_update).Run();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringTimeUpdate) {
+  auto* rendition_ptr = SetUpInterruptTest();
+
+  // Start the time update, and hold it from finishing.
+  base::OnceClosure continue_update =
+      StartAndCaptureTimeUpdate(rendition_ptr, base::Seconds(10));
+
+  // Start an adaptation. It should wait while the update is pending.
+  ExpectNoNetworkRequests();
+  engine_->UpdateNetworkSpeed(1380000);
+  task_environment_.RunUntilIdle();
+
+  // When the update finishes, the adaptation requests the low quality stream.
+  BindUrlAssignmentThunk<StringHlsDataSourceStreamFactory>(
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+  std::move(continue_update).Run();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringSeek) {
+  auto* rendition_ptr = SetUpInterruptTest();
+
+  // Start the seek, and hold it so it can't finish.
+  base::OnceClosure continue_seek = StartAndCaptureSeek(rendition_ptr);
+
+  // Start an adaptation. It should wait while the seek is pending.
+  ExpectNoNetworkRequests();
+  engine_->UpdateNetworkSpeed(1380000);
+  task_environment_.RunUntilIdle();
+
+  // When the seek finishes, the adaptation requests the low quality stream.
+  BindUrlAssignmentThunk<StringHlsDataSourceStreamFactory>(
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+  EXPECT_CALL(*this, SeekFinished());
+  std::move(continue_seek).Run();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestTimeUpdateDuringAdaptation) {
+  auto* rendition_ptr = SetUpInterruptTest();
+
+  // Start the adaptation and hold it from finishing.
+  base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
+      rendition_ptr, "http://example.com/low.m3u8", kSimpleMediaPlaylist,
+      1380000);
+
+  // Start the time update
+  EXPECT_CALL(*rendition_ptr, CheckState(_, _, _)).Times(0);
+  engine_->OnTimeUpdate(base::Seconds(0), 0.0,
+                        base::BindOnce([](base::TimeDelta r) {
+                          ASSERT_EQ(r, base::Seconds(10));
+                        }));
+  task_environment_.RunUntilIdle();
+
+  // Set expectations for update finishing.
+  EXPECT_CALL(*rendition_ptr, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(base::Seconds(10)));
+
+  // Finish adaptation.
+  std::move(continue_adaptation).Run();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestTimeUpdateDuringSeek) {
+  auto* rendition_ptr = SetUpInterruptTest();
+
+  // Start the seek and hold it from finishing.
+  base::OnceClosure continue_seek = StartAndCaptureSeek(rendition_ptr);
+
+  // Start the time update
+  EXPECT_CALL(*rendition_ptr, CheckState(_, _, _)).Times(0);
+  engine_->OnTimeUpdate(base::Seconds(0), 0.0,
+                        base::BindOnce([](base::TimeDelta r) {
+                          ASSERT_EQ(r, base::Seconds(10));
+                        }));
+  task_environment_.RunUntilIdle();
+
+  // Set expectations for update finishing.
+  EXPECT_CALL(*rendition_ptr, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(base::Seconds(10)));
+
+  // Finish seek.
+  EXPECT_CALL(*this, SeekFinished());
+  std::move(continue_seek).Run();
   task_environment_.RunUntilIdle();
 }
 
