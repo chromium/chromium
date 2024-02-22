@@ -75,6 +75,7 @@ group("resources") {
 
   if (is_chromeos_ash) {
     public_deps += [
+      "ash/extended_updates:resources",
       "ash/inline_login:resources",
       "ash/settings:resources",
       "chromeos:resources",
