@@ -31,6 +31,13 @@ constexpr auto enabled_by_default_desktop_android =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
+constexpr auto enabled_by_default_desktop_ios =
+#if BUILDFLAG(IS_ANDROID)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#endif
+
 const auto enabled_by_default_android_ios =
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     base::FEATURE_ENABLED_BY_DEFAULT;
@@ -244,7 +251,7 @@ BASE_FEATURE(kDomainSuggestions,
 // consent helper instead of a history sync based one.
 BASE_FEATURE(kPrefBasedDataCollectionConsentHelper,
              "PrefBasedDataCollectionConsentHelper",
-             enabled_by_default_desktop_only);
+             enabled_by_default_desktop_ios);
 
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in
 // the space between Omnibox and the soft keyboard. The number of suggestions

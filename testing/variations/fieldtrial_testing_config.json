@@ -11714,21 +11714,6 @@
             ]
         }
     ],
-    "OmniboxPrefBasedConsentHelper": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrefBasedDataCollectionConsentHelper"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPrerender": [
         {
             "platforms": [
