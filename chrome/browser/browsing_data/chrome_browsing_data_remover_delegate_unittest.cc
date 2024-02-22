@@ -150,6 +150,7 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_isolation/pref_names.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -250,6 +251,7 @@
 #include "components/nacl/common/buildflags.h"
 #endif  // BUILDFLAG(ENABLE_NACL)
 
+using base::test::TestFuture;
 using content::BrowsingDataFilterBuilder;
 using domain_reliability::DomainReliabilityClearMode;
 using domain_reliability::DomainReliabilityMonitor;
@@ -266,6 +268,7 @@ using testing::MatchResultListener;
 using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
+using testing::WithArg;
 using testing::WithArgs;
 
 namespace constants = chrome_browsing_data_remover;
@@ -288,6 +291,13 @@ const uint64_t kProtected =
     content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
 const uint64_t kUnprotected =
     content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
+
+// Same as the MoveArg<> gmock action, but stores the result in a TestFuture
+// (which has no assignment operator).
+template <int index, typename T>
+auto MoveArgToFuture(TestFuture<T>* future) {
+  return WithArg<index>([future](T arg) { future->SetValue(std::move(arg)); });
+}
 
 // Testers --------------------------------------------------------------------
 
@@ -890,6 +900,19 @@ class RemoveAutofillTester {
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
 };
 
+std::unique_ptr<KeyedService> BuildSyncService(
+    content::BrowserContext* context) {
+  // Build with sync disabled by default.
+  auto service = std::make_unique<syncer::TestSyncService>();
+  service->SetDisableReasons(
+      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+  service->SetAccountInfo({});
+  service->SetTransportState(syncer::SyncService::TransportState::DISABLED);
+  service->GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
+  service->SetHasSyncConsent(false);
+  return service;
+}
+
 }  // namespace
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -1203,7 +1226,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         {TrustedVaultServiceFactory::GetInstance(),
          TrustedVaultServiceFactory::GetDefaultFactory()},
         {SyncServiceFactory::GetInstance(),
-         SyncServiceFactory::GetDefaultFactory()},
+         base::BindRepeating(&BuildSyncService)},
         {ChromeSigninClientFactory::GetInstance(),
          base::BindRepeating(&signin::BuildTestSigninClient)},
         {ProtocolHandlerRegistryFactory::GetInstance(),
@@ -1235,6 +1258,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     completion_observer.BlockUntilCompletion();
     return completion_observer.failed_data_types();
   }
+
+  // Prefer using BlockUntilBrowsingDataRemoved() for most cases.
+  content::BrowsingDataRemover* remover() { return remover_; }
 
   void ExpectRemoveLoginsByURLAndTime(
       password_manager::MockPasswordStoreInterface* store) {
@@ -1305,6 +1331,12 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   network::NetworkContext* network_context() { return network_context_.get(); }
 
   TestingProfileManager* GetProfileManager() { return profile_manager_.get(); }
+
+  syncer::TestSyncService* sync_service() {
+    // Overridden in GetTestingFactories().
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile_));
+  }
 
   TestingProfile* GetProfile() { return profile_.get(); }
 
@@ -3950,7 +3982,90 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
         switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
 #endif
   }
+
+  void OptInToAccountStorage() {
+    CoreAccountInfo account;
+    account.email = "name@account.com";
+    account.gaia = "name";
+    account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+    sync_service()->SetDisableReasons({});
+    sync_service()->SetAccountInfo(account);
+    sync_service()->SetTransportState(
+        syncer::SyncService::TransportState::ACTIVE);
+#if BUILDFLAG(IS_ANDROID)
+    sync_service()->SetHasSyncConsent(true);
+    sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
+#else
+    sync_service()->SetHasSyncConsent(false);
+    sync_service()->GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
+#endif
+    ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+        GetProfile()->GetPrefs(), sync_service()));
+  }
 };
+
+// Regression test for crbug.com/325323180. Wiping cookies updates password
+// entries (it sets the auto-signin bit). This test verifies that when wiping
+// both passwords and cookies, the updates happen *after* deletions are done, to
+// avoid resurrecting passwords.
+TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
+       DisableAutoSignInAfterRemovingPasswords) {
+  // Set up the necessary futures for account and profile PasswordStores, so the
+  // the test can wait for them later.
+  OptInToAccountStorage();
+  TestFuture<base::OnceClosure> profile_auto_signin_cb, account_auto_signin_cb,
+      profile_remove_cb, account_remove_cb;
+  TestFuture<base::OnceCallback<void(bool)>> account_sync_cb;
+  ON_CALL(*profile_password_store(), DisableAutoSignInForOrigins)
+      .WillByDefault(MoveArgToFuture<1>(&profile_auto_signin_cb));
+  ON_CALL(*account_password_store(), DisableAutoSignInForOrigins)
+      .WillByDefault(MoveArgToFuture<1>(&account_auto_signin_cb));
+  ON_CALL(*profile_password_store(), RemoveLoginsByURLAndTime)
+      .WillByDefault(MoveArgToFuture<3>(&profile_remove_cb));
+  ON_CALL(*account_password_store(), RemoveLoginsByURLAndTime)
+      .WillByDefault(WithArgs<3, 4>([&](auto remove_cb, auto sync_cb) {
+        account_remove_cb.SetValue(std::move(remove_cb));
+        account_sync_cb.SetValue(std::move(sync_cb));
+      }));
+
+  // Kick off.
+  content::BrowsingDataRemoverCompletionObserver completion_observer(remover());
+  remover()->RemoveAndReply(
+      base::Time(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES |
+          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
+          chrome_browsing_data_remover::DATA_TYPE_ACCOUNT_PASSWORDS,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      &completion_observer);
+
+  // Password removal should be triggered, but not auto-signin disabling nor the
+  // completion signal.
+  ASSERT_TRUE(profile_remove_cb.Wait());
+  ASSERT_TRUE(account_remove_cb.Wait());
+  ASSERT_FALSE(profile_auto_signin_cb.IsReady());
+  ASSERT_FALSE(account_auto_signin_cb.IsReady());
+  ASSERT_FALSE(completion_observer.browsing_data_remover_done());
+
+  // Report password removal as finished, by invoking the callbacks. Note:
+  // `account_sync_cb` is null on Android.
+  profile_remove_cb.Take().Run();
+  account_remove_cb.Take().Run();
+#if !BUILDFLAG(IS_ANDROID)
+  account_sync_cb.Take().Run(true);
+#endif
+
+  // Auto-signin disabling should be triggered, but not the completion signal.
+  ASSERT_TRUE(profile_auto_signin_cb.Wait());
+  ASSERT_TRUE(account_auto_signin_cb.Wait());
+  ASSERT_FALSE(completion_observer.browsing_data_remover_done());
+
+  // Report auto-signin disabling as finished, by invoking the callbacks.
+  profile_auto_signin_cb.Take().Run();
+  account_auto_signin_cb.Take().Run();
+
+  // The completion signal should be triggered.
+  completion_observer.BlockUntilCompletion();
+}
 
 TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
        RemovePasswordsByTimeOnly_WithAccountStore) {

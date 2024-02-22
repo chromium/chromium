@@ -120,7 +120,8 @@ class ChromeBrowsingDataRemoverDelegate
     kCookies = 14,
     kPasswords = 15,
     kHttpAuthCache = 16,
-    kDisableAutoSignin = 17,
+    // See also kDisableAutoSigninForAccountPasswords.
+    kDisableAutoSigninForProfilePasswords = 17,
     kPasswordsStatistics = 18,
     kKeywordsModel = 19,
     kReportingCache = 20,
@@ -149,11 +150,13 @@ class ChromeBrowsingDataRemoverDelegate
     kWebAuthnCredentials = 43,
     kWebrtcVideoPerfHistory = 44,
     kMediaDeviceSalts = 45,
+    // See also kDisableAutoSigninForProfilePasswords.
+    kDisableAutoSigninForAccountPasswords = 46,
 
     // Please update ChromeBrowsingDataRemoverTasks in enums.xml and
     // History.ClearBrowsingData.Duration.ChromeTask.{Task}
     // in histograms/metadata/history/histograms.xml when adding entries!
-    kMaxValue = kMediaDeviceSalts,
+    kMaxValue = kDisableAutoSigninForAccountPasswords,
   };
 
   // Returns the suffix for the
@@ -205,6 +208,10 @@ class ChromeBrowsingDataRemoverDelegate
 
   std::unique_ptr<device::fido::PlatformCredentialStore> MakeCredentialStore();
 
+  // See `deferred_disable_passwords_auto_signin_cb_`.
+  void DisablePasswordsAutoSignin(
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter);
+
   // The profile for which the data will be deleted.
   raw_ptr<Profile> profile_;
 
@@ -248,6 +255,17 @@ class ChromeBrowsingDataRemoverDelegate
   // deletions of any other data.
   bool should_clear_sync_account_settings_ = false;
 #endif
+
+  // PasswordStore::DisableAutoSignInForOrigins() is required when wiping
+  // DATA_TYPE_COOKIES, but that must be deferred until any password deletions
+  // have completed, to avoid resurrecting passwords (c.f. crbug.com/325323180).
+  // This field serves that: it'll be executed in OnTasksComplete() when all
+  // other tasks are done. Executing it adds to `pending_sub_tasks_` again.
+  // OnBrowsingDataRemoverDone() is only called after the (async) auto-signin
+  // disabling has completed.
+  // This field is similar to `should_clear_sync_account_settings_` above,
+  // except that clearing settings is synchronous, disabling auto sign-in isn't.
+  base::OnceClosure deferred_disable_passwords_auto_signin_cb_;
 
   std::unique_ptr<device::fido::PlatformCredentialStore> credential_store_;
 
