@@ -431,7 +431,7 @@ GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
   }
 
   std::optional<base::Value::Dict> algorithm =
-      BuildWebCrypAlgorithmDictionary(key_info);
+      BuildWebCryptoAlgorithmDictionary(key_info);
   DCHECK(algorithm.has_value());
   output.algorithm = std::move(algorithm.value());
 
@@ -478,7 +478,7 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
   return net::X509Certificate::kPublicKeyTypeUnknown;
 }
 
-std::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
+std::optional<base::Value::Dict> BuildWebCryptoAlgorithmDictionary(
     const PublicKeyInfo& key_info) {
   switch (key_info.key_type) {
     case net::X509Certificate::kPublicKeyTypeRSA: {

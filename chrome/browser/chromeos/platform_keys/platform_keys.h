@@ -90,7 +90,7 @@ std::vector<uint8_t> GetSubjectPublicKeyInfoBlob(
     const scoped_refptr<net::X509Certificate>& certificate);
 
 // Intersects the two certificate lists |certs1| and |certs2| and passes the
-// intersection to |callback|. The intersction preserves the order of |certs1|.
+// intersection to |callback|. The intersection preserves the order of |certs1|.
 void IntersectCertificates(
     const net::CertificateList& certs1,
     const net::CertificateList& certs2,
@@ -146,7 +146,7 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
 // |key_info|. This supports both RSA and EC keys.
 // Returns std::nullopt if the key is of an unsupported type (so not RSA or
 // EC).
-std::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
+std::optional<base::Value::Dict> BuildWebCryptoAlgorithmDictionary(
     const PublicKeyInfo& key_info);
 
 // Builds a partial WebCrypto Algorithm object from the parameters available in

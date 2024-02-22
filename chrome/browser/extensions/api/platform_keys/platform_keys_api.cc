@@ -272,7 +272,7 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
                                     der_encoded_cert.end());
 
     std::optional<base::Value::Dict> algorithm =
-        BuildWebCrypAlgorithmDictionary(key_info);
+        BuildWebCryptoAlgorithmDictionary(key_info);
     if (!algorithm) {
       LOG(ERROR) << "Skipping unsupported certificate with key type "
                  << key_info.key_type;
@@ -379,7 +379,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
 
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
   std::optional<base::Value::Dict> algorithm_dictionary =
-      chromeos::platform_keys::BuildWebCrypAlgorithmDictionary(key_info);
+      chromeos::platform_keys::BuildWebCryptoAlgorithmDictionary(key_info);
   DCHECK(algorithm_dictionary);
   algorithm.additional_properties = std::move(*algorithm_dictionary);
 
