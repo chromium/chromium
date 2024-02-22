@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_functions.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_bus_pool.h"
 #include "media/base/audio_converter.h"
@@ -41,9 +40,6 @@ ConvertingAudioFifo::ConvertingAudioFifo(
 ConvertingAudioFifo::~ConvertingAudioFifo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   converter_->RemoveInput(this);
-  base::UmaHistogramCounts100(
-      "Media.Audio.ConvertingAudioFifo.MaxOutputQueueSize",
-      max_output_queue_size_);
 }
 
 void ConvertingAudioFifo::Push(std::unique_ptr<AudioBus> input_bus) {
@@ -70,9 +66,6 @@ void ConvertingAudioFifo::Convert() {
   auto output_dest = output_pool_->GetAudioBus();
   converter_->Convert(output_dest.get());
   pending_outputs_.push_back(std::move(output_dest));
-
-  max_output_queue_size_ =
-      std::max(max_output_queue_size_, pending_outputs_.size());
 }
 
 void ConvertingAudioFifo::Flush() {

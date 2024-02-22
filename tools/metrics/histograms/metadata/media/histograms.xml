@@ -722,16 +722,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.ConvertingAudioFifo.MaxOutputQueueSize"
-    units="Outputs" expires_after="2024-03-31">
-  <owner>tguilbert@chromium.org</owner>
-  <owner>media-dev-uma@google.com</owner>
-  <summary>
-    The maximum number of pending outputs in the ConvertingAudioFifo. Recorded
-    once per ConvertingAudioFifo, on destruction.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.CoreAudioDispatchOverrideInitResult"
     enum="CoreAudioDispatchOverrideInitResult" expires_after="2024-09-01">
   <owner>fhernqvist@google.com</owner>

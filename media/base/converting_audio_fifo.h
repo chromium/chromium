@@ -75,9 +75,6 @@ class MEDIA_EXPORT ConvertingAudioFifo final
   const AudioParameters input_params_;
   const AudioParameters converted_params_;
 
-  // Only used for UMAs.
-  size_t max_output_queue_size_ = 0;
-
   bool is_flushing_ = false;
 
   // Index to the first unused frame in |inputs_.front()|.
