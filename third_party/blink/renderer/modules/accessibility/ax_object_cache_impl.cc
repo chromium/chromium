@@ -1109,7 +1109,7 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
 AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
   // Find first child node of <map> that has an AXObject and return it's
   // parent, which should be a native image.
-  Node* child = LayoutTreeBuilderTraversal::FirstChild(map);
+  Node* child = ElementTraversal::FirstChild(map);
   while (child) {
     if (AXObject* ax_child = Get(child)) {
       if (AXObject* ax_image = ax_child->CachedParentObject()) {
@@ -1123,7 +1123,7 @@ AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
         return ax_image;
       }
     }
-    child = LayoutTreeBuilderTraversal::NextSibling(*child);
+    child = ElementTraversal::NextSibling(*child);
   }
   return nullptr;
 }
@@ -2633,73 +2633,68 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       RemoveSubtreeWithFlatTraversal(node);
       return;
     }
+    // Rare edge case: if an image is added, it could have changed the order of
+    // images with the same usemap in the document. Only the first image for a
+    // given <map> should have the <area> children. Therefore, get the current
+    // primary image before it's updated, and ensure its children are
+    // recalculated.
+    if (IsA<HTMLImageElement>(node)) {
+      if (HTMLMapElement* map = AXObject::GetMapForImage(node)) {
+        HTMLImageElement* primary_image_element = map->ImageElement();
+        if (node != primary_image_element) {
+          ChildrenChanged(primary_image_element);
+        } else if (AXObject* ax_previous_parent = GetAXImageForMap(*map)) {
+          if (ax_previous_parent->GetNode() != node) {
+            ChildrenChanged(ax_previous_parent);
+            ax_previous_parent->ClearChildren();
+          }
+        }
+      }
+    }
     if (IsA<HTMLTableElement>(node) && !node->IsFinishedParsingChildren() &&
         !node_to_parse_before_more_tree_updates_) {
       // Tables must be fully parsed before building, because many of the
       // computed properties require the entire table.
       node_to_parse_before_more_tree_updates_ = node;
     }
-  }
-
-  DeferTreeUpdate(TreeUpdateReason::kNodeIsAttached, node);
-}
-
-void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
-  if (!node || !node->isConnected()) {
-    return;
+    // Check if a row or cell's table changed to or from a data table.
+    if (IsA<HTMLTableRowElement>(node) || IsA<HTMLTableCellElement>(node)) {
+      Element* parent = node->parentElement();
+      while (parent) {
+        if (DynamicTo<HTMLTableElement>(parent)) {
+          break;
+        }
+        parent = parent->parentElement();
+      }
+      if (parent) {
+        // This will change the table's role if necessary. If that occurs, the
+        // subtree will be removed and recomputed as well, because the
+        // table row and cell roles depend on the table's role (layout vs data).
+        DeferTreeUpdate(
+            TreeUpdateReason::kRoleMaybeChangedFromAttachedTableDescendant,
+            parent);
+      }
+    }
   }
 
   Element* element = DynamicTo<Element>(node);
-
-#if DCHECK_IS_ON()
-  DCHECK(node->GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kLayoutClean)
-      << "Unclean document at lifecycle "
-      << node->GetDocument().Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
-
   if (AccessibleNode::GetPropertyOrARIAAttributeValue(
           element, AOMRelationProperty::kActiveDescendant)) {
-    HandleActiveDescendantChangedWithCleanLayout(element);
+    DeferTreeUpdate(TreeUpdateReason::kActiveDescendantChanged, node);
   }
 
   AXObject* obj = Get(node);
-  MaybeNewRelationTarget(*node, obj);
 
-  // Rare edge case: if an image is added, it could have changed the order of
-  // images with the same usemap in the document. Only the first image for a
-  // given <map> should have the <area> children. Therefore, get the current
-  // primary image before it's updated, and ensure its children are
-  // recalculated.
-  if (IsA<HTMLImageElement>(node)) {
-    if (HTMLMapElement* map = AXObject::GetMapForImage(node)) {
-      HTMLImageElement* primary_image_element = map->ImageElement();
-      if (node != primary_image_element) {
-        ChildrenChangedWithCleanLayout(Get(primary_image_element));
-      } else if (AXObject* ax_previous_parent = GetAXImageForMap(*map)) {
-        if (ax_previous_parent->GetNode() != node) {
-          ChildrenChangedWithCleanLayout(ax_previous_parent->GetNode(),
-                                         ax_previous_parent);
-          ax_previous_parent->ClearChildren();
-        }
-      }
-    }
+  if (!obj) {
+    // Nothing to do if there was not a previous object.
+    return;
   }
 
-  // Check if a row or cell's table changed to or from a data table.
-  if (IsA<HTMLTableRowElement>(node) || IsA<HTMLTableCellElement>(node)) {
-    Element* parent = node->parentElement();
-    while (parent) {
-      if (DynamicTo<HTMLTableElement>(parent)) {
-        break;
-      }
-      parent = parent->parentElement();
-    }
-    if (parent) {
-      UpdateTableRoleWithCleanLayout(parent);
-    }
-    TableCellRoleMaybeChanged(node);
-  }
+  // Even if the node or parent are ignored, an ancestor may need to include
+  // descendants of the attached node, thus ChildrenChanged()
+  // must be called. It handles ignored logic, ensuring that the first ancestor
+  // that should have this as a child will be updated.
+  ChildrenChanged(obj->CachedParentObject());
 }
 
 // Note: do not call this when a child is becoming newly included, because
@@ -2884,8 +2879,6 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
     CHECK(relation_cache_);
     relation_cache_->UpdateRelatedTree(optional_node, obj);
   }
-
-  TableCellRoleMaybeChanged(optional_node);
 }
 
 void AXObjectCacheImpl::UpdateTreeIfNeeded() {
@@ -3703,6 +3696,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       break;
     case TreeUpdateReason::kRoleMaybeChangedFromEventListener:
     case TreeUpdateReason::kRoleMaybeChangedFromHref:
+    case TreeUpdateReason::kRoleMaybeChangedFromAttachedTableDescendant:
       HandleRoleMaybeChangedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
@@ -3719,9 +3713,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       break;
     case TreeUpdateReason::kUpdateActiveMenuOption:
       HandleUpdateActiveMenuOptionWithCleanLayout(node);
-      break;
-    case TreeUpdateReason::kNodeIsAttached:
-      NodeIsAttachedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kUpdateAriaOwns:
       UpdateAriaOwnsWithCleanLayout(node);
@@ -4052,27 +4043,6 @@ void AXObjectCacheImpl::SectionOrRegionRoleMaybeChangedWithCleanLayout(
   }
 
   HandleRoleMaybeChangedWithCleanLayout(element);
-}
-
-void AXObjectCacheImpl::TableCellRoleMaybeChanged(Node* node) {
-  if (!node) {
-    return;
-  }
-  // The role for a table cell depends in complex ways on multiple of its
-  // siblings (see DecideRoleFromSiblings). Rather than attempt to reproduce
-  // that logic here for invalidation, just recompute the role of all siblings
-  // when new table cells are added.
-  if (auto* cell = DynamicTo<HTMLTableCellElement>(node)) {
-    for (auto* prev = LayoutTreeBuilderTraversal::PreviousSibling(*cell); prev;
-         prev = LayoutTreeBuilderTraversal::PreviousSibling(*prev)) {
-      HandleRoleMaybeChangedWithCleanLayout(prev);
-    }
-    HandleRoleMaybeChangedWithCleanLayout(cell);
-    for (auto* next = LayoutTreeBuilderTraversal::NextSibling(*cell); next;
-         next = LayoutTreeBuilderTraversal::PreviousSibling(*next)) {
-      HandleRoleMaybeChangedWithCleanLayout(next);
-    }
-  }
 }
 
 void AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout(Node* node) {

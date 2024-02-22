@@ -401,7 +401,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void HandleActiveDescendantChangedWithCleanLayout(Node*);
   void SectionOrRegionRoleMaybeChangedWithCleanLayout(Node*);
-  void TableCellRoleMaybeChanged(Node* node);
+  void TableCellRoleMaybeChangedWithCleanLayout(Node* node);
   void HandleRoleMaybeChangedWithCleanLayout(Node*);
   void HandleRoleChangeWithCleanLayout(Node*);
   void HandleAriaExpandedChangeWithCleanLayout(Node*);
@@ -409,7 +409,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleAriaPressedChangedWithCleanLayout(Node*);
   void HandleNodeLostFocusWithCleanLayout(Node*);
   void HandleNodeGainedFocusWithCleanLayout(Node*);
-  void NodeIsAttachedWithCleanLayout(Node*);
   void DidShowMenuListPopupWithCleanLayout(Node*);
   void DidHideMenuListPopupWithCleanLayout(Node*);
   void HandleScrollPositionChangedWithCleanLayout(Node*);
@@ -767,16 +766,16 @@ class MODULES_EXPORT AXObjectCacheImpl
     kRoleChangeFromAriaHasPopup = 20,
     kRoleChangeFromImageMapName = 21,
     kRoleChangeFromRoleOrType = 22,
-    kRoleMaybeChangedFromEventListener = 23,
-    kRoleMaybeChangedFromHref = 24,
-    kSectionOrRegionRoleMaybeChangedFromLabel = 25,
-    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 26,
-    kSectionOrRegionRoleMaybeChangedFromTitle = 27,
-    kTextChangedOnNode = 28,
-    kTextChangedOnClosestNodeForLayoutObject = 29,
-    kTextMarkerDataAdded = 30,
-    kUpdateActiveMenuOption = 31,
-    kNodeIsAttached = 32,
+    kRoleMaybeChangedFromAttachedTableDescendant = 23,
+    kRoleMaybeChangedFromEventListener = 24,
+    kRoleMaybeChangedFromHref = 25,
+    kSectionOrRegionRoleMaybeChangedFromLabel = 26,
+    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 27,
+    kSectionOrRegionRoleMaybeChangedFromTitle = 28,
+    kTextChangedOnNode = 29,
+    kTextChangedOnClosestNodeForLayoutObject = 30,
+    kTextMarkerDataAdded = 31,
+    kUpdateActiveMenuOption = 32,
     kUpdateAriaOwns = 33,
     kUpdateTableRole = 34,
     kUseMapAttributeChanged = 35,
