@@ -310,6 +310,7 @@ class Tests(BaseTest):
     self._TestEndToEndGeneration('SampleUniqueAnnotations.java', srcjar=True)
 
   def testEndToEndProxyHashed(self):
+    self._TestEndToEndGeneration('SampleForAnnotationProcessor.java')
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],
                                    use_proxy_hash=True)
 

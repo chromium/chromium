@@ -23,6 +23,10 @@ public class GEN_JNI {
     public static native Class this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass();
       // Hashed name: Java_J_N_M$EEymCX
     public static native Class[] this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClasses();
+      // Hashed name: Java_J_N_MtTvCTtu
+    public static native String this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString();
+      // Hashed name: Java_J_N_MJOq1186
+    public static native String[] this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings();
       // Hashed name: Java_J_N_McVHjA4P
     public static native Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObject();
       // Hashed name: Java_J_N_MJYxRKSI
@@ -48,5 +52,5 @@ public class GEN_JNI {
       // Hashed name: Java_J_N_MtvkX0TV
     public static native int[] this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
       // Hashed name: Java_J_N_MI36SGcd
-    public static native void this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, Object tStruct, Object[] structs, Object obj, Object[] objects);
+    public static native void this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object[] convertedObjects);
 }

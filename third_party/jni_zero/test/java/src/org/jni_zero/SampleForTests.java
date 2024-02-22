@@ -6,13 +6,6 @@ package org.jni_zero;
 
 import android.graphics.Rect;
 
-import org.jni_zero.AccessedByNative;
-import org.jni_zero.CalledByNative;
-import org.jni_zero.CalledByNativeUnchecked;
-import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeClassQualifiedName;
-import org.jni_zero.NativeMethods;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -82,8 +75,22 @@ class SampleForTests {
     // Exported to C++ as Java_SampleForTests_staticJavaMethod(JNIEnv* env)
     // Note no jobject argument, as it is static.
     @CalledByNative
-    public static boolean staticJavaMethod() {
+    public static boolean staticJavaMethod() throws Exception {
         return true;
+    }
+
+    // We do not want to include androidx annotations but this is basically how
+    // the real annotation looks like.
+    @interface AnnotationWithNamedNonStringParam {
+        int otherwise() default PRIVATE;
+
+        int PRIVATE = 2;
+    }
+
+    @CalledByNative
+    @AnnotationWithNamedNonStringParam(otherwise = AnnotationWithNamedNonStringParam.PRIVATE)
+    public boolean methodWithAnnotationParamAssignment() {
+        return false;
     }
 
     // No prefix, so this method is package private. It will still be exported.
@@ -100,12 +107,19 @@ class SampleForTests {
     @CalledByNative
     public SampleForTests(int foo, int bar) {}
 
+    // Tests @JniType for @CalledByNative methods.
+    @CalledByNative
+    @JniType("std::string")
+    public String getFirstString(@JniType("std::vector<std::string>") String[] array) {
+        return array[0];
+    }
+
     // Note the "Unchecked" suffix. By default, @CalledByNative will always generate bindings that
     // call CheckException(). With "@CalledByNativeUnchecked", the client C++ code is responsible to
     // call ClearException() and act as appropriate.
     // See more details at the "@CalledByNativeUnchecked" annotation.
     @CalledByNativeUnchecked
-    void methodThatThrowsException() {}
+    void methodThatThrowsException() throws Exception {}
 
     // The generator is not confused by inline comments:
     // @CalledByNative void thisShouldNotAppearInTheOutput();
@@ -125,8 +139,11 @@ class SampleForTests {
 
     // The generator is not confused by @Annotated parameters.
     @CalledByNative
-    void javaMethodWithAnnotatedParam(@SomeAnnotation int foo, final @SomeAnnotation int bar,
-            @SomeAnnotation final int baz, @SomeAnnotation final @AnotherAnnotation int bat) {}
+    void javaMethodWithAnnotatedParam(
+            @SomeAnnotation @JniType("int") int foo,
+            final @SomeAnnotation int bar,
+            @SomeAnnotation final int baz,
+            @SomeAnnotation @JniType("long") final @AnotherAnnotation long bat) {}
 
     // ---------------------------------------------------------------------------------------------
     // Java fields which are accessed from C++ code only must be annotated with @AccessedByNative to

@@ -21,6 +21,15 @@
 
 // Step 1: Forward declarations (classes).
 
+extern const char kClassPath_java_lang_String[];
+extern std::atomic<jclass> g_java_lang_String_clazz;
+#ifndef java_lang_String_clazz_defined
+#define java_lang_String_clazz_defined
+inline jclass java_lang_String_clazz(JNIEnv* env) {
+  return jni_zero::LazyGetClass(env, kClassPath_java_lang_String, &g_java_lang_String_clazz);
+}
+#endif
+
 
 // Step 2: Forward declarations (methods).
 
@@ -38,6 +47,12 @@ JNI_BOUNDARY_EXPORT jclass Java_this_is_a_package_prefix_J_N_M5NcWmhA(
     JNIEnv* env,
     jclass jcaller);
 JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_M_00024EEymCX(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_BOUNDARY_EXPORT jstring Java_this_is_a_package_prefix_J_N_MtTvCTtu(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_MJOq1186(
     JNIEnv* env,
     jclass jcaller);
 JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_McVHjA4P(
@@ -104,10 +119,15 @@ JNI_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MI36SGcd(
     jobjectArray throwables,
     jstring string,
     jobjectArray strings,
+    jstring convertedString,
+    jobjectArray convertedStrings,
+    jstring optionalString,
     jobject tStruct,
     jobjectArray structs,
     jobject obj,
-    jobjectArray objects);
+    jobject convertedObj,
+    jobjectArray objects,
+    jobjectArray convertedObjects);
 
 
 

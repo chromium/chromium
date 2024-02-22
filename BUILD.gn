@@ -390,6 +390,7 @@ group("gn_all") {
         "//third_party/androidx_javascriptengine",
         "//third_party/catapult/devil",
         "//third_party/jni_zero/sample:jni_generator_tests",
+        "//third_party/jni_zero/test:test_jni_apk",
         "//third_party/r8:custom_d8_java",
         "//tools/android:android_tools",
         "//tools/android:memconsumer",

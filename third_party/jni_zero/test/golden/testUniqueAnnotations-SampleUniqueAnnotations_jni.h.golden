@@ -39,7 +39,7 @@ namespace jni_zero {
 
 // Forward declare used conversion functions to avoid a compiler warning that
 // triggers if a conversion specialization exists within the including .cc file.
-template<> std::string ConvertType<std::string>(JNIEnv*, const JavaRef<jstring>&);
+template<> std::string FromJniType<std::string>(JNIEnv*, const JavaRef<jstring>&);
 }  // namespace jni_zero
 
 
@@ -65,9 +65,9 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniq
     jstring arg) {
   FooAndroid::BarDelegate* native = reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "Foo");
-  std::string arg_converted = jni_zero::ConvertType<std::string>(env,
+  std::string arg_converted = jni_zero::FromJniType<std::string>(env,
       jni_zero::JavaParamRef<jstring>(env, arg));
-  return native->Foo(env, std::move(arg_converted));
+  return native->Foo(env, arg_converted);
 }
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWithQualifiedObject(

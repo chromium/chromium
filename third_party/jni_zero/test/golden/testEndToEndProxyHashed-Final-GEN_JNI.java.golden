@@ -33,6 +33,14 @@ public class GEN_JNI {
         return J.N.MPl4TY3m();
     }
 
+    public static String org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
+        return J.N.MaQxW6t6();
+    }
+
+    public static String[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
+        return J.N.M8wEusw1();
+    }
+
     public static Object org_jni_1zero_SampleForAnnotationProcessor_returnObject() {
         return J.N.MpVxNDSC();
     }
@@ -81,7 +89,7 @@ public class GEN_JNI {
         return J.N.M3dkhKZM(zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
     }
 
-    public static void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, Object tStruct, Object[] structs, Object obj, Object[] objects) {
-        J.N.MomokuWo(clazz, classes, throwable, throwables, string, strings, tStruct, structs, obj, objects);
+    public static void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object[] convertedObjects) {
+        J.N.MomokuWo(clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, convertedObjects);
     }
 }

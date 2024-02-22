@@ -140,6 +140,10 @@ def JavaTypeToCForDeclaration(java_type):
 def JavaTypeToCForCalledByNativeParam(java_type):
   """Returns a C datatype to be when calling from native."""
   c_type = java_type.to_cpp()
+  if converted_type := java_type.converted_type():
+    if java_type.is_primitive():
+      return converted_type
+    return f'const {converted_type}&'
   if java_type.is_primitive():
     if c_type == 'jint':
       return 'JniIntWrapper'
@@ -168,7 +172,9 @@ def _GetParamsInDeclaration(native):
   for p in native.params:
     converted_type = p.java_type.converted_type()
     if converted_type:
-      ret.append(f'{converted_type}&& {p.name}')
+      if not p.java_type.is_primitive():
+        converted_type = f'{converted_type}&'
+      ret.append(f'{converted_type} {p.name}')
     else:
       ret.append(JavaTypeToCForDeclaration(p.java_type) + ' ' + p.name)
   if not native.static:
@@ -398,11 +404,28 @@ class HeaderFileGeneratorHelper(object):
     return template.substitute(values)
 
   def GetUniqueClasses(self, origin):
+    """Collects java classes used in cpp header file.
+
+    This is GEN_JNI class for proxy natives, the java class we are generating
+    the header file for, the java (inner) classes that have the @CalledByNative
+    methods and also the array types for object arrays (e.g. String for
+    String[]) which are annotated by @JniType.
+
+    Args:
+      origin: A list of method objects (either NativeNethod or CalledByNative).
+
+    Returns:
+      {simple_name: fqn_with_slashes} for referenced java classes.
+    """
     ret = collections.OrderedDict()
     for entry in origin:
       if isinstance(entry, NativeMethod) and entry.is_proxy:
-        short_name = self.use_proxy_hash or self.enable_jni_multiplexing
         ret[self.gen_jni_class.name] = self.gen_jni_class.full_name_with_slashes
+        return_type = entry.return_type
+        if (not return_type.is_primitive_array()
+            and return_type.converted_type()):
+          simple_name = return_type.java_class.name
+          ret[simple_name] = return_type.java_class.full_name_with_slashes
         continue
       ret[self.class_name] = self.fully_qualified_class
 
@@ -624,10 +647,29 @@ $METHOD_STUBS
     return ''
 
   def GetCalledByNativeParamsInDeclaration(self, called_by_native):
-    return ',\n    '.join([
-        JavaTypeToCForCalledByNativeParam(p.java_type) + ' ' + p.name
-        for p in called_by_native.params
-    ])
+    ret = []
+    for param in called_by_native.params:
+      ret.append(
+          JavaTypeToCForCalledByNativeParam(param.java_type) + ' ' + param.name)
+    return ',\n    '.join(ret)
+
+  def GetToCppConversionCallLines(self, params):
+    conversion_calls = []
+    for param in params:
+      if param.java_type.converted_type():
+        conversion_calls.append(
+            self.GetToCppTypeConversionCallStatement(param.name,
+                                                     param.java_type))
+    return '\n  '.join(conversion_calls)
+
+  def GetToJavaConversionCallLines(self, params):
+    conversion_calls = []
+    for param in params:
+      if param.java_type.converted_type():
+        conversion_calls.append(
+            self.GetToJavaTypeConversionCallStatement(param.name,
+                                                      param.java_type))
+    return '\n  '.join(conversion_calls)
 
   def GetJavaParamRefForCall(self, c_type, name):
     return Template('jni_zero::JavaParamRef<${TYPE}>(env, ${NAME})').substitute(
@@ -638,56 +680,128 @@ $METHOD_STUBS
 
   def GetConversionFunctionDeclarationsString(self):
     """Returns the specialized conversion method declarations."""
-    conversion_pairs = set()
+    java_to_cpp_types = []
+    cpp_to_java_types = []
     for native in self.natives:
-      for param in native.params:
-        if param.java_type.converted_type():
-          original_type = param.java_type.to_cpp()
-          if original_type != 'jobjectArray':
-            conversion_pairs.add(
-                (original_type, param.java_type.converted_type()))
-    declarations = []
-    for fromtype, totype in conversion_pairs:
-      declarations.append(
-          f'template<> {totype} ConvertType<{totype}>(JNIEnv*, const JavaRef<{fromtype}>&);'
-      )
-    return '\n'.join(declarations)
+      java_to_cpp_types.extend(param.java_type for param in native.params
+                               if param.java_type.converted_type())
+      if native.return_type.converted_type():
+        cpp_to_java_types.append(native.return_type)
+    for called_by_native in self.called_by_natives:
+      cpp_to_java_types.extend(param.java_type
+                               for param in called_by_native.params
+                               if param.java_type.converted_type())
+      if called_by_native.return_type.converted_type():
+        java_to_cpp_types.append(called_by_native.return_type)
 
-  def GetConvertedParamName(self, name):
+    declarations = set()
+    for java_type in java_to_cpp_types:
+      # Array conversions do not need to be declared and primitive conversions
+      # are just static_cast.
+      if java_type.is_array_type() or java_type.is_primitive():
+        continue
+      cpptype = java_type.converted_type()
+      javatype = f'const JavaRef<{java_type.to_cpp()}>&'
+      declarations.add(
+          f'template<> {cpptype} FromJniType<{cpptype}>(JNIEnv*, {javatype});')
+    for java_type in cpp_to_java_types:
+      # Array conversions dont need to be declared and primitive conversions
+      # are just static_cast.
+      if java_type.is_array_type() or java_type.is_primitive():
+        continue
+      cpptype = java_type.converted_type()
+      javatype = f'ScopedJavaLocalRef<{java_type.to_cpp()}>'
+      declarations.add(
+          f'template<> {javatype} ToJniType<{cpptype}>(JNIEnv*, const {cpptype}&);'
+      )
+    return '\n'.join(sorted(declarations))
+
+  def GetConvertedVarName(self, name):
     return name + '_converted'
 
-  def GetConversionCallString(self, param):
+  def GetToJavaTypeConversionCallStatement(self, var_name, java_type):
+    """Returns a conversion statement from specified @JniType to default jni type."""
+    conversion_call_str = self.GetToJavaTypeConversionCallString(
+        var_name, java_type)
     template = Template(
-        '${VARIABLE_TYPE} ${CONVERTED_NAME} = '
-        'jni_zero::ConvertType<${CONVERTED_TYPE}>(env, ${ORIGINAL_NAME});')
-    maybe_template_specialization = ''
-    if param.java_type.is_array_type():
-      template = Template(
-          '${VARIABLE_TYPE} ${CONVERTED_NAME} = '
-          'jni_zero::ConvertArray<${CONVERTED_TYPE}>::Convert${MAYBE_TEMPLATE_SPECIALIZATION}(env, ${ORIGINAL_NAME});'
-      )
-      if param.java_type.non_array_full_name_with_slashes == 'java/lang/String':
-        maybe_template_specialization = '<jstring>'
-    original_type = param.java_type.to_cpp()
-    original_name = param.name
-    variable_type = f'{param.java_type.converted_type()}'
-    if not param.java_type.is_primitive():
-      original_name = self.GetJavaParamRefForCall(original_type, original_name)
-    ret = template.substitute({
+        "${VARIABLE_TYPE} ${CONVERTED_NAME} = ${CONVERSION_CALL};")
+    variable_type = java_type.to_cpp()
+    if not java_type.is_primitive():
+      variable_type = f'ScopedJavaLocalRef<{variable_type}>'
+    return template.substitute({
         'VARIABLE_TYPE':
         variable_type,
-        'CONVERTED_TYPE':
-        param.java_type.converted_type(),
         'CONVERTED_NAME':
-        self.GetConvertedParamName(param.name),
+        self.GetConvertedVarName(var_name),
+        'CONVERSION_CALL':
+        conversion_call_str,
+    })
+
+  def GetToJavaTypeConversionCallString(self, var_name, java_type):
+    """Returns a conversion call expression from specified @JniType to default jni type."""
+    if java_type.is_primitive():
+      name_str = var_name
+      if java_type.primitive_name == 'int':
+        name_str = f'as_jint({var_name})'
+      return f'static_cast<{java_type.to_cpp()}>({name_str})'
+    template = Template(
+        'jni_zero::ToJniType<${CONVERTED_TYPE}>(env, ${ORIGINAL_NAME})')
+    maybe_java_clazz = ''
+    if java_type.is_array_type():
+      template = Template(
+          'jni_zero::ConvertArray<${CONVERTED_TYPE}>::ToJniType(env, ${ORIGINAL_NAME}${MAYBE_JAVA_CLAZZ})'
+      )
+      if not java_type.is_primitive_array():
+        escaped_java_classname = common.escape_class_name(
+            java_type.non_array_full_name_with_slashes)
+        maybe_java_clazz = f', {escaped_java_classname}_clazz(env)'
+    ret = template.substitute({
+        'CONVERTED_TYPE': java_type.converted_type(),
+        'ORIGINAL_NAME': var_name,
+        'MAYBE_JAVA_CLAZZ': maybe_java_clazz,
+    })
+    return ret
+
+  def GetToCppTypeConversionCallStatement(self, var_name, java_type):
+    """Returns a conversion statement from default jni type to specified @JniType."""
+    conversion_call_str = self.GetToCppTypeConversionCallString(
+        var_name, java_type)
+    template = Template(
+        '${VARIABLE_TYPE} ${CONVERTED_NAME} = ${CONVERSION_CALL};')
+    return template.substitute({
+        'VARIABLE_TYPE':
+        java_type.converted_type(),
+        'CONVERTED_NAME':
+        self.GetConvertedVarName(var_name),
+        'CONVERSION_CALL':
+        conversion_call_str,
+    })
+
+  def GetToCppTypeConversionCallString(self, var_name, java_type):
+    """Returns a conversion call expression from default jni type to specified @JniType."""
+    if java_type.is_primitive():
+      return f'static_cast<{java_type.converted_type()}>({var_name})'
+    template = Template(
+        'jni_zero::FromJniType<${CONVERTED_TYPE}>(env, ${ORIGINAL_NAME})')
+    maybe_template_specialization = ''
+    if java_type.is_array_type():
+      template = Template(
+          'jni_zero::ConvertArray<${CONVERTED_TYPE}>::FromJniType${MAYBE_TEMPLATE_SPECIALIZATION}(env, ${ORIGINAL_NAME})'
+      )
+      if java_type.non_array_full_name_with_slashes == 'java/lang/String':
+        maybe_template_specialization = '<jstring>'
+    original_type = java_type.to_cpp()
+    original_name = var_name
+    if not java_type.is_primitive():
+      original_name = self.GetJavaParamRefForCall(original_type, original_name)
+    return template.substitute({
+        'CONVERTED_TYPE':
+        java_type.converted_type(),
         'ORIGINAL_NAME':
         original_name,
-        'ORIGINAL_TYPE':
-        original_type,
         'MAYBE_TEMPLATE_SPECIALIZATION':
         maybe_template_specialization,
     })
-    return ret
 
   def GetImplementationMethodName(self, native):
     return 'JNI_%s_%s' % (self.java_class.name, native.cpp_name)
@@ -705,9 +819,10 @@ $METHOD_STUBS
     conversion_calls = []
     for p in params:
       if p.java_type.converted_type():
-        params_in_call.append(
-            f'std::move({self.GetConvertedParamName(p.name)})')
-        conversion_calls.append(self.GetConversionCallString(p))
+        name_in_call = self.GetConvertedVarName(p.name)
+        params_in_call.append(name_in_call)
+        conversion_calls.append(
+            self.GetToCppTypeConversionCallStatement(p.name, p.java_type))
       elif p.java_type.is_primitive():
         params_in_call.append(p.name)
       else:
@@ -720,7 +835,17 @@ $METHOD_STUBS
     return_type = native.return_type.to_cpp()
     return_declaration = return_type
     post_call = ''
-    if not native.return_type.is_primitive():
+    post_return_statement = ''
+    return_phrase = 'return'
+    if native.return_type.converted_type():
+      return_phrase = 'auto ret ='
+      convert_call = self.GetToJavaTypeConversionCallString(
+          'ret', native.return_type)
+      if not native.return_type.is_primitive():
+        convert_call = f'{convert_call}.Release()'
+      post_return_statement = f'return {convert_call};'
+      return_declaration = native.return_type.converted_type()
+    elif not native.return_type.is_primitive():
       post_call = '.Release()'
       return_declaration = ('jni_zero::ScopedJavaLocalRef<' + return_type + '>')
 
@@ -735,9 +860,10 @@ $METHOD_STUBS
         'POST_CALL': post_call,
         'CONVERSION_CALLS': '\n  '.join(conversion_calls),
         'STUB_NAME': self.helper.GetStubName(native),
+        'POST_RETURN_STATEMENT': post_return_statement,
+        'MAYBE_RETURN_PHRASE': return_phrase,
     }
 
-    namespace_qual = self.namespace + '::' if self.namespace else ''
     if native.first_param_cpp_type:
       optional_error_return = native.return_type.to_cpp_default_value()
       if optional_error_return:
@@ -754,7 +880,8 @@ JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
   ${P0_TYPE}* native = reinterpret_cast<${P0_TYPE}*>(${PARAM0_NAME});
   CHECK_NATIVE_PTR(env, jcaller, native, "${NAME}"${OPTIONAL_ERROR_RETURN});
   ${CONVERSION_CALLS}
-  return native->${NAME}(${PARAMS_IN_CALL})${POST_CALL};
+  ${MAYBE_RETURN_PHRASE} native->${NAME}(${PARAMS_IN_CALL})${POST_CALL};
+  ${POST_RETURN_STATEMENT}
 }
 """)
     else:
@@ -767,18 +894,23 @@ JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
     JNIEnv* env,
     ${PARAMS_IN_STUB}) {
   ${CONVERSION_CALLS}
-  return ${IMPL_METHOD_NAME}(${PARAMS_IN_CALL})${POST_CALL};
+  ${MAYBE_RETURN_PHRASE} ${IMPL_METHOD_NAME}(${PARAMS_IN_CALL})${POST_CALL};
+  ${POST_RETURN_STATEMENT}
 }
 """)
 
     return RemoveIndentedEmptyLines(template.substitute(values))
 
-  def GetArgument(self, param):
+  def GetCalledByNativeArgument(self, param):
+    name = param.name
+    converted = bool(param.java_type.converted_type())
+    if converted:
+      name = self.GetConvertedVarName(param.name)
     if param.java_type.is_primitive():
-      if param.java_type.primitive_name == 'int':
-        return f'as_jint({param.name})'
-      return param.name
-    return f'{param.name}.obj()'
+      if param.java_type.primitive_name == 'int' and not converted:
+        return f'as_jint({name})'
+      return name
+    return f'{name}.obj()'
 
   def GetCalledByNativeValues(self, called_by_native):
     """Fills in necessary values for the CalledByNative methods."""
@@ -795,8 +927,11 @@ JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
         called_by_native)
     if params_in_declaration:
       params_in_declaration = ', ' + params_in_declaration
+    conversion_call_lines = '\n  '.join(
+        self.GetToJavaTypeConversionCallStatement(p.name, p.java_type)
+        for p in called_by_native.params if p.java_type.converted_type())
     params_in_call = ', '.join(
-        self.GetArgument(p) for p in called_by_native.params)
+        self.GetCalledByNativeArgument(p) for p in called_by_native.params)
     if params_in_call:
       params_in_call = ', ' + params_in_call
     check_exception = 'Unchecked'
@@ -823,7 +958,12 @@ JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
     if not return_type.is_void():
       pre_call = ' ' + pre_call
       return_declaration = return_type_str + ' ret ='
-      if return_type.is_primitive():
+      if return_type.converted_type():
+        return_type_str = return_type.converted_type()
+        return_conversion_str = self.GetToCppTypeConversionCallString(
+            'ret', return_type)
+        return_clause = f'return {return_conversion_str};'
+      elif return_type.is_primitive():
         return_clause = 'return ret;'
       else:
         return_type_str = (f'jni_zero::ScopedJavaLocalRef<{return_type_str}>')
@@ -852,6 +992,7 @@ JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
         'METHOD_ID_FUNCTION_NAME': called_by_native.method_id_function_name,
         'METHOD_ID_VAR_NAME': called_by_native.method_id_var_name,
         'METHOD_ID_TYPE': 'STATIC' if called_by_native.static else 'INSTANCE',
+        'CONVERSION_CALLS': conversion_call_lines,
     }
 
   def GetLazyCalledByNativeMethodStub(self, called_by_native):
@@ -880,6 +1021,7 @@ ${FUNCTION_HEADER}
           "${JNI_DESCRIPTOR}",
           &g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME});
 
+  ${CONVERSION_CALLS}
   ${RETURN_DECLARATION}
      ${PRE_CALL}env->${ENV_CALL}(${FIRST_PARAM_IN_CALL},
           ${METHOD_ID_MEMBER_NAME}${PARAMS_IN_CALL})${POST_CALL};

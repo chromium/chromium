@@ -4,8 +4,6 @@
 
 package org.jni_zero;
 
-import org.jni_zero.JniType;
-import org.jni_zero.NativeMethods;
 
 /**
  * Sample class that uses the JNI annotation processor for static methods.
@@ -32,28 +30,56 @@ class SampleForAnnotationProcessor {
         SampleForAnnotationProcessor[] sendSamplesToNative(SampleForAnnotationProcessor[] strs);
         boolean hasPhalange();
 
-        int[] testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort,
-                short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble,
-                double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
+        @JniType("std::vector<int32_t>")
+        int[] testAllPrimitives(
+                @JniType("int") int zint,
+                @JniType("std::vector<int32_t>") int[] ints,
+                long zlong,
+                long[] longs,
+                short zshort,
+                short[] shorts,
+                @JniType("int") char zchar,
+                char[] chars,
+                byte zbyte,
+                byte[] bytes,
+                double zdouble,
+                double[] doubles,
+                float zfloat,
+                float[] floats,
+                boolean zbool,
+                boolean[] bools);
 
         void testSpecialTypes(
                 Class clazz,
                 Class[] classes,
                 Throwable throwable,
                 Throwable[] throwables,
-                @JniType("std::string") String string,
-                @JniType("std::vector<std::string>") String[] strings,
+                String string,
+                String[] strings,
+                @JniType("std::string") String convertedString,
+                @JniType("std::vector<std::string>") String[] convertedStrings,
+                @JniType("std::optional<std::string>") String optionalString,
                 TestStruct tStruct,
                 TestStruct[] structs,
-                @JniType("jni_zero::samples::CPPClass") Object obj,
-                @JniType("std::vector<jni_zero::samples::CPPClass>") Object[] objects);
+                Object obj,
+                @JniType("jni_zero::tests::CPPClass") Object convertedObj,
+                Object[] objects,
+                @JniType("std::vector<jni_zero::tests::CPPClass>") Object[] convertedObjects);
 
         Throwable returnThrowable();
         Throwable[] returnThrowables();
         Class returnClass();
         Class[] returnClasses();
         String returnString();
+
+        @JniType("std::string")
+        String returnConvertedString();
+
         String[] returnStrings();
+
+        @JniType("std::vector<std::string>")
+        String[] returnConvertedStrings();
+
         TestStruct returnStruct();
         TestStruct[] returnStructs();
         Object returnObject();

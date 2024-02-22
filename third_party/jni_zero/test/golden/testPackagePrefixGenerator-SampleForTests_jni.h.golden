@@ -74,7 +74,7 @@ namespace jni_zero {
 
 // Forward declare used conversion functions to avoid a compiler warning that
 // triggers if a conversion specialization exists within the including .cc file.
-
+template<> std::string FromJniType<std::string>(JNIEnv*, const JavaRef<jstring>&);
 }  // namespace jni_zero
 
 
@@ -306,6 +306,32 @@ static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JNIEnv*
 }
 
 static std::atomic<jmethodID>
+    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getFirstString1(nullptr);
+static std::string Java_SampleForTests_getFirstString(JNIEnv* env, const jni_zero::JavaRef<jobject>&
+    obj, const std::vector<std::string>& array) {
+  jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(),
+      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), nullptr);
+
+  jni_zero::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      jni_zero::MethodID::TYPE_INSTANCE>(
+          env,
+          clazz,
+          "getFirstString",
+          "([Ljava/lang/String;)Ljava/lang/String;",
+          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getFirstString1);
+
+  ScopedJavaLocalRef<jobjectArray> array_converted =
+      jni_zero::ConvertArray<std::vector<std::string>>::ToJniType(env, array,
+      java_lang_String_clazz(env));
+  jstring ret =
+      static_cast<jstring>(env->CallObjectMethod(obj.obj(),
+          call_context.base.method_id, array_converted.obj()));
+  return jni_zero::FromJniType<std::string>(env, jni_zero::JavaParamRef<jstring>(env, ret));
+}
+
+static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerEnum0(nullptr);
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
@@ -443,10 +469,10 @@ static jint Java_SampleForTests_javaMethod(JNIEnv* env, const jni_zero::JavaRef<
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_javaMethodWithAnnotatedParam4(nullptr);
 static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj, JniIntWrapper foo,
+    jni_zero::JavaRef<jobject>& obj, int foo,
     JniIntWrapper bar,
     JniIntWrapper baz,
-    JniIntWrapper bat) {
+    long bat) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env));
@@ -457,11 +483,13 @@ static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
           env,
           clazz,
           "javaMethodWithAnnotatedParam",
-          "(IIII)V",
+          "(IIIJ)V",
           &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_javaMethodWithAnnotatedParam4);
 
+  jint foo_converted = static_cast<jint>(as_jint(foo));
+  jlong bat_converted = static_cast<jlong>(bat);
      env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id, as_jint(foo), as_jint(bar), as_jint(baz), as_jint(bat));
+          call_context.base.method_id, foo_converted, as_jint(bar), as_jint(baz), bat_converted);
 }
 
 static std::atomic<jmethodID>
@@ -483,6 +511,29 @@ static void Java_SampleForTests_methodThatThrowsException(JNIEnv* env, const
 
      env->CallVoidMethod(obj.obj(),
           call_context.method_id);
+}
+
+static std::atomic<jmethodID>
+    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodWithAnnotationParamAssignment0(nullptr);
+static jboolean Java_SampleForTests_methodWithAnnotationParamAssignment(JNIEnv* env, const
+    jni_zero::JavaRef<jobject>& obj) {
+  jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(),
+      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), false);
+
+  jni_zero::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      jni_zero::MethodID::TYPE_INSTANCE>(
+          env,
+          clazz,
+          "methodWithAnnotationParamAssignment",
+          "()Z",
+&g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodWithAnnotationParamAssignment0);
+
+  jboolean ret =
+      env->CallBooleanMethod(obj.obj(),
+          call_context.base.method_id);
+  return ret;
 }
 
 static std::atomic<jmethodID>

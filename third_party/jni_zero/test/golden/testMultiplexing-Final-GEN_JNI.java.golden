@@ -33,6 +33,14 @@ public class GEN_JNI {
         return J.N.resolve_for_class_array(4494050796123551181L);
     }
 
+    public static String org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
+        return J.N.resolve_for_string(7569520640458300959L);
+    }
+
+    public static String[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
+        return J.N.resolve_for_string_array(-936415900957450130L);
+    }
+
     public static Object org_jni_1zero_SampleForAnnotationProcessor_returnObject() {
         return J.N.resolve_for_object(-6531260640815642492L);
     }
@@ -81,7 +89,7 @@ public class GEN_JNI {
         return J.N.resolve_for_int_array_IIAJJASSACCABBADDAFFAZZA(-2460899258934622810L, zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
     }
 
-    public static void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, Object tStruct, Object[] structs, Object obj, Object[] objects) {
-        J.N.resolve_for_void_LLATTARRAOOAOOA(-6743537113265735905L, clazz, classes, throwable, throwables, string, strings, tStruct, structs, obj, objects);
+    public static void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object[] convertedObjects) {
+        J.N.resolve_for_void_LLATTARRARRAROOAOOOAOA(-6743537113265735905L, clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, convertedObjects);
     }
 }

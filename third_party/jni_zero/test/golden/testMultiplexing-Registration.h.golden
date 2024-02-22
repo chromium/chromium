@@ -21,6 +21,15 @@
 
 // Step 1: Forward declarations (classes).
 
+extern const char kClassPath_java_lang_String[];
+extern std::atomic<jclass> g_java_lang_String_clazz;
+#ifndef java_lang_String_clazz_defined
+#define java_lang_String_clazz_defined
+inline jclass java_lang_String_clazz(JNIEnv* env) {
+  return jni_zero::LazyGetClass(env, kClassPath_java_lang_String, &g_java_lang_String_clazz);
+}
+#endif
+
 
 // Step 2: Forward declarations (methods).
 
@@ -38,6 +47,12 @@ JNI_BOUNDARY_EXPORT jclass Java_J_N_MHC2XaYW(
     JNIEnv* env,
     jclass jcaller);
 JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MPl4TY3m(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_BOUNDARY_EXPORT jstring Java_J_N_MaQxW6t6(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M8wEusw1(
     JNIEnv* env,
     jclass jcaller);
 JNI_BOUNDARY_EXPORT jobject Java_J_N_MpVxNDSC(
@@ -104,23 +119,28 @@ JNI_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     jobjectArray throwables,
     jstring string,
     jobjectArray strings,
+    jstring convertedString,
+    jobjectArray convertedStrings,
+    jstring optionalString,
     jobject tStruct,
     jobjectArray structs,
     jobject obj,
-    jobjectArray objects);
+    jobject convertedObj,
+    jobjectArray objects,
+    jobjectArray convertedObjects);
 
 
-JNI_BOUNDARY_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
+JNI_BOUNDARY_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRARRAROOAOOOAOA(
     JNIEnv* env,
     jclass jcaller,
-    jlong switch_num, jclass class_param1, jobjectArray class_array_param1, jthrowable throwable_param1, jobjectArray throwable_array_param1, jstring string_param1, jobjectArray string_array_param1, jobject object_param1, jobjectArray object_array_param1, jobject object_param2, jobjectArray object_array_param2) {
+    jlong switch_num, jclass class_param1, jobjectArray class_array_param1, jthrowable throwable_param1, jobjectArray throwable_array_param1, jstring string_param1, jobjectArray string_array_param1, jstring string_param2, jobjectArray string_array_param2, jstring string_param3, jobject object_param1, jobjectArray object_array_param1, jobject object_param2, jobject object_param3, jobjectArray object_array_param2, jobjectArray object_array_param3) {
         switch (switch_num) {
           
           case -6743537113265735905:
-            return Java_J_N_MomokuWo(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, object_param1, object_array_param1, object_param2, object_array_param2);
+            return Java_J_N_MomokuWo(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, string_param2, string_array_param2, string_param3, object_param1, object_array_param1, object_param2, object_param3, object_array_param2, object_array_param3);
           
           default:
-            JNI_ZERO_ELOG("J_N_resolve_1for_1void_1LLATTARRAOOAOOA was called with an invalid switch number: %ld", switch_num);
+            JNI_ZERO_ELOG("J_N_resolve_1for_1void_1LLATTARRARRAROOAOOOAOA was called with an invalid switch number: %ld", switch_num);
             JNI_ZERO_DCHECK(false);
             return;
         }
@@ -178,6 +198,9 @@ JNI_BOUNDARY_EXPORT jstring Java_J_N_resolve_1for_1string(
     jclass jcaller,
     jlong switch_num) {
         switch (switch_num) {
+          
+          case 7569520640458300959:
+            return Java_J_N_MaQxW6t6(env, jcaller);
           
           case 2130170930076365762:
             return Java_J_N_MHY_1jLL4(env, jcaller);
@@ -271,6 +294,9 @@ JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array(
     jclass jcaller,
     jlong switch_num) {
         switch (switch_num) {
+          
+          case -936415900957450130:
+            return Java_J_N_M8wEusw1(env, jcaller);
           
           case 1714188197378474348:
             return Java_J_N_MF8oFFVb(env, jcaller);

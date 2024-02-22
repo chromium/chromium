@@ -4,12 +4,12 @@
 
 package org.jni_zero;
 
-import org.jni_zero.Boolean;
+import org.jni_zero.internal.Boolean;
 
 import java.util.Map;
 
 @SomeAnnotation("that contains class Foo ")
-class SampleProxyEdgeCases {
+class SampleProxyEdgeCases<E extends Enum<E>> {
     enum Integer {}
     @interface ShouldBeIgnored {}
     static class OtherInnerClass {}
