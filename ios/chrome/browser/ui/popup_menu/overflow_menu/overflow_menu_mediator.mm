@@ -69,7 +69,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
@@ -126,6 +125,18 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                             image:[UIImage imageNamed:imageName]
                           accessibilityIdentifier:accessibilityIdentifier
                                           handler:handler];
+}
+
+// Uses `IsBookmarked` to check whether `url` is bookmarked in any of the
+// provided bookmark models. `account_model` can be null.
+bool IsBookmarked(const GURL& url,
+                  bookmarks::BookmarkModel* local_model,
+                  bookmarks::BookmarkModel* account_model) {
+  CHECK(local_model);
+  if (local_model->IsBookmarked(url)) {
+    return true;
+  }
+  return account_model && account_model->IsBookmarked(url);
 }
 
 }  // namespace
@@ -1822,9 +1833,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.followAction;
     }
     case overflow_menu::ActionType::Bookmark: {
-      BOOL pageIsBookmarked =
-          self.webState && self.localOrSyncableBookmarkModel &&
-          bookmark_utils_ios::IsBookmarked(self.webState->GetVisibleURL(),
+      BOOL pageIsBookmarked = self.webState &&
+                              self.localOrSyncableBookmarkModel &&
+                              IsBookmarked(self.webState->GetVisibleURL(),
                                            self.localOrSyncableBookmarkModel,
                                            self.accountBookmarkModel);
       return (pageIsBookmarked) ? self.editBookmarkAction

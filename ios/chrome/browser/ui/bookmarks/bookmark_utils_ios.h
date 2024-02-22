@@ -236,12 +236,6 @@ NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
 // Converts NSString entered by the user to a GURL.
 GURL ConvertUserDataToGURL(NSString* urlString);
 
-// Uses `IsBookmarked` to check whether `url` is bookmarked in any of the
-// provided bookmark models. `account_model` can be null.
-bool IsBookmarked(const GURL& url,
-                  bookmarks::BookmarkModel* local_model,
-                  bookmarks::BookmarkModel* account_model);
-
 // Uses `GetMostRecentlyAddedUserNodeForURL` to find the most recently added
 // bookmark node with the corresponding URL in both models. If both models
 // contain matching entries - compares them and returns the most recently added

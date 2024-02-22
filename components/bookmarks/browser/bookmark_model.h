@@ -28,9 +28,9 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
+#include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/bookmarks/browser/uuid_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -74,8 +74,8 @@ struct TitledUrlMatch;
 // Marked final to prevent unintended subclassing.
 // `MoveToOtherModelWithNewNodeIdsAndUuids` affects two instances, and assumes
 // that both instances are `BookmarkModel`, not some subclasses.
-class BookmarkModel final : public BookmarkUndoProvider,
-                            public KeyedService,
+class BookmarkModel final : public CoreBookmarkModel,
+                            public BookmarkUndoProvider,
                             public base::SupportsUserData {
  public:
   // `client` must not be null.
@@ -95,6 +95,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Special API for iOS only, where a dedicated BookmarkModel is used for
   // account bookmarks, and counter-intuitively this BookmarkModel instance
   // exposes those bookmarks as local-or-syncable bookmarks.
+  // TODO(crbug.com/326185948): Remove once a single BookmarkModel instance is
+  // used on iOS.
   void LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
       const base::FilePath& profile_path);
 
@@ -320,7 +322,7 @@ class BookmarkModel final : public BookmarkUndoProvider,
   bool HasNoUserCreatedBookmarksOrFolders() const;
 
   // Returns true if the specified URL is bookmarked.
-  bool IsBookmarked(const GURL& url) const;
+  bool IsBookmarked(const GURL& url) const override;
 
   // Return the set of bookmarked urls and their titles. This returns the unique
   // set of URLs. For example, if two bookmarks reference the same URL only one

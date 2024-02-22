@@ -6,11 +6,10 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
-#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/core_bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -19,7 +18,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
@@ -285,14 +283,9 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Returns `YES` if the tab `item` is already bookmarked.
 - (BOOL)isTabItemBookmarked:(TabItem*)item {
-  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          _browserState);
-  bookmarks::BookmarkModel* accountBookmarkModel =
-      ios::AccountBookmarkModelFactory::GetForBrowserState(_browserState);
-  return item &&
-         bookmark_utils_ios::IsBookmarked(
-             item.URL, localOrSyncableBookmarkModel, accountBookmarkModel);
+  bookmarks::CoreBookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(_browserState);
+  return item && bookmarkModel->IsBookmarked(item.URL);
 }
 
 // Returns `YES` if the tab for the given `identifier` is pinned.

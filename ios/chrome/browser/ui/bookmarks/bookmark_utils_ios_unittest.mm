@@ -462,50 +462,6 @@ TEST_F(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageOptedIn) {
       bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, IsBookmarkedNoMatches) {
-  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
-              GURL("http://example.com/a"));
-  AddBookmark(account_bookmark_model_->mobile_node(), u"b",
-              GURL("http://example.com/b"));
-
-  EXPECT_FALSE(bookmark_utils_ios::IsBookmarked(
-      GURL("http://example.com/c"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_));
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest, IsBookmarkedLocalMatch) {
-  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
-              GURL("http://example.com/a"));
-  AddBookmark(account_bookmark_model_->mobile_node(), u"b",
-              GURL("http://example.com/b"));
-
-  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(
-      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_));
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest, IsBookmarkedAccountMatch) {
-  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
-              GURL("http://example.com/a"));
-  AddBookmark(account_bookmark_model_->mobile_node(), u"b",
-              GURL("http://example.com/b"));
-
-  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(
-      GURL("http://example.com/b"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_));
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest, IsBookmarkedBothStoragesMatch) {
-  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
-              GURL("http://example.com/a"));
-  AddBookmark(account_bookmark_model_->mobile_node(), u"b",
-              GURL("http://example.com/a"));
-
-  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(
-      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
-      account_bookmark_model_));
-}
-
 TEST_F(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedNoMatchingBookmarks) {
   AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
               GURL("http://example.com/a"));

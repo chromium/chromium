@@ -859,16 +859,6 @@ GURL ConvertUserDataToGURL(NSString* urlString) {
   }
 }
 
-bool IsBookmarked(const GURL& url,
-                  bookmarks::BookmarkModel* local_model,
-                  bookmarks::BookmarkModel* account_model) {
-  CHECK(local_model);
-  if (local_model->IsBookmarked(url)) {
-    return true;
-  }
-  return account_model && account_model->IsBookmarked(url);
-}
-
 const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
     const GURL& url,
     bookmarks::BookmarkModel* local_model,

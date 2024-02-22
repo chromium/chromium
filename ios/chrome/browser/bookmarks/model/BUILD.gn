@@ -16,6 +16,8 @@ source_set("model") {
     "bookmark_client_impl.h",
     "bookmark_model_bridge_observer.h",
     "bookmark_model_bridge_observer.mm",
+    "bookmark_model_factory.cc",
+    "bookmark_model_factory.h",
     "bookmark_undo_service_factory.cc",
     "bookmark_undo_service_factory.h",
     "local_or_syncable_bookmark_model_factory.cc",
