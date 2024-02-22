@@ -624,11 +624,6 @@ void ViewAccessibility::ClearPosInSetOverride() {
   override_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
 }
 
-void ViewAccessibility::OverrideIsSelected(bool selected) {
-  override_data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                                  selected);
-}
-
 void ViewAccessibility::OverrideNextFocus(Widget* widget) {
   if (widget)
     next_focus_ = widget->GetWeakPtr();

@@ -253,11 +253,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // ViewAccessibility::ClearSetSize instead. See https://crbug.com/324485311.
   void ClearPosInSetOverride();
 
-  // Deprecated. Use ViewAccessibility::SetIsSelected instead.
-  // See https://crbug.com/324485311.
-  // Overrides the `ax::mojom::BoolAttribute::kSelected` attribute.
-  void OverrideIsSelected(bool selected);
-
   // Override the next or previous focused widget. Some assistive technologies,
   // such as screen readers, may utilize this information to transition focus
   // from the beginning or end of one widget to another when navigating by its
