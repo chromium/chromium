@@ -4,7 +4,7 @@
 enum MKDIR_CODE {MKDIR_SUCCESS,MKDIR_ERROR,MKDIR_BADPATH};
 
 MKDIR_CODE MakeDir(const wchar *Name,bool SetAttr,uint Attr);
-bool CreatePath(const wchar *Path,bool SkipLastName);
+bool CreatePath(const wchar *Path,bool SkipLastName,bool Silent);
 void SetDirTime(const wchar *Name,RarTime *ftm,RarTime *ftc,RarTime *fta);
 bool IsRemovable(const wchar *Name);
 
@@ -27,9 +27,7 @@ bool IsDeleteAllowed(uint FileAttr);
 void PrepareToDelete(const wchar *Name);
 uint GetFileAttr(const wchar *Name);
 bool SetFileAttr(const wchar *Name,uint Attr);
-#if 0
 wchar* MkTemp(wchar *Name,size_t MaxSize);
-#endif
 
 enum CALCFSUM_FLAGS {CALCFSUM_SHOWTEXT=1,CALCFSUM_SHOWPERCENT=2,CALCFSUM_SHOWPROGRESS=4,CALCFSUM_CURPOS=8};
 
@@ -41,10 +39,13 @@ bool DelDir(const wchar *Name);
 
 #if defined(_WIN_ALL) && !defined(SFX_MODULE)
 bool SetFileCompression(const wchar *Name,bool State);
+void ResetFileCache(const wchar *Name);
 #endif
 
 
 
 
+
+bool LinksToDirs(const wchar *SrcName,const wchar *SkipPart,std::wstring &LastChecked);
 
 #endif

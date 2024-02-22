@@ -42,8 +42,8 @@ void Unpack::Unpack5(bool Solid)
         break;
     }
 
-    if (((WriteBorder-UnpPtr) & MaxWinMask)<MAX_INC_LZ_MATCH && WriteBorder!=UnpPtr)
-    {
+    if (((WriteBorder - UnpPtr) & MaxWinMask) <= MAX_INC_LZ_MATCH &&
+        WriteBorder != UnpPtr) {
       UnpWriteBuf();
       if (WrittenFileSize>DestUnpSize)
         return;
@@ -93,7 +93,7 @@ void Unpack::Unpack5(bool Solid)
         }
         else
         {
-          Distance+=Inp.getbits32()>>(32-DBits);
+          Distance += Inp.getbits() >> (16 - DBits);
           Inp.addbits(DBits);
         }
       }

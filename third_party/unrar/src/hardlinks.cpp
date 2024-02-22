@@ -1,7 +1,7 @@
-bool ExtractHardlink(wchar *NameNew,wchar *NameExisting,size_t NameExistingSize)
-{
-  SlashToNative(NameExisting,NameExisting,NameExistingSize); // Not needed for RAR 5.1+ archives.
-
+bool ExtractHardlink(CommandData* Cmd,
+                     wchar* NameNew,
+                     wchar* NameExisting,
+                     size_t NameExistingSize) {
   if (!FileExist(NameExisting))
   {
     uiMsg(UIERROR_HLINKCREATE,NameNew);
@@ -9,7 +9,7 @@ bool ExtractHardlink(wchar *NameNew,wchar *NameExisting,size_t NameExistingSize)
     ErrHandler.SetErrorCode(RARX_CREATE);
     return false;
   }
-  CreatePath(NameNew,true);
+  CreatePath(NameNew, true, Cmd->DisableNames);
 
 #ifdef _WIN_ALL
   bool Success=CreateHardLink(NameNew,NameExisting,NULL)!=0;
@@ -36,4 +36,3 @@ bool ExtractHardlink(wchar *NameNew,wchar *NameExisting,size_t NameExistingSize)
   return false;
 #endif
 }
-
