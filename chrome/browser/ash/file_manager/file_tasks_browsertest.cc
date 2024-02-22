@@ -1319,9 +1319,6 @@ class DriveTest : public TestAccountBrowserTest {
     // the office fallback dialog can launched.
     test::AddDefaultComponentExtensionsOnMainThread(profile());
 
-    // Create a fake ODFS.
-    test::CreateFakeProvidedFileSystemOneDrive(profile());
-
     // Create Drive root directory.
     {
       base::ScopedAllowBlockingForTesting allow_blocking;

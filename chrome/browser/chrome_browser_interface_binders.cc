@@ -1654,14 +1654,14 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::cloud_upload::mojom::PageHandlerFactory,
         ash::cloud_upload::CloudUploadUI>(map);
+    RegisterWebUIControllerInterfaceBinder<
+        ash::office_fallback::mojom::PageHandlerFactory,
+        ash::office_fallback::OfficeFallbackUI>(map);
   }
 
   if (ash::cloud_upload::
           IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
               profile)) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::office_fallback::mojom::PageHandlerFactory,
-        ash::office_fallback::OfficeFallbackUI>(map);
     RegisterWebUIControllerInterfaceBinder<
         ash::settings::one_drive::mojom::PageHandlerFactory,
         ash::settings::OSSettingsUI>(map);
