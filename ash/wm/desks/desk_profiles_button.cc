@@ -62,8 +62,8 @@ DeskProfilesButton::DeskProfilesButton(Desk* desk,
 
   LoadIconForProfile();
 
-  SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_PROFILES_BUTTON));
+  SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_DESKS_DESK_PROFILES_BUTTON, desk->name()));
 }
 
 DeskProfilesButton::~DeskProfilesButton() {

@@ -2687,7 +2687,7 @@ Style notes:
         Close <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph> and windows
       </message>
       <message name="IDS_ASH_DESKS_DESK_PROFILES_BUTTON" desc="The desk profile button's accessible name">
-        Desk profile menu
+        Desk profile menu. <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph>
       </message>
       <message name="IDS_ASH_DESKS_MENU_ITEM_PROFILE_CHECKED" desc="The profile menu item's accessible name">
         <ph name="PROFILE_NAME">$1</ph> <ph name="EMAIL">$2</ph> Check box checked.
