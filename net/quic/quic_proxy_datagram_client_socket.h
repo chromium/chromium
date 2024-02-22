@@ -14,6 +14,7 @@
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/udp_socket.h"
+#include "net/spdy/spdy_http_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/scheme_host_port.h"
 
@@ -29,19 +30,22 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
     : public DatagramClientSocket {
  public:
   // Initializes a QuicProxyDatagramClientSocket with the provided network
-  // log (source_net_log) and destination URL. The destination parameter
-  // specifies the target server (including the scheme, hostname, and port
-  // number) to which datagrams will be sent.
-  QuicProxyDatagramClientSocket(const NetLogWithSource& source_net_log,
-                                url::SchemeHostPort destination);
+  // log (source_net_log) and destination URL. The destination URL is
+  // derived from a URI Template containing the variables "target_host"
+  // and "target_port". These variables need to be prepopulated by the caller of
+  // this constructor. Datagrams will be sent to this target server.
+  QuicProxyDatagramClientSocket(const GURL& url,
+                                const std::string& user_agent,
+                                const NetLogWithSource& source_net_log);
 
   QuicProxyDatagramClientSocket(const QuicProxyDatagramClientSocket&) = delete;
   QuicProxyDatagramClientSocket& operator=(
       const QuicProxyDatagramClientSocket&) = delete;
 
+  // On destruction Close() is called.
   ~QuicProxyDatagramClientSocket() override;
 
-  // Connect this socket over the given QUIC stream, using the `destination_`
+  // Connect this socket over the given QUIC stream, using the `url_`
   // and local and proxy peer addresses. The socket has no true peer
   // address since it is connected over a proxy and the proxy performs the
   // hostname resolution. Instead `proxy_peer_address_` is the peer to which the
@@ -75,8 +79,10 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   void UseNonBlockingIO() override;
   int SetDoNotFragment() override;
   int SetRecvTos() override;
+  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) override;
   void SetMsgConfirm(bool confirm) override;
   const NetLogWithSource& NetLog() const override;
+  DscpAndEcn GetLastTos() const override;
 
   // Socket implementation.
   int Read(IOBuffer* buf,
@@ -89,12 +95,71 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
 
+  const HttpResponseInfo* GetConnectResponseInfo() const;
+  bool IsConnected() const;
+
+ protected:
+  void BuildConnectUDPTunnelRequest(const GURL& url,
+                                    const std::string& host_and_port,
+                                    const std::string& user_agent,
+                                    const HttpRequestHeaders& extra_headers,
+                                    std::string* request_line,
+                                    HttpRequestHeaders* request_headers,
+                                    spdy::Http2HeaderBlock* headers);
+
  private:
-  NetLogWithSource net_log_;
-  IPEndPoint local_address_;
-  IPEndPoint proxy_peer_address_;
+  enum State {
+    STATE_DISCONNECTED,
+    STATE_SEND_REQUEST,
+    STATE_SEND_REQUEST_COMPLETE,
+    STATE_READ_REPLY,
+    STATE_READ_REPLY_COMPLETE,
+    STATE_CONNECT_COMPLETE
+  };
+
+  // Callback used during connecting
+  void OnIOComplete(int result);
+
+  // Callback for stream_->ReadInitialHeaders()
+  void OnReadResponseHeadersComplete(int result);
+  int ProcessResponseHeaders(const spdy::Http2HeaderBlock& headers);
+
+  int DoLoop(int last_io_result);
+  int DoSendRequest();
+  int DoSendRequestComplete(int result);
+  int DoReadReply();
+  int DoReadReplyComplete(int result);
+
+  State next_state_ = STATE_DISCONNECTED;
+
+  // Stores the callback for Connect().
+  CompletionOnceCallback connect_callback_;
+
+  // Pointer to the QUIC Stream that this sits on top of.
   std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
-  url::SchemeHostPort destination_;
+
+  // CONNECT request and response.
+  HttpRequestInfo request_;
+  HttpResponseInfo response_;
+
+  spdy::Http2HeaderBlock response_header_block_;
+
+  // Local address of socket.
+  IPEndPoint local_address_;
+  // The peer IP of sockets underlying connection.
+  IPEndPoint proxy_peer_address_;
+
+  // The URL generated from the expanded URI Template.
+  // This URI Template includes variables for "target_host" and "target_port",
+  // which have been replaced with their actual values to form the complete URL.
+  GURL url_;
+
+  std::string user_agent_;
+
+  NetLogWithSource net_log_;
+
+  // The default weak pointer factory.
+  base::WeakPtrFactory<QuicProxyDatagramClientSocket> weak_factory_{this};
 };
 
 }  // namespace net
