@@ -509,8 +509,8 @@ using HostedAppTest = HostedOrWebAppTest;
 IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   SetupApp("app");
   EXPECT_FALSE(registrar().IsInstalled(app_id_));
-  const Extension* app = ExtensionRegistry::Get(profile())->GetExtensionById(
-      app_id_, ExtensionRegistry::ENABLED);
+  const Extension* app =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(app_id_);
   EXPECT_TRUE(app->is_hosted_app());
 }
 
