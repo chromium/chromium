@@ -14,9 +14,8 @@
 # limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
-                          get_tree, goto_url, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -181,92 +180,94 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
 
 @pytest.mark.asyncio
 async def test_browsingContext_create_withUserGesture_eventsEmitted(
-        websocket, context_id, html):
-    blank_url = "https://example.com/"
+        websocket, context_id, html, example_url, read_sorted_messages):
     LINK_WITH_BLANK_TARGET = html(
-        f'''<a href="{blank_url}" target="_blank">new tab</a>''')
+        f'''<a href="{example_url}" target="_blank">new tab</a>''')
 
     await goto_url(websocket, context_id, LINK_WITH_BLANK_TARGET)
 
     await subscribe(websocket, [
-        "browsingContext.contextCreated",
-        "browsingContext.domContentLoaded",
-        "browsingContext.load",
+        'browsingContext.contextCreated',
+        'browsingContext.domContentLoaded',
+        'browsingContext.load',
     ])
 
     command_id = await send_JSON_command(
         websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": """document.querySelector('a').click();""",
-                "awaitPromise": True,
-                "target": {
-                    "context": context_id,
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'document.querySelector("a").click();',
+                'awaitPromise': True,
+                'target': {
+                    'context': context_id,
                 },
-                "userActivation": True
+                'userActivation': True
             }
         })
 
-    response = await read_JSON_message(websocket)
-    new_context_id = response["params"]["context"]
-    assert new_context_id != context_id
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.contextCreated",
-        "params": {
-            "context": ANY_STR,
-            "url": "about:blank",
-            "children": None,
-            "parent": None,
-            'userContext': 'default'
-        }
-    }
+    # Read event messages. The order can vary, so read all and sort them.
+    # Expected sorted messages order:
+    # 1. Command result.
+    # 2. "browsingContext.contextCreated" event.
+    # 3. "browsingContext.domContentLoaded" event for "about:blank".
+    # 4. "browsingContext.domContentLoaded" event for the example_url.
+    # 5. "browsingContext.load" event.
+    messages = await read_sorted_messages(5)
 
-    response = await read_JSON_message(websocket)
-    assert response == AnyExtending({
-        "id": command_id,
-        "type": "success",
-        "result": ANY_DICT
-    })
+    # Get the new context id from the "browsingContext.contextCreated" event.
+    new_context_id = messages[1]['params']['context']
 
-    # TODO: CDP sends Lifecycle events when we send Lifecycle event enable
-    # These events correspond to the initial about:blank creation
-    # We should try to ignore the from Mapper.
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.domContentLoaded",
-        "params": {
-            "context": new_context_id,
-            "navigation": ANY_STR,
-            "timestamp": ANY_TIMESTAMP,
-            "url": "about:blank"
+    assert messages == [
+        {
+            'id': command_id,
+            'type': 'success',
+            'result': ANY_DICT
+        },
+        {
+            'type': 'event',
+            'method': 'browsingContext.contextCreated',
+            'params': {
+                'context': ANY_STR,
+                'url': 'about:blank',
+                'children': None,
+                'parent': None,
+                'userContext': 'default'
+            }
+        },
+        # TODO: CDP sends Lifecycle events when we send Lifecycle event enable
+        # These events correspond to the initial about:blank creation
+        # We should try to ignore the from Mapper.
+        {
+            'type': 'event',
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': new_context_id,
+                'navigation': ANY_STR,
+                'timestamp': ANY_TIMESTAMP,
+                'url': 'about:blank'
+            }
+        },
+        {
+            'type': 'event',
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': new_context_id,
+                'navigation': ANY_STR,
+                'timestamp': ANY_TIMESTAMP,
+                'url': example_url
+            }
+        },
+        {
+            'type': 'event',
+            'method': 'browsingContext.load',
+            'params': {
+                'context': new_context_id,
+                'navigation': ANY_STR,
+                'timestamp': ANY_TIMESTAMP,
+                'url': example_url
+            }
         }
-    }
-
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.domContentLoaded",
-        "params": {
-            "context": new_context_id,
-            "navigation": ANY_STR,
-            "timestamp": ANY_TIMESTAMP,
-            "url": blank_url
-        }
-    }
-
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.load",
-        "params": {
-            "context": new_context_id,
-            "navigation": ANY_STR,
-            "timestamp": ANY_TIMESTAMP,
-            "url": blank_url
-        }
-    }
+    ]
 
 
 @pytest.mark.asyncio
