@@ -66,6 +66,7 @@ export enum NtpElement {
   CUSTOMIZE_BUTTON = 9,
   CUSTOMIZE_DIALOG = 10,
   WALLPAPER_SEARCH_BUTTON = 11,
+  MAX_VALUE = WALLPAPER_SEARCH_BUTTON,
 }
 
 /**
@@ -78,6 +79,7 @@ export enum NtpCustomizeChromeEntryPoint {
   MODULE = 1,
   URL = 2,
   WALLPAPER_SEARCH_BUTTON = 3,
+  MAX_VALUE = WALLPAPER_SEARCH_BUTTON,
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
@@ -88,13 +90,13 @@ export const CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID =
 
 function recordClick(element: NtpElement) {
   chrome.metricsPrivate.recordEnumerationValue(
-      'NewTabPage.Click', element, Object.keys(NtpElement).length);
+      'NewTabPage.Click', element, NtpElement.MAX_VALUE + 1);
 }
 
 function recordCustomizeChromeOpen(element: NtpCustomizeChromeEntryPoint) {
   chrome.metricsPrivate.recordEnumerationValue(
       'NewTabPage.CustomizeChromeOpened', element,
-      Object.keys(NtpCustomizeChromeEntryPoint).length);
+      NtpCustomizeChromeEntryPoint.MAX_VALUE + 1);
 }
 
 // Adds a <script> tag that holds the lazy loaded code.
@@ -682,7 +684,7 @@ export class AppElement extends AppElementBase {
         'NewTabPage.BackgroundImageSource',
         (theme.backgroundImage ? theme.backgroundImage.imageSource :
                                  NtpBackgroundImageSource.kNoImage),
-        NtpBackgroundImageSource.MAX_VALUE);
+        NtpBackgroundImageSource.MAX_VALUE + 1);
 
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
         'NewTabPage.Collections.IdOnLoad',
