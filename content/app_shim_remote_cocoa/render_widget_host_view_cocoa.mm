@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
+#include "ui/accessibility/accessibility_features.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/cocoa/appkit_utils.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
@@ -87,6 +88,7 @@ class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
 
  private:
   // RenderWidgetHostNSViewHostHelper implementation.
+  id GetAccessibilityElement() override { return nil; }
   id GetRootBrowserAccessibilityElement() override { return nil; }
   id GetFocusedBrowserAccessibilityElement() override { return nil; }
   void SetAccessibilityWindow(NSWindow* window) override {}
@@ -1890,6 +1892,12 @@ void ExtractUnderlines(NSAttributedString* string,
 - (id)accessibilityHitTest:(NSPoint)point {
   id rootElement = _hostHelper->GetRootBrowserAccessibilityElement();
   if (!rootElement) {
+    if (features::IsAccessibilityRemoteUIAppEnabled()) {
+      id rwhvElement = _hostHelper->GetAccessibilityElement();
+      if (rwhvElement && rwhvElement != self) {
+        return [rwhvElement accessibilityHitTest:point];
+      }
+    }
     return self;
   }
 

@@ -352,7 +352,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void SetRemoteAccessibilityTokens(
       const std::vector<uint8_t>& window_token,
       const std::vector<uint8_t>& view_token) override;
-  bool GetRootViewAccessibilityToken(int64_t* pid,
+  bool GetRootViewAccessibilityToken(base::ProcessId* pid,
                                      std::vector<uint8_t>* token) override;
   bool ValidateUserInterfaceItem(
       int32_t command,

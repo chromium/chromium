@@ -47,6 +47,9 @@ class RenderWidgetHostNSViewHostHelper {
 
   virtual ~RenderWidgetHostNSViewHostHelper() = default;
 
+  // Return the RenderWidget's accessibility node.
+  virtual id GetAccessibilityElement() = 0;
+
   // Return the RenderWidget's BrowserAccessibilityManager's root accessibility
   // node.
   virtual id GetRootBrowserAccessibilityElement() = 0;

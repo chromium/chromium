@@ -64,6 +64,7 @@ class RenderWidgetHostNSViewBridgeOwner
       const RenderWidgetHostNSViewBridgeOwner&) = delete;
 
  private:
+  NSAccessibilityRemoteUIElement* __strong remote_accessibility_element_;
   void OnMojoDisconnect() { delete this; }
 
   std::unique_ptr<blink::WebCoalescedInputEvent> TranslateEvent(
@@ -72,6 +73,19 @@ class RenderWidgetHostNSViewBridgeOwner
         web_event.Clone(), std::vector<std::unique_ptr<blink::WebInputEvent>>{},
         std::vector<std::unique_ptr<blink::WebInputEvent>>{},
         ui::LatencyInfo());
+  }
+
+  id GetAccessibilityElement() override {
+    if (!remote_accessibility_element_) {
+      base::ProcessId browser_pid = base::kNullProcessId;
+      std::vector<uint8_t> element_token;
+      host_->GetRenderWidgetAccessibilityToken(&browser_pid, &element_token);
+      [NSAccessibilityRemoteUIElement
+          registerRemoteUIProcessIdentifier:browser_pid];
+      remote_accessibility_element_ =
+          ui::RemoteAccessibility::GetRemoteElementFromToken(element_token);
+    }
+    return remote_accessibility_element_;
   }
 
   // RenderWidgetHostNSViewHostHelper implementation.
