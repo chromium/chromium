@@ -50,6 +50,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -288,6 +289,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         [self.collectionView.collectionViewLayout invalidateLayout];
       }
       completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        if (ios::provider::IsRaccoonEnabled()) {
+          for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
+            [self setHoverEffectToCell:cell];
+          }
+        }
         [self.collectionView setNeedsLayout];
         [self.collectionView layoutIfNeeded];
       }];
@@ -1752,6 +1758,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // number of reusable grid cells in memory.
     [self.pointerInteractionCells addObject:cell];
   }
+  if (ios::provider::IsRaccoonEnabled()) {
+    [self setHoverEffectToCell:cell];
+  }
 }
 
 // Tells the delegate that the user tapped the item with identifier
@@ -1873,6 +1882,26 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       tabIdentifier:[[TabSwitcherItem alloc] initWithIdentifier:ID]];
   return
       [self.diffableDataSource indexPathForItemIdentifier:lookupItemIdentifier];
+}
+
+// Sets the hover effect to a cell. The shape of the hover effect is exactly the
+// same as the border of a selected tab.
+- (void)setHoverEffectToCell:(UICollectionViewCell*)cell {
+  DCHECK(ios::provider::IsRaccoonEnabled());
+  if (@available(iOS 17.0, *)) {
+    CGFloat margin =
+        kGridCellSelectionRingTintWidth + kGridCellSelectionRingGapWidth;
+    cell.hoverStyle = [UIHoverStyle
+        styleWithShape:[UIShape
+                           fixedRectShapeWithRect:CGRectMake(
+                                                      -margin, -margin,
+                                                      cell.bounds.size.width +
+                                                          margin * 2,
+                                                      cell.bounds.size.height +
+                                                          margin * 2)
+                                     cornerRadius:kGridCellCornerRadius +
+                                                  margin]];
+  }
 }
 
 @end
