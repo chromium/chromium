@@ -30,7 +30,9 @@ def main():
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.WARNING)
-  if not os.path.isdir(os.path.join(SRC_DIR, '.git')):
+
+  # ".git" is a directory in full checkouts, but a file in work trees.
+  if not os.path.exists(os.path.join(SRC_DIR, '.git')):
     logging.warning('Skip generating location tags because the script is not '
                     'running in a git repository')
     return 0
