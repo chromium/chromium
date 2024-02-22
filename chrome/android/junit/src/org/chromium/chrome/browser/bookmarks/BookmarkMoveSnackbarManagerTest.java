@@ -22,7 +22,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -33,16 +32,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
@@ -51,7 +46,6 @@ import java.util.Arrays;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
 /** Unit tests for {@link BookmarkMoveSnackbarManager}. */
 public class BookmarkMoveSnackbarManagerTest {
     @Rule
@@ -59,7 +53,6 @@ public class BookmarkMoveSnackbarManagerTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesRule = new Features.JUnitProcessor();
 
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private IdentityManager mIdentityManager;
@@ -67,7 +60,7 @@ public class BookmarkMoveSnackbarManagerTest {
 
     private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     private Activity mActivity;
-    private BookmarkModel mBookmarkModel;
+    private FakeBookmarkModel mBookmarkModel;
     private BookmarkId mBookmarkId1;
     private BookmarkId mBookmarkId2;
     private BookmarkId mBookmarkId3;
@@ -81,6 +74,7 @@ public class BookmarkMoveSnackbarManagerTest {
     @Before
     public void setUp() {
         mBookmarkModel = setupFakeBookmarkModel();
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
         doReturn(true).when(mSnackbarManager).canShowSnackbar();
 
@@ -96,8 +90,8 @@ public class BookmarkMoveSnackbarManagerTest {
         mBookmarkModelObserver = mBookmarkMoveSnackbarManager.getBookmarkModelObserverForTesting();
     }
 
-    private BookmarkModel setupFakeBookmarkModel() {
-        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+    private FakeBookmarkModel setupFakeBookmarkModel() {
+        FakeBookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
         mAccountMobileFolderId =
                 runOnUiThreadBlockingNoException(() -> bookmarkModel.getAccountMobileFolderId());
         mMobileFolderId = runOnUiThreadBlockingNoException(() -> bookmarkModel.getMobileFolderId());
@@ -234,8 +228,8 @@ public class BookmarkMoveSnackbarManagerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testMovementWithoutFeatureFlag() {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(false);
         mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId1);
 
         mBookmarkModelObserver.bookmarkNodeMoved(

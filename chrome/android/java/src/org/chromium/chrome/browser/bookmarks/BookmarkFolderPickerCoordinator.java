@@ -38,6 +38,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
             new ObservableSupplierImpl<>();
     private final ModelList mModelList = new ModelList();
     private final Context mContext;
+    private final BookmarkModel mBookmarkModel;
     private final View mView;
     private final View mMoveButton;
     private final RecyclerView mRecyclerView;
@@ -56,6 +57,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
             ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator,
             ShoppingService shoppingService) {
         mContext = context;
+        mBookmarkModel = bookmarkModel;
         mView = LayoutInflater.from(mContext).inflate(R.layout.bookmark_folder_picker, null);
         mMoveButton = mView.findViewById(R.id.move_button);
 
@@ -73,7 +75,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                 ImprovedBookmarkRowViewBinder::bind);
         mAdapter.registerType(
                 ViewType.SECTION_HEADER,
-                BookmarkManagerCoordinator::buildSectionHeaderView,
+                this::buildSectionHeaderView,
                 BookmarkManagerViewBinder::bindSectionHeaderView);
 
         PropertyModel model = new PropertyModel(BookmarkFolderPickerProperties.ALL_KEYS);
@@ -154,6 +156,14 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                         mBookmarkUiPrefs.getBookmarkRowDisplayPref()
                                 == BookmarkRowDisplayPref.VISUAL);
         return row;
+    }
+
+    View buildSectionHeaderView(ViewGroup parent) {
+        int layoutId =
+                mBookmarkModel.areAccountBookmarkFoldersActive()
+                        ? R.layout.bookmark_section_header_v2
+                        : R.layout.bookmark_section_header;
+        return LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
     }
 
     // BackPressHandler implementation.

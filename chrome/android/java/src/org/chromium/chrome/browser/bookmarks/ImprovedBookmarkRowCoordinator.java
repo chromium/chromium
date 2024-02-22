@@ -110,7 +110,7 @@ public class ImprovedBookmarkRowCoordinator {
         // Icon.
         resolveImagesForBookmark(propertyModel, bookmarkItem);
 
-        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+        if (mBookmarkModel.areAccountBookmarkFoldersActive()) {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK,
                     !bookmarkItem.isAccountBookmark());

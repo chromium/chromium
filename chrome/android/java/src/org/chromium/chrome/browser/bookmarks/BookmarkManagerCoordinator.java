@@ -273,7 +273,7 @@ public class BookmarkManagerCoordinator
                 BookmarkManagerViewBinder::bindLegacyPromoView);
         dragReorderableRecyclerViewAdapter.registerType(
                 ViewType.SECTION_HEADER,
-                BookmarkManagerCoordinator::buildSectionHeaderView,
+                this::buildSectionHeaderView,
                 BookmarkManagerViewBinder::bindSectionHeaderView);
         dragReorderableRecyclerViewAdapter.registerDraggableType(
                 ViewType.FOLDER,
@@ -429,10 +429,11 @@ public class BookmarkManagerCoordinator
         return mPromoHeaderManager.createSyncPromoHolder(parent);
     }
 
-    static @VisibleForTesting View buildSectionHeaderView(ViewGroup parent) {
+    @VisibleForTesting
+    View buildSectionHeaderView(ViewGroup parent) {
         return inflate(
                 parent,
-                BookmarkFeatures.isBookmarksAccountStorageEnabled()
+                mBookmarkModel.areAccountBookmarkFoldersActive()
                         ? R.layout.bookmark_section_header_v2
                         : R.layout.bookmark_section_header);
     }

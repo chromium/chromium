@@ -28,7 +28,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -38,9 +37,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
@@ -52,7 +48,6 @@ import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.base.TestActivity;
@@ -64,7 +59,6 @@ import org.chromium.url.JUnitTestGURLs;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
 public class ImprovedBookmarkRowCoordinatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -72,7 +66,6 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private BookmarkModel mBookmarkModel;
@@ -89,6 +82,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
     @Before
     public void setUp() {
+        doReturn(false).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
         // Setup BookmarkModel.
@@ -263,9 +257,9 @@ public class ImprovedBookmarkRowCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmark_accountAndLocal() throws Exception {
-        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        FakeBookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        bookmarkModel.setAreAccountBookmarkFoldersActive(true);
         mCoordinator =
                 new ImprovedBookmarkRowCoordinator(
                         mActivity,

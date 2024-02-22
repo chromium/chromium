@@ -114,7 +114,6 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -139,7 +138,6 @@ import java.util.function.Consumer;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-@DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String EXAMPLE_URL_FORMATTED =
@@ -348,6 +346,7 @@ public class BookmarkManagerMediatorTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Setup BookmarkModel.
+        doReturn(false).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
         doReturn(mDesktopFolderId).when(mBookmarkModel).getDesktopFolderId();
         doReturn(mDesktopFolderItem).when(mBookmarkModel).getBookmarkById(mDesktopFolderId);
@@ -1571,11 +1570,9 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
-        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testRootLevelFolders_accountFoldersPresent() {
+        doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
         BookmarkItem accountReadingListItem =
                 new BookmarkItem(

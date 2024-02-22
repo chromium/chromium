@@ -41,21 +41,18 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -70,7 +67,6 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
-@DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
 public class BookmarkFolderPickerRenderTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -112,7 +108,7 @@ public class BookmarkFolderPickerRenderTest {
     private BookmarkFolderPickerCoordinator mCoordinator;
     private ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
     private RecyclerView mRecyclerView;
-    private BookmarkModel mBookmarkModel;
+    private FakeBookmarkModel mBookmarkModel;
 
     public BookmarkFolderPickerRenderTest(boolean useVisualRowLayout, boolean nightModeEnabled) {
         mUseVisualRowLayout = useVisualRowLayout;
@@ -126,14 +122,13 @@ public class BookmarkFolderPickerRenderTest {
     @Before
     public void setUp() throws Exception {
         mBookmarkModel = runOnUiThreadBlocking(() -> FakeBookmarkModel.createModel());
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(false);
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         // Setup profile-related factories.
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
-
 
         // Setup BookmarkImageFetcher.
         final Resources resources = mActivity.getResources();
@@ -274,8 +269,8 @@ public class BookmarkFolderPickerRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testMoveBookmarkFromRoot_withAccountFolders() throws Exception {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         BookmarkId bookmarkId =
                 runOnUiThreadBlocking(
                         () ->

@@ -54,6 +54,7 @@
 #include "components/query_parser/query_parser.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "components/undo/undo_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -135,6 +136,7 @@ const bookmarks::BookmarkNode* GetNodeFromReadingListIfLoaded(
 
 }  // namespace
 
+// static
 ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
@@ -228,6 +230,15 @@ BookmarkBridge::~BookmarkBridge() {
 void BookmarkBridge::Destroy(JNIEnv*) {
   // This will call the destructor because the user data is a unique pointer.
   bookmark_model_->RemoveUserData(kBookmarkBridgeUserDataKey);
+}
+
+jboolean BookmarkBridge::AreAccountBookmarkFoldersActive(JNIEnv* env) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    return false;
+  }
+
+  return bookmark_model_->account_mobile_node() != nullptr;
 }
 
 void BookmarkBridge::GetImageUrlForBookmark(

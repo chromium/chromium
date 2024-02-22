@@ -10,7 +10,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.bookmarks.BookmarkFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -29,6 +28,7 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
             new ObservableSupplierImpl<>();
     private final ActivityTabProvider mActivityTabProvider;
     private final ActivityTabTabObserver mActivityTabTabObserver;
+    private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
 
     private BookmarkId mLastUsedParent;
 
@@ -51,6 +51,7 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
                         }
                     }
                 };
+        mBookmarkModelSupplier = bookmarkModelSupplier;
     }
 
     // After {@link BookmarkModel} is available, load it then query the last used URL and store it
@@ -72,7 +73,8 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
     public @BackPressResult int handleBackPress() {
         Tab tab = mActivityTabProvider.get();
         int result = shouldInterceptBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
-        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+        if (mBookmarkModelSupplier.hasValue()
+                && mBookmarkModelSupplier.get().areAccountBookmarkFoldersActive()) {
             BookmarkUtils.showBookmarkManager(null, mLastUsedParent, tab.isIncognito());
         } else {
             ReadingListUtils.showReadingList(tab.isIncognito());

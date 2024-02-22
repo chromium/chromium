@@ -32,7 +32,6 @@ import androidx.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
@@ -42,14 +41,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -57,7 +52,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-import org.chromium.components.sync.SyncFeatureMap;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,10 +61,8 @@ import java.util.List;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
 public class ImprovedBookmarkQueryHandlerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private Tracker mTracker;
@@ -82,7 +74,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
     @Before
     public void setup() {
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        doReturn(false).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         TrackerFactory.setTrackerForTests(mTracker);
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
 
@@ -109,9 +101,9 @@ public class ImprovedBookmarkQueryHandlerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBuildBookmarkListForParent_rootFolder_withAccountFolders() {
-        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        FakeBookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        fakeBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         mHandler =
                 new ImprovedBookmarkQueryHandler(
                         fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
@@ -381,7 +373,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
     @Test
     public void testBuildBookmarkListForFolderSelect_rootFolder() {
-        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        FakeBookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
         mHandler =
                 new ImprovedBookmarkQueryHandler(
                         fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
@@ -401,10 +393,10 @@ public class ImprovedBookmarkQueryHandlerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void
             testBuildBookmarkListForFolderSelect_rootFolder_alphabetical_WithAccountBookmarks() {
-        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        FakeBookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        fakeBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         mHandler =
                 new ImprovedBookmarkQueryHandler(
                         fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
@@ -430,9 +422,9 @@ public class ImprovedBookmarkQueryHandlerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBuildBookmarkListForFolderSelect_rootFolder_manual_WithAccountBookmarks() {
-        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        FakeBookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        fakeBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         mHandler =
                 new ImprovedBookmarkQueryHandler(
                         fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);

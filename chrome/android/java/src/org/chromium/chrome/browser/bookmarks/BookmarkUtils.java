@@ -296,7 +296,7 @@ public class BookmarkUtils {
 
         // Reading list is aligned with the bookmark save flow used by all other bookmark saves.
         // This is bundled with account bookmarks to modernize the infra.
-        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+        if (bookmarkModel.areAccountBookmarkFoldersActive()) {
             showSaveFlow(
                     activity,
                     bottomSheetController,

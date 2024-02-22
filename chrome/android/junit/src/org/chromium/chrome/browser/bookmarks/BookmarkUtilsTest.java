@@ -30,8 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -51,7 +49,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
@@ -107,7 +104,6 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @DisableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
     public void testAddToReadingList() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -133,8 +129,8 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @EnableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
     public void testAddToReadingList_withAccountBookmarks() {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Bookmarks.AddBookmarkType", BookmarkType.READING_LIST)
@@ -142,10 +138,9 @@ public class BookmarkUtilsTest {
                                 "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
                         .build();
 
-        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
         BookmarkUtils.addToReadingList(
                 mActivity,
-                bookmarkModel,
+                mBookmarkModel,
                 "Test title",
                 new GURL("https://test.com"),
                 mSnackbarManager,
@@ -183,7 +178,6 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testAddOrEditBookmark_readingList() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()

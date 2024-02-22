@@ -127,7 +127,7 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
      */
     public void startFolderPickerAndObserveResult(BookmarkId... bookmarkIds) {
         // Snackbars will only be shown when the feature is enabled.
-        mIsObserving = BookmarkFeatures.isBookmarksAccountStorageEnabled();
+        mIsObserving = mBookmarkModel.areAccountBookmarkFoldersActive();
         mBookmarkIds = Arrays.asList(bookmarkIds);
 
         // TODO(crbug.com/1465757): Record user action.

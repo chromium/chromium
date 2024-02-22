@@ -59,6 +59,7 @@ public class FakeBookmarkModel extends BookmarkModel {
     private BookmarkId mPartnerFolderId;
     private BookmarkId mLocalOrSyncableReadingListFolderId;
     private BookmarkId mAccountReadingListFolderId;
+    private boolean mAreAccountBookmarkFoldersActive;
 
     private FakeBookmarkModel() {
         // The native bookmark bridge pointer will be ignored because the JNI is mocked by
@@ -74,6 +75,10 @@ public class FakeBookmarkModel extends BookmarkModel {
     /** Adds a managed folder, parent cannot be the root. */
     public BookmarkId addManagedFolder(BookmarkId parent, String title) {
         return addFolder(parent, title, /* isManaged= */ true);
+    }
+
+    public void setAreAccountBookmarkFoldersActive(boolean active) {
+        mAreAccountBookmarkFoldersActive = active;
     }
 
     // Private functions used internally.
@@ -269,6 +274,11 @@ public class FakeBookmarkModel extends BookmarkModel {
         }
 
         @Override
+        public boolean areAccountBookmarkFoldersActive(long nativeBookmarkBridge) {
+            return FakeBookmarkModel.this.mAreAccountBookmarkFoldersActive;
+        }
+
+        @Override
         public void getImageUrlForBookmark(
                 long nativeBookmarkBridge, GURL url, Callback<GURL> callback) {
             callback.onResult(null);
@@ -293,7 +303,7 @@ public class FakeBookmarkModel extends BookmarkModel {
             bookmarksList.addAll(FakeBookmarkModel.this.getChildIds(mRootFolderId));
 
             // Remove all account folders if the feature flag is disabled.
-            if (!BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+            if (!areAccountBookmarkFoldersActive(nativeBookmarkBridge)) {
                 bookmarksList.remove(mAccountOtherFolderId);
                 bookmarksList.remove(mAccountDesktopFolderId);
                 bookmarksList.remove(mAccountMobileFolderId);
@@ -313,7 +323,7 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public BookmarkId getDefaultReadingListFolder(long nativeBookmarkBridge) {
-            return BookmarkFeatures.isBookmarksAccountStorageEnabled()
+            return areAccountBookmarkFoldersActive(nativeBookmarkBridge)
                     ? mAccountReadingListFolderId
                     : mLocalOrSyncableReadingListFolderId;
         }

@@ -210,7 +210,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     private void maybeInsertLocalSectionHeader(List<BookmarkListEntry> entries) {
-        if (!BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+        if (!mBookmarkModel.areAccountBookmarkFoldersActive()) {
             return;
         }
 

@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -42,10 +43,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -72,25 +72,26 @@ import java.util.concurrent.ExecutionException;
     ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
     SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
 })
+// TODO(crbug.com/1168590): Once SyncTestRule supports batching, investigate batching this suite.
+@DoNotBatch(reason = "SyncTestRule doesn't support batching.")
 public class BookmarkSaveFlowTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @Rule public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule =
+    public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public final JniMocker mJniMocker = new JniMocker();
 
     @Mock private ShoppingService mShoppingService;
     @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private IdentityManager mIdentityManager;
 
+    private ChromeTabbedActivity mActivity;
     private BookmarkSaveFlowCoordinator mBookmarkSaveFlowCoordinator;
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
@@ -98,23 +99,21 @@ public class BookmarkSaveFlowTest {
 
     @Before
     public void setUp() throws ExecutionException {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
-                mActivityTestRule.getActivity());
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mActivity = mSyncTestRule.getActivity();
 
         // Setup price-tracking.
         mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChromeTabbedActivity cta = mActivityTestRule.getActivity();
                     mBottomSheetController =
-                            cta.getRootUiCoordinatorForTesting().getBottomSheetController();
+                            mActivity.getRootUiCoordinatorForTesting().getBottomSheetController();
                     mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-                    mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
+                    mBookmarkModel = mActivity.getBookmarkModelForTesting();
                     mBookmarkSaveFlowCoordinator =
                             new BookmarkSaveFlowCoordinator(
-                                    cta,
+                                    mActivity,
                                     mBottomSheetController,
                                     mShoppingService,
                                     mUserEducationHelper,
@@ -181,10 +180,12 @@ public class BookmarkSaveFlowTest {
     @Feature({"RenderTest"})
     @EnableFeatures({
         ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
         SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
     })
     public void testBookmarkSaveFlow_improvedBookmarks_accountBookmarksEnabled()
             throws IOException {
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
@@ -341,14 +342,8 @@ public class BookmarkSaveFlowTest {
                             /* isNewBookmark= */ true);
                     return null;
                 });
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        ClickUtils.clickButton(cta.findViewById(R.id.bookmark_edit));
-        onView(
-                        withText(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getResources()
-                                        .getString(R.string.edit_bookmark)))
+        ClickUtils.clickButton(mActivity.findViewById(R.id.bookmark_edit));
+        onView(withText(mActivity.getResources().getString(R.string.edit_bookmark)))
                 .check(matches(isDisplayed()));
 
         // Dismiss the activity.
@@ -368,14 +363,8 @@ public class BookmarkSaveFlowTest {
                             /* isNewBookmark= */ true);
                     return null;
                 });
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        ClickUtils.clickButton(cta.findViewById(R.id.bookmark_select_folder));
-        onView(
-                        withText(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getResources()
-                                        .getString(R.string.bookmark_choose_folder)))
+        ClickUtils.clickButton(mActivity.findViewById(R.id.bookmark_select_folder));
+        onView(withText(mActivity.getResources().getString(R.string.bookmark_choose_folder)))
                 .check(matches(isDisplayed()));
 
         // Dismiss the activity.
@@ -384,8 +373,7 @@ public class BookmarkSaveFlowTest {
 
     private void loadBookmarkModel() {
         // Do not read partner bookmarks in setUp(), so that the lazy reading is covered.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PartnerBookmarksShim.kickOffReading(mActivityTestRule.getActivity()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> PartnerBookmarksShim.kickOffReading(mActivity));
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 

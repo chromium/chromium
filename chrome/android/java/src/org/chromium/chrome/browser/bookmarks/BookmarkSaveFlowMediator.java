@@ -193,7 +193,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
     private CharSequence createTitleCharSequence() {
         assert BookmarkFeatures.isAndroidImprovedBookmarksEnabled();
 
-        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+        if (mBookmarkModel.areAccountBookmarkFoldersActive()) {
             return createHighlightedCharSequence(
                     mContext,
                     new FolderText(
@@ -208,7 +208,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
     }
 
     private CharSequence createSubTitleCharSequnce(boolean wasBookmarkMoved) {
-        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+        if (mBookmarkModel.areAccountBookmarkFoldersActive()) {
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(mBookmarkId);
             return bookmarkItem.isAccountBookmark()
                     ? mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail()

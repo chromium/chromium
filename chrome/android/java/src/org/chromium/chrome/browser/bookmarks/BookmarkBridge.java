@@ -53,6 +53,12 @@ class BookmarkBridge {
     private @Nullable BookmarkId mDesktopFolderId;
     private @Nullable BookmarkId mLocalOrSyncableReadingListFolderId;
 
+    /** Returns whether account bookmark folders are currently active. */
+    public boolean areAccountBookmarkFoldersActive() {
+        ThreadUtils.assertOnUiThread();
+        return BookmarkBridgeJni.get().areAccountBookmarkFoldersActive(mNativeBookmarkBridge);
+    }
+
     /**
      * Handler to fetch the bookmarks, titles, urls and folder hierarchy.
      *
@@ -1048,6 +1054,8 @@ class BookmarkBridge {
     @NativeMethods
     public interface Natives {
         BookmarkModel nativeGetForProfile(Profile profile);
+
+        boolean areAccountBookmarkFoldersActive(long nativeBookmarkBridge);
 
         void getImageUrlForBookmark(long nativeBookmarkBridge, GURL url, Callback<GURL> callback);
 

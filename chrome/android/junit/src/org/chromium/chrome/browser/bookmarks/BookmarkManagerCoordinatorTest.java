@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
 import android.view.View;
@@ -15,7 +16,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -25,8 +25,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -42,7 +40,6 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
@@ -54,7 +51,6 @@ import org.chromium.ui.base.TestActivity;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-@DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
 public class BookmarkManagerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -62,8 +58,6 @@ public class BookmarkManagerCoordinatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Profile mProfile;
@@ -85,9 +79,8 @@ public class BookmarkManagerCoordinatorTest {
         // Setup JNI mocks.
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
 
-        Mockito.doReturn(mProfile).when(mProfile).getOriginalProfile();
-
         // Setup service mocks.
+        Mockito.doReturn(mProfile).when(mProfile).getOriginalProfile();
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         Mockito.doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
@@ -95,6 +88,9 @@ public class BookmarkManagerCoordinatorTest {
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+
+        // Setup bookmark model.
+        doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
 
         mActivityScenarioRule
                 .getScenario()
@@ -128,7 +124,7 @@ public class BookmarkManagerCoordinatorTest {
         FrameLayout parent = new FrameLayout(mActivity);
         assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
         assertNotNull(mCoordinator.buildLegacyPromoView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildSectionHeaderView(parent));
+        assertNotNull(mCoordinator.buildSectionHeaderView(parent));
         assertNotNull(mCoordinator.buildAndInitBookmarkFolderView(parent));
         assertNotNull(mCoordinator.buildAndInitBookmarkItemRow(parent));
         assertNotNull(mCoordinator.buildAndInitShoppingItemView(parent));

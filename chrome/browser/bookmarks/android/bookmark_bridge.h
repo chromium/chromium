@@ -71,6 +71,8 @@ class BookmarkBridge : public ProfileObserver,
   const bookmarks::BookmarkNode* GetParentNode(
       const bookmarks::BookmarkNode* node);
 
+  jboolean AreAccountBookmarkFoldersActive(JNIEnv* env);
+
   void GetImageUrlForBookmark(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_url,

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.components.sync.SyncFeatureMap;
 
 /** Controls the bookmarks save-flow view. */
 public class ImprovedBookmarkSaveFlowView extends FrameLayout {
@@ -44,7 +45,7 @@ public class ImprovedBookmarkSaveFlowView extends FrameLayout {
         mBookmarkContainer.setBackgroundResource(
                 R.drawable.improved_bookmark_save_flow_single_pane_background);
 
-        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+        if (SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
             ApiCompatibilityUtils.setTextAppearance(
                     mBookmarkTitleView, R.style.TextAppearance_TextMedium_Secondary);
             ApiCompatibilityUtils.setTextAppearance(
