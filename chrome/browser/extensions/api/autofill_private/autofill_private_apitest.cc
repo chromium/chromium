@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -118,10 +119,37 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddCreditCard_Cvc) {
   base::UserActionTester user_action_tester;
+
   EXPECT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
+
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillCreditCardsAdded"));
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("AutofillCreditCardsAddedWithCvc"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiTest,
+    AddCreditCard_Metrics_StoredCreditCardCountBeforeCardAdded) {
+  base::HistogramTester histogram_tester;
+
+  autofill::TestPersonalDataManager* personal_data_manager =
+      autofill_client()->GetPersonalDataManager();
+  // Required for adding the server card.
+  personal_data_manager->SetSyncingForTest(/*is_syncing_for_test=*/true);
+
+  // Set up the personal data manager with 2 existing cards.
+  personal_data_manager->AddCreditCard(autofill::test::GetCreditCard2());
+  personal_data_manager->AddServerCreditCard(
+      autofill::test::GetMaskedServerCard());
+  EXPECT_EQ(personal_data_manager->GetCreditCards().size(), 2u);
+
+  EXPECT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
+
+  // Expect the metric to add a record for the 2 existing cards.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethods.SettingsPage."
+      "StoredCreditCardCountBeforeCardAdded",
+      2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddCreditCard_NoCvc) {

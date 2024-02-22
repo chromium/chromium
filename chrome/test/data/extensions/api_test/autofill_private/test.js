@@ -383,10 +383,19 @@ var availableTests = [
       });
     }
 
+    function filterForAddedCard(cards) {
+      return cards.filter(function (card) {
+        // Credit cards are considered the same if they have a
+        // matching card number, expiration month, and expiration
+        // year.
+        return card['cardNumber'] == MASKED_NUMBER &&
+        card['expirationMonth'] == EXP_MONTH &&
+        card['expirationYear'] == EXP_YEAR;
+      })
+    }
+
     chrome.autofillPrivate.getCreditCardList(
         chrome.test.callbackPass(function(cardList) {
-          chrome.test.assertEq([], cardList);
-
           // Set up the callback that verifies that the card was correctly
           // added.
           chrome.test.listenOnce(
@@ -401,7 +410,7 @@ var availableTests = [
                       nickname: NICKNAME,
                       cvc: MASKED_CVC
                     }],
-                    filterCardProperties(cardList));
+                    filterCardProperties(filterForAddedCard(cardList)));
               }));
 
           chrome.autofillPrivate.saveCreditCard({

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -425,8 +426,15 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
     personal_data->UpdateCreditCard(credit_card);
     base::RecordAction(base::UserMetricsAction("AutofillCreditCardsEdited"));
   } else {
+    int current_card_count = personal_data->GetCreditCards().size();
     personal_data->AddCreditCard(credit_card);
+
     base::RecordAction(base::UserMetricsAction("AutofillCreditCardsAdded"));
+    base::UmaHistogramCounts100(
+        "Autofill.PaymentMethods.SettingsPage."
+        "StoredCreditCardCountBeforeCardAdded",
+        current_card_count);
+
     if (credit_card.HasNonEmptyValidNickname()) {
       base::RecordAction(
           base::UserMetricsAction("AutofillCreditCardsAddedWithNickname"));
