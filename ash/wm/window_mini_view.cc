@@ -34,6 +34,7 @@ namespace {
 
 constexpr int kFocusRingCornerRadius = 14;
 constexpr int kFocusRingCornerRadiusOld = 20;
+constexpr float kFocusRingThickness = 4.f;
 
 // Returns the rounded corners of the preview view scaled by the given value of
 // `scale` for the preview view with given source `window` if allowed to `show`.
@@ -339,6 +340,7 @@ void WindowMiniView::InstallFocusRing() {
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetHaloThickness(kFocusRingThickness);
   focus_ring->SetHasFocusPredicate(
       base::BindRepeating([](const views::View* view) {
         const auto* v = views::AsViewClass<WindowMiniView>(view);
