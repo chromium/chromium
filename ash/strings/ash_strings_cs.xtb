@@ -18,6 +18,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1056898198331236512">Upozornění</translation>
 <translation id="1058009965971887428">Nahlásit zpětnou vazbu</translation>
+<translation id="1059120031266247284">Sdíleno s vámi</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Nahradit</translation>
 <translation id="1073899992769346247">Vyměňte nebo znovu nabijte baterii</translation>
@@ -627,6 +628,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="3580650856351781466">Stahování řečových souborů</translation>
 <translation id="3585296979871889131">Zobrazovat nedávné fotky, média, oznámení a aplikace z telefonu</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Boční tlačítko</translation>
 <translation id="3593039967545720377">Stisknutím kláves <ph name="SHORTCUT_KEY_NAME" /> + V zobrazíte schránku a najdete její historii. Začněte tím, že zkopírujete položku.</translation>
 <translation id="3593646411856133110">Přejetím nahoru a podržením zobrazíte otevřené aplikace</translation>
@@ -643,6 +645,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3621202678540785336">Vstup</translation>
 <translation id="3621712662352432595">Nastavení zvuku</translation>
 <translation id="3626281679859535460">Jas</translation>
+<translation id="3628323833346754646">Přední tlačítko</translation>
 <translation id="3630697955794050612">vypnuto</translation>
 <translation id="3631369015426612114">Povolit oznámení z následujících zdrojů</translation>
 <translation id="3633097874324966332">Pokud zařízení chcete spárovat, otevřete nastavení rozhraní Bluetooth</translation>
@@ -1284,6 +1287,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="6052614013050385269">Kliknout na odkaz pravým tlačítkem</translation>
 <translation id="6054305421211936131">Přihlásit se pomocí chytré karty</translation>
 <translation id="6059276912018042191">Nedávno použité karty Chromu</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Za <ph name="LOGOUT_TIME_LEFT" /> budete automaticky odhlášeni.</translation>
 <translation id="6064463340679478396">Tento soubor nechci používat</translation>
 <translation id="6068258534237496331">Ovládací prvky videohovorů</translation>
@@ -1345,6 +1349,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="6309219492973062892">Kliknout nebo klepnout na ikony 1–8 na poličce</translation>
 <translation id="6315170314923504164">Hlas</translation>
 <translation id="6319058840130157106">Přecházet zpět mezi pravým dolním rohem, spouštěčem, adresním řádkem, lištou záložek, otevřeným webem a staženými soubory</translation>
+<translation id="6319503618073410818">Zobrazit podrobnosti v prohlížeči</translation>
 <translation id="6324916366299863871">Upravit zkratku</translation>
 <translation id="6330012934079202188">Zobrazují se okna ze všech ploch, stisknutím šipky nahoru zobrazíte okna z aktuální plochy</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je spravovaná relace, kterou spravuje doména <ph name="MANAGER" /></translation>
@@ -1564,6 +1569,7 @@ Nová instalace</translation>
 <translation id="7229029500464092426">Paměť: <ph name="AVAILABLE_MEMORY" /> | celkem <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Stav baterie: <ph name="PERCENTAGE" />. Připojte zařízení k napájení.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kvůli použití aktualizace je třeba Chromebook restartovat. Může to trvat až minutu.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Zadní mikrofon</translation>
 <translation id="7258828758145722155">Upraveno včera</translation>
 <translation id="726276584504105859">Chcete-li použít rozdělenou obrazovku, přetáhněte okno sem</translation>
@@ -1691,6 +1697,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7742327441377685481">Žádná oznámení</translation>
 <translation id="7748275671948949022">Zvýraznit tlačítko Spouštěče na poličce</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizaci</translation>
 <translation id="7768784765476638775">Poslech vybraného textu</translation>
 <translation id="7769299611924763557">Váš GIF bude brzy připraven</translation>
@@ -2017,6 +2024,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9098969848082897657">Ztlumit telefon</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> nebo <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Vrátit zpět poslední akci</translation>
+<translation id="9129245940793250979">Zadní tlačítko</translation>
 <translation id="9133335900048457298">Chráněný obsah zaznamenat nelze</translation>
 <translation id="9139720510312328767">Smazat další písmeno</translation>
 <translation id="9151906066336345901">end</translation>

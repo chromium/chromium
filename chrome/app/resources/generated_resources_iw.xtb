@@ -524,7 +524,6 @@
 <translation id="139911022479327130">ביטול הנעילה של הטלפון ואימות הזהות שלך</translation>
 <translation id="1399261165075500043">‏לא ניתן לטעון את התנאים וההגבלות של Google Play</translation>
 <translation id="1401216725754314428">מידע נוסף על אתרים קשורים בכרטיסייה חדשה</translation>
-<translation id="1401308693935339022">‏שימוש במיקום. אפליקציות ושירותים עם הרשאת מיקום יכולים להשתמש במיקום של המכשיר הזה. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של שירותים מבוססי-מיקום.</translation>
 <translation id="1402426911829176748">מתבצע חיבור למכשיר שלך</translation>
 <translation id="1403222014593521787">‏לא ניתן להתחבר לשרת ה-proxy</translation>
 <translation id="1405779994569073824">קריסה.</translation>
@@ -802,6 +801,7 @@
 <translation id="1602085790802918092">המערכת מפעילה את המכונה הווירטואלית</translation>
 <translation id="1603116295689434284">‏פרטי מערכת של Chrome</translation>
 <translation id="1603411913360944381">מחיקת <ph name="DEVICE_NAME" /></translation>
+<translation id="1603879843804174953">לחיצה ארוכה</translation>
 <translation id="1603914832182249871">(אנונימי)</translation>
 <translation id="1604432177629086300">לא ניתן היה להדפיס. יש לבדוק את המדפסת ולנסות שוב.</translation>
 <translation id="1604567162047669454">זיהוי הסמנטיקה של הפריסה החזותית</translation>
@@ -1351,6 +1351,7 @@
 <translation id="1992397118740194946">לא מוגדר</translation>
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="1995916364271252349">בדף הזה אפשר לשלוט על המידע שאתרים יכולים להשתמש בו ולהציג אותו (מיקום, מצלמה, חלונות קופצים ועוד)</translation>
+<translation id="199610894463449797">{0,plural, =1{סגירת הפרופיל הזה}one{סגירת הפרופיל הזה (# חלונות)}two{סגירת הפרופיל הזה (# חלונות)}other{סגירת הפרופיל הזה (# חלונות)}}</translation>
 <translation id="1997433994358798851">‏כדי להתחבר למכשיר, נדרשת ל-Chrome הרשאה להשתמש ב-Bluetooth</translation>
 <translation id="1997616988432401742">האישורים שלך</translation>
 <translation id="1999115740519098545">כשפותחים את הדפדפן</translation>
@@ -1593,6 +1594,7 @@
 <translation id="2175384018164129879">ניהול של מנועי החיפוש ושל החיפוש באתרים ספציפיים</translation>
 <translation id="217576141146192373">לא ניתן להוסיף מדפסת. יש לבדוק את הגדרת המדפסת ולנסות שוב.</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
+<translation id="217631816678106981">לא להדביק</translation>
 <translation id="2177306523871626993">מתבצעת הורדה של קובצי זיהוי טקסט… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">כרטיסייה אנונימית: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -1867,7 +1869,6 @@
 <translation id="2373666622366160481">התאמה לגודל הנייר</translation>
 <translation id="2375406435414127095">התחברות לטלפון</translation>
 <translation id="2376056713414548745">קריאה בקול רם</translation>
-<translation id="2377588536920405462">‏כדי לכבות את המיקום, עליך להשבית את ההגדרה הראשית של המיקום במכשיר שלך. בהגדרות המיקום אפשר גם להשבית את האפשרות להסתמך על Wi-Fi, רשתות סלולריות וחיישנים כדי לקבוע את המיקום.</translation>
 <translation id="2377667304966270281">שגיאות חמורות</translation>
 <translation id="237828693408258535">לתרגם את הדף הזה?</translation>
 <translation id="2378982052244864789">בחר את ספריית ההרחבה.</translation>
@@ -2351,6 +2352,7 @@
 <translation id="2732134891301408122">תוכן נוסף של <ph name="CURRENT_ELEMENT" /> מתוך <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">בסימון לייק, נשלח משוב שאהבת את התוצאות האלה.</translation>
 <translation id="2733992589856193783">יצרת מפתח גישה לאתר הזה. נדרש מכשיר נייד כדי להיכנס לחשבון.</translation>
+<translation id="2734797989819862638">לא להעתיק</translation>
 <translation id="27349076983469322">רקע בהיר</translation>
 <translation id="2735712963799620190">לוח זמנים</translation>
 <translation id="2737363922397526254">כיווץ...</translation>
@@ -3134,6 +3136,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}one{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}two{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3361954577771524115">מהאפליקציה</translation>
 <translation id="3363202073972776113">הפרופיל החדש ינוהל על ידי הארגון שלך. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">‏‫Alt + העברת העכבר מעל</translation>
 <translation id="3364986687961713424">ממנהל המערכת שלך: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏צריך להשתמש ב-Ctrl או ב-Alt</translation>
 <translation id="3368922792935385530">מחובר</translation>
@@ -4577,6 +4580,7 @@
 <translation id="4473559657152613417">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה חדשה'</translation>
 <translation id="4473996011558324141">ממש עוד רגע נציג לך הערכת זמן</translation>
 <translation id="4474155171896946103">יצירת סימנייה לכל הכרטיסיות...</translation>
+<translation id="4475299370877036544">הפעולה הזו עלולה להפר את מדיניות הארגון</translation>
 <translation id="4475552974751346499">חיפוש בהורדות</translation>
 <translation id="4476590490540813026">ספורטאית</translation>
 <translation id="4476659815936224889">‏כדי לסרוק את הקוד הזה, ניתן להשתמש באפליקציה של סורק קודי ה-QR בטלפון או באפליקציות מצלמה מתאימות.</translation>
@@ -5426,7 +5430,6 @@
 <translation id="5147097165869384760">מנסה למצוא את דף המערכת של מערכת ההפעלה? צריך לעבור אל <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147516217412920887">כדי לאמת את הקוד, עליך לפעול לפי ההוראות בטלפון</translation>
 <translation id="5147992672778369947">כדאי להשתמש בסיסמה המומלצת</translation>
-<translation id="5148277445782867161">‏כדי להעריך את המיקום של המכשיר שלך, שירותי המיקום של Google מסתמכים על מקורות כמו Wi-Fi, רשתות סלולריות וחיישנים.</translation>
 <translation id="5148285448107770349">הסיסמה חייבת להכיל 8 תווים לפחות.</translation>
 <translation id="5149602533174716626">העתקת הפריים</translation>
 <translation id="5150254825601720210">‏שם שרת SSL של אישור Netscape</translation>
@@ -5717,6 +5720,7 @@
 <translation id="5395498824851198390">גופן ברירת מחדל</translation>
 <translation id="5397378439569041789">רישום של מכשיר שילוט או קיוסק</translation>
 <translation id="5397794290049113714">את/ה</translation>
+<translation id="5398062879200420134">‫⌥ + העברת העכבר מעל</translation>
 <translation id="5398497406011404839">סימניות מוסתרות</translation>
 <translation id="5398572795982417028">התייחסות לדף מחוץ לטווח, המגבלה היא <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">אין הרשאה לחפש מדפסות שלמכשיר יש גישה אליהן או להשתמש בהן</translation>
@@ -6343,6 +6347,7 @@
 <translation id="5882919346125742463">רשתות מוכרות</translation>
 <translation id="5883356647197510494">ההרשאות הבאות נחסמו אוטומטית: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">התאמה אישית לכל תוסף</translation>
+<translation id="5884730022784413637">לחיצה ארוכה</translation>
 <translation id="5885314688092915589">הארגון שלך ינהל את הפרופיל הזה</translation>
 <translation id="5885470467814103868">התחלת הסריקה</translation>
 <translation id="5885631909150054232">העתקת האסימון</translation>
@@ -6390,7 +6395,6 @@
 <translation id="5916664084637901428">פועל</translation>
 <translation id="59174027418879706">מופעל</translation>
 <translation id="5920543303088087579">החיבור לרשת הזו הושבת על ידי מנהל המערכת</translation>
-<translation id="5921257443092182237">‏כדי להעריך את המיקום של המכשיר הזה, שירותי המיקום של Google מסתמכים על מקורות כמו Wi-Fi, רשתות סלולריות וחיישנים.</translation>
 <translation id="5924047253200400718">קבלת עזרה<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏צריך לשאול לפני שמעתיקים או מעבירים קובצי Microsoft ל-Google Drive</translation>
 <translation id="5924527146239595929">‏אפשר לצלם תמונה חדשה, או לבחור תמונה או סמל קיימים.
@@ -7689,7 +7693,6 @@
 <translation id="6935031746833428401">מידע נוסף על ניהול מכשירים</translation>
 <translation id="6935286146439255109">חסר מגש נייר</translation>
 <translation id="6938386202199793006">שמרת מדפסת אחת.</translation>
-<translation id="6938387822292071111">הצגת תמונות בכרטיסים צפים שמוצגים כשמעבירים את העכבר מעל לכרטיסייה</translation>
 <translation id="6938606182859551396">‏לקבלת התראות מהטלפון במכשיר ה-<ph name="DEVICE_TYPE" />, יש לפעול לפי ההוראות בטלפון כדי לתת ל-Google Play Services גישה להתראות.</translation>
 <translation id="694168622559714949">מנהל המערכת הגדיר שפה בברירת מחדל שלא ניתן לשנות.</translation>
 <translation id="6941937518557314510">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לבצע אימות בפני <ph name="HOST_NAME" /> באמצעות האישור שלך.</translation>
@@ -7874,6 +7877,7 @@
 <translation id="7072010813301522126">שם קיצור הדרך</translation>
 <translation id="7075513071073410194">‏PKCS #1 MD5 עם הצפנת RSA</translation>
 <translation id="7075625805486468288">‏ניהול אישורים והגדרות של HTTPS/SSL</translation>
+<translation id="7075896597860500885">לא מומלץ להעתיק מהאתר הזה</translation>
 <translation id="7076875098323397992">לא ניתן להתחיל את השדרוג</translation>
 <translation id="7077751457066325012">הצגה והתאמה אישית של מקשי הקיצור</translation>
 <translation id="7077829361966535409">‏טעינת דף הכניסה באמצעות הגדרות שרת ה-proxy הנוכחיות נכשלה. <ph name="GAIA_RELOAD_LINK_START" />יש לנסות להיכנס שוב<ph name="GAIA_RELOAD_LINK_END" /> או להשתמש ב<ph name="PROXY_SETTINGS_LINK_START" />הגדרות שונות לשרת ה-proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
@@ -8223,7 +8227,7 @@
 <translation id="7368695150573390554">המערכת תמחק את כל הנתונים ששמורים אופליין.</translation>
 <translation id="736877393389250337">לא ניתן היה לפתוח את <ph name="URL" /> ב-<ph name="ALTERNATIVE_BROWSER_NAME" />. יש לפנות אל מנהל המערכת.</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
-<translation id="7371490947952970241">‏כדי לכבות את המיקום, אפשר להשבית את ההגדרה הראשית של המיקום במכשיר הזה. בהגדרות המיקום אפשר גם להשבית את האפשרות להסתמך על Wi-Fi, רשתות סלולריות וחיישנים כדי לקבוע את המיקום.</translation>
+<translation id="7370751048350026847">לא מומלץ להדביק תוכן באתר הזה</translation>
 <translation id="7371917887111892735">הכרטיסיות יתכווצו לרוחב של כרטיסייה מוצמדת</translation>
 <translation id="7374376573160927383">‏ניהול התקני USB</translation>
 <translation id="7376124766545122644">‏אי אפשר להשתמש בקישור הזה. יש לבדוק אם הקישור מתחיל ב-'http://‎' או ב-'https://‎' ולנסות שוב.</translation>
@@ -9621,6 +9625,7 @@
 <translation id="8403618281196981152">‏הנתונים שלך ב-Chrome</translation>
 <translation id="8403807918453631441">ל<ph name="BRAND" /> יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="8405046151008197676">ריכזנו עבורך את הפרטים החשובים לגבי העדכון האחרון</translation>
+<translation id="8405118833120731611">{0,plural, =1{סגירת הפרופיל הזה}one{סגירת הפרופיל הזה (# חלונות)}two{סגירת הפרופיל הזה (# חלונות)}other{סגירת הפרופיל הזה (# חלונות)}}</translation>
 <translation id="8407199357649073301">רמת הרישום ביומן:</translation>
 <translation id="8408270600235826886">‏יש לך אפשרות להחליט איזה מידע ישותף עם Google. תמיד אפשר לשנות זאת ב'הגדרות'. הנתונים ישמשו בהתאם ל<ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של Google.</translation>
 <translation id="84098433273647700">העיצוב הנוכחי שהתקנת</translation>
@@ -10420,7 +10425,6 @@
 <translation id="9018218886431812662">ההתקנה הושלמה</translation>
 <translation id="901876615920222131">כדי לפתוח מחדש את הקבוצה, לוחצים על הקבוצה</translation>
 <translation id="9019062154811256702">קריאה ושינוי של הגדרות מילוי אוטומטי</translation>
-<translation id="9019894137004772119">‏שימוש במיקום. אפליקציות ושירותים עם הרשאת מיקום יכולים להשתמש במיקום של המכשיר שלך. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של שירותים מבוססי-מיקום.</translation>
 <translation id="9019956081903586892">לא ניתן היה להוריד מילון לבדיקת איות</translation>
 <translation id="9020300839812600209">‏אפשר להזין כתובת URL כדי לראות איך ה-LBS ישפיע עליה.</translation>
 <translation id="9020362265352758658">4x</translation>

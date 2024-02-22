@@ -46,7 +46,6 @@
 <translation id="123124571410524056">पोर्टलका कारणले हुन सक्छ</translation>
 <translation id="1232610416724362657">झरना</translation>
 <translation id="1238612778414822719">HTTPS को विलम्बता</translation>
-<translation id="1264369926465113395">निर्माताहरूका लागि बनाइएको Chromebook को नयाँ डिजिटल पत्रिका पढ्नुहोस्</translation>
 <translation id="1270369111467284986">संदिग्ध क्याप्टिभ पोर्टल</translation>
 <translation id="1274654146705270731">सुन्तलाहरू</translation>
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
@@ -306,6 +305,7 @@
 <translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="2940811910881150316">डिभाइसको परीक्षण गर्न सकिँदैन। परीक्षण गर्न लिड फेरि खोल्नुहोस्।</translation>
 <translation id="2941112035454246133">निम्न</translation>
+<translation id="2956070106555335453">सारांश</translation>
 <translation id="299385721391037602">गुलाबी र पहेँलो</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
@@ -576,7 +576,6 @@
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
 <translation id="4835901797422965222">कुनै पनि सक्रिय नेटवर्क छैन</translation>
 <translation id="4838825304062068169">हिमनदी</translation>
-<translation id="4839698083503556542">आफ्नै चलचित्र बनाउनुहोस्</translation>
 <translation id="48409034532829769">तपाईंका एड्मिनले "<ph name="APP_NAME" />" स्वतः खुल्ने गरी सेट अप गर्नुभएको छ। यो एप बन्द नगरिन सक्छ।</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चयन गरिएको छ, <ph name="TOPIC_SOURCE" /> का एल्बमहरू चयन गर्न Enter थिच्नुहोस्</translation>

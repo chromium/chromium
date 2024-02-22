@@ -18,6 +18,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1056775291175587022">Engin net</translation>
 <translation id="1056898198331236512">Viðvörun</translation>
 <translation id="1058009965971887428">Senda ábendingu</translation>
+<translation id="1059120031266247284">Deilt með þér</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Skipta út</translation>
 <translation id="1073899992769346247">Skiptu um eða hladdu rafhlöðuna</translation>
@@ -627,6 +628,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
 <translation id="3580650856351781466">Sækir talskrár</translation>
 <translation id="3585296979871889131">Skoða nýlegar myndir, efni, tilkynningar og forrit símans</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Hliðarhnappur</translation>
 <translation id="3593039967545720377">Opnaðu klippiborðsferilinn þinn með því að ýta á <ph name="SHORTCUT_KEY_NAME" /> + V til að skoða klippiborðið. Afritaðu atriði til að hefjast handa.</translation>
 <translation id="3593646411856133110">Strjúktu upp og haltu fingri þar til að sjá opin forrit</translation>
@@ -643,6 +645,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3621202678540785336">Inntak</translation>
 <translation id="3621712662352432595">Hljóðstillingar</translation>
 <translation id="3626281679859535460">Birtustig</translation>
+<translation id="3628323833346754646">Fremri hnappur</translation>
 <translation id="3630697955794050612">slökkt</translation>
 <translation id="3631369015426612114">Leyfa tilkynningar frá eftirfarandi</translation>
 <translation id="3633097874324966332">Opnaðu Bluetooth-stillingar til að para tækið þitt</translation>
@@ -1284,6 +1287,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="6052614013050385269">Hægrismella á tengil</translation>
 <translation id="6054305421211936131">Skrá inn með snjallkorti</translation>
 <translation id="6059276912018042191">Nýlegir Chrome flipar</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Þú verður skráð(ur) út sjálfkrafa eftir <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Ég er búin(n) að nota skrána</translation>
 <translation id="6068258534237496331">Stýringar myndsímtals</translation>
@@ -1345,6 +1349,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="6309219492973062892">Smella eða ýta á hillutákn 1–8</translation>
 <translation id="6315170314923504164">Tal</translation>
 <translation id="6319058840130157106">Fara til baka til að skipta á milli hægra horns neðst, ræsiforrits, veffangastiku, bókamerkjastiku, vefsvæðis sem er opið og niðurhals</translation>
+<translation id="6319503618073410818">Sjá upplýsingar í vafra</translation>
 <translation id="6324916366299863871">Breyta flýtileið</translation>
 <translation id="6330012934079202188">Sýnir glugga allra skrifborða, ýttu á ör upp til að sýna glugga núverandi skrifborðs</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er stýrð lota sem <ph name="MANAGER" /> hefur umsjón með</translation>
@@ -1565,6 +1570,7 @@ Ný uppsetning</translation>
 <translation id="7229029500464092426">Minni <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> samtals</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% eftir af rafhlöðu. Tengdu tækið við rafmagn til að hlaða.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Endurræsa þarf Chromebook til að setja upp uppfærslu. Þetta getur tekið allt að mínútu.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Aftari hljóðnemi</translation>
 <translation id="7258828758145722155">Breytt í gær</translation>
 <translation id="726276584504105859">Dragðu hingað til að skipta skjánum</translation>
@@ -1692,6 +1698,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7742327441377685481">Engar tilkynningar</translation>
 <translation id="7748275671948949022">Auðkenna ræsihnapp á hillu</translation>
 <translation id="7749443890790263709">Hámarksfjölda skjáborða náð.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Smelltu til að skoða upplýsingar um uppfærsluna</translation>
 <translation id="7768784765476638775">Textaupplestur</translation>
 <translation id="7769299611924763557">GIF verður tilbúið innan skamms</translation>
@@ -2019,6 +2026,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="9098969848082897657">Slökkva á hljóði síma</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eða <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Afturkalla síðustu aðgerð</translation>
+<translation id="9129245940793250979">Aftari hnappur</translation>
 <translation id="9133335900048457298">Ekki hægt að taka upp varið efni</translation>
 <translation id="9139720510312328767">Eyða næsta staf</translation>
 <translation id="9151906066336345901">end</translation>

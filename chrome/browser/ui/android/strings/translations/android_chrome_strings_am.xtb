@@ -1089,7 +1089,6 @@
 <translation id="670498945988402717">ትላንትና ተፈትሿል</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="671481426037969117">የእርስዎ <ph name="FQDN" /> ሰዓት ቆጣሪ ጊዜ አልቋል። ነገ እንደገና ይጀመራል።</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል። በዚህ መሳሪያ ላይ ብቻ ነው የተቀመጠው።}one{ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል። በዚህ መሳሪያ ላይ ብቻ ነው የተቀመጠው።}other{ዕልባቶች ወደ <ph name="FOLDER_NAME" /> ተቀምጠዋል። በዚህ መሳሪያ ላይ ብቻ ነው የተቀመጡት።}}</translation>
 <translation id="6715020873764921614">ለማንኛውም <ph name="FILE_NAME" />ን (<ph name="FILE_SIZE" />) ማውረድ ይፈልጋሉ?</translation>
 <translation id="6719634564325948108">ከQR ኮድ ጋር ይገናኙ?</translation>
 <translation id="6723740634201835758">በእርስዎ የGoogle መለያ ውስጥ</translation>
@@ -1419,7 +1418,6 @@
 <translation id="8237871086242677046">የገጽ ግንዛቤዎች የግርጌ ሉህ</translation>
 <translation id="8243077599929149377">የእርስዎን የተጠቃሚ ስም ያክሉ</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{በመለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል።}one{በመለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል።}other{በመለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ዕልባቶች ወደ <ph name="FOLDER_NAME" /> ተቀምጠዋል።}}</translation>
 <translation id="8255617931166444521">ጣቢያዎች የአሰሳ እንቅስቃሴዎን በራሳቸው ጣቢያ ላይ ብቻ ለማየት የእርስዎን ኩኪዎች ብቻ ሊጠቀሙ ይችላሉ።</translation>
 <translation id="8259179246279078674">ቅድሚያ የሚጫኑ ገጾች የተመሠጠሩ ስለሆኑ Google ቅድሚያ ስለተጫነው የገጽ ይዘት ምንም ነገር አያውቅም። የGoogle አገልጋዮች የትኛዎቹ ጣቢያዎች በግል ቅድሚያ እንደሚጫኑ ይማራል። ይህ መረጃ ገጾቹን ቅድሚያ ለመጫን ብቻ ነው ሥራ ላይ የሚውለው፣ እና ከGoogle መለያዎ ከመጣ ሌላ መረጃ ጋር አይገናኝም።</translation>
 <translation id="8260126382462817229">እንደገና ለመግባት ይሞክሩ</translation>
@@ -1463,6 +1461,7 @@
 <translation id="8460448946170646641">ቁልፍ የግላዊነት እና የደህንነት ቁጥጥሮችን ይገምግሙ</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ከበይነ መረብ ጋር መገናኘቱን ያረጋግጡ</translation>
 <translation id="8473863474539038330">አድራሻዎች እና ተጨማሪ</translation>
+<translation id="8478751349603791277">የሰመረ ታሪክዎ ሌሎች የGoogle አገልግሎቶችን ግላዊ ለማድረግ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ።</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">የታሪክ ገጹን ክፈት</translation>
 <translation id="8493948351860045254">ቦታ አስለቅቅ</translation>

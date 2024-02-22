@@ -4325,7 +4325,6 @@ Se il criterio viene impostato su:
  * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />, il rilevamento automatico del fuso orario è sempre attivato tramite l'invio continuo di dati sulla posizione (ad esempio, punti di accesso Wi-Fi, torri cellulari raggiungibili, GPS) a un server per rilevare il fuso orario con precisione.
 
 Se il criterio non viene configurato, viene impostato su Consenti agli utenti di decidere o su Nessuno, gli utenti possono gestire il rilevamento automatico del fuso orario usando i normali controlli in chrome://settings.</translation>
-<translation id="4476769083125004742">Se la norma viene impostata su <ph name="BLOCK_GEOLOCATION_SETTING" />, le app Android non possono accedere ai dati sulla posizione. Se la norma viene impostata su qualsiasi altro valore o non viene impostata, all'utente viene chiesta l'autorizzazione quando un'app Android vuole accedere ai dati sulla posizione.</translation>
 <translation id="4478248026668918517">Blocca il rilevamento dell'ambito dei criteri.</translation>
 <translation id="4479671363221255277">La configurazione del criterio consente di elencare pattern URL che specificano quali siti possono richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
 
@@ -4571,11 +4570,6 @@ Se aggiungi i dati di navigazione esistenti nel profilo gestito, il profilo corr
 Il mancato trasferimento dei dati di navigazione esistenti nel profilo gestito comporta la creazione di un nuovo profilo pulito. I dati di navigazione esistenti rimarranno in un profilo non gestito, che sarà comunque accessibile all'utente tramite il selettore del profilo.</translation>
 <translation id="4668325077104657568">Impostazione immagini predefinite</translation>
 <translation id="4669083178278833688">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora, Crosh, Galleria e Terminale da disattivare</translation>
-<translation id="4669292863736266737">A meno che il criterio <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> sia impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, l'impostazione <ph name="GLS_ENABLED" /> attiva i Servizi di geolocalizzazione di Google durante la configurazione iniziale. Se il criterio è impostato su <ph name="GLS_DISABLED" /> o se non è configurato, i servizi di geolocalizzazione rimangono disattivati durante la configurazione.
-
-Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti viene chiesto se utilizzare o meno i Servizi di geolocalizzazione di Google. Se vengono attivati, le app Android utilizzano i servizi per cercare la posizione del dispositivo e inviare dati anonimi sulla posizione a Google.
-
-Dopo la configurazione iniziale, gli utenti possono attivare o disattivare i Servizi di geolocalizzazione di Google.</translation>
 <translation id="4670865688564083639">Minimo:</translation>
 <translation id="467236746355332046">Funzionalità supportate:</translation>
 <translation id="4672774129073185053">Attiva la sostituzione del controllo della connettività IPv6</translation>

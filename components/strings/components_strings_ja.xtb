@@ -763,6 +763,7 @@
 <translation id="2501278716633472235">戻る</translation>
 <translation id="250346157641628208">紙（インクジェット）</translation>
 <translation id="2505268675989099013">アカウントを保護</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" />（利用規約が適用されます）</translation>
 <translation id="2512101340618156538">ブロック（デフォルト）</translation>
 <translation id="2512413427717747692">Chrome を既定のブラウザに設定するボタンです。Enter キーを押すと iOS 設定で Chrome をシステムの既定のブラウザに設定できます</translation>
 <translation id="2514548229949738417">住まい、園芸</translation>
@@ -1089,6 +1090,7 @@
 <translation id="3229277193950731405">バージョン文字列をコピー</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> の CVC を入力</translation>
 <translation id="3234666976984236645">このサイトの重要なコンテンツを常に検出</translation>
+<translation id="3236212803136366317">カードのメリット</translation>
 <translation id="3238395604961564389">シークレット ウインドウでリンクを開く</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3240791268468473923">保護されたお支払い認証情報（認証情報の一致なし）シートが開いています</translation>
@@ -1125,6 +1127,7 @@
 <translation id="33073482541490531">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="3307649904964670439">[Chrome をカスタマイズ] ボタンです。実行すると、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3308006649705061278">組織単位（OU）</translation>
+<translation id="3310047144791481950">お支払いに使用するカードの選択に役立つ情報を確認できます。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />カードのメリットについて<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3324687287337751929">4x6 インチ</translation>
 <translation id="3324983252691184275">クリムゾン</translation>
 <translation id="3325027355611702542">キャンピング カー、RV</translation>

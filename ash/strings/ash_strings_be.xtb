@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">Няма сетак</translation>
 <translation id="1056898198331236512">Папярэджанне</translation>
 <translation id="1058009965971887428">Паскардзіцца на водгук</translation>
+<translation id="1059120031266247284">Абагулена з вамі</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Замяніць</translation>
 <translation id="1073899992769346247">Замяніце або зарадзіце акумулятар</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3580650856351781466">Ідзе спампоўванне файлаў для ператварэння маўлення ў тэкст</translation>
 <translation id="3585296979871889131">Прагляд нядаўніх фота, медыяфайлаў, апавяшчэнняў і праграм з тэлефона</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Бакавая кнопка</translation>
 <translation id="3593039967545720377">Каб праглядзець гісторыю буфера абмену, націсніце <ph name="SHORTCUT_KEY_NAME" /> + V Каб пачаць, скапіруйце элемент.</translation>
 <translation id="3593646411856133110">Каб убачыць адкрытыя праграмы, правядзіце пальцам уверх і ўтрымлівайце</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">Увод</translation>
 <translation id="3621712662352432595">Налады аўдыя</translation>
 <translation id="3626281679859535460">Яркасць</translation>
+<translation id="3628323833346754646">Пярэдняя кнопка</translation>
 <translation id="3630697955794050612">выключаны</translation>
 <translation id="3631369015426612114">Дазволіць апавяшчэнні з наступных крыніц</translation>
 <translation id="3633097874324966332">Каб спалучыць прыладу, адкрыйце налады Bluetooth</translation>
@@ -1284,6 +1287,7 @@
 <translation id="6052614013050385269">Націснуць правай кнопкай мышы на спасылцы</translation>
 <translation id="6054305421211936131">Увайсці з дапамогай разумнай карткі</translation>
 <translation id="6059276912018042191">Нядаўна адкрытыя ўкладкі Chrome</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Праз <ph name="LOGOUT_TIME_LEFT" /> будзе выкананы аўтаматычны выхад.</translation>
 <translation id="6064463340679478396">Я больш не выкарыстоўваю гэты файл</translation>
 <translation id="6068258534237496331">Элементы кіравання відэавыклікам</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6309219492973062892">Націснуць на значкі 1-8 на панэлі доступу</translation>
 <translation id="6315170314923504164">Галасавы ўвод</translation>
 <translation id="6319058840130157106">Пераход у адваротным напрамку паміж ніжнім правым вуглом, Панэллю запуску, адрасным радком, панэллю закладак, адкрытым вэб-сайтам і спампоўкамі</translation>
+<translation id="6319503618073410818">Праглядзець падрабязныя звесткі ў браўзеры</translation>
 <translation id="6324916366299863871">Рэдагаваць ярлык</translation>
 <translation id="6330012934079202188">Паказаны вокны ўсіх працоўных сталоў. Каб пераключыцца на рэжым паказу вокнаў бягучага працоўнага стала, націсніце стрэлку ўверх</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, якім кіруе <ph name="MANAGER" /></translation>
@@ -1565,6 +1570,7 @@
 <translation id="7229029500464092426">Даступны аб'ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Засталося <ph name="PERCENTAGE" />% зараду акумулятара. Падключыце прыладу да крыніцы сілкавання.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Для ўсталявання абнаўлення патрабуецца перазапуск Chromebook. Гэта можа заняць да 1 хвіліны.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Задні мікрафон</translation>
 <translation id="7258828758145722155">Зменена ўчора</translation>
 <translation id="726276584504105859">Каб перайсці ў рэжым падзеленага экрана, перацягніце акно сюды</translation>
@@ -1692,6 +1698,7 @@
 <translation id="7742327441377685481">Апавяшчэнняў няма</translation>
 <translation id="7748275671948949022">Вылучыць кнопку Панэлі запуску на панэлі доступу</translation>
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Каб паглядзець звесткі пра абнаўленне, націсніце тут</translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
 <translation id="7769299611924763557">Файл GIF будзе неўзабаве гатовы</translation>
@@ -2019,6 +2026,7 @@
 <translation id="9098969848082897657">Тэлефон без гуку</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Адрабіць апошняе дзеянне</translation>
+<translation id="9129245940793250979">Задняя кнопка</translation>
 <translation id="9133335900048457298">Запіс немагчымы з-за наяўнасці на экране абароненага змесціва</translation>
 <translation id="9139720510312328767">Выдаліць наступную літару</translation>
 <translation id="9151906066336345901">End</translation>

@@ -702,6 +702,7 @@
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="4619615317237390068">دیگر آلات کے ٹیبز</translation>
 <translation id="4620246317052452550">آپ کے پڑھے ہوئے صفحات</translation>
+<translation id="4620845369664293551">آپ یہاں اس صفحہ کا اشتراک نہیں کر سکتے۔</translation>
 <translation id="4620888520263267479">لنک کے پیش مناظر دکھائیں</translation>
 <translation id="4630540211544979320">صفحات کا ترجمہ کریں</translation>
 <translation id="4631335160486397366">دوبارہ استعمال کردہ <ph name="COUNT" /> پاس ورڈز</translation>
@@ -851,6 +852,7 @@
 <translation id="5339316356165661760">مطابقت پذیری آن کریں</translation>
 <translation id="5343472494710226394">آپ کی دلچسپیوں پر مبنی خبریں، اسپورٹس اور مواد۔</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{اس پیکیج کو ٹریک کریں؟}other{{COUNT} پیکیجز کو ٹریک کریں؟}}</translation>
+<translation id="5348775987281903912">آپ اشتراک بٹن سے یہاں اس صفحہ کا اشتراک کر سکتے ہیں۔</translation>
 <translation id="536067926684072644">بُک مارکس دکھائیں</translation>
 <translation id="5360976571138293719">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="5379352933722332597">{count,plural, =1{بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلہ میں محفوظ ہے۔}other{{count} بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلے میں محفوظ ہے۔}}</translation>

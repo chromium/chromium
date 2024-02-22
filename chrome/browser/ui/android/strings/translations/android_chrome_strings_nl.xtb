@@ -1089,7 +1089,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="670498945988402717">Gisteren gecheckt</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="671481426037969117">Je <ph name="FQDN" />-timer is afgelopen. Deze begint morgen opnieuw.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Bookmark opgeslagen in <ph name="FOLDER_NAME" />. Deze wordt alleen opgeslagen op dit apparaat.}other{Bookmark opgeslagen in <ph name="FOLDER_NAME" />. Deze wordt alleen opgeslagen op dit apparaat.}}</translation>
 <translation id="6715020873764921614">Wil je <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) toch downloaden?</translation>
 <translation id="6719634564325948108">Verbinding maken via een QR-code?</translation>
 <translation id="6723740634201835758">In je Google-account</translation>
@@ -1419,7 +1418,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8237871086242677046">Blad onderaan met pagina-inzichten</translation>
 <translation id="8243077599929149377">Voeg je gebruikersnaam toe</translation>
 <translation id="8250920743982581267">Documenten</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Bookmark opgeslagen in <ph name="FOLDER_NAME" /> in je account, <ph name="ACCOUNT_EMAIL" />}other{Bookmarks opgeslagen in <ph name="FOLDER_NAME" /> in je account, <ph name="ACCOUNT_EMAIL" />}}</translation>
 <translation id="8255617931166444521">Sites kunnen je cookies alleen gebruiken om je browse-activiteit op hun eigen site te bekijken</translation>
 <translation id="8259179246279078674">Omdat de vooraf geladen pagina's versleuteld zijn, krijgt Google geen informatie over de content van de vooraf geladen pagina. Google-servers kunnen wel zien welke sites privé vooraf worden geladen. Deze informatie wordt alleen gebruikt om de pagina's vooraf te laden en is niet gekoppeld aan andere informatie in je Google-account.</translation>
 <translation id="8260126382462817229">Probeer opnieuw in te loggen</translation>
@@ -1463,6 +1461,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8460448946170646641">Neem belangrijke privacy- en beveiligingsopties door</translation>
 <translation id="8466613982764129868">Zorg dat <ph name="TARGET_DEVICE_NAME" /> is verbonden met internet</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
+<translation id="8478751349603791277">Beheer hoe je gesynchroniseerde geschiedenis kan worden gebruikt om andere Google-services te personaliseren</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">De pagina Geschiedenis openen</translation>
 <translation id="8493948351860045254">Ruimte vrijmaken</translation>

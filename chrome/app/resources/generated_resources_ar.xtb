@@ -527,7 +527,6 @@
 <translation id="139911022479327130">فتح قفل هاتفك وتأكيد هويتك</translation>
 <translation id="1399261165075500043">‏يتعذَّر تحميل "بنود خدمة Google Play".</translation>
 <translation id="1401216725754314428">مزيد من المعلومات حول المواقع الإلكترونية ذات الصلة في علامة تبويب جديدة</translation>
-<translation id="1401308693935339022">‏يمكنك استخدام الموقع الجغرافي. يمكنك السماح للتطبيقات والخدمات التي لديها إذن تحديد الموقع الجغرافي باستخدام الموقع الجغرافي لهذا الجهاز. ويجوز لشركة Google جمع بيانات الموقع الجغرافي بشكل دوري واستخدام هذه البيانات بطريقة لا تعرّف الهوية لتحسين دقة الموقع والخدمات المستندة إلى الموقع الجغرافي.</translation>
 <translation id="1402426911829176748">جارٍ الربط بجهازك</translation>
 <translation id="1403222014593521787">تعذّر الاتصال بالخادم الوكيل.</translation>
 <translation id="1405779994569073824">علامة التبويب تعطَّلت.</translation>
@@ -806,6 +805,7 @@
 <translation id="1602085790802918092">جارٍ بدء تشغيل الآلة الافتراضية</translation>
 <translation id="1603116295689434284">‏معلومات نظام Chrome</translation>
 <translation id="1603411913360944381">حذف الجهاز <ph name="DEVICE_NAME" /></translation>
+<translation id="1603879843804174953">الضغط مع الاستمرار</translation>
 <translation id="1603914832182249871">(التصفح المتخفي)</translation>
 <translation id="1604432177629086300">تعذّرت الطباعة. يُرجى التحقق من الطابعة وإعادة المحاولة.</translation>
 <translation id="1604567162047669454">التعرُّف على دلالات التصميم المرئي</translation>
@@ -1349,6 +1349,7 @@
 <translation id="1992397118740194946">لم يتم تعيينه</translation>
 <translation id="1994173015038366702">‏عنوان URL للموقع</translation>
 <translation id="1995916364271252349">يمكنك التحكّم بالمعلومات التي يمكن للمواقع الإلكترونية استخدامها وعرضها (مثل معلومات الموقع الجغرافي، والكاميرا، والنوافذ المنبثقة، وغيرها).</translation>
+<translation id="199610894463449797">{0,plural, =1{إغلاق هذا الملف الشخصي}zero{إغلاق هذا الملف الشخصي (# نافذة)}two{إغلاق هذا الملف الشخصي (نافذتان)}few{إغلاق هذا الملف الشخصي (# نوافذ)}many{إغلاق هذا الملف الشخصي (# نافذة)}other{إغلاق هذا الملف الشخصي (# نافذة)}}</translation>
 <translation id="1997433994358798851">‏يحتاج Chrome إلى إذن لاستخدام البلوتوث للاتصال بجهازك.</translation>
 <translation id="1997616988432401742">شهاداتك</translation>
 <translation id="1999115740519098545">عند بدء التشغيل</translation>
@@ -1591,6 +1592,7 @@
 <translation id="2175384018164129879">&amp;إدارة محركات البحث والبحث في المواقع الإلكترونية</translation>
 <translation id="217576141146192373">تتعذّر إضافة طابعة. يُرجى التحقق من ضبط الطابعة والمحاولة مرة أخرى.</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="217631816678106981">عدم اللصق</translation>
 <translation id="2177306523871626993">جارٍ تنزيل ملفات التعرّف على النص… %<ph name="PERCENT" /></translation>
 <translation id="2177950615300672361">علامة تبويب التصفح المتخفي: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">‫Microsoft 365</translation>
@@ -1862,7 +1864,6 @@
 <translation id="2373666622366160481">ملاءمة حجم الورقة</translation>
 <translation id="2375406435414127095">الاتصال بهاتفك</translation>
 <translation id="2376056713414548745">القراءة بصوت عالٍ</translation>
-<translation id="2377588536920405462">‏يمكنك إيقاف "الموقع الجغرافي" من خلال إيقاف إعداد الموقع الجغرافي الرئيسي على جهازك. ويمكنك أيضًا إيقاف استخدام شبكة Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للموقع الجغرافي في إعدادات الموقع الجغرافي.</translation>
 <translation id="2377667304966270281">الأخطاء الجسيمة</translation>
 <translation id="237828693408258535">هل تريد ترجمة هذه الصفحة؟</translation>
 <translation id="2378982052244864789">تحديد دليل الإضافة.</translation>
@@ -2346,6 +2347,7 @@
 <translation id="2732134891301408122">المحتوى الإضافي <ph name="CURRENT_ELEMENT" /> من أصل <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">يمكنك النقر على زر الإعجاب إذا أعجبتك هذه النتائج.</translation>
 <translation id="2733992589856193783">أنشأت مفتاح مرور لهذا الموقع الإلكتروني. يجب استخدام جهازك الجوّال لتسجيل الدخول.</translation>
+<translation id="2734797989819862638">عدم النسخ</translation>
 <translation id="27349076983469322">خلفية فاتحة</translation>
 <translation id="2735712963799620190">الجدول الزمني</translation>
 <translation id="2737363922397526254">تصغير...</translation>
@@ -3115,6 +3117,7 @@
 <translation id="3342361181740736773">يرغب "<ph name="TRIGGERING_EXTENSION_NAME" />" في إزالة هذه الإضافة.</translation>
 <translation id="3345634917232014253">تم تفعيل ميزة "التحقّق من الأمان" قبل قليل.</translation>
 <translation id="3345886924813989455">لم يتم العثور على·متصفح متوافق.</translation>
+<translation id="3346306152660142597">‏تخصيص هذه الصفحة بواسطة الذكاء الاصطناعي (AI)</translation>
 <translation id="3347086966102161372">&amp;نسخ عنوان الصورة</translation>
 <translation id="3348038390189153836">تم اكتشاف جهاز قابل للإزالة</translation>
 <translation id="3348131053948466246">‏الرموز التعبيرية المُقترَحة. اضغط على السهم المتّجه للأعلى أو للأسفل للتنقُّل ثم اضغط على Enter للإدخال.</translation>
@@ -3131,6 +3134,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا عنصرًا واحدًا (<ph name="ATTACHMENTS" />) معك.}zero{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصر معك.}two{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا عنصرَين (<ph name="ATTACHMENTS" />) معك.}few{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عناصر معك.}many{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصرًا معك.}other{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصر معك.}}</translation>
 <translation id="3361954577771524115">من التطبيق</translation>
 <translation id="3363202073972776113">ستتم إدارة هذا الملف الشخصي الجديد بواسطة مؤسستك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">‏‫Alt + التمرير بالماوس</translation>
 <translation id="3364986687961713424">من مُشرفك: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏يرجى استخدام مفتاح واحد فقط: Ctrl أو Alt.</translation>
 <translation id="3368922792935385530">متصل</translation>
@@ -4301,7 +4305,7 @@
 <translation id="4260699894265914672">اضغط على مفتاح في لوحة المفاتيح لتخصيصه.</translation>
 <translation id="4260722247480053581">فتح في نافذة التصفح المتخفي</translation>
 <translation id="4261429981378979799">أذونات الإضافة</translation>
-<translation id="4262004481148703251">إغلاق التحذير</translation>
+<translation id="4262004481148703251">تجاهل التحذير</translation>
 <translation id="4263223596040212967">يُرجى التحقق من تنسيق لوحة المفاتيح وإعادة المحاولة.</translation>
 <translation id="4265301768135164545">‏يمكنك أيضًا إعداد ملف شخصي لشريحة eSIM <ph name="BEGIN_LINK" />يدويًا<ph name="END_LINK" />.</translation>
 <translation id="426564820080660648">‏للتحقق من وجود تحديثات، يُرجى استخدام شبكة Ethernet أو Wi-Fi أو بيانات الجوّال.</translation>
@@ -4576,6 +4580,7 @@
 <translation id="4473559657152613417">النقر بزر الماوس الأيمن على علامة تبويب واختيار "إضافة علامة تبويب إلى المجموعة الجديدة"</translation>
 <translation id="4473996011558324141">جارٍ تقدير المدة</translation>
 <translation id="4474155171896946103">وضع إشارات على كل علامات التبويب...</translation>
+<translation id="4475299370877036544">قد ينتهك هذا الإجراء سياسات مؤسستك.</translation>
 <translation id="4475552974751346499">البحث في صفحة عمليات التنزيل</translation>
 <translation id="4476590490540813026">رياضي</translation>
 <translation id="4476659815936224889">لمسح هذا الرمز، يمكنك استخدام تطبيق ماسح رمز الاستجابة السريعة على هاتفك أو بعض تطبيقات الكاميرا.</translation>
@@ -5427,7 +5432,6 @@
 <translation id="5147097165869384760">هل تبحث عن صفحة نظام التشغيل؟ انتقِل إلى <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147516217412920887">يُرجى اتّباع التعليمات التي تظهر على هاتفك لتأكيد الرمز.</translation>
 <translation id="5147992672778369947">استخدام كلمة المرور المقترَحة</translation>
-<translation id="5148277445782867161">‏تستخدم خدمة الموقع الجغرافي من Google المصادر مثل شبكة Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للمساعدة في تحديد الموقع الجغرافي لجهازك.</translation>
 <translation id="5148285448107770349">يجب ألا تقل كلمة المرور عن 8 أحرف.</translation>
 <translation id="5149602533174716626">نس&amp;خ إطار الفيديو</translation>
 <translation id="5150254825601720210">‏اسم خادم بروتوكول SSL (طبقة المقابس الآمنة) لشهادة Netscape</translation>
@@ -5719,6 +5723,7 @@
 <translation id="5395498824851198390">الخط التلقائي</translation>
 <translation id="5397378439569041789">‏تسجيل جهاز Kiosk أو جهاز إشارات رقمية</translation>
 <translation id="5397794290049113714">أنت</translation>
+<translation id="5398062879200420134">‫⌥ + التمرير بالماوس</translation>
 <translation id="5398497406011404839">إشارات مرجعية مخفية</translation>
 <translation id="5398572795982417028">مرجع صفحة خارج الحدود المفروضة، الحد الأقصى هو <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">المواقع الإلكترونية غير المسموح لها بالبحث عن الطابعات أو استخدامها والتي يمكن لجهازك الوصول إليها</translation>
@@ -6346,6 +6351,7 @@
 <translation id="5882919346125742463">الشبكات المعروفة</translation>
 <translation id="5883356647197510494">تم حظر إذن <ph name="PERMISSION_1" /> وإذن <ph name="PERMISSION_2" /> تلقائيًا.</translation>
 <translation id="5884447826201752041">تخصيص الإعدادات لكل إضافة</translation>
+<translation id="5884730022784413637">الضغط مع الاستمرار</translation>
 <translation id="5885314688092915589">ستدير مؤسستك هذا الملف الشخصي</translation>
 <translation id="5885470467814103868">بدء المسح الضوئي</translation>
 <translation id="5885631909150054232">نسخ الرمز المميّز</translation>
@@ -6393,7 +6399,6 @@
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="59174027418879706">تم التفعيل</translation>
 <translation id="5920543303088087579">تم إيقاف الربط بهذه الشبكة بواسطة المشرف</translation>
-<translation id="5921257443092182237">‏تستخدم خدمة الموقع الجغرافي من Google المصادر، مثل شبكة Wi-Fi وشبكات الجّوال وأجهزة الاستشعار لمساعدتك في تقدير الموقع الجغرافي لهذا الجهاز.</translation>
 <translation id="5924047253200400718">الحصول على مساعدة<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Google Drive</translation>
 <translation id="5924527146239595929">‏يمكنك التقاط صورة جديدة أو اختيار رمز أو صورة حالية.
@@ -7697,7 +7702,6 @@
 <translation id="6935031746833428401">مزيد من المعلومات حول "إدارة الأجهزة"</translation>
 <translation id="6935286146439255109">درج الورق غير متاح</translation>
 <translation id="6938386202199793006">يتوفّر لديك طابعة واحدة محفوظة.</translation>
-<translation id="6938387822292071111">عرض الصور في بطاقات منبثقة لمعاينة علامات التبويب</translation>
 <translation id="6938606182859551396">‏لتلقّي الإشعارات من هاتفك على جهاز <ph name="DEVICE_TYPE" /> الخاص بك، يُرجى اتّباع التعليمات على الهاتف لمنح "خدمات Google Play" إمكانية الوصول إلى الإشعارات.</translation>
 <translation id="694168622559714949">حدّد مشرف مؤسستك لغة تلقائية لا يمكن تغييرها.</translation>
 <translation id="6941937518557314510">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> للمصادقة على <ph name="HOST_NAME" /> باستخدام شهادتك.</translation>
@@ -7882,6 +7886,7 @@
 <translation id="7072010813301522126">اسم الاختصار</translation>
 <translation id="7075513071073410194">‏PKCS #1 MD5 مع ترميز RSA</translation>
 <translation id="7075625805486468288">‏إدارة إعدادات وشهادات HTTPS/طبقة المقابس الآمنة</translation>
+<translation id="7075896597860500885">لا يُنصَح بالنسخ من هذا الموقع الإلكتروني.</translation>
 <translation id="7076875098323397992">يتعذَّر بدء الترقية</translation>
 <translation id="7077751457066325012">عرض اختصارات لوحة المفاتيح وتخصيصها</translation>
 <translation id="7077829361966535409">تعذّر تحميل صفحة تسجيل الدخول باستخدام إعدادات الخادم الوكيل الحالية. يُرجى <ph name="GAIA_RELOAD_LINK_START" />إعادة محاولة تسجيل الدخول<ph name="GAIA_RELOAD_LINK_END" />، أو استخدام <ph name="PROXY_SETTINGS_LINK_START" />إعدادات خادم وكيل<ph name="PROXY_SETTINGS_LINK_END" /> مختلفة.</translation>
@@ -8233,7 +8238,7 @@
 <translation id="736877393389250337">تعذَّر فتح <ph name="URL" /> في <ph name="ALTERNATIVE_BROWSER_NAME" />. يُرجى التواصل مع مشرف النظام.</translation>
 <translation id="7368927539449986686">تعديل محرّك البحث في المواقع الإلكترونية</translation>
 <translation id="7370592524170198497">‏بروتوكول المصادقة القابل للامتداد (EAP) للإيثرنت:</translation>
-<translation id="7371490947952970241">‏يمكنك إيقاف "تفعيل الموقع الجغرافي" وذلك من خلال إيقاف إعداد الموقع الجغرافي الرئيسي على هذا الجهاز. ويمكنك أيضًا إيقاف استخدام شبكة Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للموقع الجغرافي في إعدادات الموقع الجغرافي.</translation>
+<translation id="7370751048350026847">لا يُنصَح بلصق هذا المحتوى في هذا الموقع الإلكتروني.</translation>
 <translation id="7371917887111892735">عرض علامات التبويب بالحجم المثبّت</translation>
 <translation id="7374376573160927383">‏إدارة أجهزة USB</translation>
 <translation id="7376124766545122644">‏يتعذّر استخدام هذا الرابط. يُرجى التأكّد من أنّ الرابط يبدأ بـ"http://‎" أو "https://‎" ثم إعادة المحاولة.</translation>
@@ -9017,6 +9022,7 @@
 <translation id="7940265372707990269">الترتيب حسب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">جاهزية التوصيل:</translation>
 <translation id="7942349550061667556">أحمر</translation>
+<translation id="7942846369224063421">Preloaded UI Renderer</translation>
 <translation id="7943349879009553083">هذه الميزة غير متاحة في "وضع الضيف"</translation>
 <translation id="7943368935008348579">‏تنزيل ملفات PDF</translation>
 <translation id="7943837619101191061">إضافة موقع...</translation>
@@ -9633,6 +9639,7 @@
 <translation id="8403618281196981152">‏بياناتك في Chrome</translation>
 <translation id="8403807918453631441">لا يستطيع "<ph name="BRAND" />" التحقّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="8405046151008197676">الحصول على السمات المميزة من آخر تحديث</translation>
+<translation id="8405118833120731611">{0,plural, =1{إغلاق هذا الملف الشخصي}zero{إغلاق هذا الملف الشخصي (# نافذة)}two{إغلاق هذا الملف الشخصي (نافذتان)}few{إغلاق هذا الملف الشخصي (# نوافذ)}many{إغلاق هذا الملف الشخصي (# نافذة)}other{إغلاق هذا الملف الشخصي (# نافذة)}}</translation>
 <translation id="8407199357649073301">مستوى السجلّ:</translation>
 <translation id="8408270600235826886">‏يمكنك تحديد البيانات التي تتم مشاركتها مع Google. يمكنك تغيير هذا الإعداد في أي وقت من خلال الإعدادات. سيتم استخدام البيانات بما يتوافق مع <ph name="BEGIN_LINK" />سياسة الخصوصية<ph name="END_LINK" /> في Google.</translation>
 <translation id="84098433273647700">المظهر الحالي الذي ثبَّته</translation>
@@ -10436,7 +10443,6 @@
 <translation id="9018218886431812662">اكتمل التثبيت</translation>
 <translation id="901876615920222131">انقر على المجموعة لإعادة فتحها.</translation>
 <translation id="9019062154811256702">قراءة إعدادات الملء التلقائي وتغييرها</translation>
-<translation id="9019894137004772119">‏يمكنك استخدام الموقع الجغرافي. يسمح هذا الإجراء للتطبيقات والخدمات التي لديها إذن تحديد الموقع الجغرافي باستخدام الموقع الجغرافي للجهاز. ويجوز لشركة Google جمع بيانات الموقع الجغرافي بشكل دوري واستخدام هذه البيانات بطريقة لا تعرّف الهوية لتحسين دقة الموقع والخدمات المستندة إلى الموقع الجغرافي.</translation>
 <translation id="9019956081903586892">تعذَّر تنزيل قاموس التدقيق الإملائي.</translation>
 <translation id="9020300839812600209">‏أدخِل عنوان URL لتعرِف كيف ستتعامل ميزة "الوصول إلى المتصفِّحات القديمة (LBS)" معه.</translation>
 <translation id="9020362265352758658">4 أضعاف</translation>

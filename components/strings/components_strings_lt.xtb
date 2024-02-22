@@ -810,6 +810,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="250346157641628208">Popierius (rašalinis)</translation>
 <translation id="2505268675989099013">Apsaugoti paskyrą</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (yra sąlygų)</translation>
 <translation id="2512101340618156538">Neleidžiama (numatytasis nustatymas)</translation>
 <translation id="2512413427717747692">„Chrome“ nustatymo kaip numatytosios naršyklės režimas; paspauskite „Enter“, kad nustatytumėte „Chrome“ kaip numatytąją sistemos naršyklę „iOS“ nustatymuose</translation>
 <translation id="2514548229949738417">Namai ir sodas</translation>
@@ -1159,6 +1160,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3229277193950731405">Kopijuoti versijos eilutę</translation>
 <translation id="323107829343500871">Įveskite „<ph name="CREDIT_CARD" />“ kortelės saugos kodą (CVC)</translation>
 <translation id="3234666976984236645">Visada aptikti svarbų turinį šioje svetainėje</translation>
+<translation id="3236212803136366317">Kortelės privilegijos</translation>
 <translation id="3238395604961564389">Atidaryti nuorodą inkognito lange</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tinkinti naršyklės išvaizdą</translation>
 <translation id="3240791268468473923">Saugaus mokėjimo prisijungimo duomenų lapas, informuojantis, kad atitinkančių prisijungimo duomenų nerasta, atidarytas</translation>
@@ -1195,6 +1197,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="33073482541490531">Slaptažodis, kurį ką tik naudojote, buvo rastas duomenų saugos pažeidime. Slaptažodžių tvarkyklė rekomenduoja pakeisti šį slaptažodį dabar.</translation>
 <translation id="3307649904964670439">Mygtukas „Tinkinti „Chrome“; suaktyvinkite, kad tinkintumėte naršyklės išvaizdą</translation>
 <translation id="3308006649705061278">Organizacinis vienetas (angl. „Organizational Unit“) (OU)</translation>
+<translation id="3310047144791481950">Peržiūrėkite informaciją, kuri padės pasirinkti, kuria kortele mokėti. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Sužinokite apie kortelių privilegijas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV komedijos</translation>
 <translation id="3324687287337751929">4 x 6 col.</translation>
 <translation id="3324983252691184275">Tamsiai raudona</translation>

@@ -621,6 +621,13 @@ Si cette règle est activée, le sélecteur d'emoji prend en charge les emoji GI
 Si cette règle est désactivée ou n'est pas configurée, le sélecteur d'emoji ne sera pas compatible avec les emoji GIF.
 Si cette règle n'est pas configurée, l'outil de sélection d'emoji est activé pour les utilisateurs standards, mais désactivé pour les utilisateurs gérés.</translation>
 <translation id="1494138678487405397">Désactiver le contraste élevé sur l'écran de connexion</translation>
+<translation id="1498640472634891941">Permet de lister les formats d'URL indiquant les sites dont l'accès aux imprimantes locales est automatiquement refusé via l'API WebPrinting.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
+
+Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est indiqué dans les deux règles.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="1499129134689253257">Contrôler le nouveau comportement de <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Appliquer uniquement les connexions en ligne depuis l'écran de connexion</translation>
 <translation id="1502843533062797703">Activer le blocage de l'injection de logiciels tiers</translation>
@@ -1433,6 +1440,7 @@ La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter qu
 <translation id="2144236546337326489">Autoriser l'activation de la poursuite des tâches via Phone Hub</translation>
 <translation id="2145735238144543545">Certificats client requis</translation>
 <translation id="2146103669166779785">Couleur hexadécimale qui sera utilisée pour générer et appliquer un thème au navigateur.</translation>
+<translation id="2148733583160916305">Autoriser l'API WebPrinting sur ces sites</translation>
 <translation id="2148769554831004951">Forcer l'activation de WebSQL.</translation>
 <translation id="214901426630414675">Limiter l'impression en mode recto verso</translation>
 <translation id="2149330464730004005">Activer l'impression couleur</translation>
@@ -1999,6 +2007,16 @@ Si cette règle est définie sur "False", la fonctionnalité d'ensembles de site
 <translation id="2570181623957732921">Activer <ph name="DESK_API_NAME" /> pour une liste de domaines tiers</translation>
 <translation id="2575198840408498393">Désactiver la création de profils itinérants</translation>
 <translation id="2576324725151524912">Autoriser le mode développeur pour les applis isolées.</translation>
+<translation id="25765864042030871">Les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> seront bientôt obsolètes. Leur déclenchement dépend de la règle <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Actuellement, ils sont autorisés par la règle par défaut. À l'avenir, ils seront progressivement interdits par défaut et les sites devront explicitement les activer à l'aide des en-têtes <ph name="PERMISSIONS_POLICY_NAME" />. Cette règle d'entreprise peut être utilisée pour refuser cet abandon progressif en forçant la valeur par défaut à rester activée.
+ 
+Les pages peuvent dépendre de gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> pour enregistrer les données sur le serveur ou signaler à celui-ci la fin d'une session utilisateur. Ce n'est pas recommandé, car cela n'est pas fiable et affecte les performances en bloquant l'utilisation de <ph name="PRODUCT_NAME" />. Il existe des alternatives recommandées, mais l'événement <ph name="UNLOAD_EVENT_NAME" /> est utilisé depuis longtemps. Certaines applis peuvent toujours s'appuyer dessus.
+
+Si cette règle est définie sur "False" ou n'est pas configurée, les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> seront progressivement obsolètes conformément au processus d'abandon. En outre, les sites qui ne définissent pas l'en-tête <ph name="PERMISSIONS_POLICY_NAME" /> cesseront de déclencher des événements "unload".
+
+Si cette règle est définie sur "True", les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> continueront de fonctionner par défaut.
+
+REMARQUE : Cette règle avait une valeur par défaut ("True") incorrectement documentée dans M117. L'événement "unload" n'a pas été modifié et ne changera pas dans M117. Cette règle n'a donc aucune incidence dans cette version.
+</translation>
 <translation id="257788512393330403">La saisie du mot de passe est requise toutes les six heures</translation>
 <translation id="2580606791930800692">Lister les règles des contrôles de données.</translation>
 <translation id="2580757713966614760">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
@@ -2030,6 +2048,7 @@ Si cette règle est définie sur "False", la fonctionnalité d'ensembles de site
       Si cette règle est définie sur "UserOnly" (valeur 1), les utilisateurs peuvent gérer les certificats utilisateur, mais pas ceux au niveau de l'appareil.</translation>
 <translation id="2593762551209145088">La navigation sécurisée n'est jamais active.</translation>
 <translation id="26023406105317310">Configurer les comptes Kerberos</translation>
+<translation id="2603237557651009842">Bloquer l'API WebPrinting sur ces sites</translation>
 <translation id="2603382859270873566">Activer la prise en charge de l'API PPB_VideoDecoder(Dev).</translation>
 <translation id="2604182581880595781">Configurer les règles associées à la fonctionnalité Partages de fichiers en réseau.</translation>
 <translation id="2608039968712973520">Demander à l'utilisateur l'autorisation d'exécuter le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /></translation>
@@ -2947,6 +2966,7 @@ Si la règle est définie sur "False", l'utilisateur n'a pas accès à la racine
       Pour connaître la liste des variables acceptées, consultez cette page : https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Si cette règle n'est pas définie, le chemin de profil par défaut sera utilisé, et l'utilisateur pourra le remplacer avec le flag de ligne de commande "--user-data-dir".</translation>
+<translation id="3379326579027180941">Autoriser les sites à demander aux utilisateurs l'accès aux imprimantes locales via l'API WebPrinting</translation>
 <translation id="3379368498958498146">Permet d'activer ou de désactiver la fonctionnalité d'écriture prédictive sur le clavier physique.
 
 Si cette règle est activée ou n'est pas configurée, la fonctionnalité d'écriture prédictive est activée pour le clavier physique.
@@ -3664,6 +3684,29 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="3982322576186033243">Ne pas autoriser les hachages non sécurisés lors de handshakes TLS</translation>
 <translation id="3982465141749620677">Inviter à s'authentifier de nouveau dans un onglet</translation>
 <translation id="3983162212222338509">La résolution DNS du système peut être exécutée dans le processus réseau, en dehors de celui-ci, ou partiellement à l'intérieur et à l'extérieur du processus réseau, en fonction de la configuration du système et des flags de fonctionnalité.</translation>
+<translation id="3984773186203819634">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
+
+      Cette règle n'a aucune incidence si la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'est pas configurée.
+
+      Lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint, le navigateur exécute les actions configurées dans celle-ci.
+
+      La règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'a aucune incidence si elle est vide ou si elle n'est pas configurée.
+
+      Actions acceptées :
+
+      <ph name="CLOSE_BROWSERS_ACTION" /> : ferme toutes les fenêtres de navigateur et les PWA pour ce profil. Non disponible sur Android et iOS.
+
+      <ph name="CLOSE_TABS_ACTION" /> : ferme tous les onglets ouverts dans les fenêtres ouvertes. Uniquement disponible sur iOS.
+
+      <ph name="SHOW_PROFILE_PICKER_ACTION" /> : affiche la fenêtre de sélection des profils. Non disponible sur Android et iOS.
+
+      <ph name="SIGN_OUT_ACTION" /> : déconnecte l'utilisateur actuellement connecté. Uniquement disponible sur iOS.
+
+      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> : efface les données de navigation correspondantes. Pour en savoir plus, consultez la règle <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />. Les types compatibles avec iOS sont <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> et <ph name="CLEAR_AUTOFILL_ACTION" />.
+
+      <ph name="RELOAD_PAGES_ACTION" /> : actualise toutes les pages Web. L'utilisateur peut d'abord être invité à confirmer l'opération pour certaines pages. Non disponible sur iOS.
+
+      Si vous configurez <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> et <ph name="CLEAR_SITE_SETTINGS_ACTION" />, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et si <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.</translation>
 <translation id="3986700049001404598">Autoriser les utilisateurs à mettre fin aux processus dans le gestionnaire de tâches Chrome</translation>
 <translation id="398884292557092447">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent contrôler les suggestions de saisie automatique pour les cartes de crédit dans l'interface utilisateur.
 
@@ -3779,7 +3822,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="4079306023113982053">Contrôle la disponibilité de <ph name="BOREALIS_NAME" /> pour cet utilisateur.
 
       Si la règle n'est pas configurée, ou si elle est définie sur "False", <ph name="BOREALIS_NAME" /> ne sera pas disponible. Lorsque la règle est définie sur "True", <ph name="BOREALIS_NAME" /> est disponible si et seulement si aucune autre règle ou aucun autre paramètre ne la désactive.</translation>
-<translation id="408029843066770167">Autoriser l'envoi de requêtes à un service horaire de Google</translation>
+<translation id="408029843066770167">Autoriser l'envoi de requêtes à un service de temps de Google</translation>
 <translation id="408076456549153854">Activer la connexion au navigateur</translation>
 <translation id="4081127242481747676">Paramètres des capteurs</translation>
 <translation id="4082405593844340376">Indique si des restrictions doivent être appliquées aux requêtes adressées à des points de terminaison plus privés du réseau</translation>
@@ -4241,7 +4284,6 @@ Cette règle peut être définie sur les valeurs suivantes :
  * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> : la détection automatique du fuseau horaire est toujours activée. Les informations de localisation (telles que les points d'accès Wi-Fi, les antennes-relais accessibles et les données GPS) sont transmises à un serveur pour détecter le plus précisément possible le fuseau horaire.
 
 Si cette règle n'est pas configurée, ou qu'elle est définie sur "Choix laissé aux utilisateurs" ou "Aucun", les utilisateurs peuvent gérer la détection automatique du fuseau horaire à l'aide des commandes classiques disponibles dans chrome://settings.</translation>
-<translation id="4476769083125004742">Si cette règle est définie sur "<ph name="BLOCK_GEOLOCATION_SETTING" />", les applications Android n'ont pas accès aux informations de localisation. Si vous la définissez sur une autre valeur ou si vous ne la modifiez pas, l'utilisateur est invité à donner son autorisation lorsqu'une application Android requiert ces informations.</translation>
 <translation id="4478248026668918517">Bloquez la détection du champ d'application des règles.</translation>
 <translation id="4479671363221255277">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à demander aux utilisateurs l'accès en lecture aux fichiers ou répertoires figurant dans le système de fichiers du système d'exploitation hôte via l'API File System.
 
@@ -4489,11 +4531,6 @@ Si les données de navigation existantes sont importées dans le profil géré, 
 Si les données de navigation existantes ne sont pas importées dans le profil géré, un profil est créé. Les données de navigation existantes resteront dans un profil non géré, auquel l'utilisateur pourra toujours accéder à l'aide de l'outil de sélection du profil.</translation>
 <translation id="4668325077104657568">Paramètres d'images par défaut</translation>
 <translation id="4669083178278833688">Configurer l'appareil photo, les paramètres du navigateur et de l'OS, la fonction de scanner, ainsi que les fonctionnalités Web Store, Canevas, Explorer, Crosh, Galerie et Terminal à désactiver</translation>
-<translation id="4669292863736266737">Configurer <ph name="GLS_ENABLED" /> active les services de localisation Google lors de la configuration initiale, sauf si la règle <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />. Si la règle est définie sur <ph name="GLS_DISABLED" /> ou n'est pas configurée, les services de localisation restent désactivés pendant la configuration.
-
-Si elle est définie sur <ph name="BR_UNDER_USER_CONTROL" />, les utilisateurs sont invités à préciser s'ils souhaitent ou non utiliser ces services. S'ils les activent, les applis Android utilisent ces services pour rechercher la position de l'appareil et envoyer des données de localisation anonymes à Google.
-
-Les utilisateurs peuvent activer ou désactiver les services de localisation Google après la configuration initiale.</translation>
 <translation id="4670865688564083639">Plage minimale :</translation>
 <translation id="467236746355332046">Fonctionnalités compatibles :</translation>
 <translation id="4672774129073185053">Activer l'annulation du contrôle de joignabilité IPv6</translation>
@@ -5209,6 +5246,7 @@ Si cette règle est désactivée, ces deux historiques ne peuvent pas être supp
 <translation id="5330684698007383292">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu suivants</translation>
 <translation id="5331342092479819688">Autoriser les hachages non sécurisés lors de handshakes TLS</translation>
 <translation id="5331746669335642668">Les règles relatives au cloud de <ph name="PRODUCT_NAME" /> sont prioritaires sur les règles relatives à la plate-forme.</translation>
+<translation id="5334404204520035180">Contrôler l'utilisation de l'API WebPrinting</translation>
 <translation id="5334501839642146593">Ne pas envoyer de statistiques à Google</translation>
 <translation id="5335910979215357815">Activer l'API Save and Share pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers.</translation>
 <translation id="5339096331970464266">Activer le clavier virtuel d'accessibilité</translation>
@@ -5348,6 +5386,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
       <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> peut aussi être utile pour isoler des origines spécifiques plus précisément qu'un site (ex. : https://a.example.com).
 
       Remarque : La prise en charge de l'isolation de tous les sites sur Android va s'améliorer, mais peut affecter les performances, surtout sur les appareils bas de gamme. Cette règle ne concerne que Chrome, sur les appareils Android de plus de 1 Go de RAM. Pour isoler des sites spécifiques en limitant l'impact sur les performances pour les utilisateurs, servez-vous de <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> avec une liste des sites à isoler.  Pour les plates-formes autres qu'Android, utilisez la règle <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
+<translation id="5443719869259235874">Extensions autorisées à passer les boîtes de dialogue de confirmation lors de l'accès aux scanners via l'API chrome.documentScan</translation>
 <translation id="5445596354079213552">Cette règle n'est appliquée que si la date d'expiration des mises à jour automatiques associée à l'appareil est atteinte et que celui-ci ne répond pas aux exigences de version minimale pour <ph name="PRODUCT_OS_NAME" />, définies dans la règle <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
       Lorsque cette règle est définie sur une chaîne non vide :
@@ -5559,6 +5598,11 @@ La suppression d'un domaine de cette règle l'empêchera d'accéder aux URL file
 Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL file:// dans le lecteur PDF.</translation>
 <translation id="5586942249556966598">Ne rien faire</translation>
 <translation id="5598417829613725146">Dessin (disponible depuis la version 90)</translation>
+<translation id="5598821717813911176">Cette règle spécifie les extensions qui sont autorisées à passer les boîtes de dialogue de confirmation lorsqu'elles utilisent les fonctions <ph name="DOCUMENTSCAN_API" /> <ph name="GET_SCANNER_LIST_FUNCTION" /> et <ph name="START_SCAN_FUNCTION" />.
+
+Si la règle est définie sur une liste non vide et qu'une extension figure dans la liste, les boîtes de dialogue de confirmation de scan qui s'affichent normalement lors de l'appel de <ph name="GET_SCANNER_LIST_FUNCTION" /> ou <ph name="START_SCAN_FUNCTION" /> sont supprimées pour cette extension.
+
+Si cette règle n'est pas configurée ou si elle est définie sur une liste vide, des boîtes de dialogue de confirmation de scan s'affichent lorsque <ph name="GET_SCANNER_LIST_FUNCTION" /> ou <ph name="START_SCAN_FUNCTION" /> sont appelés.</translation>
 <translation id="5599461642204007579">Paramètres de gestion de <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">Code</translation>
 <translation id="5607021831414604820">Activer les rapports sur l'état de stockage de l'appareil</translation>
@@ -6107,6 +6151,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6089679180657323464">Contrôle les paramètres du dispositif de contrôle de diagnostic et de télémétrie de Wilco.</translation>
 <translation id="6091233616732024397">Obliger les utilisateurs à se connecter pour se servir du navigateur</translation>
 <translation id="6092073071805297119">Autoriser l'utilisation du filtrage des performances d'accessibilité.</translation>
+<translation id="60925735895026302">Interdire à tous les sites de demander l'accès aux imprimantes locales via l'API WebPrinting</translation>
 <translation id="6093156968240188330">Permettre aux utilisateurs distants d'interagir avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="6094314311474620462">Désactivez l'impression</translation>
 <translation id="6097601282776163274">Activer la collecte des données anonymes incluant les URL</translation>
@@ -6689,6 +6734,13 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
 <translation id="6513453889192806240">Latence des requêtes HTTPS</translation>
 <translation id="6515357889978918016">Fichier image <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Attendre que la version sélectionnée rattrape la version installée lors du retour à une version antérieure</translation>
+<translation id="6518894783486860562">Pour des raisons de sécurité, les API Web <ph name="SHOW_SUBAPPS_APP_API_NAME" /> ,<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> et <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> nécessitent un geste préalable de l'utilisateur ("activation temporaire") pour être appelées, sans quoi l'appel échouera. L'utilisateur est également invité à confirmer l'opération via une boîte de dialogue dédiée.
+
+Lorsque cette règle est configurée, les administrateurs peuvent spécifier les origines sur lesquelles ces API peuvent être appelées sans geste préalable de l'utilisateur ni demander confirmation à l'utilisateur.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur * n'est pas acceptée pour cette règle.
+
+Si cette règle n'est pas configurée, toutes les origines nécessitent un geste préalable de l'utilisateur pour appeler ces API, et proposent à l'utilisateur une boîte de dialogue de confirmation.</translation>
 <translation id="6520053715392444458">Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> peut envoyer à Google les téléchargements suspects d'utilisateurs pour lesquels la navigation sécurisée est activée, afin de rechercher des logiciels malveillants, ou inviter les utilisateurs à fournir un mot de passe pour les archives chiffrées.
 Si elle est désactivée, cette analyse n'est pas effectuée.
 Cette règle n'a pas d'incidence sur l'analyse du contenu téléchargé configurée par les connecteurs Chrome Enterprise.</translation>
@@ -6928,6 +6980,7 @@ Si cette règle est définie sur "False", le transfert de port dans les conteneu
 
       Remarque : Même si la règle peut accepter plusieurs éléments dans "<ph name="ENTRIES_FIELD_NAME" />", ils sont tous ignorés, sauf le premier.
       Avertissement : Configurer cette règle peut retarder l'application des mises à jour logicielles.</translation>
+<translation id="6695441448686167614">Paramètres d'impression Web</translation>
 <translation id="6698632841807204978">Activer l'impression monochrome</translation>
 <translation id="6699740789657890714">Spécifie si les sites sont autorisés à envoyer des requêtes à des points de terminaison plus privés du réseau de façon non sécurisée</translation>
 <translation id="6699880231565102694">Activer l'authentification forte pour les hôtes d'accès à distance</translation>
@@ -7008,6 +7061,7 @@ Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</transl
 
       Si la règle est définie sur "False" ou n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas activé pour cet appareil.
       Si elle est définie sur "True", <ph name="PLUGIN_VM_NAME" /> est activé pour l'appareil à condition que les autres paramètres l'y autorisent aussi. Les règles <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> et <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> doivent être définies sur "True", et <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> ou <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> doivent être configurés de sorte à permettre l'exécution de <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="6749641778238480311">Autoriser l'appel des API subApps sans geste préalable de l'utilisateur ni demander confirmation à celui-ci.</translation>
 <translation id="6750902920405577210">Liste des données de télémétrie à signaler sur les événements de modification de l'intensité du signal.
 
       Chaque donnée de télémétrie spécifiée n'est signalée que si elle n'a pas été désactivée par la règle qui la contrôle.
@@ -7141,6 +7195,11 @@ Si la règle est définie sur "false" ou si elle n'est pas configurée, cette di
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
 <translation id="6866755486434471318">Autorise <ph name="PEPPER_NAME" /> à utiliser des images partagées pour le décodage vidéo.</translation>
 <translation id="6878757724611298427">Autoriser les utilisateurs à se servir d'applis Android sur des appareils non affiliés</translation>
+<translation id="6881397131210596522">Si cette règle est définie sur "2", cela empêche automatiquement les sites d'utiliser l'API WebPrinting.
+
+Si cette règle est définie sur "3", l'utilisateur reçoit une invite lorsqu'un site souhaite utiliser l'API WebPrinting.
+
+Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès aux imprimantes locales. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="6881447940489194100">Hachage SHA-256 des données, encodé en hexadécimal.</translation>
 <translation id="68818134518270542">Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
 
@@ -7657,6 +7716,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 
       Les plug-ins manquants ne sont plus recherchés ni installés automatiquement.</translation>
 <translation id="7267809745244694722">Les touches multimédias sont par défaut des touches de fonction</translation>
+<translation id="7268365133021434339">Fermer les onglets</translation>
 <translation id="7269263983506766969">Utiliser la priorité par défaut pour le processus audio</translation>
 <translation id="7270001383428188269">Identifiant de ce certificat client.</translation>
 <translation id="7271085005502526897">Importer la page d'accueil du navigateur par défaut à la première exécution</translation>
@@ -9414,6 +9474,13 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
 <translation id="8789338675663014675">Permet de configurer les règles relatives aux extensions. L'utilisateur n'est pas autorisé à installer des extensions bloquées, à moins qu'elles aient été ajoutées à la liste blanche. Vous pouvez également forcer <ph name="PRODUCT_NAME" /> à installer automatiquement des extensions en les spécifiant dans <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Cette méthode permet d'installer des extensions inscrites sur la liste de blocage.</translation>
 <translation id="879697755145469671">Ne pas détecter une fenêtre recouverte</translation>
 <translation id="8798099450830957504">Par défaut</translation>
+<translation id="879863472982972634">Permet de lister les formats d'URL indiquant les sites automatiquement autorisés à accéder aux imprimantes locales via l'API WebPrinting.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
+
+Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est indiqué dans les deux règles.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="8799492680917278474">Si cette règle est activée, les connexions d'accès à distance se termineront automatiquement une fois le nombre de minutes défini écoulé. Cela n'empêche pas le client de se reconnecter après avoir atteint la durée maximale de session. Si la durée définie dans cette règle n'est pas comprise dans les limites indiquées, l'hôte risque de ne pas démarrer. Cette règle ne concerne pas les cas d'assistance à distance.
 
           Elle n'a aucun effet si elle n'est pas définie. Dans ce cas, les connexions d'accès à distance n'auront pas de limite de durée sur cet ordinateur.</translation>

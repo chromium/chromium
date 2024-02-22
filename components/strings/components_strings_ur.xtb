@@ -811,6 +811,7 @@
 <translation id="2501278716633472235">پیچھے جائیں</translation>
 <translation id="250346157641628208">کاغذ (انک جیٹ)</translation>
 <translation id="2505268675989099013">اکاؤنٹ محفوظ کریں</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (شرائط لاگو ہیں)</translation>
 <translation id="2512101340618156538">اجازت نہیں ہے (ڈیفالٹ)</translation>
 <translation id="2512413427717747692">‏Chrome کو بطور ڈیفالٹ براؤزر بٹن سیٹ کریں، iOS ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے Enter دبائیں</translation>
 <translation id="2514548229949738417">گھر اور باغبانی</translation>
@@ -1160,6 +1161,7 @@
 <translation id="3229277193950731405">ورژن سٹرنگ کاپی کریں</translation>
 <translation id="323107829343500871">‏<ph name="CREDIT_CARD" /> کا CVC درج کریں</translation>
 <translation id="3234666976984236645">اس سائٹ پر اہم مواد کا ہمیشہ پتا لگائیں</translation>
+<translation id="3236212803136366317">کارڈ کے فوائد</translation>
 <translation id="3238395604961564389">لنک کو پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="3240683217920639535">‏<ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے براؤزر کی شکل کو حسب ضرورت بنانے کیلئے ٹیب پھر Enter دبائیں</translation>
 <translation id="3240791268468473923">ادائیگی کی اسناد محفوظ کریں کوئی مماثل اسناد نہیں کی شیٹ کھلی ہوئی ہے</translation>
@@ -1196,6 +1198,7 @@
 <translation id="33073482541490531">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ پاس ورڈ مینیجر اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="3307649904964670439">‏Chrome کو حسب ضرورت بنائیں بٹن، اپنے براؤزر کی شکل کو حسب ضرورت بنانے کے لیے فعال کریں</translation>
 <translation id="3308006649705061278">‏تنظیمی اکائی (OU)</translation>
+<translation id="3310047144791481950">وہ معلومات دیکھیں جو آپ کو منتخب کرنے میں مدد کرتی ہے کہ کس کارڈ سے ادائیگی کرنی ہے۔ <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />کارڈ کے فوائد کے بارے میں جانیں<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">‏TV کامیڈیز</translation>
 <translation id="3324687287337751929">‏‎4 x 6 انچ</translation>
 <translation id="3324983252691184275">قرمزی</translation>

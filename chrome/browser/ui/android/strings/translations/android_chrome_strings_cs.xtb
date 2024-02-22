@@ -1089,7 +1089,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="670498945988402717">Zkontrolováno včera</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="671481426037969117">Časovač <ph name="FQDN" /> vypršel. Spustí se zase zítra.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Záložka byla uložena do složky <ph name="FOLDER_NAME" />. Tato složka je uložena pouze na tomto zařízení.}few{Záložky byly uloženy do složky <ph name="FOLDER_NAME" />. Tato složka je uložena pouze na tomto zařízení.}many{Záložky byly uloženy do složky <ph name="FOLDER_NAME" />. Tato složka je uložena pouze na tomto zařízení.}other{Záložky byly uloženy do složky <ph name="FOLDER_NAME" />. Tato složka je uložena pouze na tomto zařízení.}}</translation>
 <translation id="6715020873764921614">Chcete soubor <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) přesto stáhnout?</translation>
 <translation id="6719634564325948108">Připojit se pomocí QR kódu?</translation>
 <translation id="6723740634201835758">V účtu Google</translation>
@@ -1419,7 +1418,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8237871086242677046">Spodní tabulka se statistikami stránky</translation>
 <translation id="8243077599929149377">Přidejte své uživatelské jméno</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Záložka byla uložena do složky <ph name="FOLDER_NAME" /> ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}few{Záložky byly uloženy do složky <ph name="FOLDER_NAME" /> ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}many{Záložky byly uloženy do složky <ph name="FOLDER_NAME" /> ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}other{Záložky byly uloženy do složky <ph name="FOLDER_NAME" /> ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Weby mohou pomocí souborů cookie sledovat aktivitu prohlížení pouze na svém vlastním webu</translation>
 <translation id="8259179246279078674">Protože jsou předběžně načítané stránky zašifrované, Google nedozví nic o jejich obsahu. Servery Google se dozví, které weby se soukromě předběžně načítají. Tyto informace se používají pouze k předběžnému načítání stránek a nejsou spojeny s jinými informacemi z vašeho účtu Google.</translation>
 <translation id="8260126382462817229">Zkuste se přihlásit znovu.</translation>
@@ -1463,6 +1461,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8460448946170646641">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení</translation>
 <translation id="8466613982764129868">Zkontrolujte, zda je zařízení <ph name="TARGET_DEVICE_NAME" /> připojené k internetu</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
+<translation id="8478751349603791277">Určete, jak se vaše synchronizovaná historie může používat k personalizaci dalších služeb Google</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Otevřít stránku historie</translation>
 <translation id="8493948351860045254">Uvolnit místo</translation>

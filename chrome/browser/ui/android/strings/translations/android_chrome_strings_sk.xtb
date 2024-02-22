@@ -1088,7 +1088,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="670498945988402717">Kontrola prebehla včera</translation>
 <translation id="6710213216561001401">Späť</translation>
 <translation id="671481426037969117">Časovač aplikácie <ph name="FQDN" /> vypršal. Spustí sa zase zajtra.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Záložka bola uložená do priečinka <ph name="FOLDER_NAME" />. Je uložená iba v tomto zariadení.}few{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" />. Sú uložené iba v tomto zariadení.}many{Bookmarks saved to <ph name="FOLDER_NAME" />. It is only saved to this device.}other{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" />. Sú uložené iba v tomto zariadení.}}</translation>
 <translation id="6715020873764921614">Chcete aj tak stiahnuť <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Chcete sa pripojiť pomocou QR kódu?</translation>
 <translation id="6723740634201835758">V účte Google</translation>
@@ -1417,7 +1416,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8237871086242677046">Dolný hárok štatistík stránky</translation>
 <translation id="8243077599929149377">Pridajte svoje používateľské meno</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Záložka bola uložená do priečinka <ph name="FOLDER_NAME" /> vo vašom účte <ph name="ACCOUNT_EMAIL" />.}few{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" /> vo vašom účte <ph name="ACCOUNT_EMAIL" />.}many{Bookmarks saved to <ph name="FOLDER_NAME" /> in your account, <ph name="ACCOUNT_EMAIL" />.}other{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" /> vo vašom účte <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Weby môžu pomocou vašich súborov cookie zobrazovať iba vašu aktivitu prehliadania na nich</translation>
 <translation id="8259179246279078674">Prednačítavané stránky sú šifrované, takže Google nezistí nič o ich obsahu. Servery Googlu budú mať k dispozícii informáciu, ktoré weby sú súkromne prednačítavané. Bude slúžiť iba na prednačítanie stránok, ale nebude spojená z ďalšími informáciami z vášho účtu Google.</translation>
 <translation id="8260126382462817229">Skúste sa znova prihlásiť</translation>
@@ -1461,6 +1459,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8460448946170646641">Skontrolujte hlavné ovládacie prvky ochrany súkromia a zabezpečenia</translation>
 <translation id="8466613982764129868">Skontrolujte, či je zariadenie <ph name="TARGET_DEVICE_NAME" /> pripojené k internetu</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
+<translation id="8478751349603791277">Ovládajte, ako sa môžu pomocou vašej synchronizovanej histórie prispôsobovať iné služby Googlu</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Otvorenie stránky História</translation>
 <translation id="8493948351860045254">Uvoľniť miesto</translation>

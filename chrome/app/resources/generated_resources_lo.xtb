@@ -525,7 +525,6 @@
 <translation id="139911022479327130">ປົດລັອກໂທລະສັບຂອງທ່ານ ແລະ ຢືນຢັນວ່າແມ່ນທ່ານ</translation>
 <translation id="1399261165075500043">ບໍ່ສາມາດໂຫຼດຂໍ້ກຳນົດບໍລິການຂອງ Google Play ໄດ້</translation>
 <translation id="1401216725754314428">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບເວັບໄຊທີ່ກ່ຽວຂ້ອງໃນແຖບໃໝ່</translation>
-<translation id="1401308693935339022">ໃຊ້ສະຖານທີ່. ອະນຸຍາດໃຫ້ແອັບ ແລະ ການບໍລິການທີ່ມີການອະນຸຍາດສະຖານທີ່ໃຊ້ສະຖານທີ່ຂອງອຸປະກອນນີ້. Google ອາດຈະເກັບເອົາຂໍ້ມູນສະຖານທີ່ເປັນຊ່ວງໄລຍະ ແລະ ໃຊ້ຂໍ້ມູນນີ້ແບບບໍ່ເປີດເຜີຍຊື່ ເພື່ອປັບປຸງຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ ແລະ ການບໍລິການທີ່ອີງໃສ່ສະຖານທີ່.</translation>
 <translation id="1402426911829176748">ກຳລັງເຊື່ອມຕໍ່ກັບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1403222014593521787">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບພຣັອກຊີໄດ້</translation>
 <translation id="1405779994569073824">ຂັດຂ້ອງ.</translation>
@@ -804,6 +803,7 @@
 <translation id="1602085790802918092">ກຳລັງເລີ່ມເຄື່ອງສະເໝືອນ</translation>
 <translation id="1603116295689434284">ຂໍ້ມູນລະບົບ Chrome</translation>
 <translation id="1603411913360944381">ລືມ <ph name="DEVICE_NAME" /></translation>
+<translation id="1603879843804174953">ກົດຄ້າງ</translation>
 <translation id="1603914832182249871">(ບໍ່​ເຜີຍ​ຕົນ​ຕົວ)</translation>
 <translation id="1604432177629086300">ບໍ່ສາມາດພິມໄດ້. ກວດເບິ່ງເຄື່ອງພິມ ແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="1604567162047669454">ຮູ້ຈັກຄວາມໝາຍຂອງໂຄງຮ່າງພາບ</translation>
@@ -1353,6 +1353,7 @@
 <translation id="1992397118740194946">ບໍ່​ໄດ້ຕັ້ງ​</translation>
 <translation id="1994173015038366702">URL ​ເວັບ​ໄຊທ໌</translation>
 <translation id="1995916364271252349">ຄວບຄຸມວ່າເວັບໄຊສາມາດໃຊ້ ແລະ ສະແດງຂໍ້ມູນໃດໄດ້ (ສະຖານທີ່, ກ້ອງ, ປັອບອັບ ແລະ ອື່ນໆອີກ)</translation>
+<translation id="199610894463449797">{0,plural, =1{ປິດໂປຣໄຟລ໌ນີ້}other{ປິດໂປຣໄຟລ໌ນີ້ (# ໜ້າຈໍ)}}</translation>
 <translation id="1997433994358798851">Chrome ຕ້ອງການການອະນຸຍາດເພື່ອໃຊ້ Bluetooth ເພື່ອເຊື່ອມຕໍ່ກັບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1997616988432401742">ໃບ​ຢັ້ງ​ຢືນ​ຂອງ​ທ່ານ</translation>
 <translation id="1999115740519098545">ຢູ່ໃນຕອນເລີ່ມຕົ້ນ</translation>
@@ -1596,6 +1597,7 @@
 <translation id="2175384018164129879">&amp;ຈັດການໂປຣແກຣມຊອກຫາ ແລະ ການຊອກຫາເວັບໄຊ</translation>
 <translation id="217576141146192373">ບໍ່ສາມາດເພີ່ມເຄື່ອງພິມໄດ້. ກະລຸນາກວດເບິ່ງການຕັ້ງຄ່າເຄື່ອງພິມຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="2175927920773552910">ລະຫັດ QR</translation>
+<translation id="217631816678106981">ຢ່າວາງ</translation>
 <translation id="2177306523871626993">ກຳລັງດາວໂຫຼດໄຟລ໌ການຮັບຮູ້ຂໍ້ຄວາມ… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">ແຖບທີ່​ບໍ່​ເຜີຍ​ຕົນ​ຕົວ: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -1871,7 +1873,6 @@
 <translation id="2373666622366160481">ພໍດີກັບເຈ້ຍ</translation>
 <translation id="2375406435414127095">ເຊື່ອມຕໍ່ກັບໂທລະສັບຂອງທ່ານ</translation>
 <translation id="2376056713414548745">ອ່ານອອກສຽງ</translation>
-<translation id="2377588536920405462">ທ່ານສາມາດປິດສະຖານທີ່ໄດ້ໂດຍການປິດການຕັ້ງຄ່າສະຖານທີ່ຫຼັກຢູ່ໃນອຸປະກອນຂອງທ່ານ. ນອກຈາກທ່ານຍັງສາມາດປິດການນຳໃຊ້ Wi‑Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີຕ່າງໆສຳລັບສະຖານທີ່ໄດ້ໃນການຕັ້ງຄ່າສະຖານທີ່.</translation>
 <translation id="2377667304966270281">ການຂັດຂ້ອງຮ້າຍແຮງ</translation>
 <translation id="237828693408258535">ແປໜ້ານີ້ບໍ?</translation>
 <translation id="2378982052244864789">ເລືອກໄດເຣັກຕໍຣີສ່ວນຂະຫຍາຍ.</translation>
@@ -2355,6 +2356,7 @@
 <translation id="2732134891301408122">ເນື້ອຫາເພີ່ມເຕີມທີ <ph name="CURRENT_ELEMENT" /> ຈາກທັງໝົດ <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">ຍົກໂປ້ຂຶ້ນເພື່ອສົ່ງຄຳຕິຊົມທີ່ທ່ານຖືກໃຈສິ່ງເຫຼົ່ານີ້.</translation>
 <translation id="2733992589856193783">ທ່ານສ້າງກະແຈຜ່ານສຳລັບເວັບໄຊນີ້ແລ້ວ. ທ່ານຕ້ອງການອຸປະກອນມືຖືຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
+<translation id="2734797989819862638">ບໍ່ສຳເນົາ</translation>
 <translation id="27349076983469322">ພື້ນຫຼັງແຈ້ງ</translation>
 <translation id="2735712963799620190">ກຳນົດເວລາ</translation>
 <translation id="2737363922397526254">ຍຸບລົງ...</translation>
@@ -3141,6 +3143,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນ <ph name="ATTACHMENTS" /> ກັບທ່ານ.}other{<ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນ <ph name="ATTACHMENTS" /> ກັບທ່ານ.}}</translation>
 <translation id="3361954577771524115">ຈາກແອັບ</translation>
 <translation id="3363202073972776113">ໂປຣໄຟລ໌ໃໝ່ນີ້ຈະໄດ້ຮັບການຈັດການໂດຍອົງການຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">Alt+ວາງ</translation>
 <translation id="3364986687961713424">ຈາກຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">ໃຊ້ Ctrl ຫຼື Alt</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
@@ -4588,6 +4591,7 @@
 <translation id="4473559657152613417">ຄລິກຂວາໃສ່ແຖບ ແລ້ວເລືອກ "ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່"</translation>
 <translation id="4473996011558324141">ກຳລັງປະເມີນເວລາ</translation>
 <translation id="4474155171896946103">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ...</translation>
+<translation id="4475299370877036544">ຄຳສັ່ງນີ້ອາດລະເມີດນະໂຍາຍຂອງອົງການທ່ານ</translation>
 <translation id="4475552974751346499">ຄົ້ນ​ຫາການດາວ​ໂຫຼດ​</translation>
 <translation id="4476590490540813026">ນັກກິລາ</translation>
 <translation id="4476659815936224889">ເພື່ອສະແກນລະຫັດນີ້, ທ່ານສາມາດໃຊ້ແອັບໂປຣແກຣມສະແກນ QR ໃນໂທລະສບຂອງທ່ານ ຫຼື ບາງແອັບກ້ອງຖ່າຍຮູບອື່ນ.</translation>
@@ -5440,7 +5444,6 @@
 <translation id="5147097165869384760">ກຳລັງຊອກຫາໜ້າລະບົບປະຕິບັດການບໍ? ເຂົ້າເບິ່ງ<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147516217412920887">ປະຕິບັດຕາມຄໍາແນະນໍາຢູ່ໂທລະສັບຂອງທ່ານເພື່ອຢັ້ງຢືນລະຫັດ</translation>
 <translation id="5147992672778369947">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
-<translation id="5148277445782867161">ການບໍລິການລະບຸສະຖານທີ່ຂອງ Google ໃຊ້ແຫຼ່ງຂໍ້ມູນ ເຊັ່ນວ່າ Wi-Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີ ເພື່ອຄາດຄະເນສະຖານທີ່ຂອງອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="5148285448107770349">ລະຫັດຜ່ານຕ້ອງມີຢ່າງໜ້ອຍ 8 ຕົວອັກສອນ</translation>
 <translation id="5149602533174716626">ສຳເນົາເຟຣມວິດີໂອ</translation>
 <translation id="5150254825601720210">ຊື່ເຊີບເວີ SSL ໃບຢັ້ງຢືນ Netscape</translation>
@@ -5732,6 +5735,7 @@
 <translation id="5395498824851198390">ຟອນເລີ່ມຕົ້ນ</translation>
 <translation id="5397378439569041789">ລົງທະບຽນອຸປະກອນຄີອອສ ຫຼື ອຸປະກອນປ້າຍ</translation>
 <translation id="5397794290049113714">ທ່ານ</translation>
+<translation id="5398062879200420134">⌥+ວາງ</translation>
 <translation id="5398497406011404839">ບຸກມາກທີ່ເຊື່ອງໄວ້</translation>
 <translation id="5398572795982417028">ເກີນຂອບເຂດການອ້າງອີງໜ້າ, ຂີດຈຳກັດແມ່ນ <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">ບໍ່ອະນຸຍາດໃຫ້ຊອກຫາ ຫຼື ໃຊ້ເຄື່ອງພິມທີ່ເຂົ້າເຖິງໄດ້ໂດຍອຸປະກອນຂອງທ່ານ</translation>
@@ -6358,6 +6362,7 @@
 <translation id="5882919346125742463">ເຄືອຂ່າຍທີ່ຮູ້ຈັກ</translation>
 <translation id="5883356647197510494">ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ໂດຍອັດຕະໂນມັດແລ້ວ</translation>
 <translation id="5884447826201752041">ປັບແຕ່ງສຳລັບແຕ່ລະສ່ວນຂະຫຍາຍ</translation>
+<translation id="5884730022784413637">ກົດຄ້າງ</translation>
 <translation id="5885314688092915589">ອົງການຂອງທ່ານຈະຈັດການໂປຣໄຟລ໌ນີ້</translation>
 <translation id="5885470467814103868">ເລີ່ມຕົ້ນສະແກນ</translation>
 <translation id="5885631909150054232">ສຳເນົາໂທເຄນ</translation>
@@ -6405,7 +6410,6 @@
 <translation id="5916664084637901428">ເປີດ</translation>
 <translation id="59174027418879706">ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5920543303088087579">ການເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ຖືກປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
-<translation id="5921257443092182237">ການບໍລິການລະບຸສະຖານທີ່ຂອງ Google ໃຊ້ແຫຼ່ງຂໍ້ມູນ ເຊັ່ນວ່າ Wi-Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີ ເພື່ອຄາດຄະເນສະຖານທີ່ຂອງອຸປະກອນນີ້.</translation>
 <translation id="5924047253200400718">ຂໍຄວາມຊ່ວຍເຫຼືອ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">ສອບຖາມກ່ອນສຳເນົາ ຫຼື ຍ້າຍໄຟລ໌ Microsoft ໄປໃສ່ Google Drive</translation>
 <translation id="5924527146239595929">ຖ່າຍຮູບໃໝ່ ຫຼື ເລືອກຮູບ ຫຼື ໄອຄອນທີ່ມີຢູ່ແລ້ວ.
@@ -7701,7 +7705,6 @@
 <translation id="6935031746833428401">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຈັດການອຸປະກອນ</translation>
 <translation id="6935286146439255109">ບໍ່ມີຖາດເຈ້ຍ</translation>
 <translation id="6938386202199793006">ທ່ານມີເຄື່ອງພິມທີ່ບັນທຶກໄວ້ 1 ເຄື່ອງ.</translation>
-<translation id="6938387822292071111">ສະແດງຮູບຢູ່ບັດຕົວຢ່າງເລື່ອນໄປໃສ່ແຖບ</translation>
 <translation id="6938606182859551396">ເພື່ອຮັບການແຈ້ງເຕືອນຈາກໂທລະສັບຂອງທ່ານໃນ <ph name="DEVICE_TYPE" /> ທ່ານ, ກະລຸນາປະຕິບັດຕາມຄຳແນະນຳໃນໂທລະສັບຂອງທ່ານເພື່ອໃຫ້ສິດເຂົ້າເຖິງການແຈ້ງເຕືອນແກ່ບໍລິການ Google Play.</translation>
 <translation id="694168622559714949">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງພາສາເລີ່ມຕົ້ນໄວ້ແລ້ວເຊິ່ງບໍ່ສາມາດແກ້ໄຂໄດ້.</translation>
 <translation id="6941937518557314510">ກະ​ລຸ​ນາ​ລົງຊື່ເຂົ້າ​ໃຊ້ <ph name="TOKEN_NAME" /> ເພື່ອຮັບຮອງກັບ <ph name="HOST_NAME" /> ພ້ອມກັບ​ໃບ​ຢັ້ງ​ຢືນ​ຂອງ​ທ່ານ​.</translation>
@@ -7885,6 +7888,7 @@
 <translation id="7072010813301522126">ຊື່​ທາງ​ລັດ</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="7075625805486468288">ຈັດການໃບຢັ້ງຢືນ ແລະ ການຕັ້ງຄ່າ HTTPS/SSL</translation>
+<translation id="7075896597860500885">ບໍ່ແນະນຳໃຫ້ສຳເນົາຈາກເວັບໄຊນີ້</translation>
 <translation id="7076875098323397992">ບໍ່ສາມາດເລີ່ມອັບເກຣດໄດ້</translation>
 <translation id="7077751457066325012">ເບິ່ງ ແລະ ປັບແຕ່ງຄີລັດ</translation>
 <translation id="7077829361966535409">ໜ້າລົງຊື່ເຂົ້າ​ໃຊ້ທີ່ໃຊ້ການຕັ້ງຄ່າພຣັອກຊີປະຈຸບັນໂຫຼດບໍ່ໄດ້. ກະລຸນາ <ph name="GAIA_RELOAD_LINK_START" />ລອງລົງຊື່ເຂົ້າ​ໃຊ້ອີກ<ph name="GAIA_RELOAD_LINK_END" />, ຫຼືໃຊ້ <ph name="PROXY_SETTINGS_LINK_START" />ການຕັ້ງຄ່າພຣັອກຊີ<ph name="PROXY_SETTINGS_LINK_END" /> ອື່ນ.</translation>
@@ -8235,7 +8239,7 @@
 <translation id="736877393389250337">ບໍ່ສາມາດເປີດ <ph name="URL" /> ໄດ້ໃນ <ph name="ALTERNATIVE_BROWSER_NAME" />. ກະລຸນາຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="7368927539449986686">ແກ້ໄຂການຊອກຫາເວັບໄຊ</translation>
 <translation id="7370592524170198497">ອີເທີເນັດ EAP:</translation>
-<translation id="7371490947952970241">ທ່ານສາມາດປິດສະຖານທີ່ໄດ້ໂດຍການປິດການຕັ້ງຄ່າສະຖານທີ່ຫຼັກຢູ່ໃນອຸປະກອນນີ້. ນອກຈາກທ່ານຍັງສາມາດປິດການນຳໃຊ້ Wi‑Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີຕ່າງໆສຳລັບສະຖານທີ່ໄດ້ໃນການຕັ້ງຄ່າສະຖານທີ່.</translation>
+<translation id="7370751048350026847">ບໍ່ແນະນຳໃຫ້ວາງເນື້ອຫາໄປໃສ່ເວັບໄຊນີ້</translation>
 <translation id="7371917887111892735">ຫຍໍ້ແຖບເປັນຄວາມກວ້າງແຖບທີ່ປັກໝຸດ</translation>
 <translation id="7374376573160927383">ຈັດການອຸປະກອນ USB</translation>
 <translation id="7376124766545122644">ບໍ່ສາມາດໃຊ້ລິ້ງນີ້ໄດ້. ກະລຸນາກວດສອບວ່າລິ້ງຂອງທ່ານຂຶ້ນຕົ້ນດ້ວຍ 'http://' ຫຼື 'https://' ເພື່ອລອງໃໝ່.</translation>
@@ -9633,6 +9637,7 @@
 <translation id="8403618281196981152">ຂໍ້ມູນຂອງທ່ານໃນ Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້</translation>
 <translation id="8405046151008197676">ຮັບໄຮໄລ້ຈາກການອັບເດດຫຼ້າສຸດ</translation>
+<translation id="8405118833120731611">{0,plural, =1{ປິດໂປຣໄຟລ໌ນີ້}other{ປິດໂປຣໄຟລ໌ນີ້ (# ໜ້າຈໍ)}}</translation>
 <translation id="8407199357649073301">ລະດັບຂອງບັນທຶກ:</translation>
 <translation id="8408270600235826886">ທ່ານສາມາດຄວບຄຸມໄດ້ວ່າຈະແບ່ງປັນຂໍ້ມູນຫຍັງໃຫ້ກັບ Google. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ. ຂໍ້ມູນຈະຖືກໃຊ້ໂດຍສອດຄ່ອງຕາມ <ph name="BEGIN_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK" /> ຂອງ Google.</translation>
 <translation id="84098433273647700">ຮູບແບບສີສັນປັດຈຸບັນທີ່ທ່ານໄດ້ຕິດຕັ້ງ.</translation>
@@ -10432,7 +10437,6 @@
 <translation id="9018218886431812662">ສຳເລັດການຕິດຕັ້ງແລ້ວ</translation>
 <translation id="901876615920222131">ເພື່ອເປີດກຸ່ມຄືນໃໝ່, ໃຫ້ຄລິກໃສ່ກຸ່ມນັ້ນ</translation>
 <translation id="9019062154811256702">ອ່ານ ແລະ​ປ່ຽນ​ແປງ​ການ​ຕັ້ງ​ຄ່າ​ການ​ຕື່ມ​ໃສ່​ອັດ​ຕະ​ໂນ​ມັດ</translation>
-<translation id="9019894137004772119">ໃຊ້ສະຖານທີ່. ອະນຸຍາດໃຫ້ແອັບ ແລະ ການບໍລິການທີ່ມີການອະນຸຍາດສະຖານທີ່ໃຊ້ສະຖານທີ່ຂອງອຸປະກອນຂອງທ່ານ. Google ອາດຈະເກັບເອົາຂໍ້ມູນສະຖານທີ່ເປັນຊ່ວງໄລຍະ ແລະ ໃຊ້ຂໍ້ມູນນີ້ແບບບໍ່ເປີດເຜີຍຊື່ ເພື່ອປັບປຸງຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ ແລະ ການບໍລິການທີ່ອີງໃສ່ສະຖານທີ່.</translation>
 <translation id="9019956081903586892">ບໍ່ສາມາດດາວໂຫຼດວັດຈະນານຸກົມສຳລັບກວດຄຳຜິດໄດ້</translation>
 <translation id="9020300839812600209">ລະບຸ URL ເພື່ອເບິ່ງວ່າ LBS ຈະເຮັດຫຍັງກັບມັນ.</translation>
 <translation id="9020362265352758658">4x</translation>

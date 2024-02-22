@@ -46,7 +46,6 @@
 <translation id="123124571410524056">စာမျက်နှာကို သံသယရှိသည်</translation>
 <translation id="1232610416724362657">ရေတံခွန်</translation>
 <translation id="1238612778414822719">HTTPS တုံ့ပြန်ချိန်</translation>
-<translation id="1264369926465113395">ထုတ်လုပ်သူများအတွက် Chromebook ၏ ဒစ်ဂျစ်တယ် မဂ္ဂဇင်းအသစ်ကို စစ်ဆေးနိုင်သည်</translation>
 <translation id="1270369111467284986">စတင်ဝင်ရန်စာမျက်နှာကို သံသယရှိသည်</translation>
 <translation id="1274654146705270731">လိမ္မော်သီး</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
@@ -306,6 +305,7 @@
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
 <translation id="2940811910881150316">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ။</translation>
 <translation id="2941112035454246133">နိမ့်</translation>
+<translation id="2956070106555335453">စုစုပေါင်း</translation>
 <translation id="299385721391037602">ပန်းရောင်နှင့် အဝါ</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
@@ -576,7 +576,6 @@
 <translation id="4832079907277790330">Files အက်ပ်တွင် ဖိုင်တွဲကိုရွေးရန်...</translation>
 <translation id="4835901797422965222">ဖွင့်ထားသော ကွန်ရက်မရှိပါ</translation>
 <translation id="4838825304062068169">ရေခဲမြစ်</translation>
-<translation id="4839698083503556542">ရုပ်ရှင် ဖန်တီးပါ</translation>
 <translation id="48409034532829769">သင့်စီမံခန့်ခွဲသူက “<ph name="APP_NAME" />” ကို အလိုအလျောက်စတင်ရန် စနစ်ထည့်သွင်းထားသည်။ ဤအက်ပ်ကို ပိတ်မည်မဟုတ်ပါ။</translation>
 <translation id="484462545196658690">အော်တို</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ကို ရွေးချယ်ထားသည်၊ <ph name="TOPIC_SOURCE" /> အယ်လ်ဘမ်များကိုရွေးရန် Enter နှိပ်ပါ</translation>

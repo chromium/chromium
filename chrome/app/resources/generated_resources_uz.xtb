@@ -523,7 +523,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="139911022479327130">Telefonni qulfdan chiqaring va shaxsingizni tasdiqlang</translation>
 <translation id="1399261165075500043">Google Play xizmat shartlari yuklanmadi</translation>
 <translation id="1401216725754314428">Aloqador saytlar haqida yangi varaqda batafsil axborot oling</translation>
-<translation id="1401308693935339022">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin.</translation>
 <translation id="1402426911829176748">Qurilmangizga ulanmoqda</translation>
 <translation id="1403222014593521787">Proksi-serverga ulanib boʻlmadi</translation>
 <translation id="1405779994569073824">Ishdan chiqdi.</translation>
@@ -1859,7 +1858,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2373666622366160481">Qogʻozga moslash</translation>
 <translation id="2375406435414127095">Telefonga ulang</translation>
 <translation id="2376056713414548745">Ovozli oʻqish</translation>
-<translation id="2377588536920405462">Qurilmangizda asosiy Joylashuv sozlamasini faolsizlantirish orqali Joylashuvni aniqlash xizmatini faolsizlantirish mumkin. Shuningdek, joylashuv parametri orqali joylashuv axboroti uchun Wi-Fi va mobil tarmoqlardan foydalanish hamda sensorlarni ham faolsizlantirish mumkin.</translation>
 <translation id="2377667304966270281">Xotirada sahifa yo‘qligi xatolari</translation>
 <translation id="237828693408258535">Bu sahifa tarjima qilinsinmi?</translation>
 <translation id="2378982052244864789">Kengaytma katalogini tanlang.</translation>
@@ -2318,6 +2316,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2721695630904737430">Nazorat qilinadigan profilni administrator o‘chirib qo‘ygan.</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> dan keyin qurilma oʻchadi. USBni qurilmani ishga tushirishdan oldin chiqaring. Keyin <ph name="DEVICE_OS" /> tizimidan foydalana olasiz.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Mehmon profilini ochish</translation>
 <translation id="2723819893410108315">Citron</translation>
 <translation id="2724841811573117416">WebRTC jurnallari</translation>
 <translation id="272488616838512378">Birliklar konvertori</translation>
@@ -5426,7 +5425,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5147097165869384760">OT tizim sahifasi kerakmi? <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="5147516217412920887">Kodni tasdiqlash uchun telefonda koʻrsatmalarni bajaring.</translation>
 <translation id="5147992672778369947">Tavsiya etilgan parol ishlating</translation>
-<translation id="5148277445782867161">Google joylashuv xizmati Wi-Fi, mobil tarmoq va sensorlardan qurilmangiz joylashuvini aniqlashda foydalanadi.</translation>
 <translation id="5148285448107770349">Parol (8 ta belgidan kam boʻlmasligi kerak)</translation>
 <translation id="5149602533174716626">Video kadridan nusxa olish</translation>
 <translation id="5150254825601720210">Netscape SSL sertifikat serveri nomi</translation>
@@ -6392,7 +6390,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5916664084637901428">Yoniq</translation>
 <translation id="59174027418879706">Yoqilgan</translation>
 <translation id="5920543303088087579">Bu tarmoqqa ulanish ruxsati administrator tomonidan o‘chirib qo‘yilgan</translation>
-<translation id="5921257443092182237">Google joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi.</translation>
 <translation id="5924047253200400718">Yordam sahifasiga o‘tish<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft fayllarini Google Drive xizmatiga koʻchirish yoki nusxalashdan oldin soʻralsin</translation>
 <translation id="5924527146239595929">Suratga oling yoki mavjud surat yoki ikonkalardan birini tanlang.
@@ -7688,7 +7685,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6935031746833428401">Qurilmalar boshqaruvi haqida batafsil</translation>
 <translation id="6935286146439255109">Kiritish tarnoviga qogʻoz solinmagan</translation>
 <translation id="6938386202199793006">1 ta printer saqlangan.</translation>
-<translation id="6938387822292071111">Varaqqa kursorni olib borganda razm solish rasmlarini chiqarish</translation>
 <translation id="6938606182859551396">Telefoningizdan <ph name="DEVICE_TYPE" /> qurilmangizga bildirishnomalarni olish uchun Google Play xizmatlaridagi bildirishnomalardan foydalanishga oid telefoningizdagi koʻrsatmalarga amal qiling.</translation>
 <translation id="694168622559714949">Administrator asosiy tilni sozlagan va uni oʻzgartirish imkonsiz.</translation>
 <translation id="6941937518557314510"><ph name="TOKEN_NAME" />’ga kirib, sertifikat bilan <ph name="HOST_NAME" />’ga shaxsingizni tasdiqlang.</translation>
@@ -8222,7 +8218,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="736877393389250337"><ph name="URL" /> manzili <ph name="ALTERNATIVE_BROWSER_NAME" /> ichida ochilmadi. Tizim administratoriga murojaat qiling.</translation>
 <translation id="7368927539449986686">Sayt qidiruv tizimini tahrirlash</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
-<translation id="7371490947952970241">Qurilmangizda asosiy Joylashuv sozlamasini faolsizlantirish orqali Joylashuvni aniqlash xizmatini faolsizlantirish mumkin. Shuningdek, joylashuv parametri orqali joylashuv axboroti uchun Wi-Fi va mobil tarmoqlardan foydalanish hamda sensorlarni ham faolsizlantirish mumkin.</translation>
 <translation id="7371917887111892735">Varaqlar mahkamlanganlar oʻlchamigacha kichraytiriladi</translation>
 <translation id="7374376573160927383">USB qurilmalarni boshqarish</translation>
 <translation id="7376124766545122644">Bu havola ishlamadi. Qayta urinish uchun havolani “http://” yoki “https://” bilan boshlanishii tekshiring.</translation>
@@ -10419,7 +10414,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9018218886431812662">O‘rnatildi.</translation>
 <translation id="901876615920222131">Guruhni qayta ochish uchun guruh ustiga bosing</translation>
 <translation id="9019062154811256702">Avtomatik to‘ldirish sozlamalarini o‘qish va o‘zgartirish</translation>
-<translation id="9019894137004772119">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin.</translation>
 <translation id="9019956081903586892">Imloni tekshirish lugʻati yuklab olinmadi</translation>
 <translation id="9020300839812600209">LBS nima qilishini koʻrish uchun URL manzilni kiriting</translation>
 <translation id="9020362265352758658">4x</translation>

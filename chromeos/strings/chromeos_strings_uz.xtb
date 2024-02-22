@@ -46,7 +46,6 @@
 <translation id="123124571410524056">Portal muzlatildi</translation>
 <translation id="1232610416724362657">sharshara</translation>
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
-<translation id="1264369926465113395">Chromebook qurilmasining ijodkorlar uchun yangi raqamli jurnali bilan tanishing</translation>
 <translation id="1270369111467284986">Kirish portali muzlatildi</translation>
 <translation id="1274654146705270731">apelsinlar</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
@@ -576,7 +575,6 @@
 <translation id="4832079907277790330">Fayllar ilovasida jild tanlang...</translation>
 <translation id="4835901797422965222">Faol tarmoq topilmadi</translation>
 <translation id="4838825304062068169">muzlik</translation>
-<translation id="4839698083503556542">Oʻz filmingizni yarating</translation>
 <translation id="48409034532829769">Administrator <ph name="APP_NAME" /> ilovasini avtomatik ishga tushadigan qilib sozlagan. Bu ilova yopilmasligi mumkin.</translation>
 <translation id="484462545196658690">Avto</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> tanlangan, <ph name="TOPIC_SOURCE" /> albomini tanlash uchun Enter tugmasini bosing</translation>
@@ -789,7 +787,7 @@
 <translation id="6156030503438652198">toʻq qizil va pushti</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6184793017104303157">B4</translation>
-<translation id="6188737759358894319">Yaratildi: <ph name="DATE" /></translation>
+<translation id="6188737759358894319">Yaratilgan: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batareya sigʻimi ishlatilishi davomida kamayadi</translation>
 <translation id="6191293864534840972">Nom serverlarida xato</translation>
 <translation id="6196607555925437199">Qayta yaratish</translation>

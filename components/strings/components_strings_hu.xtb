@@ -2060,6 +2060,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4989809363548539747">Ez a beépülő modul nem támogatott</translation>
 <translation id="4990241977441916452">A2 boríték</translation>
 <translation id="4992066212339426712">Némítás feloldása</translation>
+<translation id="4994348767896109801">Az, hogy a megjelenő hirdetések személyre vannak-e szabva, több dolgon is múlhat, többek között ettől a beállítástól, a <ph name="BEGIN_LINK_1" />hirdetéstémáktól<ph name="END_LINK_1" />, a <ph name="BEGIN_LINK_2" />cookie-beállításaitól<ph name="END_LINK_2" /> és attól, hogy a felkeresett webhely személyre szabja-e a hirdetéseket. További információ a <ph name="BEGIN_LINK_3" />hirdetésekhez kapcsolódó adatvédelem kezeléséről<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Módosítva:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Site Search és az alapértelmezett keresőmotor kezeléséhez.</translation>
 <translation id="4998950033665438990">Egyoldalú</translation>
@@ -3401,6 +3402,7 @@ További részletek:
 <translation id="7600965453749440009">Soha ne fordítsa le a(z) <ph name="LANGUAGE" /> nyelvű szöveget</translation>
 <translation id="7601297359530599375">Ön általában biztonságosan csatlakozik ehhez a webhelyhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy egy támadó megpróbálja lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7605377493722372900">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók olyan kártékony szoftvereket telepítenek, amelyek ellopják vagy törlik például az Ön jelszavát, fotóit, üzeneteit vagy hitelkártyaszámát.</translation>
+<translation id="7608583484192556132">Az, hogy a megjelenő hirdetések személyre vannak-e szabva, több dolgon is múlhat, többek között ettől a beállítástól, a <ph name="BEGIN_LINK_1" />webhelyek által javasolt hirdetésektől<ph name="END_LINK_1" />, a <ph name="BEGIN_LINK_2" />cookie-beállításaitól<ph name="END_LINK_2" /> és attól, hogy a felkeresett webhely személyre szabja-e a hirdetéseket. További információ a <ph name="BEGIN_LINK_3" />hirdetésekhez kapcsolódó adatvédelem kezeléséről<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Az érték kívül esik a következő tartományon: <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Lejárat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a jelszavaknak a Chrome beállításaiban való megtekintéséhez és kezeléséhez</translation>
@@ -3675,6 +3677,7 @@ További részletek:
 <translation id="8118506371121007279">Visszajelzés</translation>
 <translation id="8127301229239896662">A(z) „<ph name="SOFTWARE_NAME" />” nem megfelelően lett telepítve a számítógépre vagy a hálózatra. A probléma elhárítása érdekében forduljon rendszergazdájához.</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
+<translation id="8133495915926741232">Kiválaszthatja, hogy milyen tágabb témakategóriák legyenek használhatók a hirdetések személyre szabásához. Egy adott tágabb kategória kikapcsolásával a hozzá kapcsolódó témákat is letiltja. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8134058435519644366">Toborzás és munkaerő-szervezés</translation>
 <translation id="8135546115396015134">bal billentyű</translation>
 <translation id="8137456439814903304">Energia és közművek</translation>
@@ -3683,6 +3686,7 @@ További részletek:
 <translation id="8150722005171944719">A fájl (<ph name="URL" />) nem olvasható. Lehet, hogy eltávolították, áthelyezték, vagy a fájlengedélyek megakadályozzák a hozzáférést.</translation>
 <translation id="8153865548451212769">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a letöltését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a letöltését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Jégkorong-felszerelés</translation>
+<translation id="815788908807586564">Csevegés a Gemini szolgáltatással</translation>
 <translation id="8161095570253161196">Böngészés folytatása</translation>
 <translation id="8163866351304776260">Négy lyuk a bal oldalon</translation>
 <translation id="8164078261547504572">Szeretne e-mailt kapni az árcsökkenésekről?</translation>
@@ -3886,6 +3890,7 @@ További részletek:
 <translation id="8528149813106025610">Gyermekruházat</translation>
 <translation id="8530813470445476232">A böngészési előzmények, a cookie-k, a gyorsítótár és egyebek törlése a Chrome-beállítások között</translation>
 <translation id="853246364274116957">Broadway és musicalszínház</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">A &lt;strong&gt;chrome://policy&lt;/strong&gt; oldalon láthatja a rendszergazda által letiltott URL-ek és a beállított egyéb kötelező irányelvek listáját.</translation>
 <translation id="8534934518812659742">Kikapcsolta a(z) <ph name="PERMISSION" /> engedélyt a Chrome-ban.</translation>
 <translation id="8536234749087605613">Boríték (ablakos)</translation>
@@ -3936,6 +3941,7 @@ További részletek:
 <translation id="8612919051706159390">Online közösségek</translation>
 <translation id="8617269623452051934">aktív eszközhasználat</translation>
 <translation id="861775596732816396">Méret: 4</translation>
+<translation id="8618975513789458065">A hirdetéstéma csupán egy azon számos dolog közül, amelyet a webhelyek a hirdetések személyre szabásához használhatnak. A webhelyek a hirdetéstémák nélkül is megjeleníthetnek Önnek hirdetéseket, de előfordulhat, hogy ezeket a hirdetéseket kevésbé találja majd érdekesnek.</translation>
 <translation id="8620276786115098679">Kaku 7 boríték</translation>
 <translation id="8623885649813806493">Nincs egyező jelszó. Az összes mentett jelszó megjelenítése.</translation>
 <translation id="8624354461147303341">Kérem a kedvezményeket</translation>

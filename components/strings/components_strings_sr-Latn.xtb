@@ -810,6 +810,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="250346157641628208">Papir (inkdžet)</translation>
 <translation id="2505268675989099013">Zaštiti nalog</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (važe uslovi)</translation>
 <translation id="2512101340618156538">Nije dozvoljeno (podrazumevano)</translation>
 <translation id="2512413427717747692">Dugme Podesi Chrome kao podrazumevani pregledač, pritisnite Enter da biste podesili Chrome kao podrazumevani pregledač sistema u podešavanjima iOS-a</translation>
 <translation id="2514548229949738417">Dom i bašta</translation>
@@ -1158,6 +1159,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3229277193950731405">Kopiraj string verzije</translation>
 <translation id="323107829343500871">Unesite CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Uvek otkrivaj važan sadržaj na ovom sajtu</translation>
+<translation id="3236212803136366317">Prednosti kartica</translation>
 <translation id="3238395604961564389">Otvori link u prozoru bez arhiviranja</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste prilagodili izgled pregledača</translation>
 <translation id="3240791268468473923">Otvoreno je obaveštenje da nema akreditiva koji se podudaraju za bezbedno plaćanje</translation>
@@ -1194,6 +1196,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="33073482541490531">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Menadžer lozinki preporučuje da odmah promenite ovu lozinku.</translation>
 <translation id="3307649904964670439">Dugme Prilagodi Chrome, aktivirajte ga da biste prilagodili izgled pregledača</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
+<translation id="3310047144791481950">Pregledajte informacije koje vam pomažu da izaberete karticu pomoću koje ćete plaćati. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saznajte više o prednostima kartica<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV komedije</translation>
 <translation id="3324687287337751929">4×6 in</translation>
 <translation id="3324983252691184275">Jarkocrvena</translation>

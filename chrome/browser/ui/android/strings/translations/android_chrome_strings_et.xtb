@@ -1088,7 +1088,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="670498945988402717">Kontrolliti eile</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="671481426037969117">Teie rakenduse <ph name="FQDN" /> taimeri aeg sai otsa. See alustab uuesti homme.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Järjehoidja on salvestatud kausta <ph name="FOLDER_NAME" />. See on salvestatud ainult sellesse seadmesse.}other{Järjehoidjad on salvestatud kausta <ph name="FOLDER_NAME" />. Need on salvestatud ainult sellesse seadmesse.}}</translation>
 <translation id="6715020873764921614">Kas soovite faili <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ikkagi alla laadida?</translation>
 <translation id="6719634564325948108">Kas ühendada QR-koodi kaudu?</translation>
 <translation id="6723740634201835758">Teie Google’i kontol</translation>
@@ -1417,7 +1416,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8237871086242677046">Lehe statistika alumine leht</translation>
 <translation id="8243077599929149377">Lisage oma kasutajanimi</translation>
 <translation id="8250920743982581267">Dokumendid</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Järjehoidja on salvestatud kausta <ph name="FOLDER_NAME" /> teie kontol <ph name="ACCOUNT_EMAIL" />.}other{Järjehoidjad on salvestatud kausta <ph name="FOLDER_NAME" /> teie kontol <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Saidid võivad teie küpsisefaile kasutada vaid selleks, et vaadata teie sirvimistegevust ainult samal saidil</translation>
 <translation id="8259179246279078674">Kuna eellaaditud lehed on krüpteeritud, ei saa Google eellaaditud lehe sisu kohta teavet. Google'i serverid saavad teada, millised saidid eellaaditakse privaatselt. Seda teavet kasutatakse ainult lehtede eellaadimiseks ja seda ei seostata teie Google'i kontol oleva muu teabega.</translation>
 <translation id="8260126382462817229">Proovige uuesti sisse logida</translation>

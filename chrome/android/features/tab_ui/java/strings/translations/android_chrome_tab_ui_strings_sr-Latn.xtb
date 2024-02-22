@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Opozovi grupisanje kartice}one{Opozovi grupisanje kartica}few{Opozovi grupisanje kartica}other{Opozovi grupisanje kartica}}</translation>
 <translation id="2277224997687551299">Izmenite ime grupe</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Obeleži karticu}one{Obeleži kartice}few{Obeleži kartice}other{Obeleži kartice}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Skupite grupu kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_ONE" /> karticom.}one{Skupite grupu kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Skupite grupu kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Skupite grupu kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skupite <ph name="TABS_COUNT_ONE" /> karticu.}one{Skupite grupu sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Skupite grupu sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Skupite grupu sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="2569352796411618312">Predlog: Imate više kartica (<ph name="NUMBER_OF_TABS" />) koje niste koristili u skorije vreme. Želite li da ih zatvorite?</translation>
 <translation id="2613747923081026172">Napravi grupu</translation>

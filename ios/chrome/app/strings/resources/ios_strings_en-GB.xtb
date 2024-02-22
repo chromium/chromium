@@ -570,6 +570,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3922310737605261887">Search for copied text</translation>
 <translation id="3928666092801078803">Combine my data</translation>
 <translation id="3929457972718048006">Addresses</translation>
+<translation id="3939505428630887612">About this page</translation>
 <translation id="3948600256434252210">You can swipe right to browse in Incognito.</translation>
 <translation id="3955822496205734389">You have weak passwords.</translation>
 <translation id="3958312024468322930">Drag it to the dock at the bottom of your Home screen</translation>
@@ -585,6 +586,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4002019827078931033">Move address bar to top</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="4004204301268239848">Passwords are saved in your Google Account so that you can use them on any device.</translation>
+<translation id="4008355329784586136">Check your default browser settings</translation>
 <translation id="4018310736049373830">Manage activity</translation>
 <translation id="4021931095789478915">Add ${url} to reading list</translation>
 <translation id="4038354071007134711">No application on this device can open the file.</translation>
@@ -633,6 +635,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4279431713294750185">You can swipe the edge to go forward.</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
+<translation id="4282944936010261425">There are no security issues for you to fix.</translation>
 <translation id="4286718549648564014">Address moved to your account <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">What's new</translation>
 <translation id="4293080268407233932">Search</translation>
@@ -699,6 +702,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4620246317052452550">Pages That You've Read</translation>
+<translation id="4620845369664293551">You can share this page here.</translation>
 <translation id="4620888520263267479">Show link previews</translation>
 <translation id="4630540211544979320">Translate pages</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> reused passwords</translation>
@@ -848,6 +852,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5339316356165661760">Turn on sync</translation>
 <translation id="5343472494710226394">News, sports and content based on your interests.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Track this parcel?}other{Track {COUNT} parcels?}}</translation>
+<translation id="5348775987281903912">You can share this page here from the share button.</translation>
 <translation id="536067926684072644">Show bookmarks</translation>
 <translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{{count} Bookmarks saved to ‘{title}’. They are saved only to this device.}}</translation>
@@ -1245,7 +1250,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="739101637685146669">What URL would you like to bookmark?</translation>
 <translation id="7396331865858820922">Password Was Not Shared</translation>
 <translation id="7398893703713203428">Create link</translation>
-<translation id="7399802613464275309">Safety Check</translation>
+<translation id="7399802613464275309">Safety check</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7402602673739047753">{count,plural, =1{1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}other{{count} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> unread articles.</translation>
@@ -1286,6 +1291,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7564917801238348224">SAVE…</translation>
+<translation id="7569588934989281656">You can swipe the tab strip to switch between tabs.</translation>
 <translation id="7582857256643797524">This setting is enabled on your device</translation>
 <translation id="7583004045319035904">Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> to unlock your incognito tabs.</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
@@ -1425,6 +1431,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8248969482078657578">Inactive Tabs helps you to stay focused</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8263336784344783289">Name This Group</translation>
+<translation id="8263809106706527890">There may have been a change to your default browser settings. You can check this in settings.</translation>
 <translation id="8264966119170358612">Some of your saved passwords were exposed in a non-Google data breach. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPad reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="8271720166617117963">Accept and sign in</translation>

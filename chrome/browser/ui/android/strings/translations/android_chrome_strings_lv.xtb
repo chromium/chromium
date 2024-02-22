@@ -276,6 +276,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> vienumi tika izdzēsti</translation>
 <translation id="2536728043171574184">Skata šīs lapas kopiju bezsaistē</translation>
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
+<translation id="254973855621628293">Paroles ir saglabātas šajā ierīcē</translation>
 <translation id="2567385386134582609">ATTĒLS</translation>
 <translation id="2567545343356994513">Ātrāka, aktīva aizsardzība pret bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="2569733278091928697">Varēsiet viegli pārvaldīt multivides vadīklas, inkognito sesijas, lejupielādes un daudz ko citu</translation>
@@ -1088,7 +1089,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="670498945988402717">Pārbaudīts: vakar</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="671481426037969117">Jūsu lietotnes <ph name="FQDN" /> taimera laiks ir beidzies. Tas atkal sāksies rīt.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Grāmatzīme tika saglabāta mapē “<ph name="FOLDER_NAME" />”. Tā ir saglabāta tikai šajā ierīcē.}zero{Grāmatzīmes tika saglabātas mapē “<ph name="FOLDER_NAME" />”. Tās ir saglabātas tikai šajā ierīcē.}one{Grāmatzīmes tika saglabātas mapē “<ph name="FOLDER_NAME" />”. Tās ir saglabātas tikai šajā ierīcē.}other{Grāmatzīmes tika saglabātas mapē “<ph name="FOLDER_NAME" />”. Tās ir saglabātas tikai šajā ierīcē.}}</translation>
 <translation id="6715020873764921614">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />” (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Vai izveidot savienojumu, izmantojot kvadrātkodu?</translation>
 <translation id="6723740634201835758">Google kontā</translation>
@@ -1288,6 +1288,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7665369617277396874">Pievienot kontu</translation>
 <translation id="766587987807204883">Šeit tiek rādīti raksti, kurus varat lasīt arī bezsaistē</translation>
+<translation id="7670101447063278728">Paroles ir saglabātas kontā <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Ņemiet vērā šos ieteikumus: atbrīvojiet ierīcē vietu un mēģiniet eksportēt vēlreiz.</translation>
 <translation id="7686086654630106285">Vairāk par vietnēs ieteiktajām reklāmām</translation>
 <translation id="768618399695552958">Dažas no jūsu apmeklētajām lapām ir ielādētas iepriekš. Lapas var tikt ielādētas iepriekš, izmantojot Google serverus, ja novirzīšana tiek veikta no Google vietnes.</translation>
@@ -1417,7 +1418,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8237871086242677046">Lapas ieskatu ekrāna apakšdaļas lapa</translation>
 <translation id="8243077599929149377">Lietotājvārda pievienošana</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Grāmatzīme tika saglabāta jūsu kontā <ph name="ACCOUNT_EMAIL" /> mapē “<ph name="FOLDER_NAME" />”.}zero{Grāmatzīmes tika saglabātas jūsu kontā <ph name="ACCOUNT_EMAIL" /> mapē “<ph name="FOLDER_NAME" />”.}one{Grāmatzīmes tika saglabātas jūsu kontā <ph name="ACCOUNT_EMAIL" /> mapē “<ph name="FOLDER_NAME" />”.}other{Grāmatzīmes tika saglabātas jūsu kontā <ph name="ACCOUNT_EMAIL" /> mapē “<ph name="FOLDER_NAME" />”.}}</translation>
 <translation id="8255617931166444521">Vietnes var izmantot jūsu sīkfailus tikai jūsu pārlūkošanas darbību skatīšanai savā vietnē.</translation>
 <translation id="8259179246279078674">Tā kā iepriekš ielādētās lapas ir šifrētas, Google neiegūs nekādu informāciju par iepriekš ielādēto lapu saturu. Google serveri iegūs informāciju par to, kuras vietnes ir privāti iepriekš ielādētas. Šī informācija tiek izmantota tikai lapu iepriekšējai ielādei, un tā nav saistīta ar citu informāciju no Google konta.</translation>
 <translation id="8260126382462817229">Mēģiniet pierakstīties vēlreiz</translation>

@@ -276,6 +276,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />개 항목 삭제함</translation>
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
+<translation id="254973855621628293">비밀번호가 이 기기에 저장됨</translation>
 <translation id="2567385386134582609">이미지</translation>
 <translation id="2567545343356994513">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다.</translation>
 <translation id="2569733278091928697">미디어 제어, 시크릿 세션, 다운로드 등을 간편하게 관리할 수 있습니다.</translation>
@@ -1088,7 +1089,6 @@
 <translation id="670498945988402717">어제 확인됨</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> 타이머가 종료되었습니다. 타이머는 내일 다시 시작됩니다.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{<ph name="FOLDER_NAME" />에 북마크가 저장되었습니다. 북마크가 이 기기에만 저장됩니다.}other{<ph name="FOLDER_NAME" />에 북마크가 저장되었습니다. 북마크가 이 기기에만 저장됩니다.}}</translation>
 <translation id="6715020873764921614">그래도 <ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다운로드하시겠습니까?</translation>
 <translation id="6719634564325948108">QR 코드로 연결하시겠습니까?</translation>
 <translation id="6723740634201835758">내 Google 계정에서</translation>
@@ -1288,6 +1288,7 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="766587987807204883">기사가 여기 표시되며 오프라인 상태에서도 읽을 수 있습니다.</translation>
+<translation id="7670101447063278728">비밀번호가 <ph name="USERNAME" />에 저장됨</translation>
 <translation id="7682724950699840886">다음 방법을 시도해 보세요. 기기 저장용량이 충분한지 확인하고 다시 내보내 봅니다.</translation>
 <translation id="7686086654630106285">사이트 추천 광고에 관해 자세히 알아보기</translation>
 <translation id="768618399695552958">방문한 페이지 중 일부가 미리 로드되었습니다. Google 사이트에서 페이지에 연결하는 경우 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
@@ -1417,7 +1418,6 @@
 <translation id="8237871086242677046">페이지 통계 하단 시트</translation>
 <translation id="8243077599929149377">사용자 이름 추가</translation>
 <translation id="8250920743982581267">문서</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{계정(<ph name="ACCOUNT_EMAIL" />)의 <ph name="FOLDER_NAME" />에 북마크가 저장되었습니다.}other{계정(<ph name="ACCOUNT_EMAIL" />)의 <ph name="FOLDER_NAME" />에 북마크가 저장되었습니다.}}</translation>
 <translation id="8255617931166444521">사이트에서 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8259179246279078674">미리 로드된 페이지는 암호화되어 있으므로 Google에서는 미리 로드된 페이지의 콘텐츠에 관해 어떠한 정보도 알 수 없습니다. Google 서버는 어떤 사이트가 비공개로 미리 로드되었는지 파악하게 됩니다. 이 정보는 페이지를 미리 로드하는 데에만 사용되며, Google 계정의 다른 정보와 연결되지 않습니다.</translation>
 <translation id="8260126382462817229">다시 로그인해 주세요.</translation>
@@ -1461,6 +1461,7 @@
 <translation id="8460448946170646641">주요 개인 정보 보호 및 보안 제어 기능 검토</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" />이(가) 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
+<translation id="8478751349603791277">동기화된 기록을 사용하여 다른 Google 서비스를 맞춤설정하는 방식을 관리하세요.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">방문 기록 페이지 열기</translation>
 <translation id="8493948351860045254">저장 공간 확보하기</translation>

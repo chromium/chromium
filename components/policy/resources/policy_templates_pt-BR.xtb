@@ -633,6 +633,14 @@ Se a política for ativada, o seletor de emojis vai oferecer suporte para emojis
 Se a política for desativada ou deixada sem definição, o seletor de emojis não vai oferecer suporte para emojis de GIF.
 Se esta política não for definida, o seletor de emojis será ativado para usuários normais, mas desativado para usuários gerenciados.</translation>
 <translation id="1494138678487405397">Desativar o alto contraste na tela de login</translation>
+<translation id="1497797462580613666">O gerenciador de downloads terá a opção de salvar arquivos no <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="1498640472634891941">Se a política for definida, você poderá listar os padrões de URL que especificam quais sites têm acesso negado automaticamente a impressoras locais pela API WebPrinting.
+
+Se a política não tiver definição, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
+
+Os padrões de URL não podem entrar em conflito com <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
+
+Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="1499129134689253257">Controlar o novo comportamento de <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Usar logins on-line apenas na tela de login</translation>
 <translation id="1502843533062797703">Ativar bloqueio de injeção de software de terceiros</translation>
@@ -1472,6 +1480,7 @@ atualizados para HTTPS por esse recurso.</translation>
 <translation id="2144236546337326489">Permitir que a continuação da tarefa do recurso "Seu smartphone" seja ativada</translation>
 <translation id="2145735238144543545">Certificados do cliente obrigatórios</translation>
 <translation id="2146103669166779785">Cor hexadecimal que será usada para gerar e aplicar um tema ao navegador.</translation>
+<translation id="2148733583160916305">Permitir a API WebPrinting nesses sites</translation>
 <translation id="2148769554831004951">Forçar a ativação do WebSQL.</translation>
 <translation id="214901426630414675">Restringir o modo duplex de impressão</translation>
 <translation id="2149330464730004005">Ativar a impressão colorida</translation>
@@ -2102,6 +2111,7 @@ OBSERVAÇÃO: essa política tinha documentado incorretamente o padrão como "ve
       Se a política for definida como "Somente usuário" (valor 1), os usuários poderão gerenciar os próprios certificados, mas não os do dispositivo.</translation>
 <translation id="2593762551209145088">O "Navegação segura" nunca está ativado.</translation>
 <translation id="26023406105317310">Configurar contas do Kerberos</translation>
+<translation id="2603237557651009842">Bloquear a API WebPrinting nestes sites</translation>
 <translation id="2603382859270873566">Ativar suporte para a API PPB_VideoDecoder(Dev).</translation>
 <translation id="2604182581880595781">Configurar políticas relacionadas ao Compartilhamento de arquivos de rede.</translation>
 <translation id="2608039968712973520">Pedir permissão ao usuário para executar o <ph name="FLASH_PLUGIN_NAME" /> desatualizado</translation>
@@ -3039,6 +3049,7 @@ Se a política for definida como falsa, o acesso root aos contêineres do Crosti
       Acesse https://support.google.com/chrome/a?p=Supported_directory_variables para ver uma lista das variáveis que podem ser usadas.
 
       Se esta política for deixada sem definição, o caminho padrão do perfil será usado, e o usuário poderá substituí-lo pela flag de linha de comando "--user-data-dir".</translation>
+<translation id="3379326579027180941">Permitir que os sites peçam que o usuário conceda acesso a impressoras locais pela API WebPrinting</translation>
 <translation id="3379368498958498146">Ativar ou desativar o recurso de escrita preditiva no teclado físico.
 
 Se esta política for ativada ou deixada sem definição, o recurso de escrita preditiva será ativado no teclado físico.
@@ -3629,6 +3640,7 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="3838094946886335701">Se a política for definida (apenas como recomendado), será possível registrar uma lista de gerenciadores de protocolo, que será mesclada às registradas pelo usuário de forma que as duas configurações sejam aplicadas. Defina a propriedade "protocolo" conforme o esquema, por exemplo, "mailto", e defina a propriedade "URL" conforme o padrão de URL do aplicativo que gerencia o esquema especificado no campo "protocolo". O padrão pode incluir um marcador "%s", que é substituído pelo URL gerenciado.
 
       Os usuários não podem remover um gerenciador de protocolo registrado pela política. No entanto, ao instalar um novo gerenciador padrão, eles podem mudar os gerenciadores de protocolo instalados pela política.</translation>
+<translation id="3842619997238271109">Não permite que o host de acesso remoto use autenticações com PIN e pareamento ao aceitar conexões de clientes</translation>
 <translation id="3851443303439635700">Controla o limite de aninhamento antes que a função setTimeout() do JavaScript comece a ser ajustada.</translation>
 <translation id="3858658082795336534">Modo duplex de impressão padrão</translation>
 <translation id="3859780406608282662">Adicionar um parâmetro para a busca do termo-semente "Variações" no <ph name="PRODUCT_OS_NAME" />.
@@ -3780,6 +3792,13 @@ Essa política é temporária e será removida.</translation>
       Se a política for definida como "Desativada" ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o dispositivo.</translation>
 <translation id="3973371701361892765">Nunca ocultar automaticamente a estante</translation>
 <translation id="3977304360459208438">Usar a configuração padrão para pacotes de criptografia 3DES em TLS</translation>
+<translation id="3977906634350977040">Se a política for ativada, o host de acesso remoto poderá usar autenticações com PIN e pareamento ao aceitar conexões de clientes.
+
+Se for desativada, as autenticações com PIN ou pareamento não serão permitidas.
+
+Se for deixada sem definição, o host poderá decidir se autenticações com PIN e/ou pareamento podem ser usadas.
+
+Observação: se a configuração resultar em métodos de autenticação aceitos tanto pelo host quanto pelo cliente, a conexão será recusada.</translation>
 <translation id="3979738908158213640">URLs que terão acesso para realizar o atestado do dispositivo durante a autenticação SAML</translation>
 <translation id="3982322576186033243">Não permitir hashes não seguros em handshakes do TLS</translation>
 <translation id="3982465141749620677">Pedir a reautenticação em uma guia</translation>
@@ -4411,7 +4430,6 @@ Se a política for definida como:
  * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />, a detecção automática de fuso horário ficará ativada, enviando continuamente informações de localização (como pontos de acesso Wi-Fi, torres de celular próximas e GPS) a um servidor para uma detecção de fuso horário mais precisa.
 
 Se a política não for definida, especifique a opção "Deixar os usuários decidirem" ou defina como "Nenhuma". Assim, os usuários controlarão a detecção automática de fuso horário usando os controles normais em chrome://settings.</translation>
-<translation id="4476769083125004742">Se esta política for definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, os apps Android não poderão acessar as informações de local. Se você configurar essa política para qualquer outro valor ou deixá-la sem definição, será solicitado o consentimento do usuário quando um app Android quiser acessar as informações de local.</translation>
 <translation id="4478248026668918517">Detecção do escopo da política de bloqueio.</translation>
 <translation id="4479671363221255277">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que os usuários concedam permissão de leitura de arquivos ou diretórios no sistema de arquivos do sistema operacional do host com a API File System.
 
@@ -4686,11 +4704,6 @@ A transferência de dados de navegação para o perfil gerenciado significa que 
 Não transferir os dados de navegação para o perfil gerenciado significa que um novo perfil limpo será criado. Os dados de navegação vão permanecer em um perfil não gerenciado, que ainda poderá ser acessado pelo usuário no seletor de perfis.</translation>
 <translation id="4668325077104657568">Configuração de imagens padrão</translation>
 <translation id="4669083178278833688">Definir a câmera, configurações do navegador, configurações do SO, digitalização, loja on-line, tela, análise, Crosh, galeria e recursos do terminal a serem desativados</translation>
-<translation id="4669292863736266737">A não ser que a política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> seja definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, a definição de <ph name="GLS_ENABLED" /> vai ativar os Serviços de localização do Google durante a configuração inicial. Se a política for definida como <ph name="GLS_DISABLED" /> ou não for definida, os Serviços de localização vão continuar desativados durante a configuração.
-
-Se a política for definida como <ph name="BR_UNDER_USER_CONTROL" />, os usuários vão receber solicitações para escolher usar ou não os Serviços de localização do Google. Caso os serviços sejam ativados, apps para Android vão usá-los para procurar a localização do dispositivo e enviar dados de local anônimos ao Google.
-
-Após a configuração inicial, os usuários poderão ativar ou desativar os Serviços de localização do Google.</translation>
 <translation id="4670865688564083639">Mínimo:</translation>
 <translation id="467236746355332046">Recursos compatíveis:</translation>
 <translation id="4672774129073185053">Ativar a substituição da verificação de acessibilidade do IPv6</translation>
@@ -4771,6 +4784,7 @@ Esta política mapeia um ID de extensão ou um URL de atualização apenas para 
 Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, associada ao <ph name="MS_AAD_NAME" /> ou estiver registrada em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for gerenciada por MDM, associada a um domínio via MCX ou registrada em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4739596156184678950">Permitir que arquivos sejam salvos diretamente no <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Restringir modo de impressão de gráficos de segundo plano</translation>
 <translation id="4744467872051608680">Na versão M119, se a política for definida como falsa ou deixada sem definição, o WebSQL será desativado, mas poderá ser ativado com a sinalização do Chrome "web-sql-access". Se ela for definida como verdadeira, o acesso ao WebSQL será ativado.</translation>
 <translation id="4745232963710538589">Ativar extensão de insights para relatar métricas de uso</translation>
@@ -5424,6 +5438,7 @@ Se a política for desativada, o histórico de navegação e o de downloads não
 <translation id="5330684698007383292">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo a seguir</translation>
 <translation id="5331342092479819688">Permitir hashes não seguros em handshakes do TLS</translation>
 <translation id="5331746669335642668">A política de nuvem do <ph name="PRODUCT_NAME" /> substitui a política da plataforma.</translation>
+<translation id="5334404204520035180">Controlar o uso da API WebPrinting</translation>
 <translation id="5334501839642146593">Nunca enviar métricas ao Google</translation>
 <translation id="5335910979215357815">Ativar a API Save and Share para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros.</translation>
 <translation id="5339096331970464266">Ativar o teclado virtual de acessibilidade</translation>
@@ -5636,6 +5651,9 @@ Se a política for desativada ou deixada sem definição, as configurações de 
       Se a configuração estiver desativada, os usuários não vão ter permissão para usar o recurso. Se a política PhoneHubAllowed estiver desativada, os usuários também não terão permissão para usar o recurso.
 
       Se a política for deixada sem definição, o padrão será permitido tanto para usuários gerenciados por empresas quanto para os não gerenciados.</translation>
+<translation id="5488268615614906498">Esta política controla se o usuário tem permissão para salvar arquivos no <ph name="GOOGLE_DRIVE_NAME" /> diretamente pelo gerenciador de downloads.
+Se a política for ativada ou deixada sem definição, o usuário poderá usar o gerenciador de downloads para salvar arquivos no <ph name="GOOGLE_DRIVE_NAME" />. Se for desativada, a opção não vai aparecer no gerenciador de downloads.
+Esta política não impede que os usuários salvem arquivos no <ph name="GOOGLE_DRIVE_NAME" /> de maneiras que não sejam pelo gerenciador de downloads.</translation>
 <translation id="5494322570831642650">Especifica se o usuário pode abrir páginas no modo de navegação anônima no <ph name="PRODUCT_NAME" />.
 
       Se a política for definida como "Enabled" ou deixada sem definição, as páginas poderão ser abertas no modo de navegação anônima.
@@ -5905,6 +5923,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será 
 
       Observação: separe vários valores usando vírgulas.</translation>
 <translation id="5693469654327063861">Permitir migração de dados</translation>
+<translation id="56936613186060503">O gerenciador de downloads não terá a opção de salvar arquivos no <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5695209488612697377">Ativa o uso de um provedor de pesquisa padrão no menu de contexto.
 
           Se esta política for definida como desativada, o item do menu de contexto da pesquisa que depende do provedor de pesquisa padrão não estará disponível.
@@ -6344,6 +6363,7 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Forçar o usuário a fazer login para usar o navegador</translation>
 <translation id="6092073071805297119">Permitir o uso da filtragem de desempenho de acessibilidade.</translation>
+<translation id="60925735895026302">Não permitir que os sites peçam acesso a impressoras locais pela API WebPrinting</translation>
 <translation id="6093156968240188330">Permitir que usuários remotos interajam com janelas elevadas em sessões de assistência remota</translation>
 <translation id="6094314311474620462">Desativar a impressão</translation>
 <translation id="6097601282776163274">Ativar a coleta de dados anônimos inseridos no URL</translation>
@@ -6977,6 +6997,22 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="6513453889192806240">Latência de HTTPS</translation>
 <translation id="6515357889978918016">Imagem de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Esperar que o canal conclua o downgrade de canal</translation>
+<translation id="6518894783486860562">Por motivos de segurança, as APIs da Web
+<ph name="SHOW_SUBAPPS_APP_API_NAME" />,
+<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> e
+<ph name="SHOW_SUBAPPS_LIST_API_NAME" /> exigem que um gesto anterior do usuário ("ativação temporária") seja chamado. Caso contrário, vai haver
+uma falha. Além disso, será pedido que o usuário confirme a
+operação em uma caixa de diálogo.
+
+Com esse conjunto de políticas, os administradores conseguem especificar origens em que essas APIs podem ser
+chamadas sem o gesto anterior do usuário e sem pedir confirmação do usuário.
+
+Para informações detalhadas sobre padrões de URL válidos, consulte
+https://chromeenterprise.google/intl/pt_br/policies/url-patterns/. O valor *
+não é aceito para esta política.
+
+Se a política for deixada sem definição, todas as origens vão exigir um gesto anterior do usuário para chamar
+essas APIs e apresentar uma caixa de diálogo de confirmação ao usuário.</translation>
 <translation id="6520053715392444458">Se esta política for ativada ou não for definida, o <ph name="PRODUCT_NAME" /> poderá enviar downloads suspeitos de usuários com o recurso Navegação segura ao Google para verificar se há malware ou solicitar que os usuários forneçam uma senha para arquivos criptografados.
 Se a política for desativada, a verificação não será realizada.
 Ela não afeta a análise de downloads configurada pelo Chrome Enterprise Connectors.</translation>
@@ -7215,6 +7251,7 @@ Se esta política for definida como falsa, o encaminhamento de portas em contêi
 
       Observação: ainda que a política possa aceitar vários itens em <ph name="ENTRIES_FIELD_NAME" />, todos eles serão ignorados, com exceção do primeiro.
       Aviso: a configuração dessa política pode atrasar as atualizações de software.</translation>
+<translation id="6695441448686167614">Configurações da impressão na Web</translation>
 <translation id="6698632841807204978">Ativar impressão monocromática</translation>
 <translation id="6699740789657890714">Especifica se os sites têm permissão para fazer solicitações para endpoints de rede mais particulares de forma não segura</translation>
 <translation id="6699880231565102694">Ativar autenticação de dois fatores para hosts de acesso remoto</translation>
@@ -7295,6 +7332,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 
       Se esta política for definida como falsa ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o usuário.
       Se for definida como verdadeira, o <ph name="PLUGIN_VM_NAME" /> será ativado para o usuário desde que permitido por outras configurações. É necessário definir <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> como verdadeiras, e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> ou <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> precisam ser definidas para que <ph name="PLUGIN_VM_NAME" /> possa ser executado.</translation>
+<translation id="6749641778238480311">Permitir que APIs de subApps sejam chamadas sem o gesto anterior do usuário e sem a necessidade de confirmação dele.</translation>
 <translation id="6750902920405577210">Lista de dados de telemetria a serem informados em eventos de mudança da intensidade do sinal.
 
       Os dados de telemetria especificados só vão ser informados se não tiverem sido desativados pela política de controle.
@@ -7441,6 +7479,11 @@ Se ela for definida como "false" ou deixada sem definição, o layout não ficar
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imagens compartilhadas para decodificar vídeos.</translation>
 <translation id="6878757724611298427">Permite que os usuários usem apps Android em dispositivos não afiliados</translation>
+<translation id="6881397131210596522">Se a política for definida como 2, os sites não poderão usar a API WebPrinting automaticamente.
+
+Se a política for definida como 3, o usuário vai receber um pedido quando um site quiser usar a API WebPrinting.
+
+Se a política não for definida, os sites vão poder pedir acesso à impressora local, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="6881447940489194100">Hash SHA-256 dos dados codificado em hexadecimal.</translation>
 <translation id="68818134518270542">A definição da política especifica os apps que os usuários podem ativar para fazer anotações na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
 
@@ -9440,6 +9483,7 @@ Não há suporte à reversão para o <ph name="PRODUCT_OS_NAME" /> 106 ou versã
       Aviso: não recomendamos configurar as restrições de versão, já que elas podem impedir atualizações de software e correções de segurança importantes. Restringir as atualizações para uma versão específica pode colocar os usuários em risco.</translation>
 <translation id="8519617069657262768">Ativar sincronização do Google Drive</translation>
 <translation id="8520064498689833152">Forçar o uso do SafeSearch na Pesquisa Google e o Modo restrito do YouTube pelo menos no nível moderado</translation>
+<translation id="8520950040439618600">Permitir métodos de autenticação com PIN e pareamento para hosts de acesso remoto</translation>
 <translation id="8524334245528364388">URL para um arquivo JSON com uma lista de servidores de impressão.</translation>
 <translation id="8525526490824335042">Contêiner Linux</translation>
 <translation id="8526745614158856826">Se a política for definida, você vai poder listar sites com permissão automática para acessar todos os dispositivos disponíveis.
@@ -9468,6 +9512,7 @@ Não há suporte à reversão para o <ph name="PRODUCT_OS_NAME" /> 106 ou versã
 <translation id="8544375438507658205">Renderizador padrão de HTML para o <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite a sincronização de mensagens SMS do smartphone com o Chromebook.</translation>
 <translation id="8549906780629620346">Ativar a recuperação de conta</translation>
+<translation id="8553491595730354263">Permite que o host de acesso remoto use autenticações com PIN e pareamento ao aceitar conexões de clientes</translation>
 <translation id="8553955290407912156">Se a política for definida, é possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso ao dispositivo HID.
 
       Se esta política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> vai ser aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários vão ser aplicadas.
@@ -9769,6 +9814,13 @@ por padrão a partir da versão M119.
 <translation id="8789338675663014675">Configura políticas relacionadas a extensões. O usuário não tem permissão para instalar extensões bloqueadas, a menos que tenham sido colocadas na lista de permissões. Você também pode forçar o <ph name="PRODUCT_NAME" /> a instalar extensões automaticamente especificando-as na <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Extensões de instalação forçada são instaladas independentemente de estarem ou não na lista de bloqueio.</translation>
 <translation id="879697755145469671">Não detectar janelas cobertas</translation>
 <translation id="8798099450830957504">Padrão</translation>
+<translation id="879863472982972634">Se a política for definida, você poderá listar os padrões de URL que especificam quais sites recebem acesso automático às impressoras locais pela API WebPrinting.
+
+Se a política não tiver definição, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
+
+Os padrões de URL não podem entrar em conflito com <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
+
+Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="8799492680917278474">Se esta política for definida, as conexões de acesso remoto serão encerradas automaticamente quando o número de minutos definido na política for excedido. Isso não impede que o cliente se reconecte após a duração máxima da sessão ter sido alcançada. Se a política for definida com um valor que não está no intervalo mínimo/máximo, o host poderá não ser iniciado. Esta política não afeta situações de suporte remoto.
 
           Esta política não terá efeito se não for definida. Nesse caso, as conexões de acesso remoto não terão uma duração máxima nesta máquina.</translation>

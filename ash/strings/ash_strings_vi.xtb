@@ -18,6 +18,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1056775291175587022">Không có mạng</translation>
 <translation id="1056898198331236512">Cảnh báo</translation>
 <translation id="1058009965971887428">Báo cáo phản hồi</translation>
+<translation id="1059120031266247284">Được chia sẻ với bạn</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Thay thế</translation>
 <translation id="1073899992769346247">Hãy thay hoặc sạc lại pin</translation>
@@ -627,6 +628,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3580650856351781466">Đang tải các tệp mã chuyển lời nói thành văn bản xuống</translation>
 <translation id="3585296979871889131">Xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Nút bên</translation>
 <translation id="3593039967545720377">Truy cập vào nhật ký lưu dữ liệu vào bảng nhớ tạm bằng cách nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem bảng nhớ tạm của bạn. Hãy sao chép một mục để bắt đầu.</translation>
 <translation id="3593646411856133110">Vuốt lên và giữ để xem các ứng dụng đang mở</translation>
@@ -643,6 +645,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3621202678540785336">Thiết bị vào</translation>
 <translation id="3621712662352432595">Cài đặt âm thanh</translation>
 <translation id="3626281679859535460">Độ sáng</translation>
+<translation id="3628323833346754646">Nút phía trước</translation>
 <translation id="3630697955794050612">đang tắt</translation>
 <translation id="3631369015426612114">Cho phép thông báo từ các nguồn sau</translation>
 <translation id="3633097874324966332">Mở phần cài đặt Bluetooth để ghép nối thiết bị</translation>
@@ -1284,6 +1287,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="6052614013050385269">Nhấp chuột phải vào một liên kết</translation>
 <translation id="6054305421211936131">Đăng nhập bằng thẻ thông minh</translation>
 <translation id="6059276912018042191">Các thẻ Chrome mở gần đây</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Bạn sẽ tự động được đăng xuất sau <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Đã dùng xong tệp này</translation>
 <translation id="6068258534237496331">Các tuỳ chọn điều khiển cuộc gọi video</translation>
@@ -1345,6 +1349,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="6309219492973062892">Nhấp hoặc nhấn vào các biểu tượng từ 1 – 8 trên kệ</translation>
 <translation id="6315170314923504164">Thoại</translation>
 <translation id="6319058840130157106">Di chuyển lùi giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>
+<translation id="6319503618073410818">Xem thông tin chi tiết trong trình duyệt</translation>
 <translation id="6324916366299863871">Chỉnh sửa phím tắt</translation>
 <translation id="6330012934079202188">Đang hiển thị các cửa sổ của mọi không gian làm việc, hãy nhấn phím Mũi tên lên để hiển thị các cửa sổ của không gian làm việc hiện tại</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> là phiên do <ph name="MANAGER" /> quản lý</translation>
@@ -1565,6 +1570,7 @@ Mới cài đặt</translation>
 <translation id="7229029500464092426">Bộ nhớ còn <ph name="AVAILABLE_MEMORY" /> | Tổng <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Còn <ph name="PERCENTAGE" />% pin. Hãy sạc thiết bị.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Cần khởi động lại Chromebook này để áp dụng bản cập nhật. Quá trình này có thể mất tối đa 1 phút.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Micrô mặt sau</translation>
 <translation id="7258828758145722155">Chỉnh sửa hôm qua</translation>
 <translation id="726276584504105859">Kéo vào đây để sử dụng chế độ chia đôi màn hình</translation>
@@ -1692,6 +1698,7 @@ Mới cài đặt</translation>
 <translation id="7742327441377685481">Không có thông báo</translation>
 <translation id="7748275671948949022">Đánh dấu nút Trình chạy trên kệ</translation>
 <translation id="7749443890790263709">Đã đạt đến số lượng không gian làm việc tối đa.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Nhấp để xem chi tiết cập nhật</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
 <translation id="7769299611924763557">Ảnh GIF của bạn sẽ sớm sẵn sàng</translation>
@@ -2019,6 +2026,7 @@ Mới cài đặt</translation>
 <translation id="9098969848082897657">Tắt tiếng điện thoại</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> hoặc <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Huỷ thao tác thực hiện gần đây nhất</translation>
+<translation id="9129245940793250979">Nút phía sau</translation>
 <translation id="9133335900048457298">Không thể ghi nội dung được bảo vệ</translation>
 <translation id="9139720510312328767">Xoá chữ cái tiếp theo</translation>
 <translation id="9151906066336345901">end</translation>

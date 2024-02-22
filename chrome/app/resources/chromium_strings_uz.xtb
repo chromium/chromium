@@ -111,6 +111,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="3032706164202344641">Chromium parollaringizni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="3032787606318309379">Chromium‘ga o‘rnatilmoqda...</translation>
 <translation id="3038232873781883849">Oʻrnatish kutilmoqda…</translation>
+<translation id="3068187312562070417">Boshqa Chromium profillari</translation>
 <translation id="3068515742935458733">Google‘ga ishdan chiqishlar hisoboti va <ph name="UMA_LINK" />‘ni jo‘natib Chromium yaxshilanishiga yordam berish.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 ta USB qurilma kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}=1{1 ta USB qurilma kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}other{# ta USB qurilma kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}}</translation>
 <translation id="3101560983689755071">Ochgan saytlaringiz tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chromium har oyda qiziqishlaringizni avtomatik oʻchiradi. Qiziqishlar ularni olib tashlamaguningizga qadar yangilanishi mumkin.</translation>
@@ -226,6 +227,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5294316920224716406">Inkognito rejimida ishlayotganingizda, xavfsiz ulanishli saytga kirganingizda Chromium sizni ogohlantiradi.</translation>
 <translation id="5296845517486664001">Sinov muddatlari yoqilganida Chromium sizni tasodifiy faol sinovga joylaganda siz ochgan sahifalar tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chromium har oyda qiziqishlaringizni avtomatik oʻchiradi.</translation>
 <translation id="5352264705793813212">Sizda Chromium bilan ishlashda xavfsizlikka oid bir nechta tavsiya bor</translation>
+<translation id="5352361688875342522">Boshqa Chromium profillari</translation>
 <translation id="5358375970380395591">Siz boshqaruvdagi hisobga kiryapsiz va uning administratoriga Chromium profilingizni boshqarishga ruxsat beryapsiz. Ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi barcha Chromium ma’lumotlaringiz <ph name="USER_NAME" /> hisobiga biriktiriladi. Siz bu ma’lumotlarni Google hisoblar shaxsiy kabinetidan o‘chirishingiz mumkin, lekin bu ma’lumotlarni boshqa hisob bilan bog‘lay olmaysiz. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Qoʻshimcha kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Chromium ayrim fayllarni nega bloklashi haqida</translation>

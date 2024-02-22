@@ -702,6 +702,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4620246317052452550">Mga Page na Nabasa Mo Na</translation>
+<translation id="4620845369664293551">Puwede mong i-share ang page na ito rito.</translation>
 <translation id="4620888520263267479">Ipakita ang Mga Preview ng Link</translation>
 <translation id="4630540211544979320">I-translate ang Mga Page</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> (na) password na ginamit ulit</translation>
@@ -851,6 +852,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5339316356165661760">I-on ang Pag-sync</translation>
 <translation id="5343472494710226394">Balita, sports, at content batay sa iyong mga interes.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Subaybayan ang Package na Ito?}one{Subaybayan ang {COUNT} Package?}other{Subaybayan ang {COUNT} na Package?}}</translation>
+<translation id="5348775987281903912">Puwede mong i-share ang page na ito rito mula sa button na i-share.</translation>
 <translation id="536067926684072644">Ipakita ang Mga Bookmark</translation>
 <translation id="5360976571138293719">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pangongolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Na-save ang bookmark sa "{title}." Naka-save lang ito sa device na ito.}one{{count} Bookmark ang na-save sa "{title}." Naka-save lang ang mga ito sa device na ito.}other{{count} na Bookmark ang na-save sa "{title}." Naka-save lang ang mga ito sa device na ito.}}</translation>
@@ -1584,6 +1586,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="9008201768610948239">Balewalain</translation>
 <translation id="9012585441087414258">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kung may kahina-hinalang ginagawa ang isang page, ipinapadala sa Ligtas na Pag-browse sa Google ang mga URL at bit ng content ng page.</translation>
+<translation id="9025203546212508704">Mag-swipe para matutunan kung paano i-customize ang iyong menu</translation>
 <translation id="9029650858822697271">Na-sign out ka</translation>
 <translation id="9034759925968272072">Hindi ka masa-sign out sa iyong Google Account. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Ipakita Ang Orihinal</translation>

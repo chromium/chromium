@@ -15,6 +15,7 @@
 <translation id="1423007117030725713">Yeni bir Chromium sekmesinde arama başlatır.</translation>
 <translation id="1431818719585918472">Chromium'un Gizli sekmelerinizi kapatmasına izin verin.</translation>
 <translation id="1472013873724362412">Hesabınız Chromium'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
+<translation id="1503199973012840174">Chromium'unuz güncel değil. Güvenliğiniz için güncelleyin.</translation>
 <translation id="1507010443238049608">Chromium'un Özelliklerini ve Performansını İyileştirmeye Yardımcı Olun</translation>
 <translation id="1513122820609681462">Chromium'u varsayılan tarayıcı olarak ayarla</translation>
 <translation id="1531155317299575425">Chromium'da oturum açmak için istekleri gösterir.</translation>
@@ -50,6 +51,7 @@
 <translation id="22313767259766852">Bu adres şu anda Chromum'da kayıtlıdır. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedin.</translation>
 <translation id="2236584955986023187">Bu durumda Chromium her seferinde masaüstü siteyi ister.</translation>
 <translation id="2313870531055795960">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
+<translation id="231828342043114302">İlgi alanlarınıza dayalı kişiselleştirilmiş içerikler görmek için Chromium'da oturum açın.</translation>
 <translation id="2374627437126809292">Chromium, algılanan adreslerle ilgili yol tarifleri ve yerel bilgiler sağlamak için Google Haritalar'ı kullanır.</translation>
 <translation id="2386292341327187942">Arama widget'ları kutusuna Chromium yazın.</translation>
 <translation id="2426113998523353159">Kuruluşunuz, Chromium'u kullanmak için oturum açmanızı zorunlu tutuyor.</translation>

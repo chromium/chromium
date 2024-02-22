@@ -1089,7 +1089,6 @@
 <translation id="670498945988402717">گزشتہ کل چیک کیا گیا</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="671481426037969117">آپ کا <ph name="FQDN" /> ٹائمر بند ہو گیا ہے۔ یہ کل دوبارہ شروع ہو جائے گا۔</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{بُک مارک کو <ph name="FOLDER_NAME" /> میں محفوظ کیا گیا۔ یہ صرف اس آلہ میں محفوظ ہے۔}other{بُک مارکس کو <ph name="FOLDER_NAME" /> میں محفوظ کیا گیا۔ یہ صرف اس آلہ میں محفوظ ہے۔}}</translation>
 <translation id="6715020873764921614">کیا آپ بہر صورت <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) کو ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="6719634564325948108">‏QR کوڈ کے ساتھ منسلک ہوں؟</translation>
 <translation id="6723740634201835758">‏آپ کے Google اکاؤنٹ میں</translation>
@@ -1419,7 +1418,6 @@
 <translation id="8237871086242677046">صفحہ کی بصیرتوں کی نیچے کی شیٹ</translation>
 <translation id="8243077599929149377">اپنا صارف نام شامل کریں</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{بُک مارک آپ کے اکاؤنٹ <ph name="ACCOUNT_EMAIL" />، <ph name="FOLDER_NAME" /> میں محفوظ کیا گیا۔}other{بُک مارکس آپ کے اکاؤنٹ <ph name="ACCOUNT_EMAIL" />، <ph name="FOLDER_NAME" /> میں محفوظ کئے گئے۔}}</translation>
 <translation id="8255617931166444521">سائٹس آپ کی کوکیز کو صرف اپنی خود کی سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں</translation>
 <translation id="8259179246279078674">‏چونکہ پیشگی لوڈ کردہ صفحات مرموز کردہ ہیں، Google پیشگی لوڈ کردہ صفحہ کے مواد کے بارے میں کچھ نہیں سیکھے گا Google سرورز یہ سیکھیں گے کون سی سائٹس نجی طور پر پیشگی لوڈ کردہ ہیں۔ یہ معلومات صرف صفحات کو پیشگی لوڈ کرنے کے لیے استعمال کی جاتی ہے اور آپ کے Google اکاؤنٹ کی دیگر معلومات سے لنک نہیں ہے۔</translation>
 <translation id="8260126382462817229">دوبارہ سائن ان کرنے کی کوشش کریں</translation>
@@ -1463,6 +1461,7 @@
 <translation id="8460448946170646641">کلیدی رازداری اور سیکیورٹی کنٹرولز کا جائزہ لیں</translation>
 <translation id="8466613982764129868">یہ یقینی بنائیں کہ <ph name="TARGET_DEVICE_NAME" /> انٹرنیٹ سے منسلک ہے</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
+<translation id="8478751349603791277">‏کنٹرول کریں کہ آپ کی مطابقت پذیر کردہ سرگزشت کو دیگر Google سروسز کو ذاتی نوعیت کا بنانے کے لیے کس طرح استعمال کیا جا سکتا ہے</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">سرگزشت صفحہ کھولیں</translation>
 <translation id="8493948351860045254">جگہ خالی کریں</translation>

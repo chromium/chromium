@@ -1080,7 +1080,6 @@
 <translation id="670498945988402717">कल जांच की गई</translation>
 <translation id="6710213216561001401">पिछला</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> इस्तेमाल करने का समय खत्म हो गया. यह कल फिर से शुरू होगा.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{बुकमार्क <ph name="FOLDER_NAME" /> में सेव किया गया. इसे सिर्फ़ इस डिवाइस में सेव किया गया है.}one{बुकमार्क <ph name="FOLDER_NAME" /> में सेव किया गया. इसे सिर्फ़ इस डिवाइस में सेव किया गया है.}other{बुकमार्क <ph name="FOLDER_NAME" /> में सेव किए गए. इन्हें सिर्फ़ इस डिवाइस में सेव किया गया है.}}</translation>
 <translation id="6715020873764921614">क्या आप फिर भी <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) को डाउनलोड करना चाहते हैं?</translation>
 <translation id="6719634564325948108">क्यूआर कोड की मदद से कनेक्ट करें?</translation>
 <translation id="6723740634201835758">अपने Google खाते में</translation>
@@ -1405,7 +1404,6 @@
 <translation id="8237871086242677046">पेज की अहम जानकारी वाली बॉटम शीट</translation>
 <translation id="8243077599929149377">अपना उपयोगकर्ता नाम जोड़ें</translation>
 <translation id="8250920743982581267">दस्तावेज़</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{बुकमार्क आपके खाते (<ph name="ACCOUNT_EMAIL" />) में मौजूद <ph name="FOLDER_NAME" /> में सेव किया गया.}one{बुकमार्क आपके खाते (<ph name="ACCOUNT_EMAIL" />) में मौजूद <ph name="FOLDER_NAME" /> में सेव किया गया.}other{बुकमार्क आपके खाते (<ph name="ACCOUNT_EMAIL" />) में मौजूद <ph name="FOLDER_NAME" /> में सेव किए गए.}}</translation>
 <translation id="8255617931166444521">साइटें सिर्फ़ आपकी कुकी का इस्तेमाल कर सकती हैं, ताकि वे अपनी साइटों पर आपकी ब्राउज़िंग गतिविधि देख सकें</translation>
 <translation id="8259179246279078674">अगर पहले से लोड किए गए पेज एन्क्रिप्ट (सुरक्षित) किए गए हैं, तो Google को पहले से लोड किए गए पेज के कॉन्टेंट के बारे में पता नहीं चलेगा. हालांकि, Google के सर्वर को निजी तौर पर पहले से लोड की गई साइटों के बारे में पता होगा. इस जानकारी का इस्तेमाल सिर्फ़ पेजों को पहले से लोड करने के लिए किया जाता है. यह आपके Google खाते की किसी दूसरी जानकारी से जुड़ी नहीं होती.</translation>
 <translation id="8260126382462817229">फिर से प्रवेश करके देखें</translation>

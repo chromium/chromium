@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">沒有網絡</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058009965971887428">提供意見</translation>
+<translation id="1059120031266247284">已與你分享</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1073899992769346247">請更換電池或充電</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3580650856351781466">正在下載語音檔案</translation>
 <translation id="3585296979871889131">查看手機最近的相片、媒體、通知和應用程式</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">側邊按鈕</translation>
 <translation id="3593039967545720377">如要存取剪貼簿記錄，按下<ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看剪貼簿。複製項目即可開始使用。</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕，即可查看開啟的應用程式</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">輸入</translation>
 <translation id="3621712662352432595">音效檔案設定</translation>
 <translation id="3626281679859535460">亮度</translation>
+<translation id="3628323833346754646">正面按鈕</translation>
 <translation id="3630697955794050612">關閉</translation>
 <translation id="3631369015426612114">允許顯示來自以下來源的通知</translation>
 <translation id="3633097874324966332">開啟「藍牙設定」以配對裝置</translation>
@@ -1283,6 +1286,7 @@
 <translation id="6052614013050385269">以滑鼠右鍵按一下連結</translation>
 <translation id="6054305421211936131">使用智能卡登入</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">您將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
 <translation id="6064463340679478396">不會再使用檔案</translation>
 <translation id="6068258534237496331">視像通話控制項</translation>
@@ -1344,6 +1348,7 @@
 <translation id="6309219492973062892">點擊或輕按捷徑列圖示 1-8</translation>
 <translation id="6315170314923504164">語音</translation>
 <translation id="6319058840130157106">在右下角、啟動器、網址列、書籤列、開啟的網站和下載項目之間向後移動</translation>
+<translation id="6319503618073410818">在瀏覽器中查看詳細資料</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6330012934079202188">顯示緊來自所有桌面嘅視窗，㩒向上箭咀掣就可以顯示來自目前桌面嘅視窗</translation>
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
@@ -1563,6 +1568,7 @@
 <translation id="7229029500464092426">記憶體用量：<ph name="AVAILABLE_MEMORY" /> (總記憶體：<ph name="TOTAL_MEMORY" />)</translation>
 <translation id="7244725679040769470">剩餘 <ph name="PERCENTAGE" />% 電量。請將裝置接上電源。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新啟動才能套用更新。過程可能需時 1 分鐘。</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">後置麥克風</translation>
 <translation id="7258828758145722155">昨天編輯過</translation>
 <translation id="726276584504105859">拖曳到此處即可分割畫面</translation>
@@ -1690,6 +1696,7 @@
 <translation id="7742327441377685481">沒有通知</translation>
 <translation id="7748275671948949022">突顯捷徑列上的「啟動器」按鈕</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
 <translation id="7768784765476638775">揀選朗讀內容</translation>
 <translation id="7769299611924763557">GIF 很快就能使用</translation>
@@ -2017,6 +2024,7 @@
 <translation id="9098969848082897657">將手機設為靜音</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">復原上一個操作</translation>
+<translation id="9129245940793250979">背面按鈕</translation>
 <translation id="9133335900048457298">無法錄影受保護的內容</translation>
 <translation id="9139720510312328767">刪除下一個字母</translation>
 <translation id="9151906066336345901">End 鍵</translation>

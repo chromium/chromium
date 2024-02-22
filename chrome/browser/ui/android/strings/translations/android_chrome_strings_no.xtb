@@ -276,6 +276,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="2534155362429831547">Slettet <ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="2536728043171574184">Ser på en lokalt lagret versjon av denne siden</translation>
 <translation id="2546283357679194313">Informasjonskapsler og data fra nettsteder</translation>
+<translation id="254973855621628293">Passord som er lagret på denne enheten</translation>
 <translation id="2567385386134582609">BILDE</translation>
 <translation id="2567545343356994513">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="2569733278091928697">Med Chrome-varsler kan du enkelt administrere mediekontroller, inkognitoøkter, nedlastinger med mer</translation>
@@ -1088,7 +1089,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="670498945988402717">Sjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="671481426037969117">Tidtakeren for <ph name="FQDN" /> gikk ut. Den starter igjen i morgen.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Bokmerket er lagret i <ph name="FOLDER_NAME" />. Det lagres bare på denne enheten.}other{Bokmerkene er lagret i <ph name="FOLDER_NAME" />. Det lagres bare på denne enheten.}}</translation>
 <translation id="6715020873764921614">Vil du laste ned <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) likevel?</translation>
 <translation id="6719634564325948108">Vil du koble til med QR-kode?</translation>
 <translation id="6723740634201835758">I Google-kontoen din</translation>
@@ -1288,6 +1288,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665369617277396874">Legg til konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>
+<translation id="7670101447063278728">Passord som er lagret i <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
 <translation id="7686086654630106285">Mer om annonser som foreslås på nettstedet</translation>
 <translation id="768618399695552958">Noen av sidene du besøker, er forhåndslastede. Sider kan bli forhåndslastet via Googles tjenere når de er linket på Google-nettsteder.</translation>
@@ -1417,7 +1418,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8237871086242677046">Sidestatistikkfeltet nederst</translation>
 <translation id="8243077599929149377">Legg til brukernavnet ditt</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Bokmerket er lagret i <ph name="FOLDER_NAME" /> i kontoen din, <ph name="ACCOUNT_EMAIL" />.}other{Bokmerkene er lagret i <ph name="FOLDER_NAME" /> i kontoen din, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Nettsteder kan bare bruke informasjonskapslene dine til å se surfeaktiviteten din på sitt eget nettsted</translation>
 <translation id="8259179246279078674">Siden de forhåndslastede sidene er krypterte, får ikke Google vite noe om det forhåndslastede sideinnholdet. Googles tjenere får vite hvilke nettsteder som forhåndslastes privat. Denne informasjonen brukes bare til å forhåndslaste sidene og blir ikke knyttet til annen informasjon i Google-kontoen din.</translation>
 <translation id="8260126382462817229">Prøv å logge på igjen</translation>
@@ -1461,6 +1461,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8460448946170646641">Gjennomgå viktige personvern- og sikkerhetskontroller</translation>
 <translation id="8466613982764129868">Kontroller at <ph name="TARGET_DEVICE_NAME" /> er koblet til internett</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
+<translation id="8478751349603791277">Kontroller hvordan den synkroniserte loggen din kan brukes til å tilpasse andre Google-tjenester</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Åpne loggsiden</translation>
 <translation id="8493948351860045254">Frigjør plass</translation>

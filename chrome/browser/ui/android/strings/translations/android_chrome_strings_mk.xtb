@@ -1088,7 +1088,6 @@
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="671481426037969117">Тајмерот за <ph name="FQDN" /> истече. Ќе започне одново утре.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Обележувачот е зачуван во „<ph name="FOLDER_NAME" />“. Зачуван е само на овој уред.}one{Обележувачите се зачувани во „<ph name="FOLDER_NAME" />“. Зачувани се само на овој уред.}other{Обележувачите се зачувани во „<ph name="FOLDER_NAME" />“. Зачувани се само на овој уред.}}</translation>
 <translation id="6715020873764921614">Дали сепак сакате да ја преземете датотеката <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Да се поврзе со QR-код?</translation>
 <translation id="6723740634201835758">Во вашата сметка на Google</translation>
@@ -1417,7 +1416,6 @@
 <translation id="8237871086242677046">Долен лист со увиди за страницата</translation>
 <translation id="8243077599929149377">Додајте го вашето корисничко име</translation>
 <translation id="8250920743982581267">Документи</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Обележувачот е зачуван во „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}one{Обележувачите се зачувани во „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}other{Обележувачите се зачувани во „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Сајтовите може да ги користат колачињата само за да ја гледаат вашата активност од прелистувањето на сопствениот сајт</translation>
 <translation id="8259179246279078674">Бидејќи однапред вчитаните страници се шифрирани, Google нема да дознае ништо за нивните содржини. Серверите на Google ќе знаат кои сајтови се приватно вчитани однапред. Податоциве се користат само за вчитување на страниците однапред и не се поврзани со други податоци од вашата сметка на Google.</translation>
 <translation id="8260126382462817229">Обидете се да се најавите повторно</translation>
@@ -1461,6 +1459,7 @@
 <translation id="8460448946170646641">Прегледајте ги клучните контроли за приватноста и безбедноста</translation>
 <translation id="8466613982764129868">Проверете дали <ph name="TARGET_DEVICE_NAME" /> е поврзан на интернет</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
+<translation id="8478751349603791277">Контролирајте како вашата синхронизирана историја може да се користи за персонализирање други услуги на Google</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Отворете ја страницата „Историја“</translation>
 <translation id="8493948351860045254">Ослободете простор</translation>

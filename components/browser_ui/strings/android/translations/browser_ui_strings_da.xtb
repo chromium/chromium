@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="1073417869336441572">Hjælp os med at forbedre Chrome ved at fortælle os, hvorfor du har tilladt tredjepartscookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Skjul kort med prisfald</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1192844206376121885">Denne handling sletter alle data og cookies, der er gemt af <ph name="ORIGIN" />.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Hjælp og feedback</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
+<translation id="2550801787432930915">Kort med prisfald</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie blev blokeret}one{# cookie blev blokeret}other{# cookies blev blokeret}}</translation>
 <translation id="2570922361219980984">Lokationsadgang er også deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Udvidet – klik for at skjule.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8805385115381080995">Dette skaber færre afbrydelser, når du bruger nettet, da det er mindre sandsynligt, at et website beder dig om at verificere, at du er en rigtig person</translation>
 <translation id="8816026460808729765">Bloker adgang til sensorer på websites</translation>
+<translation id="8843699287283948910">Skjul faner fra andre enheder</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre browserbeskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer som forventet.</translation>
 <translation id="8889294078294184559">Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>

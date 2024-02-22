@@ -46,7 +46,6 @@
 <translation id="123124571410524056">Podozrenie na portál</translation>
 <translation id="1232610416724362657">vodopádu</translation>
 <translation id="1238612778414822719">Latencia protokolu HTTPS</translation>
-<translation id="1264369926465113395">Pozrite si nový digitálny časopis Chromebooku pre autorov</translation>
 <translation id="1270369111467284986">Predpokladá sa prihlasovací portál</translation>
 <translation id="1274654146705270731">pomaranče</translation>
 <translation id="1290331692326790741">slabý signál</translation>
@@ -322,6 +321,7 @@
 <translation id="2926057806159140518">Zadajte používateľské meno a heslo alebo naskenujte QR kód</translation>
 <translation id="2940811910881150316">Zariadenie sa nedá testovať. Ak chcete testovať, znova otvorte kryt.</translation>
 <translation id="2941112035454246133">Nízka</translation>
+<translation id="2956070106555335453">Súhrn</translation>
 <translation id="299385721391037602">ružová a žltá</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
@@ -600,7 +600,6 @@
 <translation id="4832079907277790330">Vybrať priečinok v aplikácii Súbory…</translation>
 <translation id="4835901797422965222">Žiadne aktívne siete</translation>
 <translation id="4838825304062068169">ľadovca</translation>
-<translation id="4839698083503556542">Vytvorte si vlastný film</translation>
 <translation id="48409034532829769">Váš správca nastavil aplikáciu <ph name="APP_NAME" /> tak, aby sa spúšťala automaticky. Táto aplikácia nemusí byť zavretá.</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4847902821209177679">Zdroj <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> je vybraný, stlačením klávesa Enter vyberte albumy zo zdroja <ph name="TOPIC_SOURCE" /></translation>

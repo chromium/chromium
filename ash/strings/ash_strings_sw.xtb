@@ -18,6 +18,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1056775291175587022">Hamna mitandao</translation>
 <translation id="1056898198331236512">Ilani</translation>
 <translation id="1058009965971887428">Ripoti maoni</translation>
+<translation id="1059120031266247284">Uliyotumiwa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Badilisha</translation>
 <translation id="1073899992769346247">Badilisha betri au uichaji</translation>
@@ -627,6 +628,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3577473026931028326">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="3580650856351781466">Inapakua faili za matamshi</translation>
 <translation id="3585296979871889131">Angalia picha, maudhui, arifa na programu za hivi karibuni za simu yako</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Kitufe cha Pembeni</translation>
 <translation id="3593039967545720377">Fikia historia ya ubao wako wa kunakili kwa kubonyeza kitufe cha <ph name="SHORTCUT_KEY_NAME" /> pamoja na herufi V ili uangalie ubao wako wa kunakili. Nakili kipengee ili uanze.</translation>
 <translation id="3593646411856133110">Telezesha kidole juu na ushikilie ili uone programu zilizofunguliwa</translation>
@@ -643,6 +645,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3621202678540785336">Ingizo</translation>
 <translation id="3621712662352432595">Mipangilio ya Sauti</translation>
 <translation id="3626281679859535460">Ung'aavu</translation>
+<translation id="3628323833346754646">Kitufe cha Mbele</translation>
 <translation id="3630697955794050612">imezimwa</translation>
 <translation id="3631369015426612114">Ruhusu arifa kutoka vyanzo hivi</translation>
 <translation id="3633097874324966332">Fungua mipangilio ya Bluetooth ili uoanishe kifaa chako</translation>
@@ -1284,6 +1287,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="6052614013050385269">Bofya kulia kiungo</translation>
 <translation id="6054305421211936131">Ingia katika akaunti ukitumia kadi yako mahiri</translation>
 <translation id="6059276912018042191">Vichupo vya Chrome vilivyofunguliwa hivi majuzi</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Utaondolewa kwenye akaunti kiotomatiki baada ya <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Nimemaliza kutumia faili</translation>
 <translation id="6068258534237496331">Vidhibiti vya Simu za Video</translation>
@@ -1345,6 +1349,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="6309219492973062892">Bofya au gusa aikoni ya rafu ya 1 hadi 8</translation>
 <translation id="6315170314923504164">Sauti</translation>
 <translation id="6319058840130157106">Sogeza nyuma kati ya kona ya chini kulia, Kifungua Programu, sehemu ya anwani, sehemu ya alamisho, tovuti iliyofunguliwa na vipakuliwa</translation>
+<translation id="6319503618073410818">Angalia maelezo kwenye kivinjari</translation>
 <translation id="6324916366299863871">Badilisha njia ya mkato</translation>
 <translation id="6330012934079202188">Inaonyesha madirisha yaliyo kwenye maeneokazi yote, bonyeza kishale cha Juu ili uonyeshe madirisha yaliyo kwenye eneokazi la sasa</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ni kipindi kinachodhibitiwa ambacho kinadhibitiwa na <ph name="MANAGER" /></translation>
@@ -1565,6 +1570,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7229029500464092426">Hifadhi ya <ph name="AVAILABLE_MEMORY" /> kati ya jumla ya hifadhi ya <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri. Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ili utumie sasisho, unahitaji kuzima kisha uwashe Chromebook hii. Hatua hii inaweza kuchukua hadi dakika moja.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Maikrofoni ya nyuma</translation>
 <translation id="7258828758145722155">Ilibadilishwa jana</translation>
 <translation id="726276584504105859">Buruta hapa ili utumie skrini iliyogawanywa</translation>
@@ -1693,6 +1699,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7742327441377685481">Hakuna arifa</translation>
 <translation id="7748275671948949022">Angazia kitufe cha Kifungua programu kwenye rafu</translation>
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Bofya ili uone maelezo ya masasisho</translation>
 <translation id="7768784765476638775">Chagua ili izungumze</translation>
 <translation id="7769299611924763557">GIF yako itakuwa tayari hivi punde</translation>
@@ -2020,6 +2027,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9098969848082897657">Kuzima mlio wa simu</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> au <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Tendua kitendo cha mwisho</translation>
+<translation id="9129245940793250979">Kitufe cha Nyuma</translation>
 <translation id="9133335900048457298">Huwezi kurekodi maudhui yanayolindwa</translation>
 <translation id="9139720510312328767">Futa herufi inayofuata</translation>
 <translation id="9151906066336345901">end</translation>

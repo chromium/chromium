@@ -31,6 +31,7 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609"><ph name="DOMAIN" /> administra tu dispositivo. Los administradores pueden acceder a los datos de cualquier perfil en este dispositivo.</translation>
+<translation id="1022719295563085177">Red predeterminada</translation>
 <translation id="1026655690966755180">Agregar puerto</translation>
 <translation id="1026822031284433028">Cargar imagen</translation>
 <translation id="1026959648338730078">Windows Hello o llave de seguridad externa</translation>
@@ -318,6 +319,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="123578888592755962">Disco lleno</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{texto}other{# textos}}</translation>
 <translation id="1236009322878349843">Editar el teléfono</translation>
+<translation id="1237950098253310325">Reordena <ph name="BUTTON_NAME" /> con Ctrl + flecha hacia arriba o hacia abajo</translation>
 <translation id="1238293488628890871">¿Quieres cambiar de perfil?</translation>
 <translation id="1239594683407221485">Explora el contenido del dispositivo en la app Archivos.</translation>
 <translation id="1239841552505950173">Ejecutar aplicación</translation>
@@ -520,7 +522,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="139911022479327130">Desbloquea el teléfono y confirma que eres tú</translation>
 <translation id="1399261165075500043">No se pueden cargar las Condiciones del Servicio de Google Play</translation>
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una pestaña nueva</translation>
-<translation id="1401308693935339022">Usa la ubicación. Permite que las apps y los servicios con permiso de ubicación usen la ubicación de este dispositivo. Es posible que Google recopile datos de ubicación anónimos de forma periódica y los use para mejorar la precisión de la ubicación y los servicios basados en ella.</translation>
 <translation id="1402426911829176748">Estableciendo conexión con el dispositivo</translation>
 <translation id="1403222014593521787">No se pudo establecer conexión con el proxy.</translation>
 <translation id="1405779994569073824">Falló</translation>
@@ -1850,7 +1851,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2373666622366160481">Ajustar a la hoja</translation>
 <translation id="2375406435414127095">Conéctate a tu teléfono</translation>
 <translation id="2376056713414548745">Leer en voz alta</translation>
-<translation id="2377588536920405462">Para inhabilitar la Ubicación, desactiva la configuración de la ubicación principal en el dispositivo. También puedes desactivar el uso de Wi-Fi, redes móviles y sensores para obtener la ubicación en la configuración de la ubicación.</translation>
 <translation id="2377667304966270281">Fallos graves</translation>
 <translation id="237828693408258535">¿Deseas traducir esta página?</translation>
 <translation id="2378982052244864789">Seleccionar el directorio de extensión.</translation>
@@ -2818,6 +2818,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3101709781009526431">Fecha y hora</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3103451787721578293">Ingresa un motivo para cargar estos datos:</translation>
+<translation id="3103512663951238230">Alt + clic</translation>
 <translation id="3105339775057145050">Última actualización incorrecta</translation>
 <translation id="3105796011181310544">¿Deseas volver a Google?</translation>
 <translation id="3105820656234755131">Se actualizó la contraseña</translation>
@@ -3213,6 +3214,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3440663250074896476">Más acciones para <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3441663102605358937">Vuelve a acceder a <ph name="ACCOUNT" /> para verificar esta cuenta</translation>
+<translation id="3441824746233675597">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="3442674350323953953">Permitir que Google utilice tus datos de hardware para mejorar <ph name="DEVICE_OS" />. Si lo rechazas, se enviarán estos datos a Google para determinar las actualizaciones adecuadas, pero no se almacenarán ni se utilizarán de otra manera.</translation>
 <translation id="3443744348829035122">Se agotó el tiempo de espera de <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Ya tienes contraseñas para estas cuentas en tu <ph name="BRAND" />. Si decides importar una de las contraseñas a continuación, se reemplazará la contraseña existente.</translation>
@@ -3392,6 +3394,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
 <translation id="3586806079541226322">No se puede abrir este archivo.</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
+<translation id="3587279952965197737">Debe tener un máximo de <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
 <translation id="3587438013689771191">Más información sobre <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3588790464166520201">Puede instalar controladores de pago</translation>
@@ -4575,6 +4578,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4490086832405043258">Usar la configuración de proxy de ChromeOS en este perfil</translation>
 <translation id="4490798467014431984">No se permiten las extensiones en este sitio</translation>
 <translation id="449126573531210296">Encriptar las contraseñas sincronizadas con tu Cuenta de Google</translation>
+<translation id="4492265221907525667">Para usar esta nueva función experimental, accede a tu cuenta.</translation>
 <translation id="449232563137139956">Por lo general los sitios muestran imágenes para proporcionar una referencia visual, como fotos de tiendas en línea o artículos de noticias.</translation>
 <translation id="4492698018379445570">Mira lo que agregaste a los carritos de compras y realiza el pago cuando no quieras modificar o sumar nada más.</translation>
 <translation id="4493167769966437077">Quitar el idioma <ph name="LANGUAGE_NAME" /> de los idiomas para los que nunca se ofrece la traducción</translation>
@@ -5139,6 +5143,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4929386379796360314">Destinos de impresión</translation>
 <translation id="4930447554870711875">Desarrolladores</translation>
 <translation id="4930714375720679147">Activar</translation>
+<translation id="4931347390544064118">Es posible que las conexiones seguras no siempre estén disponibles cuando se use la configuración predeterminada de la red. Te recomendamos que selecciones otro proveedor para asegurarte de utilizar siempre una conexión segura.</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4933484234309072027">insertado en <ph name="URL" /></translation>
 <translation id="4936042273057045735">No se admite la sincronización de notificaciones para teléfonos que tengan un perfil de trabajo</translation>
@@ -5406,7 +5411,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5147097165869384760">¿Buscas la página del sistema del SO? Visita <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147516217412920887">Sigue las instrucciones que se muestran en tu teléfono para verificar el código</translation>
 <translation id="5147992672778369947">Usa la contraseña recomendada</translation>
-<translation id="5148277445782867161">El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para ayudar a determinar la ubicación de tu dispositivo.</translation>
 <translation id="5148285448107770349">La contraseña debe tener como mínimo 8 caracteres</translation>
 <translation id="5149602533174716626">Copia&amp;r fotograma</translation>
 <translation id="5150254825601720210">Nombre del servidor SSL para el certificado de Microsoft</translation>
@@ -6370,7 +6374,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5916664084637901428">Activado</translation>
 <translation id="59174027418879706">Habilitado</translation>
 <translation id="5920543303088087579">El administrador inhabilitó la conexión a esta red</translation>
-<translation id="5921257443092182237">El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para determinar la ubicación de este dispositivo.</translation>
 <translation id="5924047253200400718">Obtener ayuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Preguntar antes de copiar o mover archivos de Microsoft a Google Drive</translation>
 <translation id="5924527146239595929">Toma una foto nueva o elige una foto o un ícono existente.
@@ -7665,7 +7668,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6935031746833428401">Obtén más información sobre la Administración de dispositivos</translation>
 <translation id="6935286146439255109">Falta la bandeja de papel</translation>
 <translation id="6938386202199793006">Tienes 1 impresora guardada.</translation>
-<translation id="6938387822292071111">Mostrar las tarjetas emergentes de vista previa al colocar el cursor en las pestañas</translation>
 <translation id="6938606182859551396">Si quieres recibir notificaciones del teléfono en tu <ph name="DEVICE_TYPE" />, sigue las instrucciones que aparecen en el teléfono para otorgar a los Servicios de Google Play acceso a las notificaciones.</translation>
 <translation id="694168622559714949">Tu administrador configuró un idioma predeterminado, el cual no puede modificarse.</translation>
 <translation id="6941937518557314510">Accede a <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
@@ -8199,7 +8201,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7368695150573390554">Se borrarán los datos sin conexión</translation>
 <translation id="736877393389250337"><ph name="URL" /> no se pudo abrir en <ph name="ALTERNATIVE_BROWSER_NAME" />. Comunícate con el administrador del sistema.</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
-<translation id="7371490947952970241">Para inhabilitar la Ubicación, desactiva la configuración de la ubicación principal en este dispositivo. También puedes desactivar el uso de Wi-Fi, redes móviles y sensores para obtener la ubicación en la configuración de la ubicación.</translation>
 <translation id="7371917887111892735">Las pestañas se achican al ancho de las pestañas fijas</translation>
 <translation id="7374376573160927383">Administrar dispositivos USB</translation>
 <translation id="7376124766545122644">No se pudo usar este vínculo. Para intentarlo nuevamente, verifica que el vínculo comience con "http://" o "https://".</translation>
@@ -9207,6 +9208,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8102139037507939978">Quita la información de identificación personal del archivo system_logs.txt.</translation>
 <translation id="810362914482827094">Buscar claves de acceso</translation>
 <translation id="8104088837833760645">Descargar el perfil de eSIM</translation>
+<translation id="8105273883928376822">Accede a tu cuenta para continuar</translation>
 <translation id="8107015733319732394">Se está instalando Google Play Store en tu <ph name="DEVICE_TYPE" />. Esta acción puede tardar unos minutos.</translation>
 <translation id="810728361871746125">Resolución de la pantalla</translation>
 <translation id="8109109153262930486">Avatar predeterminado</translation>
@@ -10020,6 +10022,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8732030010853991079">Para usar esta extensión, haz clic en este ícono.</translation>
 <translation id="8732212173949624846">Leer y cambiar el historial de navegación en todos los dispositivos a los que accediste.</translation>
 <translation id="8732844209475700754">Más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos</translation>
+<translation id="8733779588180110397">⌥ + clic</translation>
 <translation id="8734073480934656039">Al habilitar esta opción, las aplicaciones del kiosco podrán iniciarse automáticamente en el inicio.</translation>
 <translation id="8734755021067981851">No hay dispositivos USB conectados.</translation>
 <translation id="8736288397686080465">Este sitio se actualizó en segundo plano.</translation>
@@ -10387,13 +10390,13 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9012585441087414258">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Si una página realiza alguna acción sospechosa, las URLs y los bits del contenido de la página se envían a la Navegación segura de Google.</translation>
 <translation id="9013037634206938463">Se necesitan <ph name="INSTALL_SIZE" /> de espacio libre para instalar Linux. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
 <translation id="9014206344398081366">Instructivo de ChromeVox</translation>
+<translation id="9014674417732091912">Se movió a la fila <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">Crear una copia de seguridad en Google Drive</translation>
 <translation id="9016827136585652292">botón de activación de la pantalla de privacidad</translation>
 <translation id="90181708067259747">Fecha de vencimiento: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Se completó la instalación</translation>
 <translation id="901876615920222131">Para volver a abrir el grupo, haz clic en él</translation>
 <translation id="9019062154811256702">Leer y cambiar la configuración de Autocompletar</translation>
-<translation id="9019894137004772119">Usa la ubicación. Permite que las apps y los servicios con permiso de ubicación usen la ubicación de tu dispositivo. Es posible que Google recopile datos de ubicación anónimos de forma periódica y los use para mejorar la precisión de la ubicación y los servicios basados en ella.</translation>
 <translation id="9019956081903586892">No se pudo descargar el diccionario del corrector ortográfico.</translation>
 <translation id="9020300839812600209">Ingresa un URL para ver que puede hacer LBS.</translation>
 <translation id="9020362265352758658">4x</translation>

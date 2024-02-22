@@ -111,6 +111,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="3032706164202344641">O Chromium não pode verificar suas senhas. Tente mais tarde.</translation>
 <translation id="3032787606318309379">Adicionando ao Chromium...</translation>
 <translation id="3038232873781883849">Aguardando instalação...</translation>
+<translation id="3068187312562070417">Outros perfis do Chromium</translation>
 <translation id="3068515742935458733">Ajude a melhorar o Chromium. Envie relatórios de erros e <ph name="UMA_LINK" /> para o Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{unused plural form}=1{Uma ou mais extensões do Chromium estavam acessando 1 dispositivo USB}one{Uma ou mais extensões do Chromium estavam acessando # dispositivo USB}other{Uma ou mais extensões do Chromium estavam acessando # dispositivos USB}}</translation>
 <translation id="3101560983689755071">Seu histórico de navegação afeta os anúncios que você vê e os interesses estimados abaixo. Para proteger sua privacidade, o Chromium exclui automaticamente seus interesses mais antigos do que um mês. Os interesses podem ser atualizados, a menos que você os remova.</translation>
@@ -226,6 +227,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5294316920224716406">Quando você está no modo de navegação anônima, o Chromium avisa antes de carregar um site usando uma conexão sem segurança</translation>
 <translation id="5296845517486664001">Quando os testes estão ativados e se o Chromium colocou você aleatoriamente em um teste ativo, seu histórico de navegação vai afetar os anúncios que você vê e os interesses estimados abaixo. Para proteger sua privacidade, o Chromium exclui seus interesses mais antigos do que um mês.</translation>
 <translation id="5352264705793813212">O Chromium encontrou algumas recomendações de segurança para sua avaliação</translation>
+<translation id="5352361688875342522">Outros perfis do Chromium</translation>
 <translation id="5358375970380395591">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Chromium. Seus dados do Chromium, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Código extra: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Saiba por que o Chromium bloqueia alguns arquivos</translation>

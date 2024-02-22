@@ -1089,7 +1089,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="670498945988402717">Última verificação ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">O temporizador da app <ph name="FQDN" /> terminou. Recomeça amanhã.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Marcador guardado em <ph name="FOLDER_NAME" />. Só está guardado neste dispositivo.}other{Marcadores guardados em <ph name="FOLDER_NAME" />. Só estão guardados neste dispositivo.}}</translation>
 <translation id="6715020873764921614">Quer transferir <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) mesmo assim?</translation>
 <translation id="6719634564325948108">Ligar com um código QR?</translation>
 <translation id="6723740634201835758">Na sua Conta Google</translation>
@@ -1419,7 +1418,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8237871086242677046">Secção inferior das estatísticas da página</translation>
 <translation id="8243077599929149377">Adicione o seu nome de utilizador</translation>
 <translation id="8250920743982581267">Docs</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Marcador guardado em <ph name="FOLDER_NAME" /> na sua conta <ph name="ACCOUNT_EMAIL" />.}other{Marcadores guardados em <ph name="FOLDER_NAME" /> na sua conta <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Os sites apenas podem utilizar os seus cookies para ver a sua atividade de navegação no respetivo site</translation>
 <translation id="8259179246279078674">Uma vez que as páginas pré-carregadas são encriptadas, a Google não irá aprender nada sobre o conteúdo das páginas pré-carregadas. Os servidores da Google saberão que sites são pré-carregados de forma privada. Esta informação só é utilizada para pré-carregar as páginas e não está associada a outras informações da sua Conta Google.</translation>
 <translation id="8260126382462817229">Experimente iniciar sessão novamente</translation>
@@ -1463,6 +1461,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8460448946170646641">Reveja os principais controlos de privacidade e segurança</translation>
 <translation id="8466613982764129868">Certifique-se de que o <ph name="TARGET_DEVICE_NAME" /> está ligado à Internet.</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
+<translation id="8478751349603791277">Controle a forma como o seu histórico sincronizado pode ser usado para personalizar outros serviços Google</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abrir a página do histórico</translation>
 <translation id="8493948351860045254">Libertar espaço</translation>

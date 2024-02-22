@@ -275,6 +275,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />件の項目を削除しました</translation>
 <translation id="2536728043171574184">このページのオフライン コピーを表示しています</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
+<translation id="254973855621628293">このデバイスに保存されたパスワード</translation>
 <translation id="2567385386134582609">画像</translation>
 <translation id="2567545343356994513">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します</translation>
 <translation id="2569733278091928697">メディア コントロール、シークレット モード セッション、ダウンロードなどを簡単に管理できるようになります</translation>
@@ -1081,7 +1082,6 @@
 <translation id="670498945988402717">前回の確認: 昨日</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> のタイマーが切れました。タイマーはまた明日開始されます。</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{ブックマークを <ph name="FOLDER_NAME" /> に保存しました。保存されるのはこのデバイスのみに限られます。}other{ブックマークを <ph name="FOLDER_NAME" /> に保存しました。保存されるのはこのデバイスのみに限られます。}}</translation>
 <translation id="6715020873764921614"><ph name="FILE_NAME" />（<ph name="FILE_SIZE" />）のダウンロードを続行しますか？</translation>
 <translation id="6719634564325948108">QR コードを使用して接続しますか？</translation>
 <translation id="6723740634201835758">Google アカウント</translation>
@@ -1162,7 +1162,7 @@
 <translation id="7088681679121566888">Chrome は最新の状態です</translation>
 <translation id="7105047059074518658">複数のデバイスでスムーズにブラウジングするにはログインしてください</translation>
 <translation id="7106762743910369165">お使いのブラウザは組織によって管理されています</translation>
-<translation id="7111394291981742152">Chrome では、表示される広告を細かく管理でき、パーソナライズド広告を表示する際にサイトがユーザーについて把握できる情報も制限されます。</translation>
+<translation id="7111394291981742152">Chrome では、表示される広告を細かく管理でき、サイトがパーソナライズド広告を表示する際にユーザーについて把握できる情報も制限されます。</translation>
 <translation id="7138678301420049075">その他</translation>
 <translation id="7140829094791862589">手動で並べ替え</translation>
 <translation id="7146622961999026732">以下のサイトやアプリは重要な可能性があります。</translation>
@@ -1279,6 +1279,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="766587987807204883">記事がここに表示されます。これらの記事はオフラインでも読むことができます</translation>
+<translation id="7670101447063278728">パスワードを <ph name="USERNAME" /> に保存しました。</translation>
 <translation id="7682724950699840886">推奨される対策: デバイスに十分な空き容量があることを確認し、再度エクスポートを試します。</translation>
 <translation id="7686086654630106285">ウェブサイトによる広告提案の詳細</translation>
 <translation id="768618399695552958">アクセスしたページの一部はプリロードされます。ページが Google サイトからリンクされている場合、Google サーバーを介してプリロードされる可能性があります。</translation>
@@ -1407,7 +1408,6 @@
 </translation>
 <translation id="8243077599929149377">ユーザー名を追加</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{ブックマークをアカウント（<ph name="ACCOUNT_EMAIL" />）の <ph name="FOLDER_NAME" /> に保存しました。}other{ブックマークをアカウント（<ph name="ACCOUNT_EMAIL" />）の <ph name="FOLDER_NAME" /> に保存しました。}}</translation>
 <translation id="8255617931166444521">サイトは、Cookie を使用して、そのサイトでのあなたの閲覧アクティビティのみを確認できます</translation>
 <translation id="8259179246279078674">プリロードされたページは暗号化されているため、Google はプリロードされたページのコンテンツを一切把握できません。Google サーバーは、どのサイトが非公開でプリロードされたかを把握します。この情報はページをプリロードするためにのみ使用され、Google アカウントから他の情報にリンクされることはありません。</translation>
 <translation id="8260126382462817229">もう一度ログインしてみてください</translation>
@@ -1451,6 +1451,7 @@
 <translation id="8460448946170646641">プライバシーとセキュリティに関する重要な設定を確認する</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> がインターネットに接続していることを確認してください</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
+<translation id="8478751349603791277">同期された履歴を使用して他の Google サービスをカスタマイズする方法を管理します</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">履歴ページを開く</translation>
 <translation id="8493948351860045254">容量を空ける</translation>

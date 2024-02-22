@@ -276,6 +276,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
+<translation id="254973855621628293">या डिव्हाइसवर सेव्ह केलेले पासवर्ड</translation>
 <translation id="2567385386134582609">इमेज</translation>
 <translation id="2567545343356994513">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून अधिक जलद, प्रोअ‍ॅक्टिव्ह संरक्षण</translation>
 <translation id="2569733278091928697">तुम्ही मीडिया नियंत्रणे, गुप्त सेशन, डाउनलोड आणि आणखी बरेच काही सहजरीत्या व्यवस्थापित करू शकाल</translation>
@@ -1088,7 +1089,6 @@
 <translation id="670498945988402717">काल तपासले</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="671481426037969117">तुमचा <ph name="FQDN" /> टायमर झाला आहे. तो उद्या पुन्हा सुरू होईल.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{बुकमार्क <ph name="FOLDER_NAME" /> मध्ये सेव्ह केला आहे. तो फक्त या डिव्हाइसमध्ये सेव्ह केला आहे.}other{बुकमार्क <ph name="FOLDER_NAME" /> मध्ये सेव्ह केले आहेत. ते फक्त या डिव्हाइसमध्ये सेव्ह केले आहेत.}}</translation>
 <translation id="6715020873764921614">तुम्हाला तरीही <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) डाउनलोड करायची आहे का?</translation>
 <translation id="6719634564325948108">QR कोड सह कनेक्ट करायचे का?</translation>
 <translation id="6723740634201835758">तुमच्या Google खात्यामध्ये</translation>
@@ -1288,6 +1288,7 @@
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7665369617277396874">खाते जोडा</translation>
 <translation id="766587987807204883">तुम्ही ऑफलाइन असताना देखील तुम्ही वाचू शकता असे लेख येथे दिसतात</translation>
+<translation id="7670101447063278728"><ph name="USERNAME" /> वर सेव्ह केलेले पासवर्ड.</translation>
 <translation id="7682724950699840886">खालील टिपा वापरून पहा: तुमच्या डिव्हाइसवर पुरेशी जागा असल्याची खात्री करा, पुन्हा एक्सपोर्ट करण्याचा प्रयत्न करा.</translation>
 <translation id="7686086654630106285">साइटने सुचवलेल्या जाहिरातींबद्दल आणखी</translation>
 <translation id="768618399695552958">तुम्ही भेट देत असलेली काही पेज प्रीलोड केलेली आहेत. Google साइटवरून लिंक केल्यावर पेज Google सर्व्हरद्वारे प्रीलोड केली जाऊ शकतात.</translation>
@@ -1417,7 +1418,6 @@
 <translation id="8237871086242677046">तळाशी असलेल्या शीटमधील पेज इनसाइट</translation>
 <translation id="8243077599929149377">तुमचे वापरकर्ता नाव जोडा</translation>
 <translation id="8250920743982581267">दस्तऐवज</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामधील <ph name="FOLDER_NAME" /> मध्ये बुकमार्क सेव्ह केला आहे.}other{तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामधील <ph name="FOLDER_NAME" /> मध्ये बुकमार्क सेव्ह केले आहेत.}}</translation>
 <translation id="8255617931166444521">साइट फक्त तुमच्या कुकीचा वापर फक्त त्यांच्या स्वतःच्या साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी करू शकतात</translation>
 <translation id="8259179246279078674">प्रीलोड केलेली पेज एंक्रिप्ट केलेली असल्यामुळे, प्रीलोड केलेल्या पेज आशयाबद्दल Google ला काहीही समजणार नाही. कोणत्या साइट खाजगीरीत्या प्रीलोड केलेल्या आहेत हे Google सर्व्हरना समजेल. ही माहिती फक्त पेज प्रीलोड करण्यासाठी वापरली जाते आणि तुमच्या Google खाते मधील इतर माहितीशी लिंक केलेली नाही.</translation>
 <translation id="8260126382462817229">पुन्हा साइन इन करण्याचा प्रयत्न करा</translation>
@@ -1461,6 +1461,7 @@
 <translation id="8460448946170646641">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> इंटरनेटशी कनेक्ट केले असल्याची खात्री करा</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
+<translation id="8478751349603791277">तुमचा सिंक केलेला इतिहास इतर Google सेवा पर्सनलाइझ करण्यासाठी कसा वापरला जाऊ शकतो ते नियंत्रित करा</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहास पेज उघडा</translation>
 <translation id="8493948351860045254">जागा मोकळी करा</translation>

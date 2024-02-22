@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">네트워크 없음</translation>
 <translation id="1056898198331236512">경고</translation>
 <translation id="1058009965971887428">의견 보내기</translation>
+<translation id="1059120031266247284">나와 공유됨</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">바꾸기</translation>
 <translation id="1073899992769346247">배터리를 교체하거나 충전해 주세요.</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3580650856351781466">음성 파일 다운로드 중</translation>
 <translation id="3585296979871889131">휴대전화의 최근 사진, 미디어, 알림, 앱 보기</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">측면 버튼</translation>
 <translation id="3593039967545720377"><ph name="SHORTCUT_KEY_NAME" /> + V 키를 눌러 클립보드를 열면 클립보드 기록에 액세스할 수 있습니다. 시작하려면 항목을 복사하세요.</translation>
 <translation id="3593646411856133110">위로 스와이프한 후 눌러 열려 있는 앱 보기</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">입력</translation>
 <translation id="3621712662352432595">오디오 설정</translation>
 <translation id="3626281679859535460">밝기</translation>
+<translation id="3628323833346754646">전면 버튼</translation>
 <translation id="3630697955794050612">사용 안함</translation>
 <translation id="3631369015426612114">다음 항목에 알림 허용:</translation>
 <translation id="3633097874324966332">기기를 페어링하려면 블루투스 설정을 여세요.</translation>
@@ -1284,6 +1287,7 @@
 <translation id="6052614013050385269">마우스 오른쪽 버튼으로 링크 클릭</translation>
 <translation id="6054305421211936131">스마트 카드로 로그인</translation>
 <translation id="6059276912018042191">최근 Chrome 탭</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> 후 자동으로 로그아웃됩니다.</translation>
 <translation id="6064463340679478396">파일 사용 완료</translation>
 <translation id="6068258534237496331">영상 통화 설정</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6309219492973062892">앱 표시줄 아이콘 1-8 클릭 또는 탭</translation>
 <translation id="6315170314923504164">음성</translation>
 <translation id="6319058840130157106">오른쪽 하단, 런처, 주소 표시줄, 북마크바, 열려 있는 웹사이트, 다운로드 항목 간에 뒤로 이동</translation>
+<translation id="6319503618073410818">브라우저에서 세부정보 보기</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6330012934079202188">모든 데스크의 창을 표시합니다. 현재 데스크의 창을 표시하려면 위쪽 화살표 키를 누르세요</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> 세션은 <ph name="MANAGER" />에서 관리합니다.</translation>
@@ -1565,6 +1570,7 @@
 <translation id="7229029500464092426">총 메모리 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" /> 사용</translation>
 <translation id="7244725679040769470">배터리가 <ph name="PERCENTAGE" />% 남았습니다. 기기를 전원에 연결하세요.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. 업데이트를 적용하려면 Chromebook을 다시 시작해야 합니다. 여기에는 최대 1분이 걸릴 수 있습니다.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">후면 마이크</translation>
 <translation id="7258828758145722155">어제 수정됨</translation>
 <translation id="726276584504105859">화면 분할을 사용하려면 여기를 드래그하세요.</translation>
@@ -1692,6 +1698,7 @@
 <translation id="7742327441377685481">알림 없음</translation>
 <translation id="7748275671948949022">앱 표시줄의 런처 버튼 강조 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">업데이트 세부정보를 보려면 클릭하세요.</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769299611924763557">곧 GIF가 준비됩니다</translation>
@@ -2019,6 +2026,7 @@
 <translation id="9098969848082897657">휴대전화 무음 설정</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 또는 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">마지막 작업 실행취소</translation>
+<translation id="9129245940793250979">후면 버튼</translation>
 <translation id="9133335900048457298">보호된 콘텐츠는 녹화할 수 없음</translation>
 <translation id="9139720510312328767">다음 문자 삭제</translation>
 <translation id="9151906066336345901">End</translation>

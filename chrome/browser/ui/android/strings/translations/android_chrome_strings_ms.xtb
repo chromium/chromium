@@ -1089,7 +1089,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="670498945988402717">Disemak semalam</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="671481426037969117">Pemasa <ph name="FQDN" /> anda sudah tamat. Pemasa akan bermula lagi esok.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Penanda halaman disimpan pada <ph name="FOLDER_NAME" />. Penanda halaman tersebut disimpan pada peranti ini sahaja.}other{Penanda halaman disimpan pada <ph name="FOLDER_NAME" />. Penanda halaman tersebut disimpan pada peranti ini sahaja.}}</translation>
 <translation id="6715020873764921614">Adakah anda mahu memuat turun <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) juga?</translation>
 <translation id="6719634564325948108">Sambung menggunakan Kod QR?</translation>
 <translation id="6723740634201835758">Dalam Google Account anda</translation>
@@ -1419,7 +1418,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8237871086242677046">Helaian bawah cerapan halaman</translation>
 <translation id="8243077599929149377">Tambahkan nama pengguna anda</translation>
 <translation id="8250920743982581267">Dokumen</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Penanda halaman disimpan pada <ph name="FOLDER_NAME" /> dalam akaun anda, <ph name="ACCOUNT_EMAIL" />.}other{Penanda halaman disimpan pada <ph name="FOLDER_NAME" /> dalam akaun anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Laman hanya boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda pada laman mereka sendiri sahaja</translation>
 <translation id="8259179246279078674">Oleh sebab halaman pramuat disulitkan, Google tidak akan mempelajari apa-apa tentang kandungan halaman yang dipramuat. Pelayan Google akan mengetahui laman yang dipramuat secara peribadi. Maklumat ini hanya digunakan untuk pramuat halaman dan tidak dipautkan kepada maklumat lain daripada Google Account anda.</translation>
 <translation id="8260126382462817229">Cuba log masuk semula</translation>
@@ -1463,6 +1461,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8460448946170646641">Semak privasi dan kawalan keselamatan utama</translation>
 <translation id="8466613982764129868">Pastikan <ph name="TARGET_DEVICE_NAME" /> disambungkan ke Internet</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
+<translation id="8478751349603791277">Kawal cara sejarah anda yang disegerakkan boleh digunakan untuk memeribadikan perkhidmatan Google yang lain</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Buka halaman sejarah</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>

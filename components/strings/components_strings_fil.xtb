@@ -810,6 +810,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="250346157641628208">Papel (Inkjet)</translation>
 <translation id="2505268675989099013">Protektahan ang Account</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (may mga nalalapat na tuntunin)</translation>
 <translation id="2512101340618156538">Hindi pinapayagan (default)</translation>
 <translation id="2512413427717747692">Itakda ang Chrome bilang default na button ng browser, pindutin ang Enter para itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
 <translation id="2514548229949738417">Bahay at Hardin</translation>
@@ -1158,6 +1159,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3229277193950731405">Kopyahin ang string ng bersyon</translation>
 <translation id="323107829343500871">Ilagay ang iyong CVC para sa <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Palaging tukuyin ang mahalagang content sa site na ito</translation>
+<translation id="3236212803136366317">Mga benepisyo ng card</translation>
 <translation id="3238395604961564389">Buksan ang Link sa Incognito Window</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para i-customize ang hitsura ng iyong browser</translation>
 <translation id="3240791268468473923">Nakabukas ang sheet na walang tumutugmang kredensyal sa kredensyal sa secure na pagbabayad</translation>
@@ -1194,6 +1196,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="33073482541490531">Nakita sa isang data breach ang password na kakagamit mo lang. Inirerekomenda ng Password Manager na palitan na ngayon ang password na ito.</translation>
 <translation id="3307649904964670439">Button na I-customize ang Chrome, i-activate para ma-customize ang hitsura ng iyong browser</translation>
 <translation id="3308006649705061278">Organizational Unit (OU)</translation>
+<translation id="3310047144791481950">Tumingin ng impormasyong makakatulong sa iyong pumili ng card para makapagbayad. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Matuto tungkol sa mga benepisyo ng card<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Mga Comedy sa TV</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>

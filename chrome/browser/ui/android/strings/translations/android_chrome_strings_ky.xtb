@@ -1088,7 +1088,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="670498945988402717">Кечээ текшерилди</translation>
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> таймериңиздин убакыты бүттү. Ал эртең кайра башталат.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Кыстарма <ph name="FOLDER_NAME" /> папкасына сакталды. Ал ушул түзмөккө гана сакталат.}other{Кыстармалар <ph name="FOLDER_NAME" /> папкасына сакталды. Алар ушул түзмөккө гана сакталат.}}</translation>
 <translation id="6715020873764921614"><ph name="FILE_NAME" /> файлы (<ph name="FILE_SIZE" />) баары бир жүктөлүп алынсынбы?</translation>
 <translation id="6719634564325948108">QR код менен туташасызбы?</translation>
 <translation id="6723740634201835758">Google аккаунтуңузда</translation>
@@ -1417,7 +1416,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8237871086242677046">Барактын статистикасынын ылдыйкы экраны</translation>
 <translation id="8243077599929149377">Колдонуучу атыңызды кошуңуз</translation>
 <translation id="8250920743982581267">Документтер</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Кыстарма <ph name="ACCOUNT_EMAIL" /> аккаунтуңуздагы папкага (<ph name="FOLDER_NAME" />) сакталды.}other{Кыстармалар <ph name="ACCOUNT_EMAIL" /> аккаунтуңуздагы папкага (<ph name="FOLDER_NAME" />) сакталды.}}</translation>
 <translation id="8255617931166444521">Сайттар cookie файлдары аркылуу сайтында көрүлгөн барактарды көрө алышат</translation>
 <translation id="8259179246279078674">Алдын ала жүктөлгөн барактар шифрленгендиктен, Google алардын мазмунун окуй албайт. Google'дун серверлери кайсы сайттар алдын ала жүктөлгөнүн аныктайт. Бул маалымат барактарды алдын ала жүктөө үчүн гана колдонулат, ошондой эле Google аккаунтуңуздагы башка маалыматка байланыштырылбайт.</translation>
 <translation id="8260126382462817229">Кайра кирип көрүңүз.</translation>

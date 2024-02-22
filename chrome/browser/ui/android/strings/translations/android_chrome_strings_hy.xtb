@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Անհատականացված</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> էջում</translation>
+<translation id="1183189057400844278">Հաստատեք ձեր ինքնությունը, որպեսզի միշտ կարողանաք օգտագործել գաղտնաբառերը ձեր Google հաշվում</translation>
 <translation id="1193729455103054076">Օգտագործե՞լ հուսալի գաղտնաբառ</translation>
 <translation id="1197267115302279827">Տեղափոխել էջանիշները</translation>
 <translation id="1197761954713363183">Անցաբառի հաստատման թերթը փակված է</translation>
@@ -210,6 +211,7 @@
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
 <translation id="2155214902713132423">Հաստատման այս եղանակը հասանելի չէ այս սարքի համար։ Ընտրեք մեկ այլ տարբերակ ձեր մյուս սարքում։</translation>
 <translation id="2158408438301413340">Chrome-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը</translation>
+<translation id="2163089732491971196">Chrome-ի տվյալները Google հաշվում օգտագործելու և պահելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="2172688499998841696">Պատկերների նկարագրություններն անջատված են</translation>
 <translation id="2172905120685242547">Փակե՞լ պատուհանը</translation>
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
@@ -274,6 +276,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> տարր ջնջվեց</translation>
 <translation id="2536728043171574184">Դուք դիտում եք տվյալ էջի անցանց պատճենը</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
+<translation id="254973855621628293">Այս սարքում պահված գաղտնաբառեր</translation>
 <translation id="2567385386134582609">ՊԱՏԿԵՐ</translation>
 <translation id="2567545343356994513">Ավելի արագ և արդյունավետ պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից</translation>
 <translation id="2569733278091928697">Դուք կկարողանաք հեշտությամբ կառավարել մեդիա բովանդակությունը, ինկոգնիտո աշխատաշրջանները, ներբեռնված ֆայլերը և այլն։</translation>
@@ -519,6 +522,7 @@
 <translation id="3847319713229060696">Օգնեք բարելավել համացանցից օգտվողների անվտանգությունը</translation>
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="3858860766373142691">Անուն</translation>
+<translation id="3872520701277728051">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />մաքրեք Chrome-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
 <translation id="3894427358181296146">Պանակի ավելացում</translation>
 <translation id="3899682235662194879">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
@@ -604,6 +608,7 @@
 <translation id="4307992518367153382">Հիմնական</translation>
 <translation id="4311652497846705514">Բացե՞լ PDF ֆայլը</translation>
 <translation id="4320177379694898372">Համացանցի կապակցում չկա</translation>
+<translation id="4326079409704643112">Հաստատեք ձեր ինքնությունը՝ Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար</translation>
 <translation id="433213510553688132">Բաժանորդագրում…</translation>
 <translation id="4335835283689002019">Ապահով դիտարկումն անջատված է</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
@@ -655,6 +660,7 @@
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4594952190837476234">Այս էջը պահվել է <ph name="CREATION_TIME" />-ին, և կարող է տարբերվել առցանց տարբերակից։</translation>
 <translation id="4601095002996233687">Կասկածելի ներբեռնումների մանրակրկիտ սկանավորում։</translation>
+<translation id="4609429330876432068">Պահված գաղտնաբառերի ձեր ցանկերը Chrome-ի և <ph name="CHROME_CHANNEL" />-ի համար միավորվել են։ Դուք նախկինի պես կարող եք ինքնալրացնել ձեր բոլոր պահված գաղտնաբառերը երկու հավելվածներում։</translation>
 <translation id="4616150815774728855">Բացել <ph name="WEBAPK_NAME" /> հավելվածը</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
@@ -848,6 +854,8 @@
 <translation id="5590372121997663538">Հիշել այս համակարգիչը</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
 <translation id="5599455543593328020">Ինկոգնիտո ռեժիմ</translation>
+<translation id="5605283439565877834">Վճարման եղանակները և Google Pay-ի հասցեները չեն գաղտնագրվի։ Chrome-ի այցելությունների պատմությունը չի համաժամացվի։
+Միայն ձեր անցաբառն ունեցող մարդիկ կարող են կարդալ ձեր գաղտնագրված տվյալները։ Անցաբառը չի ուղարկվում Google-ին կամ պահվում նրա կողմից։ Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />մաքրեք Chrome-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="5620163320393916465">Պահված գաղտնաբառեր չկան</translation>
 <translation id="5620928963363755975">«Այլ տարբերակներ» կոճակի օգնությամբ որոնեք ձեր ֆայլերն ու էջերը «Ներբեռնումներ» պանակում</translation>
 <translation id="562289928968387744">Կառավարել արձագանքները</translation>
@@ -958,6 +966,7 @@
 <translation id="6140709049082532940">Բարելավված պաշտպանություն՝</translation>
 <translation id="6140912465461743537">Երկիր/տարածաշրջան</translation>
 <translation id="6150320133806434356">Էջանիշը պահված է</translation>
+<translation id="6150706324143004339">Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար թարմացրեք Chrome-ը</translation>
 <translation id="6154478581116148741">Այս սարքից ձեր գաղտնաբառերն արտահանելու համար կարգավորումներում միացրեք էկրանի կողպումը։</translation>
 <translation id="6162892189396105610">Chrome-ը նախաբեռնում է այն էջերը, որոնք առավել հավանական է, որ կայցելեք։</translation>
 <translation id="6186394685773237175">Կոտրված գաղտնաբառեր չեն գտնվել</translation>
@@ -1080,7 +1089,6 @@
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում։ Այն պահվում է միայն այս սարքում։}one{Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում։ Այն պահվում է միայն այս սարքում։}other{Էջանիշները պահվեցին «<ph name="FOLDER_NAME" />» պանակում։ Դրանք պահվում են միայն այս սարքում։}}</translation>
 <translation id="6715020873764921614">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
 <translation id="6719634564325948108">Կապե՞լ QR կոդի միջոցով</translation>
 <translation id="6723740634201835758">Ձեր Google հաշվում</translation>
@@ -1121,6 +1129,7 @@
 <translation id="688738109438487280">Ավելացնել առկա տվյալները <ph name="TO_ACCOUNT" /> հաշվում:</translation>
 <translation id="6891726759199484455">Գաղտնաբառը պատճենելու համար ապակողպեք էկրանը</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
+<translation id="6898797562238201317">Օգտագործեք ձեր անցաբառը՝ Chrome-ի բոլոր տվյալները ձեր Google հաշվում գաղտնագրելու համար</translation>
 <translation id="6900532703269623216">Բարելավված պաշտպանություն</translation>
 <translation id="6903907808598579934">Միացնել համաժամացումը</translation>
 <translation id="6906448540340261898">Համոզվեք, որ միշտ կարող եք օգտվել գաղտնաբառերից ձեր Google հաշվում</translation>
@@ -1247,6 +1256,7 @@
 <translation id="750228856503700085">Թարմացումներն անհասանելի են</translation>
 <translation id="7507207699631365376">Տեսնել այս մատակարարի <ph name="BEGIN_LINK" />գաղտնիության քաղաքականությունը<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
+<translation id="7517292544534877198">Օգտագործել Google-ի կանխադրված գաղտնագրումը գաղտնաբառերի համար ձեր Google հաշվում</translation>
 <translation id="7518079994230200553">Այս եղանակը ներկայումս հասանելի չէ։</translation>
 <translation id="751961395872307827">Չի հաջողվում միանալ կայքին</translation>
 <translation id="752220631458524187">Աշխատանքն ավարտեուց հետո անջատեք մալուխը</translation>
@@ -1278,6 +1288,7 @@
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="766587987807204883">Հոդվածները ցուցադրվում են այստեղ։ Դրանք կարող եք կարդալ նույնիսկ անցանց ռեժիմում։</translation>
+<translation id="7670101447063278728"><ph name="USERNAME" /> հաշվում պահված գաղտնաբառեր։</translation>
 <translation id="7682724950699840886">Փորձեք անել հետևյալը․ համոզվեք, որ ձեր սարքում բավարար տարածք կա և նորից փորձեք արտահանել։</translation>
 <translation id="7686086654630106285">Կայքերի կողմից առաջարկվող գովազդների մասին</translation>
 <translation id="768618399695552958">Ձեր կողմից այցելվող որոշ էջեր նախապես են բեռնվում։ Եթե հղումը կատարվում է Google-ի որևէ կայքից, նախաբեռնումը կարող է կատարվել Google-ի սերվերների միջոցով։</translation>
@@ -1352,6 +1363,7 @@
 <translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="8013372441983637696">Նաև մաքրել Chrome-ի ձեր տվյալներն այս սարքից</translation>
 <translation id="8015452622527143194">Էջում ամեն ինչ վերադարձնել կանխադրված չափին</translation>
+<translation id="8026238112629815203">Մենք փոխել ենք այս սարքում գաղտնաբառերի պահման եղանակը</translation>
 <translation id="8026334261755873520">Դիտարկումների տվյալների մաքրում</translation>
 <translation id="8027863900915310177">Ընտրեք, թե որտեղ է պետք ներբեռնել</translation>
 <translation id="8030852056903932865">Հաստատել</translation>
@@ -1389,6 +1401,7 @@
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>
 <translation id="8135406045838672858">Ներբեռնված PDF ֆայլերն ավտոմատ բացվում են <ph name="APP_NAME" /> հավելվածի միջոցով</translation>
 <translation id="8137562778192957619">Այս գաղտնաբառը հիշելու կարիք չկա։ Այն կպահվի Google գաղտնաբառերի կառավարչում։</translation>
+<translation id="8163820386638255770">Հաստատեք ձեր ինքնությունը՝ Google հաշվում գաղտնաբառեր օգտագործելու և պահելու համար</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Մնաց <ph name="FILES" /> ֆայլ</translation>
 <translation id="8190358571722158785">Մնացել է 1 օր</translation>
@@ -1405,7 +1418,6 @@
 <translation id="8237871086242677046">Էջի վիճակագրության ներքևի էկրան</translation>
 <translation id="8243077599929149377">Ավելացրեք ձեր օգտանունը</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Էջանիշը պահվեց <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}one{Էջանիշը պահվեց <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}other{Էջանիշները պահվեցին <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}}</translation>
 <translation id="8255617931166444521">Կայքերը կարող են օգտագործել քուքիներ՝ միայն իրենց էջերում ձեր գործողությունները հետագծելու համար։</translation>
 <translation id="8259179246279078674">Քանի որ նախապես բեռնված էջերը գաղտնագրված են, Google-ը ոչինչ չի իմանա դրանց բովանդակության մասին։ Google-ի սերվերները տեղեկություններ կստանան, թե որ կայքերն են անանուն կերպով նախաբեռնվել։ Այս տեղեկություններն օգտագործվում են միայն կայքերի նախաբեռնման համար և կապված չեն ձեր Google հաշվի մյուս տվյալների հետ։</translation>
 <translation id="8260126382462817229">Փորձեք նորից մուտք գործել</translation>
@@ -1538,6 +1550,7 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_ONE" /> այլ ներդիր կփակվեն}one{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիր կփակվեն}other{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիրներ կփակվեն}}</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="8972098258593396643">Ներբեռնե՞լ կանխադրված պանակ</translation>
+<translation id="8992769679401294069">Ձեր տվյալները գաղտնագրված են անցաբառով։ Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար մուտքագրեք ձեր անցաբառը։</translation>
 <translation id="8993760627012879038">Բացել նոր ներդիր ինկոգնիտո ռեժիմում</translation>
 <translation id="8996847606757455498">Ընտրել մեկ այլ մատակարար</translation>
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>

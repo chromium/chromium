@@ -45,7 +45,6 @@
 <translation id="123124571410524056">போர்டல் இருப்பதுபோல் தெரிகிறது</translation>
 <translation id="1232610416724362657">நீர்வீழ்ச்சி</translation>
 <translation id="1238612778414822719">HTTPS தாமதம்</translation>
-<translation id="1264369926465113395">Chromebookகின், கிரியேட்டர்களுக்கான புதிய டிஜிட்டல் பத்திரிகையைப் பார்க்கவும்</translation>
 <translation id="1270369111467284986">கேப்டிவ் போர்டல் இருப்பது போல் தெரிகிறது</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
 <translation id="1300115153046603471">இந்த APN இயல்பு மற்றும் <ph name="ATTACH" /> வகையைச் சேர்ந்தது.</translation>
@@ -293,6 +292,7 @@
 <translation id="2926057806159140518">உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் டைப் செய்யவும் அல்லது QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
 <translation id="2940811910881150316">சாதனத்தைச் சோதிக்க முடியவில்லை. சோதிக்க ஸ்கிரீனை மீண்டும் திறக்கவும்.</translation>
 <translation id="2941112035454246133">குறைவு</translation>
+<translation id="2956070106555335453">சுருக்கம்</translation>
 <translation id="299385721391037602">பிங்க் மற்றும் மஞ்சள்</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
@@ -555,7 +555,6 @@
 <translation id="4832079907277790330">Files ஆப்ஸில் ஃபோல்டரைத் தேர்ந்தெடு...</translation>
 <translation id="4835901797422965222">நெட்நொர்க்குகள் எதுவும் செயலில் இல்லை</translation>
 <translation id="4838825304062068169">பனிப்பாறை</translation>
-<translation id="4839698083503556542">சொந்த மூவியை உருவாக்குக</translation>
 <translation id="48409034532829769">உங்கள் நிர்வாகி "<ph name="APP_NAME" />" ஆப்ஸைத் தானாகவே தொடங்கும் வகையில் அமைத்துள்ளார். இந்த ஆப்ஸை மூட முடியாமல் போகலாம்.</translation>
 <translation id="484462545196658690">தானியங்கு</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> தேர்ந்தெடுக்கப்பட்டுள்ளது, <ph name="TOPIC_SOURCE" /> ஆல்பங்களைத் தேர்ந்தெடுக்க Enter விசையை அழுத்துங்கள்</translation>
@@ -784,7 +783,7 @@
 <translation id="6321407676395378991">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
 <translation id="6324916366299863871">ஷார்ட்கட்டைத் திருத்து</translation>
 <translation id="6325525973963619867">தோல்வி</translation>
-<translation id="6327262166342360252">இந்த ப்ராம்ப்ட்டுக்கு AI உருவாக்கிய வால்பேப்பர்: "<ph name="PROMPT" />."</translation>
+<translation id="6327262166342360252">இது "<ph name="PROMPT" />" என்பதற்கு AI உருவாக்கிய வால்பேப்பர்.</translation>
 <translation id="6331191339300272798">தானியங்கு டார்க் தீம்</translation>
 <translation id="6340526405444716530">பிரத்தியேகமாக்குதல்</translation>
 <translation id="6348738456043757611">பயனர்பெயர் &amp; கடவுச்சொல்</translation>

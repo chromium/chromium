@@ -95,6 +95,7 @@
 <translation id="7559245342362162951">Rādīt grupas cilnes pilnekrāna režģī</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Kopīgot <ph name="TABS_COUNT_ONE" /> atlasīto cilni}zero{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}one{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasīto cilni}other{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}}</translation>
 <translation id="7792771145871471484">Pārskatīt ieteikumus.</translation>
+<translation id="7825973332242257878">Ciļņu grupas</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupēt <ph name="TABS_COUNT_ONE" /> atlasīto cilni}zero{Grupēt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}one{Grupēt <ph name="TABS_COUNT_MANY" /> atlasīto cilni}other{Grupēt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> atsauksme}zero{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmju}one{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksme}other{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmes}}</translation>
 <translation id="7885132941432959125">Pārvietot cilni pa labi</translation>

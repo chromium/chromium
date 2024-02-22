@@ -44,7 +44,6 @@
 <translation id="123124571410524056">פורטל חשוד</translation>
 <translation id="1232610416724362657">מפל</translation>
 <translation id="1238612778414822719">‏זמן אחזור HTTPS</translation>
-<translation id="1264369926465113395">‏רוצה לעיין בכתב העת הדיגיטלי החדש של Chromebook ליוצרים?</translation>
 <translation id="1270369111467284986">יש חשד לפורטל שבוי</translation>
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1300115153046603471">‏ה-APN הוא מסוג ברירת מחדל ו<ph name="ATTACH" />.</translation>
@@ -290,6 +289,7 @@
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
 <translation id="2940811910881150316">לא ניתן לבדוק את המכשיר. צריך לפתוח את המכסה כדי לבצע את הבדיקה.</translation>
 <translation id="2941112035454246133">נמוכה</translation>
+<translation id="2956070106555335453">סיכום</translation>
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="3017079585324758401">רקע</translation>
@@ -549,7 +549,6 @@
 <translation id="4832079907277790330">בחירת תיקייה מהאפליקציה 'קבצים'…</translation>
 <translation id="4835901797422965222">אין רשתות פעילות</translation>
 <translation id="4838825304062068169">קרחון</translation>
-<translation id="4839698083503556542">ליצירת סרט משלך</translation>
 <translation id="48409034532829769">האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME" />. יכול להיות שהאפליקציה הזו לא סגורה.</translation>
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4847902821209177679">‏בחרת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> – יש להקיש על Enter כדי לבחור אלבומי <ph name="TOPIC_SOURCE" /></translation>

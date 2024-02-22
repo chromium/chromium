@@ -1941,6 +1941,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4989809363548539747">Este complemento no es compatible</translation>
 <translation id="4990241977441916452">Sobre A2</translation>
 <translation id="4992066212339426712">Dejar de silenciar</translation>
+<translation id="4994348767896109801">La personalización de un anuncio que ves puede depender de muchos factores, como este parámetro de configuración, los <ph name="BEGIN_LINK_1" />temas de anuncios<ph name="END_LINK_1" />, tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y si el sitio que estás viendo personaliza los anuncios. Obtén más información para <ph name="BEGIN_LINK_3" />administrar tu privacidad en los anuncios<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la búsqueda de sitios y tu motor de búsqueda predeterminado</translation>
 <translation id="4998950033665438990">Simple faz</translation>
@@ -3190,6 +3191,7 @@ Detalles adicionales:
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Por lo general, te conectas a este sitio de forma segura, pero Chrome no pudo usar una conexión segura esta vez. Es posible que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Los atacantes del sitio que intentas visitar podrían instalar software dañino que roba o borra elementos como tu contraseña, fotos, mensajes o número de tarjeta de crédito.</translation>
+<translation id="7608583484192556132">La personalización de un anuncio que ves puede depender de muchos factores, como este parámetro de configuración, los <ph name="BEGIN_LINK_1" />anuncios sugeridos por sitios<ph name="END_LINK_1" />, tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y si el sitio que estás viendo personaliza los anuncios. Obtén más información para <ph name="BEGIN_LINK_3" />administrar tu privacidad en los anuncios<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">El valor <ph name="VALUE" /> está fuera del rango.</translation>
 <translation id="7613889955535752492">Vencimiento: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para ver y administrar tus contraseñas en la configuración de Chrome</translation>
@@ -3445,6 +3447,7 @@ Detalles adicionales:
 <translation id="8118506371121007279">Enviar comentarios</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se instaló correctamente en tu computadora o red. Solicita al administrador de TI que corrija este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8133495915926741232">Elige qué categorías de temas generales se pueden utilizar para personalizar los anuncios. Si desactivas una categoría más general, también se bloquearán los temas relacionados. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Contratación y selección de personal</translation>
 <translation id="8135546115396015134">tecla izquierda</translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>
@@ -3452,6 +3455,7 @@ Detalles adicionales:
 <translation id="8150722005171944719">El archivo de <ph name="URL" /> no se puede leer. Es posible que se haya eliminado o movido o que se impida el acceso a los permisos del archivo.</translation>
 <translation id="8153865548451212769">{0,plural, =1{La política del administrador no recomienda descargar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda descargar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Equipo para hockey</translation>
+<translation id="815788908807586564">Chatea con Gemini</translation>
 <translation id="8161095570253161196">Reanudar la navegación</translation>
 <translation id="8163866351304776260">Perforación cuádruple a la izquierda</translation>
 <translation id="8164078261547504572">¿Quieres recibir correos electrónicos cuando bajen los precios?</translation>
@@ -3642,6 +3646,7 @@ Detalles adicionales:
 <translation id="8527228059738193856">Bocinas</translation>
 <translation id="8530813470445476232">Borra el historial de navegación, las cookies, la memoria caché y mucho más en la configuración de Chrome</translation>
 <translation id="853246364274116957">Broadway y teatro musical</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver la lista de URL bloqueadas y otras políticas que estableció el administrador del sistema.</translation>
 <translation id="8534934518812659742">Desactivaste <ph name="PERMISSION" /> para Chrome.</translation>
 <translation id="8536234749087605613">Sobre (con ventana)</translation>
@@ -3687,6 +3692,7 @@ Detalles adicionales:
 <translation id="8606988009912891950">Los temas de anuncios ayudan a los sitios a mostrarte anuncios relevantes al mismo tiempo que protegen tu identidad y tu historial de navegación. Chrome puede registrar temas de interés basados en tu historial de navegación reciente. Luego, los sitios que visites pueden consultar a Chrome sobre temas relevantes para personalizar los anuncios que verás.</translation>
 <translation id="8617269623452051934">uso de tu dispositivo</translation>
 <translation id="861775596732816396">Tamaño 4</translation>
+<translation id="8618975513789458065">Los temas de anuncios son solo una de las muchas opciones que un sitio puede usar para personalizar los anuncios. Incluso sin temas de anuncios, los sitios pueden seguir mostrándote anuncios, pero es posible que sean menos interesantes.</translation>
 <translation id="8620276786115098679">Sobre Kaku n.º 7</translation>
 <translation id="8623885649813806493">No se encontró una contraseña para este sitio. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8624354461147303341">Obtener descuentos</translation>

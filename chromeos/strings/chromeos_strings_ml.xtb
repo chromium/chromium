@@ -46,7 +46,6 @@
 <translation id="123124571410524056">പോർട്ടൽ ഉണ്ടെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1232610416724362657">വെള്ളച്ചാട്ടം</translation>
 <translation id="1238612778414822719">HTTPS പ്രതികരണ സമയം</translation>
-<translation id="1264369926465113395">Chromebook-ന്റെ സ്രഷ്‌ടാക്കൾക്കുള്ള പുതിയ ഡിജിറ്റൽ മാഗസിൻ പരിശോധിക്കുക</translation>
 <translation id="1270369111467284986">ക്യാപ്റ്റീവ് പോർട്ടൽ ആണെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1274654146705270731">ഓറഞ്ചുകൾ</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
@@ -322,6 +321,7 @@
 <translation id="2926057806159140518">നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും നൽകുക അല്ലെങ്കിൽ നിങ്ങളുടെ QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2940811910881150316">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലിഡ് വീണ്ടും തുറക്കുക.</translation>
 <translation id="2941112035454246133">താഴ്ന്ന</translation>
+<translation id="2956070106555335453">സംഗ്രഹം</translation>
 <translation id="299385721391037602">പിങ്കും മഞ്ഞയും</translation>
 <translation id="3008341117444806826">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
@@ -600,7 +600,6 @@
 <translation id="4832079907277790330">Files ആപ്പിൽ ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="4835901797422965222">സജീവമായ നെറ്റ്‌വർക്കുകളൊന്നുമില്ല</translation>
 <translation id="4838825304062068169">ഹിമപ്പരപ്പ്</translation>
-<translation id="4839698083503556542">സ്വന്തം സിനിമ സൃഷ്ടിക്കൂ</translation>
 <translation id="48409034532829769">സ്വയമേവ ആരംഭിക്കുന്നതിന് നിങ്ങളുടെ അഡ്‌മിൻ "<ph name="APP_NAME" />" സജ്ജീകരിച്ചിരിക്കുന്നു. ഈ ആപ്പ് അടച്ചേക്കില്ല.</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുത്തു, <ph name="TOPIC_SOURCE" /> ആൽബങ്ങൾ തിരഞ്ഞെടുക്കാൻ 'Enter' അമർത്തുക</translation>

@@ -702,6 +702,7 @@
 <translation id="4619564267100705184">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4619615317237390068">ከሌሎች መሣሪያዎች የመጡ ትሮች</translation>
 <translation id="4620246317052452550">እርስዎ ያነበቧቸው ገጾች</translation>
+<translation id="4620845369664293551">ይህንን ገጽ እዚህ ማጋራት ይችላሉ።</translation>
 <translation id="4620888520263267479">የአገናኝ ቅድመ-እይታዎችን አሳይ</translation>
 <translation id="4630540211544979320">ገጾችን ያስተርጉሙ</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃሎች</translation>
@@ -851,6 +852,7 @@
 <translation id="5339316356165661760">አስምርን ያብሩ</translation>
 <translation id="5343472494710226394">በዝንባሌዎችዎ ላይ የተመሰረተ ዜና፣ ስፖርት እና ይዘት።</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{ይህ ጥቅል ክትትል ይደረግበት?}one{{COUNT} ጥቅል ክትትል ይደረግበት?}other{{COUNT} ጥቅሎች ክትትል ይደረግባቸው?}}</translation>
+<translation id="5348775987281903912">ይህንን ገጽ ከአጋራ አዝራር እዚህ ማጋራት ይችላሉ።</translation>
 <translation id="536067926684072644">እልባቶችን አሳይ</translation>
 <translation id="5360976571138293719">ከግላዊነት፣ ደህንነት እና የውሂብ አሰባሰብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" />ን ይመልከቱ።</translation>
 <translation id="5379352933722332597">{count,plural, =1{ዕልባት ወደ «{title}» ተቀምጧል። በዚህ መሣሪያ ላይ ብቻ ነው የተቀመጠው።}one{{count} ዕልባት ወደ «{title}» ተቀምጧል። በዚህ መሣሪያ ላይ ብቻ ነው የተቀመጠው።}other{{count} ዕልባቶች ወደ «{title}» ተቀምጠዋል። እነዚህ ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል።}}</translation>

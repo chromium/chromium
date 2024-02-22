@@ -1080,7 +1080,6 @@
 <translation id="670498945988402717">התבצעה בדיקה אתמול</translation>
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="671481426037969117">זמן השימוש באפליקציה <ph name="FQDN" /> הסתיים. הטיימר יופעל מחדש מחר ואז אפשר יהיה להשתמש שוב באפליקציה.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{הסימנייה נשמרה בתיקייה ’<ph name="FOLDER_NAME" />‘. היא שמורה רק במכשיר הזה.}one{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}two{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}other{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}}</translation>
 <translation id="6715020873764921614">רוצה להוריד את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) בכל זאת?</translation>
 <translation id="6719634564325948108">‏לקשר באמצעות קוד QR?</translation>
 <translation id="6723740634201835758">‏בחשבון Google שלך</translation>
@@ -1405,7 +1404,6 @@
 <translation id="8237871086242677046">הגיליון התחתון של התובנות לגבי הדף</translation>
 <translation id="8243077599929149377">הוספה של שם המשתמש</translation>
 <translation id="8250920743982581267">מסמכים</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{הסימנייה נשמרה בתיקייה ’<ph name="FOLDER_NAME" />‘ בחשבון שלך, <ph name="ACCOUNT_EMAIL" />.}one{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘ בחשבון שלך, <ph name="ACCOUNT_EMAIL" />.}two{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘ בחשבון שלך, <ph name="ACCOUNT_EMAIL" />.}other{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘ בחשבון שלך, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">‏אתרים יכולים להשתמש בקובצי ה-cookie רק כדי לראות את פעילות הגלישה שלך שמתבצעת בהם בלבד, ולא באתרים אחרים</translation>
 <translation id="8259179246279078674">‏מפני שהדפים שנטענים מראש מוצפנים, Google לא תקבל מידע על תוכן הדף שנטען מראש. שרתי Google יגלו אילו אתרים נטענים מראש באופן פרטי. המידע הזה משמש רק לטעינה מראש של הדפים והוא לא מקושר למידע אחר מחשבון Google שלך.</translation>
 <translation id="8260126382462817229">יש להיכנס שוב</translation>
@@ -1449,6 +1447,7 @@
 <translation id="8460448946170646641">בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה</translation>
 <translation id="8466613982764129868">יש לוודא ש-<ph name="TARGET_DEVICE_NAME" /> מחובר לאינטרנט</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
+<translation id="8478751349603791277">‏אפשר לקבוע איך ההיסטוריה המסונכרנת תשמש להתאמה אישית של שירותי Google אחרים</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">פתיחת דף ההיסטוריה</translation>
 <translation id="8493948351860045254">פינוי נפח אחסון</translation>

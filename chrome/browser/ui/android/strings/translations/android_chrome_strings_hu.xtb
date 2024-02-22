@@ -1089,7 +1089,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="670498945988402717">Tegnap volt ellenőrizve</translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="671481426037969117">A(z) <ph name="FQDN" /> alkalmazás időzítése lejárt. Holnap újraindul.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Könyvjelző mentve ide: <ph name="FOLDER_NAME" />. Csak erre az eszközre van mentve.}other{Könyvjelzők mentve ide: <ph name="FOLDER_NAME" />. Csak erre az eszközre vannak mentve.}}</translation>
 <translation id="6715020873764921614">Mindenképpen le szeretné tölteni a következő fájlt: <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">QR-kóddal szeretne csatlakozni?</translation>
 <translation id="6723740634201835758">Google-fiókban</translation>
@@ -1419,7 +1418,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8237871086242677046">Oldalstatisztikák – alsó lap</translation>
 <translation id="8243077599929149377">Adja meg felhasználónevét</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Könyvjelző mentve a(z) <ph name="FOLDER_NAME" /> mappába a fiókjában (<ph name="ACCOUNT_EMAIL" />).}other{Könyvjelzők mentve a(z) <ph name="FOLDER_NAME" /> mappába a fiókjában (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8255617931166444521">A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék az Ön, csak a saját webhelyükön végzett böngészési tevékenységeit</translation>
 <translation id="8259179246279078674">Mivel az előre betöltött oldalak titkosítottak, a Google semmilyen információt nem tud meg az előre betöltött oldal tartalmával kapcsolatban. A Google-szerverek csak annyit tudnak majd meg, hogy mely webhelyek töltődnek be előre privát módon. Ez az információ csak az oldalak előtöltésére szolgálnak, és a rendszer nem kapcsolja össze őket az Ön Google-fiókjából származó egyéb információkkal.</translation>
 <translation id="8260126382462817229">Próbáljon meg újra bejelentkezni</translation>

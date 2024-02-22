@@ -875,7 +875,7 @@
 <translation id="5687606994963670306">‏يحذف Chrome تلقائيًا المواقع الإلكترونية التي يمر أكثر من 30 يومًا على إضافتها إلى قائمة "المواقع الإلكترونية التي تقترح الإعلانات". وقد يظهر في القائمة مجددًا أي موقع إلكتروني تكرِّر زيارته. يمكنك أيضًا منع موقع إلكتروني معيّن من اقتراح إعلانات لك. مزيد من المعلومات حول <ph name="BEGIN_LINK" />إدارة الخصوصية في عرض الإعلانات في Chrome<ph name="END_LINK" /></translation>
 <translation id="569435661099256888">يمكنك الاطّلاع على الصفحات التي زرتها أو محوها من السجلّ.</translation>
 <translation id="569536719314091526">ترجمة هذه الصفحة إلى أي لغة من خلال الزر "مزيد من الخيارات"</translation>
-<translation id="5696597120588531049">‏يستطيع Chrome مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
+<translation id="5696597120588531049">‏يستطيع Chrome مساعدتك في حماية معلوماتك من عمليات الاختراق والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="5698878456427040674">تحقَّق مما إذا كان الحساب الذي اخترته صحيحًا.</translation>
 <translation id="570347048394355941">‏التبديل إلى مفتاح التبويب (Tab)</translation>
 <translation id="5715150588940290235">هل تريد حذف رموز الأمان المحفوظة؟</translation>
@@ -1091,7 +1091,6 @@
 <translation id="670498945988402717">تمّ إجراء عملية التحقُّق أمس.</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="671481426037969117">انقضى وقت موقّت <ph name="FQDN" />، وسيبدأ عمله مرّةً أخرى غدًا.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{تم حفظ الإشارة المرجعية في مجلّد "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}zero{تم حفظ الإشارات المرجعية في مجلّد "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}two{تم حفظ الإشارتَين المرجعيتَين في مجلّد "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}few{تم حفظ الإشارات المرجعية في مجلّد "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}many{تم حفظ الإشارات المرجعية في مجلّد "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}other{تم حفظ الإشارات المرجعية في مجلّد "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}}</translation>
 <translation id="6715020873764921614">هل تريد تنزيل <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) على أي حال؟</translation>
 <translation id="6719634564325948108">هل تريد ربط جهاز كمبيوتر باستخدام رمز الاستجابة السريعة؟</translation>
 <translation id="6723740634201835758">‏في حسابك على Google</translation>
@@ -1423,7 +1422,6 @@
 <translation id="8237871086242677046">البطاقة السفلية لإحصاءات الصفحة</translation>
 <translation id="8243077599929149377">إضافة اسم المستخدم</translation>
 <translation id="8250920743982581267">المستندات</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{تم حفظ الإشارة المرجعية في مجلّد "<ph name="FOLDER_NAME" />" في حسابك <ph name="ACCOUNT_EMAIL" />.}zero{تم حفظ الإشارات المرجعية في مجلّد "<ph name="FOLDER_NAME" />" في حسابك <ph name="ACCOUNT_EMAIL" />.}two{تم حفظ الإشارتَين المرجعيتَين في مجلّد "<ph name="FOLDER_NAME" />" في حسابك <ph name="ACCOUNT_EMAIL" />.}few{تم حفظ الإشارات المرجعية في مجلّد "<ph name="FOLDER_NAME" />" في حسابك <ph name="ACCOUNT_EMAIL" />.}many{تم حفظ الإشارات المرجعية في مجلّد "<ph name="FOLDER_NAME" />" في حسابك <ph name="ACCOUNT_EMAIL" />.}other{تم حفظ الإشارات المرجعية في مجلّد "<ph name="FOLDER_NAME" />" في حسابك <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط إلا للاطّلاع على نشاط تصفّحك على تلك المواقع.</translation>
 <translation id="8259179246279078674">‏لن تطلِع Google على محتوى صفحات الويب التي يتم تحميلها مُسبقًا لأنّ هذه الصفحات يتم تشفيرها. ستتعرّف خوادم Google على المواقع الإلكترونية التي يتم تحميلها مُسبقًا بخصوصية. لا يتم استخدام هذه المعلومات إلّا لتحميل صفحات الويب مُسبقًا، ولا يتم ربطها بمعلومات أخرى من حسابك في Google.</translation>
 <translation id="8260126382462817229">محاولة تسجيل الدخول مرة أخرى</translation>
@@ -1467,6 +1465,7 @@
 <translation id="8460448946170646641">مراجعة العناصر الرئيسية للتحكّم في الخصوصية والأمان</translation>
 <translation id="8466613982764129868">يُرجى التأكُّد من اتصال الجهاز <ph name="TARGET_DEVICE_NAME" /> بالإنترنت.</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
+<translation id="8478751349603791277">‏التحكُّم في كيفية استخدام سجلّك الذي تمت مزامنته لتخصيص خدمات Google الأخرى</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">فتح صفحة السجل</translation>
 <translation id="8493948351860045254">تفريغ بعض المساحة</translation>

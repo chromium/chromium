@@ -287,6 +287,7 @@
 <translation id="2473876017985765807">તમે <ph name="WEBSITE" /> માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2476359652512522418">પસંદ કરેલું નથી</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
+<translation id="2480445180439820402">ઇતિહાસ</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
 <translation id="2484459871750294497">હું આ સુવિધા કેવી રીતે ચાલુ કરું?</translation>
 <translation id="2496626742194544812">પહેલી ટૅબ પર જાઓ</translation>
@@ -577,6 +578,7 @@
 <translation id="3962326069546168954">સાચવો</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="3968505803272650567">રુચિઓ મેનેજ કરો</translation>
+<translation id="3976922811715736829">તાજેતરના ટૅબ</translation>
 <translation id="3989635538409502728">સાઇન આઉટ</translation>
 <translation id="3994422733891749358">તમે મેળવવા હોય તે નોટિફિકેશન પસંદ કરો</translation>
 <translation id="3995521777587992544">પેજ લોડ પ્રોગ્રેસ બાર, <ph name="EMAIL" /> લોડ થયો.</translation>
@@ -635,6 +637,7 @@
 <translation id="4281844954008187215">સેવાની શરતો</translation>
 <translation id="4282944936010261425">તમારે ઠીક કરવી પડે એવી કોઈ સુરક્ષા સંબંધિત સમસ્યા નથી.</translation>
 <translation id="4286718549648564014">સરનામું તમારા એકાઉન્ટ <ph name="USER_EMAIL" /> પર ખસેડવામાં આવ્યું</translation>
+<translation id="428768789042547925">નવું શું છે</translation>
 <translation id="4293080268407233932">શોધો</translation>
 <translation id="4302248187517737842">કોઈ વપરાશકર્તાનું નામ નથી ••••••••</translation>
 <translation id="4302415908542657649">પાસવર્ડ શેર કરી રહ્યાં છીએ</translation>
@@ -689,6 +692,7 @@
 <translation id="4587589328781138893">સાઇટ</translation>
 <translation id="4588014171431912783">તમારા છેલ્લા બૅકઅપના આધારે તમારા સિંક કરેલા સેટિંગ રિસ્ટોર કરવામાં આવશે. <ph name="BEGIN_LINK" />તમે શું સિંક કરી શકો, તે જાણો<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">કીબોર્ડ</translation>
+<translation id="4596899661486753028">વાંચન સૂચિ</translation>
 <translation id="4601095002996233687">શંકાસ્પદ ડાઉનલોડ માટે સવિસ્તર સ્કૅનની સુવિધા.</translation>
 <translation id="4606247758155004938">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે.</translation>
 <translation id="4607887340472970274">કિંમત ટ્રૅક કરવી</translation>
@@ -1153,6 +1157,7 @@
 <translation id="6807889908376551050">બધું બતાવો...</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6822587385560699678">જ્યારે આ ચાલુ હોય, ત્યારે પાસવર્ડ <ph name="ACCOUNT" />માં સાચવવામાં આવે છે. જ્યારે આ બંધ હોય, ત્યારે પાસવર્ડ માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
+<translation id="6824350924364057989">સેટિંગ</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
 <translation id="6842136130964845393">તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6851516051005285358">ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
@@ -1191,6 +1196,7 @@
 <translation id="7004499039102548441">તાજેતરના ટૅબ્સ</translation>
 <translation id="7006788746334555276">કન્ટેન્ટ સેટિંગ</translation>
 <translation id="7016070607649558507">તમારી પાસે 1 નબળો પાસવર્ડ છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.</translation>
+<translation id="7022197654033719543">સાઇટની માહિતી</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="704692552158601232">ડિફૉલ્ટ બ્રાઉઝર ઍપ</translation>
 <translation id="7062545763355031412">સ્વીકારો અને એકાઉન્ટ્સ સ્વિચ કરો</translation>
@@ -1290,6 +1296,7 @@
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) અવરોધિત પૉપ-અપ્સ</translation>
 <translation id="7606639338662398635">ટૅબના ગ્રૂપ</translation>
 <translation id="7607521702806708809">પાસવર્ડ ડિલીટ કરો</translation>
+<translation id="7609559547731036746">બુકમાર્ક</translation>
 <translation id="7638584964844754484">ખોટો પાસફ્રેઝ</translation>
 <translation id="7640669552036055091">Androidમાંથી ટૅબ</translation>
 <translation id="7646263789464975852">મેનૂ → સેટિંગ → સલામતી માટે તપાસ</translation>
@@ -1327,8 +1334,10 @@
 <translation id="7781069478569868053">નવું ટૅબ પેજ</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 દિવસ પછી}one{{COUNT} દિવસ પછી}other{{COUNT} દિવસ પછી}}</translation>
+<translation id="7788868432173225918">મોટો કરેલો વ્યૂ છોડી દો</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="7792549458069452436">ઍપ મેળવો</translation>
+<translation id="7800723706644914607">Password Manager</translation>
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
 <translation id="7812377703891978671">તમે <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> પસંદ કરીને તમારો તમામ બ્રાઉઝિંગ ઇતિહાસ ઍક્સેસ કરી શકો છો.</translation>
 <translation id="78146569776629510">ડાઉનલોડ</translation>
@@ -1401,6 +1410,7 @@
 <translation id="81313319706244542">2. પાસવર્ડ પર ટૅપ કરો</translation>
 <translation id="8132598642024322408">હવે <ph name="PRICE" /> છે, પહેલાં <ph name="PREVIOUS_PRICE" /> હતી.</translation>
 <translation id="813370552429173916">દરેક સાઇટ અથવા ઍપ પર વિશિષ્ટ પાસવર્ડનો ઉપયોગ કરો. જો કોઈને ફરીથી ઉપયોગમાં લેવાયેલો પાસવર્ડ મળે, તો તે પાસવર્ડ તમારા અન્ય એકાઉન્ટને ઍક્સેસ કરવામાં ઉપયોગમાં લેવામાં આવી શકે છે. વેબસાઇટ ખોલવા ક્લિક કરો અને હમણાં જ પાસવર્ડ બદલો.</translation>
+<translation id="814463369662540460">કિંમત ટ્રૅક કરો</translation>
 <translation id="8156478151976189188">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> એકાઉન્ટ્સ</translation>
 <translation id="8159358225423560600">હમણાં જ</translation>
@@ -1508,6 +1518,7 @@
 <translation id="8703536910991780768">તમારા પાસવર્ડ સશક્ત જણાય છે</translation>
 <translation id="8706253136355675497">તાપમાન</translation>
 <translation id="8709409604518538305">ટૅબ બંધ કરવામાં આવી</translation>
+<translation id="8709773186849937451">ડાઉનલોડ</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8717864919010420084">લિંકની કૉપિ કરો</translation>
 <translation id="8721297211384281569">સાધન મેનૂ</translation>

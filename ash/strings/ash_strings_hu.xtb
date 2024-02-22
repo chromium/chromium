@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">Nincs hálózat</translation>
 <translation id="1056898198331236512">Figyelmeztetés</translation>
 <translation id="1058009965971887428">Visszajelzés küldése</translation>
+<translation id="1059120031266247284">Önnel megosztva</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Csere</translation>
 <translation id="1073899992769346247">Cserélje ki vagy töltse fel az akkumulátort</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="3580650856351781466">Beszédfájlok letöltése…</translation>
 <translation id="3585296979871889131">A telefonján lévő legutóbbi fotók, médiatartalmak, értesítések és alkalmazások megtekintése</translation>
+<translation id="358832729276157756">1. ExpressKey</translation>
 <translation id="3590441166907930941">Oldalsó gomb</translation>
 <translation id="3593039967545720377">Nyomja le a(z) <ph name="SHORTCUT_KEY_NAME" /> + V billentyűkombinációt a vágólap előzményeinek megtekintéséhez. Kezdésként másoljon valamit a vágólapra.</translation>
 <translation id="3593646411856133110">Felfelé csúsztatva és nyomva tartva megjelenik a többi alkalmazás</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">Bemenet</translation>
 <translation id="3621712662352432595">Hangbeállítások</translation>
 <translation id="3626281679859535460">Fényerő</translation>
+<translation id="3628323833346754646">Elülső gomb</translation>
 <translation id="3630697955794050612">ki</translation>
 <translation id="3631369015426612114">Értesítések engedélyezése a következőktől:</translation>
 <translation id="3633097874324966332">Eszköze párosításához nyissa meg a Bluetooth beállításait</translation>
@@ -1285,6 +1288,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="6052614013050385269">Jobb kattintás egy linkre</translation>
 <translation id="6054305421211936131">Bejelentkezés intelligens kártyával</translation>
 <translation id="6059276912018042191">Nemrég megnyitott Chrome-lapok</translation>
+<translation id="606147842285839995">3. ExpressKey</translation>
 <translation id="6062360702481658777">A rendszer automatikusan kijelentkezteti Önt <ph name="LOGOUT_TIME_LEFT" /> idő múlva.</translation>
 <translation id="6064463340679478396">Már nem használom a fájlt</translation>
 <translation id="6068258534237496331">Videohívási vezérlők</translation>
@@ -1346,6 +1350,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="6309219492973062892">Kattintson vagy koppintson a polcon lévő ikonokra (1–8)</translation>
 <translation id="6315170314923504164">Hang</translation>
 <translation id="6319058840130157106">Mozgás visszafelé a jobb alsó sarok, az Indító, a címsáv, a könyvjelzősáv, a megnyitott webhely és a letöltések között</translation>
+<translation id="6319503618073410818">Részletek megtekintése böngészőben</translation>
 <translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>
 <translation id="6330012934079202188">Most az összes asztal ablakait mutatja; az aktuális asztal ablakainak megjelenítéséhez nyomja meg a felfelé nyilat</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> által kezelt munkamenet</translation>
@@ -1566,6 +1571,7 @@ Frissen telepítve</translation>
 <translation id="7229029500464092426">Memória <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> összesen</translation>
 <translation id="7244725679040769470">Az akkumulátor töltöttségi szintje: <ph name="PERCENTAGE" />%. Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. A Chromebookot újra kell indítani a frissítés alkalmazásához. Ez akár egy percig is eltarthat.</translation>
+<translation id="7256057185598509352">2. ExpressKey</translation>
 <translation id="7256634071279256947">Hátulsó mikrofon</translation>
 <translation id="7258828758145722155">Tegnap szerkesztette</translation>
 <translation id="726276584504105859">Húzza ide az osztott képernyő használatához</translation>
@@ -1693,6 +1699,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7742327441377685481">Nincs értesítés</translation>
 <translation id="7748275671948949022">Az indítógomb kiemelése a polcon</translation>
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
+<translation id="7749958366403230681">4. ExpressKey</translation>
 <translation id="776344839111254542">Kattintson a frissítés részleteinek megtekintéséhez</translation>
 <translation id="7768784765476638775">Felolvasás</translation>
 <translation id="7769299611924763557">A GIF hamarosan elkészül.</translation>
@@ -2020,6 +2027,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9098969848082897657">Telefon némítása</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> vagy <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Utolsó művelet visszavonása</translation>
+<translation id="9129245940793250979">Hátsó gomb</translation>
 <translation id="9133335900048457298">Nem lehet rögzíteni védett tartalmakat</translation>
 <translation id="9139720510312328767">Következő betű törlése</translation>
 <translation id="9151906066336345901">end</translation>

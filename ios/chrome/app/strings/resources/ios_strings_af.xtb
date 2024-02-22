@@ -569,6 +569,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3922310737605261887">Soek vir gekopieerde teks</translation>
 <translation id="3928666092801078803">Kombineer my data</translation>
 <translation id="3929457972718048006">Adresse</translation>
+<translation id="3939505428630887612">Meer Oor Hierdie Bladsy</translation>
 <translation id="3948600256434252210">Jy kan ook regs swiep om in Incognito te blaai.</translation>
 <translation id="3955822496205734389">Jy het swak wagwoorde.</translation>
 <translation id="3958312024468322930">Sleep dit na die dok onderaan jou tuisskerm</translation>
@@ -583,6 +584,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4002019827078931033">Skuif adresbalk na bo</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik.</translation>
+<translation id="4008355329784586136">Gaan jou verstekblaaierinstellings na</translation>
 <translation id="4018310736049373830">Bestuur aktiwiteit</translation>
 <translation id="4021931095789478915">Voeg ${url} by leeslys</translation>
 <translation id="4038354071007134711">Geen program op hierdie toestel kan die lêer oopmaak nie.</translation>
@@ -631,6 +633,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4277990410970811858">Veiligblaai</translation>
 <translation id="4279431713294750185">Jy kan die rand swiep om terug of vorentoe te gaan.</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
+<translation id="4282944936010261425">Daar is geen sekuriteitkwessies vir jou om reg te stel nie.</translation>
 <translation id="4286718549648564014">Adres is na jou rekening <ph name="USER_EMAIL" /> toe geskuif</translation>
 <translation id="4293080268407233932">Soek</translation>
 <translation id="4302248187517737842">Geen gebruikernaam nie ••••••••</translation>
@@ -1280,6 +1283,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7557508262441527045">Afgemeld</translation>
 <translation id="7561196759112975576">Altyd</translation>
 <translation id="7564917801238348224">STOOR …</translation>
+<translation id="7569588934989281656">Jy kan die oortjiestrook swiep om tussen oortjies te wissel.</translation>
 <translation id="7582857256643797524">Die instelling is op jou toestel geaktiveer</translation>
 <translation id="7583004045319035904">Gebruik <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> om jou Incognito-oortjies te ontsluit.</translation>
 <translation id="7600965453749440009">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
@@ -1415,6 +1419,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8248969482078657578">Onaktiewe Oortjies help jou om gefokus te bly</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8263336784344783289">Gee hierdie groep 'n naam</translation>
+<translation id="8263809106706527890">Daar is dalk ’n verandering aan jou verstekblaaierinstellings gemaak. Jy kan dit in instellings nagaan.</translation>
 <translation id="8264966119170358612">Sommige van jou gestoorde wagwoorde is blootgestel in ’n nie-Google-dataskending. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Jy is as deel van jou iPad-terugstelling uit jou rekening, <ph name="USER_NAME" />, afgemeld. Tik op “Gaan voort” hier onder om weer aan te meld.</translation>
 <translation id="8271720166617117963">Aanvaar en meld aan</translation>

@@ -95,6 +95,7 @@
 <translation id="7559245342362162951">Shfaq skedat e grupit në rrjetën me ekran të plotë</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Ndaj <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Ndaj <ph name="TABS_COUNT_MANY" /> skedat e zgjedhura}}</translation>
 <translation id="7792771145871471484">Rishiko sugjerimet.</translation>
+<translation id="7825973332242257878">Grupet e skedave</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupo <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Grupo <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> koment}other{Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> komente}}</translation>
 <translation id="7885132941432959125">Lëviz skedën djathtas</translation>

@@ -702,6 +702,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4619564267100705184">Patvirtinti tapatybę</translation>
 <translation id="4619615317237390068">Skirtukai iš kitų įrenginių</translation>
 <translation id="4620246317052452550">Perskaityti puslapiai</translation>
+<translation id="4620845369664293551">Čia galite bendrinti šį puslapį.</translation>
 <translation id="4620888520263267479">Nuorodų peržiūrų rodymas</translation>
 <translation id="4630540211544979320">Versti puslapius</translation>
 <translation id="4631335160486397366">Pakartotinai naudojamų slaptažodžių: <ph name="COUNT" /></translation>
@@ -851,6 +852,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5339316356165661760">Įjungti sinchronizavimą</translation>
 <translation id="5343472494710226394">Naujienos, sportas ir turinys pagal jūsų pomėgius.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Stebėti šį paketą?}one{Stebėti {COUNT} paketą?}few{Stebėti {COUNT} paketus?}many{Stebėti {COUNT} paketo?}other{Stebėti {COUNT} paketų?}}</translation>
+<translation id="5348775987281903912">Čia galite bendrinti šį puslapį naudodami bendrinimo mygtuką.</translation>
 <translation id="536067926684072644">Rodyti žymes</translation>
 <translation id="5360976571138293719">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyje <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Žymė išsaugota skiltyje „{title}“. Ji išsaugoma tik šiame įrenginyje.}one{{count} žymė išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}few{{count} žymės išsaugotos skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}many{{count} žymės išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}other{{count} žymių išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}}</translation>
@@ -1584,6 +1586,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9000089900434778519">Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
 <translation id="9012585441087414258">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Jei puslapyje atliekami įtartini veiksmai, URL ir puslapio turinio dalys siunčiami „Google“ saugaus naršymo paslaugai.</translation>
+<translation id="9025203546212508704">Perbraukite, kad sužinotumėte, kaip tinkinti meniu</translation>
 <translation id="9029650858822697271">Buvote atjungti</translation>
 <translation id="9034759925968272072">Nebūsite atjungti nuo „Google“ paskyros. Adresu <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros istorija.</translation>
 <translation id="9037965129289936994">Rodyti originalą</translation>

@@ -1080,7 +1080,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="670498945988402717">A comprobación realizouse onte</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">O temporizador de <ph name="FQDN" /> chegou ao final. Volverá comezar mañá.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{O marcador gardouse en <ph name="FOLDER_NAME" />. Só está gardado neste dispositivo.}other{Os marcadores gardáronse en <ph name="FOLDER_NAME" />. Só están gardados neste dispositivo.}}</translation>
 <translation id="6715020873764921614">Queres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de todas as formas?</translation>
 <translation id="6719634564325948108">Queres conectarte cun código QR?</translation>
 <translation id="6723740634201835758">Na túa Conta de Google</translation>
@@ -1405,7 +1404,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8237871086242677046">Panel inferior de estatísticas da páxina</translation>
 <translation id="8243077599929149377">Engade un nome de usuario</translation>
 <translation id="8250920743982581267">Documentos</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{O marcador gardouse en <ph name="FOLDER_NAME" />, na túa conta (<ph name="ACCOUNT_EMAIL" />).}other{Os marcadores gardáronse en <ph name="FOLDER_NAME" />, na túa conta (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8255617931166444521">Os distintos sitios só poden utilizar as túas cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio</translation>
 <translation id="8259179246279078674">Como as páxinas precargadas están encriptadas, Google non recibirá información sobre o seu contido. Os nosos servidores saberán que sitios se precargan de forma privada. Esta información só se utilizará para precargar as páxinas e non se vinculará a outros datos da túa Conta de Google.</translation>
 <translation id="8260126382462817229">Proba a volver iniciar sesión</translation>

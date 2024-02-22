@@ -1940,6 +1940,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4989809363548539747">Hierdie inprop word nie gesteun nie</translation>
 <translation id="4990241977441916452">Koevert A2</translation>
 <translation id="4992066212339426712">Ontdemp</translation>
+<translation id="4994348767896109801">Of ’n advertensie wat jy sien gepersonaliseer is, kan van baie dinge afhang, insluitend hierdie instelling, <ph name="BEGIN_LINK_1" />advertensie-onderwerpe<ph name="END_LINK_1" />, jou <ph name="BEGIN_LINK_2" />webkoekie-instellings<ph name="END_LINK_2" />, en of die werf waarna jy kyk advertensies personaliseer. Meer inligting oor die <ph name="BEGIN_LINK_3" />bestuur van jou advertensieprivaatheid<ph name="END_LINK_3" /></translation>
 <translation id="4995474875135717171">Verander:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om werf se soekfunksie en jou versteksoekenjin te bestuur</translation>
 <translation id="4998950033665438990">Enkelplatkant</translation>
@@ -3189,6 +3190,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7600965453749440009">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
 <translation id="7601297359530599375">Jy koppel hierdie werf gewoonlik veilig, maar Chrome kon nie hierdie keer ’n veilige verbinding gebruik nie. ’n Aanvaller probeer dalk afluister of jou netwerkverbinding wysig. <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Aanvallers op die werf wat jy probeer besoek, kan skadelike sagteware installeer wat dinge soos jou wagwoord, foto’s, boodskappe of kredietkaartnommer steel of uitvee.</translation>
+<translation id="7608583484192556132">Of ’n advertensie wat jy gesien gepersonaliseer is, kan van baie dinge afhang, insluitend hierdie instelling, <ph name="BEGIN_LINK_1" />webwerfvoorgestelde advertensies<ph name="END_LINK_1" />, jou <ph name="BEGIN_LINK_2" />webkoekie-instellings<ph name="END_LINK_2" />, en of die werf waarna jy kyk advertensies personaliseer. Meer inligting oor die <ph name="BEGIN_LINK_3" />bestuur van jou advertensieprivaatheid<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Waarde is buite die reeks <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Verval: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou wagwoorde in Chrome-instellings te bekyk en te bestuur</translation>
@@ -3444,6 +3446,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8118506371121007279">Gee terugvoer</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" is nie behoorlik op jou rekenaar of netwerk geïnstalleer nie. Vra jou IT-administrateur om hierdie probleem op te los.</translation>
 <translation id="8131740175452115882">Bevestig</translation>
+<translation id="8133495915926741232">Kies watter breë kategorieë onderwerpe gebruik kan word om te help om advertensies te personaliseer. As ’n breër kategorie afgeskakel word, sal dit ook die verwante onderwerpe van die kategorie blokkeer. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Werwing en personeel</translation>
 <translation id="8135546115396015134">linkersleutel</translation>
 <translation id="8148608574971654810">PDF-weergawe:</translation>
@@ -3451,6 +3454,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8150722005171944719">Die lêer by <ph name="URL" /> is nie leesbaar nie. Dit is dalk verwyder, geskuif of lêertoestemmings kan dalk toegang verhinder.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe aflaai nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe aflaai nie}}</translation>
 <translation id="81563721597823545">Hokkietoerusting</translation>
+<translation id="815788908807586564">Klets met Gemini</translation>
 <translation id="8161095570253161196">Hervat blaai</translation>
 <translation id="8163866351304776260">Vierpons links</translation>
 <translation id="8164078261547504572">Wil jy e-posse ontvang wanneer pryse daal?</translation>
@@ -3641,6 +3645,7 @@ Bykomende besonderhede:
 <translation id="8527228059738193856">Luidsprekers</translation>
 <translation id="8530813470445476232">Vee jou blaaigeskiedenis, webkoekies, kasgeheue en meer in Chrome-instellings uit</translation>
 <translation id="853246364274116957">Broadway en musiekteater</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Besoek &lt;strong&gt;chrome://policy&lt;/strong&gt; om die lys geblokkeerde URL'e en ander beleide wat jou stelseladministrateur toepas te sien.</translation>
 <translation id="8534934518812659742">Jy het <ph name="PERMISSION" /> vir Chrome afgeskakel.</translation>
 <translation id="8536234749087605613">Koevert (venster)</translation>
@@ -3685,6 +3690,7 @@ Bykomende besonderhede:
 <translation id="8606988009912891950">Advertensie-onderwerpe help werwe om vir jou relevante advertensies te wys terwyl dit jou blaaigeskiedenis en identiteit beskerm. Chrome kan kennis neem van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis. ’n Werf wat jy besoek, kan vir Chrome later vir relevante onderwerpe vra om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="8617269623452051934">jou toestelgebruik</translation>
 <translation id="861775596732816396">Grootte 4</translation>
+<translation id="8618975513789458065">Advertensie-onderwerpe is net een van baie dinge wat ’n werf kan gebruik om advertensies te personaliseer. Werwe kan selfs sonder advertensie-onderwerpe steeds vir jou advertensies wys, maar dit kan minder interessant wees.</translation>
 <translation id="8620276786115098679">Koevert Kaku 7</translation>
 <translation id="8623885649813806493">Geen passende wagwoorde nie. Wys alle gestoorde wagwoorde.</translation>
 <translation id="8624354461147303341">Kry afslag</translation>

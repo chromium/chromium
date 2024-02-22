@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1056898198331236512">ଚେତାବନୀ</translation>
 <translation id="1058009965971887428">ମତାମତର ରିପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="1059120031266247284">ଆପଣଙ୍କ ସହ ସେୟାର କରଯାଇଛି</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">ପ୍ରତିସ୍ଥାପନ କରନ୍ତୁ</translation>
 <translation id="1073899992769346247">ବ୍ୟାଟେରୀ ବଦଳାନ୍ତୁ କିମ୍ବା ଏହାକୁ ରିଚାର୍ଜ କରନ୍ତୁ</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3580650856351781466">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଉଛି</translation>
 <translation id="3585296979871889131">ଆପଣଙ୍କ ଫୋନର ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ, ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସକୁ ଭ୍ୟୁ କରନ୍ତୁ</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">ସାଇଡ ବଟନ</translation>
 <translation id="3593039967545720377">ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡ ଦେଖିବାକୁ <ph name="SHORTCUT_KEY_NAME" /> + V ଦବାଇ ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡ ଇତିହାସକୁ ଆକ୍ସେସ୍ କରନ୍ତୁ। ଆରମ୍ଭ କରିବାକୁ ଏକ ଆଇଟମ୍ କପି କରନ୍ତୁ।</translation>
 <translation id="3593646411856133110">ଖୋଲା ଥିବା ଆପଗୁଡ଼ିକୁ ଦେଖିବାକୁ ଉପରକୁ ଉଠାଇ ଧରି ରଖନ୍ତୁ</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">ଇନ୍‌ପୁଟ୍</translation>
 <translation id="3621712662352432595">ଅଡିଓ ସେଟିଂସ୍</translation>
 <translation id="3626281679859535460">ଉଜ୍ଜ୍ୱଳତା</translation>
+<translation id="3628323833346754646">ଫ୍ରଣ୍ଟ ବଟନ</translation>
 <translation id="3630697955794050612">ବନ୍ଦ ଅଛି</translation>
 <translation id="3631369015426612114">ନିମ୍ନୋକ୍ତରୁ ବିଜ୍ଞପ୍ତିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3633097874324966332">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପେୟାର କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
@@ -1284,6 +1287,7 @@
 <translation id="6052614013050385269">ଏକ ଲିଙ୍କ୍‌ରେ ରାଇଟ୍‍-କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="6054305421211936131">ସ୍ମାର୍ଟ କାର୍ଡ ସହିତ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="6059276912018042191">ବର୍ତ୍ତମାନର Chrome ଟାବଗୁଡ଼ିକ</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">ଆପଣ ସ୍ଵଚାଳିତ ଭାବେ <ph name="LOGOUT_TIME_LEFT" />ରେ ସାଇନ୍ ଆଉଟ୍ କରିବେ।</translation>
 <translation id="6064463340679478396">ଏହି ଫାଇଲକୁ ବ୍ୟବହାର କରିସାରିଛି</translation>
 <translation id="6068258534237496331">ଭିଡିଓ କଲ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6309219492973062892">1-8 ସେଲ୍ପ ଆଇକନରେ କ୍ଲିକ କିମ୍ବା ଟାପ କରନ୍ତୁ</translation>
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6319058840130157106">ନିମ୍ନ ଡାହାଣ କୋଣ, ଲଞ୍ଚର, ଠିକଣା ବାର, ବୁକମାର୍କ ବାର, ଖୋଲା ଥିବା ୱେବସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ମଧ୍ୟରେ ପଛକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="6319503618073410818">ବ୍ରାଉଜରରେ ବିବରଣୀକୁ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="6324916366299863871">ସର୍ଟକଟ୍‌କୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="6330012934079202188">ସମସ୍ତ ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକ ଦେଖାଯାଉଛି, ବର୍ତ୍ତମାନର ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ ଅପ୍ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ହେଉଛି <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଥିବା ଏକ ପରିଚାଳିତ ସେସନ୍</translation>
@@ -1564,6 +1569,7 @@
 <translation id="7229029500464092426">ମୋଟ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ମେମୋରୀ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ବେଟେରୀ ଚାର୍ଜ ବାକି ଅଛି। ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାର ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ଏକ ଅପଡେଟ୍ ଲାଗୁ କରିବା ନିମନ୍ତେ ଏହି Chromebook ରିଷ୍ଟାର୍ଟ କରିବା ଦରକାର। ଏହା ପାଖାପାଖି 1 ମିନିଟ୍ ସମୟ ନେଇପାରେ।</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">ପଛପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="7258828758145722155">ଗତକାଲି ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="726276584504105859">ସ୍ପ୍ଲିଟ୍‍ ସ୍କ୍ରିନ୍‍ ବ୍ୟବହାର କରିବା ପାଇଁ ଏଠାକୁ ଡ୍ରାଗ୍‌ କରନ୍ତୁ</translation>
@@ -1691,6 +1697,7 @@
 <translation id="7742327441377685481">କୌଣସି ବିଜ୍ଞପ୍ତି ନାହିଁ</translation>
 <translation id="7748275671948949022">ସେଲ୍ଫରେ ଲଞ୍ଚର ବଟନକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
 <translation id="7749443890790263709">ସର୍ବାଧିକ ସଂଖ୍ୟକ ଡେସ୍କରେ ପହଞ୍ଚିଯାଇଛି।</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">ଅପ୍‍‍ଡେଟ୍ ବିବରଣୀ ଦେଖିବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="7768784765476638775">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍</translation>
 <translation id="7769299611924763557">ଆପଣଙ୍କ GIF ଖୁବ ଶୀଘ୍ର ପ୍ରସ୍ତୁତ ହୋଇଯିବ</translation>
@@ -2018,6 +2025,7 @@
 <translation id="9098969848082897657">ଫୋନକୁ ନୀରବ କରନ୍ତୁ</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> କିମ୍ବା <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ଗତ କାର୍ଯ୍ୟଟିକୁ ପୂର୍ବବତ କରନ୍ତୁ</translation>
+<translation id="9129245940793250979">ରିଅର କେମେରା</translation>
 <translation id="9133335900048457298">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ରେକର୍ଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9139720510312328767">ପରବର୍ତ୍ତୀ ଅକ୍ଷରକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="9151906066336345901">end</translation>

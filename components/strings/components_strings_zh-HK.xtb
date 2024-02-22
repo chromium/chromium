@@ -763,6 +763,7 @@
 <translation id="2501278716633472235">返回</translation>
 <translation id="250346157641628208">紙張 (噴墨打印)</translation>
 <translation id="2505268675989099013">保護帳戶</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (適用相關條款)</translation>
 <translation id="2512101340618156538">不允許 (預設)</translation>
 <translation id="2512413427717747692">將 Chrome 設定做預設瀏覽器按鈕，㩒 Enter 鍵就可以喺 iOS 設定度將 Chrome 設定做系統嘅預設瀏覽器</translation>
 <translation id="2514548229949738417">家居和園藝</translation>
@@ -1089,6 +1090,7 @@
 <translation id="3229277193950731405">複製版本字串</translation>
 <translation id="323107829343500871">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼 (CVC)</translation>
 <translation id="3234666976984236645">一律在這個網站上偵測重要內容</translation>
+<translation id="3236212803136366317">卡片福利</translation>
 <translation id="3238395604961564389">在無痕式視窗中開啟連結</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以自訂瀏覽器外觀</translation>
 <translation id="3240791268468473923">開咗冇相符安全付款憑證工作表</translation>
@@ -1125,6 +1127,7 @@
 <translation id="33073482541490531">系統發現您剛才使用的密碼因資料外洩而被洩露。「密碼管理工具」建議您立即變更密碼。</translation>
 <translation id="3307649904964670439">自訂 Chrome 按鈕，啟動之後就可以自訂瀏覽器嘅風格</translation>
 <translation id="3308006649705061278">機構單位 (OU)</translation>
+<translation id="3310047144791481950">顯示實用資訊，方便你選擇用來付款的卡片。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />瞭解卡片福利<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">棕紅色</translation>
 <translation id="3325027355611702542">野營車和旅遊車</translation>
@@ -1939,6 +1942,7 @@
 <translation id="4989809363548539747">系統不支援此外掛程式</translation>
 <translation id="4990241977441916452">A2 信封</translation>
 <translation id="4992066212339426712">取消靜音</translation>
+<translation id="4994348767896109801">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK_1" />廣告主題<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否會放送個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK_3" />管理廣告隱私權<ph name="END_LINK_3" />。</translation>
 <translation id="4995474875135717171">修改日期：</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理站內搜尋同預設搜尋引擎</translation>
 <translation id="4998950033665438990">單面</translation>
@@ -3188,6 +3192,7 @@
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">您通常可經由安全連線前往此網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改您的網絡連線。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會在你的裝置上安裝有害軟件，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。</translation>
+<translation id="7608583484192556132">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK_1" />網站建議廣告<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否會放送個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK_3" />管理廣告隱私權<ph name="END_LINK_3" />。</translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="7613889955535752492">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度睇同管理密碼</translation>
@@ -3443,6 +3448,7 @@
 <translation id="8118506371121007279">提供意見</translation>
 <translation id="8127301229239896662">無法在您的電腦或網絡上正確安裝「<ph name="SOFTWARE_NAME" />」。請要求您的 IT 管理員解決此問題。</translation>
 <translation id="8131740175452115882">確定</translation>
+<translation id="8133495915926741232">選擇系統可根據哪些廣泛的主題類別放送個人化廣告。如果停用廣泛類別，系統也會一併封鎖相關主題。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">人才招募和人力配備</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
@@ -3450,6 +3456,7 @@
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已被移除或移動位置，或者檔案權限為禁止存取。</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理員政策不建議下載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議下載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">曲棍球用品</translation>
+<translation id="815788908807586564">與 Gemini 對話</translation>
 <translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
 <translation id="8164078261547504572">想在降價時收到電郵嗎？</translation>
@@ -3640,6 +3647,7 @@
 <translation id="8527228059738193856">喇叭</translation>
 <translation id="8530813470445476232">清除您的瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
 <translation id="853246364274116957">百老匯及音樂劇場</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>
 <translation id="8534934518812659742">你已關閉 Chrome 的<ph name="PERMISSION" />權限。</translation>
 <translation id="8536234749087605613">信封 (開窗)</translation>
@@ -3684,6 +3692,7 @@
 <translation id="8606988009912891950">廣告主題可協助網站向您顯示相關廣告，同時保護您的瀏覽記錄和身分。Chrome 可根據您最近的瀏覽記錄，記下您感興趣的主題。您日後瀏覽的網站可向 Chrome 要求相關主題資料，以便向您顯示個人化廣告。</translation>
 <translation id="8617269623452051934">您的裝置使用狀態</translation>
 <translation id="861775596732816396">粗幼：4</translation>
+<translation id="8618975513789458065">廣告主題只是網站可用來放送個人化廣告的其中一項依據。即使未啟用廣告主題，網站仍可放送廣告，但廣告內容可能較不符合你的需求。</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
 <translation id="8623885649813806493">沒有相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8624354461147303341">取得折扣</translation>

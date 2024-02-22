@@ -113,6 +113,7 @@
 <translation id="3032706164202344641">Chromium 無法檢查密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium…</translation>
 <translation id="3038232873781883849">正在等待安裝…</translation>
+<translation id="3068187312562070417">其他 Chromium 設定檔</translation>
 <translation id="3068515742935458733">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 USB 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 USB 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 USB 裝置}}</translation>
 <translation id="3101560983689755071">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chromium 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
@@ -230,6 +231,7 @@
 <translation id="5294316920224716406">使用無痕模式瀏覽時，Chromium 會在使用不安全的連線載入網站前顯示警告</translation>
 <translation id="5296845517486664001">在試用期間，如果 Chromium 隨機將您加入試用行列，您的瀏覽記錄會影響所看到的廣告，以及系統推測的以下興趣。為保障您的私隱，Chromium 每個月都會自動刪除您的興趣。</translation>
 <translation id="5352264705793813212">Chromium 發現一些安全性建議需要你審核</translation>
+<translation id="5352361688875342522">其他 Chromium 設定檔</translation>
 <translation id="5358375970380395591">您已登入受管理的帳戶，並將管理控制權授予您的 Chromium 設定檔。您的 Chromium 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">額外代碼：<ph name="EXTRA_CODE" />。</translation>
 <translation id="5383439451358640070">瞭解 Chromium 封鎖部分檔案的原因</translation>

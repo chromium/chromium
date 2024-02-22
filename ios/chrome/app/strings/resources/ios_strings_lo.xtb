@@ -702,6 +702,7 @@
 <translation id="4619564267100705184">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="4619615317237390068">ແຖບຈາກອຸປະກອນອື່ນ</translation>
 <translation id="4620246317052452550">ໜ້າທີ່ທ່ານອ່ານແລ້ວ</translation>
+<translation id="4620845369664293551">ທ່ານສາມາດແບ່ງປັນໜ້ານີ້ຢູ່ນີ້ໄດ້.</translation>
 <translation id="4620888520263267479">ສະແດງຕົວຢ່າງລິ້ງ</translation>
 <translation id="4630540211544979320">ແປໜ້າເວັບ</translation>
 <translation id="4631335160486397366">ມີລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ <ph name="COUNT" /> ລາຍການ</translation>
@@ -851,6 +852,7 @@
 <translation id="5339316356165661760">ເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="5343472494710226394">ຂ່າວ, ກິລາ ແລະ ເນື້ອຫາໂດຍອີງຕາມຄວາມສົນໃຈຂອງທ່ານ.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{ຕິດຕາມພັດສະດຸນີ້ບໍ?}other{ຕິດຕາມ {COUNT} ພັດສະດຸບໍ?}}</translation>
+<translation id="5348775987281903912">ທ່ານສາມາດແບ່ງປັນໜ້ານີ້ຢູ່ນີ້ຈາກປຸ່ມແບ່ງປັນໄດ້.</translation>
 <translation id="536067926684072644">ສະແດງບຸກມາກ</translation>
 <translation id="5360976571138293719">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວ, ຄວາມປອດໄພ ແລະ ການເກັບກຳຂໍ້ມູນ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK" />ການບໍລິການຂອງ Google<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ແລ້ວ. ໂດຍຈະບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ.}other{ບັນທຶກບຸກມາກ {count} ລາຍການໃສ່ "{title}" ແລ້ວ. ໂດຍຈະບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ.}}</translation>

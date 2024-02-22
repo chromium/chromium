@@ -569,6 +569,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3922310737605261887">Buscar texto copiado</translation>
 <translation id="3928666092801078803">Combinar os meus datos</translation>
 <translation id="3929457972718048006">Enderezos</translation>
+<translation id="3939505428630887612">Acerca desta páxina</translation>
 <translation id="3948600256434252210">Podes pasar o dedo cara á dereita para navegar no modo de incógnito.</translation>
 <translation id="3955822496205734389">Tes contrasinais pouco seguros.</translation>
 <translation id="3958312024468322930">Arrastra a icona á barra de aplicacións que está na parte inferior da pantalla de inicio</translation>
@@ -583,6 +584,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4002019827078931033">Mover barra de enderezos á parte superior</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo.</translation>
+<translation id="4008355329784586136">Comprobar a configuración do navegador predeterminado</translation>
 <translation id="4018310736049373830">Xestionar actividade</translation>
 <translation id="4021931095789478915">Engadir ${url} á lista de lectura</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
@@ -631,6 +633,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4277990410970811858">Navegación segura</translation>
 <translation id="4279431713294750185">Podes pasar o dedo polo bordo para avanzar.</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
+<translation id="4282944936010261425">Non se atopou ningún problema de seguranza que haxa que resolver.</translation>
 <translation id="4286718549648564014">O enderezo moveuse á túa conta <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Buscar</translation>
 <translation id="4302248187517737842">Sen nome de usuario ••••••••</translation>
@@ -1280,6 +1283,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7557508262441527045">Pechouse a sesión</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7564917801238348224">GARDAR...</translation>
+<translation id="7569588934989281656">Podes pasar o dedo pola franxa de pestanas para cambiar de pestana.</translation>
 <translation id="7582857256643797524">Esta opción de configuración está activada no teu dispositivo</translation>
 <translation id="7583004045319035904">Utiliza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear as pestanas do modo de incógnito.</translation>
 <translation id="7600965453749440009">Non traducir nunca do <ph name="LANGUAGE" /></translation>
@@ -1415,6 +1419,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8248969482078657578">Pestanas inactivas axúdanche a concentrarte</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8263336784344783289">Ponlle un nome a este grupo</translation>
+<translation id="8263809106706527890">Pode que haxa algún cambio na configuración do teu navegador predeterminado. Compróbao na configuración.</translation>
 <translation id="8264966119170358612">Algúns dos teus contrasinais gardados quedaron expostos nunha violación da seguranza dos datos allea a Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Para poder restablecer o iPad, pechouse a sesión da túa conta (<ph name="USER_NAME" />). Se queres volver iniciar a sesión, toca Continuar máis abaixo.</translation>
 <translation id="8271720166617117963">Aceptar e iniciar sesión</translation>

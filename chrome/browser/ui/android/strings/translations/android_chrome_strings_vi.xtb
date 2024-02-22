@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1181366777303791449">trên <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1183189057400844278">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
 <translation id="1197761954713363183">Đã đóng trang xác nhận khoá truy cập</translation>
@@ -210,6 +211,7 @@
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2155214902713132423">Hiện không dùng được phương thức xác minh này trên thiết bị này. Hãy chọn một cách khác trên thiết bị còn lại.</translation>
 <translation id="2158408438301413340">Chrome không thể kiểm tra một số mật khẩu</translation>
+<translation id="2163089732491971196">Nhập cụm mật khẩu của bạn để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó</translation>
 <translation id="2172688499998841696">Tính năng mô tả hình ảnh đang tắt</translation>
 <translation id="2172905120685242547">Đóng cửa sổ?</translation>
 <translation id="2173302385160625112">Kiểm tra đường kết nối Internet của bạn</translation>
@@ -274,6 +276,7 @@
 <translation id="2534155362429831547">Đã xóa <ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="2536728043171574184">Xem bản sao ngoại tuyến của trang này</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
+<translation id="254973855621628293">Đã lưu mật khẩu vào thiết bị này</translation>
 <translation id="2567385386134582609">HÌNH ẢNH</translation>
 <translation id="2567545343356994513">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm</translation>
 <translation id="2569733278091928697">Bạn có thể dễ dàng quản lý chế độ điều khiển nội dung nghe nhìn, Phiên truy cập ẩn danh, tệp đã tải xuống, v.v.</translation>
@@ -519,6 +522,7 @@
 <translation id="3847319713229060696">Giúp tăng cường bảo mật cho mọi người trên web</translation>
 <translation id="3856096718352044181">Vui lòng xác minh rằng đây là nhà cung cấp hợp lệ hoặc thử lại sau</translation>
 <translation id="3858860766373142691">Tên</translation>
+<translation id="3872520701277728051">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="3894427358181296146">Thêm thư mục</translation>
 <translation id="3899682235662194879">Đóng tất cả các thẻ Ẩn danh</translation>
@@ -604,6 +608,7 @@
 <translation id="4307992518367153382">Cơ bản</translation>
 <translation id="4311652497846705514">Mở tệp PDF?</translation>
 <translation id="4320177379694898372">Không có kết nối Internet</translation>
+<translation id="4326079409704643112">Xác minh danh tính của bạn để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó</translation>
 <translation id="433213510553688132">Đang theo dõi...</translation>
 <translation id="4335835283689002019">Tính năng Duyệt web an toàn đang tắt</translation>
 <translation id="4351244548802238354">Đóng hộp thoại</translation>
@@ -655,6 +660,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4587589328781138893">Trang web</translation>
 <translation id="4594952190837476234">Trang ngoại tuyến này được tạo từ lúc <ph name="CREATION_TIME" /> và có thể khác với phiên bản trực tuyến.</translation>
 <translation id="4601095002996233687">Quét kỹ càng để tìm nội dung tải xuống đáng ngờ.</translation>
+<translation id="4609429330876432068">Danh sách mật khẩu mà bạn lưu cho Chrome và <ph name="CHROME_CHANNEL" /> đã được hợp nhất. Bạn vẫn có thể chọn tự động điền tất cả mật khẩu đã lưu trên cả hai ứng dụng.</translation>
 <translation id="4616150815774728855">Mở <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
 <translation id="4634124774493850572">Sử dụng mật khẩu</translation>
@@ -848,6 +854,8 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5590372121997663538">Nhớ máy tính này</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
 <translation id="5599455543593328020">Chế độ ẩn danh</translation>
+<translation id="5605283439565877834">Các địa chỉ và phương thức thanh toán trên Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
+Chỉ những người biết cụm mật khẩu của bạn mới đọc được dữ liệu đã mã hoá. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Bạn chưa lưu mật khẩu nào</translation>
 <translation id="5620928963363755975">Tìm tệp và trang của bạn trong Tài nguyên đã tải xuống từ nút Tùy chọn khác</translation>
 <translation id="562289928968387744">Quản lý lượt bày tỏ cảm xúc</translation>
@@ -958,6 +966,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6140709049082532940">Chế độ bảo vệ nâng cao:</translation>
 <translation id="6140912465461743537">Quốc gia/Vùng</translation>
 <translation id="6150320133806434356">Đã lưu dấu trang</translation>
+<translation id="6150706324143004339">Cập nhật Chrome để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó</translation>
 <translation id="6154478581116148741">Bật khóa màn hình trong Cài đặt để xuất mật khẩu của bạn từ thiết bị này</translation>
 <translation id="6162892189396105610">Chrome sẽ tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập.</translation>
 <translation id="6186394685773237175">Không phát hiện thấy mật khẩu nào bị lộ</translation>
@@ -1080,7 +1089,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="670498945988402717">Đã kiểm tra hôm qua</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="671481426037969117">Thời gian hẹn giờ của <ph name="FQDN" /> đã hết. Thời gian hẹn giờ sẽ bắt đầu lại vào ngày mai.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Đã lưu dấu trang vào <ph name="FOLDER_NAME" />. Dấu trang chỉ được lưu vào thiết bị này.}other{Đã lưu dấu trang vào <ph name="FOLDER_NAME" />. Dấu trang chỉ được lưu vào thiết bị này.}}</translation>
 <translation id="6715020873764921614">Bạn vẫn muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống?</translation>
 <translation id="6719634564325948108">Kết nối bằng mã QR?</translation>
 <translation id="6723740634201835758">Trong Tài khoản Google của bạn</translation>
@@ -1121,6 +1129,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="688738109438487280">Thêm dữ liệu hiện có vào <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Mở khóa để sao chép mật khẩu của bạn</translation>
 <translation id="6896758677409633944">Sao chép</translation>
+<translation id="6898797562238201317">Sử dụng cụm mật khẩu của riêng bạn để mã hoá tất cả dữ liệu Chrome trong Tài khoản Google</translation>
 <translation id="6900532703269623216">Chế độ bảo vệ nâng cao</translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
 <translation id="6906448540340261898">Đảm bảo bạn luôn có thể sử dụng mật khẩu trong Tài khoản Google</translation>
@@ -1247,6 +1256,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="750228856503700085">Không có thông tin cập nhật</translation>
 <translation id="7507207699631365376">Xem <ph name="BEGIN_LINK" />chính sách quyền riêng tư<ph name="END_LINK" /> của nhà cung cấp này</translation>
 <translation id="7514365320538308">Tải xuống</translation>
+<translation id="7517292544534877198">Sử dụng phương pháp mã hoá mặc định của Google cho mật khẩu trong Tài khoản Google</translation>
 <translation id="7518079994230200553">Lựa chọn này hiện không sẵn dùng.</translation>
 <translation id="751961395872307827">Không thể kết nối với trang web</translation>
 <translation id="752220631458524187">Hãy ngắt kết nối điện thoại khi bạn đã hoàn tất</translation>
@@ -1278,6 +1288,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7665369617277396874">Thêm tài khoản</translation>
 <translation id="766587987807204883">Các bài viết xuất hiện ở đây và bạn có thể đọc ngay cả khi không có kết nối mạng</translation>
+<translation id="7670101447063278728">Đã lưu mật khẩu vào <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Thử các mẹo sau: đảm bảo thiết bị của bạn có đủ dung lượng, sau đó thử xuất lại.</translation>
 <translation id="7686086654630106285">Tìm hiểu thêm về quảng cáo do trang web đề xuất</translation>
 <translation id="768618399695552958">Một số trang bạn truy cập đã được tải trước. Những trang này có thể được tải trước thông qua các máy chủ của Google khi được liên kết bởi một trang web tạo bằng Google Sites.</translation>
@@ -1352,6 +1363,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8013372441983637696">Xóa cả dữ liệu của bạn trên Chrome khỏi thiết bị này</translation>
 <translation id="8015452622527143194">Trả lại mọi nội dung trên trang về kích thước mặc định</translation>
+<translation id="8026238112629815203">Chúng tôi đã thay đổi cách lưu mật khẩu trên thiết bị này</translation>
 <translation id="8026334261755873520">Xoá dữ liệu duyệt web</translation>
 <translation id="8027863900915310177">Chọn vị trí lưu tệp tải xuống</translation>
 <translation id="8030852056903932865">Phê duyệt</translation>
@@ -1389,6 +1401,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="813082847718468539">Xem thông tin trang web</translation>
 <translation id="8135406045838672858">Các tệp PDF đã tải xuống sẽ tự động mở bằng <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Bạn không cần ghi nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu của Google.</translation>
+<translation id="8163820386638255770">Xác minh danh tính của bạn để lưu mật khẩu vào Tài khoản Google và sử dụng các mật khẩu đó</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Còn lại <ph name="FILES" /> tệp</translation>
 <translation id="8190358571722158785">Còn 1 ngày</translation>
@@ -1405,7 +1418,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8237871086242677046">Bảng thông tin chi tiết về trang ở dưới cùng</translation>
 <translation id="8243077599929149377">Thêm tên người dùng của bạn</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Đã lưu dấu trang vào <ph name="FOLDER_NAME" /> trong tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn.}other{Đã lưu dấu trang vào <ph name="FOLDER_NAME" /> trong tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="8255617931166444521">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của riêng họ</translation>
 <translation id="8259179246279078674">Vì các trang tải trước đã được mã hóa, nên Google sẽ không tìm hiểu bất cứ điều gì về nội dung trên trang được tải trước. Máy chủ của Google sẽ tìm hiểu những trang web nào đã được tải trước ở chế độ riêng tư. Thông tin này chỉ được dùng để tải trước các trang và không được liên kết với thông tin khác trong Tài khoản Google của bạn.</translation>
 <translation id="8260126382462817229">Thử đăng nhập lại</translation>
@@ -1449,6 +1461,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8460448946170646641">Xem xét các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật</translation>
 <translation id="8466613982764129868">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> có kết nối Internet</translation>
 <translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
+<translation id="8478751349603791277">Kiểm soát cách dùng nhật ký đã đồng bộ hoá để cá nhân hoá các dịch vụ khác của Google</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Mở trang lịch sử</translation>
 <translation id="8493948351860045254">Giải phóng dung lượng</translation>
@@ -1538,6 +1551,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_ONE" /> thẻ nữa sẽ đóng}other{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_MANY" /> thẻ nữa sẽ đóng}}</translation>
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>
 <translation id="8972098258593396643">Tải xuống thư mục mặc định?</translation>
+<translation id="8992769679401294069">Dữ liệu đã được mã hoá bằng cụm mật khẩu của bạn. Nhập cụm mật khẩu để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó.</translation>
 <translation id="8993760627012879038">Mở thẻ mới trong chế độ Ẩn danh</translation>
 <translation id="8996847606757455498">Chọn nhà cung cấp khác</translation>
 <translation id="8998289560386111590">Tính năng đăng nhập không hoạt động trên thiết bị của bạn</translation>

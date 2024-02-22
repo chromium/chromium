@@ -95,6 +95,7 @@
 <translation id="7559245342362162951">Hiển thị các thẻ của nhóm trong lưới toàn màn hình</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Chia sẻ <ph name="TABS_COUNT_ONE" /> thẻ được chọn}other{Chia sẻ <ph name="TABS_COUNT_MANY" /> thẻ được chọn}}</translation>
 <translation id="7792771145871471484">Xem lại các đề xuất.</translation>
+<translation id="7825973332242257878">Nhóm thẻ</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Nhóm <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Nhóm <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> bài đánh giá}other{Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> bài đánh giá}}</translation>
 <translation id="7885132941432959125">Chuyển thẻ sang phải</translation>

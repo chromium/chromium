@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">Желі табылмады</translation>
 <translation id="1056898198331236512">Ескерту</translation>
 <translation id="1058009965971887428">Пікір жіберу</translation>
+<translation id="1059120031266247284">Сізге берілді</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Ауыстыру</translation>
 <translation id="1073899992769346247">Батареяны ауыстырыңыз немесе зарядтаңыз.</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="3580650856351781466">Сөз файлдары жүктеп алынуда</translation>
 <translation id="3585296979871889131">Телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландыруларды және қолданбаларды көру</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Бүйірлік түйме</translation>
 <translation id="3593039967545720377">Буферді көру үшін <ph name="SHORTCUT_KEY_NAME" /> + V басу арқылы буфер тарихын пайдаланыңыз. Бастау үшін элементті көшіріңіз.</translation>
 <translation id="3593646411856133110">Ашық қолданбаларды көру үшін жоғары сипап, ұстап тұрыңыз.</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">Енгізу</translation>
 <translation id="3621712662352432595">Аудио параметрлері</translation>
 <translation id="3626281679859535460">Жарықтық</translation>
+<translation id="3628323833346754646">Алдыңғы түйме</translation>
 <translation id="3630697955794050612">өшірулі</translation>
 <translation id="3631369015426612114">Келесі көздерден алынатын хабарландыруларға рұқсат беру</translation>
 <translation id="3633097874324966332">Құрылғыны жұптау үшін Bluetooth параметрлерін ашыңыз.</translation>
@@ -1284,6 +1287,7 @@
 <translation id="6052614013050385269">Сілтемені тінтуірдің оң жақ түймесімен басу</translation>
 <translation id="6054305421211936131">Смарт картамен кіру</translation>
 <translation id="6059276912018042191">Соңғы Chrome қойындылары</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> уақытта жүйеден автоматты түрде шығасыз.</translation>
 <translation id="6064463340679478396">Файлды пайдаланбаймын</translation>
 <translation id="6068258534237496331">Бейнеқоңырауды басқару элементтері</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6309219492973062892">1–8 сөре белгішелерін басу немесе түрту</translation>
 <translation id="6315170314923504164">Микрофон</translation>
 <translation id="6319058840130157106">Төменгі оң жақ бұрыш, іске қосу тақтасы, мекенжай жолағы, бетбелгілер жолағы, ашық веб-сайт және жүктеп алынғандар арасында артқа жылжу</translation>
+<translation id="6319503618073410818">Мәліметтерді браузерден көру</translation>
 <translation id="6324916366299863871">Таңбашаны өзгерту</translation>
 <translation id="6330012934079202188">Терезелер барлық жұмыс үстелінен көрсетіліп тұр. Терезелерді қазіргі жұмыс үстелінен көрсету үшін жоғарыға бағыттауыш пернені басыңыз.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> басқаратын сеанс.</translation>
@@ -1565,6 +1570,7 @@
 <translation id="7229029500464092426">Қолжетімді жад: <ph name="AVAILABLE_MEMORY" /> | Жалпы жад: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Батарея заряды — <ph name="PERCENTAGE" />%. Құрылғыны қуат көзіне қосыңыз.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңартылған нұсқаны қолдану үшін бұл Chromebook-ті қайта қосу қажет. Оған 1 минуттай кетуі мүмкін.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Артқы микрофон</translation>
 <translation id="7258828758145722155">Кеше өзгертілді.</translation>
 <translation id="726276584504105859">Бөлінген экранды пайдалану үшін осында сүйреңіз</translation>
@@ -1692,6 +1698,7 @@
 <translation id="7742327441377685481">Хабарландырулар жоқ</translation>
 <translation id="7748275671948949022">Сөредегі іске қосу тақтасының түймесін ерекшелеу</translation>
 <translation id="7749443890790263709">Жұмыс үстелдерінің максималды санына жетті.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Жаңарту мәліметтерін қарау үшін басыңыз</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">GIF файлыңыз жақын арада дайын болады.</translation>
@@ -2019,6 +2026,7 @@
 <translation id="9098969848082897657">Телефон дыбысын өшіру</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> немесе <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Соңғы әрекетті қайтару</translation>
+<translation id="9129245940793250979">Артқы түйме</translation>
 <translation id="9133335900048457298">Қорғалған контентті жазу мүмкін емес</translation>
 <translation id="9139720510312328767">Келесі әріпті жою</translation>
 <translation id="9151906066336345901">end</translation>

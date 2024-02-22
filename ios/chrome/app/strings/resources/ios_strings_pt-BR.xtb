@@ -287,6 +287,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2473876017985765807">Você já salvou uma senha em <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Não selecionada</translation>
 <translation id="2479148705183875116">Acessar as configurações</translation>
+<translation id="2480445180439820402">Histórico</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484459871750294497">Como posso ativar esse recurso?</translation>
 <translation id="2496626742194544812">Ir para a primeira guia</translation>
@@ -577,6 +578,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3962326069546168954">Salvar</translation>
 <translation id="3967822245660637423">Download concluído</translation>
 <translation id="3968505803272650567">Gerenciar interesses</translation>
+<translation id="3976922811715736829">Guias recentes</translation>
 <translation id="3989635538409502728">Sair</translation>
 <translation id="3994422733891749358">Escolha as notificações que você quer receber</translation>
 <translation id="3995521777587992544">Barra de progresso do carregamento de página, <ph name="EMAIL" /> carregada.</translation>
@@ -635,6 +637,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4281844954008187215">Termos de Serviço</translation>
 <translation id="4282944936010261425">Sem problemas de segurança para corrigir.</translation>
 <translation id="4286718549648564014">Endereço movido para sua conta <ph name="USER_EMAIL" /></translation>
+<translation id="428768789042547925">Novidades</translation>
 <translation id="4293080268407233932">Pesquisar</translation>
 <translation id="4302248187517737842">Sem nome de usuário ••••••••</translation>
 <translation id="4302415908542657649">Compartilhando senha</translation>
@@ -689,6 +692,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">Suas configurações de sincronização vão ser restauradas com base no seu último backup. <ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Teclado</translation>
+<translation id="4596899661486753028">Lista de leitura</translation>
 <translation id="4601095002996233687">Verificações detalhadas de downloads suspeitos.</translation>
 <translation id="4606247758155004938">O navegador é gerenciado pela sua organização.</translation>
 <translation id="4607887340472970274">Monitoramento de preços</translation>
@@ -1153,6 +1157,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6822587385560699678">Quando essa configuração está ativada, as senhas são salvas em <ph name="ACCOUNT" />. Quando está desativada, elas são salvas apenas neste dispositivo.</translation>
+<translation id="6824350924364057989">Configurações</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6842136130964845393">Para garantir o acesso às suas senhas salvas, confirme sua identidade</translation>
 <translation id="6851516051005285358">Solicitar site para computador</translation>
@@ -1191,6 +1196,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7004499039102548441">Guias recentes</translation>
 <translation id="7006788746334555276">Configurações de conteúdo</translation>
 <translation id="7016070607649558507">Você tem uma senha fraca. Corrija o problema agora para se proteger.</translation>
+<translation id="7022197654033719543">Informações do site</translation>
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="704692552158601232">App de navegação padrão</translation>
 <translation id="7062545763355031412">Aceitar e alternar entre contas</translation>
@@ -1290,6 +1296,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Grupos de guias</translation>
 <translation id="7607521702806708809">Excluir senha</translation>
+<translation id="7609559547731036746">Favoritos</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
 <translation id="7640669552036055091">Guias do Android</translation>
 <translation id="7646263789464975852">Menu → Configurações → Confirmação de segurança</translation>
@@ -1327,8 +1334,10 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7781069478569868053">Página "Nova guia"</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Após 1 dia}one{Após {COUNT} dia}other{Após {COUNT} dias}}</translation>
+<translation id="7788868432173225918">Dispensar exibição expandida</translation>
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7792549458069452436">INSTALAR O APP</translation>
+<translation id="7800723706644914607">Gerenciador de senhas</translation>
 <translation id="7807060072011926525">Fornecido pelo Google</translation>
 <translation id="7812377703891978671">Você pode acessar todo seu histórico de navegação selecionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Downloads</translation>
@@ -1401,6 +1410,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="81313319706244542">2. Toque em "Senhas"</translation>
 <translation id="8132598642024322408">De <ph name="PREVIOUS_PRICE" /> por <ph name="PRICE" />.</translation>
 <translation id="813370552429173916">Use uma senha exclusiva para cada site ou app. Se alguém descobrir uma senha que foi reutilizada, ela poderá ser usada para acessar outras contas. Clique para abrir o site e mudar as senhas agora mesmo.</translation>
+<translation id="814463369662540460">Monitorar preço</translation>
 <translation id="8156478151976189188">O Password Sync não está funcionando</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
 <translation id="8159358225423560600">agora há pouco</translation>
@@ -1508,6 +1518,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8703536910991780768">Suas senhas parecem fortes</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8709409604518538305">As guias foram fechadas</translation>
+<translation id="8709773186849937451">Downloads</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>
@@ -1573,6 +1584,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9000089900434778519">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protege contra extensões, sites e downloads perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página serão enviados ao recurso Navegação segura do Google.</translation>
+<translation id="9025203546212508704">Deslize para aprender a personalizar seu menu</translation>
 <translation id="9029650858822697271">Sua conta foi desconectada</translation>
 <translation id="9034759925968272072">Você não será desconectado da sua Conta do Google. É possível que sua Conta do Google tenha outras formas de histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>

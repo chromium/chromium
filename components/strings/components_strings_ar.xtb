@@ -810,6 +810,7 @@
 <translation id="2501278716633472235">الرجوع</translation>
 <translation id="250346157641628208">ورق (نفث الحبر)</translation>
 <translation id="2505268675989099013">حماية الحساب</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (تنطبق الأحكام)</translation>
 <translation id="2512101340618156538">غير مسموح به (الإعداد التلقائي)</translation>
 <translation id="2512413427717747692">‏زر ضبط Chrome كمتصفِّح تلقائي، انقر على مفتاح Enter لضبط Chrome كمتصفِّح تلقائي للنظام في إعدادات iOS</translation>
 <translation id="2514548229949738417">منازل وحدائق</translation>
@@ -1159,6 +1160,7 @@
 <translation id="3229277193950731405">نَسخ بيانات الإصدار</translation>
 <translation id="323107829343500871">‏أدخِل رمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">الكشف دائمًا عن المحتوى المهم على هذا الموقع</translation>
+<translation id="3236212803136366317">مزايا البطاقة</translation>
 <translation id="3238395604961564389">فتح الرابط في نافذة التصفح المتخفي</translation>
 <translation id="3240683217920639535">‏<ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص مظهر المتصفِّح</translation>
 <translation id="3240791268468473923">تم فتح صفحة عدم تطابق بيانات اعتماد الدفع الآمن.</translation>
@@ -1195,6 +1197,7 @@
 <translation id="33073482541490531">‏استُخدمت كلمة المرور التي أدخلتها للتو في عملية اختراق للبيانات، لذلك ينصح "مدير كلمات المرور" في Google بتغيير كلمة المرور هذه الآن.</translation>
 <translation id="3307649904964670439">‏زر تخصيص Chrome: انقر على هذا الزر لتخصيص مظهر المتصفِّح.</translation>
 <translation id="3308006649705061278">‏الوحدة التنظيمية (OU)</translation>
+<translation id="3310047144791481950">يمكنك الاطّلاع على معلومات تُساعدك في اختيار البطاقة التي تريد استخدامها للدفع. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />التعرُّف على مزايا البطاقة<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">أعمال تلفزيونية كوميدية</translation>
 <translation id="3324687287337751929">4 × 6 بوصة</translation>
 <translation id="3324983252691184275">قرمزي</translation>

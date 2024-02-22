@@ -2062,6 +2062,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4989809363548539747">This plug-in is not supported</translation>
 <translation id="4990241977441916452">Envelope A2</translation>
 <translation id="4992066212339426712">Unmute</translation>
+<translation id="4994348767896109801">Whether an ad that you see is personalised can depend on many things, including this setting, <ph name="BEGIN_LINK_1" />ad topics<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you're viewing personalises ads. Learn more about <ph name="BEGIN_LINK_3" />managing your ad privacy<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Modified:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage Site Search and your default search engine</translation>
 <translation id="4998950033665438990">Single face</translation>
@@ -3271,7 +3272,7 @@ Additional details:
 <translation id="7392089738299859607">Update Address</translation>
 <translation id="7393161616326137353">Adventure games</translation>
 <translation id="739728382607845710">Payment handler icon</translation>
-<translation id="7399802613464275309">Safety Check</translation>
+<translation id="7399802613464275309">Safety check</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Share this tab by sharing the link, creating a QR code, casting and more</translation>
 <translation id="7403591733719184120">Your <ph name="DEVICE_NAME" /> is managed</translation>
@@ -3403,6 +3404,7 @@ Additional details:
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages or credit card number.</translation>
+<translation id="7608583484192556132">Whether an ad that you see is personalised can depend on many things, including this setting, <ph name="BEGIN_LINK_1" />site-suggested ads<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you're viewing personalises ads. Learn more about <ph name="BEGIN_LINK_3" />managing your ad privacy<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Exp: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to view and manage your passwords in Chrome settings</translation>
@@ -3677,6 +3679,7 @@ Additional details:
 <translation id="8118506371121007279">Give feedback</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' wasn’t installed properly on your computer or network. Ask your IT administrator to resolve this issue.</translation>
 <translation id="8131740175452115882">Confirm</translation>
+<translation id="8133495915926741232">Choose which broad categories of topics can be used to help personalise ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Recruitment and Staffing</translation>
 <translation id="8135546115396015134">left key</translation>
 <translation id="8137456439814903304">Energy and utilities</translation>
@@ -3685,6 +3688,7 @@ Additional details:
 <translation id="8150722005171944719">The file at <ph name="URL" /> is not readable.  It may have been removed, moved or file permissions may be preventing access.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend downloading these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Hockey Equipment</translation>
+<translation id="815788908807586564">Chat with Gemini</translation>
 <translation id="8161095570253161196">Resume browsing</translation>
 <translation id="8163866351304776260">Quad punch left</translation>
 <translation id="8164078261547504572">Want emails when prices drop?</translation>
@@ -3887,6 +3891,7 @@ Additional details:
 <translation id="8528149813106025610">Children's clothing</translation>
 <translation id="8530813470445476232">Clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="853246364274116957">Broadway and Musical Theatre</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visit &lt;strong&gt;chrome://policy&lt;/strong&gt; to see the list of blocked URLs and other policies enforced by your system administrator.</translation>
 <translation id="8534934518812659742">You've turned <ph name="PERMISSION" /> off for Chrome.</translation>
 <translation id="8536234749087605613">Envelope (window)</translation>
@@ -3936,6 +3941,7 @@ Additional details:
 <translation id="8612919051706159390">Online communities</translation>
 <translation id="8617269623452051934">your device use</translation>
 <translation id="861775596732816396">Size 4</translation>
+<translation id="8618975513789458065">Ad topics are just one of many things that a site can use to personalise ads. Even without ad topics, sites can still show you ads but they may be less interesting.</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>
 <translation id="8624354461147303341">Get discounts</translation>

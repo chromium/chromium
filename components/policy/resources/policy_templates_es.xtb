@@ -4295,7 +4295,6 @@ Si se asignan los siguientes valores:
  * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />: se mantendrá la detección automática de la zona horaria activada, enviando continuamente información sobre la ubicación (como puntos de acceso Wi‑Fi, torres de telefonía móvil disponibles, GPS) a un servidor para detectar la zona horaria de forma más precisa.
 
 Si esta política no se establece o se le asigna "Dejar que los usuarios decidan" o "Ninguno", los usuarios controlarán la detección automática de la zona horaria con los controles normales en chrome://settings.</translation>
-<translation id="4476769083125004742">Si se asigna el valor <ph name="BLOCK_GEOLOCATION_SETTING" /> a esta política, las aplicaciones para Android no tendrán acceso a la información sobre la ubicación. Si se le asigna cualquier otro valor o no se configura, el usuario tendrá que dar su consentimiento cuando una aplicación para Android quiera acceder a los datos de ubicación.</translation>
 <translation id="4478248026668918517">Bloquea la detección del nivel de las políticas.</translation>
 <translation id="4479671363221255277">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les concedan acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
 
@@ -4543,11 +4542,6 @@ Si el usuario lleva sus datos de navegación al perfil gestionado, el perfil act
 Si el usuario no lleva sus datos de navegación al perfil gestionado, se creará un perfil nuevo y limpio. Sus datos de navegación permanecerán en un perfil no gestionado al que el usuario podrá seguir accediendo mediante el selector de perfiles.</translation>
 <translation id="4668325077104657568">Configuración de imágenes predeterminada</translation>
 <translation id="4669083178278833688">Inhabilitar la cámara, la configuración del navegador, los ajustes del sistema operativo, los análisis, Web Store, Canvas, Explorar, Crosh, Galería y Terminal</translation>
-<translation id="4669292863736266737">A menos que se haya asignado el valor <ph name="BLOCK_GEOLOCATION_SETTING" /> a la política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" />, el ajuste <ph name="GLS_ENABLED" /> activa los servicios de ubicación de Google durante la configuración inicial. Si se asigna el valor <ph name="GLS_DISABLED" /> a esta política o no se define, los servicios de ubicación estarán desactivados durante la configuración.
-
-Si se le asigna el valor <ph name="BR_UNDER_USER_CONTROL" />, se preguntará a los usuarios si quieren usar los servicios de ubicación de Google. Si los usuarios activan los servicios de ubicación de Google, las aplicaciones Android usarán estos servicios para consultar la ubicación del dispositivo y enviar datos de ubicación anónimos a Google.
-
-Tras la configuración inicial, los usuarios podrán activar y desactivar los servicios de ubicación de Google.</translation>
 <translation id="4670865688564083639">Mínimo:</translation>
 <translation id="467236746355332046">Funciones admitidas:</translation>
 <translation id="4672774129073185053">Habilitar la anulación de la comprobación de alcanzabilidad de IPv6</translation>

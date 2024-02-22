@@ -702,6 +702,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4619564267100705184">Potvrđivanje identiteta</translation>
 <translation id="4619615317237390068">Kartice s drugih uređaja</translation>
 <translation id="4620246317052452550">Stranice koje ste pročitali</translation>
+<translation id="4620845369664293551">Ovu stranicu možete podijeliti ovdje.</translation>
 <translation id="4620888520263267479">Prikaži pregled veze</translation>
 <translation id="4630540211544979320">Prijevod stranica</translation>
 <translation id="4631335160486397366">Višestruko korištene zaporke: <ph name="COUNT" /></translation>
@@ -851,6 +852,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5339316356165661760">Uključi sinkronizaciju</translation>
 <translation id="5343472494710226394">Vijesti, sport i sadržaj na temelju vaših interesa.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Pratiti taj paket?}one{Pratiti {COUNT} paket?}few{Pratiti {COUNT} paketa?}other{Pratiti {COUNT} paketa?}}</translation>
+<translation id="5348775987281903912">Ovu stranicu možete podijeliti ovdje pomoću gumba za dijeljenje.</translation>
 <translation id="536067926684072644">Prikaži oznake</translation>
 <translation id="5360976571138293719">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljku <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Oznaka je spremljena u {title}. Sprema se samo na ovom uređaju.}one{Ukupno {count} oznaka spremljena je u {title}. Spremaju se samo na ovom uređaju.}few{Ukupno {count} oznake spremljene su u {title}. Spremaju se samo na ovom uređaju.}other{Ukupno {count} oznaka spremljeno je u {title}. Spremaju se samo na ovom uređaju.}}</translation>

@@ -1080,7 +1080,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="670498945988402717">Gister nagegaan</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="671481426037969117">Jou <ph name="FQDN" />-tydteller het uitgetel. Dit sal môre weer begin.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Boekmerk gestoor in <ph name="FOLDER_NAME" />. Dit word slegs op hierdie toestel gestoor.}other{Boekmerke gestoor in <ph name="FOLDER_NAME" />. Dit word slegs op hierdie toestel gestoor.}}</translation>
 <translation id="6715020873764921614">Wil jy <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) in elk geval aflaai?</translation>
 <translation id="6719634564325948108">Koppel met QR-kode?</translation>
 <translation id="6723740634201835758">In jou Google-rekening</translation>
@@ -1405,7 +1404,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8237871086242677046">Bladinsigte se onderste blad</translation>
 <translation id="8243077599929149377">Voeg jou gebruikernaam by</translation>
 <translation id="8250920743982581267">Dokumente</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Boekmerk in <ph name="FOLDER_NAME" /> in jou rekening <ph name="ACCOUNT_EMAIL" /> gestoor.}other{Boekmerke in <ph name="FOLDER_NAME" /> in jou rekening <ph name="ACCOUNT_EMAIL" /> gestoor.}}</translation>
 <translation id="8255617931166444521">Werwe kan jou webkoekies net gebruik om jou blaai-aktiwiteit op hul eie werf te sien</translation>
 <translation id="8259179246279078674">Google sal niks oor die voorafgelaaide bladsy se inhoud te wete kom nie omdat die voorafgelaaide bladsye geënkripteer word. Google-bedieners sal leer watter werwe privaat vooraf gelaai word. Hierdie inligting word slegs gebruik om die bladsye vooraf te laai en word nie aan ander inligting in jou Google-rekening gekoppel nie.</translation>
 <translation id="8260126382462817229">Probeer weer om aan te meld</translation>

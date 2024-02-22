@@ -4283,7 +4283,6 @@ Je kunt het beleid instellen op:
  * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />: Automatische tijdzonedetectie blijft aan. Locatiegegevens (zoals wifi-toegangspunten, bereikbare zendmasten, gps) worden voortdurend naar een server gestuurd voor de meest gedetailleerde tijdzonedetectie.
 
 Als je het beleid niet instelt, Gebruikers laten bepalen instelt of het beleid instelt op Geen, bepalen gebruikers de automatische tijdzonedetectie via de normale opties in chrome://settings.</translation>
-<translation id="4476769083125004742">Als dit beleid wordt ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, hebben de Android-apps geen toegang tot locatiegegevens. Als je een andere waarde voor dit beleid instelt of het beleid niet instelt, wordt de gebruiker om toestemming gevraagd wanneer een Android-app toegang tot locatiegegevens probeert te krijgen.</translation>
 <translation id="4478248026668918517">Detectie van beleidsbereik blokkeren.</translation>
 <translation id="4479671363221255277">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om hun leestoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API.
 
@@ -4521,11 +4520,6 @@ Als de gebruiker bestaande browsegegevens toevoegt aan het beheerde profiel, wor
 Als de gebruiker bestaande browsegegevens niet overzet naar het beheerde profiel, wordt er een helemaal nieuw profiel gemaakt. De bestaande browsegegevens blijven in een onbeheerd profiel staan dat via de profielkiezer nog steeds toegankelijk is voor de gebruiker.</translation>
 <translation id="4668325077104657568">Standaardinstelling voor afbeeldingen</translation>
 <translation id="4669083178278833688">Instellen welke functies moeten worden uitgezet in de camera, browserinstellingen, OS-instellingen, scannen, Web Store, canvas, Ontdekken, crosh, Galerij en Terminal</translation>
-<translation id="4669292863736266737">Tenzij het beleid <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, zorgt het instellen van <ph name="GLS_ENABLED" /> bij de eerste configuratie ervoor dat Google-locatieservices wordt aangezet. Locatieservices blijft uitstaan tijdens de configuratie als je het beleid instelt op <ph name="GLS_DISABLED" /> of niet instelt.
-
-Als je het beleid instelt op <ph name="BR_UNDER_USER_CONTROL" />, worden gebruikers gevraagd of ze Google-locatieservices willen gebruiken. Als een gebruiker Google-locatieservices aanzet, gebruiken Android-apps de services om de apparaatlocatie te zoeken en anonieme locatiegegevens naar Google te sturen.
-
-Na de eerste configuratie kunnen gebruikers Google-locatieservices aan- of uitzetten.</translation>
 <translation id="4670865688564083639">Minimum:</translation>
 <translation id="467236746355332046">Ondersteunde functies:</translation>
 <translation id="4672774129073185053">Overschrijven van IPv6-bereikbaarheidscheck aanzetten</translation>

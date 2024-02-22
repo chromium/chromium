@@ -3,6 +3,7 @@
 <translationbundle lang="ar">
 <translation id="1213425325105380833">يمكنك استعادة تطبيقات الويب التي استخدمتها مؤخرًا على الأجهزة المرتبطة بهذا الحساب.</translation>
 <translation id="1344914278748983512">سبق وتم تثبيت هذا التطبيق</translation>
+<translation id="1353513225130339633">‏جارٍ التحقّق من إمكانية تثبيت التطبيق\u2026</translation>
 <translation id="1786044937610313874">‏يتم فتح الاختصارات في متصفِّح Chrome.</translation>
 <translation id="204914487372604757">إنشاء اختصار</translation>
 <translation id="2065911435109240297">استعادة تطبيقات الويب</translation>
@@ -10,6 +11,7 @@
 <translation id="2139186145475833000">الإضافة إلى الشاشة الرئيسية</translation>
 <translation id="2172982519592313442">مراجعة تطبيقات الويب</translation>
 <translation id="2478076885740497414">تثبيت التطبيق</translation>
+<translation id="3470954020960831923">لا يمكن تثبيت هذا التطبيق.</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3910402514791813257">تعذَّر التثبيت.</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>

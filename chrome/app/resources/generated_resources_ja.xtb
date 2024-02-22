@@ -522,7 +522,6 @@
 <translation id="139911022479327130">スマートフォンのロックを解除して本人確認を行う</translation>
 <translation id="1399261165075500043">Google Play 利用規約を読み込めません</translation>
 <translation id="1401216725754314428">新しいタブで関連サイトの詳細を確認します</translation>
-<translation id="1401308693935339022">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがこのデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報に基づくサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。</translation>
 <translation id="1402426911829176748">デバイスに接続しています</translation>
 <translation id="1403222014593521787">プロキシに接続できませんでした</translation>
 <translation id="1405779994569073824">クラッシュしました。</translation>
@@ -802,6 +801,7 @@
 <translation id="1602085790802918092">仮想マシンを起動しています</translation>
 <translation id="1603116295689434284">Chrome のシステム情報</translation>
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> との接続を解除</translation>
+<translation id="1603879843804174953">長押し</translation>
 <translation id="1603914832182249871">（シークレット モード）</translation>
 <translation id="1604432177629086300">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
 <translation id="1604567162047669454">ビジュアル レイアウト セマンティクスを認識</translation>
@@ -1339,6 +1339,7 @@
 <translation id="1992397118740194946">未設定</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
 <translation id="1995916364271252349">サイトが使用、表示できる情報（位置情報、カメラ、ポップアップなど）を制御します</translation>
+<translation id="199610894463449797">{0,plural, =1{このプロフィールを閉じる}other{このプロフィールを閉じる（# 個のウィンドウ）}}</translation>
 <translation id="1997433994358798851">Chrome からデバイスに接続するには、Bluetooth の使用を許可する必要があります</translation>
 <translation id="1997616988432401742">ユーザーの証明書</translation>
 <translation id="1999115740519098545">起動時</translation>
@@ -1581,6 +1582,7 @@
 <translation id="2175384018164129879">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="217576141146192373">プリンタを追加できません。プリンタの設定を確認して、もう一度お試しください。</translation>
 <translation id="2175927920773552910">QR コード</translation>
+<translation id="217631816678106981">貼り付けない</translation>
 <translation id="2177306523871626993">テキスト認識ファイルをダウンロードしています… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">シークレット タブ: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -1850,7 +1852,6 @@
 <translation id="2373666622366160481">用紙に合わせる</translation>
 <translation id="2375406435414127095">スマートフォンに接続</translation>
 <translation id="2376056713414548745">読み上げ</translation>
-<translation id="2377588536920405462">位置情報の使用を無効にするには、お使いのデバイスでメインの位置情報の設定を無効にします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。</translation>
 <translation id="2377667304966270281">ハードの障害数</translation>
 <translation id="237828693408258535">このページを翻訳しますか？</translation>
 <translation id="2378982052244864789">拡張機能のディレクトリを選択してください。</translation>
@@ -2308,6 +2309,7 @@
 <translation id="2721695630904737430">監視対象ユーザーは管理者によって無効にされています。</translation>
 <translation id="2722540561488096675">デバイスは、<ph name="TIME_LEFT" /> 後にシャットダウンします。デバイスが再起動する前に USB を取り外してください。再起動すると、<ph name="DEVICE_OS" /> のご利用を開始できます。</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">ゲスト プロフィールを開く</translation>
 <translation id="2723819893410108315">シトロン</translation>
 <translation id="2724841811573117416">WebRTC ログ</translation>
 <translation id="272488616838512378">単位変換</translation>
@@ -2332,6 +2334,7 @@
 <translation id="2732134891301408122">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目</translation>
 <translation id="2733248615007838252">高く評価すると、この結果が気に入ったというフィードバックが送信されます。</translation>
 <translation id="2733992589856193783">このサイトのパスキーを作成しました。モバイル デバイスを使用してログインする必要があります。</translation>
+<translation id="2734797989819862638">コピーしない</translation>
 <translation id="27349076983469322">明るい背景</translation>
 <translation id="2735712963799620190">スケジュール</translation>
 <translation id="2737363922397526254">折りたたむ...</translation>
@@ -3100,6 +3103,7 @@
 <translation id="3342361181740736773">「<ph name="TRIGGERING_EXTENSION_NAME" />」によってこの拡張機能が削除されます。</translation>
 <translation id="3345634917232014253">安全チェックを数分前に実行しました</translation>
 <translation id="3345886924813989455">サポートされているブラウザが見つかりませんでした</translation>
+<translation id="3346306152660142597">AI でこのページをカスタマイズ</translation>
 <translation id="3347086966102161372">画像アドレスをコピー(&amp;C)</translation>
 <translation id="3348038390189153836">リムーバブル デバイスが検出されました</translation>
 <translation id="3348131053948466246">絵文字の候補です。上または下矢印キーで移動し、Enter キーで挿入します。</translation>
@@ -3116,6 +3120,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}other{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}}</translation>
 <translation id="3361954577771524115">アプリから</translation>
 <translation id="3363202073972776113">この新しいプロフィールは組織によって管理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">Alt+マウスオーバー</translation>
 <translation id="3364986687961713424">管理者からのメッセージ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl キーまたは Alt キーのいずれかを使用してください</translation>
 <translation id="3368922792935385530">接続済み</translation>
@@ -4558,6 +4563,7 @@
 <translation id="4473559657152613417">タブを右クリックして、[タブを新しいグループに追加] を選択します</translation>
 <translation id="4473996011558324141">所要時間の目安</translation>
 <translation id="4474155171896946103">すべてのタブをブックマークに追加...</translation>
+<translation id="4475299370877036544">このアクションは組織のポリシーに違反している可能性があります</translation>
 <translation id="4475552974751346499">ダウンロード検索</translation>
 <translation id="4476590490540813026">競技選手</translation>
 <translation id="4476659815936224889">このコードをスキャンするには、スマートフォンの QR スキャンアプリまたはカメラアプリを使用してください。</translation>
@@ -5408,7 +5414,6 @@
 <translation id="5147097165869384760">OS のシステムページをお探しですか？<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> にアクセスしてください。</translation>
 <translation id="5147516217412920887">スマートフォンに表示される手順に沿ってコードを確認します</translation>
 <translation id="5147992672778369947">推奨されるパスワードを使用してください</translation>
-<translation id="5148277445782867161">Google の位置情報サービスでは、デバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。</translation>
 <translation id="5148285448107770349">パスワードは 8 文字以上で指定してください</translation>
 <translation id="5149602533174716626">動画フレームをコピー(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 証明書 SSL サーバー名</translation>
@@ -5698,6 +5703,7 @@
 <translation id="5395498824851198390">デフォルトのフォント</translation>
 <translation id="5397378439569041789">キオスクまたはサイネージ デバイスを登録</translation>
 <translation id="5397794290049113714">あなた</translation>
+<translation id="5398062879200420134">⌥+マウスオーバー</translation>
 <translation id="5398497406011404839">非表示のブックマーク</translation>
 <translation id="5398572795982417028">範囲外のページを参照しています。上限は <ph name="MAXIMUM_PAGE" /> です。</translation>
 <translation id="5400196580536813396">デバイスにアクセスできるプリンタの検索と使用を許可しないサイト</translation>
@@ -6323,6 +6329,7 @@
 <translation id="5882919346125742463">既知のネットワーク</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を自動ブロックしました</translation>
 <translation id="5884447826201752041">拡張機能ごとにカスタマイズする</translation>
+<translation id="5884730022784413637">長押し</translation>
 <translation id="5885314688092915589">このプロフィールは組織によって管理されます</translation>
 <translation id="5885470467814103868">スキャンを開始</translation>
 <translation id="5885631909150054232">トークンをコピー</translation>
@@ -6370,7 +6377,6 @@
 <translation id="5916664084637901428">ON</translation>
 <translation id="59174027418879706">有効</translation>
 <translation id="5920543303088087579">このネットワークへの接続は管理者によって無効にされています</translation>
-<translation id="5921257443092182237">Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> ヘルプ</translation>
 <translation id="5924438086390153180">Microsoft のファイルを Google ドライブにコピーまたは移動する前に確認する</translation>
 <translation id="5924527146239595929">新しく写真を撮るか、既存の写真またはアイコンを選択してください。
@@ -7663,7 +7669,6 @@
 <translation id="6935031746833428401">デバイス管理の詳細</translation>
 <translation id="6935286146439255109">用紙トレイが見つかりません</translation>
 <translation id="6938386202199793006">保存済みのプリンタは 1 件です。</translation>
-<translation id="6938387822292071111">タブ マウスオーバーのプレビュー カードに画像を表示する</translation>
 <translation id="6938606182859551396">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で受信するには、スマートフォンの画面の指示に沿って、Google Play 開発者サービスへの通知アクセスを許可してください。</translation>
 <translation id="694168622559714949">デフォルトの言語は管理者が設定しており、変更できません。</translation>
 <translation id="6941937518557314510">証明書で <ph name="HOST_NAME" /> の認証を受けるには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
@@ -7848,6 +7853,7 @@
 <translation id="7072010813301522126">ショートカット名</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 with RSA 暗号化</translation>
 <translation id="7075625805486468288">HTTPS / SSL の証明書と設定を管理します</translation>
+<translation id="7075896597860500885">このサイトからのコピーは推奨されていません</translation>
 <translation id="7076875098323397992">アップグレードを開始できません</translation>
 <translation id="7077751457066325012">キーボード ショートカットの表示とカスタマイズ</translation>
 <translation id="7077829361966535409">現在のプロキシ設定を使用してログイン ページを読み込むことができませんでした。<ph name="GAIA_RELOAD_LINK_START" />もう一度ログイン<ph name="GAIA_RELOAD_LINK_END" />してみるか、別の<ph name="PROXY_SETTINGS_LINK_START" />プロキシ設定<ph name="PROXY_SETTINGS_LINK_END" />を使用してみてください。</translation>
@@ -8196,7 +8202,7 @@
 <translation id="7368695150573390554">オフライン データがすべて削除されます</translation>
 <translation id="736877393389250337"><ph name="URL" /> を <ph name="ALTERNATIVE_BROWSER_NAME" /> で開けませんでした。システム管理者にお問い合わせください。</translation>
 <translation id="7370592524170198497">イーサネット EAP:</translation>
-<translation id="7371490947952970241">位置情報の使用を無効にするには、このデバイスでメインの位置情報の設定を無効にします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。</translation>
+<translation id="7370751048350026847">このコンテンツをこのサイトに貼り付けることは推奨されていません</translation>
 <translation id="7371917887111892735">タブを固定幅まで縮小</translation>
 <translation id="7374376573160927383">USB デバイスを管理する</translation>
 <translation id="7376124766545122644">このリンクは使用できません。リンクが「http://」または「https://」で始まっていることを確認して、もう一度お試しください。</translation>
@@ -8978,6 +8984,7 @@
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> で並べ替え</translation>
 <translation id="7941179291434537290">テザリングの準備:</translation>
 <translation id="7942349550061667556">赤</translation>
+<translation id="7942846369224063421">プリロード済み UI レンダラ</translation>
 <translation id="7943349879009553083">ゲストモードでは使用できません</translation>
 <translation id="7943368935008348579">PDF をダウンロードする</translation>
 <translation id="7943837619101191061">位置情報を追加...</translation>
@@ -9593,6 +9600,7 @@
 <translation id="8403618281196981152">Chrome に保存されるデータ</translation>
 <translation id="8403807918453631441">パスワードを保存すると、<ph name="BRAND" /> で確認できるようになります</translation>
 <translation id="8405046151008197676">最新のアップデートの概要をご確認ください</translation>
+<translation id="8405118833120731611">{0,plural, =1{このプロフィールを閉じる}other{このプロフィールを閉じる（# 個のウィンドウ）}}</translation>
 <translation id="8407199357649073301">ログレベル:</translation>
 <translation id="8408270600235826886">各ユーザーは Google と共有するデータを設定できるようになっています。これは [設定] でいつでも変更できます。データは Google の<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />に従って使用されます。</translation>
 <translation id="84098433273647700">インストールした現在のテーマ。</translation>
@@ -10392,7 +10400,6 @@
 <translation id="9018218886431812662">インストールが完了しました</translation>
 <translation id="901876615920222131">グループをもう一度開くには、グループをクリックします</translation>
 <translation id="9019062154811256702">自動入力設定の読み取りと変更</translation>
-<translation id="9019894137004772119">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報に基づくサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。</translation>
 <translation id="9019956081903586892">スペルチェック辞書をダウンロードできませんでした</translation>
 <translation id="9020300839812600209">URL を入力すると、LBS の動作を確認できます。</translation>
 <translation id="9020362265352758658">4 倍</translation>

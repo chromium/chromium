@@ -44,7 +44,6 @@
 <translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
 <translation id="1232610416724362657">वॉटरफ़ॉल</translation>
 <translation id="1238612778414822719">एचटीटीपीएस पेजों के खुलने में इंतज़ार का समय</translation>
-<translation id="1264369926465113395">क्रिएटर्स के लिए तैयार की गई, Chromebook की नई डिजिटल पत्रिका देखें</translation>
 <translation id="1270369111467284986">कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
 <translation id="1300115153046603471">एपीएन का टाइप डिफ़ॉल्ट और <ph name="ATTACH" /> पर सेट है.</translation>
@@ -290,6 +289,7 @@
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
 <translation id="2940811910881150316">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए लिड को फिर से खोलें.</translation>
 <translation id="2941112035454246133">कम</translation>
+<translation id="2956070106555335453">सारांश</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
@@ -549,7 +549,6 @@
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
 <translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
 <translation id="4838825304062068169">ग्लेशियर</translation>
-<translation id="4839698083503556542">अपनी खुद की फ़िल्म बनाएं</translation>
 <translation id="48409034532829769">आपके एडमिन ने "<ph name="APP_NAME" />" को अपने-आप चालू होने के लिए सेट अप किया है. शायद इस ऐप्लिकेशन को बंद नहीं किया गया है.</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनी गई, <ph name="TOPIC_SOURCE" /> एल्बम चुनने के लिए Enter दबाएं</translation>

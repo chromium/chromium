@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Utilizzo del microfono e della fotocamera</translation>
 <translation id="1005333234656240382">Attivare il debug ADB?</translation>
 <translation id="1005671386794704751">Rosa</translation>
+<translation id="1006033052970139968">L'accesso al microfono è consentito alle app, ai siti web che dispongono dell'autorizzazione di accesso al microfono e ai servizi di sistema</translation>
 <translation id="1006557561787696884">Usa le passkey sui tuoi dispositivi Apple</translation>
 <translation id="1006873397406093306">Questa estensione può leggere e modificare i tuoi dati sui siti. Sei tu controllare a quali siti può accedere l'estensione.</translation>
 <translation id="1007057452468855774">Attiva il Google Play Store</translation>
@@ -522,7 +523,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="139911022479327130">Sblocca il telefono e conferma la tua identità</translation>
 <translation id="1399261165075500043">Impossibile caricare i Termini di servizio di Google Play</translation>
 <translation id="1401216725754314428">Scopri di più sui siti correlati in una nuova scheda</translation>
-<translation id="1401308693935339022">Utilizza la geolocalizzazione. Consenti ad app e servizi che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
 <translation id="1402426911829176748">Collegamento al dispositivo in corso…</translation>
 <translation id="1403222014593521787">Impossibile connettersi al proxy</translation>
 <translation id="1405779994569073824">Arresto anomalo.</translation>
@@ -1280,6 +1280,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1944535645109964458">Nessuna passkey disponibile</translation>
 <translation id="1944921356641260203">Aggiornamento trovato</translation>
 <translation id="1947136734041527201">Ti consente di accedere ai siti web utilizzando l'account che hai creato con un servizio di identità</translation>
+<translation id="1948528728718281125">L'accesso alla fotocamera è consentito alle app, ai siti web che dispongono dell'autorizzazione di accesso alla fotocamera e ai servizi di sistema</translation>
 <translation id="1949332606889020901">ID arresti anomali</translation>
 <translation id="1949584741547056205">Risposte rapide</translation>
 <translation id="1949849604471335579">Personalizza sfondo, salvaschermo, colori intensi e altro ancora</translation>
@@ -1858,7 +1859,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2373666622366160481">Adatta a dimensioni del foglio</translation>
 <translation id="2375406435414127095">Collegati al telefono</translation>
 <translation id="2376056713414548745">Leggi ad alta voce</translation>
-<translation id="2377588536920405462">Puoi disabilitare la geolocalizzazione disattivando l'impostazione Posizione principale sul tuo dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobili e di sensori per la geolocalizzazione nelle impostazioni di geolocalizzazione.</translation>
 <translation id="2377667304966270281">Errori hardware</translation>
 <translation id="237828693408258535">Vuoi tradurre questa pagina?</translation>
 <translation id="2378982052244864789">Seleziona la directory dell'estensione.</translation>
@@ -2476,6 +2476,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2822910719211888134">Errore durante il backup di Linux</translation>
 <translation id="2823176412251649407">Modifica la connessione a internet e scegli "Riprova" oppure seleziona "Apri nell'editor offline" per utilizzare opzioni di visualizzazione e modifica limitate.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> usa le impostazioni proxy stabilite dall'amministratore</translation>
+<translation id="2825151610926840364">Consenti l'accesso a siti web e app che dispongono dell'autorizzazione di accesso alla fotocamera. Per usare la fotocamera, potrebbe essere necessario riavviare l'app o aggiornare la pagina.</translation>
 <translation id="2825758591930162672">Chiave pubblica del soggetto</translation>
 <translation id="2828375943530438449">Indietro dalla pagina di accesso</translation>
 <translation id="2828650939514476812">Collegati alla rete Wi-Fi</translation>
@@ -3993,6 +3994,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4001540981461989979">Evidenzia il puntatore del mouse quando si muove</translation>
 <translation id="4002347779798688515">Il profilo scaricato potrebbe non essere utilizzabile se l'operatore di rete mobile è bloccato. Contatta il tuo provider per ricevere assistenza.</translation>
 <translation id="4002440992267487163">Configurazione del PIN</translation>
+<translation id="4003647532210142956">La programmazione corrente è impostata su <ph name="SUNRISE" /> - <ph name="SUNSET" />. Per aggiornare automaticamente l'ora del tramonto e dell'alba, <ph name="BEGIN_LINK" />attiva l'accesso alla posizione<ph name="END_LINK" />.</translation>
 <translation id="4005817994523282006">Metodo di rilevamento del fuso orario</translation>
 <translation id="4007856537951125667">Nascondi scorciatoie</translation>
 <translation id="4010746393007464819">È disponibile un upgrade a Debian 12 (Bookworm)</translation>
@@ -4031,6 +4033,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4036778507053569103">La norma scaricata dal server non è valida.</translation>
 <translation id="4037084878352560732">Cavallo</translation>
 <translation id="403725336528835653">Prova prima</translation>
+<translation id="4039966970282098406">Gestisci la tua privacy controllando l'accesso a microfono, fotocamera e altro ancora</translation>
 <translation id="4040041015953651705">Lingua da cui tradurre</translation>
 <translation id="4042660782729322247">Stai condividendo lo schermo</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
@@ -4402,6 +4405,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="434198521554309404">Veloce. Sicuro. Semplice.</translation>
 <translation id="4342417854108207000">Non autorizzati a modificare file o cartelle sul dispositivo</translation>
 <translation id="4343250402091037179">Per eseguire ricerche in un sito o una parte specifici di Chrome, digita la relativa scorciatoia nella barra degli indirizzi, seguita dalla tua scorciatoia da tastiera preferita.</translation>
+<translation id="4343283008857332996">L'accesso alla fotocamera è consentito alle app, ai siti web che dispongono dell'autorizzazione di accesso alla fotocamera e ai servizi di sistema. Per usare la fotocamera, potrebbe essere necessario riavviare l'app o aggiornare la pagina.</translation>
 <translation id="4345457680916430965">&amp;Apri in <ph name="APP" /></translation>
 <translation id="4345587454538109430">Configura...</translation>
 <translation id="4345732373643853732">Nome utente non noto al server</translation>
@@ -4709,6 +4713,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4576541033847873020">Accoppia dispositivo Bluetooth</translation>
 <translation id="4576763597586015380">Verifica la tua identità per continuare a salvare le password nel tuo Account Google</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - Scheda non attiva</translation>
+<translation id="4577995939477504370">Le app e i siti web che dispongono dell'autorizzazione di accesso al microfono, nonché i servizi di sistema, possono usare il microfono</translation>
 <translation id="4579453506923101210">Eliminare un telefono connesso</translation>
 <translation id="4579581181964204535">Impossibile trasmettere <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Per le notifiche del browser, vai a <ph name="LINK_BEGIN" />Impostazioni del browser Chrome<ph name="LINK_END" /></translation>
@@ -5423,7 +5428,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5147097165869384760">Stai cercando la pagina del sistema operativo? Visita<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147516217412920887">Segui le istruzioni sullo smartphone per verificare il codice</translation>
 <translation id="5147992672778369947">Usa password consigliata</translation>
-<translation id="5148277445782867161">Il servizio di geolocalizzazione di Google utilizza fonti quali le reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa del dispositivo.</translation>
 <translation id="5148285448107770349">La password deve avere almeno 8 caratteri</translation>
 <translation id="5149602533174716626">Copia frame</translation>
 <translation id="5150254825601720210">Nome server SSL certificato Netscape</translation>
@@ -5703,6 +5707,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5385628342687007304">La password viene salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google.</translation>
 <translation id="5387116558048951800">Modifica <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Criterio aziendale modificato. Pulsante Esperimenti aggiunto alla barra degli strumenti. Fai clic sul pulsante per aprire una finestra di dialogo in cui puoi attivare esperimenti.</translation>
+<translation id="5388436023007579456">Le app e i siti web che dispongono dell'autorizzazione di accesso alla fotocamera, nonché i servizi di sistema, possono utilizzare la fotocamera. Per usare la fotocamera, potrebbe essere necessario riavviare l'app o aggiornare la pagina.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{È stato trovato un sito con molte notifiche}other{Sono stati trovati {NUM_SITES} siti con molte notifiche}}</translation>
 <translation id="5388885445722491159">Accoppiato</translation>
 <translation id="5389626883706033615">I siti non possono chiederti l'autorizzazione a usare le informazioni salvate su di te</translation>
@@ -5804,6 +5809,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Note sulla schermata di blocco</translation>
 <translation id="5459864179070366255">Installa comunque</translation>
+<translation id="5460641065520325899">Gestisci i tipi di informazioni che i siti possono usare per monitorare la tua navigazione.</translation>
 <translation id="5460861858595506978">Ispirazione</translation>
 <translation id="5461050611724244538">Connessione col telefono persa</translation>
 <translation id="5463275305984126951">Indice di <ph name="LOCATION" /></translation>
@@ -6387,7 +6393,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5916664084637901428">On</translation>
 <translation id="59174027418879706">Attivato</translation>
 <translation id="5920543303088087579">La connessione a questa rete è stata disattivata dall'amministratore</translation>
-<translation id="5921257443092182237">Il servizio di geolocalizzazione di Google utilizza fonti quali le reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa di questo dispositivo.</translation>
 <translation id="5924047253200400718">Richiedi assistenza<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Chiedi prima di copiare o spostare i file Microsoft su Google Drive</translation>
 <translation id="5924527146239595929">Scatta una foto oppure scegli una foto esistente o un'icona.
@@ -6887,6 +6892,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="630292539633944562">Suggerimenti di informazioni personali</translation>
 <translation id="6305607932814307878">Norme globali:</translation>
 <translation id="6305702903308659374">Riproduci con volume normale anche durante la lettura vocale di ChromeVox</translation>
+<translation id="6307268917612054609">Le app e i siti web che dispongono dell'autorizzazione di accesso alla fotocamera, nonché i servizi di sistema, possono usare la fotocamera</translation>
 <translation id="6307990684951724544">Sistema occupato</translation>
 <translation id="6308493641021088955">Accesso fornito da <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Salva lin&amp;k con nome...</translation>
@@ -7681,7 +7687,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6935031746833428401">Scopri di più su Gestione dispositivi</translation>
 <translation id="6935286146439255109">Vassoio carta mancante</translation>
 <translation id="6938386202199793006">Hai una stampante salvata.</translation>
-<translation id="6938387822292071111">Mostra immagini per schede popup di anteprima delle schede</translation>
 <translation id="6938606182859551396">Per ricevere notifiche del telefono sul tuo <ph name="DEVICE_TYPE" />, segui le istruzioni sul telefono per garantire l'accesso delle notifiche a Google Play Services.</translation>
 <translation id="694168622559714949">L'amministratore ha impostato una lingua predefinita che non può essere modificata.</translation>
 <translation id="6941937518557314510">Accedi a <ph name="TOKEN_NAME" /> per autenticarti su <ph name="HOST_NAME" /> con il tuo certificato.</translation>
@@ -8215,9 +8220,9 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7367714965999718019">Generatore codice QR</translation>
 <translation id="7368695150573390554">I dati offline verranno eliminati</translation>
 <translation id="736877393389250337">Impossibile aprire <ph name="URL" /> in <ph name="ALTERNATIVE_BROWSER_NAME" />. Contatta l'amministratore di sistema.</translation>
+<translation id="7368927539449986686">Modifica ricerca su sito</translation>
 <translation id="7370592524170198497">EAP ethernet:</translation>
 <translation id="7370751048350026847">Incollare questi contenuti nel sito non è consigliato</translation>
-<translation id="7371490947952970241">Puoi disabilitare la geolocalizzazione disattivando l'impostazione Posizione principale su questo dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobili e di sensori per la geolocalizzazione nelle impostazioni di geolocalizzazione.</translation>
 <translation id="7371917887111892735">Le schede si riducono alla larghezza della scheda bloccata</translation>
 <translation id="7374376573160927383">Gestisci i dispositivi USB</translation>
 <translation id="7376124766545122644">Impossibile utilizzare questo link. Controlla che il link inizi con "http://" o "https://" per riprovare.</translation>
@@ -8482,6 +8487,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="756583107125124860">Alcune funzionalità possono usare i contenuti delle pagine aperte e delle pagine recenti correlate per fornire altri suggerimenti o informazioni utili</translation>
 <translation id="7566118625369982896">Gestisci i link dell'app Play</translation>
 <translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">Crea combinazione di tasti</translation>
 <translation id="756809126120519699">Dati di Chrome cancellati</translation>
 <translation id="756876171895853918">Personalizza l'avatar</translation>
 <translation id="7568790562536448087">Aggiornamento</translation>
@@ -8743,6 +8749,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7757787379047923882">Testo condiviso da <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Regola i bordi del display</translation>
+<translation id="7758884017823246335">Aggiungi ricerca su sito</translation>
 <translation id="7759809451544302770">Facoltative</translation>
 <translation id="7762024824096060040">Impossibile usare questo account</translation>
 <translation id="7762243782113123335">Si è verificato un problema. Invia un feedback con #bruschetta nella descrizione. Il codice di errore è <ph name="ERROR" />.</translation>
@@ -9474,7 +9481,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8298429963694909221">Puoi ora ricevere le notifiche del telefono sul tuo dispositivo <ph name="DEVICE_TYPE" />. Se ignori le notifiche sul tuo dispositivo <ph name="DEVICE_TYPE" />, verranno ignorate anche sul telefono. Assicurati che il tuo telefono sia nelle vicinanze, nonché che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="829923460755755423">Aggiungi una scorciatoia a Gestore delle password di Google</translation>
 <translation id="8299319456683969623">Al momento sei offline.</translation>
-<translation id="829937697336000302">Aumenta la tua produttività</translation>
+<translation id="829937697336000302">Aumenta la produttività</translation>
 <translation id="8299951061833867575">Wi-Fi, dati mobili</translation>
 <translation id="8300011035382349091">Modifica il preferito per questa scheda</translation>
 <translation id="8300374739238450534">Blu notte</translation>
@@ -10415,7 +10422,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9018218886431812662">Installazione completata</translation>
 <translation id="901876615920222131">Per riaprire il gruppo, fai clic sullo stesso</translation>
 <translation id="9019062154811256702">Lettura e modifica delle impostazioni di Compilazione automatica</translation>
-<translation id="9019894137004772119">Utilizza la geolocalizzazione. Consenti ad app e servizi che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
 <translation id="9019956081903586892">Impossibile scaricare il dizionario per il controllo ortografico</translation>
 <translation id="9020300839812600209">Inserisci un URL per scoprire come verrebbe usato dalla funzionalità LBS.</translation>
 <translation id="9020362265352758658">4x</translation>
@@ -10610,6 +10616,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9153274276370926498">Informazioni sul sistema Lacros</translation>
 <translation id="9153367754133725216">Ricevi suggerimenti relativi a nuove app e contenuti web in Avvio app e nei risultati di ricerca. Invia statistiche per migliorare i suggerimenti solo se hai scelto di inviare a ChromeOS report sugli arresti anomali e dati diagnostici e sull'utilizzo.</translation>
 <translation id="9154194610265714752">Aggiornato</translation>
+<translation id="915485121129452731">Tablet con penna</translation>
 <translation id="9155344700756733162">Deseleziona colore</translation>
 <translation id="9157096865782046368">0,8 secondi</translation>
 <translation id="9157697743260533322">Impostazione degli aggiornamenti automatici per tutti gli utenti non riuscita (errore di avvio preliminare: <ph name="ERROR_NUMBER" />)</translation>

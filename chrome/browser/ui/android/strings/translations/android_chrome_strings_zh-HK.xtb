@@ -274,6 +274,7 @@
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
+<translation id="254973855621628293">密碼已儲存到這部裝置</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2567545343356994513">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能</translation>
 <translation id="2569733278091928697">您將能輕鬆管理媒體控制項、無痕工作階段、下載項目等等</translation>
@@ -1080,7 +1081,6 @@
 <translation id="670498945988402717">曾在昨天檢查</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="671481426037969117">「<ph name="FQDN" />」計時器已結束計時，將於明天重新開始。</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{書籤已儲存至「<ph name="FOLDER_NAME" />」。書籤只會儲存在此裝置上。}other{書籤已儲存至「<ph name="FOLDER_NAME" />」。書籤只會儲存在此裝置上。}}</translation>
 <translation id="6715020873764921614">仍要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="6719634564325948108">要使用 QR 碼連線嗎？</translation>
 <translation id="6723740634201835758">在您的 Google 帳戶中</translation>
@@ -1278,6 +1278,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>
+<translation id="7670101447063278728">密碼已儲存到 <ph name="USERNAME" />。</translation>
 <translation id="7682724950699840886">請嘗試按照以下提示操作：確保您的裝置上有足夠的儲存空間，然後嘗試重新匯出。</translation>
 <translation id="7686086654630106285">進一步瞭解網站建議的廣告</translation>
 <translation id="768618399695552958">系統會預先載入您瀏覽的部分網頁。當您從 Google 網站連至這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
@@ -1405,7 +1406,6 @@
 <translation id="8237871086242677046">頁面分析資料頁底面板</translation>
 <translation id="8243077599929149377">新增你的使用者名稱</translation>
 <translation id="8250920743982581267">文件</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{書籤已儲存至帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的「<ph name="FOLDER_NAME" />」}other{書籤已儲存至帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的「<ph name="FOLDER_NAME" />」}}</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已加密，Google 不會得知預先載入網頁內容的相關資料。Google 伺服器會知道哪些網站已透過私密方式預先載入。此資料只用於預先載入網頁，不會與您 Google 帳戶的其他資料連結。</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>

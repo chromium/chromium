@@ -523,7 +523,6 @@
 <translation id="139911022479327130">اپنا فون غیر مقفل کریں اور تصدیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="1399261165075500043">‏Google Play کی سروس کی شرائط کو لوڈ نہیں کیا جا سکتا</translation>
 <translation id="1401216725754314428">ایک نئے ٹیب میں متعلقہ سائٹس کے بارے میں مزید جانیں</translation>
-<translation id="1401308693935339022">‏مقام استعمال کریں۔ مقام کی اجازت والی ایپس اور سروسز کو اس آلہ کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کے لیے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
 <translation id="1402426911829176748">آپ کے آلے سے منسلک ہو رہا ہے</translation>
 <translation id="1403222014593521787">پراکسی سے منسلک ہونے سے قاصر</translation>
 <translation id="1405779994569073824">کریش ہو گیا</translation>
@@ -803,6 +802,7 @@
 <translation id="1602085790802918092">ورچوئل مشین شروع ہو رہی ہے</translation>
 <translation id="1603116295689434284">‏Chrome سسٹم کی معلومات</translation>
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> بھول جائیں</translation>
+<translation id="1603879843804174953">لانگ پریس</translation>
 <translation id="1603914832182249871">(پوشیدگی)</translation>
 <translation id="1604432177629086300">پرنٹ نہیں کیا جا سکا۔ پرنٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1604567162047669454">ویژوئل لے آؤٹ کی سیمنٹکس کو پہچانیں</translation>
@@ -1344,6 +1344,7 @@
 <translation id="1992397118740194946">سیٹ نہیں ہے</translation>
 <translation id="1994173015038366702">‏سائٹ کا URL</translation>
 <translation id="1995916364271252349">سائٹس کون سی معلومات استعمال اور دکھا سکتی ہیں (مقام، کیمرا، پاپ اپس، اور بہت کچھ) کو کنٹرول کرتا ہے</translation>
+<translation id="199610894463449797">{0,plural, =1{اس پروفائل کو بند کریں}other{اس پروفائل کو بند کریں (# ونڈوز)}}</translation>
 <translation id="1997433994358798851">‏Chrome کو آپ کے آلے سے منسلک ہونے کے لیے بلوٹوتھ استعمال کرنے کی اجازت درکار ہے</translation>
 <translation id="1997616988432401742">آپ کے سرٹیفیکیٹس</translation>
 <translation id="1999115740519098545">شروعات میں</translation>
@@ -1587,6 +1588,7 @@
 <translation id="2175384018164129879">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
 <translation id="217576141146192373">پرنٹر شامل کرنے سے قاصر۔ براہ کرم اپنے پرنٹر کی کنفیگریشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
+<translation id="217631816678106981">پیسٹ نہ کریں</translation>
 <translation id="2177306523871626993">ٹیکسٹ شناخت فائلز ڈاؤن لوڈ ہو رہی ہیں… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">پوشیدگی ٹیب: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -1859,7 +1861,6 @@
 <translation id="2373666622366160481">کاغذ پر فٹ کریں</translation>
 <translation id="2375406435414127095">اپنے فون سے منسلک کریں</translation>
 <translation id="2376056713414548745">بلند آواز سے پڑھیں</translation>
-<translation id="2377588536920405462">‏آپ اپنے آلے پر مقام کی بنیادی ترتیب آف کر کے مقام آف کر سکتے ہیں۔ آپ مقام کی ترتیبات میں مقام کے لیے Wi‑Fi، موبائل نیٹ ورکس اور سینسرز کے استعمال کو بھی آف کر سکتے ہیں۔</translation>
 <translation id="2377667304966270281">بڑی غلطیاں</translation>
 <translation id="237828693408258535">اس صفحہ کا ترجمہ کریں؟</translation>
 <translation id="2378982052244864789">ایکسٹینشن ڈائریکٹری منتخب کریں۔</translation>
@@ -2343,6 +2344,7 @@
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> میں سے اضافی مواد <ph name="CURRENT_ELEMENT" /></translation>
 <translation id="2733248615007838252">اظہار پسندیدگی تاثرات جمع کراتا ہے کہ آپ کو یہ نتائج پسند ہیں۔</translation>
 <translation id="2733992589856193783">آپ نے اس سائٹ کے لیے ایک پاس کی بنائی ہے۔ سائن ان کرنے کے لیے آپ کو اپنے موبائل آلہ کی ضرورت ہے۔</translation>
+<translation id="2734797989819862638">کاپی نہ کریں</translation>
 <translation id="27349076983469322">ہلکا پس منظر</translation>
 <translation id="2735712963799620190">شیڈول</translation>
 <translation id="2737363922397526254">سکیڑیں…</translation>
@@ -3112,6 +3114,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" اس ایکسٹینشن کو ہٹانا چاہے گا۔</translation>
 <translation id="3345634917232014253">سیفٹی چیک ایک لمحہ پہلے کیا گیا</translation>
 <translation id="3345886924813989455">کوئی تعاون یافتہ براؤزر نہیں ملا</translation>
+<translation id="3346306152660142597">‏اس صفحہ کو AI کے ساتھ حسب ضرورت بنائیں</translation>
 <translation id="3347086966102161372">تصویر کا پتہ کا&amp;پی کریں</translation>
 <translation id="3348038390189153836">ہٹانے لائق آلہ کا پتا چلا</translation>
 <translation id="3348131053948466246">تجویز کردہ ایموجی۔ نیویگیٹ کرنے کے لیے اوپر یا نیچے کا تیر دبائیں اور داخل کرنے کے لیے اینٹر دبائیں۔</translation>
@@ -3128,6 +3131,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> آپ کے ساتھ <ph name="ATTACHMENTS" /> کا اشتراک کر رہا ہے۔}other{<ph name="DEVICE_NAME" /> آپ کے ساتھ <ph name="ATTACHMENTS" /> کا اشتراک کر رہا ہے۔}}</translation>
 <translation id="3361954577771524115">ایپ سے</translation>
 <translation id="3363202073972776113">آپ کی تنظیم اس نئی پروفائل کا نظم کرے گی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">‏Alt+ہوور</translation>
 <translation id="3364986687961713424">آپ کے منتظم کی جانب سے: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏Ctrl یا Alt کا استعمال کریں</translation>
 <translation id="3368922792935385530">منسلک</translation>
@@ -4575,6 +4579,7 @@
 <translation id="4473559657152613417">ٹیب پر دایاں کلک کریں اور "نئے گروپ میں ٹیب شامل کریں" کو منتخب کریں</translation>
 <translation id="4473996011558324141">وقت کا اندازہ لگا یا جا رہا ہے</translation>
 <translation id="4474155171896946103">سبھی ٹیبز کو بُک مارک کریں…</translation>
+<translation id="4475299370877036544">یہ کارروائی آپ کی تنظیم کی پالیسیوں کی خلاف ورزی کر سکتی ہے</translation>
 <translation id="4475552974751346499">ڈاؤن لوڈز تلاش کریں</translation>
 <translation id="4476590490540813026">کھلاڑی</translation>
 <translation id="4476659815936224889">‏یہ کوڈ اسکین کرنے کیلئے، آپ اپنے فون یا کچھ کیمرا ایپس پر ایک QR اسکینر ایپ کا استعمال کر سکتے ہیں۔</translation>
@@ -5426,7 +5431,6 @@
 <translation id="5147097165869384760">‏OS سسٹم کا صفحہ تلاش کر رہے ہیں؟ <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> ملاحظہ کریں۔</translation>
 <translation id="5147516217412920887">کوڈ کی توثیق کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں</translation>
 <translation id="5147992672778369947">تجویز کردہ پاس ورڈ استعمال کریں</translation>
-<translation id="5148277445782867161">‏آپ کے آلہ کا مقام متعین کرنے میں مدد کرنے کے لئے Google کی مقام کی سروس Wi-Fi، موبائل نیٹ ورکس اور سینسرز جیسے ذرائع کا استعمال کرتی ہے۔</translation>
 <translation id="5148285448107770349">پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے</translation>
 <translation id="5149602533174716626">ویڈیو فریم کاپی کریں</translation>
 <translation id="5150254825601720210">‏Netscape سرٹیفکیٹ SSL سرور کا نام</translation>
@@ -5718,6 +5722,7 @@
 <translation id="5395498824851198390">ڈیفالٹ فونٹ</translation>
 <translation id="5397378439569041789">کیوسک یا سائنیج آلہ اندراج کریں</translation>
 <translation id="5397794290049113714">آپ</translation>
+<translation id="5398062879200420134">⌥+ہوور</translation>
 <translation id="5398497406011404839">چھپے ہوئے بُک مارکس</translation>
 <translation id="5398572795982417028">صفحہ کے حوالہ کی حدوں سے باہر، حد <ph name="MAXIMUM_PAGE" /> ہے</translation>
 <translation id="5400196580536813396">آپ کے آلہ تک قابل رسائی پرنٹرز کو تلاش کرنے یا انہیں استعمال کرنے کی اجازت نہیں ہے</translation>
@@ -6344,6 +6349,7 @@
 <translation id="5882919346125742463">معلوم نیٹ ورکس</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کو خودکار طور پر مسدود کر دیا گیا</translation>
 <translation id="5884447826201752041">ہر ایکسٹینشن کے لیے حسب ضرورت بنائیں</translation>
+<translation id="5884730022784413637">لانگ پریس</translation>
 <translation id="5885314688092915589">آپ کی تنظیم اس پروفائل کا نظم کرے گی</translation>
 <translation id="5885470467814103868">اسکین شروع کریں</translation>
 <translation id="5885631909150054232">ٹوکن کاپی کریں</translation>
@@ -6391,7 +6397,6 @@
 <translation id="5916664084637901428">آن</translation>
 <translation id="59174027418879706">فعال</translation>
 <translation id="5920543303088087579">اس نیٹ ورک سے منسلک ہونے کو آپ کے منتظم نے غیر فعال کر دیا ہے</translation>
-<translation id="5921257443092182237">‏اس آلہ کا مقام متعین کرنے میں مدد کرنے کے لئے Google کی مقام کی سروس Wi-Fi، موبائل نیٹ ورکس اور سینسرز جیسے ذرائع کا استعمال کرتی ہے۔</translation>
 <translation id="5924047253200400718">مدد حاصل کریں<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏Microsoft فائلز کو Google Drive میں کاپی یا منتقل کرنے سے پہلے پوچھیں</translation>
 <translation id="5924527146239595929">‏ایک نئی تصویر لیں یا کوئی موجودہ تصویر یا آئیکن منتخب کریں۔
@@ -7687,7 +7692,6 @@
 <translation id="6935031746833428401">آلہ کے نظم و نسق کے بارے میں مزید جانیں</translation>
 <translation id="6935286146439255109">کاغذی ٹرے غائب ہے</translation>
 <translation id="6938386202199793006">آپ کے پاس 1 محفوظ کردہ پرنٹر ہے۔</translation>
-<translation id="6938387822292071111">ٹیب ہوور پیش منظر کے کارڈز پر تصاویر دکھائیں</translation>
 <translation id="6938606182859551396">‏اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات وصول کرنے کی خاطر، Google Play سروسز کو اطلاعات تک رسائی فراہم کرنے کیلئے اپنے فون پر ہدایات کی پیروی کریں۔</translation>
 <translation id="694168622559714949">آپ کے منتظم نے ایک ایسی ڈیفالٹ زبان سیٹ کی ہے جس میں ترمیم نہیں کی جا سکتی۔</translation>
 <translation id="6941937518557314510">براہ کرم اپنے سرٹیفکیٹ کے ساتھ <ph name="HOST_NAME" /> کی توثیق کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
@@ -7871,6 +7875,7 @@
 <translation id="7072010813301522126">شارٹ کٹ نام</translation>
 <translation id="7075513071073410194">‏RSA مرموز کاری کے ساتھ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">‏HTTPS/SSL سرٹیفکیٹس اور ترتیبات کا نظم کریں</translation>
+<translation id="7075896597860500885">اس سائٹ سے کاپی کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="7076875098323397992">اپ گریڈ شروع نہیں کی جا سکتی</translation>
 <translation id="7077751457066325012">کی بورڈ شارٹ کٹس دیکھیں اور حسب ضرورت بنائیں</translation>
 <translation id="7077829361966535409">موجودہ پراکسی ترتیبات کا استعمال کر کے سائن ان صفحہ لوڈ ہونے میں ناکام ہوگیا۔ براہ کرم <ph name="GAIA_RELOAD_LINK_START" />دوبارہ سائن ان کرنے کی کوشش کریں<ph name="GAIA_RELOAD_LINK_END" /> یا مختلف <ph name="PROXY_SETTINGS_LINK_START" />پراکسی ترتیبات<ph name="PROXY_SETTINGS_LINK_END" /> استعمال کریں۔</translation>
@@ -8221,7 +8226,7 @@
 <translation id="736877393389250337"><ph name="URL" /> کو <ph name="ALTERNATIVE_BROWSER_NAME" /> میں نہیں کھولا جا سکا۔ براہ کرم اپنے سسٹم کے منتظم سے رابطہ کریں۔</translation>
 <translation id="7368927539449986686">سائٹ کی تلاش میں ترمیم کریں</translation>
 <translation id="7370592524170198497">‏ایتھرنیٹ EAP:</translation>
-<translation id="7371490947952970241">‏آپ اس آلے پر مقام کی بنیادی ترتیب آف کر کے مقام آف کر سکتے ہیں۔ آپ مقام کی ترتیبات میں مقام کے لیے Wi‑Fi، موبائل نیٹ ورکس اور سینسرز کے استعمال کو بھی آف کر سکتے ہیں۔</translation>
+<translation id="7370751048350026847">اس مواد کو اس سائٹ پر پیسٹ کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="7371917887111892735">ٹیبز کی چوڑائی پن کردہ ٹیب جتنی ہو جاتی ہے</translation>
 <translation id="7374376573160927383">‏USB آلات کا نظم کریں</translation>
 <translation id="7376124766545122644">‏اس لنک کا استعمال نہیں کر سکتے۔ دوبارہ کوشش کرنے کیلئے چیک کریں کہ آپ کا لنک '//:http' یا 'https://' سے شروع ہوتا ہے۔</translation>
@@ -9006,6 +9011,7 @@
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> کے لحاظ سے ترتیب دیں</translation>
 <translation id="7941179291434537290">ٹیدرنگ کی تیاری:</translation>
 <translation id="7942349550061667556">سرخ</translation>
+<translation id="7942846369224063421">‏پیشگی لوڈ کردہ UI رینڈرر</translation>
 <translation id="7943349879009553083">مہمان وضع میں دستیاب نہیں ہے</translation>
 <translation id="7943368935008348579">‏PDFs ڈاؤن لوڈ کریں</translation>
 <translation id="7943837619101191061">مقام شامل کریں…</translation>
@@ -9620,6 +9626,7 @@
 <translation id="8403618281196981152">‏Chrome میں آپ کا ڈیٹا</translation>
 <translation id="8403807918453631441">جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو <ph name="BRAND" /> انہیں چیک کر سکتا ہے</translation>
 <translation id="8405046151008197676">تازہ ترین اپ ڈیٹ سے ہائی لائٹس حاصل کریں</translation>
+<translation id="8405118833120731611">{0,plural, =1{اس پروفائل کو بند کریں}other{اس پروفائل کو بند کریں (# ونڈوز)}}</translation>
 <translation id="8407199357649073301">لاگ کی سطح:</translation>
 <translation id="8408270600235826886">‏آپ یہ کنٹرول کر سکتے ہیں کہ Google کے ساتھ کون سے ڈیٹا کا اشتراک کیا جائے۔ آپ اسے ترتیبات میں کسی بھی وقت تبدیل کر سکتے ہیں۔ ڈیٹا کا استعمال Google کی <ph name="BEGIN_LINK" />رازداری کی پالیسی<ph name="END_LINK" /> کے مطابق کیا جائے گا۔</translation>
 <translation id="84098433273647700">موجودہ تھیم جسے آپ نے انسٹال کیا ہے۔</translation>
@@ -10419,7 +10426,6 @@
 <translation id="9018218886431812662">انسٹالیشن مکمل ہو گئی</translation>
 <translation id="901876615920222131">گروپ کو دوبارہ کھولنے کے لیے، گروپ پر کلک کریں</translation>
 <translation id="9019062154811256702">آٹو فل کی ترتیبات پڑھیں اور تبدیل کریں</translation>
-<translation id="9019894137004772119">‏مقام استعمال کریں۔ مقام کی اجازت والی ایپس اور سروسز کو اپنے آلہ کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کے لیے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
 <translation id="9019956081903586892">املا کی جانچ کرنے والی لغت ڈاؤن لوڈ نہیں ہو سکی</translation>
 <translation id="9020300839812600209">‏یہ دیکھنے کے لیے کہ LBS اس کے ساتھ کیا کرے گا ایک URL درج کریں۔</translation>
 <translation id="9020362265352758658">4x</translation>

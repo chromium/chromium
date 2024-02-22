@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Спеціальне</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1181366777303791449">на сторінці <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1183189057400844278">Щоб завжди мати змогу використовувати паролі в обліковому записі Google, підтвердьте свою особу</translation>
 <translation id="1193729455103054076">Використати надійний пароль?</translation>
 <translation id="1197267115302279827">Перемістити закладки</translation>
 <translation id="1197761954713363183">Екран підтвердження ключа доступу закрито</translation>
@@ -210,6 +211,7 @@
 <translation id="2149973817440762519">Редагувати закладку</translation>
 <translation id="2155214902713132423">Цей спосіб підтвердження недоступний для цього пристрою. Виберіть інакший спосіб на іншому пристрої.</translation>
 <translation id="2158408438301413340">Chrome не вдалося перевірити всі паролі</translation>
+<translation id="2163089732491971196">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, введіть парольну фразу</translation>
 <translation id="2172688499998841696">Описи зображень вимкнено</translation>
 <translation id="2172905120685242547">Закрити вікно?</translation>
 <translation id="2173302385160625112">Перевірте інтернет-з’єднання</translation>
@@ -274,6 +276,7 @@
 <translation id="2534155362429831547">Видалено елементів: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2536728043171574184">Перегляд копії сторінки в режимі офлайн</translation>
 <translation id="2546283357679194313">Файли cookie й дані сайтів</translation>
+<translation id="254973855621628293">Паролі, збережені на цьому пристрої</translation>
 <translation id="2567385386134582609">ЗОБРАЖЕННЯ</translation>
 <translation id="2567545343356994513">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень</translation>
 <translation id="2569733278091928697">Ви зможете легко керувати медіаконтентом, сеансами в анонімному режимі, завантаженнями тощо</translation>
@@ -519,6 +522,7 @@
 <translation id="3847319713229060696">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
 <translation id="3856096718352044181">Підтвердьте, що цей постачальник активний, або повторіть спробу пізніше</translation>
 <translation id="3858860766373142691">Назва</translation>
+<translation id="3872520701277728051">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />очистьте дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="3894427358181296146">Додати папку</translation>
 <translation id="3899682235662194879">Закрити всі анонімні вкладки</translation>
@@ -604,6 +608,7 @@
 <translation id="4307992518367153382">Основні</translation>
 <translation id="4311652497846705514">Відкрити файл PDF?</translation>
 <translation id="4320177379694898372">Немає з’єднання з Інтернетом</translation>
+<translation id="4326079409704643112">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, підтвердьте свою особу</translation>
 <translation id="433213510553688132">Додавання до підписок…</translation>
 <translation id="4335835283689002019">Безпечний перегляд вимкнено</translation>
 <translation id="4351244548802238354">Закрити діалогове вікно</translation>
@@ -655,6 +660,7 @@
 <translation id="4587589328781138893">Сайти</translation>
 <translation id="4594952190837476234">Цю сторінку створено <ph name="CREATION_TIME" />. Вона може відрізнятися від онлайн-версії.</translation>
 <translation id="4601095002996233687">Ретельна перевірка підозрілих завантажень.</translation>
+<translation id="4609429330876432068">Ваші списки збережених паролів для Chrome і <ph name="CHROME_CHANNEL" /> було об’єднано. Ви можете автоматично вводити всі збережені паролі в обох додатках.</translation>
 <translation id="4616150815774728855">Відкрити файл <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Підтвердити особу</translation>
 <translation id="4634124774493850572">Прийняти пароль</translation>
@@ -848,6 +854,8 @@
 <translation id="5590372121997663538">Запам’ятати цей комп’ютер</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5599455543593328020">Режим анонімного перегляду</translation>
+<translation id="5605283439565877834">Способи оплати й адреси з Google Pay не шифруватимуться. Історія вебперегляду з Chrome не синхронізуватиметься.
+Зашифровані дані може читати лише користувач, який знає вашу парольну фразу. Вона не надсилається й не зберігається в Google. Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />очистьте дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Немає збережених паролів</translation>
 <translation id="5620928963363755975">Знаходьте свої файли та сторінки в розділі "Завантаження", натиснувши кнопку "Більше опцій"</translation>
 <translation id="562289928968387744">Керувати реакціями</translation>
@@ -958,6 +966,7 @@
 <translation id="6140709049082532940">Покращений захист:</translation>
 <translation id="6140912465461743537">Країна або регіон</translation>
 <translation id="6150320133806434356">Закладку збережено</translation>
+<translation id="6150706324143004339">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, оновіть Chrome</translation>
 <translation id="6154478581116148741">Щоб експортувати паролі з цього пристрою, увімкніть блокування екрана</translation>
 <translation id="6162892189396105610">Сторінки, які ви, імовірно, відвідаєте, попередньо завантажуються.</translation>
 <translation id="6186394685773237175">Немає зламаних паролів</translation>
@@ -1080,7 +1089,6 @@
 <translation id="670498945988402717">Перевірено вчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Вийшов час на таймері веб-сайту <ph name="FQDN" />. Завтра він знову запрацює.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Закладку збережено в папці "<ph name="FOLDER_NAME" />" і тільки на цьому пристрої.}one{Закладки збережено в папці "<ph name="FOLDER_NAME" />" і тільки на цьому пристрої.}few{Закладки збережено в папці "<ph name="FOLDER_NAME" />" і тільки на цьому пристрої.}many{Закладки збережено в папці "<ph name="FOLDER_NAME" />" і тільки на цьому пристрої.}other{Закладки збережено в папці "<ph name="FOLDER_NAME" />" і тільки на цьому пристрої.}}</translation>
 <translation id="6715020873764921614">Усе одно завантажити файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Підключитися за допомогою QR-коду?</translation>
 <translation id="6723740634201835758">В обліковому записі Google</translation>
@@ -1121,6 +1129,7 @@
 <translation id="688738109438487280">Додати наявні дані в обліковий запис <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Розблокуйте, щоб скопіювати пароль</translation>
 <translation id="6896758677409633944">Копіювати</translation>
+<translation id="6898797562238201317">Використовувати власну парольну фразу для шифрування всіх даних Chrome в обліковому записі Google</translation>
 <translation id="6900532703269623216">Покращений захист</translation>
 <translation id="6903907808598579934">Увімкнути синхронізацію</translation>
 <translation id="6906448540340261898">Подбайте про те, щоб завжди мати змогу використовувати паролі в обліковому записі Google</translation>
@@ -1247,6 +1256,7 @@
 <translation id="750228856503700085">Оновлення недоступні</translation>
 <translation id="7507207699631365376">Переглянути <ph name="BEGIN_LINK" />політику конфіденційності<ph name="END_LINK" /> цього постачальника</translation>
 <translation id="7514365320538308">Завантажити</translation>
+<translation id="7517292544534877198">Використовувати стандартне шифрування Google для паролів в обліковому записі Google</translation>
 <translation id="7518079994230200553">Ця опція зараз не доступна.</translation>
 <translation id="751961395872307827">Немає з’єднання із сайтом</translation>
 <translation id="752220631458524187">Коли завершите, відключіть телефон</translation>
@@ -1278,6 +1288,7 @@
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7665369617277396874">Додати обліковий запис</translation>
 <translation id="766587987807204883">Тут з'являються статті, які можна читати навіть у режимі офлайн</translation>
+<translation id="7670101447063278728">Паролі, збережені в обліковому записі <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Порада. Переконайтеся, що на пристрої достатньо вільного місця та спробуйте експортувати дані знову.</translation>
 <translation id="7686086654630106285">Докладніше про рекламу, пропоновану сайтами</translation>
 <translation id="768618399695552958">Деякі сторінки, які ви відвідуєте, попередньо завантажені. Сторінки можуть попередньо завантажуватися через сервери Google, коли вони зв’язані через сайт Google.</translation>
@@ -1352,6 +1363,7 @@
 <translation id="8004582292198964060">Переглядач</translation>
 <translation id="8013372441983637696">Також видалити дані Chrome із цього пристрою</translation>
 <translation id="8015452622527143194">Відновити розміри всіх елементів за умовчанням</translation>
+<translation id="8026238112629815203">Ми змінили спосіб зберігання паролів на цьому пристрої</translation>
 <translation id="8026334261755873520">Очистити історію</translation>
 <translation id="8027863900915310177">Виберіть, куди завантажити файл</translation>
 <translation id="8030852056903932865">Дозволити</translation>
@@ -1389,6 +1401,7 @@
 <translation id="813082847718468539">Перегляд інформації про сайт</translation>
 <translation id="8135406045838672858">Завантажені файли PDF автоматично відкриватимуться в додатку <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Цей пароль не потрібно запам’ятовувати. Його буде збережено в Google Менеджері паролів.</translation>
+<translation id="8163820386638255770">Щоб використовувати й зберігати паролі в обліковому записі Google, підтвердьте свою особу</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Залишилося файлів: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Залишився 1 день</translation>
@@ -1405,7 +1418,6 @@
 <translation id="8237871086242677046">Нижній екран зі статистикою сторінки</translation>
 <translation id="8243077599929149377">Додайте ім’я користувача</translation>
 <translation id="8250920743982581267">Документи</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Закладку збережено в папці "<ph name="FOLDER_NAME" />" у вашому обліковому записі (<ph name="ACCOUNT_EMAIL" />).}one{Закладки збережено в папці "<ph name="FOLDER_NAME" />" у вашому обліковому записі (<ph name="ACCOUNT_EMAIL" />).}few{Закладки збережено в папці "<ph name="FOLDER_NAME" />" у вашому обліковому записі (<ph name="ACCOUNT_EMAIL" />).}many{Закладки збережено в папці "<ph name="FOLDER_NAME" />" у вашому обліковому записі (<ph name="ACCOUNT_EMAIL" />).}other{Закладки збережено в папці "<ph name="FOLDER_NAME" />" у вашому обліковому записі (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8255617931166444521">Сайти можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі лише на цих сайтах</translation>
 <translation id="8259179246279078674">Оскільки попередньо завантажені сторінки зашифровані, Google не зможе проаналізувати їх контент. Сервери Google визначатимуть, які сайти попередньо завантажуються в приватному режимі. Ця інформація використовується лише для попереднього завантаження сторінок і не пов’язується з іншими даними в обліковому записі Google.</translation>
 <translation id="8260126382462817229">Спробуйте ввійти ще раз</translation>
@@ -1449,6 +1461,7 @@
 <translation id="8460448946170646641">Перегляньте основні елементи керування конфіденційністю та безпекою</translation>
 <translation id="8466613982764129868">Переконайтеся, що пристрій <ph name="TARGET_DEVICE_NAME" /> підключено до Інтернету</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
+<translation id="8478751349603791277">Вибирайте, як синхронізована історія може використовуватися для персоналізації інших сервісів Google</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Відкрити сторінку "Історія"</translation>
 <translation id="8493948351860045254">Звільнити місце</translation>
@@ -1538,6 +1551,7 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_ONE" /> вкладку буде закрито}one{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладку буде закрито}few{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}many{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладок буде закрито}other{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}}</translation>
 <translation id="8970887620466824814">Сталася помилка.</translation>
 <translation id="8972098258593396643">Завантажити в папку за умовчанням?</translation>
+<translation id="8992769679401294069">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
 <translation id="8993760627012879038">Відкрити нове вікно в режимі анонімного перегляду</translation>
 <translation id="8996847606757455498">Вибрати іншого постачальника</translation>
 <translation id="8998289560386111590">Недоступно на вашому пристрої</translation>

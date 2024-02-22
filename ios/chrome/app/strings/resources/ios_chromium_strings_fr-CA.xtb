@@ -15,6 +15,7 @@
 <translation id="1423007117030725713">Lance une recherche dans un nouvel onglet Chromium.</translation>
 <translation id="1431818719585918472">Chromium peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="1472013873724362412">Votre compte n'est pas compatible avec Chromium. Veuillez communiquer avec l'administrateur de votre domaine ou utiliser un compte Google ordinaire pour vous connecter.</translation>
+<translation id="1503199973012840174">Votre Chromium est obsolète. Mettez-le à jour pour rester en sécurité.</translation>
 <translation id="1507010443238049608">Nous aider à améliorer les fonctionnalités et les performances de Chromium</translation>
 <translation id="1513122820609681462">Définir Chromium comme navigateur par défaut</translation>
 <translation id="1531155317299575425">Affiche les invites de connexion dans Chromium.</translation>
@@ -50,6 +51,7 @@
 <translation id="22313767259766852">Cette adresse est actuellement enregistrée dans Chromium. Pour l'utiliser dans tous les produits Google, enregistrez-la dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Cela signifie que Chromium demandera toujours la version bureau du site.</translation>
 <translation id="2313870531055795960">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
+<translation id="231828342043114302">Pour recevoir du contenu personnalisé en fonction de vos intérêts, connectez-vous à Chromium.</translation>
 <translation id="2374627437126809292">Chromium utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="2386292341327187942">Dans le champ Widgets de recherche, entrez Chromium</translation>
 <translation id="2426113998523353159">Votre organisation vous demande de vous connecter pour utiliser Chromium.</translation>

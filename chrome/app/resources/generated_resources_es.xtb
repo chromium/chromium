@@ -523,7 +523,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="139911022479327130">Desbloquea tu teléfono y confirma que eres tú</translation>
 <translation id="1399261165075500043">No se pueden cargar los Términos del Servicio de Google Play</translation>
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una nueva pestaña</translation>
-<translation id="1401308693935339022">Usa la ubicación. Permite que las aplicaciones y los servicios que tienen permiso de ubicación utilicen la ubicación de este dispositivo. Es posible que Google recoja datos de ubicación de forma periódica y los utilice de forma anónima para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="1402426911829176748">Conectando con tu dispositivo</translation>
 <translation id="1403222014593521787">No se ha podido establecer conexión con el proxy</translation>
 <translation id="1405779994569073824">Error.</translation>
@@ -1858,7 +1857,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2373666622366160481">Ajustar al tamaño del papel</translation>
 <translation id="2375406435414127095">Conecta tu teléfono</translation>
 <translation id="2376056713414548745">Leer en voz alta</translation>
-<translation id="2377588536920405462">Para inhabilitar la ubicación, desactiva el ajuste de ubicación principal en el dispositivo. También puedes desactivar el uso de sensores y redes Wi‑Fi o móviles para determinar la ubicación en los ajustes de ubicación.</translation>
 <translation id="2377667304966270281">Fallos graves</translation>
 <translation id="237828693408258535">¿Quieres traducir esta página?</translation>
 <translation id="2378982052244864789">Selecciona el directorio de la extensión.</translation>
@@ -3110,6 +3108,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" quiere quitar esta extensión.</translation>
 <translation id="3345634917232014253">La comprobación de seguridad se ha ejecutado hace un momento</translation>
 <translation id="3345886924813989455">No se ha encontrado ningún navegador compatible.</translation>
+<translation id="3346306152660142597">Personalizar esta página con IA</translation>
 <translation id="3347086966102161372">C&amp;opiar dirección de imagen</translation>
 <translation id="3348038390189153836">Se ha detectado un dispositivo extraíble.</translation>
 <translation id="3348131053948466246">Emoji sugerido. Pulsa arriba o abajo para desplazarte, e Intro para insertarlo.</translation>
@@ -5423,7 +5422,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5147097165869384760">¿Buscas la página del sistema operativo? Accede a <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147516217412920887">Sigue las instrucciones de tu teléfono para verificar el código</translation>
 <translation id="5147992672778369947">Usa una contraseña recomendada</translation>
-<translation id="5148277445782867161">El servicio de ubicación de Google utiliza fuentes como las redes Wi‑Fi y sensores para determinar la ubicación de tu dispositivo.</translation>
 <translation id="5148285448107770349">La contraseña debe tener al menos 8 caracteres</translation>
 <translation id="5149602533174716626">C&amp;opiar fotograma</translation>
 <translation id="5150254825601720210">Nombre de servidor SSL de certificado de Netscape</translation>
@@ -6389,7 +6387,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5916664084637901428">Activado</translation>
 <translation id="59174027418879706">Habilitado</translation>
 <translation id="5920543303088087579">El administrador ha inhabilitado la conexión a esta red</translation>
-<translation id="5921257443092182237">El servicio de ubicación de Google utiliza fuentes como las redes Wi‑Fi y sensores para determinar la ubicación de este dispositivo.</translation>
 <translation id="5924047253200400718">Obtener ayuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Preguntar antes de copiar o mover archivos de Microsoft a Google Drive</translation>
 <translation id="5924527146239595929">Haz una foto o selecciona una foto o un icono que ya tengas.
@@ -7685,7 +7682,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6935031746833428401">Más información sobre la gestión de dispositivos</translation>
 <translation id="6935286146439255109">Falta una bandeja de papel</translation>
 <translation id="6938386202199793006">Tienes 1 impresora guardada.</translation>
-<translation id="6938387822292071111">Mostrar imágenes en las tarjetas de vista previa al colocar el cursor sobre una pestaña</translation>
 <translation id="6938606182859551396">Para recibir notificaciones de tu teléfono en tu <ph name="DEVICE_TYPE" />, sigue las instrucciones en el teléfono para que las notificaciones puedan acceder a Servicios de Google Play.</translation>
 <translation id="694168622559714949">Tu administrador ha establecido un idioma predeterminado que no se puede cambiar.</translation>
 <translation id="6941937518557314510">Inicia sesión en <ph name="TOKEN_NAME" /> para identificarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
@@ -8220,7 +8216,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="736877393389250337"><ph name="URL" /> no se ha podido abrir en <ph name="ALTERNATIVE_BROWSER_NAME" />. Ponte en contacto con el administrador del sistema.</translation>
 <translation id="7368927539449986686">Editar búsqueda en el sitio</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
-<translation id="7371490947952970241">Para inhabilitar la ubicación, desactiva el ajuste de ubicación principal en el dispositivo. También puedes desactivar el uso de sensores y redes Wi‑Fi o móviles para determinar la ubicación en los ajustes de ubicación.</translation>
 <translation id="7371917887111892735">el tamaño de las pestañas se ajusta al ancho de la pestaña fija</translation>
 <translation id="7374376573160927383">Gestionar dispositivos USB</translation>
 <translation id="7376124766545122644">No se puede usar este enlace. Comprueba que el enlace empieza por "http://" o "https://" y vuelve a intentarlo.</translation>
@@ -9005,6 +9000,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparación de la conexión compartida:</translation>
 <translation id="7942349550061667556">Rojo</translation>
+<translation id="7942846369224063421">Renderizador de IU precargada</translation>
 <translation id="7943349879009553083">No disponible en el modo Invitado</translation>
 <translation id="7943368935008348579">Descargar archivos PDF</translation>
 <translation id="7943837619101191061">Añadir ubicación...</translation>
@@ -10419,7 +10415,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9018218886431812662">Instalación completada</translation>
 <translation id="901876615920222131">Para volver a abrir el grupo, haz clic en él</translation>
 <translation id="9019062154811256702">Leer y cambiar la configuración de Autocompletar</translation>
-<translation id="9019894137004772119">Usa la ubicación. Permite que las aplicaciones y los servicios que tienen permiso de ubicación utilicen la ubicación de tu dispositivo. Es posible que Google recoja datos de ubicación de forma periódica y los utilice de forma anónima para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="9019956081903586892">No se ha podido descargar el diccionario de revisión ortográfica</translation>
 <translation id="9020300839812600209">Introduce una URL para ver qué comportamiento tendría la función LBS con ella.</translation>
 <translation id="9020362265352758658">4x</translation>

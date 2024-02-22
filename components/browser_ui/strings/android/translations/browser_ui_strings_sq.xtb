@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Fshih kartën e uljes së çmimit</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1192844206376121885">Kjo do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" />.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Ndihmë dhe komente</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
+<translation id="2550801787432930915">Karta e uljes së çmimit</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 kuki është bllokuar}other{# kuki janë bllokuar}}</translation>
 <translation id="2570922361219980984">Qasja te vendndodhja është po ashtu joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">I zgjeruar - kliko për ta palosur.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Kur është e aktive</translation>
 <translation id="8805385115381080995">Shfletimi është më i shpejtë pasi një sajt ka më pak gjasa që të të kërkojë të verifikosh që je një person real</translation>
 <translation id="8816026460808729765">Bllokojua faqeve hapjen e sensorëve</translation>
+<translation id="8843699287283948910">Fshih skedat nga pajisjet e tjera</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve me shumë mundësi mund të funksionojnë siç pritet.</translation>
 <translation id="8889294078294184559">Ndërkohë që ti vazhdon të shfletosh, sajtet mund të kontrollojnë në Chrome dhe të verifikojnë nga një sajt i mëparshëm që ke vizituar që ka gjasa të jesh një person real.</translation>

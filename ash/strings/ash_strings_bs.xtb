@@ -18,7 +18,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1056775291175587022">Nema mreže</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1058009965971887428">Prijavite povratne informacije</translation>
-<translation id="1059120031266247284">Podijeljeno s vama</translation>
+<translation id="1059120031266247284">Podijeljeno je s vama</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Zamijeni</translation>
 <translation id="1073899992769346247">Zamijenite ili napunite bateriju</translation>
@@ -645,7 +645,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3621202678540785336">Ulaz</translation>
 <translation id="3621712662352432595">Postavke zvuka</translation>
 <translation id="3626281679859535460">Osvjetljenje</translation>
-<translation id="3628323833346754646">Prednji gumb</translation>
+<translation id="3628323833346754646">Prednje dugme</translation>
 <translation id="3630697955794050612">isključeno</translation>
 <translation id="3631369015426612114">Omogućite obavještenja iz sljedećih izvora</translation>
 <translation id="3633097874324966332">Otvorite postavke Bluetootha da uparite uređaj</translation>
@@ -1349,7 +1349,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="6309219492973062892">Kliknite ili dodirnite ikone police od 1 do 8</translation>
 <translation id="6315170314923504164">Govor</translation>
 <translation id="6319058840130157106">Krećite se unazad između donjeg desnog ugla, Pokretača, trake za adresu, trake oznaka, otvorene web lokacije i preuzimanja</translation>
-<translation id="6319503618073410818">Pregledajte pojedinosti u pregledniku</translation>
+<translation id="6319503618073410818">Pregledajte detalje u pregledniku</translation>
 <translation id="6324916366299863871">Uredite prečicu</translation>
 <translation id="6330012934079202188">Prikazani su prozori sa svih radnih površina. Pritisnite tipku sa strelicom nagore da se prikažu prozori s trenutne radne površine</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana sesija kojom upravlja <ph name="MANAGER" /></translation>
@@ -2026,7 +2026,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9098969848082897657">Utišavanje telefona</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ili <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Opoziv posljednje radnje</translation>
-<translation id="9129245940793250979">Stražnji gumb</translation>
+<translation id="9129245940793250979">Zadnje dugme</translation>
 <translation id="9133335900048457298">Nije moguće snimiti zaštićeni sadržaj</translation>
 <translation id="9139720510312328767">Brisanje sljedećeg slova</translation>
 <translation id="9151906066336345901">End</translation>

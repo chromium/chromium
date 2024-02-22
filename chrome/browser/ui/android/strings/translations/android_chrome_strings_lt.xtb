@@ -276,6 +276,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2534155362429831547">Ištrinta elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2536728043171574184">Žiūrima neprisijungus naudojama šio puslapio kopija</translation>
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
+<translation id="254973855621628293">Slaptažodžiai išsaugoti šiame įrenginyje</translation>
 <translation id="2567385386134582609">VAIZDAS</translation>
 <translation id="2567545343356994513">Spartesnė, veiksni apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių</translation>
 <translation id="2569733278091928697">Galėsite lengvai valdyti medijos valdiklius, inkognito režimo seansus, atsisiuntimus ir kt.</translation>
@@ -1088,7 +1089,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="670498945988402717">Tikrinta vakar</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> laikmatis sustojo. Jis vėl bus paleistas rytoj.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Žymė išsaugota aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}one{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}few{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}many{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}other{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}}</translation>
 <translation id="6715020873764921614">Ar vis tiek norite atsisiųsti „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Prijungti naudojant QR kodą?</translation>
 <translation id="6723740634201835758">„Google“ paskyroje</translation>
@@ -1288,6 +1288,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7665369617277396874">Pridėti paskyrą</translation>
 <translation id="766587987807204883">Čia rodomi straipsniai, kuriuos galima skaityti net neprisijungus</translation>
+<translation id="7670101447063278728">Slaptažodžiai išsaugoti skiltyje „<ph name="USERNAME" />“.</translation>
 <translation id="7682724950699840886">Išbandykite nurodytus patarimus: įsitikinkite, kad įrenginyje yra pakankamai vietos, ir bandykite eksportuoti dar kartą.</translation>
 <translation id="7686086654630106285">Daugiau apie svetainių siūlomus skelbimus</translation>
 <translation id="768618399695552958">Kai kurie puslapiai, kuriuose lankotės, yra iš anksto įkelti. Puslapiai gali būti iš anksto įkelti per „Google“ serverius, kai susieti iš „Google“ svetainės.</translation>
@@ -1417,7 +1418,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8237871086242677046">Puslapio įžvalgų apatinis lapas</translation>
 <translation id="8243077599929149377">Naudotojo vardo pridėjimas</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Žymė išsaugota aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}one{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}few{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}many{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}other{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8255617931166444521">Svetainės slapukai gali būti naudojami tik siekiant peržiūrėti naršymo veiklą toje svetainėje.</translation>
 <translation id="8259179246279078674">Kadangi iš anksto įkelti puslapiai yra šifruojami, „Google“ nežinos nieko apie iš anksto įkelto puslapio turinį. „Google“ serveriai žinos, kurios svetainės yra privačiai iš anksto įkeltos. Ši informacija naudojama tik puslapiams iš anksto įkelti ir nėra susieta su kita informacija iš jūsų „Google“ paskyros.</translation>
 <translation id="8260126382462817229">Bandykite prisijungti dar kartą</translation>
@@ -1461,6 +1461,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8460448946170646641">Peržiūrėkite pagrindinius privatumo ir saugos valdiklius</translation>
 <translation id="8466613982764129868">Įsitikinkite, kad įrenginys „<ph name="TARGET_DEVICE_NAME" />“ prijungtas prie interneto</translation>
 <translation id="8473863474539038330">Adresai ir dar daugiau</translation>
+<translation id="8478751349603791277">Valdykite, kaip sinchronizuota istorija gali būti naudojama kitoms „Google“ paslaugoms suasmeninti</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Atidaryti istorijos puslapį</translation>
 <translation id="8493948351860045254">Atlaisvinti vietos</translation>

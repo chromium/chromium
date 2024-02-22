@@ -18,6 +18,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
 <translation id="1056898198331236512">Waarskuwing</translation>
 <translation id="1058009965971887428">Gee terugvoer</translation>
+<translation id="1059120031266247284">Met jou gedeel</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Vervang</translation>
 <translation id="1073899992769346247">Vervang of herlaai die battery</translation>
@@ -627,6 +628,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
 <translation id="3580650856351781466">Laai tans spraaklêers af</translation>
 <translation id="3585296979871889131">Bekyk jou foon se onlangse foto’s, media, kennisgewings en apps</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Kantknoppie</translation>
 <translation id="3593039967545720377">Kry jou knipbordgeskiedenis deur <ph name="SHORTCUT_KEY_NAME" /> + V te druk om jou knipbord te bekyk. Kopieer 'n item om te begin.</translation>
 <translation id="3593646411856133110">Swiep op en hou om oop programme te sien</translation>
@@ -643,6 +645,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3621202678540785336">Invoer</translation>
 <translation id="3621712662352432595">Oudio-instellings</translation>
 <translation id="3626281679859535460">Helderheid</translation>
+<translation id="3628323833346754646">Voorste knoppie</translation>
 <translation id="3630697955794050612">af</translation>
 <translation id="3631369015426612114">Laat kennisgewings van die volgende af toe</translation>
 <translation id="3633097874324966332">Maak Bluetooth-instellings oop om jou toestel saam te bind</translation>
@@ -1285,6 +1288,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="6052614013050385269">Regterklik 'n skakel</translation>
 <translation id="6054305421211936131">Meld met slimkaart aan</translation>
 <translation id="6059276912018042191">Onlangse Chrome-oortjies</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> outomaties afgemeld word.</translation>
 <translation id="6064463340679478396">Hierdie lêer klaar gebruik</translation>
 <translation id="6068258534237496331">Video-oproepkontroles</translation>
@@ -1346,6 +1350,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="6309219492973062892">Klik of tik op rakikone 1-8</translation>
 <translation id="6315170314923504164">Stem</translation>
 <translation id="6319058840130157106">Beweeg agtertoe tussen regter onderste hoek, Lanseerder, adresbalk, boekmerkbalk, webwerf wat oop is en aflaaie</translation>
+<translation id="6319503618073410818">Bekyk besonderhede in blaaier</translation>
 <translation id="6324916366299863871">Wysig kortpad</translation>
 <translation id="6330012934079202188">Vensters van alle lessenaars word tans gewys; druk die oppylsleutel om vensters van die huidige lessenaar te wys</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is 'n bestuurde sessie wat deur <ph name="MANAGER" /> bestuur word</translation>
@@ -1566,6 +1571,7 @@ Nuwe installasie</translation>
 <translation id="7229029500464092426">Geheue <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totaal</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% batterykrag oor. Koppel jou toestel aan krag.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Hierdie Chromebook moet herbegin om 'n opdatering toe te pas. Dit kan tot 1 minuut neem.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Agterste mikrofoon</translation>
 <translation id="7258828758145722155">Gister gewysig</translation>
 <translation id="726276584504105859">Sleep hierheen om verdeelde skerm te gebruik</translation>
@@ -1693,6 +1699,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7742327441377685481">Geen kennisgewings nie</translation>
 <translation id="7748275671948949022">Merk lanseerderknoppie op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">Klik om die opdateringbesonderhede te sien</translation>
 <translation id="7768784765476638775">Hardoplees</translation>
 <translation id="7769299611924763557">Jou GIF sal binnekort gereed wees</translation>
@@ -2020,6 +2027,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="9098969848082897657">Maak foon stil</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> of <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Ontdoen jongste handeling</translation>
+<translation id="9129245940793250979">Agterste knoppie</translation>
 <translation id="9133335900048457298">Kan nie beskermde inhoud opneem nie</translation>
 <translation id="9139720510312328767">Vee volgende letter uit</translation>
 <translation id="9151906066336345901">end</translation>

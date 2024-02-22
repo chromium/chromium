@@ -1088,7 +1088,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="670498945988402717">Comprobado ayer</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">Se ha agotado el temporizador de <ph name="FQDN" />. Se reiniciará mañana.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Marcador guardado en <ph name="FOLDER_NAME" />. Solo se guarda en este dispositivo.}other{Marcadores guardados en <ph name="FOLDER_NAME" />. Solo se guardan en este dispositivo.}}</translation>
 <translation id="6715020873764921614">¿Quieres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de todos modos?</translation>
 <translation id="6719634564325948108">¿Conectar con código QR?</translation>
 <translation id="6723740634201835758">De tu cuenta de Google</translation>
@@ -1417,7 +1416,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8237871086242677046">Hoja inferior de métricas de la página</translation>
 <translation id="8243077599929149377">Añade tu nombre de usuario</translation>
 <translation id="8250920743982581267">Documentos</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Marcador guardado en <ph name="FOLDER_NAME" /> en tu cuenta (<ph name="ACCOUNT_EMAIL" />).}other{Marcadores guardados en <ph name="FOLDER_NAME" /> en tu cuenta (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8255617931166444521">Los sitios solo pueden usar las cookies para ver tu actividad de navegación en ellos mismos.</translation>
 <translation id="8259179246279078674">Dado que las páginas precargadas están cifradas, Google no analizará el contenido de la página precargada. Los servidores de Google sabrán qué sitios se precargan de forma privada. Esta información solo se usa para precargar las páginas, y no está vinculada a ninguna otra información de tu cuenta de Google.</translation>
 <translation id="8260126382462817229">Prueba a iniciar sesión de nuevo</translation>

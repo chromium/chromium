@@ -1080,7 +1080,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="670498945988402717">Ilikaguliwa jana</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
 <translation id="671481426037969117">Kipindi cha kipima muda cha <ph name="FQDN" /> kimeisha. Kitaanza tena kesho.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Alamisho imehifadhiwa kwenye <ph name="FOLDER_NAME" />. Imehifadhiwa kwenye kifaa hiki pekee.}other{Alamisho zimehifadhiwa kwenye <ph name="FOLDER_NAME" />. Zimehifadhiwa kwenye kifaa hiki pekee.}}</translation>
 <translation id="6715020873764921614">Je, ungependa kupakua <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) licha ya hayo?</translation>
 <translation id="6719634564325948108">Ungependa kuunganisha kupitia msimbo wa QR?</translation>
 <translation id="6723740634201835758">Katika Akaunti yako ya Google</translation>
@@ -1405,7 +1404,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8237871086242677046">Safu ya chini ya maarifa ya ukurasa</translation>
 <translation id="8243077599929149377">Weka jina lako la mtumiaji</translation>
 <translation id="8250920743982581267">Hati</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Alamisho imehifadhiwa kwenye <ph name="FOLDER_NAME" /> katika akaunti yako, <ph name="ACCOUNT_EMAIL" />.}other{Alamisho zimehifadhiwa kwenye <ph name="FOLDER_NAME" /> katika akaunti yako, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Tovuti zinaweza tu kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti hizo pekee</translation>
 <translation id="8259179246279078674">Kwa sababu kurasa zilizopakiwa mapema zimesimbwa kwa njia fiche, Google haitapata maelezo yoyote kuhusu maudhui ya kurasa hizo. Seva za Google zitafahamu ni tovuti gani zilizopakiwa mapema kwa njia ya faragha. Maelezo haya yanatumiwa tu kwa ajili ya kupakia kurasa mapema na hayahusishwi na taarifa zingine kutoka kwenye Akaunti yako ya Google.</translation>
 <translation id="8260126382462817229">Jaribu kuingia katika akaunti tena</translation>

@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les cookies tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Masquer la carte de baisse de prix</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1192844206376121885">L'ensemble des données et cookies stockés par <ph name="ORIGIN" /> seront supprimés.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Aide et commentaires</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2546283357679194313">Cookies et données des sites</translation>
+<translation id="2550801787432930915">Carte de baisse de prix</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqué}one{# cookie bloqué}other{# cookies bloqués}}</translation>
 <translation id="2570922361219980984">L'accès à la position est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Lorsque la fonctionnalité est activée</translation>
 <translation id="8805385115381080995">La navigation est plus rapide, car les sites sont moins susceptibles de vous demander de confirmer que vous êtes une personne bien réelle</translation>
 <translation id="8816026460808729765">Bloque l'accès aux capteurs pour certains sites</translation>
+<translation id="8843699287283948910">Masquer les onglets d'autres appareils</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Essayez d'autoriser temporairement les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
 <translation id="8889294078294184559">Lorsque vous continuez à naviguer, les sites peuvent vérifier avec Chrome et avec un site que vous avez déjà visité si vous êtes une personne réelle</translation>

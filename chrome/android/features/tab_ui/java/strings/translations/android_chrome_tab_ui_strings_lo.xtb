@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ຍົກເລີກການຈັດກຸ່ມແຖບ}other{ຍົກເລີກການຈັດກຸ່ມແຖບ}}</translation>
 <translation id="2277224997687551299">ແກ້ໄຂຊື່ກຸ່ມ</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ແຖບບຸກມາກ}other{ແຖບບຸກມາກ}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{ຫຍໍ້ກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_ONE" /> ແຖບລົງ.}other{ຫຍໍ້ກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບລົງ.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ຫຍໍ້ <ph name="TABS_COUNT_ONE" /> ແຖບລົງ.}other{ຫຍໍ້ກຸ່ມແຖບທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບແລ້ວ.}}</translation>
 <translation id="2569352796411618312">ການແນະນຳ: ທ່ານບໍ່ໄດ້ໃຊ້ແຖບຂອງທ່ານ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>
 <translation id="2613747923081026172">ສ້າງກຸ່ມ</translation>
