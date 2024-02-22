@@ -335,6 +335,13 @@ void TabStripModel::AppendWebContents(std::unique_ptr<WebContents> contents,
       foreground ? (ADD_INHERIT_OPENER | ADD_ACTIVE) : ADD_NONE);
 }
 
+void TabStripModel::AppendTab(std::unique_ptr<tabs::TabModel> tab,
+                              bool foreground) {
+  InsertDetachedTabAt(
+      count(), std::move(tab),
+      foreground ? (ADD_INHERIT_OPENER | ADD_ACTIVE) : ADD_NONE);
+}
+
 int TabStripModel::InsertWebContentsAt(
     int index,
     std::unique_ptr<WebContents> contents,

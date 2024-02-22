@@ -193,8 +193,15 @@ class TabStripModel : public TabGroupController {
 
   // Adds the specified WebContents in the default location. Tabs opened
   // in the foreground inherit the opener of the previously active tab.
+  // Use of the detached tab is preferred over webcontents, so when possible
+  // use AppendTab instead of this method.
   void AppendWebContents(std::unique_ptr<content::WebContents> contents,
                          bool foreground);
+
+  // Adds the specified Tab at the end of the Tabstrip. Tabs opened
+  // in the foreground inherit the opener of the previously active tab and
+  // become the active tab.
+  void AppendTab(std::unique_ptr<tabs::TabModel> tab, bool foreground);
 
   // Adds the specified WebContents at the specified location.
   // |add_types| is a bitmask of AddTabTypes; see it for details.
