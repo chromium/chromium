@@ -1013,22 +1013,20 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   std::string script = R"(
         (async () => {
           const {token} = await navigator.identity.get({
-            identity: {
+            digital: {
               providers: [{
-                holder: {
-                  selector: {
-                    format: ['mdoc'],
-                    doctype: 'org.iso.18013.5.1.mDL',
-                    fields: [
-                      'org.iso.18013.5.1.family_name',
-                      'org.iso.18013.5.1.portrait',
-                    ]
-                  },
-                  params: {
-                    nonce: '1234',
-                    readerPublicKey: 'test_reader_public_key',
-                    extraParamAsNeededByDigitalCredentials: true,
-                  },
+                selector: {
+                  format: ['mdoc'],
+                  doctype: 'org.iso.18013.5.1.mDL',
+                  fields: [
+                    'org.iso.18013.5.1.family_name',
+                    'org.iso.18013.5.1.portrait',
+                  ]
+                },
+                params: {
+                  nonce: '1234',
+                  readerPublicKey: 'test_reader_public_key',
+                  extraParamAsNeededByDigitalCredentials: true,
                 },
               }],
             },

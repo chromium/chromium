@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -92,9 +92,12 @@ void OnCompleteRequest(ScriptPromiseResolver* resolver,
 }  // anonymous namespace
 
 bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
-  return options.hasIdentity() && options.identity()->hasProviders() &&
-         base::ranges::any_of(options.identity()->providers(),
-                              &IdentityProviderConfig::hasHolder);
+  if (options.hasIdentity()) {
+    return options.identity()->hasProviders() &&
+           base::ranges::any_of(options.identity()->providers(),
+                                &IdentityProviderConfig::hasHolder);
+  }
+  return options.hasDigital() && options.digital()->hasProviders();
 }
 
 ScriptPromise DiscoverDigitalIdentityCredentialFromExternalSource(
@@ -111,9 +114,13 @@ ScriptPromise DiscoverDigitalIdentityCredentialFromExternalSource(
     return resolver->Promise();
   }
 
+  size_t num_providers = options.hasIdentity()
+                             ? options.identity()->providers().size()
+                             : options.digital()->providers().size();
+
   // TODO(https://crbug.com/1416939): make sure the Digital Credentials
   // API works well with the Multiple IdP API.
-  if (options.identity()->providers().size() > 1u) {
+  if (num_providers > 1u) {
     exception_state.ThrowTypeError(
         "Digital identity API currently does not support multiple "
         "providers.");
@@ -150,9 +157,11 @@ ScriptPromise DiscoverDigitalIdentityCredentialFromExternalSource(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
+  const DigitalCredentialProvider& digital_provider =
+      options.hasIdentity() ? *options.identity()->providers()[0]->holder()
+                            : *options.digital()->providers()[0];
   auto digital_credential_provider =
-      blink::mojom::blink::DigitalCredentialProvider::From(
-          *options.identity()->providers()[0]->holder());
+      blink::mojom::blink::DigitalCredentialProvider::From(digital_provider);
 
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
