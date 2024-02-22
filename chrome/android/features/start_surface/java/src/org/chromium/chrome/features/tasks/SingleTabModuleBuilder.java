@@ -64,6 +64,12 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
                 () -> {
                     moduleDelegateHost.onCaptureThumbnailStatusChanged();
                 };
+
+        // If the host surface is NTP and there isn't a last visited Tab to track, don't create the
+        // single Tab module.
+        if (isShownOnNtp && moduleDelegateHost.getTrackingTab() == null) {
+            return false;
+        }
         SingleTabSwitcherCoordinator singleTabSwitcherCoordinator =
                 new SingleTabSwitcherCoordinator(
                         mActivity,
