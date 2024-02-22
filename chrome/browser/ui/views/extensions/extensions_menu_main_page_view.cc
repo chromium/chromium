@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -719,6 +720,13 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     subheader_subtitle_->SetEnabledColorId(kColorExtensionsMenuSecondaryText);
     subheader_subtitle_->SetTextStyle(views::style::STYLE_BODY_3);
   }
+
+  // By default, the button's accessible description is set to the button's
+  // tooltip text. This is the accepted workaround to ensure only accessible
+  // name is announced by a screenreader rather than tooltip text and
+  // accessible name.
+  site_settings_toggle_->GetViewAccessibility().OverrideDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Align the site setting toggle vertically with the subheader title by
   // getting the label height after construction.
