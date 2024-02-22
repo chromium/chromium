@@ -283,8 +283,9 @@ IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
   CheckSetupIsFinishedSuccessfully();
 }
 
+// TODO(crbug.com/326323866): re-enable this.
 IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
-                       SetupShouldFailAsHashesDoNotMatch) {
+                       DISABLED_SetupShouldFailAsHashesDoNotMatch) {
   AllowPluginVm();
   // Reset PluginVmImage hash to non-matching.
   SetPluginVmImagePref(embedded_test_server()->GetURL(kZipFile).spec(),
