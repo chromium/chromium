@@ -76,7 +76,10 @@ message GarbageCollectionDirective {
     DEPRECATED_MAX_ITEM_COUNT = 3 [deprecated = true];
   }
 
-  optional Type type = 1 [default = UNKNOWN];
+  // Deprecated in M124. This field is unused because it would be hard to use
+  // `active_collaboration_ids`. The client should rely on the presence of the
+  // corresponding fields instead.
+  optional Type type = 1 [default = UNKNOWN, deprecated = true];
 
   // This field specifies the watermark for the versions which should get
   // garbage collected.  The client should purge all sync entities when
@@ -92,6 +95,16 @@ message GarbageCollectionDirective {
 
   reserved 4;
   reserved "max_number_of_items";
+
+  // This field contains a list of active collaboration IDs which are available
+  // to the user. The client should stop tracking any shared sync entities with
+  // collaborations which are not in the list. Note that if the list is empty,
+  // an empty `collaboration_gc` is expected to be provided by the server.
+  // Introduced in M124.
+  message CollaborationGarbageCollection {
+    repeated string active_collaboration_ids = 1;
+  }
+  optional CollaborationGarbageCollection collaboration_gc = 5;
 }
 
 // This message communicates additional per-type information related to

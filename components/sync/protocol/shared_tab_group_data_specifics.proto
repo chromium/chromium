@@ -22,12 +22,13 @@ message SharedTabGroupDataSpecifics {
   // Unique identifier for this entity.
   optional string guid = 1;
 
-  optional string collaboration_id = 2;
-  optional string last_modification_author = 3;
+  // TODO(b/319521964): consider to rename and add a comment to clarify the
+  // content.
+  optional string last_modification_author = 2;
 
   oneof entity {
-    SharedTabGroup tab_group = 4;
-    SharedTab tab = 5;
+    SharedTabGroup tab_group = 3;
+    SharedTab tab = 4;
   }
 }
 

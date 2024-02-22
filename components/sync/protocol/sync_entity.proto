@@ -221,4 +221,13 @@ message SyncEntity {
   // and the code has been removed as of M66.
   reserved 26;
   reserved "attachment_id";
+
+  // Metadata used for shared data types. Must not be present for regular data
+  // types.
+  // Introduced in M124.
+  message CollaborationMetadata {
+    // Collaboration ID which the current entity belongs to.
+    optional string collaboration_id = 1;
+  }
+  optional CollaborationMetadata collaboration = 27;
 }

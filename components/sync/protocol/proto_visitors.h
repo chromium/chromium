@@ -497,6 +497,13 @@ VISIT_PROTO_FIELDS(const sync_pb::DataTypeProgressMarker& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::GarbageCollectionDirective& proto) {
   VISIT(version_watermark);
+  VISIT(collaboration_gc);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::GarbageCollectionDirective::CollaborationGarbageCollection&
+        proto) {
+  VISIT_REP(active_collaboration_ids);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DebugEventInfo& proto) {
@@ -1252,7 +1259,6 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedTab& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupDataSpecifics& proto) {
   VISIT(guid);
-  VISIT(collaboration_id);
   VISIT(last_modification_author);
   VISIT(tab_group);
   VISIT(tab);
@@ -1303,6 +1309,11 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncEntity& proto) {
   VISIT(specifics);
   VISIT(folder);
   VISIT(client_tag_hash);
+  VISIT(collaboration);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SyncEntity::CollaborationMetadata& proto) {
+  VISIT(collaboration_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncInvalidationsPayload& proto) {
