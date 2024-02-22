@@ -18,7 +18,7 @@ def _convert_gn_sources_list_to_dict(gn_sources_list, build_dir):
   return gn_sources_dict
 
 
-def _get_sources_for_gn_target(all_transitive_sources, target_name):
+def _get_sources_for_gn_target(all_transitive_sources, gn_path, target_name):
   """ Given a particular target, stores all the source files for that target in
   the given multiprocessing.Manager().dict().
 
@@ -38,7 +38,9 @@ def _get_sources_for_gn_target(all_transitive_sources, target_name):
       ...
     }"""
   if target_name is not None:
-    get_sources_command = ["gn", "desc", "out/release", target_name, "sources"]
+    get_sources_command = [
+        gn_path, "desc", "out/release", target_name, "sources"
+    ]
     sources_output = subprocess.run(get_sources_command,
                                     check=False,
                                     capture_output=True)
@@ -51,7 +53,7 @@ def _get_sources_for_gn_target(all_transitive_sources, target_name):
         all_transitive_sources[file] = True
 
 
-def _fetch_all_transitive_sources_for_gn_target(gn_target, build_dir):
+def _fetch_all_transitive_sources_for_gn_target(gn_target, build_dir, gn_path):
   """Fetches a list of all transitive source dependencies for a GN target.
 
   For a given GN target and build directory, returns a list with all the
@@ -73,7 +75,7 @@ def _fetch_all_transitive_sources_for_gn_target(gn_target, build_dir):
      '//ui/platform_window/extensions/workspace_extension.cc',
      ...]
     """
-  get_deps_command = ["gn", "desc", build_dir, gn_target, "deps", "--all"]
+  get_deps_command = [gn_path, "desc", build_dir, gn_target, "deps", "--all"]
   deps_output = subprocess.run(get_deps_command,
                                check=True,
                                capture_output=True)
@@ -81,12 +83,13 @@ def _fetch_all_transitive_sources_for_gn_target(gn_target, build_dir):
   my_cpu_count = int(multiprocessing.cpu_count())
   all_transitive_sources = multiprocessing.Manager().dict()
   with multiprocessing.Pool(my_cpu_count) as p:
-    p.map(functools.partial(_get_sources_for_gn_target, all_transitive_sources),
-          target_names[:25])
+    p.map(
+        functools.partial(_get_sources_for_gn_target, all_transitive_sources,
+                          gn_path), target_names[:25])
   return all_transitive_sources.keys()
 
 
-def dictionary_of_all_transitive_sources(gn_target, build_dir):
+def dictionary_of_all_transitive_sources(gn_target, build_dir, gn_path):
   """Constructs a dictionary of all transitive GN source deps for a target.
 
   For a given GN target (e.g. `//components:components_unittests`) and the
@@ -109,5 +112,5 @@ def dictionary_of_all_transitive_sources(gn_target, build_dir):
      ...}
   """
   gn_sources_list = _fetch_all_transitive_sources_for_gn_target(
-      gn_target, build_dir)
+      gn_target, build_dir, gn_path)
   return _convert_gn_sources_list_to_dict(gn_sources_list, build_dir)
