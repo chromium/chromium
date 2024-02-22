@@ -2054,6 +2054,7 @@ static_library("ui") {
       "//components/enterprise/common:files_scan_data",
       "//components/feedback/proto",
       "//components/headless/policy",
+      "//components/history_embeddings",
       "//components/keep_alive_registry",
       "//components/manta",
       "//components/manta/proto",

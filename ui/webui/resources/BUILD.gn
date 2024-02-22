@@ -87,11 +87,13 @@ generate_grd("build_grd") {
     if (!is_android) {
       public_deps += [
         "cr_components/history_clusters:build_grdp",
+        "cr_components/history_embeddings:build_grdp",
         "cr_components/omnibox:build_grdp",
         "cr_components/omnibox/icons:build_grdp",
       ]
       grdp_files += [
         "$target_gen_dir/cr_components/history_clusters/resources.grdp",
+        "$target_gen_dir/cr_components/history_embeddings/resources.grdp",
         "$target_gen_dir/cr_components/omnibox/resources.grdp",
         "$target_gen_dir/cr_components/omnibox/icons/resources.grdp",
       ]
