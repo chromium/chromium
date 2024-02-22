@@ -11,6 +11,7 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -876,9 +877,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNoTestingConfig, AppListShown) {
   EXPECT_CALL(*mock_tracker(),
               NotifyEvent(scalable_iph::kEventNameAppListShown));
 
-  ash::AppListController* app_list_controller = ash::AppListController::Get();
-  CHECK(app_list_controller);
-  app_list_controller->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().ShowBubbleAppListAndWait();
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OpenPersonalizationApp) {
@@ -1095,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
                                          app_list_model_updater);
   app_list_item_waiter.Wait();
 
-  app_list_client_impl->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().ShowBubbleAppListAndWait();
 
   EXPECT_CALL(
       *mock_tracker(),
