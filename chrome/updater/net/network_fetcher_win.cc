@@ -50,7 +50,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
 
   VLOG(1) << "Using the system configuration for proxy.";
 
-  return base::MakeRefCounted<winhttp::AutoProxyConfiguration>();
+  return base::MakeRefCounted<winhttp::ProxyConfiguration>();
 }
 
 class NetworkFetcher : public update_client::NetworkFetcher {

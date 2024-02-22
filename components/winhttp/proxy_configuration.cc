@@ -29,7 +29,7 @@ int ProxyConfiguration::DoGetAccessType() const {
                                     !proxy_info_.proxy.empty();
 
   return is_using_named_proxy ? WINHTTP_ACCESS_TYPE_NAMED_PROXY
-                              : WINHTTP_ACCESS_TYPE_DEFAULT_PROXY;
+                              : WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
 }
 
 std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::GetProxyForUrl(
