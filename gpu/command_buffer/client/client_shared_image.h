@@ -116,6 +116,11 @@ class GPU_EXPORT ClientSharedImage
   void SetColorSpaceOnNativeBuffer(const gfx::ColorSpace& color_space);
 #endif
 
+  // Returns the texture target to be used for the given |usage| and |format|
+  // based on the underlying SharedImageCapabilities. Requires that
+  // `HasHolder()` is true.
+  uint32_t GetTextureTarget(gfx::BufferUsage usage, gfx::BufferFormat format);
+
   base::trace_event::MemoryAllocatorDumpGuid GetGUIDForTracing() {
     return gpu::GetSharedImageGUIDForTracing(mailbox_);
   }

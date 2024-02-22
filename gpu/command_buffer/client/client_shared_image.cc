@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/client/client_shared_image.h"
+#include <GLES2/gl2.h>
+
+#include "base/containers/contains.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "ui/gfx/buffer_types.h"
 
 namespace gpu {
 
@@ -128,6 +134,16 @@ void ClientSharedImage::SetColorSpaceOnNativeBuffer(
   gpu_memory_buffer_->SetColorSpace(color_space);
 }
 #endif
+
+uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
+                                             gfx::BufferFormat format) {
+  CHECK(HasHolder());
+
+  auto capabilities = sii_holder_->Get()->GetCapabilities();
+  bool found = base::Contains(capabilities.texture_target_exception_list,
+                              gfx::BufferUsageAndFormat(usage, format));
+  return found ? gpu::GetPlatformSpecificTextureTarget() : GL_TEXTURE_2D;
+}
 
 ExportedSharedImage ClientSharedImage::Export() {
   if (creation_sync_token_.HasData() &&
