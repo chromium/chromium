@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -1012,6 +1013,57 @@ TEST_F(FileSystemAccessLockManagerTest,
   // The pending locks that got evicted will not have their callbacks run.
   ASSERT_FALSE(pending_and_evicting_future_1.IsReady());
   ASSERT_FALSE(pending_and_evicting_future_2.IsReady());
+}
+
+TEST_F(FileSystemAccessLockManagerTest,
+       BFCachePendingLockDestroyedOnPromotion) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath path = dir_.GetPath().AppendASCII("foo");
+  auto url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, path);
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
+
+  auto exclusive_lock =
+      TakeLockSync(bf_cache_context, url, exclusive_lock_type);
+  ASSERT_TRUE(exclusive_lock);
+
+  // Entering into the BFCache should not evict the page.
+  rfh->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+  // Taking a lock of a contentious type will not return synchronously, but
+  // will start eviction and create a pending lock.
+  bool pending_lock_callback_run = false;
+  auto pending_callback = base::BindOnce(
+      [](bool* pending_lock_callback_run,
+         scoped_refptr<FileSystemAccessLockManager::LockHandle> lock_handle) {
+        // Resetting the `lock_handle` will destroy the promoted Pending
+        // Lock since its the only `LockHandle` to it.
+        lock_handle.reset();
+        *pending_lock_callback_run = true;
+      },
+      &pending_lock_callback_run);
+  manager_->TakeLock(active_context, url, shared_lock_type,
+                     std::move(pending_callback));
+  EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+
+  // Resetting the `exclusive_lock` destroys the exclusive lock since its the
+  // only LockHandle to it. This promotes the Pending Lock to Taken but it is
+  // destroyed before its pending callbacks return.
+  EXPECT_FALSE(pending_lock_callback_run);
+  exclusive_lock.reset();
+  EXPECT_TRUE(pending_lock_callback_run);
 }
 
 }  // namespace content

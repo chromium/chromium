@@ -73,7 +73,8 @@ class Lock {
                     parent_lock_->InPendingSubtree()) {}
 
   virtual ~Lock() {
-    CHECK(pending_callbacks_.empty() && frame_id_lock_handles_.empty());
+    CHECK(frame_id_lock_handles_.empty());
+    CHECK(pending_callbacks_.empty());
   }
 
   Lock(Lock const&) = delete;
@@ -317,10 +318,12 @@ class Lock {
     for (auto& [_path, child] : child_locks_) {
       child->PromotePendingToTaken();
     }
-    for (auto& pending_callback : pending_callbacks_) {
+    auto pending_callbacks = std::move(pending_callbacks_);
+    for (auto& pending_callback : pending_callbacks) {
+      // May destroy `this` if none of the pending_callbacks keep their
+      // `LockHandle` alive.
       std::move(pending_callback).Run();
     }
-    pending_callbacks_.clear();
   }
 
   // Returns if its the subroot of a Pending subtree. See class comment.
