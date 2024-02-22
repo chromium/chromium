@@ -8,6 +8,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/devtools/protocol/autofill.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/browser/web_contents.h"
@@ -22,7 +24,8 @@ class CreditCard;
 }
 
 class AutofillHandler : public protocol::Autofill::Backend,
-                        autofill::AutofillManager::Observer {
+                        autofill::AutofillManager::Observer,
+                        autofill::ContentAutofillDriverFactory::Observer {
  public:
   AutofillHandler(protocol::UberDispatcher* dispatcher,
                   const std::string& target_id);
@@ -46,7 +49,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
       std::unique_ptr<protocol::Array<protocol::Autofill::Address>> addresses,
       std::unique_ptr<SetAddressesCallback> callback) override;
 
-  // Autofill::AutofillManagerObserver
+  // AutofillManager::Observer:
   // Observes form filled events. In the case of an address form, we emit to
   // devtools the filled fields details and information about the profile used.
   // These information is then used to build a UI inside devtools, which will
@@ -59,6 +62,11 @@ class AutofillHandler : public protocol::Autofill::Backend,
       absl::variant<const autofill::AutofillProfile*,
                     const autofill::CreditCard*> profile_or_credit_card)
       override;
+
+  // ContentAutofillDriverFactory::Observer:
+  void OnContentAutofillDriverCreated(
+      autofill::ContentAutofillDriverFactory&,
+      autofill::ContentAutofillDriver&) override;
 
   // Returns the driver for the outermost frame, not the one that created the
   // `DevToolsAgentHost` and iniated the session.
@@ -73,6 +81,10 @@ class AutofillHandler : public protocol::Autofill::Backend,
                           autofill::AutofillManager::Observer>
       autofill_manager_observation_{this};
 
+  // Observes the factory to keep the `AutofillManager` observation relevant.
+  base::ScopedObservation<autofill::ContentAutofillDriverFactory,
+                          autofill::ContentAutofillDriverFactory::Observer>
+      factory_observation_{this};
   base::WeakPtrFactory<AutofillHandler> weak_ptr_factory_{this};
 };
 

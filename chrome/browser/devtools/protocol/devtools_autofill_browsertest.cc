@@ -670,4 +670,50 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
   EXPECT_FALSE(HasExistingNotification("Autofill.addressFormFilled"))
       << "The other handler should not handle `OnFillOrPreviewDataModelForm`";
 }
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
+                       AutofillManagerEventsAfterNavigation) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("a.com", "/autofill_test_form.html")));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(9));
+
+  Attach();
+  SendCommandSync("Autofill.enable");
+
+  AutofillProfile profile_a = CreateTestProfile();
+  FormData form_a =
+      main_autofill_manager().form_structures().begin()->second->ToFormData();
+  std::vector<const FormFieldData* const> filled_fields_by_autofill_a = {
+      {&form_a.fields[0], &form_a.fields[1]}};
+  main_autofill_manager().NotifyObservers(
+      &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
+      form_a.global_id(), autofill::mojom::ActionPersistence::kFill,
+      filled_fields_by_autofill_a, &profile_a);
+
+  WaitForNotification("Autofill.addressFormFilled", /*allow_existing=*/true);
+
+  // Navigating from "a.com" to "b.com".
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("b.com", "/autofill_test_form.html")));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(9));
+
+  AutofillProfile profile_b = CreateTestProfile();
+  FormData form_b =
+      main_autofill_manager().form_structures().begin()->second->ToFormData();
+  std::vector<const FormFieldData* const> filled_fields_by_autofill_b = {
+      {&form_b.fields[0], &form_b.fields[1]}};
+  main_autofill_manager().NotifyObservers(
+      &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
+      form_b.global_id(), autofill::mojom::ActionPersistence::kFill,
+      filled_fields_by_autofill_b, &profile_b);
+  WaitForNotification("Autofill.addressFormFilled", /*allow_existing=*/true);
+}
 }  // namespace autofill
