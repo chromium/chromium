@@ -194,6 +194,11 @@ class AppShimController
   // created yet, or if it is of the wrong type.
   mac_notifications::MacNotificationServiceUN* notification_service_un();
 
+  // Called when a change in the system notification permission status has been
+  // detected.
+  void NotificationPermissionStatusChanged(
+      mac_notifications::mojom::PermissionStatus status);
+
   // Helper function to set up a connection to the AppShimListener at the given
   // Mach endpoint name.
   static mojo::PlatformChannelEndpoint ConnectToBrowser(

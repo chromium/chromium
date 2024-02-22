@@ -31,6 +31,7 @@ const char kFileHandlerExtensions[] = "extensions";
 const char kFileHandlerMimeTypes[] = "mime_types";
 const char kProtocolHandlers[] = "protocols";
 const char kCdHashHmac[] = "cdhash_hmac";
+const char kNotificationPermissionStatus[] = "notification_permission";
 
 base::Value::List SetToValueList(const std::set<std::string>& values) {
   base::Value::List result;
@@ -130,7 +131,8 @@ void AppShimRegistry::OnAppInstalledForProfile(const std::string& app_id,
       GetLastActiveProfilesForApp(app_id);
   last_active_profiles.insert(profile);
   SetAppInfo(app_id, &installed_profiles, &last_active_profiles,
-             /*handlers=*/nullptr, /*cd_hash_hmac_base64=*/nullptr);
+             /*handlers=*/nullptr, /*cd_hash_hmac_base64=*/nullptr,
+             /*notification_permission_status=*/nullptr);
 }
 
 bool AppShimRegistry::OnAppUninstalledForProfile(
@@ -141,7 +143,8 @@ bool AppShimRegistry::OnAppUninstalledForProfile(
   if (found != installed_profiles.end()) {
     installed_profiles.erase(profile);
     SetAppInfo(app_id, &installed_profiles, /*last_active_profiles=*/nullptr,
-               /*handlers=*/nullptr, /*cd_hash_hmac_base64=*/nullptr);
+               /*handlers=*/nullptr, /*cd_hash_hmac_base64=*/nullptr,
+               /*notification_permission_status=*/nullptr);
   }
   return installed_profiles.empty();
 }
@@ -150,7 +153,8 @@ void AppShimRegistry::SaveLastActiveProfilesForApp(
     const std::string& app_id,
     std::set<base::FilePath> last_active_profiles) {
   SetAppInfo(app_id, /*installed_profiles=*/nullptr, &last_active_profiles,
-             /*handlers=*/nullptr, /*cd_hash_hmac_base64=*/nullptr);
+             /*handlers=*/nullptr, /*cd_hash_hmac_base64=*/nullptr,
+             /*notification_permission_status=*/nullptr);
 }
 
 std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
@@ -205,7 +209,8 @@ void AppShimRegistry::SaveFileHandlersForAppAndProfile(
     handlers.erase(it);
   SetAppInfo(app_id, /*installed_profiles=*/nullptr,
              /*last_active_profiles=*/nullptr, &handlers,
-             /*cd_hash_hmac_base64=*/nullptr);
+             /*cd_hash_hmac_base64=*/nullptr,
+             /*notification_permission_status=*/nullptr);
 }
 
 void AppShimRegistry::SaveProtocolHandlersForAppAndProfile(
@@ -219,7 +224,8 @@ void AppShimRegistry::SaveProtocolHandlersForAppAndProfile(
     handlers.erase(it);
   SetAppInfo(app_id, /*installed_profiles=*/nullptr,
              /*last_active_profiles=*/nullptr, &handlers,
-             /*cd_hash_hmac_base64=*/nullptr);
+             /*cd_hash_hmac_base64=*/nullptr,
+             /*notification_permission_status=*/nullptr);
 }
 
 std::map<base::FilePath, AppShimRegistry::HandlerInfo>
@@ -324,7 +330,8 @@ void AppShimRegistry::SaveCdHashForApp(const std::string& app_id,
   std::string cd_hash_hmac_base64 = base::Base64Encode(cd_hash_hmac);
   SetAppInfo(app_id, /*installed_profiles=*/nullptr,
              /*last_active_profiles=*/nullptr, /*handlers=*/nullptr,
-             &cd_hash_hmac_base64);
+             &cd_hash_hmac_base64,
+             /*notification_permission_status=*/nullptr);
 }
 
 bool AppShimRegistry::VerifyCdHashForApp(const std::string& app_id,
@@ -354,6 +361,43 @@ bool AppShimRegistry::VerifyCdHashForApp(const std::string& app_id,
   return hmac.Verify(cd_hash, *cd_hash_hmac);
 }
 
+void AppShimRegistry::SaveNotificationPermissionStatusForApp(
+    const std::string& app_id,
+    mac_notifications::mojom::PermissionStatus status) {
+  SetAppInfo(app_id, /*installed_profiles=*/nullptr,
+             /*last_active_profiles=*/nullptr, /*handlers=*/nullptr,
+             /*cd_hash_hmac_base64=*/nullptr, &status);
+}
+
+mac_notifications::mojom::PermissionStatus
+AppShimRegistry::GetNotificationPermissionStatusForApp(
+    const std::string& app_id) {
+  using PermissionStatus = mac_notifications::mojom::PermissionStatus;
+  const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
+  const base::Value::Dict* app_info = cache.FindDict(app_id);
+  if (!app_info) {
+    return PermissionStatus::kNotDetermined;
+  }
+  std::optional<int> status_as_int =
+      app_info->FindInt(kNotificationPermissionStatus);
+  if (!status_as_int.has_value()) {
+    return PermissionStatus::kNotDetermined;
+  }
+  switch (*status_as_int) {
+    case static_cast<int>(PermissionStatus::kNotDetermined):
+    case static_cast<int>(PermissionStatus::kPromptPending):
+    case static_cast<int>(PermissionStatus::kDenied):
+    case static_cast<int>(PermissionStatus::kGranted):
+      return static_cast<PermissionStatus>(*status_as_int);
+  }
+  return PermissionStatus::kNotDetermined;
+}
+
+base::CallbackListSubscription AppShimRegistry::RegisterAppChangedCallback(
+    base::RepeatingCallback<void(const std::string&)> callback) {
+  return app_changed_callbacks_.Add(std::move(callback));
+}
+
 void AppShimRegistry::SetPrefServiceAndUserDataDirForTesting(
     PrefService* pref_service,
     const base::FilePath& user_data_dir) {
@@ -366,6 +410,9 @@ base::Value::Dict AppShimRegistry::AsDebugDict() const {
 
   return app_shims.Clone();
 }
+
+AppShimRegistry::AppShimRegistry() = default;
+AppShimRegistry::~AppShimRegistry() = default;
 
 PrefService* AppShimRegistry::GetPrefService() const {
   if (override_pref_service_)
@@ -387,7 +434,9 @@ void AppShimRegistry::SetAppInfo(
     const std::set<base::FilePath>* installed_profiles,
     const std::set<base::FilePath>* last_active_profiles,
     const std::map<base::FilePath, HandlerInfo>* handlers,
-    const std::string* cd_hash_hmac_base64) {
+    const std::string* cd_hash_hmac_base64,
+    const mac_notifications::mojom::PermissionStatus*
+        notification_permission_status) {
   ScopedDictPrefUpdate update(GetPrefService(), kAppShims);
 
   // If there are no installed profiles, clear the app's key.
@@ -438,4 +487,9 @@ void AppShimRegistry::SetAppInfo(
   if (cd_hash_hmac_base64) {
     app_info->Set(kCdHashHmac, *cd_hash_hmac_base64);
   }
+  if (notification_permission_status) {
+    app_info->Set(kNotificationPermissionStatus,
+                  static_cast<int>(*notification_permission_status));
+  }
+  app_changed_callbacks_.Notify(app_id);
 }

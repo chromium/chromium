@@ -197,6 +197,9 @@ class AppShimHostTest : public testing::Test,
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
                                     const GURL& override_url) override {}
   void OnShimWillTerminate(AppShimHost* host) override {}
+  void OnNotificationPermissionStatusChanged(
+      AppShimHost* host,
+      mac_notifications::mojom::PermissionStatus status) override {}
 
   chrome::mojom::AppShimLaunchResult launch_result_ =
       chrome::mojom::AppShimLaunchResult::kSuccess;

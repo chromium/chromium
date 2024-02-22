@@ -1502,6 +1502,13 @@ void AppShimManager::OnShimWillTerminate(AppShimHost* host) {
   app_state->did_save_last_active_profiles_on_terminate = true;
 }
 
+void AppShimManager::OnNotificationPermissionStatusChanged(
+    AppShimHost* host,
+    mac_notifications::mojom::PermissionStatus status) {
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      host->GetAppId(), status);
+}
+
 void AppShimManager::OnProfileAdded(Profile* profile) {
   if (profile->IsOffTheRecord())
     return;

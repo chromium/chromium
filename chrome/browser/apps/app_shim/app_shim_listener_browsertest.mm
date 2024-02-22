@@ -219,6 +219,8 @@ class AppShimListenerBrowserTest : public InProcessBrowserTest,
   void EnableAccessibilitySupport(
       chrome::mojom::AppShimScreenReaderSupportMode mode) override {}
   void ApplicationWillTerminate() override {}
+  void NotificationPermissionStatusChanged(
+      mac_notifications::mojom::PermissionStatus status) override {}
 
   std::unique_ptr<base::RunLoop> runner_;
   mojo::Receiver<chrome::mojom::AppShimHost> receiver_{this};

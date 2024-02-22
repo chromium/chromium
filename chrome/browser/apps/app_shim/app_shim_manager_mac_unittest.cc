@@ -342,6 +342,7 @@ class TestHost : public AppShimHost {
   }
 
   using AppShimHost::FilesOpened;
+  using AppShimHost::NotificationPermissionStatusChanged;
   using AppShimHost::OpenAppWithOverrideUrl;
   using AppShimHost::ProfileSelectedFromMenu;
   using AppShimHost::ReopenApp;
@@ -2081,6 +2082,43 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppNotInstalled) {
                                               result.GetCallback());
   EXPECT_EQ(mac_notifications::mojom::RequestPermissionResult::kRequestFailed,
             result.Get());
+}
+
+TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
+  using PermissionStatus = mac_notifications::mojom::PermissionStatus;
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  // Create and launch shim for app A in profile A.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_,
+              DoLaunchShim(&profile_a_, kTestAppIdA,
+                           web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                           web_app::ShimLaunchMode::kNormal));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+
+  // Initial cached status should be "not determined".
+  EXPECT_EQ(PermissionStatus::kNotDetermined,
+            AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
+                kTestAppIdA));
+
+  // Trigger updates to the notification status.
+  base::test::TestFuture<const std::string&> app_changed;
+  auto app_changed_registration =
+      AppShimRegistry::Get()->RegisterAppChangedCallback(
+          app_changed.GetRepeatingCallback());
+
+  for (auto status :
+       {PermissionStatus::kGranted, PermissionStatus::kNotDetermined,
+        PermissionStatus::kPromptPending, PermissionStatus::kDenied}) {
+    host_aa_->NotificationPermissionStatusChanged(status);
+    EXPECT_EQ(kTestAppIdA, app_changed.Take());
+    EXPECT_EQ(status,
+              AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
+                  kTestAppIdA));
+  }
 }
 
 }  // namespace apps

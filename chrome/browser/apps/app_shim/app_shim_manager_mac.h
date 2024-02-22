@@ -228,6 +228,10 @@ class AppShimManager
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
                                     const GURL& override_url) override;
   void OnShimWillTerminate(AppShimHost* host) override;
+  void OnNotificationPermissionStatusChanged(
+      AppShimHost* host,
+      mac_notifications::mojom::PermissionStatus status) override;
+
   // AppLifetimeMonitor::Observer overrides:
   void OnAppStart(content::BrowserContext* context,
                   const std::string& app_id) override;

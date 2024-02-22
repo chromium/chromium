@@ -234,6 +234,11 @@ void AppShimHost::ApplicationWillTerminate() {
   client_->OnShimWillTerminate(this);
 }
 
+void AppShimHost::NotificationPermissionStatusChanged(
+    mac_notifications::mojom::PermissionStatus status) {
+  client_->OnNotificationPermissionStatusChanged(this, status);
+}
+
 base::FilePath AppShimHost::GetProfilePath() const {
   // This should only be used by single-profile-app paths.
   DCHECK(!profile_path_.empty());

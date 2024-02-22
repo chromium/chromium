@@ -70,20 +70,16 @@ void LogUNNotificationRequestPermissionResult(
       result);
 }
 
-void LogUNNotificationSettings(UNUserNotificationCenter* center) {
-  [center getNotificationSettingsWithCompletionHandler:^(
-              UNNotificationSettings* _Nonnull settings) {
-    std::string prefix = base::StrCat(
-        {"Notifications.Permissions.UNNotification.",
-         MacNotificationStyleSuffix(NotificationStyleFromAppBundle())});
+void LogUNNotificationSettings(UNNotificationSettings* settings) {
+  std::string prefix = base::StrCat(
+      {"Notifications.Permissions.UNNotification.",
+       MacNotificationStyleSuffix(NotificationStyleFromAppBundle())});
 
-    base::UmaHistogramEnumeration(
-        base::StrCat({prefix, ".Style"}),
-        ConvertNotificationStyle(settings.alertStyle));
-    base::UmaHistogramEnumeration(
-        base::StrCat({prefix, ".PermissionStatus"}),
-        ConvertAuthorizationStatus(settings.authorizationStatus));
-  }];
+  base::UmaHistogramEnumeration(base::StrCat({prefix, ".Style"}),
+                                ConvertNotificationStyle(settings.alertStyle));
+  base::UmaHistogramEnumeration(
+      base::StrCat({prefix, ".PermissionStatus"}),
+      ConvertAuthorizationStatus(settings.authorizationStatus));
 }
 
 }  // namespace mac_notifications

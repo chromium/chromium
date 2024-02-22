@@ -116,6 +116,20 @@ enum RequestPermissionResult {
   kPermissionPreviouslyGranted = 4,
 };
 
+// This enum is persisted to disk. Do not delete or re-order entries. New
+// entries should only be added at the end.
+enum PermissionStatus {
+  // A permission prompt has never been shown for this application.
+  kNotDetermined = 1,
+  // A permission prompt is currently showing.
+  kPromptPending = 2,
+  // A permission prompt has been denied, or the application quit with a pending
+  // permission prompt.
+  kDenied = 3,
+  // A permission prompt has been accepted.
+  kGranted = 4,
+};
+
 // Interface to control notifications shown by the helper app. Implemented by
 // the helper app and called from the browser process.
 interface MacNotificationService {
@@ -127,7 +141,8 @@ interface MacNotificationService {
   // include notification ids for that profile. Otherwise this will return all
   // displayed notification ids for all profiles. If an `origin` is passed, the
   // list is also filtered to only include notifications for that origin.
-  GetDisplayedNotifications(ProfileIdentifier? profile, url.mojom.Url? origin)
+  GetDisplayedNotifications(
+      ProfileIdentifier? profile, url.mojom.Url? origin)
       => (array<NotificationIdentifier> notifications);
 
   // Closes the notification identified by |identifier|.
@@ -162,6 +177,7 @@ interface MacNotificationProvider {
   // Called from the browser process to connect to the helper app. Further calls
   // are made on the |service| interface and actions will be handled by the
   // passed |handler|.
-  BindNotificationService(pending_receiver<MacNotificationService> service,
-                          pending_remote<MacNotificationActionHandler> handler);
+  BindNotificationService(
+      pending_receiver<MacNotificationService> service,
+      pending_remote<MacNotificationActionHandler> handler);
 };
