@@ -105,6 +105,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // Call when a menu closes, to restore focus to where it was previously.
   virtual void FireFocusAfterMenuClose();
 
+  void SetHasPopup(const ax::mojom::HasPopup has_popup);
+
   void SetRole(const ax::mojom::Role role);
 
   // This function cannot follow the established pattern and be named GetRole()
@@ -235,6 +237,8 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideIsIgnored(bool value);
   virtual bool IsIgnored() const;
 
+  // Deprecated. Use ViewAccessibility::SetHasPopup instead.
+  // See https://crbug.com/324485311.
   void OverrideHasPopup(const ax::mojom::HasPopup has_popup);
 
   // Override information provided to users by screen readers when describing

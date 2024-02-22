@@ -370,6 +370,10 @@ void ViewAccessibility::FireFocusAfterMenuClose() {
   view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
 }
 
+void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
+  data_.SetHasPopup(has_popup);
+}
+
 void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   if (role == GetViewAccessibilityRole()) {
     return;
