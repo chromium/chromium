@@ -53,20 +53,6 @@ config("find_bad_constructs") {
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "raw-ptr-exclude-path=/third_party/dawn/",
-
-      # TODO(bartekn): Remove once clang plugin with crrev.com/c/5205312 rolls.
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "raw-ptr-exclude-path=base/logging.h",
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "raw-ptr-exclude-path=base/synchronization/lock_impl.h",
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "raw-ptr-exclude-path=base/check.h",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
