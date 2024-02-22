@@ -191,7 +191,8 @@ IN_PROC_BROWSER_TEST_P(ExtendedFilesAppBrowserTest, PRE_Test) {
                                     GetOptions().native_smb);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtendedFilesAppBrowserTest, Test) {
+// TODO(crbug.com/40943441): re-enable this.
+IN_PROC_BROWSER_TEST_P(ExtendedFilesAppBrowserTest, DISABLED_Test) {
   StartTest();
 }
 
