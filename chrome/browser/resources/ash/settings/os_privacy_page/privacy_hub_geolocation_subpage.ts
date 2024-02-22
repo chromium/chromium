@@ -10,15 +10,19 @@
 
 import './privacy_hub_app_permission_row.js';
 
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExhaustive, castExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {App, AppPermissionsHandlerInterface, AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {Route, Router, routes} from '../router.js';
 
 import {getAppPermissionProvider} from './mojo_interface_provider.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
@@ -53,7 +57,7 @@ export interface SettingsPrivacyHubGeolocationSubpage {
 }
 
 const SettingsPrivacyHubGeolocationSubpageBase =
-    PrefsMixin(I18nMixin(PolymerElement));
+    RouteObserverMixin(DeepLinkingMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsPrivacyHubGeolocationSubpage extends
     SettingsPrivacyHubGeolocationSubpageBase {
@@ -132,6 +136,22 @@ export class SettingsPrivacyHubGeolocationSubpage extends
       'onTimeZoneChanged_(prefs.cros.system.timezone.value)',
     ];
   }
+
+  override currentRouteChanged(route: Route): void {
+    // Does not apply to this page.
+    if (route !== routes.PRIVACY_HUB_GEOLOCATION_ADVANCED) {
+      return;
+    }
+
+    this.attemptDeepLink();
+  }
+
+  /**
+   * Used by DeepLinkingMixin to focus this page's deep links.
+   */
+  override supportedSettingIds = new Set([
+    Setting.kGeolocationAdvanced,
+  ]);
 
   private geolocationMapTargets_: DropdownMenuOptionList;
   private appList_: App[];
@@ -286,6 +306,10 @@ export class SettingsPrivacyHubGeolocationSubpage extends
     this.browserProxy_.getCurrentSunsetTime().then((time) => {
       this.currentSunSetTime_ = time;
     });
+  }
+
+  private onGeolocationAdvancedAreaClick_(): void {
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION_ADVANCED);
   }
 }
 

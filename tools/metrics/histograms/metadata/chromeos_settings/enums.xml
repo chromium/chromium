@@ -271,6 +271,7 @@ chromium-metrics-reviews@google.com.
   <int value="1120" label="Privacy: Speak-on-mute Detection Software Switch"/>
   <int value="1121" label="Privacy: Local Data Recovery Switch"/>
   <int value="1122" label="Privacy: Enable/Disable reven hardware data access"/>
+  <int value="1123" label="Privacy: Geolocation Advanced Settings"/>
   <int value="1200" label="Add Language"/>
   <int value="1201" label="Show Input Options In Shelf"/>
   <int value="1202" label="Show Personal Information Suggestions (Deprecated)"/>
@@ -491,6 +492,7 @@ chromium-metrics-reviews@google.com.
   <int value="1105" label="Privacy Hub Microphone"/>
   <int value="1106" label="Privacy Hub Camera"/>
   <int value="1107" label="Privacy Hub Geolocation"/>
+  <int value="1108" label="Privacy Hub Geolocation Advanced"/>
   <int value="1200" label="Languages And Input Details"/>
   <int value="1201" label="Manage Input Methods"/>
   <int value="1202" label="Smart Inputs"/>

@@ -1,1 +1,14 @@
-<div>Geolocation Advanced Settings</div>
+<style include="settings-shared">
+    .list-item:not(:last-of-type) {
+      border-bottom: var(--cr-separator-line);
+    }
+</style>
+<div>
+  <template is="dom-if" if="[[showPrivacyHubLocationControl_]]" restamp>
+    <settings-toggle-button id="geoLocationAccuracyToggle"
+      pref="{{prefs.ash.user.geolocation_accuracy_enabled}}"
+      label="$i18n{geolocationAccuracyToggleTitle}"
+      sub-label="$i18n{geolocationAccuracyToggleText}">
+    </settings-toggle-button>
+  </template>
+</div>

@@ -145,6 +145,7 @@ enum Subpage {
   kPrivacyHubMicrophone = 1105,
   kPrivacyHubCamera = 1106,
   kPrivacyHubGeolocation = 1107,
+  kPrivacyHubGeolocationAdvanced = 1108,
 
   // Languages and Input section.
   // 1200 was used for kLanguagesAndInputDetails. Do not reuse.
@@ -303,6 +304,8 @@ const string kPrivacyHubMicrophoneSubpagePath =
 const string kPrivacyHubCameraSubpagePath = "osPrivacy/privacyHub/camera";
 const string kPrivacyHubGeolocationSubpagePath =
       "osPrivacy/privacyHub/geolocation";
+const string kPrivacyHubGeolocationAdvancedSubpagePath =
+      "osPrivacy/privacyHub/geolocation/advanced";
 
 // Languages and Input section.
 const string kLanguagesAndInputSectionPath = "osLanguages";

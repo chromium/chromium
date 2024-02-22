@@ -9,12 +9,19 @@
  *
  */
 
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './privacy_hub_geolocation_advanced_subpage.html.js';
 
+const SettingsPrivacyHubGeolocationAdvancedSubpageBase =
+    PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+
 export class SettingsPrivacyHubGeolocationAdvancedSubpage extends
-    PolymerElement {
+    SettingsPrivacyHubGeolocationAdvancedSubpageBase {
   static get is() {
     return 'settings-privacy-hub-geolocation-advanced-subpage' as const;
   }
@@ -23,6 +30,20 @@ export class SettingsPrivacyHubGeolocationAdvancedSubpage extends
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      /**
+       * Whether the location access control should be displayed in Privacy Hub.
+       */
+      showPrivacyHubLocationControl_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('showPrivacyHubLocationControl');
+        },
+      },
+    };
+  }
 }
 
 declare global {

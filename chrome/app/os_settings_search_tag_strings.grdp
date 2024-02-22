@@ -1102,6 +1102,9 @@
   <message name="IDS_OS_SETTINGS_TAG_GEOLOCATION" desc="Text for search result item which, when clicked, navigates the user to Location access settings.">
     Location access
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_GEOLOCATION_ACCURACY" desc="Text for search result item which, when clicked, navigates the user to Location accuracy settings under location settings page.">
+    Location accuracy
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_MICROPHONE" desc="Text for search result item which, when clicked, navigates the user to Microphone access settings.">
     Microphone access
   </message>

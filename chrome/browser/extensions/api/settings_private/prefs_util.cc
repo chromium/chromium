@@ -1001,6 +1001,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kUserGeolocationAccessLevel] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kUserGeolocationAccuracyEnabled] =
+      settings_api::PrefType::kBoolean;
 #else
   // System settings.
   (*s_allowlist)[::prefs::kBackgroundModeEnabled] =

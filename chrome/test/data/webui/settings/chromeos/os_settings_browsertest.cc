@@ -1498,6 +1498,12 @@ IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubAndV0Enabled,
   RunSettingsTest("os_privacy_page/privacy_hub_geolocation_subpage_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubAndV0Enabled,
+                       OsPrivacyPagePrivacyHubGeolocationAdvancedSubpage) {
+  RunSettingsTest(
+      "os_privacy_page/privacy_hub_geolocation_advanced_subpage_test.js");
+}
+
 class OSSettingsPrivacyTestPrivacyHubV0Enabled : public OSSettingsMochaTest {
  protected:
   OSSettingsPrivacyTestPrivacyHubV0Enabled() {

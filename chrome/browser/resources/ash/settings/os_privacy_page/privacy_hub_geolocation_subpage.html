@@ -116,3 +116,11 @@
       </settings-privacy-hub-system-service-row>
   </div>
 </div>
+
+<cr-link-row
+    id="geolocationAdvancedAreaLinkRow"
+    on-click="onGeolocationAdvancedAreaClick_"
+    deep-link-focus-id$="[[Setting.kGeolocationAdvanced]]"
+    using-slotted-label>
+  <div slot="label">$i18n{geolocationAdvancedAreaTitle}</div>
+</cr-link-row>

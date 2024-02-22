@@ -1228,6 +1228,11 @@ inline constexpr char kDeviceGeolocationAllowed[] =
 inline constexpr char kUserPreviousGeolocationAccessLevel[] =
     "ash.user.previous_geolocation_access_level";
 
+// An boolean pref indicating whether a user has enabled the improve location
+// toggle.
+inline constexpr char kUserGeolocationAccuracyEnabled[] =
+    "ash.user.geolocation_accuracy_enabled";
+
 // Double prefs storing the most recent valid geoposition, which is only used
 // when the device lacks connectivity and we're unable to retrieve a valid
 // geoposition to calculate the sunset / sunrise times.
