@@ -9,6 +9,7 @@ import hashlib
 import json
 import logging
 import os
+import pickle
 import posixpath
 import re
 import shutil
@@ -33,6 +34,7 @@ from pylib import valgrind_tools
 from pylib.base import base_test_result
 from pylib.base import output_manager
 from pylib.constants import host_paths
+from pylib.instrumentation import instrumentation_parser
 from pylib.instrumentation import instrumentation_test_instance
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_test_run
@@ -103,9 +105,6 @@ EXTRA_TRACE_FILE = ('org.chromium.base.test.BaseJUnit4ClassRunner.TraceFile')
 _EXTRA_RUN_DISABLED_TEST = (
     'org.chromium.base.test.util.DisableIfSkipCheck.RunDisabledTest')
 
-_EXTRA_TEST_LIST = (
-    'org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList')
-
 _EXTRA_TEST_IS_UNIT = (
     'org.chromium.base.test.BaseChromiumAndroidJUnitRunner.IsUnitTest')
 
@@ -132,6 +131,37 @@ RENDER_TEST_MODEL_SDK_CONFIGS = {
 _BATCH_SUFFIX = '_batch'
 # If the batch is too big it starts to fail for command line length reasons.
 _LOCAL_TEST_BATCH_MAX_GROUP_SIZE = 200
+
+_PICKLE_FORMAT_VERSION = 12
+
+
+class _TestListPickleException(Exception):
+  pass
+
+
+def _LoadTestsFromPickle(pickle_path, test_mtime, pickle_extras):
+  if not os.path.exists(pickle_path):
+    raise _TestListPickleException('%s does not exist.' % pickle_path)
+  if os.path.getmtime(pickle_path) <= test_mtime:
+    raise _TestListPickleException('File is stale: %s' % pickle_path)
+
+  with open(pickle_path, 'rb') as f:
+    pickle_data = pickle.load(f)
+  if pickle_data['VERSION'] != _PICKLE_FORMAT_VERSION:
+    raise _TestListPickleException('PICKLE_FORMAT_VERSION has changed.')
+  if pickle_data.get('EXTRAS') != pickle_extras:
+    raise _TestListPickleException('PICKLE EXTRAS has changed.')
+  return pickle_data['TEST_METHODS']
+
+
+def _SaveTestsToPickle(pickle_path, tests, pickle_extras):
+  pickle_data = {
+      'VERSION': _PICKLE_FORMAT_VERSION,
+      'EXTRAS': pickle_extras,
+      'TEST_METHODS': tests,
+  }
+  with open(pickle_path, 'wb') as pickle_file:
+    pickle.dump(pickle_data, pickle_file)
 
 
 @contextlib.contextmanager
@@ -188,6 +218,75 @@ def _GetTargetPackageName(test_apk):
   # apk_under_test does not work for smoke tests, where it is set to an
   # apk that is not listed as the targetPackage in the test apk's manifest.
   return test_apk.GetAllInstrumentations()[0]['android:targetPackage']
+
+
+def _ParseTestListOutputFromChromiumListener(output):
+  parser = instrumentation_parser.InstrumentationParser(output)
+  tests_by_class = collections.defaultdict(list)
+  annotations_by_class = {}
+  for code, bundle in parser.IterStatus():
+    # Code used only by TestListInstrumentationRunListener.
+    if code == 5:
+      if 'class' in bundle:
+        cur_class = bundle['class']
+        annotations_by_class[cur_class] = json.loads(
+            bundle['class_annotations'])
+      tests_by_class[cur_class].append({
+          'method':
+          bundle['method'],
+          'annotations':
+          json.loads(bundle['method_annotations']),
+      })
+    elif 'class' in bundle and 'current' in bundle:
+      # From AndroidX Listener.
+      # Both listeners are active for APKs built in chromium that do not use
+      # BaseChromiumAndroidJUnitRunner for instrumentation (e.g. to be
+      # compatible with other build systems).
+      continue
+    elif code == -1:
+      # RESULT_OK
+      continue
+    else:
+      logging.warning('Unexpected code=%s output: %r', code, bundle)
+  return [{
+      'class': class_name,
+      'methods': methods,
+      'annotations': annotations_by_class[class_name],
+  } for class_name, methods in tests_by_class.items()]
+
+
+def _ParseTestListOutputFromAndroidxListener(output):
+  parser = instrumentation_parser.InstrumentationParser(output)
+  tests_by_class = collections.defaultdict(list)
+  for code, bundle in parser.IterStatus():
+    if 'class' in bundle and 'current' in bundle:
+      # AndroidX's InstrumentationResultPrinter uses:
+      # code=0 for start
+      # code=1 for finished
+      # code=-3 for ignored.
+      if code == 1:
+        class_name = bundle.get('class')
+        method_name = bundle.get('test')
+        # TODO(crbug.com/326260748): Handle spaces in names.
+        if any(c in method_name for c in ' *-:'):
+          logging.warning('Ignoring method with invalid chars: %s.%s',
+                          class_name, method_name)
+          continue
+        if class_name and method_name:
+          tests_by_class[class_name].append({
+              'method': method_name,
+              'annotations': {},
+          })
+    elif code == -1:
+      # RESULT_OK
+      continue
+    else:
+      logging.warning('Unexpected code=%s output: %r', code, bundle)
+  return [{
+      'class': class_name,
+      'methods': methods,
+      'annotations': {}
+  } for class_name, methods in tests_by_class.items()]
 
 
 class LocalDeviceInstrumentationTestRun(
@@ -644,16 +743,59 @@ class LocalDeviceInstrumentationTestRun(
     # Each test or test batch will be a single shard.
     return tests
 
+  def _GetTestsFromPickle(self, pickle_extras):
+    test_apk_path = self._test_instance.test_apk.path
+    pickle_path = '%s-testlist.pickle' % test_apk_path
+    # For incremental APKs, the code doesn't live in the apk, so instead check
+    # the timestamp of the target's .dex files.
+    if self._test_instance.test_apk_incremental_install_json:
+      with open(self._test_instance.test_apk_incremental_install_json) as f:
+        data = json.load(f)
+      out_dir = constants.GetOutDirectory()
+      test_mtime = max(
+          os.path.getmtime(os.path.join(out_dir, p)) for p in data['dex_files'])
+    else:
+      test_mtime = os.path.getmtime(test_apk_path)
+
+    try:
+      raw_tests = _LoadTestsFromPickle(pickle_path, test_mtime, pickle_extras)
+      logging.info('Using cached test list.')
+    except _TestListPickleException as e:
+      logging.info('Not using cached test list: %s', e)
+      raw_tests = None
+    return raw_tests, pickle_path
+
   #override
   def _GetTests(self):
-    if self._test_instance.junit4_runner_supports_listing:
-      raw_tests = self._GetTestsFromRunner()
-      tests = self._test_instance.ProcessRawTests(raw_tests)
-    else:
-      tests = self._test_instance.GetTests()
-    tests = self._ApplyExternalSharding(
-        tests, self._test_instance.external_shard_index,
-        self._test_instance.total_external_shards)
+    ti = self._test_instance
+    use_dexdump = (not ti.has_chromium_test_listener
+                   and ti.has_external_annotation_filters)
+    run_disabled = ti.GetRunDisabledFlag()
+    # run_disabled effects test listing only when using AndroidJUnitRunner.
+    use_androidx_runner = not use_dexdump and not ti.has_chromium_test_listener
+    pickle_extras = (use_dexdump, use_androidx_runner and run_disabled)
+    raw_tests, pickle_path = self._GetTestsFromPickle(pickle_extras)
+
+    if raw_tests is None:
+      if use_dexdump:
+        # This path is hit by CTS tests.
+        # Dexdump is not able to find parameterized tests, so some tests might
+        # be missed.
+        # We should consider using AndroidJunitRunner's "-e annotation Foo,Bar"
+        # and "-e notAnnotation Foo,Bar" to list tests when annotation filters
+        # exist instead.
+        logging.info('Getting tests from dexdump (due to annotation filters)')
+        raw_tests = instrumentation_test_instance.GetTestsFromDexdump(
+            ti.test_apk.path)
+      else:
+        logging.info('Getting tests by having %s list them.',
+                     ti.junit4_runner_class)
+        raw_tests = self._GetTestsFromRunner(run_disabled=run_disabled)
+      _SaveTestsToPickle(pickle_path, raw_tests, pickle_extras)
+
+    tests = ti.ProcessRawTests(raw_tests)
+    tests = self._ApplyExternalSharding(tests, ti.external_shard_index,
+                                        ti.total_external_shards)
     return tests
 
   #override
@@ -943,8 +1085,9 @@ class LocalDeviceInstrumentationTestRun(
         output = self._test_instance.MaybeDeobfuscateLines(output)
         # TODO(jbudorick): Make instrumentation tests output a JSON so this
         # doesn't have to parse the output.
-        result_code, result_bundle, statuses = (
-            self._test_instance.ParseAmInstrumentRawOutput(output))
+        parser = instrumentation_parser.InstrumentationParser(output)
+        statuses = list(parser.IterStatus())
+        result_code, result_bundle = parser.GetResult()
         results = self._test_instance.GenerateTestResults(
             result_code, result_bundle, statuses, duration_ms,
             device.product_cpu_abi, self._test_instance.symbolizer)
@@ -1231,66 +1374,46 @@ class LocalDeviceInstrumentationTestRun(
 
     return results, tests_to_rerun if tests_to_rerun else None
 
-  def _GetTestsFromRunner(self):
-    test_apk_path = self._test_instance.test_apk.path
-    pickle_path = '%s-runner.pickle' % test_apk_path
-    # For incremental APKs, the code doesn't live in the apk, so instead check
-    # the timestamp of the target's .stamp file.
-    if self._test_instance.test_apk_incremental_install_json:
-      with open(self._test_instance.test_apk_incremental_install_json) as f:
-        data = json.load(f)
-      out_dir = constants.GetOutDirectory()
-      test_mtime = max(
-          os.path.getmtime(os.path.join(out_dir, p)) for p in data['dex_files'])
-    else:
-      test_mtime = os.path.getmtime(test_apk_path)
-
-    try:
-      return instrumentation_test_instance.GetTestsFromPickle(
-          pickle_path, test_mtime)
-    except instrumentation_test_instance.TestListPickleException as e:
-      logging.info('Could not get tests from pickle: %s', e)
-    logging.info('Getting tests by having %s list them.',
-                 self._test_instance.junit4_runner_class)
+  def _GetTestsFromRunner(self, run_disabled):
     def list_tests(d):
       def _run(dev):
-        # We need to use GetAppWritablePath instead of GetExternalStoragePath
-        # here because we will not have applied legacy storage workarounds on R+
-        # yet.
-        with device_temp_file.DeviceTempFile(
-            dev.adb,
-            suffix='.json',
-            dir=dev.GetAppWritablePath(),
-            device_utils=dev) as dev_test_list_json:
-          junit4_runner_class = self._test_instance.junit4_runner_class
-          test_package = self._test_instance.test_package
-          extras = {
+        junit4_runner_class = self._test_instance.junit4_runner_class
+        test_package = self._test_instance.test_package
+        extras = {
             'log': 'true',
             # Workaround for https://github.com/mockito/mockito/issues/922
             'notPackage': 'net.bytebuddy',
-          }
-          extras[_EXTRA_TEST_LIST] = dev_test_list_json.name
-          target = '%s/%s' % (test_package, junit4_runner_class)
-          timeout = 240
-          if self._test_instance.wait_for_java_debugger:
-            timeout = None
-          with self._ArchiveLogcat(dev, 'list_tests'):
-            test_list_run_output = dev.StartInstrumentation(
-                target, extras=extras, retries=0, timeout=timeout)
-          if any(test_list_run_output):
-            logging.error('Unexpected output while listing tests:')
-            for line in test_list_run_output:
-              logging.error('  %s', line)
-          with tempfile_ext.NamedTemporaryDirectory() as host_dir:
-            host_file = os.path.join(host_dir, 'list_tests.json')
-            device_file_path = dev_test_list_json.name
-            if self._env.force_main_user:
-              device_file_path = dev.ResolveSpecialPath(device_file_path)
-            dev.PullFile(device_file_path,
-                         host_file,
-                         as_root=self._env.force_main_user)
-            with open(host_file, 'r') as host_file:
-              return json.load(host_file)
+        }
+        # BaseChromiumAndroidJUnitRunner ignores this bundle value (and always
+        # adds the listener). This is needed to enable the the listener when
+        # using AndroidJUnitRunner directly.
+        if self._test_instance.has_chromium_test_listener:
+          extras['listener'] = (
+              'org.chromium.testing.TestListInstrumentationRunListener')
+        elif not run_disabled:
+          extras['notAnnotation'] = 'androidx.test.filters.FlakyTest'
+
+        target = '%s/%s' % (test_package, junit4_runner_class)
+        timeout = 240
+        if self._test_instance.wait_for_java_debugger:
+          timeout = None
+        with self._ArchiveLogcat(dev, 'list_tests'):
+          test_list_run_output = dev.StartInstrumentation(target,
+                                                          raw=True,
+                                                          extras=extras,
+                                                          retries=0,
+                                                          timeout=timeout)
+        if ('INSTRUMENTATION_RESULT: shortMsg=Process crashed.'
+            in test_list_run_output):
+          # Message output by ActivityManagerService when app crashes.
+          logging.error('Crashed detected. Output was: \n%s',
+                        test_list_run_output)
+          return None
+        if self._test_instance.has_chromium_test_listener:
+          logging.info('Parsing tests from TestListInstrumentationRunListener')
+          return _ParseTestListOutputFromChromiumListener(test_list_run_output)
+        logging.info('Parsing tests from androidx InstrumentationResultPrinter')
+        return _ParseTestListOutputFromAndroidxListener(test_list_run_output)
 
       return crash_handler.RetryOnSystemCrash(_run, d)
 
@@ -1305,7 +1428,6 @@ class LocalDeviceInstrumentationTestRun(
     # Get the first viable list of raw tests
     raw_tests = [tl for tl in raw_test_lists if tl][0]
 
-    instrumentation_test_instance.SaveTestsToPickle(pickle_path, raw_tests)
     return raw_tests
 
   @contextlib.contextmanager

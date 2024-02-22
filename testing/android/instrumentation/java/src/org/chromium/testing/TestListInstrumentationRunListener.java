@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.base.test;
+package org.chromium.testing;
 
 import android.os.Bundle;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.internal.runner.listener.InstrumentationRunListener;
 
 import org.json.JSONArray;
@@ -17,34 +16,36 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
 
-import org.chromium.base.Log;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
-/** A RunListener that list out all the test information into a json file. */
+/**
+ * A RunListener that captures the list of tests along with annotation information (AndroidX's
+ * default log-only listener does not capture annotations).
+ */
 public class TestListInstrumentationRunListener extends InstrumentationRunListener {
-    private static final String TAG = "TestListRunListener";
-    private static final String LIST_ALL_TESTS_FLAG =
-            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList";
-
+    // Should not conflict with androidx's InstrumentationResultPrinter.java, which uses 0 and 1.
+    private static final int STATUS_CODE = 5;
     private static final Set<String> SKIP_METHODS =
             Set.of("toString", "hashCode", "annotationType", "equals");
 
-    private final Map<Class<?>, JSONObject> mTestClassJsonMap = new HashMap<>();
+    private final boolean mRequireBaseRunner;
     private Failure mFirstFailure;
+    private Class<?> mActiveTestClass;
+
+    public TestListInstrumentationRunListener() {
+        this(false);
+    }
+
+    public TestListInstrumentationRunListener(boolean requireBaseRunner) {
+        mRequireBaseRunner = requireBaseRunner;
+    }
 
     @Override
     public void testFailure(Failure failure) {
@@ -55,74 +56,54 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
 
     @Override
     public void testFinished(Description desc) throws Exception {
-        Class<?> testClass = desc.getTestClass();
-        JSONObject classEntry = mTestClassJsonMap.get(testClass);
-        if (classEntry == null) {
-            classEntry =
-                    new JSONObject()
-                            .put("class", testClass.getName())
-                            .put("superclass", testClass.getSuperclass().getName())
-                            .put(
-                                    "annotations",
-                                    getAnnotationJSON(Arrays.asList(testClass.getAnnotations())))
-                            .put("methods", new JSONArray());
-            mTestClassJsonMap.put(testClass, classEntry);
+        Bundle bundle = new Bundle();
+
+        Class<?> curClass = desc.getTestClass();
+        if (!curClass.equals(mActiveTestClass)) {
+            bundle.putString("class", curClass.getName());
+            bundle.putString(
+                    "class_annotations",
+                    getAnnotationJSON(Arrays.asList(curClass.getAnnotations())).toString());
+            mActiveTestClass = curClass;
         }
-        ((JSONArray) classEntry.get("methods")).put(getTestMethodJSON(desc));
+        bundle.putString("method", desc.getMethodName());
+        bundle.putString("method_annotations", getAnnotationJSON(desc.getAnnotations()).toString());
+
+        sendStatus(STATUS_CODE, bundle);
     }
 
-    /**
-     * Store the test method description to a Map at the beginning of a test
-     * run.
-     */
+    /** Store the test method description to a Map at the beginning of a test run. */
     @Override
     public void testStarted(Description desc) throws Exception {
-        // BaseJUnit4ClassRunner only fires testFinished(), so a call to
-        // testStarted means a different runner is active, and the test is
-        // actually being executed rather than just listed.
-        throw new InitializationError(
-                "All tests must use"
-                        + " @RunWith(BaseJUnit4ClassRunner.class) or a subclass thereof."
-                        + " Found that this test does not: "
-                        + desc.getTestClass());
+        if (mRequireBaseRunner) {
+            // BaseJUnit4ClassRunner only fires testFinished(), so a call to
+            // testStarted means a different runner is active, and the test is
+            // actually being executed rather than just listed.
+            throw new InitializationError(
+                    "All tests must use @RunWith(BaseJUnit4ClassRunner.class) or a subclass"
+                            + " thereof. Found that this test does not: "
+                            + desc.getTestClass());
+        }
     }
 
-    /** Create a JSONArray with all the test class JSONObjects and save it to listed output path. */
-    private void saveTestsToJson(String outputPath) {
+    @Override
+    public void instrumentationRunFinished(
+            PrintStream streamResult, Bundle resultBundle, Result junitResults) {
         if (mFirstFailure != null) {
             throw new RuntimeException(
                     "Failed on " + mFirstFailure.getDescription(), mFirstFailure.getException());
         }
-
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(outputPath), "UTF-8")) {
-            JSONArray allTestClassesJSON = new JSONArray(mTestClassJsonMap.values());
-            writer.write(allTestClassesJSON.toString());
-        } catch (IOException e) {
-            Log.e(TAG, "failed to write json to file", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** Return a JSONObject that represent a Description of a method". */
-    static JSONObject getTestMethodJSON(Description desc) throws Exception {
-        return new JSONObject()
-                .put("method", desc.getMethodName())
-                .put("annotations", getAnnotationJSON(desc.getAnnotations()));
     }
 
     /**
-     * Make a JSONObject dictionary out of annotations, keyed by the
-     * Annotation types' simple java names.
+     * Make a JSONObject dictionary out of annotations, keyed by the Annotation types' simple java
+     * names.
      *
-     * For example, for the following group of annotations for ExampleClass
-     * <code>
+     * <p>For example, for the following group of annotations for ExampleClass <code>
      * @A
      * @B(message = "hello", level = 3)
      * public class ExampleClass() {}
-     * </code>
-     *
-     * This method would return a JSONObject as such:
-     * <code>
+     * </code> This method would return a JSONObject as such: <code>
      * {
      *   "A": {},
      *   "B": {
@@ -130,13 +111,11 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
      *     "level": "3"
      *   }
      * }
-     * </code>
-     *
-     * The method accomplish this by though through each annotation and
-     * reflectively call the annotation's method to get the element value,
-     * with exceptions to methods like "equals()" or "hashCode".
+     * </code> The method accomplish this by though through each annotation and reflectively call
+     * the annotation's method to get the element value, with exceptions to methods like "equals()"
+     * or "hashCode".
      */
-    static JSONObject getAnnotationJSON(Collection<Annotation> annotations)
+    private static JSONObject getAnnotationJSON(Collection<Annotation> annotations)
             throws IllegalAccessException, InvocationTargetException, JSONException {
         JSONObject result = new JSONObject();
         for (Annotation a : annotations) {
@@ -148,8 +127,7 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
     }
 
     /**
-     * Recursively serialize an Annotation or an Annotation field value to
-     * a JSON compatible type.
+     * Recursively serialize an Annotation or an Annotation field value to a JSON compatible type.
      */
     private static Object asJSON(Object obj)
             throws IllegalAccessException, InvocationTargetException, JSONException {
@@ -187,11 +165,5 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
                 return obj;
             }
         }
-    }
-
-    @Override
-    public void instrumentationRunFinished(
-            PrintStream streamResult, Bundle resultBundle, Result junitResults) {
-        saveTestsToJson(InstrumentationRegistry.getArguments().getString(LIST_ALL_TESTS_FLAG));
     }
 }

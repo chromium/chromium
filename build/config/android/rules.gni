@@ -3618,7 +3618,9 @@ if (enable_java_templates && is_android) {
         data += invoker.data
       }
 
-      deps = []
+      deps = [
+        "//testing/android/instrumentation:instrumentation_test_runner_java",
+      ]
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }

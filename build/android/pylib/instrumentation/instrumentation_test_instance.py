@@ -6,7 +6,6 @@
 import copy
 import logging
 import os
-import pickle
 import re
 
 from devil.android import apk_helper
@@ -15,8 +14,8 @@ from pylib.base import base_test_result
 from pylib.base import test_exception
 from pylib.base import test_instance
 from pylib.constants import host_paths
-from pylib.instrumentation import test_result
 from pylib.instrumentation import instrumentation_parser
+from pylib.instrumentation import test_result
 from pylib.symbols import deobfuscator
 from pylib.symbols import stack_symbolizer
 from pylib.utils import dexdump
@@ -41,15 +40,14 @@ _EXCLUDE_UNLESS_REQUESTED_ANNOTATIONS = [
 _VALID_ANNOTATIONS = set(_DEFAULT_ANNOTATIONS + _DO_NOT_REVIVE_ANNOTATIONS +
                          _EXCLUDE_UNLESS_REQUESTED_ANNOTATIONS)
 
-_TEST_LIST_JUNIT4_RUNNERS = [
-    'org.chromium.base.test.BaseChromiumAndroidJUnitRunner']
+_BASE_INSTRUMENTATION_CLASS_NAME = (
+    'org.chromium.base.test.BaseChromiumAndroidJUnitRunner')
 
 _SKIP_PARAMETERIZATION = 'SkipCommandLineParameterization'
 _PARAMETERIZED_COMMAND_LINE_FLAGS = 'ParameterizedCommandLineFlags'
 _PARAMETERIZED_COMMAND_LINE_FLAGS_SWITCHES = (
     'ParameterizedCommandLineFlags$Switches')
 _NATIVE_CRASH_RE = re.compile('(process|native) crash', re.IGNORECASE)
-_PICKLE_FORMAT_VERSION = 12
 
 # The ID of the bundle value Instrumentation uses to report which test index the
 # results are for in a collection of tests. Note that this index is 1-based.
@@ -78,31 +76,6 @@ class MissingSizeAnnotationError(test_exception.TestException):
 
 class CommandLineParameterizationException(test_exception.TestException):
   pass
-
-
-class TestListPickleException(test_exception.TestException):
-  pass
-
-
-def ParseAmInstrumentRawOutput(raw_output):
-  """Parses the output of an |am instrument -r| call.
-
-  Args:
-    raw_output: the output of an |am instrument -r| call as a list of lines
-  Returns:
-    A 3-tuple containing:
-      - the instrumentation code as an integer
-      - the instrumentation result as a list of lines
-      - the instrumentation statuses received as a list of 2-tuples
-        containing:
-        - the status code as an integer
-        - the bundle dump as a dict mapping string keys to a list of
-          strings, one for each line.
-  """
-  parser = instrumentation_parser.InstrumentationParser(raw_output)
-  statuses = list(parser.IterStatus())
-  code, bundle = parser.GetResult()
-  return (code, bundle, statuses)
 
 
 def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
@@ -424,32 +397,7 @@ def FilterTests(tests,
   return return_tests
 
 
-def GetAllTestsFromApk(test_apk):
-  pickle_path = '%s-dexdump.pickle' % test_apk
-  try:
-    tests = GetTestsFromPickle(pickle_path, os.path.getmtime(test_apk))
-  except TestListPickleException as e:
-    logging.info('Could not get tests from pickle: %s', e)
-    logging.info('Getting tests from dex via dexdump.')
-    tests = _GetTestsFromDexdump(test_apk)
-    SaveTestsToPickle(pickle_path, tests)
-  return tests
-
-
-def GetTestsFromPickle(pickle_path, test_mtime):
-  if not os.path.exists(pickle_path):
-    raise TestListPickleException('%s does not exist.' % pickle_path)
-  if os.path.getmtime(pickle_path) <= test_mtime:
-    raise TestListPickleException('File is stale: %s' % pickle_path)
-
-  with open(pickle_path, 'rb') as f:
-    pickle_data = pickle.load(f)
-  if pickle_data['VERSION'] != _PICKLE_FORMAT_VERSION:
-    raise TestListPickleException('PICKLE_FORMAT_VERSION has changed.')
-  return pickle_data['TEST_METHODS']
-
-
-def _GetTestsFromDexdump(test_apk):
+def GetTestsFromDexdump(test_apk):
   dex_dumps = dexdump.Dump(test_apk)
   tests = []
 
@@ -486,18 +434,8 @@ def _GetTestsFromDexdump(test_apk):
               classAnnotations,
               'methods':
               get_test_methods(class_info['methods'], methodsAnnotations),
-              'superclass':
-              class_info['superclass'],
           })
   return tests
-
-def SaveTestsToPickle(pickle_path, tests):
-  pickle_data = {
-    'VERSION': _PICKLE_FORMAT_VERSION,
-    'TEST_METHODS': tests,
-  }
-  with open(pickle_path, 'wb') as pickle_file:
-    pickle.dump(pickle_data, pickle_file)
 
 
 def GetTestName(test, sep='#'):
@@ -585,7 +523,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._test_apk_incremental_install_json = None
     self._test_package = None
     self._junit4_runner_class = None
-    self._junit4_runner_supports_listing = None
+    self._uses_base_instrumentation = None
+    self._has_chromium_test_listener = None
     self._test_support_apk = None
     self._initializeApkAttributes(args, error_func)
 
@@ -599,6 +538,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._initializeDataDependencyAttributes(args, data_deps_delegate)
     self._annotations = None
     self._excluded_annotations = None
+    self._has_external_annotation_filters = None
     self._test_filters = None
     self._initializeTestFilterAttributes(args)
 
@@ -721,16 +661,19 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._junit4_runner_class = (all_instrumentations[0]['android:name']
                                  if all_instrumentations else None)
 
+    test_apk_metadata = dict(self._test_apk.GetAllMetadata())
+    self._has_chromium_test_listener = bool(
+        test_apk_metadata.get('org.chromium.hasTestRunListener'))
     if self._junit4_runner_class:
       if self._test_apk_incremental_install_json:
-        for name, value in self._test_apk.GetAllMetadata():
+        for name, value in test_apk_metadata.items():
           if (name.startswith('incremental-install-instrumentation-')
-              and value in _TEST_LIST_JUNIT4_RUNNERS):
-            self._junit4_runner_supports_listing = True
+              and value == _BASE_INSTRUMENTATION_CLASS_NAME):
+            self._uses_base_instrumentation = True
             break
       else:
-        self._junit4_runner_supports_listing = (
-            self._junit4_runner_class in _TEST_LIST_JUNIT4_RUNNERS)
+        self._uses_base_instrumentation = (
+            self._junit4_runner_class == _BASE_INSTRUMENTATION_CLASS_NAME)
 
     self._package_info = None
     if self._apk_under_test:
@@ -772,6 +715,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   def _initializeTestFilterAttributes(self, args):
     self._test_filters = test_filter.InitializeFiltersFromArgs(args)
+    self._has_external_annotation_filters = bool(args.annotation_str
+                                                 or args.exclude_annotation_str)
 
     def annotation_element(a):
       a = a.split('=', 1)
@@ -945,8 +890,16 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     return self._junit4_runner_class
 
   @property
-  def junit4_runner_supports_listing(self):
-    return self._junit4_runner_supports_listing
+  def has_chromium_test_listener(self):
+    return self._has_chromium_test_listener
+
+  @property
+  def has_external_annotation_filters(self):
+    return self._has_external_annotation_filters
+
+  @property
+  def uses_base_instrumentation(self):
+    return self._uses_base_instrumentation
 
   @property
   def package_info(self):
@@ -1094,15 +1047,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   def GetRunDisabledFlag(self):
     return self._run_disabled
 
-  def GetTests(self):
-    if self._test_apk_incremental_install_json:
-      # Would likely just be a matter of calling GetAllTestsFromApk on all
-      # .dex files listed in the .json.
-      raise Exception('Support not implemented for incremental_install=true on '
-                      'tests that do not use //base\'s test runner.')
-    raw_tests = GetAllTestsFromApk(self.test_apk.path)
-    return self.ProcessRawTests(raw_tests)
-
   def MaybeDeobfuscateLines(self, lines):
     if not self._deobfuscator:
       return lines
@@ -1128,14 +1072,20 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   # pylint: disable=no-self-use
   def _InflateTests(self, tests):
     inflated_tests = []
-    for c in tests:
-      for m in c['methods']:
-        a = dict(c['annotations'])
-        a.update(m['annotations'])
+    for clazz in tests:
+      for method in clazz['methods']:
+        annotations = dict(clazz['annotations'])
+        annotations.update(method['annotations'])
+
+        # Preserve historic default.
+        if (not self._uses_base_instrumentation
+            and not any(a in _VALID_ANNOTATIONS for a in annotations)):
+          annotations['MediumTest'] = None
+
         inflated_tests.append({
-            'class': c['class'],
-            'method': m['method'],
-            'annotations': a,
+            'class': clazz['class'],
+            'method': method['method'],
+            'annotations': annotations,
         })
     return inflated_tests
 
@@ -1186,10 +1136,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
           _setTestFlags(parameterized_t, _switchesToFlags(p))
           new_tests.append(parameterized_t)
     return tests + new_tests
-
-  @staticmethod
-  def ParseAmInstrumentRawOutput(raw_output):
-    return ParseAmInstrumentRawOutput(raw_output)
 
   @staticmethod
   def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
