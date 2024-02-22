@@ -21,6 +21,7 @@ const MAX_FILE_SIZE = 10485760;
 export interface SystemAppElement {
   $: {
     tableTitle: HTMLElement,
+    title: HTMLElement,
     status: HTMLElement,
   };
 }
@@ -48,6 +49,7 @@ export class SystemAppElement extends PolymerElement {
 
   private logs_: SystemLog[];
   private loading_: boolean;
+  private showFeedbackInfo_: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -64,7 +66,22 @@ export class SystemAppElement extends PolymerElement {
     // </if>
 
     this.loading_ = true;
-    this.logs_ = await BrowserProxyImpl.getInstance().requestSystemInfo();
+    this.showFeedbackInfo_ = (new URLSearchParams(window.location.search))
+                                 .has('showFeedbackInfo', 'true');
+    let title: string;
+    if (this.showFeedbackInfo_) {
+      this.logs_ =
+          await BrowserProxyImpl.getInstance().requestFeedbackSystemInfo();
+      title = loadTimeData.getString('feedbackInfoTitle');
+    } else {
+      this.logs_ = await BrowserProxyImpl.getInstance().requestSystemInfo();
+      title = loadTimeData.getString('aboutSysTitle');
+    }
+    // Update document title from "Loading..." to the one corresponding to the
+    // current page.
+    document.title = title;
+    // Assign the correct page title.
+    this.$.title.textContent = title;
     this.loading_ = false;
 
     // Add event listeners for handling drag and dropping a system_logs.txt file

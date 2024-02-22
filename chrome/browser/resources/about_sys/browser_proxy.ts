@@ -10,6 +10,8 @@ export interface SystemLog {
 }
 
 interface BrowserProxy {
+  requestFeedbackSystemInfo(): Promise<SystemLog[]>;
+
   requestSystemInfo(): Promise<SystemLog[]>;
 
   isLacrosEnabled(): Promise<boolean>;
@@ -18,6 +20,10 @@ interface BrowserProxy {
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
+  requestFeedbackSystemInfo() {
+    return sendWithPromise('requestFeedbackSystemInfo');
+  }
+
   requestSystemInfo() {
     return sendWithPromise('requestSystemInfo');
   }

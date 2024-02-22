@@ -433,10 +433,7 @@ void ChromeOsFeedbackDelegate::OpenMetricsDialog() {
 }
 
 void ChromeOsFeedbackDelegate::OpenSystemInfoDialog() {
-  // TODO(http://b/239701119): Make the sys_info.html page a separate WebUI.
-  // For now, use the old Feedback tool's sys_info.html.
-  GURL systemInfoUrl =
-      GURL(base::StrCat({chrome::kChromeUIFeedbackURL, "html/sys_info.html"}));
+  GURL systemInfoUrl = GURL(chrome::kChromeUIFeedbackSystemInfoUrl);
   OpenWebDialog(systemInfoUrl, /*args=*/"");
 }
 
