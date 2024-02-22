@@ -124,7 +124,7 @@ BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kMigrateAccountManagementSettingsToCapabilities,
              "MigrateAccountManagementSettingsToCapabilities",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 bool IsChildAccountSupervisionEnabled() {
