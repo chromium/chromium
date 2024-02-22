@@ -868,8 +868,6 @@ void TestAvifBppHistogram(const char* image_name,
                    sample);
 }
 
-}  // namespace
-
 struct AVIFImageParam {
   const char* path;
   size_t expected_frame_count;
@@ -1763,5 +1761,7 @@ TEST_P(StaticAVIFColorTests, InspectImage) {
 TEST_P(StaticAVIFColorTests, InspectImageHalfFloat) {
   InspectImage(GetParam(), ImageDecoder::kHighBitDepthToHalfFloat);
 }
+
+}  // namespace
 
 }  // namespace blink
