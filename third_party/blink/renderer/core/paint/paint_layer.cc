@@ -51,6 +51,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "build/build_config.h"
+#include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -814,6 +815,16 @@ void PaintLayer::UpdateScrollableArea() {
 
   if (!scrollable_area_) {
     scrollable_area_ = MakeGarbageCollected<PaintLayerScrollableArea>(*this);
+    const ComputedStyle& style = GetLayoutObject().StyleRef();
+    // A newly created snap container may need to be made aware of snap areas
+    // within it which are targeted or contain a targeted element. Such a
+    // container may also change the snap areas associated with snap containers
+    // higher in the DOM.
+    if (!style.GetScrollSnapType().is_none) {
+      if (Element* css_target = GetLayoutObject().GetDocument().CssTarget()) {
+        css_target->SetTargetedSnapAreaIdsForSnapContainers();
+      }
+    }
   } else {
     scrollable_area_->Dispose();
     scrollable_area_.Clear();

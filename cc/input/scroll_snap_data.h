@@ -370,6 +370,10 @@ class CC_EXPORT SnapContainerData {
       const SnapContainerData* container_data,
       const gfx::PointF& scroll_offset);
 
+  void set_targeted_area_id(const std::optional<ElementId>& id) {
+    targeted_area_id_ = id;
+  }
+
  private:
   // Finds the best SnapArea candidate that's optimal for the given selection
   // strategy, while satisfying two invariants:
@@ -470,6 +474,12 @@ class CC_EXPORT SnapContainerData {
   // showing or hiding browser controls during a scroll gesture.  This is only
   // set while a call to FindSnapPosition is executing.
   double snapport_height_adjustment_ = 0;
+
+  // This is the ElementId of the snap area (snapped to by this snap container)
+  // that is targeted[1] or contains a targeted[1] element. It is std::nullopt
+  // if no such snap area exists.
+  // [1]https://drafts.csswg.org/selectors/#the-target-pseudo
+  std::optional<ElementId> targeted_area_id_;
 
   FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementHorizontal);
   FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementVertical);

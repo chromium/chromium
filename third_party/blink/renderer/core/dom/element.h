@@ -1365,6 +1365,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                          mojom::blink::ConsoleMessageLevel level,
                          const String& message);
 
+  // These update every scroll container that is an ancestor of
+  // of this element, letting them know which snap area of theirs, if any,
+  // either is a targeted[1] element or contains a targeted[1] element.
+  // [1]https://drafts.csswg.org/selectors/#the-target-pseudo
+  void SetTargetedSnapAreaIdsForSnapContainers();
+  void ClearTargetedSnapAreaIdsForSnapContainers();
+
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }
   const ElementData* GetElementData() const { return element_data_.Get(); }

@@ -164,6 +164,9 @@ class CORE_EXPORT RootFrameViewport final
     return user_scroll_sequence_affects_layout_viewport_;
   }
 
+  std::optional<cc::ElementId> GetTargetedSnapAreaId() override;
+  void SetTargetedSnapAreaId(const std::optional<cc::ElementId>&) override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(RootFrameViewportTest, DistributeScrollOrder);
 

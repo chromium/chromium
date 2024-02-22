@@ -776,4 +776,13 @@ void RootFrameViewport::EnqueueSnapChangingEventFromImplIfNeeded() {
   LayoutViewport().EnqueueSnapChangingEventFromImplIfNeeded();
 }
 
+std::optional<cc::ElementId> RootFrameViewport::GetTargetedSnapAreaId() {
+  return LayoutViewport().GetTargetedSnapAreaId();
+}
+
+void RootFrameViewport::SetTargetedSnapAreaId(
+    const std::optional<cc::ElementId>& id) {
+  LayoutViewport().SetTargetedSnapAreaId(id);
+}
+
 }  // namespace blink

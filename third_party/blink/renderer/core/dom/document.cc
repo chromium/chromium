@@ -5743,11 +5743,14 @@ void Document::SetCSSTarget(Element* new_target) {
       css_target_->PseudoStateChanged(
           CSSSelector::kPseudoSelectorFragmentAnchor);
     }
+    css_target_->ClearTargetedSnapAreaIdsForSnapContainers();
   }
   css_target_ = new_target;
   css_target_is_selector_fragment_ = false;
-  if (css_target_)
+  if (css_target_) {
     css_target_->PseudoStateChanged(CSSSelector::kPseudoTarget);
+    css_target_->SetTargetedSnapAreaIdsForSnapContainers();
+  }
 }
 
 void Document::RegisterNodeList(const LiveNodeListBase* list) {

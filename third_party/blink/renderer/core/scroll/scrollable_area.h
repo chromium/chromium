@@ -604,6 +604,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   }
   virtual void EnqueueSnapChangingEventFromImplIfNeeded() {}
 
+  virtual std::optional<cc::ElementId> GetTargetedSnapAreaId() {
+    return std::nullopt;
+  }
+  virtual void SetTargetedSnapAreaId(const std::optional<cc::ElementId>&) {}
+
  protected:
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either

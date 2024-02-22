@@ -86,6 +86,13 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   std::optional<cc::SnappedTargetData> snapped_target_data_;
   std::optional<cc::SnappedTargetData> snapchanging_target_data_;
   std::unique_ptr<cc::SnapSelectionStrategy> impl_snap_strategy_;
+  // If this is a snap container, this represents the cc::ElementId of the snap
+  // area (snapped to by this snap container) that is targeted[1] or contains a
+  // targeted[1] element.
+  // It is std::nullopt if no such snap area exists or if this is not a
+  // snap container.
+  // [1]https://drafts.csswg.org/selectors/#the-target-pseudo
+  std::optional<cc::ElementId> targeted_snap_area_id_;
   Vector<gfx::Rect> tickmarks_override_;
 };
 
@@ -605,6 +612,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool IsApplyingScrollStart() const final;
 
   gfx::Size PixelSnappedBorderBoxSize() const;
+
+  std::optional<cc::ElementId> GetTargetedSnapAreaId() override {
+    return RareData() ? RareData()->targeted_snap_area_id_ : std::nullopt;
+  }
+  void SetTargetedSnapAreaId(const std::optional<cc::ElementId>& id) override {
+    EnsureRareData().targeted_snap_area_id_ = id;
+  }
 
  private:
   bool NeedsHypotheticalScrollbarThickness(ScrollbarOrientation) const;
