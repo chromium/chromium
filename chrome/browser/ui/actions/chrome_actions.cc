@@ -24,6 +24,11 @@ void InitializeActionIdStringMapping() {
           std::vector<std::pair<actions::ActionId, std::string>>{
               SIDE_PANEL_ACTION_IDS}));
 
+  actions::ActionIdMap::AddActionIdToStringMappings(
+      base::MakeFlatMap<actions::ActionId, std::string>(
+          std::vector<std::pair<actions::ActionId, std::string>>{
+              TOOLBAR_PINNABLE_ACTION_IDS}));
+
 #include "ui/actions/action_id_macros.inc"
 #undef MAP_ACTION_IDS_TO_STRINGS
 
@@ -34,6 +39,11 @@ void InitializeActionIdStringMapping() {
       base::MakeFlatMap<std::string, actions::ActionId>(
           std::vector<std::pair<std::string, actions::ActionId>>{
               SIDE_PANEL_ACTION_IDS}));
+
+  actions::ActionIdMap::AddStringToActionIdMappings(
+      base::MakeFlatMap<std::string, actions::ActionId>(
+          std::vector<std::pair<std::string, actions::ActionId>>{
+              TOOLBAR_PINNABLE_ACTION_IDS}));
 
 #include "ui/actions/action_id_macros.inc"
 #undef MAP_STRING_TO_ACTION_IDS

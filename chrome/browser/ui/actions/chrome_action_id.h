@@ -18,16 +18,13 @@
 #define CHROME_COMMON_ACTION_IDS \
   /* Navigation commands */ \
   E(kActionBack, IDC_BACK, kChromeActionsStart, ChromeActionIds) \
-  E(kActionForward, IDC_FORWARD) \
   E(kActionReload, IDC_RELOAD) \
-  E(kActionHome, IDC_HOME) \
   E(kActionOpenCurrentUrl, IDC_OPEN_CURRENT_URL) \
   E(kActionStop, IDC_STOP) \
   E(kActionReloadBypassingCache, IDC_RELOAD_BYPASSING_CACHE) \
   E(kActionReloadClearingCache, IDC_RELOAD_CLEARING_CACHE) \
   /* Window management commands */ \
   E(kActionNewWindow, IDC_NEW_WINDOW) \
-  E(kActionNewIncognitoWindow, IDC_NEW_INCOGNITO_WINDOW) \
   E(kActionCloseWindow, IDC_CLOSE_WINDOW) \
   E(kActionAlwaysOnTop, IDC_ALWAYS_ON_TOP) \
   E(kActionNewTab, IDC_NEW_TAB) \
@@ -67,22 +64,17 @@
   E(kActionBookmarkThisTab, IDC_BOOKMARK_THIS_TAB) \
   E(kActionBookmarkAllTabs, IDC_BOOKMARK_ALL_TABS) \
   E(kActionViewSource, IDC_VIEW_SOURCE) \
-  E(kActionPrint, IDC_PRINT) \
   E(kActionSavePage, IDC_SAVE_PAGE) \
   E(kActionEmailPageLocation, IDC_EMAIL_PAGE_LOCATION) \
   E(kActionBasicPrint, IDC_BASIC_PRINT) \
   E(kActionSaveCreditCardForPage, IDC_SAVE_CREDIT_CARD_FOR_PAGE) \
-  E(kActionShowTranslate, IDC_SHOW_TRANSLATE) \
   E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
-  E(kActionRouteMedia, IDC_ROUTE_MEDIA) \
   E(kActionWindowMuteSite, IDC_WINDOW_MUTE_SITE) \
   E(kActionWindowPinTab, IDC_WINDOW_PIN_TAB) \
   E(kActionWindowGroupTab, IDC_WINDOW_GROUP_TAB) \
   E(kActionMigrateLocalCreditCardForPage, \
     IDC_MIGRATE_LOCAL_CREDIT_CARD_FOR_PAGE) \
-  E(kActionSendTabToSelf, IDC_SEND_TAB_TO_SELF) \
   E(kActionFocusThisTab, IDC_FOCUS_THIS_TAB) \
-  E(kActionQrcodeGenerator, IDC_QRCODE_GENERATOR) \
   E(kActionWindowCloseTabsToRight, IDC_WINDOW_CLOSE_TABS_TO_RIGHT) \
   E(kActionWindowCloseOtherTabs, IDC_WINDOW_CLOSE_OTHER_TABS) \
   E(kActionNewTabToRight, IDC_NEW_TAB_TO_RIGHT) \
@@ -100,9 +92,6 @@
   E(kActionAutofillMandatoryReauth, IDC_AUTOFILL_MANDATORY_REAUTH) \
   E(kActionProfileMenuInAppMenu, IDC_PROFILE_MENU_IN_APP_MENU) \
   E(kActionPasswordsAndAutofillMenu, IDC_PASSWORDS_AND_AUTOFILL_MENU) \
-  E(kActionShowPasswordManager, IDC_SHOW_PASSWORD_MANAGER) \
-  E(kActionShowPaymentMethods, IDC_SHOW_PAYMENT_METHODS) \
-  E(kActionShowAddresses, IDC_SHOW_ADDRESSES) \
   /* Page-manipulation commands that target a specified tab, which may not */ \
   /* be the active one. */ \
   E(kActionMuteTargetSite, IDC_MUTE_TARGET_SITE) \
@@ -151,16 +140,12 @@
   E(kActionOpenFile, IDC_OPEN_FILE) \
   E(kActionCreateShortcut, IDC_CREATE_SHORTCUT) \
   E(kActionDeveloperMenu, IDC_DEVELOPER_MENU) \
-  E(kActionDevTools, IDC_DEV_TOOLS) \
   E(kActionDevToolsConsole, IDC_DEV_TOOLS_CONSOLE) \
-  E(kActionTaskManager, IDC_TASK_MANAGER) \
   E(kActionDevToolsDevices, IDC_DEV_TOOLS_DEVICES) \
   E(kActionFeedback, IDC_FEEDBACK) \
   E(kActionShowBookmarkBar, IDC_SHOW_BOOKMARK_BAR) \
   E(kActionShowHistory, IDC_SHOW_HISTORY) \
   E(kActionShowBookmarkManager, IDC_SHOW_BOOKMARK_MANAGER) \
-  E(kActionShowDownloads, IDC_SHOW_DOWNLOADS) \
-  E(kActionClearBrowsingData, IDC_CLEAR_BROWSING_DATA) \
   E(kActionImportSettings, IDC_IMPORT_SETTINGS) \
   E(kActionOptions, IDC_OPTIONS) \
   E(kActionEditSearchEngines, IDC_EDIT_SEARCH_ENGINES) \
@@ -213,7 +198,6 @@
     IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE) \
   E(kActionReadingListMenu, IDC_READING_LIST_MENU) \
   E(kActionReadingListMenuAddTab, IDC_READING_LIST_MENU_ADD_TAB) \
-  E(kActionShowChromeLabs, IDC_SHOW_CHROME_LABS) \
   E(kActionRecentTabsLoginForDeviceTabs, \
     IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS) \
   E(kActionOpenRecentTab, IDC_OPEN_RECENT_TAB) \
@@ -568,6 +552,24 @@
   E(kActionSidePanelShowSideSearch) \
   E(kActionSidePanelShowUserNote) \
 
+#define TOOLBAR_PINNABLE_ACTION_IDS \
+  E(kActionHome, IDC_HOME) \
+  E(kActionForward, IDC_FORWARD) \
+  E(kActionNewIncognitoWindow, IDC_NEW_INCOGNITO_WINDOW) \
+  E(kActionShowPasswordManager, IDC_SHOW_PASSWORD_MANAGER) \
+  E(kActionShowPaymentMethods, IDC_SHOW_PAYMENT_METHODS) \
+  E(kActionShowAddresses, IDC_SHOW_ADDRESSES) \
+  E(kActionShowDownloads, IDC_SHOW_DOWNLOADS) \
+  E(kActionClearBrowsingData, IDC_CLEAR_BROWSING_DATA) \
+  E(kActionPrint, IDC_PRINT) \
+  E(kActionShowTranslate, IDC_SHOW_TRANSLATE) \
+  E(kActionSendTabToSelf, IDC_SEND_TAB_TO_SELF) \
+  E(kActionQrCodeGenerator, IDC_QRCODE_GENERATOR) \
+  E(kActionRouteMedia, IDC_ROUTE_MEDIA) \
+  E(kActionTaskManager, IDC_TASK_MANAGER) \
+  E(kActionDevTools, IDC_DEV_TOOLS) \
+  E(kActionShowChromeLabs, IDC_SHOW_CHROME_LABS) \
+
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \
     CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
@@ -580,6 +582,7 @@ enum ChromeActionIds : actions::ActionId {
 
   CHROME_ACTION_IDS
   SIDE_PANEL_ACTION_IDS
+  TOOLBAR_PINNABLE_ACTION_IDS
 
   kChromeActionsEnd,
 };
