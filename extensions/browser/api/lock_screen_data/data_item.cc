@@ -274,8 +274,8 @@ void DataItem::GetRegisteredValuesForExtension(
     const ExtensionId& extension_id,
     RegisteredValuesCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context)->GetExtensionById(
-          extension_id, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension,
                             base::Value::Dict());
@@ -330,8 +330,8 @@ DataItem::~DataItem() = default;
 
 void DataItem::Register(WriteCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context_)->GetExtensionById(
-          extension_id_, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+          extension_id_);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension);
     return;
@@ -353,8 +353,8 @@ void DataItem::Register(WriteCallback callback) {
 
 void DataItem::Write(const std::vector<char>& data, WriteCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context_)->GetExtensionById(
-          extension_id_, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+          extension_id_);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension);
     return;
@@ -377,8 +377,8 @@ void DataItem::Write(const std::vector<char>& data, WriteCallback callback) {
 
 void DataItem::Read(ReadCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context_)->GetExtensionById(
-          extension_id_, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+          extension_id_);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension, nullptr);
     return;
@@ -405,8 +405,8 @@ void DataItem::Read(ReadCallback callback) {
 
 void DataItem::Delete(WriteCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context_)->GetExtensionById(
-          extension_id_, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+          extension_id_);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension);
     return;

@@ -404,10 +404,9 @@ void ActionTracker::DispatchOnRuleMatchedDebugIfNeeded(
     const RequestAction& request_action,
     dnr_api::RequestDetails request_details) {
   const ExtensionId& extension_id = request_action.extension_id;
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context_)
-          ->GetExtensionById(extension_id,
-                             extensions::ExtensionRegistry::ENABLED);
+  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
   DCHECK(extension);
 
   // Do not dispatch an event if the extension has not registered a listener.

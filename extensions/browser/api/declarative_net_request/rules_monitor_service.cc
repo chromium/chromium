@@ -967,8 +967,8 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
 
   // It's possible that the extension has been disabled since the initial
   // request. If it's disabled, return early.
-  const Extension* extension = extension_registry_->GetExtensionById(
-      load_data.extension_id, ExtensionRegistry::ENABLED);
+  const Extension* extension =
+      extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
   if (!extension) {
     // Still dispatch the |callback|, even though it's probably a no-op.
     std::move(callback).Run(std::nullopt /* error */);
