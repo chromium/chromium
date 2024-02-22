@@ -60,12 +60,12 @@ chromium-metrics-reviews@google.com.
 <enum name="ChromeBrowsingDataRemoverTasks">
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kHistory"/>
-  <int value="3" label="kHostNameResolution"/>
+  <int value="3" label="(Obsolete) kHostNameResolution"/>
   <int value="4" label="kNaclCache"/>
   <int value="5" label="kPnaclCache"/>
   <int value="6" label="kAutofillData"/>
   <int value="7" label="kAutofillOrigins"/>
-  <int value="8" label="kPluginData"/>
+  <int value="8" label="(Obsolete) kPluginData"/>
   <int value="9" label="kFlashLsoHelper"/>
   <int value="10" label="kDomainReliability"/>
   <int value="11" label="(Obsolete) kNetworkPredictor"/>
@@ -76,29 +76,29 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="kHttpAuthCache"/>
   <int value="17" label="kDisableAutoSigninForProfilePasswords"/>
   <int value="18" label="kPasswordsStatistics"/>
-  <int value="19" label="kKeywordsModel"/>
+  <int value="19" label="(Obsolete) kKeywordsModel"/>
   <int value="20" label="kReportingCache"/>
   <int value="21" label="kNetworkErrorLogging"/>
-  <int value="22" label="kFlashDeauthorization"/>
+  <int value="22" label="(Obsolete) kFlashDeauthorization"/>
   <int value="23" label="kOfflinePages"/>
   <int value="24" label="kPrecache"/>
-  <int value="25" label="kExploreSites"/>
-  <int value="26" label="kLegacyStrikes"/>
+  <int value="25" label="(Obsolete) kExploreSites"/>
+  <int value="26" label="(Obsolete) kLegacyStrikes"/>
   <int value="27" label="kWebrtcEventLogs"/>
   <int value="28" label="kCdmLicenses"/>
   <int value="29" label="kHostCache"/>
   <int value="30" label="kTpmAttestationKeys"/>
-  <int value="31" label="kStrikes"/>
+  <int value="31" label="(Obsolete) kStrikes"/>
   <int value="32"
       label="(Obsolete) kLeakedCredentials. Use kCompromisedCredentials
              instead. This expired 2019-11."/>
   <int value="33" label="(Obsolete) kFieldInfo. Deprecated in M117"/>
-  <int value="34" label="kCompromisedCredentials"/>
+  <int value="34" label="(Obsolete) kCompromisedCredentials"/>
   <int value="35" label="kUserDataSnapshot"/>
-  <int value="36" label="kMediaFeeds"/>
+  <int value="36" label="(Obsolete) kMediaFeeds"/>
   <int value="37" label="kAccountPasswords"/>
   <int value="38" label="kAccountPasswordsSynced"/>
-  <int value="39" label="kAccountCompromisedCredentials"/>
+  <int value="39" label="(Obsolete) kAccountCompromisedCredentials"/>
   <int value="40" label="kFaviconCacheExpiration"/>
   <int value="41" label="kSecurePaymentConfirmationInstruments"/>
   <int value="42" label="kWebAppHistory"/>

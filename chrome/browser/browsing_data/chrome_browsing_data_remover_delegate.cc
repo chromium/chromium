@@ -1455,8 +1455,6 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "Synchronous";
     case TracingDataType::kHistory:
       return "History";
-    case TracingDataType::kHostNameResolution:
-      return "HostNameResolution";
     case TracingDataType::kNaclCache:
       return "NaclCache";
     case TracingDataType::kPnaclCache:
@@ -1465,8 +1463,6 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "AutofillData";
     case TracingDataType::kAutofillOrigins:
       return "AutofillOrigins";
-    case TracingDataType::kPluginData:
-      return "PluginData";
     case TracingDataType::kDomainReliability:
       return "DomainReliability";
     case TracingDataType::kWebrtcLogs:
@@ -1485,20 +1481,12 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "DisableAutoSigninForAccountPasswords";
     case TracingDataType::kPasswordsStatistics:
       return "PasswordsStatistics";
-    case TracingDataType::kKeywordsModel:
-      return "KeywordsModel";
     case TracingDataType::kReportingCache:
       return "ReportingCache";
     case TracingDataType::kNetworkErrorLogging:
       return "NetworkErrorLogging";
-    case TracingDataType::kFlashDeauthorization:
-      return "FlashDeauthorization";
     case TracingDataType::kOfflinePages:
       return "OfflinePages";
-    case TracingDataType::kExploreSites:
-      return "ExploreSites";
-    case TracingDataType::kLegacyStrikes:
-      return "LegacyStrikes";
     case TracingDataType::kWebrtcEventLogs:
       return "WebrtcEventLogs";
     case TracingDataType::kCdmLicenses:
@@ -1507,20 +1495,12 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "HostCache";
     case TracingDataType::kTpmAttestationKeys:
       return "TpmAttestationKeys";
-    case TracingDataType::kStrikes:
-      return "Strikes";
-    case TracingDataType::kCompromisedCredentials:
-      return "CompromisedCredentials";
     case TracingDataType::kUserDataSnapshot:
       return "UserDataSnapshot";
-    case TracingDataType::kMediaFeeds:
-      return "MediaFeeds";
     case TracingDataType::kAccountPasswords:
       return "AccountPasswords";
     case TracingDataType::kAccountPasswordsSynced:
       return "AccountPasswordsSynced";
-    case TracingDataType::kAccountCompromisedCredentials:
-      return "AccountCompromisedCredentials";
     case TracingDataType::kFaviconCacheExpiration:
       return "FaviconCacheExpiration";
     case TracingDataType::kSecurePaymentConfirmationCredentials:
