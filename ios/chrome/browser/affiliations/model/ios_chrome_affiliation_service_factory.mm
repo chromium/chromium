@@ -11,10 +11,10 @@
 #import "base/not_fatal_until.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/affiliations/core/browser/affiliation_constants.h"
 #import "components/affiliations/core/browser/affiliation_service_impl.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "components/password_manager/core/browser/password_manager_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -61,12 +61,10 @@ IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
   auto affiliation_service =
       std::make_unique<affiliations::AffiliationServiceImpl>(
           context->GetSharedURLLoaderFactory(), backend_task_runner);
-
-  // TODO(b/324553078): Move this constant into an affiliations file.
-  base::FilePath database_path = context->GetStatePath().Append(
-      password_manager::kAffiliationDatabaseFileName);
   affiliation_service->Init(
-      GetApplicationContext()->GetNetworkConnectionTracker(), database_path);
+      GetApplicationContext()->GetNetworkConnectionTracker(),
+      context->GetStatePath().Append(
+          affiliations::kAffiliationDatabaseFileName));
 
   return affiliation_service;
 }

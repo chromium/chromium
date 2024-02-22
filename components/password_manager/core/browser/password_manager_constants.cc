@@ -6,8 +6,6 @@
 
 namespace password_manager {
 
-const base::FilePath::CharType kAffiliationDatabaseFileName[] =
-    FILE_PATH_LITERAL("Affiliation Database");
 const base::FilePath::CharType kLoginDataForProfileFileName[] =
     FILE_PATH_LITERAL("Login Data");
 const base::FilePath::CharType kLoginDataForAccountFileName[] =

@@ -9,8 +9,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/affiliations/core/browser/affiliation_constants.h"
 #include "components/affiliations/core/browser/affiliation_service_impl.h"
-#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -46,12 +46,9 @@ AffiliationServiceFactory::BuildServiceInstanceForBrowserContext(
   auto affiliation_service =
       std::make_unique<affiliations::AffiliationServiceImpl>(
           url_loader_factory, backend_task_runner);
-
-  // TODO(b/324553078): Move this constant into an affiliations file.
-  base::FilePath database_path =
-      profile->GetPath().Append(password_manager::kAffiliationDatabaseFileName);
-  affiliation_service->Init(content::GetNetworkConnectionTracker(),
-                            database_path);
+  affiliation_service->Init(
+      content::GetNetworkConnectionTracker(),
+      profile->GetPath().Append(affiliations::kAffiliationDatabaseFileName));
 
   return affiliation_service;
 }

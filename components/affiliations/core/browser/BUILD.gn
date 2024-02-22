@@ -23,6 +23,7 @@ source_set("affiliations") {
   sources = [
     "affiliation_backend.cc",
     "affiliation_backend.h",
+    "affiliation_constants.h",
     "affiliation_database.cc",
     "affiliation_database.h",
     "affiliation_fetch_throttler.cc",

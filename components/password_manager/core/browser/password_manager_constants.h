@@ -9,7 +9,6 @@
 
 namespace password_manager {
 
-extern const base::FilePath::CharType kAffiliationDatabaseFileName[];
 extern const base::FilePath::CharType kLoginDataForProfileFileName[];
 extern const base::FilePath::CharType kLoginDataForAccountFileName[];
 
