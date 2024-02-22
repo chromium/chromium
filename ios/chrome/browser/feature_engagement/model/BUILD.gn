@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "ios_tracker_session_controller.h",
+    "ios_tracker_session_controller.mm",
     "tracker_factory.h",
     "tracker_factory.mm",
     "tracker_factory_util.h",
@@ -51,9 +53,13 @@ source_set("eg2_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "feature_engagement_unittest.mm" ]
+  sources = [
+    "feature_engagement_unittest.mm",
+    "ios_tracker_session_controller_unittest.mm",
+  ]
   frameworks = [ "Foundation.framework" ]
   deps = [
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/public",

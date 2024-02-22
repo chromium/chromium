@@ -10,6 +10,7 @@
 #import "base/task/thread_pool.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/feature_engagement/model/ios_tracker_session_controller.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter_factory.h"
@@ -50,8 +51,12 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
       PromosManagerEventExporterFactory::GetForBrowserState(browser_state)
           ->AsWeakPtr();
 
+  auto session_controller = std::make_unique<IOSTrackerSessionController>();
+
   return base::WrapUnique(feature_engagement::Tracker::Create(
-      storage_dir, background_task_runner, db_provider, event_exporter));
+      storage_dir, background_task_runner, db_provider, event_exporter,
+      feature_engagement::Tracker::GetDefaultConfigurationProviders(),
+      std::move(session_controller)));
 }
 
 }  // namespace feature_engagement
