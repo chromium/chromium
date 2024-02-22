@@ -38,15 +38,13 @@ RealtimeReportingJobConfiguration::RealtimeReportingJobConfiguration(
     CloudPolicyClient* client,
     const std::string& server_url,
     bool include_device_info,
-    bool add_connector_url_params,
     UploadCompleteCallback callback)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_REAL_TIME_REPORT,
                                     client->GetURLLoaderFactory(),
                                     DMAuth::FromDMToken(client->dm_token()),
                                     server_url,
                                     std::move(callback)) {
-  InitializePayloadInternal(client, add_connector_url_params,
-                            include_device_info);
+  InitializePayloadInternal(client, include_device_info);
 }
 
 RealtimeReportingJobConfiguration::~RealtimeReportingJobConfiguration() =
@@ -77,7 +75,6 @@ bool RealtimeReportingJobConfiguration::AddReport(base::Value::Dict report) {
 
 void RealtimeReportingJobConfiguration::InitializePayloadInternal(
     CloudPolicyClient* client,
-    bool add_connector_url_params,
     bool include_device_info) {
   if (include_device_info) {
     InitializePayloadWithDeviceInfo(client->dm_token(), client->client_id());
@@ -86,12 +83,6 @@ void RealtimeReportingJobConfiguration::InitializePayloadInternal(
   }
 
   payload_.Set(kEventListKey, base::Value::List());
-
-  // If specified add extra enterprise connector URL params.
-  if (add_connector_url_params) {
-    AddParameter(enterprise::kUrlParamConnector, "OnSecurityEvent");
-    AddParameter(enterprise::kUrlParamDeviceToken, client->dm_token());
-  }
 }
 
 DeviceManagementService::Job::RetryMethod

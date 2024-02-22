@@ -72,7 +72,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
     client_.SetDMToken(kDummyToken);
     configuration_ = std::make_unique<RealtimeReportingJobConfiguration>(
         &client_, service_.configuration()->GetRealtimeReportingServerUrl(),
-        /*include_device_info=*/true, /*add_connector_url_params=*/false,
+        /*include_device_info=*/true,
         base::BindOnce(&MockCallbackObserver::OnURLLoadComplete,
                        base::Unretained(&callback_observer_)));
     base::Value::Dict context;

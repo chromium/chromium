@@ -878,7 +878,7 @@ void CloudPolicyClient::UploadSecurityEventReport(
   CreateNewRealtimeReportingJob(
       std::move(report),
       service()->configuration()->GetReportingConnectorServerUrl(context),
-      include_device_info, add_connector_url_params_, std::move(callback));
+      include_device_info, std::move(callback));
 }
 
 void CloudPolicyClient::UploadAppInstallReport(base::Value::Dict report,
@@ -894,8 +894,7 @@ void CloudPolicyClient::UploadAppInstallReport(base::Value::Dict report,
   app_install_report_request_job_ = CreateNewRealtimeReportingJob(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
-      /* include_device_info */ true, /* add_connector_url_params=*/false,
-      std::move(callback));
+      /* include_device_info */ true, std::move(callback));
   DCHECK(app_install_report_request_job_);
 }
 
@@ -952,11 +951,10 @@ DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
     base::Value::Dict report,
     const std::string& server_url,
     bool include_device_info,
-    bool add_connector_url_params,
     ResultCallback callback) {
   std::unique_ptr<RealtimeReportingJobConfiguration> config =
       std::make_unique<RealtimeReportingJobConfiguration>(
-          this, server_url, include_device_info, add_connector_url_params,
+          this, server_url, include_device_info,
           base::BindOnce(&CloudPolicyClient::OnRealtimeReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 

@@ -324,9 +324,6 @@ RealtimeReportingClient::InitBrowserReportingClient(
       policy::CloudPolicyClient::DeviceDMTokenCallback());
   client = browser_private_client_.get();
 
-  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
-  // the uploaded reports, do the following:
-  //     client->add_connector_url_params(true);
   if (!client->is_registered()) {
     client->SetupRegistration(
         dm_token, client_id,
@@ -352,10 +349,6 @@ RealtimeReportingClient::InitProfileReportingClient(
       g_browser_process->shared_url_loader_factory(),
       policy::CloudPolicyClient::DeviceDMTokenCallback());
   policy::CloudPolicyClient* client = profile_private_client_.get();
-
-  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
-  // the uploaded reports, do the following:
-  //     client->add_connector_url_params(true);
 
   client->SetupRegistration(dm_token,
                             policy_manager->core()->client()->client_id(),

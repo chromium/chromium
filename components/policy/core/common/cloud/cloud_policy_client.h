@@ -613,10 +613,6 @@ class POLICY_EXPORT CloudPolicyClient {
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
-  void add_connector_url_params(bool value) {
-    add_connector_url_params_ = value;
-  }
-
   // Returns the number of active requests.
   int GetActiveRequestCountForTest() const;
 
@@ -793,7 +789,6 @@ class POLICY_EXPORT CloudPolicyClient {
       base::Value::Dict report,
       const std::string& server_url,
       bool include_device_info,
-      bool add_connector_url_params,
       ResultCallback callback);
 
   void SetClientId(const std::string& client_id);
@@ -842,11 +837,6 @@ class POLICY_EXPORT CloudPolicyClient {
   // with errors `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` and
   // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET`.
   std::string reregistration_dm_token_;
-
-  // Whether extra enterprise connectors URL parameters should be included
-  // in real-time reports.  Only reports uploaded using UploadRealtimeReport()
-  // are affected.
-  bool add_connector_url_params_ = false;
 
   // Used to create tasks which run delayed on the UI thread.
   base::WeakPtrFactory<CloudPolicyClient> weak_ptr_factory_{this};
