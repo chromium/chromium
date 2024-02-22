@@ -7866,33 +7866,6 @@
             ]
         }
     ],
-    "GreySnapshotOptimization": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledNoImagesInDiskAndCache",
-                    "params": {
-                        "level": "do-not-store-to-disk-and-cache"
-                    },
-                    "enable_features": [
-                        "GreySnapshotOptimization"
-                    ]
-                },
-                {
-                    "name": "EnabledNoImagesInDisk",
-                    "params": {
-                        "level": "do-not-store-to-disk"
-                    },
-                    "enable_features": [
-                        "GreySnapshotOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "GridTabSwitcherAndroidAnimations": [
         {
             "platforms": [
