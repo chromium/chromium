@@ -1314,5 +1314,20 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+TEST_F(ExternalAppResolutionCommandTest, WriteDataToDiskFailed) {
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kBrowser,
+      ExternalInstallSource::kExternalDefault);
+
+  SetPageState(install_options);
+  // Induce an error: Simulate "Disk Full" for writing icon files.
+  file_utils().SetRemainingDiskSpaceSize(1024);
+
+  // Expect app installation to fail and not lead to a crash.
+  auto result = InstallAndWait(install_options);
+  EXPECT_EQ(result.code, webapps::InstallResultCode::kWriteDataFailed);
+  ASSERT_FALSE(result.app_id.has_value());
+}
+
 }  // namespace
 }  // namespace web_app

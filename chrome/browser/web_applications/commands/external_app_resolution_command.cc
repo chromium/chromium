@@ -390,7 +390,6 @@ void ExternalAppResolutionCommand::OnInstallFinalized(
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
-  CHECK_EQ(app_id, app_id_);
   install_code_ = code;
 
   GetMutableDebugValue().Set("install_code", base::ToString(code));
@@ -400,6 +399,7 @@ void ExternalAppResolutionCommand::OnInstallFinalized(
     return;
   }
 
+  CHECK_EQ(app_id, app_id_);
   RecordWebAppInstallationTimestamp(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())
           ->GetPrefs(),
