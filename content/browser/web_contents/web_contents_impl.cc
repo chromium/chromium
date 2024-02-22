@@ -7224,8 +7224,6 @@ void WebContentsImpl::OnPepperPluginHung(RenderFrameHostImpl* source,
                                          bool is_hung) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPepperPluginHung",
                         "render_frame_host", source);
-  UMA_HISTOGRAM_COUNTS_1M("Pepper.PluginHung", 1);
-
   observers_.NotifyObservers(&WebContentsObserver::PluginHungStatusChanged,
                              plugin_child_id, path, is_hung);
 }

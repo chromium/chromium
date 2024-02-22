@@ -8214,11 +8214,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Pepper.PluginHung" enum="BooleanHit" expires_after="M124">
-  <owner>mackinlay@google.com</owner>
-  <summary>Count how often the plugin hung infobar is displayed.</summary>
-</histogram>
-
 <histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
     expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
