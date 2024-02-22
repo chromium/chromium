@@ -344,7 +344,7 @@ external/wpt/feature-policy/reporting/vr-report-only.https.html.headers [ Skip ]
 
 # Manual tests related to accessibility for which we have parallel coverage,
 # e.g. porting them to content browser tests.
-external/wpt/accname [ Skip ]
+external/wpt/accname/manual/ [ Skip ]
 
 # Other manual tests related to accessibility.
 # TODO(accessibility): core-aam has many manual tests and a single non-manual
