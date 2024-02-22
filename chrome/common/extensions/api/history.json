@@ -79,7 +79,7 @@
         "id": "UrlDetails",
         "type": "object",
         "properties": {
-          "url": {"type": "string", "description": "The URL for the operation. It must be in the format as returned from a call to history.search."}
+          "url": {"type": "string", "description": "The URL for the operation. It must be in the format as returned from a call to <code>history.search()</code>."}
         }
       }
     ],
@@ -93,10 +93,10 @@
             "name": "query",
             "type": "object",
             "properties": {
-              "text": {"type": "string", "description": "A free-text query to the history service.  Leave empty to retrieve all pages."},
-              "startTime": {"type": "number", "optional": true, "description": "Limit results to those visited after this date, represented in milliseconds since the epoch. If not specified, this defaults to 24 hours in the past."},
+              "text": {"type": "string", "description": "A free-text query to the history service. Leave this empty to retrieve all pages."},
+              "startTime": {"type": "number", "optional": true, "description": "Limit results to those visited after this date, represented in milliseconds since the epoch. If property is not specified, it will default to 24 hours."},
               "endTime": {"type": "number", "optional": true, "description": "Limit results to those visited before this date, represented in milliseconds since the epoch."},
-              "maxResults": {"type": "integer", "optional": true, "minimum": 0, "description": "The maximum number of results to retrieve.  Defaults to 100."}
+              "maxResults": {"type": "integer", "optional": true, "minimum": 0, "description": "The maximum number of results to retrieve. Defaults to 100."}
             }
           }
         ],
@@ -159,7 +159,7 @@
       {
         "name": "deleteRange",
         "type": "function",
-        "description": "Removes all items within the specified date range from the history.  Pages will not be removed from the history unless all visits fall within the range.",
+        "description": "Removes all items within the specified date range from the history. Pages will not be removed from the history unless all visits fall within the range.",
         "parameters": [
           {
             "name": "range",
@@ -190,7 +190,7 @@
       {
         "name": "onVisited",
         "type": "function",
-        "description": "Fired when a URL is visited, providing the HistoryItem data for that URL.  This event fires before the page has loaded.",
+        "description": "Fired when a URL is visited, providing the <code>HistoryItem</code> data for that URL. This event fires before the page has loaded.",
         "parameters": [
           { "name": "result", "$ref": "HistoryItem"}
         ]
@@ -198,13 +198,13 @@
       {
         "name": "onVisitRemoved",
         "type": "function",
-        "description": "Fired when one or more URLs are removed from the history service.  When all visits have been removed the URL is purged from history.",
+        "description": "Fired when one or more URLs are removed from history. When all visits have been removed the URL is purged from history.",
         "parameters": [
           {
             "name": "removed",
             "type": "object",
             "properties": {
-              "allHistory": { "type": "boolean", "description": "True if all history was removed.  If true, then urls will be empty." },
+              "allHistory": { "type": "boolean", "description": "True if all history was removed. If true, then urls will be empty." },
               "urls": { "type": "array", "items": { "type": "string" }, "optional": true}
             }
           }
