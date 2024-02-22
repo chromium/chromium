@@ -97,6 +97,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void SetForceRespectUiGains(bool force_respect_ui_gains_enabled) override;
   void GetNumStreamIgnoreUiGains(
       chromeos::DBusMethodCallback<int> callback) override;
+  void GetNumberOfArcStreams(
+      chromeos::DBusMethodCallback<int> callback) override;
   void SetHfpMicSrEnabled(bool hfp_mic_sr_on) override;
   void GetHfpMicSrSupported(
       chromeos::DBusMethodCallback<bool> callback) override;
@@ -139,6 +141,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // Generates fake signal for SurveyTriggered.
   void NotifySurveyTriggered(
       const base::flat_map<std::string, std::string>& survey_specific_data);
+
+  // Sets the number of ARC streams.
+  void SetNumberOfArcStreams(int32_t streams);
 
   const AudioNodeList& node_list() const { return node_list_; }
   const uint64_t& active_input_node_id() const { return active_input_node_id_; }
@@ -200,6 +205,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // Maps audio client type to the number of active input streams for clients
   // with the type specified
   ClientTypeToInputStreamCount active_input_streams_;
+  int32_t number_arc_streams_ = 0;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

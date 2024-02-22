@@ -171,6 +171,15 @@ class CrasAudioClientImpl : public CrasAudioClient {
             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    // Monitor the D-Bus signal for number of ARC streams changed.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface, cras::kNumberOfArcStreamsChanged,
+        base::BindRepeating(
+            &CrasAudioClientImpl::NumberOfArcStreamsChangedReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   CrasAudioClientImpl(const CrasAudioClientImpl&) = delete;
@@ -637,6 +646,16 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetNumberOfArcStreams(
+      chromeos::DBusMethodCallback<int32_t> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetNumberOfArcStreams);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetNumberOfArcStreams,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   // Called when the cras signal is initially connected.
   void SignalConnected(const std::string& interface_name,
@@ -904,6 +923,12 @@ class CrasAudioClientImpl : public CrasAudioClient {
     }
     for (auto& observer : observers_) {
       observer.NumStreamIgnoreUiGains(num);
+    }
+  }
+
+  void NumberOfArcStreamsChangedReceived(dbus::Signal* signal) {
+    for (auto& observer : observers_) {
+      observer.NumberOfArcStreamsChanged();
     }
   }
 
@@ -1313,6 +1338,24 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(num_stream_ignore_ui_gains);
   }
 
+  void OnGetNumberOfArcStreams(chromeos::DBusMethodCallback<int32_t> callback,
+                               dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling " << cras::kGetNumberOfArcStreams;
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    int32_t num_arc_streams = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopInt32(&num_arc_streams)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(num_arc_streams);
+  }
+
   raw_ptr<dbus::ObjectProxy> cras_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -1363,6 +1406,8 @@ void CrasAudioClient::Observer::SpeakOnMuteDetected() {}
 void CrasAudioClient::Observer::NumberOfNonChromeOutputStreamsChanged() {}
 
 void CrasAudioClient::Observer::NumStreamIgnoreUiGains(int32_t num) {}
+
+void CrasAudioClient::Observer::NumberOfArcStreamsChanged() {}
 
 CrasAudioClient::CrasAudioClient() {
   DCHECK(!g_instance);

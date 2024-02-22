@@ -482,4 +482,16 @@ void FakeCrasAudioClient::SetHfpMicSrEnabled(bool hfp_mic_sr_on) {
   hfp_mic_sr_enabled_ = hfp_mic_sr_on;
 }
 
+void FakeCrasAudioClient::SetNumberOfArcStreams(int32_t streams) {
+  number_arc_streams_ = streams;
+  for (auto& observer : observers_) {
+    observer.NumberOfArcStreamsChanged();
+  }
+}
+
+void FakeCrasAudioClient::GetNumberOfArcStreams(
+    chromeos::DBusMethodCallback<int32_t> callback) {
+  std::move(callback).Run(number_arc_streams_);
+}
+
 }  // namespace ash

@@ -84,6 +84,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // Called when num-stream-ignore-ui-gains is changed.
     virtual void NumStreamIgnoreUiGains(int32_t num);
 
+    // Called when NumberOfArcStreamsChanged is detected.
+    virtual void NumberOfArcStreamsChanged();
+
    protected:
     virtual ~Observer();
   };
@@ -282,6 +285,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Gets if hfp_mic_sr is supported.
   virtual void GetHfpMicSrSupported(
       chromeos::DBusMethodCallback<bool> callback) = 0;
+
+  // Gets the number of active ARC streams.
+  virtual void GetNumberOfArcStreams(
+      chromeos::DBusMethodCallback<int32_t> callback) = 0;
 
  protected:
   friend class CrasAudioClientTest;

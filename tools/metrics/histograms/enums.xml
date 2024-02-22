@@ -24282,6 +24282,7 @@ from previous Chrome versions.
   <int value="1643712769" label="PrintWithReducedRasterization:enabled"/>
   <int value="1644340731" label="NearbySharingSelfShareUI:enabled"/>
   <int value="1644405691" label="VCPortraitRelighting:disabled"/>
+  <int value="1644777968" label="ArcUnthrottleOnActiveAudio:disabled"/>
   <int value="1645141340" label="DesksCloseAll:enabled"/>
   <int value="1645447927" label="MixedContentSiteSetting:disabled"/>
   <int value="1645479440" label="HistoryManipulationIntervention:disabled"/>
@@ -24372,6 +24373,7 @@ from previous Chrome versions.
   <int value="1681612611" label="CodeBasedRBD:disabled"/>
   <int value="1683560662" label="ChromeShareHighlightsAndroid:disabled"/>
   <int value="1684043382" label="AssistantKeyRemapping:enabled"/>
+  <int value="1684080951" label="ArcUnthrottleOnActiveAudio:enabled"/>
   <int value="1685280468" label="AppServiceShelf:enabled"/>
   <int value="1687272287" label="HandwritingLibraryDlc:disabled"/>
   <int value="1687544136" label="AndroidManagedByMenuItem:enabled"/>

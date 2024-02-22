@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
+#include "chrome/browser/ash/arc/instance_throttle/arc_active_audio_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_app_launch_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
@@ -301,6 +302,9 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   // This one is controlled by ash::ArcPowerControlHandler.
   AddObserver(std::make_unique<ash::ThrottleObserver>(
       kChromeArcPowerControlPageObserver));
+  if (base::FeatureList::IsEnabled(arc::kUnthrottleOnActiveAudio)) {
+    AddObserver(std::make_unique<ArcActiveAudioThrottleObserver>());
+  }
 
   StartObservers();
   DCHECK(bridge_);

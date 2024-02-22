@@ -203,8 +203,15 @@ void CrasAudioHandler::AudioObserver::OnSpeakOnMuteDetected() {}
 void CrasAudioHandler::AudioObserver::OnNumStreamIgnoreUiGainsChanged(
     int32_t num) {}
 
+void CrasAudioHandler::AudioObserver::OnNumberOfArcStreamsChanged(int32_t num) {
+}
+
 void CrasAudioHandler::NumberOfNonChromeOutputStreamsChanged() {
   GetNumberOfNonChromeOutputStreams();
+}
+
+void CrasAudioHandler::NumberOfArcStreamsChanged() {
+  GetNumberOfArcStreams();
 }
 
 // static
@@ -1714,6 +1721,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetNumberOfNonChromeOutputStreams();
   GetNumberOfInputStreamsWithPermissionInternal();
   GetNumStreamIgnoreUiGains();
+  GetNumberOfArcStreams();
   CrasAudioClient::Get()->SetFixA2dpPacketSize(
       base::FeatureList::IsEnabled(features::kBluetoothFixA2dpPacketSize));
 
@@ -2777,6 +2785,29 @@ void CrasAudioHandler::HandleGetNumStreamIgnoreUiGains(
   num_stream_ignore_ui_gains_ = *new_stream_ignore_ui_gains_count;
 }
 
+void CrasAudioHandler::GetNumberOfArcStreams() {
+  CrasAudioClient::Get()->GetNumberOfArcStreams(
+      base::BindOnce(&CrasAudioHandler::HandleGetNumberOfArcStreams,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrasAudioHandler::HandleGetNumberOfArcStreams(
+    std::optional<int32_t> new_num_arc_streams) {
+  if (!new_num_arc_streams.has_value()) {
+    LOG(ERROR) << "Failed to retrieve number of active ARC streams.";
+    return;
+  }
+  DCHECK_GE(*new_num_arc_streams, 0);
+
+  if (*new_num_arc_streams != num_arc_streams_) {
+    for (auto& observer : observers_) {
+      observer.OnNumberOfArcStreamsChanged(*new_num_arc_streams);
+    }
+  }
+
+  num_arc_streams_ = *new_num_arc_streams;
+}
+
 ScopedCrasAudioHandlerForTesting::ScopedCrasAudioHandlerForTesting() {
   CHECK(!CrasAudioClient::Get())
       << "ScopedCrasAudioHandlerForTesting expects that there is no "
@@ -2801,6 +2832,14 @@ int32_t CrasAudioHandler::NumberOfNonChromeOutputStreams() const {
 
 int32_t CrasAudioHandler::NumberOfChromeOutputStreams() const {
   return num_active_output_streams_;
+}
+
+int32_t CrasAudioHandler::NumberOfArcStreams() const {
+  return num_arc_streams_;
+}
+
+void CrasAudioHandler::SetNumberOfArcStreamsForTesting(int32_t num) {
+  num_arc_streams_ = num;
 }
 
 }  // namespace ash

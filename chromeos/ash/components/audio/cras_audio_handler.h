@@ -256,6 +256,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     // Called when num-stream-ignore-ui-gains state is changed.
     virtual void OnNumStreamIgnoreUiGainsChanged(int32_t num);
 
+    // Called when number of ARC streams is changed.
+    virtual void OnNumberOfArcStreamsChanged(int32_t num);
+
    protected:
     AudioObserver();
     virtual ~AudioObserver();
@@ -642,6 +645,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   int32_t NumberOfNonChromeOutputStreams() const;
   int32_t NumberOfChromeOutputStreams() const;
+  int32_t NumberOfArcStreams() const;
+
+  // Simulate number of ARC streams changing in a test.
+  void SetNumberOfArcStreamsForTesting(int32_t num);
 
  protected:
   CrasAudioHandler(
@@ -671,6 +678,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void SpeakOnMuteDetected() override;
   void NumberOfNonChromeOutputStreamsChanged() override;
   void NumStreamIgnoreUiGains(int32_t num) override;
+  void NumberOfArcStreamsChanged() override;
 
   // AudioPrefObserver overrides.
   void OnAudioPolicyPrefChanged() override;
@@ -752,6 +760,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void GetNumberOfOutputStreams();
 
   void GetNumberOfNonChromeOutputStreams();
+
+  // Calls CRAS over D-Bus to get the number of ARC streams.
+  void GetNumberOfArcStreams();
 
   // Updates the current audio nodes list and switches the active device
   // if needed.
@@ -884,6 +895,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       std::optional<base::flat_map<std::string, uint32_t>> num_input_streams);
   void HandleGetNumberOfNonChromeOutputStreams(
       std::optional<int32_t> num_output_streams);
+
+  // Handle dbus callback for GetNumberOfArcStreams.
+  void HandleGetNumberOfArcStreams(std::optional<int32_t> num_arc_streams);
 
   // Calling dbus to get system AEC supported flag.
   void GetSystemAecSupported();
@@ -1040,6 +1054,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   cras::DisplayRotation display_rotation_ = cras::DisplayRotation::ROTATE_0;
 
   int num_stream_ignore_ui_gains_ = 0;
+
+  int32_t num_arc_streams_ = 0;
 
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 };

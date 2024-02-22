@@ -5706,6 +5706,10 @@ const char kArcExternalStorageAccessDescription[] =
     "Allow Android apps to access external storage devices like USB flash "
     "drives and SD cards";
 
+const char kArcUnthrottleOnActiveAudioName[] = "Unthrottle ARC on active audio";
+const char kArcUnthrottleOnActiveAudioDescription[] =
+    "Do not throttle ARC when there is an active audio stream running.";
+
 const char kAshEnableUnifiedDesktopName[] = "Unified desktop mode";
 const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "

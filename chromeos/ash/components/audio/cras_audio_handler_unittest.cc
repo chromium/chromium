@@ -240,6 +240,14 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     return nonchrome_output_stopped_change_count_;
   }
 
+  int number_of_arc_stream_changed_latest_value() const {
+    return number_of_arc_stream_changed_latest_value_;
+  }
+
+  int number_of_arc_stream_changed_count() const {
+    return number_of_arc_stream_changed_count_;
+  }
+
   int survey_triggerd_count() const { return survey_triggerd_count_; }
 
   const CrasAudioHandler::AudioSurvey& survey_triggerd_recv() const {
@@ -316,6 +324,11 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     }
   }
 
+  void OnNumberOfArcStreamsChanged(int32_t num) override {
+    ++number_of_arc_stream_changed_count_;
+    number_of_arc_stream_changed_latest_value_ = num;
+  }
+
  private:
   int active_output_node_changed_count_ = 0;
   int active_input_node_changed_count_ = 0;
@@ -331,6 +344,8 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int output_stopped_change_count_ = 0;
   int nonchrome_output_stopped_change_count_ = 0;
   int nonchrome_output_started_change_count_ = 0;
+  int number_of_arc_stream_changed_latest_value_ = 0;
+  int number_of_arc_stream_changed_count_ = 0;
   int survey_triggerd_count_ = 0;
   CrasAudioHandler::AudioSurvey survey_triggerd_recv_;
 };
@@ -1085,6 +1100,36 @@ TEST_P(CrasAudioHandlerTest, NumberNonChromeOutputs) {
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 2);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
   EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 2);
+}
+
+TEST_P(CrasAudioHandlerTest, NumberArcStreams) {
+  AudioNodeList audio_nodes =
+      GenerateAudioNodeList({kInternalSpeaker, kHDMIOutput});
+  SetUpCrasAudioHandler(audio_nodes);
+  // start at 0.
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 0);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 0);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 0);
+  // Go up to 1.
+  fake_cras_audio_client()->SetNumberOfArcStreams(1);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 1);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 1);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 1);
+  // Go up to 2.
+  fake_cras_audio_client()->SetNumberOfArcStreams(2);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 2);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 2);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 2);
+  // Stay at 2, no callback expected.
+  fake_cras_audio_client()->SetNumberOfArcStreams(2);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 2);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 2);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 2);
+  // Down to 0
+  fake_cras_audio_client()->SetNumberOfArcStreams(0);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 0);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 3);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 0);
 }
 
 TEST_P(CrasAudioHandlerTest, InitializeWithHDMIOutput) {

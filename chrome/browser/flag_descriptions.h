@@ -3290,6 +3290,9 @@ extern const char kArcEnableVirtioBlkForDataDesc[];
 extern const char kArcExternalStorageAccessName[];
 extern const char kArcExternalStorageAccessDescription[];
 
+extern const char kArcUnthrottleOnActiveAudioName[];
+extern const char kArcUnthrottleOnActiveAudioDescription[];
+
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 
