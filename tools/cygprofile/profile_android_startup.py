@@ -191,8 +191,15 @@ class AndroidProfileTool:
   _WPR_ARCHIVE = os.path.join(
       os.path.dirname(__file__), 'memory_top_10_mobile_000.wprgo')
 
-  def __init__(self, output_directory, host_profile_dir, use_wpr, urls,
-               simulate_user, device, debug=False):
+  def __init__(self,
+               output_directory,
+               host_profile_dir,
+               use_wpr,
+               urls,
+               simulate_user,
+               device,
+               debug=False,
+               verbosity=0):
     """Constructor.
 
     Args:
@@ -205,6 +212,7 @@ class AndroidProfileTool:
       device: (DeviceUtils) Android device selected to be used to
                             generate orderfile.
       debug: (bool) Use simpler, non-representative debugging profile.
+      verbosity: (int) The number of -v to pass to telemetry calls.
     """
     assert device, 'Expected a valid device'
     self._device = device
@@ -215,6 +223,7 @@ class AndroidProfileTool:
     self._urls = urls
     self._simulate_user = simulate_user
     self._debug = debug
+    self._verbosity = verbosity
     self._SetUpDevice()
     self._pregenerated_profiles = None
 
@@ -313,11 +322,12 @@ class AndroidProfileTool:
       logging.info('Using reduced debugging profile')
       profile_benchmark = 'orderfile_generation.debugging'
     self._SetUpDeviceFolders()
-    self._RunCommand(['tools/perf/run_benchmark',
-                      '--device={}'.format(self._device.serial),
-                      '--browser=exact',
-                      '--browser-executable={}'.format(apk),
-                      profile_benchmark])
+    cmd = [
+        'tools/perf/run_benchmark', '--device', self._device.serial,
+        '--browser=exact', '--browser-executable', apk, profile_benchmark
+    ] + ['-v'] * self._verbosity
+    logging.debug('Running telemetry command: %s', cmd)
+    self._RunCommand(cmd)
     data = self._PullProfileData()
     self._DeleteDeviceData()
     return data

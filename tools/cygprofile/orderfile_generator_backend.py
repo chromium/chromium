@@ -583,8 +583,14 @@ class OrderfileGenerator:
       simulate_user = options.simulate_user
       device = self._SetDevice()
       self._profiler = profile_android_startup.AndroidProfileTool(
-          output_directory, host_profile_dir, use_wpr, urls, simulate_user,
-          device, debug=self._options.streamline_for_debugging)
+          output_directory,
+          host_profile_dir,
+          use_wpr,
+          urls,
+          simulate_user,
+          device,
+          debug=self._options.streamline_for_debugging,
+          verbosity=self._options.verbosity)
       if options.pregenerated_profiles:
         self._profiler.SetPregeneratedProfiles(
             glob.glob(options.pregenerated_profiles))
@@ -820,15 +826,13 @@ class OrderfileGenerator:
     self._step_recorder.BeginStep("Running orderfile.memory_mobile")
     try:
       out_dir = tempfile.mkdtemp()
-      self._profiler._RunCommand(['tools/perf/run_benchmark',
-                                  '--device={}'.format(
-                                      self._profiler._device.serial),
-                                  '--browser=exact',
-                                  '--output-format=csv',
-                                  '--output-dir={}'.format(out_dir),
-                                  '--reset-results',
-                                  '--browser-executable={}'.format(apk),
-                                  'orderfile.memory_mobile'])
+      cmd = [
+          'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
+          '--browser=exact', '--output-format=csv', '--output-dir', out_dir,
+          '--reset-results', '--browser-executable', apk,
+          'orderfile.memory_mobile'
+      ] + ['-v'] * self._options.verbosity
+      self._profiler._RunCommand(cmd)
 
       out_file_path = os.path.join(out_dir, 'results.csv')
       if not os.path.exists(out_file_path):
@@ -871,15 +875,13 @@ class OrderfileGenerator:
     self._step_recorder.BeginStep("Running Speedometer2.0.")
     try:
       out_dir = tempfile.mkdtemp()
-      self._profiler._RunCommand(['tools/perf/run_benchmark',
-                                  '--device={}'.format(
-                                      self._profiler._device.serial),
-                                  '--browser=exact',
-                                  '--output-format=histograms',
-                                  '--output-dir={}'.format(out_dir),
-                                  '--reset-results',
-                                  '--browser-executable={}'.format(apk),
-                                  'speedometer2'])
+      cmd = [
+          'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
+          '--browser=exact', '--output-format=histograms', '--output-dir',
+          out_dir, '--reset-results', '--browser-executable', apk,
+          'speedometer2'
+      ] + ['-v'] * self._options.verbosity
+      self._profiler._RunCommand(cmd)
 
       out_file_path = os.path.join(out_dir, 'histograms.json')
       if not os.path.exists(out_file_path):
@@ -1160,6 +1162,13 @@ def CreateArgumentParser():
                             'checkout; performs no other action'))
   parser.add_argument('--use-call-graph', action='store_true', default=False,
                       help='Use call graph instrumentation.')
+  parser.add_argument('-v',
+                      '--verbose',
+                      dest='verbosity',
+                      action='count',
+                      default=0,
+                      help='>=1 to print debug logging, this will also be '
+                      'passed to run_benchmark calls.')
   profile_android_startup.AddProfileCollectionArguments(parser)
   return parser
 
@@ -1174,7 +1183,11 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   Returns:
     True iff success.
   """
-  logging.basicConfig(level=logging.INFO)
+  if options.verbosity >= 1:
+    level = logging.DEBUG
+  else:
+    level = logging.INFO
+  logging.basicConfig(level=level)
   devil_chromium.Initialize(adb_path=options.adb_path)
 
   generator = OrderfileGenerator(options, orderfile_updater_class)
