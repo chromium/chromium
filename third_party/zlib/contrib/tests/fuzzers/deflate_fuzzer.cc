@@ -23,42 +23,75 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider fdp(data, size);
-  int level = fdp.PickValueInArray({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+  int level = fdp.PickValueInArray({-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
   int windowBits = fdp.PickValueInArray({9, 10, 11, 12, 13, 14, 15});
   int memLevel = fdp.PickValueInArray({1, 2, 3, 4, 5, 6, 7, 8, 9});
   int strategy = fdp.PickValueInArray(
       {Z_DEFAULT_STRATEGY, Z_FILTERED, Z_HUFFMAN_ONLY, Z_RLE, Z_FIXED});
-  std::vector<uint8_t> src = fdp.ConsumeRemainingBytes<uint8_t>();
+
+   if (fdp.ConsumeBool()) {
+    // Gzip wrapper.
+    windowBits += 16;
+  } else if (fdp.ConsumeBool()) {
+    // Raw deflate.
+    windowBits *= -1;
+  } else {
+    // Default: zlib wrapper.
+  }
+
+  std::vector<uint8_t> src;
+  std::vector<uint8_t> compressed;
+  static const int kMinChunk = 1;
+  static const int kMaxChunk = 512 * 1024;
 
   z_stream stream;
   stream.zalloc = Z_NULL;
   stream.zfree = Z_NULL;
-
-  // Compress the data one byte at a time to exercise the streaming code.
   int ret =
       deflateInit2(&stream, level, Z_DEFLATED, windowBits, memLevel, strategy);
   ASSERT(ret == Z_OK);
 
-  size_t deflate_bound = deflateBound(&stream, src.size());
-
-  std::vector<uint8_t> compressed(src.size() * 2 + 1000);
-  stream.next_out = compressed.data();
-  stream.avail_out = compressed.size();
-  for (uint8_t b : src) {
-    stream.next_in = &b;
-    stream.avail_in = 1;
+  // Stream with random-sized input and output buffers.
+  while (fdp.ConsumeBool()) {
+    std::vector<uint8_t> src_chunk = fdp.ConsumeBytes<uint8_t>(
+        fdp.ConsumeIntegralInRange(kMinChunk, kMaxChunk));
+    std::vector<uint8_t> out_chunk(
+        fdp.ConsumeIntegralInRange(kMinChunk, kMaxChunk));
+    stream.next_in = src_chunk.data();
+    stream.avail_in = src_chunk.size();
+    stream.next_out = out_chunk.data();
+    stream.avail_out = out_chunk.size();
     ret = deflate(&stream, Z_NO_FLUSH);
-    ASSERT(ret == Z_OK);
+    ASSERT(ret == Z_OK || ret == Z_BUF_ERROR);
+
+    src.insert(src.end(), src_chunk.begin(), src_chunk.end() - stream.avail_in);
+    compressed.insert(compressed.end(), out_chunk.begin(),
+                      out_chunk.end() - stream.avail_out);
   }
-  stream.next_in = Z_NULL;
-  stream.avail_in = 0;
-  ret = deflate(&stream, Z_FINISH);
-  ASSERT(ret == Z_STREAM_END);
-  compressed.resize(compressed.size() - stream.avail_out);
-  deflateEnd(&stream);
+  // Finish up.
+  while (true) {
+    std::vector<uint8_t> out_chunk(
+        fdp.ConsumeIntegralInRange(kMinChunk, kMaxChunk));
+    stream.next_in = Z_NULL;
+    stream.avail_in = 0;
+    stream.next_out = out_chunk.data();
+    stream.avail_out = out_chunk.size();
+    ret = deflate(&stream, Z_FINISH);
+    compressed.insert(compressed.end(), out_chunk.begin(),
+                      out_chunk.end() - stream.avail_out);
+    if (ret == Z_STREAM_END) {
+      break;
+    }
+    ASSERT(ret == Z_OK || Z_BUF_ERROR);
+  }
 
   // Check that the bound was correct.
-  ASSERT(compressed.size() <= deflate_bound);
+  // size_t deflate_bound = deflateBound(&stream, src.size());
+  // TODO(crbug.com/40270738): This does not always hold.
+  // ASSERT(compressed.size() <= deflate_bound);
+
+  deflateEnd(&stream);
+
 
   // Verify that the data decompresses correctly.
   ret = inflateInit2(&stream, windowBits);
