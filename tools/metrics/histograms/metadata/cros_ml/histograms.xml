@@ -186,8 +186,10 @@ chromium-metrics-reviews@google.com.
   <owner>dgrebenyuk@chromium.org</owner>
   <owner>nbowe@chromium.org</owner>
   <summary>
-    The final detailed error code received from DLC Service after the completion
-    of a request to install the ML Core DLC.
+    The detailed error code received from DLC Service after a DLC State Change
+    notification from DLC Service, following a request to install the ML Core
+    DLC. &quot;BUSY&quot; code is considered non-final as retries are made in
+    this case.
   </summary>
 </histogram>
 

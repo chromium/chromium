@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unrecognized DLC error code"/>
   <int value="1" label="NONE (No error)"/>
   <int value="2" label="INTERNAL"/>
-  <int value="3" label="BUSY"/>
+  <int value="3" label="BUSY (Not terminal: retry is possible)"/>
   <int value="4" label="NEED_REBOOT"/>
   <int value="5" label="INVALID_DLC"/>
   <int value="6" label="ALLOCATION"/>
