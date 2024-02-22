@@ -43,6 +43,8 @@ class LocalHttpServer:
         super().__init__()
         self.__http_server = http_server
 
+        http_server.clear()
+
         self.__start_time = datetime.now()
 
         def html_doc(content):
