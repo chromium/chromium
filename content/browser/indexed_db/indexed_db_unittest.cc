@@ -1595,19 +1595,6 @@ TEST_P(IndexedDBTest, CloseSequenceStarts) {
   VerifyBucketContext(bucket_id, /*expected_context_exists=*/false);
 }
 
-TEST_P(IndexedDBTest, ImmediateClose) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      kIDBCloseImmediatelySwitch);
-  IndexedDBBucketContextHandle bucket_context_handle = CreateBucketHandle();
-  const storage::BucketId bucket_id =
-      bucket_context_handle->bucket_locator().id;
-  bucket_context_handle.Release();
-
-  VerifyBucketContext(bucket_id, /*expected_context_exists=*/true);
-  RunPostedTasks();
-  VerifyBucketContext(bucket_id, /*expected_context_exists=*/false);
-}
-
 // Similar to the above, but installs a receiver which prevents the bucket
 // context from being destroyed.
 TEST_P(IndexedDBTest, CloseWithReceiversActive) {

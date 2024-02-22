@@ -1105,9 +1105,7 @@ void IndexedDBBucketContext::StartClosing() {
   DCHECK(CanClose());
   DCHECK(!IsClosing());
 
-  if (skip_closing_sequence_ ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kIDBCloseImmediatelySwitch)) {
+  if (skip_closing_sequence_) {
     CloseNow();
     return;
   }

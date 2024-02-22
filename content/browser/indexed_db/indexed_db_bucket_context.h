@@ -52,8 +52,6 @@ class IndexedDBDatabase;
 class IndexedDBDataItemReader;
 class IndexedDBPreCloseTaskQueue;
 
-constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
-
 // IndexedDBBucketContext manages the per-bucket IndexedDB state, and other
 // important context like the backing store and lock manager.
 //
