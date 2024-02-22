@@ -19,11 +19,12 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/stateless/utils.h"
+#include "media/media_buildflags.h"
 
 // This has not been accepted upstream.
 #ifndef V4L2_PIX_FMT_AV1
@@ -38,6 +39,51 @@
 namespace media {
 
 namespace {
+
+std::string IoctlToString(uint64_t request) {
+#define IOCTL_TO_STR(i) \
+  case i:               \
+    return #i;
+
+  switch (request) {
+    IOCTL_TO_STR(VIDIOC_DECODER_CMD)
+    IOCTL_TO_STR(VIDIOC_DQBUF)
+    IOCTL_TO_STR(VIDIOC_DQEVENT)
+    IOCTL_TO_STR(VIDIOC_ENCODER_CMD)
+    IOCTL_TO_STR(VIDIOC_ENUM_FMT)
+    IOCTL_TO_STR(VIDIOC_ENUM_FRAMESIZES)
+    IOCTL_TO_STR(VIDIOC_EXPBUF)
+    IOCTL_TO_STR(VIDIOC_G_CROP)
+    IOCTL_TO_STR(VIDIOC_G_EXT_CTRLS)
+    IOCTL_TO_STR(VIDIOC_G_FMT)
+    IOCTL_TO_STR(VIDIOC_G_PARM)
+    IOCTL_TO_STR(VIDIOC_G_SELECTION)
+    IOCTL_TO_STR(VIDIOC_QBUF)
+    IOCTL_TO_STR(VIDIOC_QUERYBUF)
+    IOCTL_TO_STR(VIDIOC_QUERYCAP)
+    IOCTL_TO_STR(VIDIOC_QUERYCTRL)
+    IOCTL_TO_STR(VIDIOC_QUERYMENU)
+    IOCTL_TO_STR(VIDIOC_QUERY_EXT_CTRL)
+    IOCTL_TO_STR(VIDIOC_REQBUFS)
+    IOCTL_TO_STR(VIDIOC_STREAMOFF)
+    IOCTL_TO_STR(VIDIOC_STREAMON)
+    IOCTL_TO_STR(VIDIOC_SUBSCRIBE_EVENT)
+    IOCTL_TO_STR(VIDIOC_S_CROP)
+    IOCTL_TO_STR(VIDIOC_S_CTRL)
+    IOCTL_TO_STR(VIDIOC_S_EXT_CTRLS)
+    IOCTL_TO_STR(VIDIOC_S_FMT)
+    IOCTL_TO_STR(VIDIOC_S_PARM)
+    IOCTL_TO_STR(VIDIOC_S_SELECTION)
+    IOCTL_TO_STR(VIDIOC_TRY_DECODER_CMD)
+    IOCTL_TO_STR(VIDIOC_TRY_ENCODER_CMD)
+    IOCTL_TO_STR(VIDIOC_TRY_FMT)
+    IOCTL_TO_STR(VIDIOC_UNSUBSCRIBE_EVENT)
+  }
+
+  return "unknown";
+
+#undef IOCTL_TO_STR
+}
 
 // Helper functions for translating between V4L2 structs that should not
 // be included in the header and external structs that are shared.

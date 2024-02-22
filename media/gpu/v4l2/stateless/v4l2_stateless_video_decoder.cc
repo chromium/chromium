@@ -17,7 +17,6 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/stateless/h264_delegate.h"
 #include "media/gpu/v4l2/stateless/h265_delegate.h"
-#include "media/gpu/v4l2/stateless/utils.h"
 #include "media/gpu/v4l2/stateless/vp8_delegate.h"
 #include "media/gpu/v4l2/stateless/vp9_delegate.h"
 #include "media/gpu/v4l2/v4l2_status.h"
