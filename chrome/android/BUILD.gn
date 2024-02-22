@@ -750,6 +750,9 @@ if (current_toolchain == default_toolchain) {
       # the bundled version of Guava is not shadowed by the one in android_deps.
       # https://crbug.com/325425527
       "//third_party/android_deps:dagger_processor",
+    ]
+    annotation_processor_deps += [
+      # Adding non-dagger annotation_processor_deps here prevents auto-sorting
       "//components/module_installer/android:module_interface_processor",
     ]
 
