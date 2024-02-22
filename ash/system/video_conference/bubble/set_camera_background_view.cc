@@ -101,10 +101,16 @@ gfx::ImageSkia ConstrainedScaleAndCrop(const SkBitmap& bitmap,
   const auto new_size =
       gfx::ScaleToCeiledSize(gfx::Size(bitmap_width, bitmap_height), ratio);
 
+  // target_area is a cropped area from the center.
+  const auto target_area =
+      SkIRect::MakeXYWH((new_size.width() - expected_width) / 2,
+                        (new_size.height() - expected_height) / 2,
+                        expected_width, expected_height);
+
   // Resize and only take the expected_size.
   auto resized = skia::ImageOperations::Resize(
       bitmap, skia::ImageOperations::RESIZE_LANCZOS3, new_size.width(),
-      new_size.height(), SkIRect::MakeWH(expected_width, expected_height));
+      new_size.height(), target_area);
 
   return gfx::ImageSkia::CreateFrom1xBitmap(resized);
 }
