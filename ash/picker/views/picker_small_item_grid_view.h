@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/picker/views/picker_traversable_item_container.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -20,7 +21,9 @@ class PickerEmoticonItemView;
 
 // Container view for the small items in a section, which can include emoji,
 // symbol and emoticon items. These are displayed in a grid of rows.
-class ASH_EXPORT PickerSmallItemGridView : public views::View {
+class ASH_EXPORT PickerSmallItemGridView
+    : public views::View,
+      public PickerTraversableItemContainer {
   METADATA_HEADER(PickerSmallItemGridView, views::View)
 
  public:
@@ -28,6 +31,14 @@ class ASH_EXPORT PickerSmallItemGridView : public views::View {
   PickerSmallItemGridView(const PickerSmallItemGridView&) = delete;
   PickerSmallItemGridView& operator=(const PickerSmallItemGridView&) = delete;
   ~PickerSmallItemGridView() override;
+
+  // PickerTraversableItemContainer:
+  PickerItemView* GetTopItem() override;
+  PickerItemView* GetBottomItem() override;
+  PickerItemView* GetItemAbove(const PickerItemView* item) override;
+  PickerItemView* GetItemBelow(const PickerItemView* item) override;
+  PickerItemView* GetItemLeftOf(const PickerItemView* item) override;
+  PickerItemView* GetItemRightOf(const PickerItemView* item) override;
 
   PickerEmojiItemView* AddEmojiItem(
       std::unique_ptr<PickerEmojiItemView> emoji_item);
@@ -39,6 +50,10 @@ class ASH_EXPORT PickerSmallItemGridView : public views::View {
  private:
   PickerItemView* AddSmallGridItem(
       std::unique_ptr<PickerItemView> small_grid_item);
+
+  // Returns the row containing `item`, or nullptr if `item` is not part of this
+  // grid.
+  const views::View* GetRowContaining(const PickerItemView* item) const;
 
   int grid_width_ = 0;
 };
