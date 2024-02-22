@@ -73,9 +73,7 @@ void LogRegexShadowPredictions(const AutofillField& field) {
 }
 
 void LogMlShadowPredictions(const AutofillField& field) {
-#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  return;
-#endif
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
     return;
   }
@@ -105,6 +103,7 @@ void LogMlShadowPredictions(const AutofillField& field) {
           field.heuristic_type(HeuristicSource::kLegacy),
           field.heuristic_type(HeuristicSource::kMachineLearning),
           submitted_types));
+#endif
 }
 
 }  // namespace
