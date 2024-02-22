@@ -78,14 +78,14 @@ void PointerArithmetic() {
   struct {} s;
   ptr1 += s;                           // expected-error@*:* {{no viable overloaded '+='}}
   ptr1 -= s;                           // expected-error@*:* {{no viable overloaded '-='}}
-  PtrCanDoArithmetic ptr2 = ptr1 + s;  // expected-error@*:* {{no viable overloaded '+='}}
-  ptr2 = ptr1 - s;                     // expected-error@*:* {{no viable overloaded '-='}}
+  PtrCanDoArithmetic ptr2 = ptr1 + s;  // expected-error@*:* {{no matching function for call to 'Advance'}}
+  ptr2 = ptr1 - s;                     // expected-error@*:* {{no matching function for call to 'Retreat'}}
 
 #if !BUILDFLAG(HAS_64_BIT_POINTERS)
   ptr1 += uint64_t{2};        // expected-error@*:* {{no viable overloaded '+='}}
   ptr1 -= uint64_t{2};        // expected-error@*:* {{no viable overloaded '-='}}
-  ptr2 = ptr1 + uint64_t{2};  // expected-error@*:* {{no viable overloaded '+='}}
-  ptr2 = ptr1 - uint64_t{2};  // expected-error@*:* {{no viable overloaded '-='}}
+  ptr2 = ptr1 + uint64_t{2};  // expected-error@*:* {{no matching function for call to 'Advance'}}
+  ptr2 = ptr1 - uint64_t{2};  // expected-error@*:* {{no matching function for call to 'Retreat'}}
 #endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
 }
 
@@ -96,10 +96,10 @@ void PointerArithmeticDisabled() {
   ptr_a1--;                            // expected-error@*:* {{cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.}}
   ++ptr_a1;                            // expected-error@*:* {{cannot increment raw_ptr unless AllowPtrArithmetic trait is present.}}
   --ptr_a1;                            // expected-error@*:* {{cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.}}
-  raw_ptr<TypeA> ptr_a2 = ptr_a1 + 1;  // expected-error@*:* {{cannot increment raw_ptr unless AllowPtrArithmetic trait is present.}}
-  ptr_a2 = ptr_a1 - 1;                 // expected-error@*:* {{cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.}}
+  raw_ptr<TypeA> ptr_a2 = ptr_a1 + 1;  // expected-error@*:* {{cannot add to raw_ptr unless AllowPtrArithmetic trait is present.}}
+  ptr_a2 = ptr_a1 - 1;                 // expected-error@*:* {{cannot subtract from raw_ptr unless AllowPtrArithmetic trait is present.}}
   raw_ptr<TypeB> ptr_b1 = new TypeB();
-  raw_ptr<TypeB> ptr_b2 = 1 + ptr_b1;  // expected-error@*:* {{cannot increment raw_ptr unless AllowPtrArithmetic trait is present.}}
+  raw_ptr<TypeB> ptr_b2 = 1 + ptr_b1;  // expected-error@*:* {{cannot add to raw_ptr unless AllowPtrArithmetic trait is present.}}
   ptr_b2 - ptr_b1;                     // expected-error@*:* {{cannot subtract raw_ptrs unless AllowPtrArithmetic trait is present.}}
 }
 

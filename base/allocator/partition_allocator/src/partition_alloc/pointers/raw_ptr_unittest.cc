@@ -1750,6 +1750,7 @@ TEST_F(BackupRefPtrTest, QuarantinedBytes) {
 void RunBackupRefPtrImplAdvanceTest(
     partition_alloc::PartitionAllocator& allocator,
     size_t requested_size) {
+#if BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
   char* ptr = static_cast<char*>(allocator.root()->Alloc(requested_size));
   raw_ptr<char, AllowPtrArithmetic> protected_ptr = ptr;
   protected_ptr += 123;
@@ -1804,6 +1805,7 @@ void RunBackupRefPtrImplAdvanceTest(
 
   protected_ptr = nullptr;
   allocator.root()->Free(ptr);
+#endif  // BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
 }
 
 TEST_F(BackupRefPtrTest, Advance) {
@@ -1897,6 +1899,7 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
 volatile char g_volatile_char_to_ignore;
 
 TEST_F(BackupRefPtrTest, IndexOperator) {
+#if BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
   size_t requested_size = GetRequestSizeThatFills512BSlot();
   char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size));
   {
@@ -1911,6 +1914,7 @@ TEST_F(BackupRefPtrTest, IndexOperator) {
 #endif
   }
   allocator_.root()->Free(ptr);
+#endif  // BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
 }
 
 bool IsQuarantineEmpty(partition_alloc::PartitionAllocator& allocator) {

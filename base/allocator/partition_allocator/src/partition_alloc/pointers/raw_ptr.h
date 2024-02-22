@@ -639,14 +639,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
-    wrapped_ptr_ = Impl::Advance(wrapped_ptr_, 1);
+    wrapped_ptr_ = Impl::Advance(wrapped_ptr_, 1, true);
     return *this;
   }
   PA_ALWAYS_INLINE constexpr raw_ptr& operator--() {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.");
-    wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, 1);
+    wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, 1, true);
     return *this;
   }
   PA_ALWAYS_INLINE constexpr raw_ptr operator++(int /* post_increment */) {
@@ -672,7 +672,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
-    wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
+    wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems, true);
     return *this;
   }
   template <
@@ -682,7 +682,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.");
-    wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, delta_elems);
+    wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, delta_elems, true);
     return *this;
   }
 
@@ -698,7 +698,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     // Call SafelyUnwrapPtrForDereference() to simulate what GetForDereference()
     // does, but without creating a temporary.
     return *Impl::SafelyUnwrapPtrForDereference(
-        Impl::Advance(wrapped_ptr_, delta_elems));
+        Impl::Advance(wrapped_ptr_, delta_elems, false));
   }
 
   // Do not disable operator+() and operator-().
@@ -717,10 +717,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(const raw_ptr& p,
                                                       Z delta_elems) {
-    // Don't check for AllowPtrArithmetic here, as operator+= already does that,
-    // and we'd get double errors.
-    raw_ptr result = p;
-    return result += delta_elems;
+    // Don't check `is_offset_type<Z>` here, as existence of `Advance` is
+    // already gated on that, and we'd get double errors.
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot add to raw_ptr unless AllowPtrArithmetic trait is present.");
+    raw_ptr result = Impl::Advance(p.wrapped_ptr_, delta_elems, false);
+    return result;
   }
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(Z delta_elems,
@@ -730,10 +733,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator-(const raw_ptr& p,
                                                       Z delta_elems) {
-    // Don't check for AllowPtrArithmetic here, as operator-= already does that,
-    // and we'd get double errors.
-    raw_ptr result = p;
-    return result -= delta_elems;
+    // Don't check `is_offset_type<Z>` here, as existence of `Retreat` is
+    // already gated on that, and we'd get double errors.
+    static_assert(raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+                  "cannot subtract from raw_ptr unless AllowPtrArithmetic "
+                  "trait is present.");
+    raw_ptr result = Impl::Retreat(p.wrapped_ptr_, delta_elems, false);
+    return result;
   }
 
   // The "Do not disable operator+() and operator-()" comment above doesn't

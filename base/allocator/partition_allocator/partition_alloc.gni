@@ -216,10 +216,14 @@ declare_args() {
   # to go through build_overrides
   enable_dangling_raw_ptr_perf_experiment = false
 
-  # Set to `enable_backup_ref_ptr_support && has_64_bit_pointers` when enabling.
-  backup_ref_ptr_poison_oob_ptr = false
-
   enable_backup_ref_ptr_instance_tracer = false
+
+  backup_ref_ptr_extra_oob_checks = enable_backup_ref_ptr_support
+}
+
+declare_args() {
+  backup_ref_ptr_poison_oob_ptr =
+      false && backup_ref_ptr_extra_oob_checks && has_64_bit_pointers
 }
 
 declare_args() {
@@ -293,12 +297,16 @@ assert(
     enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_perf_experiment,
     "Missing dangling pointer checks feature for its performance experiment")
 
+# To enable extra OOB checks for BackupRefPtr, the underlying feature must be
+# enabled, too.
+assert(enable_backup_ref_ptr_support || !backup_ref_ptr_extra_oob_checks,
+       "Can't enable extra OOB checks if BackupRefPtr isn't enabled at all")
+
 # To poison OOB pointers for BackupRefPtr, the underlying feature must be
 # enabled, too.
-assert(
-    enable_backup_ref_ptr_support || !backup_ref_ptr_poison_oob_ptr,
-    "Can't enable poisoning for OOB pointers if BackupRefPtr isn't enabled " +
-        "at all")
+assert(backup_ref_ptr_extra_oob_checks || !backup_ref_ptr_poison_oob_ptr,
+       "Can't enable poisoning for OOB pointers if OOB checks aren't enabled " +
+           "at all")
 assert(has_64_bit_pointers || !backup_ref_ptr_poison_oob_ptr,
        "Can't enable poisoning for OOB pointers if pointers are only 32-bit")
 
