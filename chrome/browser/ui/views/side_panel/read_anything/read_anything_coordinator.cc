@@ -151,7 +151,10 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
-  extension_loader_->RemoveA11yHelperExtensionForReadingMode();
+  if (extension_loader_) {
+    extension_loader_->RemoveA11yHelperExtensionForReadingMode();
+    extension_loader_ = nullptr;
+  }
 
   // Inform observers when |this| is destroyed so they can do their own cleanup.
   for (Observer& obs : observers_) {
