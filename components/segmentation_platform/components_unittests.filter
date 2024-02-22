@@ -83,5 +83,6 @@
 *UkmObserverTest.*
 *UkmUrlTableTest.*
 *UmaFeatureProcessorTest.*
+*UmaMetricsTableTest.*
 *UrlSignalHandlerTest.*
 *UserActionSignalHandlerTest.*

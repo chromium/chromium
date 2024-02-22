@@ -12,6 +12,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
+#include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
 namespace segmentation_platform {
@@ -37,16 +39,7 @@ class SignalDatabase {
                            std::optional<int32_t> value,
                            SuccessCallback callback) = 0;
 
-  // Represents an entry in the signal database.
-  struct DbEntry {
-    proto::SignalType type;
-    // Hash of the histogram or user action.
-    uint64_t name_hash;
-    // Sample recorded time.
-    base::Time time;
-    // Sample value, always 0 for user actions.
-    int32_t value;
-  };
+  using DbEntry = UmaMetricEntry;
   using EntriesCallback = base::OnceCallback<void(std::vector<DbEntry>)>;
 
   // Called to get signals collected between any two timestamps (including both

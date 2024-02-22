@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,6 +34,21 @@ UkmMetricsTable::MetricsRow GetMetricsRowWithQuery(sql::Statement& statement) {
   if (base::HexStringToUInt64(statement.ColumnString(6), &metric_hash))
     row.metric_hash = UkmMetricHash::FromUnsafeValue(metric_hash);
   row.metric_value = statement.ColumnInt64(7);
+  return row;
+}
+
+UmaMetricEntry GetUmaMetricsRowWithQuery(sql::Statement& statement) {
+  DCHECK(statement.is_valid());
+  DCHECK_EQ(statement.ColumnCount(), 6);
+
+  UmaMetricEntry row;
+  row.time = statement.ColumnTime(1);
+  row.type = static_cast<proto::SignalType>(statement.ColumnInt64(3));
+  uint64_t metric_hash = 0;
+  if (base::HexStringToUInt64(statement.ColumnString(4), &metric_hash)) {
+    row.name_hash = metric_hash;
+  }
+  row.value = statement.ColumnInt64(5);
   return row;
 }
 
@@ -91,6 +107,39 @@ void AssertUrlsInTable(sql::Database& db, const std::vector<UrlMatcher>& urls) {
   }
 
   EXPECT_THAT(actual_rows, UnorderedElementsAreArray(urls));
+}
+
+std::vector<UmaMetricEntry> GetUmaMetricsRowWithQuery(base::StringPiece query,
+                                                      sql::Database& db) {
+  sql::Statement statement(db.GetUniqueStatement(query.data()));
+  std::vector<UmaMetricEntry> rows;
+  while (statement.Step()) {
+    rows.emplace_back(GetUmaMetricsRowWithQuery(statement));
+  }
+  return rows;
+}
+
+std::vector<UmaMetricEntry> GetAllUmaMetrics(sql::Database& db) {
+  return GetUmaMetricsRowWithQuery("SELECT * FROM uma_metrics ORDER BY id", db);
+}
+
+void ExpectUmaRowIsEqual(const UmaMetricEntry& row1,
+                         const UmaMetricEntry& row2) {
+  EXPECT_EQ(row1.name_hash, row2.name_hash);
+  EXPECT_EQ(row1.time, row2.time);
+  EXPECT_EQ(row1.type, row2.type);
+  EXPECT_EQ(row1.value, row2.value);
+}
+
+void AssertRowsInUmaMetricsTable(sql::Database& db,
+                                 const std::vector<UmaMetricEntry>& rows) {
+  auto actual_rows = GetAllUmaMetrics(db);
+  ASSERT_EQ(actual_rows.size(), rows.size());
+  auto it1 = actual_rows.begin();
+  auto it2 = rows.begin();
+  for (; it1 != actual_rows.end(); ++it1, ++it2) {
+    ExpectUmaRowIsEqual(*it1, *it2);
+  }
 }
 
 }  // namespace segmentation_platform::test_util

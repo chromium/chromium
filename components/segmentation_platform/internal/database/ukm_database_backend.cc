@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/database/ukm_url_table.h"
+#include "components/segmentation_platform/internal/database/uma_metrics_table.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -115,7 +116,8 @@ UkmDatabaseBackend::UkmDatabaseBackend(
       db_(sql::DatabaseOptions{.wal_mode = base::FeatureList::IsEnabled(
                                    kSqlWALModeOnSegmentationDatabase)}),
       metrics_table_(&db_),
-      url_table_(&db_) {
+      url_table_(&db_),
+      uma_metrics_table_(&db_) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   db_.set_histogram_tag("UKMMetrics");
   db_.set_error_callback(base::BindRepeating(&ErrorCallback));
@@ -146,7 +148,8 @@ void UkmDatabaseBackend::InitDatabase(SuccessCallback callback) {
     result = false;
   }
   if (result) {
-    result = metrics_table_.InitTable() && url_table_.InitTable();
+    result = metrics_table_.InitTable() && url_table_.InitTable() &&
+             uma_metrics_table_.InitTable();
   }
   status_ = result ? Status::INIT_SUCCESS : Status::INIT_FAILED;
 
@@ -263,6 +266,15 @@ void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls,
   RestartTransaction();
 }
 
+void UkmDatabaseBackend::AddUmaMetric(const std::string& profile_id,
+                                      const UmaMetricEntry& row) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+  uma_metrics_table_.AddUmaMetric(profile_id, row);
+}
+
 void UkmDatabaseBackend::RunReadonlyQueries(QueryList&& queries,
                                             QueryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -324,6 +336,7 @@ void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
       metrics_table_.DeleteEventsBeforeTimestamp(time);
   url_table_.RemoveUrls(deleted_urls);
   url_table_.DeleteUrlsBeforeTimestamp(time);
+  uma_metrics_table_.DeleteEventsBeforeTimestamp(time);
 
   // Force commit so that we don't store URLs longer than needed.
   RestartTransaction();

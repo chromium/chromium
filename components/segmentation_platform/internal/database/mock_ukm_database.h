@@ -31,6 +31,8 @@ class MockUkmDatabase : public UkmDatabase {
 
   MOCK_METHOD2(RemoveUrls, void(const std::vector<GURL>& urls, bool));
 
+  MOCK_METHOD2(AddUmaMetric, void(const std::string&, const UmaMetricEntry&));
+
   MOCK_METHOD2(RunReadonlyQueries,
                void(QueryList&& queries, QueryCallback callback));
 
