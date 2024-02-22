@@ -27,7 +27,6 @@ source_set("authentication") {
     ":authentication_constants",
     ":signin_presenter",
     "resources:signin_confirmation_more",
-    "resources:signin_promo_close_gray",
     "unified_consent",
     "//components/bookmarks/common",
     "//components/consent_auditor",

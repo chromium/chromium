@@ -11,6 +11,7 @@
 #import "build/branding_buildflags.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
@@ -68,8 +69,8 @@ const PromoStyleValues kCompactVerticalStyle = {
     42.0,  // kButtonTitleHorizontalContentInset
     9.0,   // kButtonTitleVerticalContentInset
     8.0,   // kButtonCornerRadius
-    -8.0,  // kCloseButtonTrailingMargin
-    8.0,   // kCloseButtonTopMargin
+    -9.0,  // kCloseButtonTrailingMargin
+    9.0,   // kCloseButtonTopMargin
     12.0,  // kMainPromoSubViewSpacing
     5.0,   // kButtonStackViewSubViewSpacing
 };
@@ -96,7 +97,7 @@ constexpr CGFloat kStackViewHorizontalPadding = 16.0;
 // Non-profile icon background corner radius.
 constexpr CGFloat kNonProfileIconCornerRadius = 14;
 // Size for the close button width and height.
-constexpr CGFloat kCloseButtonWidthHeight = 24;
+constexpr CGFloat kCloseButtonWidthHeight = 16;
 // Sizes of the signin promo image.
 constexpr CGFloat kProfileImageHeightWidth = 32.0;
 constexpr CGFloat kProfileImageCompactHeightWidth = 48.0;
@@ -231,8 +232,13 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     [_closeButton addTarget:self
                      action:@selector(onCloseButtonAction:)
            forControlEvents:UIControlEventTouchUpInside];
-    [_closeButton setImage:[UIImage imageNamed:@"signin_promo_close_gray"]
-                  forState:UIControlStateNormal];
+    UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+        configurationWithPointSize:kCloseButtonWidthHeight
+                            weight:UIImageSymbolWeightSemibold];
+    UIImage* closeButtonImage =
+        DefaultSymbolWithConfiguration(@"xmark", config);
+    [_closeButton setImage:closeButtonImage forState:UIControlStateNormal];
+    _closeButton.tintColor = [UIColor colorNamed:kTextTertiaryColor];
     _closeButton.hidden = YES;
     _closeButton.pointerInteractionEnabled = YES;
     [self addSubview:_closeButton];
