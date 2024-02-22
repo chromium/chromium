@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 
 namespace base::android {
+class MemoryPurgeManagerAndroid;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kOnPreFreezeMemoryTrim);
 
@@ -51,8 +52,13 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // possible immediately, before we are frozen.
   static void OnPreFreeze() LOCKS_EXCLUDED(lock_);
 
+  static bool IsRespectingModernTrim();
+
  private:
   friend class base::NoDestructor<PreFreezeBackgroundMemoryTrimmer>;
+  friend jboolean JNI_MemoryPurgeManager_IsOnPreFreezeMemoryTrimEnabled(
+      JNIEnv* env);
+  friend class base::android::MemoryPurgeManagerAndroid;
 
   // We use our own implementation here, based on |PostCancelableDelayedTask|,
   // rather than relying on something like |base::OneShotTimer|, since
@@ -87,8 +93,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static void UnregisterBackgroundTask(BackgroundTask*) LOCKS_EXCLUDED(lock_);
 
   void UnregisterBackgroundTaskInternal(BackgroundTask*) LOCKS_EXCLUDED(lock_);
-
-  static bool IsRespectingModernTrim();
 
   void PostDelayedBackgroundTaskInternal(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
