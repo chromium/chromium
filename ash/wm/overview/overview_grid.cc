@@ -15,7 +15,7 @@
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
-#include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/rotator/screen_rotation_animator.h"
@@ -155,6 +155,9 @@ constexpr int kFeedbackCornerSpacing = 30;
 // The minimum height of the grid area in order for the feedback button to be
 // visible.
 constexpr int kFeedbackGridMinHeight = 100;
+
+// The bottom padding applied to the bottom of the birch bar.
+constexpr int kBirchBarBottomPadding = 16;
 
 // Wait a while before unpausing the occlusion tracker after a scroll has
 // completed as the user may start another scroll.
@@ -504,6 +507,17 @@ bool ShouldImmediatelyInitDeskBar(OverviewGrid* grid) {
   return false;
 }
 
+// Returns true if the birch bar should be shown in current state.
+bool ShouldShowBirchBar(aura::Window* root_window) {
+  // The birch bar should not be shown in tablet mode or partial split view or
+  // the feature is disabled.
+  // TODO(http://b/325963519): remove the restriction of tablet mode when the
+  // design is finalized.
+  return features::IsForestFeatureEnabled() &&
+         !Shell::Get()->IsInTabletMode() &&
+         !SplitViewController::Get(root_window)->InSplitViewMode();
+}
+
 }  // namespace
 
 OverviewGrid::OverviewGrid(
@@ -617,12 +631,16 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     desks_widget_.reset();
     desks_bar_view_ = nullptr;
   }
+
+  DestroyBirchBarWidget();
 }
 
 void OverviewGrid::PrepareForOverview() {
   if (ShouldImmediatelyInitDeskBar(this)) {
     MaybeInitDesksWidget();
   }
+
+  MaybeInitBirchBarWidget();
 
   if (root_window_ == Shell::GetPrimaryRootWindow() &&
       overview_session_->enter_exit_overview_type() ==
@@ -1027,6 +1045,7 @@ void OverviewGrid::SetBoundsAndUpdatePositions(
   const bool bounds_updated = bounds_in_screen != bounds_;
   bounds_ = bounds_in_screen;
   MaybeUpdateDesksWidgetBounds();
+  MaybeUpdateBirchBarWidgetBounds();
   PositionWindows(animate, ignored_items);
 
   if (bounds_updated && saved_desk_library_widget_)
@@ -1089,6 +1108,19 @@ bool OverviewGrid::MaybeUpdateDesksWidgetBounds() {
     // See crbug.com/1056371 for more details.
     desks_bar_view_->InvalidateLayout();
     desks_widget_->SetBounds(desks_widget_bounds);
+    return true;
+  }
+  return false;
+}
+
+bool OverviewGrid::MaybeUpdateBirchBarWidgetBounds() {
+  if (!birch_bar_widget_) {
+    return false;
+  }
+
+  const gfx::Rect birch_bar_widget_bounds = GetBirchBarWidgetBounds();
+  if (birch_bar_widget_bounds != birch_bar_widget_->GetWindowBoundsInScreen()) {
+    birch_bar_widget_->SetBounds(birch_bar_widget_bounds);
     return true;
   }
   return false;
@@ -1206,8 +1238,9 @@ void OverviewGrid::OnDisplayMetricsChanged() {
 
 void OverviewGrid::OnUserWorkAreaInsetsChanged(aura::Window* root_window) {
   DCHECK_EQ(root_window, root_window_);
-  if (!desks_widget_)
+  if (!desks_widget_ && !birch_bar_widget_) {
     return;
+  }
 
   RefreshGridBounds(/*animate=*/false);
 }
@@ -1218,6 +1251,8 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
     return;
 
   MaybeInitDesksWidget();
+
+  MaybeInitBirchBarWidget();
 
   UpdateSaveDeskButtons();
 
@@ -1555,55 +1590,91 @@ bool OverviewGrid::IsDesksBarViewActive() const {
 }
 
 gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
-  // There's an edge case where is in tablet mode, there're more than one desk,
-  // after entering overview mode, deleting desks to just keep one, even though
-  // there's only one desk now in tablet mode, the desks bar will stay. That's
-  // why we need to check the existence of `desks_bar_view_` here.
-  if (!desks_bar_view_ && !desks_util::ShouldDesksBarBeCreated())
-    return bounds_;
-
   gfx::Rect effective_bounds = bounds_;
-  effective_bounds.Inset(gfx::Insets::TLBR(GetDesksBarHeight(), 0, 0, 0));
-  effective_bounds.Inset(GetGridEffectiveBoundsPaddings());
+  effective_bounds.Inset(GetGridHorizontalPaddings());
+  effective_bounds.Inset(GetGridVerticalPaddings());
+
   return effective_bounds;
 }
 
-gfx::Insets OverviewGrid::GetGridEffectiveBoundsPaddings() const {
+gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
   if (!features::IsForestFeatureEnabled() || InTabletMode()) {
     return gfx::Insets();
   }
 
   // Use compact paddings for partial overview.
   if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
-    return gfx::Insets(kCompactPaddingForEffectiveBounds);
+    return gfx::Insets::VH(0, kCompactPaddingForEffectiveBounds);
   }
 
-  gfx::Insets paddings;
+  gfx::Insets horizontal_paddings;
 
-  // Use compact top padding for expanded desks bar and no padding for zero
-  // state.
-  const DeskBarViewBase::State state =
-      desks_bar_view_ ? desks_bar_view_->state()
-                      : LegacyDeskBarView::GetPreferredState(
-                            LegacyDeskBarView::Type::kOverview);
-  paddings.set_top(state == DeskBarViewBase::State::kZero
-                       ? 0
-                       : kCompactPaddingForEffectiveBounds);
-
-  // Use compact paddings for the side with shelf and spacious padding
+  // Use compact padding for the side with shelf and spacious padding
   // otherwise.
-  const ShelfAlignment alignment = Shelf::ForWindow(root_window_)->alignment();
-  paddings.set_left(alignment == ShelfAlignment::kLeft
-                        ? kCompactPaddingForEffectiveBounds
-                        : kSpaciousPaddingForEffectiveBounds);
-  paddings.set_right(alignment == ShelfAlignment::kRight
-                         ? kCompactPaddingForEffectiveBounds
-                         : kSpaciousPaddingForEffectiveBounds);
-  paddings.set_bottom(alignment == ShelfAlignment::kBottom ||
-                              alignment == ShelfAlignment::kBottomLocked
-                          ? kCompactPaddingForEffectiveBounds
-                          : kSpaciousPaddingForEffectiveBounds);
-  return paddings;
+  const auto* shelf = Shelf::ForWindow(root_window_);
+  horizontal_paddings.set_left(shelf->SelectValueForShelfAlignment(
+      /*bottom=*/kSpaciousPaddingForEffectiveBounds,
+      /*left=*/kCompactPaddingForEffectiveBounds,
+      /*right=*/kSpaciousPaddingForEffectiveBounds));
+  horizontal_paddings.set_right(shelf->SelectValueForShelfAlignment(
+      /*bottom=*/kSpaciousPaddingForEffectiveBounds,
+      /*left=*/kSpaciousPaddingForEffectiveBounds,
+      /*right=*/kCompactPaddingForEffectiveBounds));
+  return horizontal_paddings;
+}
+
+gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
+  const bool forest_enabled = features::IsForestFeatureEnabled();
+
+  // Use compact paddings for partial overview.
+  if (forest_enabled &&
+      SplitViewController::Get(root_window_)->InSplitViewMode()) {
+    return gfx::Insets::VH(kCompactPaddingForEffectiveBounds, 0);
+  }
+
+  gfx::Insets vertical_paddings;
+
+  // Calculate the top padding according to the existence of desk bar.
+
+  // There's an edge case where is in tablet mode, there're more than one desk,
+  // after entering overview mode, deleting desks to just keep one, even though
+  // there's only one desk now in tablet mode, the desks bar will stay. That's
+  // why we need to check the existence of `desks_bar_view_` here.
+  const bool has_desk_bar =
+      desks_bar_view_ || desks_util::ShouldDesksBarBeCreated();
+
+  // TODO(http://b/326087216): extend the expanded desk bar height by 16px for
+  // Forest feature.
+  vertical_paddings.set_top(has_desk_bar ? GetDesksBarHeight() : 0);
+
+  // TODO(http://b/325963519): implement the paddings in tablet mode when the
+  // design is finalized.
+  if (!forest_enabled || InTabletMode()) {
+    return vertical_paddings;
+  }
+
+  // Calculate the bottom padding according to the existence of birch bar and
+  // shelf.
+  const bool has_birch_bar = birch_bar_view_ && birch_bar_view_->GetChipsNum();
+
+  // If birch bar exist, add compact padding with birch bar height and birch bar
+  // bottom padding to the bottom.
+  if (has_birch_bar) {
+    vertical_paddings.set_bottom(kBirchBarBottomPadding +
+                                 birch_bar_view_->GetPreferredSize().height() +
+                                 kCompactPaddingForEffectiveBounds);
+    return vertical_paddings;
+  }
+
+  // Otherwise, if there is a bottom shelf, use compact padding and spacious
+  // padding otherwise.
+  vertical_paddings.set_bottom(
+      Shelf::ForWindow(root_window_)
+          ->SelectValueForShelfAlignment(
+              /*bottom=*/kCompactPaddingForEffectiveBounds,
+              /*left=*/kSpaciousPaddingForEffectiveBounds,
+              /*right=*/kSpaciousPaddingForEffectiveBounds));
+  return vertical_paddings;
 }
 
 gfx::Insets OverviewGrid::GetGridInsets() const {
@@ -2320,6 +2391,15 @@ void OverviewGrid::OnTabletModeChanged() {
   // screen setup session, and the desk bar will be created in tablet mode
   // either. In this case, we may need to init the virtual desk bar.
   MaybeInitDesksWidget();
+
+  // Show the birch bar in clamshell mode and hide it in tablet mode.
+  // TODO(http://b/325963519): remove it when the design of the birch bar in
+  // tablet mode is finalized.
+  if (ShouldShowBirchBar(root_window_)) {
+    MaybeInitBirchBarWidget();
+  } else {
+    DestroyBirchBarWidget();
+  }
 }
 
 size_t OverviewGrid::GetNumWindows() const {
@@ -2391,6 +2471,14 @@ void OverviewGrid::OnSplitViewStateChanged(
             ? OverviewEndAction::kWindowActivating
             : OverviewEndAction::kSplitView);
     return;
+  }
+
+  // Hide the birch bar in partial split view and show the birch bar if the
+  // partial split view ends.
+  if (state == SplitViewController::State::kNoSnap) {
+    MaybeInitBirchBarWidget();
+  } else {
+    DestroyBirchBarWidget();
   }
 
   // Update the cannot snap warnings and adjust the grid bounds.
@@ -2509,6 +2597,32 @@ void OverviewGrid::MaybeInitDesksWidget() {
   // the container.
   auto* window = desks_widget_->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
+}
+
+void OverviewGrid::MaybeInitBirchBarWidget() {
+  if (!ShouldShowBirchBar(root_window_) || birch_bar_widget_) {
+    return;
+  }
+
+  birch_bar_widget_ = BirchBarView::CreateBirchBarWidget(root_window_);
+  birch_bar_view_ =
+      views::AsViewClass<BirchBarView>(birch_bar_widget_->GetContentsView());
+  birch_bar_relayout_callback_subscription_ =
+      birch_bar_view_->AddRelayoutCallback(
+          base::BindRepeating(&OverviewGrid::OnBirchBarLayoutChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
+  birch_bar_widget_->Show();
+
+  // Stack birch bar at bottom to guarantee the dragged window is above it.
+  auto* window = birch_bar_widget_->GetNativeWindow();
+  window->parent()->StackChildAtBottom(window);
+}
+
+void OverviewGrid::DestroyBirchBarWidget() {
+  if (birch_bar_widget_) {
+    birch_bar_view_ = nullptr;
+    birch_bar_widget_.reset();
+  }
 }
 
 std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
@@ -2829,6 +2943,29 @@ gfx::Rect OverviewGrid::GetDesksWidgetBounds() const {
                                               root_window_);
 }
 
+gfx::Rect OverviewGrid::GetBirchBarWidgetBounds() const {
+  CHECK(birch_bar_view_);
+
+  // Calculate the available space for birch bar.
+  const gfx::Insets paddings = GetGridHorizontalPaddings();
+  gfx::Rect available_space = bounds_;
+  available_space.Inset(paddings);
+
+  // Update the available space of the birch bar and get the preferred size.
+  birch_bar_view_->UpdateAvailableSpace(available_space.width());
+  const gfx::Size birch_bar_widget_size = birch_bar_view_->GetPreferredSize();
+
+  // Centeralize the bich bar at the bottom.
+  const int top_inset = available_space.height() -
+                        birch_bar_widget_size.height() - kBirchBarBottomPadding;
+  const int horizontal_inset =
+      (available_space.width() - birch_bar_widget_size.width()) / 2;
+
+  available_space.Inset(gfx::Insets::TLBR(
+      top_inset, horizontal_inset, kBirchBarBottomPadding, horizontal_inset));
+  return available_space;
+}
+
 void OverviewGrid::UpdateCannotSnapWarningVisibility(bool animate) {
   for (auto& overview_mode_item : item_list_) {
     overview_mode_item->UpdateCannotSnapWarningVisibility(animate);
@@ -2874,6 +3011,17 @@ void OverviewGrid::OnSavedDeskGridFadedOut() {
 
 void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {
   save_desk_button_container_widget_->Hide();
+}
+
+void OverviewGrid::OnBirchBarLayoutChanged(
+    BirchBarView::RelayoutReason reason) {
+  if (reason != BirchBarView::RelayoutReason::kAddRemoveChip) {
+    return;
+  }
+
+  if (MaybeUpdateBirchBarWidgetBounds()) {
+    PositionWindows(/*animate=*/true);
+  }
 }
 
 void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(

@@ -15,11 +15,13 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
+#include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 
@@ -203,6 +205,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Returns true if the desks widget's bounds have been updated.
   bool MaybeUpdateDesksWidgetBounds();
 
+  // Updates the birch bar widget bounds if necessary.
+  // Returns true if the birch bar widget's bounds have been updated.
+  bool MaybeUpdateBirchBarWidgetBounds();
+
   // Updates the appearance of the drop target to visually indicate when the
   // dragged window is being dragged over it. For dragging from the top or from
   // the shelf, pass null for |dragged_item|.
@@ -294,8 +300,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // positioned, taking into account the availability of the Desks bar).
   gfx::Rect GetGridEffectiveBounds() const;
 
-  // Gets the paddings around the effective bounds (excluding the desk bar).
-  gfx::Insets GetGridEffectiveBoundsPaddings() const;
+  // Gets the horizontal paddings according to the shelf alignment and the
+  // existence of split view.
+  gfx::Insets GetGridHorizontalPaddings() const;
+
+  // Gets the vertical paddings according to the existence of desk bar, birch
+  // bar, shelf and split view.
+  gfx::Insets GetGridVerticalPaddings() const;
 
   // Gets the insets of the grid. Either |bounds_| or GetGridEffectiveBounds
   // does not exclude the insets from its bounds. But like PositionWindows needs
@@ -486,6 +497,15 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   float scroll_offset_for_testing() const { return scroll_offset_; }
   views::Widget* pine_widget_for_testing() { return pine_widget_.get(); }
 
+  const views::Widget* birch_bar_widget_for_testing() const {
+    return birch_bar_widget_.get();
+  }
+
+  const BirchBarView* birch_bar_view_for_testing() const {
+    return birch_bar_view_;
+  }
+  BirchBarView* birch_bar_view_for_testing() { return birch_bar_view_; }
+
  private:
   friend class DesksTemplatesTest;
   friend class OverviewTestBase;
@@ -504,6 +524,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // will update the save desk buttons visibility after we initialize
   // `LegacyDeskBarView`.
   void MaybeInitDesksWidget();
+
+  // Initializes the widget that contains the `BirchBarView` contents.
+  void MaybeInitBirchBarWidget();
+
+  // Destroys birch bar widget.
+  void DestroyBirchBarWidget();
 
   // Gets the layout of the overview items. Layout is done in 2 stages
   // maintaining fixed MRU ordering.
@@ -559,6 +585,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Returns the the bounds of the desks widget in screen coordinates.
   gfx::Rect GetDesksWidgetBounds() const;
 
+  // Returns the bounds of the birch bar widget in the screen coordinates.
+  gfx::Rect GetBirchBarWidgetBounds() const;
+
   void UpdateCannotSnapWarningVisibility(bool animate);
 
   // Called back when the button to save desk as template button is pressed.
@@ -574,6 +603,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Called when the animation for fading the
   // `save_desk_button_container_widget_` out is completed.
   void OnSaveDeskButtonContainerFadedOut();
+
+  // Called when the layout of the birch bar is updated. We may need to
+  // reposition the windows if the relayout is due to the contents change.
+  void OnBirchBarLayoutChanged(BirchBarView::RelayoutReason reason);
 
   // Updates the number of unsupported windows of saved desk. This includes
   // `num_incognito_windows_` and `num_unsupported_windows` as of now. When
@@ -641,9 +674,19 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The contents view of the above |desks_widget_| if created.
   raw_ptr<LegacyDeskBarView, DanglingUntriaged> desks_bar_view_ = nullptr;
 
+  // Widget that contains the BirchBarView contents when the Forest feature is
+  // enabled.
+  std::unique_ptr<views::Widget> birch_bar_widget_;
+
+  // The contents view of the `birch_bar_widget_` if created.
+  raw_ptr<BirchBarView> birch_bar_view_ = nullptr;
+
   // Widget that appears during faster splitview setup. Contains the faster
   // splitview toast and the overview settings button.
   std::unique_ptr<views::Widget> faster_splitview_widget_;
+
+  // The subscription of birch bar relayout callback.
+  base::CallbackListSubscription birch_bar_relayout_callback_subscription_;
 
   // True if the overview grid should animate when exiting overview mode. Note
   // even if it's true, it doesn't mean all window items in the grid should

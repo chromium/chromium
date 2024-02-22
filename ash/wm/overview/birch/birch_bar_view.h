@@ -5,7 +5,10 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_BIRCH_BAR_VIEW_H_
 #define ASH_WM_OVERVIEW_BIRCH_BIRCH_BAR_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
+#include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
@@ -13,7 +16,11 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace ash {
 
@@ -34,22 +41,41 @@ namespace ash {
 // fit in the work area. Otherwise, the third and fourth chips will be moved to
 // the secondary row.
 
-class BirchBarView : public views::BoxLayoutView,
-                     public BirchChipButton::Delegate {
+class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
+                                public BirchChipButton::Delegate {
   METADATA_HEADER(BirchBarView, views::BoxLayoutView)
 
  public:
+  enum class RelayoutReason {
+    // Relayout caused by adding or removing chips.
+    kAddRemoveChip,
+    // Relayout caused by available space change.
+    kAvailableSpaceChanged,
+  };
+
+  // The callback which is called when the birch bar view relayouts due to given
+  // reason.
+  using RelayoutCallback = base::RepeatingCallback<void(RelayoutReason)>;
+
   explicit BirchBarView(aura::Window* root_window);
   BirchBarView(const BirchBarView&) = delete;
   BirchBarView& operator=(const BirchBarView&) = delete;
   ~BirchBarView() override;
 
-  // Gets the paddings for the container of the birch bar.
-  gfx::Insets GetContainerPaddings() const;
+  // Creates a birch bar widget for given `root_window`.
+  static std::unique_ptr<views::Widget> CreateBirchBarWidget(
+      aura::Window* root_window);
 
   // Updates the birch bar's available space and relayout the bar according to
-  // the updated available space.
+  // the updated available space. Note that the function must be called before
+  // getting the view's preferred size.
   void UpdateAvailableSpace(int available_space);
+
+  // Registers a relayout callback.
+  base::CallbackListSubscription AddRelayoutCallback(RelayoutCallback callback);
+
+  // Gets current number of chips.
+  int GetChipsNum() const;
 
   // Adds a new birch chip to the bar.
   // TODO(zxdan): move the function to private when using model and replace the
@@ -66,6 +92,8 @@ class BirchBarView : public views::BoxLayoutView,
   void RemoveChip(BirchChipButton* chip) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BirchBarLayoutTest, ResponsiveLayout);
+
   // The layouts that the birch bar may use. When current available space can
   // hold all present chips, a 1x4 grids layout is used. Otherwise, a 2x2 grids
   // layout is used.
@@ -74,19 +102,22 @@ class BirchBarView : public views::BoxLayoutView,
     kTwoByTwo,
   };
 
-  // Calculate the chip size according to current shelf position and display
+  // Calculates the chip size according to current shelf position and display
   // size.
   gfx::Size GetChipSize() const;
 
-  // Get expected layout types according to the number of chips and available
+  // Gets expected layout types according to the number of chips and available
   // space.
   LayoutType GetExpectedLayoutType() const;
 
-  // Rearrange the chips according to current expected layout type.
-  void Relayout();
+  // Rearranges the chips according to current expected layout type.
+  void Relayout(RelayoutReason reason);
+
+  // Called after relayout.
+  void OnRelayout(RelayoutReason reason);
 
   // The root window hosting the birch bar.
-  raw_ptr<aura::Window> root_window_;
+  const raw_ptr<aura::Window> root_window_;
 
   // Cached chip size.
   const gfx::Size chip_size_;
@@ -96,10 +127,15 @@ class BirchBarView : public views::BoxLayoutView,
 
   // Chips rows owned by this.
   raw_ptr<BoxLayoutView> primary_row_;
-  raw_ptr<BoxLayoutView> secondary_row_;
+  // The secondary row only exists when it holds chips. Otherwise, there will
+  // always be child spacing between the rows.
+  raw_ptr<BoxLayoutView> secondary_row_ = nullptr;
 
   // The chips are owned by either primary or secondary row.
   std::vector<raw_ptr<BirchChipButton>> chips_;
+
+  base::RepeatingCallbackList<RelayoutCallback::RunType>
+      relayout_callback_list_;
 };
 
 }  // namespace ash
