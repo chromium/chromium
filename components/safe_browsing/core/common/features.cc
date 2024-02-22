@@ -305,7 +305,7 @@ BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
 
 BASE_FEATURE(kClientSideDetectionImagesCache,
              "ClientSideDetectionImagesCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
     &kSafeBrowsingDailyPhishingReportsLimit,
