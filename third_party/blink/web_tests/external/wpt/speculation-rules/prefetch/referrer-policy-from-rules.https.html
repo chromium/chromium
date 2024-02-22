@@ -15,7 +15,8 @@
 <meta name="variant" content="?4-4">
 <meta name="variant" content="?5-5">
 <meta name="variant" content="?6-6">
-<meta name="variant" content="?7-last">
+<meta name="variant" content="?7-7">
+<meta name="variant" content="?8-last">
 
 <script>
 "use strict";
@@ -81,6 +82,25 @@ subsetTest(promise_test, async t => {
   const headers = await agent.getRequestHeaders();
   assert_not_prefetched(headers, "must not be prefetched");
 }, 'unrecognized policies invalidate the rule');
+
+subsetTest(promise_test, async t => {
+  const agent = await spawnWindow(t);
+  await agent.setReferrerPolicy("strict-origin");
+  const expectedReferrer = agent.getExecutorURL().origin + "/";
+
+  const nextURL = agent.getExecutorURL({ page: 2 });
+  await agent.execute_script((url) => {
+    const a = addLink(url);
+    a.referrerPolicy = 'no-referrrrrrrer';
+    insertDocumentRule();
+  }, [nextURL]);
+  await new Promise(resolve => t.step_timeout(resolve, 2000));
+  await agent.navigate(nextURL);
+
+  const headers = await agent.getRequestHeaders();
+  assert_prefetched(headers, "must be prefetched");
+  assert_equals(headers.referer, expectedReferrer, "must send the origin as the referrer");
+}, 'unrecognized policies in link referrerpolicy attribute are ignored');
 
 subsetTest(promise_test, async t => {
   const agent = await spawnWindow(t);

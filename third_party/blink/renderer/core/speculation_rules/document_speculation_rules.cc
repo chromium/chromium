@@ -82,39 +82,57 @@ String SpeculationActionAsString(mojom::blink::SpeculationAction action) {
 
 String MakeReferrerWarning(mojom::blink::SpeculationAction action,
                            const KURL& url,
-                           const Referrer& referrer) {
-  return "Ignored attempt to " + SpeculationActionAsString(action) + " " +
-         url.ElidedString() + " due to unacceptable referrer policy (" +
+                           const Referrer& referrer,
+                           bool has_link) {
+  const String action_string = SpeculationActionAsString(action);
+
+  const String suggested_fix =
+      has_link ? "A stricter referrer policy may be set using the matched "
+                 "link's \"referrerpolicy\" attribute, or it may be set "
+                 "specifically for the " +
+                     action_string +
+                     " request using the \"referrer_policy\" key in the "
+                     "speculation rule."
+               : "A stricter referrer policy may be set for this specific " +
+                     action_string +
+                     " request using the \"referrer_policy\" key in the "
+                     "speculation rule.";
+  constexpr auto kExampleAcceptablePolicy =
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
+
+  return "Ignored attempt to " + action_string + " " + url.ElidedString() +
+         " due to unacceptable referrer policy (" +
          SecurityPolicy::ReferrerPolicyAsString(referrer.referrer_policy) +
-         ").";
+         "). " + suggested_fix + " For example, the policy \"" +
+         SecurityPolicy::ReferrerPolicyAsString(kExampleAcceptablePolicy) +
+         "\" is sufficiently strict.";
 }
 
 // Computes a referrer based on a Speculation Rule, and its URL or the link it
 // is matched against. Return std::nullopt if the computed referrer policy is
 // not acceptable (see AcceptableReferrerPolicy above).
-std::optional<Referrer> GetReferrer(SpeculationRule* rule,
-                                    ExecutionContext* execution_context,
+std::optional<Referrer> GetReferrer(const SpeculationRule* rule,
+                                    const SpeculationRuleSet& rule_set,
+                                    const Document& document,
                                     mojom::blink::SpeculationAction action,
                                     HTMLAnchorElement* link,
                                     std::optional<KURL> opt_url) {
+  ExecutionContext* execution_context = document.GetExecutionContext();
   DCHECK(link || opt_url);
-  bool using_link_referrer_policy = false;
   network::mojom::ReferrerPolicy referrer_policy;
   if (rule->referrer_policy()) {
     referrer_policy = rule->referrer_policy().value();
+  } else if (link && link->HasRel(kRelationNoReferrer)) {
+    referrer_policy = network::mojom::ReferrerPolicy::kNever;
+  } else if (link && link->FastHasAttribute(html_names::kReferrerpolicyAttr)) {
+    // Override |referrer_policy| with value derived from link's
+    // referrerpolicy attribute (if valid).
+    referrer_policy = execution_context->GetReferrerPolicy();
+    SecurityPolicy::ReferrerPolicyFromString(
+        link->FastGetAttribute(html_names::kReferrerpolicyAttr),
+        kSupportReferrerPolicyLegacyKeywords, &referrer_policy);
   } else {
     referrer_policy = execution_context->GetReferrerPolicy();
-    if (link && link->HasRel(kRelationNoReferrer)) {
-      using_link_referrer_policy = true;
-      referrer_policy = network::mojom::ReferrerPolicy::kNever;
-    } else if (link &&
-               link->FastHasAttribute(html_names::kReferrerpolicyAttr)) {
-      // Override |referrer_policy| with value derived from link's
-      // referrerpolicy attribute (if valid).
-      using_link_referrer_policy = SecurityPolicy::ReferrerPolicyFromString(
-          link->FastGetAttribute(html_names::kReferrerpolicyAttr),
-          kSupportReferrerPolicyLegacyKeywords, &referrer_policy);
-    }
   }
 
   String outgoing_referrer = execution_context->OutgoingReferrer();
@@ -129,11 +147,15 @@ std::optional<Referrer> GetReferrer(SpeculationRule* rule,
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        MakeReferrerWarning(action, url, referrer));
-    if (using_link_referrer_policy) {
-      console_message->SetNodes(link->GetDocument().GetFrame(),
-                                {link->GetDomNodeId()});
+        MakeReferrerWarning(action, url, referrer, link));
+    Vector<DOMNodeId> nodes;
+    if (rule_set.source()->GetNodeId()) {
+      nodes.push_back(*rule_set.source()->GetNodeId());
     }
+    if (link) {
+      nodes.push_back(link->GetDomNodeId());
+    }
+    console_message->SetNodes(document.GetFrame(), std::move(nodes));
     execution_context->AddConsoleMessage(console_message);
     return std::nullopt;
   }
@@ -585,29 +607,30 @@ void DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask() {
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidates() {
+  Document& document = *GetSupplementable();
   DCHECK_NE(pending_update_state_, PendingUpdateState::kNoUpdate);
   if (SelectorMatchesEnabled()) {
-    DCHECK(!GetSupplementable()->NeedsLayoutTreeUpdate());
+    DCHECK(!document.NeedsLayoutTreeUpdate());
   }
 
   // We are actually performing the update below, so mark as no update pending.
   SetPendingUpdateState(PendingUpdateState::kNoUpdate);
 
   mojom::blink::SpeculationHost* host = GetHost();
-  auto* execution_context = GetSupplementable()->GetExecutionContext();
+  auto* execution_context = document.GetExecutionContext();
   if (!host || !execution_context) {
     return;
   }
 
   HeapVector<Member<SpeculationCandidate>> candidates;
-  auto push_candidates = [&candidates, &execution_context](
+  auto push_candidates = [&candidates, &document](
                              mojom::blink::SpeculationAction action,
                              SpeculationRuleSet* rule_set,
                              const HeapVector<Member<SpeculationRule>>& rules) {
     for (SpeculationRule* rule : rules) {
       for (const KURL& url : rule->urls()) {
-        std::optional<Referrer> referrer =
-            GetReferrer(rule, execution_context, action, /*link=*/nullptr, url);
+        std::optional<Referrer> referrer = GetReferrer(
+            rule, *rule_set, document, action, /*link=*/nullptr, url);
         if (!referrer)
           continue;
 
@@ -645,7 +668,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
       // document is frozen or unload to avoid reusing old data in the cache
       // after the session storage has been modified by another renderer
       // process. See crbug.com/1215680 for more details.
-      LocalFrame* frame = GetSupplementable()->GetFrame();
+      LocalFrame* frame = document.GetFrame();
       if (frame && frame->IsMainFrame()) {
         frame->SetEvictCachedSessionStorageOnFreezeOrUnload();
       }
@@ -661,7 +684,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   // |FrameLoader::ShouldPerformFragmentNavigation|).
   // Note that the document's URL is not necessarily the same as the base URL
   // (e,g., when a <base> element is present in the document).
-  const KURL& document_url = GetSupplementable()->Url();
+  const KURL& document_url = document.Url();
   auto* last = base::ranges::remove_if(candidates, [&](const auto& candidate) {
     const KURL& url = candidate->url();
     return url.HasFragmentIdentifier() &&
@@ -675,7 +698,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     host->EnableNoVarySearchSupport();
   }
 
-  probe::SpeculationCandidatesUpdated(*GetSupplementable(), candidates);
+  probe::SpeculationCandidatesUpdated(document, candidates);
 
   using SpeculationEagerness = blink::mojom::SpeculationEagerness;
   base::EnumSet<SpeculationEagerness, SpeculationEagerness::kMinValue,
@@ -692,16 +715,14 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   host->UpdateSpeculationCandidates(std::move(mojom_candidates));
 
   if (eagerness_set.Has(SpeculationEagerness::kConservative)) {
-    UseCounter::Count(GetSupplementable(),
+    UseCounter::Count(document,
                       WebFeature::kSpeculationRulesEagernessConservative);
   }
   if (eagerness_set.Has(SpeculationEagerness::kModerate)) {
-    UseCounter::Count(GetSupplementable(),
-                      WebFeature::kSpeculationRulesEagernessModerate);
+    UseCounter::Count(document, WebFeature::kSpeculationRulesEagernessModerate);
   }
   if (eagerness_set.Has(SpeculationEagerness::kEager)) {
-    UseCounter::Count(GetSupplementable(),
-                      WebFeature::kSpeculationRulesEagernessEager);
+    UseCounter::Count(document, WebFeature::kSpeculationRulesEagernessEager);
   }
 
   base::UmaHistogramEnumeration(
@@ -721,12 +742,12 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
     HTMLAnchorElement* link = *it;
     HeapVector<Member<SpeculationCandidate>>* link_candidates =
         MakeGarbageCollected<HeapVector<Member<SpeculationCandidate>>>();
-    ExecutionContext* execution_context =
-        GetSupplementable()->GetExecutionContext();
+    Document& document = *GetSupplementable();
+    ExecutionContext* execution_context = document.GetExecutionContext();
     CHECK(execution_context);
 
     const auto push_link_candidates =
-        [&link, &link_candidates, &execution_context, this](
+        [&link, &link_candidates, &document, this](
             mojom::blink::SpeculationAction action,
             SpeculationRuleSet* rule_set,
             const HeapVector<Member<SpeculationRule>>& speculation_rules) {
@@ -759,7 +780,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
               continue;
 
             std::optional<Referrer> referrer =
-                GetReferrer(rule, execution_context, action, link,
+                GetReferrer(rule, *rule_set, document, action, link,
                             /*opt_url=*/std::nullopt);
             if (!referrer)
               continue;

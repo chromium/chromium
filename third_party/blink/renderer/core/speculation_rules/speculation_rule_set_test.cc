@@ -2626,8 +2626,8 @@ TEST_F(DocumentRulesTest, LinkReferrerPolicy) {
   const auto& console_message_storage =
       page_holder.GetPage().GetConsoleMessageStorage();
   EXPECT_EQ(console_message_storage.size(), 1u);
-  EXPECT_EQ(console_message_storage.at(0)->Nodes()[0],
-            link_with_disallowed_referrer->GetDomNodeId());
+  EXPECT_THAT(console_message_storage.at(0)->Nodes(),
+              testing::Contains(link_with_disallowed_referrer->GetDomNodeId()));
 }
 
 // Tests that changing the "referrerpolicy" attribute results in the
