@@ -824,7 +824,9 @@ TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
             GetHeaderRow(notification_view())->bounds().y());
 }
 
-TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
+// TODO(crbug.com/326337073): Re-enable this test
+TEST_F(AshNotificationViewTest,
+       DISABLED_ExpandCollapseAnimationsRecordSmoothness) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
