@@ -615,6 +615,9 @@ try_.compilator_builder(
     name = "linux_chromium_asan_siso_rel_ng-compilator",
     main_list_view = "try",
     siso_enabled = True,
+    # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
+    # Many concurrent compile jobs may cause the slowness.
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -887,6 +890,9 @@ try_.compilator_builder(
     name = "linux_chromium_tsan_siso_rel_ng-compilator",
     main_list_view = "try",
     siso_enabled = True,
+    # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
+    # Many concurrent compile jobs may cause the slowness.
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
