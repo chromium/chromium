@@ -67,7 +67,6 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
@@ -381,35 +380,9 @@ TEST_F(ShellSurfaceTest, Minimize) {
   shell_surface->Minimize();
   EXPECT_FALSE(shell_surface->GetWidget());
 
-  // Committing the buffer will create a widget with minimized state.
-  views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "ExoShellSurface-0");
-  uint32_t serial = 0;
-  chromeos::WindowStateType state[2]{chromeos::WindowStateType::kNormal};
-  auto configure_callback = base::BindRepeating(
-      [](uint32_t* const serial_ptr, chromeos::WindowStateType* state_ptr,
-         const gfx::Rect& bounds, chromeos::WindowStateType state_type,
-         bool resizing, bool activated, const gfx::Vector2d& origin_offset,
-         float raster_scale, aura::Window::OcclusionState occlusion_state,
-         std::optional<chromeos::WindowStateType>) {
-        state_ptr[*serial_ptr] = state_type;
-        CHECK(*serial_ptr < 2);
-        return ++(*serial_ptr);
-      },
-      &serial, state);
-  shell_surface->set_configure_callback(configure_callback);
-
+  // Attaching the buffer will create a widget with minimized state.
   shell_surface->root_surface()->Commit();
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
-  // Two configures (initial configure and the state change configure) should be
-  // sent with the minimzied state.
-  ASSERT_EQ(2u, serial);
-  EXPECT_EQ(chromeos::WindowStateType::kMinimized, state[0]);
-  EXPECT_EQ(chromeos::WindowStateType::kMinimized, state[1]);
-  shell_surface->set_configure_callback(ShellSurface::ConfigureCallback());
-
-  // Minimized widget should be Shown.
-  widget_waiter.WaitIfNeededAndGet();
 
   shell_surface->Restore();
   EXPECT_FALSE(shell_surface->GetWidget()->IsMinimized());

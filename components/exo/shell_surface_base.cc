@@ -11,7 +11,6 @@
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -1272,10 +1271,6 @@ void ShellSurfaceBase::OnActivationRequested() {
 }
 
 void ShellSurfaceBase::RequestActivation() {
-  if (!IsReady()) {
-    initially_activated_ = true;
-    return;
-  }
   if (widget_ && GetSecurityDelegate() &&
       GetSecurityDelegate()->CanSelfActivate(widget_->GetNativeWindow())) {
     this->Activate();
@@ -1283,11 +1278,7 @@ void ShellSurfaceBase::RequestActivation() {
 }
 
 void ShellSurfaceBase::RequestDeactivation() {
-  if (!IsReady()) {
-    initially_activated_ = false;
-    return;
-  }
-  if (widget_ && GetSecurityDelegate() && IsReady() &&
+  if (widget_ && GetSecurityDelegate() &&
       GetSecurityDelegate()->CanSelfActivate(widget_->GetNativeWindow())) {
     this->Deactivate();
   }
@@ -1298,7 +1289,7 @@ void ShellSurfaceBase::OnSetServerStartResize() {
 }
 
 bool ShellSurfaceBase::IsReady() const {
-  return widget_ && !pending_show_widget_;
+  return !pending_show_widget_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1898,9 +1889,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
         ui::Accelerator(entry.keycode, entry.modifiers),
         ui::AcceleratorManager::kNormalPriority, this);
   }
-
   // Show widget next time Commit() is called.
-  pending_show_widget_ = true;
+  if (show_state != ui::SHOW_STATE_MINIMIZED)
+    pending_show_widget_ = true;
 
   UpdateDisplayOnTree();
 
@@ -2285,15 +2276,6 @@ void ShellSurfaceBase::OnPostWidgetCommit() {
   UpdateTopInset();
 }
 
-void ShellSurfaceBase::ShowWidget(bool activate) {
-  if (activate) {
-    // Widget will minimize itself if the initial state is minimized.
-    widget_->Show();
-  } else {
-    widget_->ShowInactive();
-  }
-}
-
 void ShellSurfaceBase::SetContainerInternal(int container) {
   container_ = container;
   WidgetDelegate::SetCanMaximize(
@@ -2391,9 +2373,10 @@ void ShellSurfaceBase::CommitWidget() {
   UpdateWindowRoundedCorners();
   UpdateShadow();
 
-  // Don't show yet if the shell surface doesn't have content.
-  bool should_show = !host_window()->bounds().IsEmpty();
-
+  // Don't show yet if the shell surface doesn't have content or is minimized
+  // while waiting for content.
+  bool should_show =
+      !host_window()->bounds().IsEmpty() && !widget_->IsMinimized();
   // Do not layout the window if the position should not be controlled by window
   // manager. (popup, emulating x11 override direct, or requested not to move)
   if (is_popup_ || movement_disabled_)
@@ -2445,14 +2428,12 @@ void ShellSurfaceBase::CommitWidget() {
       }
     }
 
-    // TODO(crbug.com/325969457): Showing a widget in minimzied state will
-    // trigger minimized animation. This should probably be handled in `Widget`
-    // impl.
-    std::unique_ptr<ash::ScopedAnimationDisabler> disabler =
-        widget_->IsMinimized() ? std::make_unique<ash::ScopedAnimationDisabler>(
-                                     widget_->GetNativeWindow())
-                               : nullptr;
-    ShowWidget(initially_activated_);
+    if (initially_activated_) {
+      // Widget will minimize itself if the initial state is minimized.
+      widget_->Show();
+    } else {
+      widget_->ShowInactive();
+    }
 
     if (has_grab_)
       StartCapture();

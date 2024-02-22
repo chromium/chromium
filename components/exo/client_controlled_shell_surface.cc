@@ -338,36 +338,6 @@ class ClientControlledShellSurface::ScopedLockedToRoot {
   const raw_ptr<aura::Window> window_;
 };
 
-class ClientControlledShellSurface::ScopedDeferWindowStateUpdate {
- public:
-  explicit ScopedDeferWindowStateUpdate(
-      ClientControlledShellSurface* shell_surface)
-      : shell_surface_(shell_surface) {
-    DCHECK(!shell_surface_->scoped_defer_window_state_update_);
-    shell_surface_->scoped_defer_window_state_update_ = base::WrapUnique(this);
-  }
-
-  ScopedDeferWindowStateUpdate(const ScopedDeferWindowStateUpdate&) = delete;
-  ScopedDeferWindowStateUpdate& operator=(const ScopedDeferWindowStateUpdate&) =
-      delete;
-
-  ~ScopedDeferWindowStateUpdate() {
-    DCHECK_EQ(shell_surface_->scoped_defer_window_state_update_.release(),
-              this);
-    if (next_state_) {
-      shell_surface_->OnWindowStateChangeEvent(*next_state_, *next_state_);
-    }
-  }
-
-  void SetNextState(chromeos::WindowStateType next_state) {
-    next_state_ = next_state;
-  }
-
- private:
-  raw_ptr<ClientControlledShellSurface> shell_surface_;
-  std::optional<chromeos::WindowStateType> next_state_;
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 // ClientControlledShellSurface, public:
 
@@ -515,11 +485,6 @@ void ClientControlledShellSurface::OnWindowStateChangeEvent(
     chromeos::WindowStateType next_state) {
   // Android already knows this state change. Don't send state change to Android
   // that it is about to do anyway.
-  if (scoped_defer_window_state_update_) {
-    scoped_defer_window_state_update_->SetNextState(next_state);
-    return;
-  }
-
   if (delegate_ && pending_window_state_ != next_state)
     delegate_->OnStateChanged(current_state, next_state);
 }
@@ -1289,11 +1254,6 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
   }
 
   return true;
-}
-
-void ClientControlledShellSurface::ShowWidget(bool inactive) {
-  ScopedDeferWindowStateUpdate update(this);
-  ShellSurfaceBase::ShowWidget(inactive);
 }
 
 void ClientControlledShellSurface::OnPostWidgetCommit() {
