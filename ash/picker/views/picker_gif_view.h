@@ -54,6 +54,8 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
 
   void OnPreviewImageFetched(const gfx::ImageSkia& preview_image);
 
+  void RecordFetchFramesTime();
+
   // Original dimensions of the gif, used to preserve aspect ratio when
   // resizing.
   gfx::Size original_dimensions_;
@@ -66,6 +68,8 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
 
   // Index of the frame to show on the next call to `UpdateFrame`.
   size_t next_frame_index_ = 0;
+
+  std::optional<base::TimeTicks> fetch_frames_start_time_;
 
   base::WeakPtrFactory<PickerGifView> weak_factory_{this};
 };

@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/image_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -200,6 +201,63 @@ TEST(PickerGifViewTest, AdjustsShortFrameDurations) {
 
   task_environment.FastForwardBy(base::Milliseconds(60));
   EXPECT_TRUE(GetImage(gif_view).BackedBySameObjectAs(frames[1].image));
+}
+
+TEST(PickerGifViewTest, RecordsTimeToFirstFrameWhenGifIsFetchedFirst) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  base::HistogramTester histogram_tester;
+  GifAssetFetcher asset_fetcher;
+  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
+                         /*accessible_name=*/u"");
+
+  task_environment.FastForwardBy(base::Milliseconds(100));
+  asset_fetcher.CompleteFetchFrames({CreateGifFrame(base::Milliseconds(0))});
+  task_environment.FastForwardBy(base::Milliseconds(200));
+  asset_fetcher.CompleteFetchPreviewImage(
+      image_util::CreateEmptyImage(kImageSize));
+
+  histogram_tester.ExpectTotalCount("Ash.Picker.TimeToFirstGifFrame", 1);
+  histogram_tester.ExpectUniqueTimeSample("Ash.Picker.TimeToFirstGifFrame",
+                                          base::Milliseconds(100), 1);
+}
+
+TEST(PickerGifViewTest, RecordsTimeToFirstFrameWhenPreviewIsFetchedFirst) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  base::HistogramTester histogram_tester;
+  GifAssetFetcher asset_fetcher;
+  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
+                         /*accessible_name=*/u"");
+
+  task_environment.FastForwardBy(base::Milliseconds(100));
+  asset_fetcher.CompleteFetchPreviewImage(
+      image_util::CreateEmptyImage(kImageSize));
+  task_environment.FastForwardBy(base::Milliseconds(200));
+  asset_fetcher.CompleteFetchFrames({CreateGifFrame(base::Milliseconds(0))});
+
+  histogram_tester.ExpectTotalCount("Ash.Picker.TimeToFirstGifFrame", 1);
+  histogram_tester.ExpectUniqueTimeSample("Ash.Picker.TimeToFirstGifFrame",
+                                          base::Milliseconds(100), 1);
+}
+
+TEST(PickerGifViewTest, DoesNotRecordTimeToFirstFrameForInvalidGifsOrPreviews) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  base::HistogramTester histogram_tester;
+  GifAssetFetcher asset_fetcher;
+  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                         asset_fetcher.GetPreviewImageFetcher(), kImageSize,
+                         /*accessible_name=*/u"");
+
+  task_environment.FastForwardBy(base::Milliseconds(100));
+  asset_fetcher.CompleteFetchPreviewImage(gfx::ImageSkia());
+  task_environment.FastForwardBy(base::Milliseconds(200));
+  asset_fetcher.CompleteFetchFrames({});
+
+  histogram_tester.ExpectTotalCount("Ash.Picker.TimeToFirstGifFrame", 0);
 }
 
 }  // namespace

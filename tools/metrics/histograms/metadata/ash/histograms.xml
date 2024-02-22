@@ -5759,6 +5759,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Picker.TimeToFirstGifFrame" units="ms"
+    expires_after="2024-12-31">
+  <owner>shend@chromium.org</owner>
+  <owner>michellegc@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The time it takes to download and decode the first frame of a GIF in Picker.
+    Recorded starting at when the download request is issued, ending at when a
+    ImageView is set with the first frame (of either a preview thumbnail or the
+    full GIF).
+  </summary>
+</histogram>
+
 <histogram name="Ash.Pine.ScreenshotEncodeAndSaveDuration" units="ms"
     expires_after="2024-12-31">
   <owner>minch@chromium.org</owner>
