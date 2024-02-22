@@ -14,7 +14,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -23,6 +25,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -40,6 +43,8 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -64,6 +69,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
@@ -77,8 +83,67 @@ using ::attribution_reporting::mojom::RegistrationType;
 
 constexpr int64_t kNavigationId(-1);
 
+const aggregation_service::TestHpkeKey kHpkeKey;
+
 base::TimeDelta TimeOffset(base::Time time_origin) {
   return time_origin - base::Time::UnixEpoch();
+}
+
+base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
+                                       const std::string& shared_info) {
+  CHECK(payloads.has_value());
+
+  base::Value::List payloads_list = std::move(*payloads).TakeList();
+  CHECK_EQ(payloads_list.size(), 1u);
+
+  base::Value::Dict& payload_dict = payloads_list.front().GetDict();
+
+  std::optional<base::Value> payload = payload_dict.Extract("payload");
+  CHECK(payload.has_value());
+
+  std::optional<std::vector<uint8_t>> encrypted_payload =
+      base::Base64Decode(payload->GetString());
+  CHECK(encrypted_payload.has_value());
+
+  std::vector<uint8_t> decrypted_payload =
+      aggregation_service::DecryptPayloadWithHpke(
+          *encrypted_payload, kHpkeKey.full_hpke_key(), shared_info);
+  std::optional<cbor::Value> deserialized_payload =
+      cbor::Reader::Read(decrypted_payload);
+  CHECK(deserialized_payload.has_value());
+  const cbor::Value::MapValue& payload_map = deserialized_payload->GetMap();
+  const auto it = payload_map.find(cbor::Value("data"));
+  CHECK(it != payload_map.end());
+
+  base::Value::List list;
+
+  for (const cbor::Value& data : it->second.GetArray()) {
+    const cbor::Value::MapValue& data_map = data.GetMap();
+
+    const cbor::Value::BinaryValue& bucket_byte_string =
+        data_map.at(cbor::Value("bucket")).GetBytestring();
+
+    absl::uint128 bucket;
+    CHECK(
+        base::HexStringToUInt128(base::HexEncode(bucket_byte_string), &bucket));
+
+    const cbor::Value::BinaryValue& value_byte_string =
+        data_map.at(cbor::Value("value")).GetBytestring();
+
+    uint32_t value;
+    CHECK(base::HexStringToUInt(base::HexEncode(value_byte_string), &value));
+
+    // Ignore the paddings.
+    if (bucket == 0 && value == 0) {
+      continue;
+    }
+
+    list.Append(
+        base::Value::Dict()
+            .Set("key", attribution_reporting::HexEncodeAggregationKey(bucket))
+            .Set("value", base::checked_cast<int>(value)));
+  }
+  return list;
 }
 
 class AttributionReportConverter {
@@ -92,45 +157,36 @@ class AttributionReportConverter {
 
     absl::visit(
         base::Overloaded{
-            [&](const AttributionReport::AggregatableAttributionData&
-                    aggregatable_data) {
+            [&](const AttributionReport::AggregatableAttributionData&) {
               // These fields normally encode a random GUID or the absolute time
               // and therefore are sources of nondeterminism in the output.
 
               // Output attribution_destination from the shared_info field.
-              if (std::optional<base::Value> shared_info =
-                      report_body.Extract("shared_info");
-                  shared_info.has_value() && shared_info->is_string()) {
-                if (std::optional<base::Value> shared_info_value =
-                        base::JSONReader::Read(shared_info->GetString(),
-                                               base::JSON_PARSE_RFC)) {
-                  static constexpr char kKeyAttributionDestination[] =
-                      "attribution_destination";
-                  if (std::optional<base::Value> attribution_destination =
-                          shared_info_value->GetDict().Extract(
-                              kKeyAttributionDestination)) {
-                    report_body.Set(kKeyAttributionDestination,
-                                    std::move(*attribution_destination));
-                  }
-                }
-              }
+              std::optional<base::Value> shared_info =
+                  report_body.Extract("shared_info");
+              CHECK(shared_info.has_value());
+              std::string shared_info_str = shared_info->GetString();
 
-              report_body.Remove("aggregation_service_payloads");
+              std::optional<base::Value> shared_info_value =
+                  base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
+              CHECK(shared_info_value.has_value());
+              static constexpr char kKeyAttributionDestination[] =
+                  "attribution_destination";
+              std::optional<base::Value> attribution_destination =
+                  shared_info_value->GetDict().Extract(
+                      kKeyAttributionDestination);
+              CHECK(attribution_destination.has_value());
+              report_body.Set(kKeyAttributionDestination,
+                              std::move(*attribution_destination));
 
               // The aggregation coordinator may be platform specific.
               report_body.Remove("aggregation_coordinator_origin");
 
-              base::Value::List list;
-              for (const auto& contribution : aggregatable_data.contributions) {
-                list.Append(
-                    base::Value::Dict()
-                        .Set("key",
-                             attribution_reporting::HexEncodeAggregationKey(
-                                 contribution.key()))
-                        .Set("value",
-                             base::checked_cast<int>(contribution.value())));
-              }
-              report_body.Set("histograms", std::move(list));
+              report_body.Set(
+                  "histograms",
+                  GetDecryptedPayloads(
+                      report_body.Extract("aggregation_service_payloads"),
+                      shared_info_str));
             },
             [&](const AttributionReport::EventLevelData&) {
               AdjustEventLevelBody(report_body);
@@ -459,7 +515,7 @@ RunAttributionInteropSimulation(base::Value::Dict input,
           GetAggregationServiceProcessingUrl(url::Origin::Create(
               GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
                        .Get()))),
-          PublicKeyset({aggregation_service::TestHpkeKey().GetPublicKey()},
+          PublicKeyset({kHpkeKey.GetPublicKey()},
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 
