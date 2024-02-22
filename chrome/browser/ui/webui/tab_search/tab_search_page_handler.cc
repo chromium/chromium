@@ -362,7 +362,8 @@ void TabSearchPageHandler::GetTabOrganizationSession(
   TabOrganizationSession* session =
       organization_service_->GetSessionForBrowser(browser);
   if (!session) {
-    session = organization_service_->CreateSessionForBrowser(browser);
+    session = organization_service_->CreateSessionForBrowser(
+        browser, TabOrganizationEntryPoint::kTabSearch);
   }
 
   if (!base::Contains(listened_sessions_, session)) {
@@ -448,9 +449,11 @@ void TabSearchPageHandler::RequestTabOrganization() {
   TabOrganizationSession* session =
       organization_service_->GetSessionForBrowser(browser);
   if (!session) {
-    session = organization_service_->CreateSessionForBrowser(browser);
+    session = organization_service_->CreateSessionForBrowser(
+        browser, TabOrganizationEntryPoint::kTabSearch);
   } else if (session->IsComplete()) {
-    session = organization_service_->ResetSessionForBrowser(browser);
+    session = organization_service_->ResetSessionForBrowser(
+        browser, TabOrganizationEntryPoint::kTabSearch);
   }
 
   if (!base::Contains(listened_sessions_, session)) {
@@ -460,7 +463,8 @@ void TabSearchPageHandler::RequestTabOrganization() {
 
   browser->profile()->GetPrefs()->SetBoolean(
       tab_search_prefs::kTabOrganizationShowFRE, false);
-  organization_service_->StartRequest(browser);
+  organization_service_->StartRequest(browser,
+                                      TabOrganizationEntryPoint::kTabSearch);
 }
 
 void TabSearchPageHandler::RemoveTabFromOrganization(
@@ -500,13 +504,15 @@ void TabSearchPageHandler::RestartSession() {
 
   // Don't notify observers to avoid a repaint
   TabOrganizationSession* session =
-      organization_service_->ResetSessionForBrowser(browser, nullptr);
+      organization_service_->ResetSessionForBrowser(
+          browser, TabOrganizationEntryPoint::kTabSearch, nullptr);
   if (!base::Contains(listened_sessions_, session)) {
     session->AddObserver(this);
     listened_sessions_.emplace_back(session);
   }
 
-  organization_service_->StartRequest(browser);
+  organization_service_->StartRequest(browser,
+                                      TabOrganizationEntryPoint::kTabSearch);
 
   restarting_ = false;
 

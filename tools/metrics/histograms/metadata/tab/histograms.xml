@@ -383,6 +383,19 @@ chromium-metrics-reviews@google.com.
   <token key="EntryPoint" variants="TabOrganizationEntryPoint"/>
 </histogram>
 
+<histogram name="Tab.Organization{EntryPoint}.GroupCount" units="groups"
+    expires_after="2024-07-28">
+  <owner>dpenning@chromium.org</owner>
+  <owner>emshack@chromium.org</owner>
+  <owner>tbergquist@chromium.org</owner>
+  <summary>
+    Number of organizations that were suggested as a result of {EntryPoint}
+    being clicked. Logs when the suggestion is destroyed, regardless of whether
+    the user accepted it.
+  </summary>
+  <token key="EntryPoint" variants="TabOrganizationEntryPoint"/>
+</histogram>
+
 <histogram name="Tab.Organization{EntryPoint}.UserChoice"
     enum="TabOrganizationUserChoice" expires_after="2024-07-28">
   <owner>dpenning@chromium.org</owner>

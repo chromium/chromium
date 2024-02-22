@@ -31,27 +31,59 @@ TabOrganizationSession::TabOrganizationSession(
 }
 
 TabOrganizationSession::~TabOrganizationSession() {
+  const int group_count = tab_organizations_.size();
+  switch (entrypoint_) {
+    case TabOrganizationEntryPoint::kProactive: {
+      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.Proactive.GroupCount",
+                               group_count);
+      break;
+    }
+    case TabOrganizationEntryPoint::kTabContextMenu: {
+      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.TabContextMenu.GroupCount",
+                               group_count);
+      break;
+    }
+    case TabOrganizationEntryPoint::kThreeDotMenu: {
+      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.ThreeDotMenu.GroupCount",
+                               group_count);
+      break;
+    }
+    case TabOrganizationEntryPoint::kTabSearch: {
+      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.TabSearch.GroupCount",
+                               group_count);
+      break;
+    }
+    case TabOrganizationEntryPoint::kNone: {
+    }
+  }
+  UMA_HISTOGRAM_COUNTS_100("Tab.Organization.AllEntrypoints.GroupCount",
+                           group_count);
+
   for (auto& organization : tab_organizations_) {
     organization->RemoveObserver(this);
 
     switch (entrypoint_) {
-      case TabOrganizationEntryPoint::PROACTIVE: {
+      case TabOrganizationEntryPoint::kProactive: {
         UMA_HISTOGRAM_ENUMERATION("Tab.Organization.Proactive.UserChoice",
                                   organization->choice());
         break;
       }
-      case TabOrganizationEntryPoint::TAB_CONTEXT_MENU: {
+      case TabOrganizationEntryPoint::kTabContextMenu: {
         UMA_HISTOGRAM_ENUMERATION("Tab.Organization.TabContextMenu.UserChoice",
                                   organization->choice());
         break;
       }
-      case TabOrganizationEntryPoint::THREE_DOT_MENU: {
+      case TabOrganizationEntryPoint::kThreeDotMenu: {
         UMA_HISTOGRAM_ENUMERATION("Tab.Organization.ThreeDotMenu.UserChoice",
                                   organization->choice());
         break;
       }
-
-      case TabOrganizationEntryPoint::NONE: {
+      case TabOrganizationEntryPoint::kTabSearch: {
+        UMA_HISTOGRAM_ENUMERATION("Tab.Organization.TabSearch.UserChoice",
+                                  organization->choice());
+        break;
+      }
+      case TabOrganizationEntryPoint::kNone: {
       }
     }
 
@@ -81,6 +113,7 @@ TabOrganizationSession::~TabOrganizationSession() {
 std::unique_ptr<TabOrganizationSession>
 TabOrganizationSession::CreateSessionForBrowser(
     const Browser* browser,
+    const TabOrganizationEntryPoint entrypoint,
     const content::WebContents* base_session_webcontents) {
   std::unique_ptr<TabOrganizationRequest> request =
       TabOrganizationRequestFactory::GetForProfile(browser->profile())
@@ -105,7 +138,8 @@ TabOrganizationSession::CreateSessionForBrowser(
     request->AddTabData(std::move(tab_data));
   }
 
-  return std::make_unique<TabOrganizationSession>(std::move(request));
+  return std::make_unique<TabOrganizationSession>(std::move(request),
+                                                  entrypoint);
 }
 
 const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {

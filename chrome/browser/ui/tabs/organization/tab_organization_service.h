@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/trigger_observer.h"
@@ -60,17 +61,20 @@ class TabOrganizationService
   // existing session, they should first call GetSessionForBrowser to confirm.
   TabOrganizationSession* CreateSessionForBrowser(
       const Browser* browser,
+      const TabOrganizationEntryPoint entrypoint,
       const content::WebContents* base_session_webcontents = nullptr);
 
   // If the session exists, destroys the session, calls CreateSessionForBrowser.
   TabOrganizationSession* ResetSessionForBrowser(
       const Browser* browser,
+      const TabOrganizationEntryPoint entrypoint,
       const content::WebContents* base_session_webcontents = nullptr);
 
   // Convenience method that resets the session, starts a request if not in the
   // first run experience, and opens the Organization UI.
   void RestartSessionAndShowUI(
       const Browser* browser,
+      const TabOrganizationEntryPoint entrypoint,
       const content::WebContents* base_session_webcontents = nullptr);
 
   // Allows for other User actions to open up the Organization UI.
@@ -88,12 +92,14 @@ class TabOrganizationService
 
   // Checks if the user is in the first run experience, and starts a request if
   // not.
-  void StartRequestIfNotFRE(const Browser* browser);
+  void StartRequestIfNotFRE(const Browser* browser,
+                            const TabOrganizationEntryPoint entrypoint);
 
   // Starts a request for the tab organization session that exists for the
   // browser, creating a new session if one does not already exists. Does not
   // start a request if one is already started.
-  void StartRequest(const Browser* browser);
+  void StartRequest(const Browser* browser,
+                    const TabOrganizationEntryPoint entrypoint);
 
   void AddObserver(TabOrganizationObserver* observer) {
     observers_.AddObserver(observer);

@@ -112,7 +112,7 @@ class TabOrganizationTest : public testing::Test {
   }
 
   std::unique_ptr<TabOrganizationSession> CreateSessionWithValidOrganization(
-      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::NONE) {
+      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::kNone) {
     std::unique_ptr<TabOrganizationRequest> request =
         std::make_unique<TabOrganizationRequest>();
     TabOrganizationRequest* request_ptr = request.get();
@@ -1422,7 +1422,7 @@ TEST_F(TabOrganizationTest,
   base::HistogramTester histogram_tester;
   std::unique_ptr<TabOrganizationSession> session =
       CreateSessionWithValidOrganization(
-          TabOrganizationEntryPoint::TAB_CONTEXT_MENU);
+          TabOrganizationEntryPoint::kTabContextMenu);
 
   ASSERT_NE(session->GetNextTabOrganization(), nullptr);
   session->GetNextTabOrganization()->Accept();
@@ -1442,7 +1442,7 @@ TEST_F(TabOrganizationTest,
   base::HistogramTester histogram_tester;
   std::unique_ptr<TabOrganizationSession> session =
       CreateSessionWithValidOrganization(
-          TabOrganizationEntryPoint::THREE_DOT_MENU);
+          TabOrganizationEntryPoint::kThreeDotMenu);
 
   ASSERT_NE(session->GetNextTabOrganization(), nullptr);
   session->GetNextTabOrganization()->Reject();
@@ -1461,7 +1461,7 @@ TEST_F(TabOrganizationTest,
        HistogramLogNoChoiceOrganizationProactiveEntryPoint) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<TabOrganizationSession> session =
-      CreateSessionWithValidOrganization(TabOrganizationEntryPoint::PROACTIVE);
+      CreateSessionWithValidOrganization(TabOrganizationEntryPoint::kProactive);
   ASSERT_NE(session->GetNextTabOrganization(), nullptr);
 
   session.reset();

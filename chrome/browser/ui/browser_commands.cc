@@ -1521,7 +1521,8 @@ void StartTabOrganizationRequest(Browser* browser) {
   UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
   UMA_HISTOGRAM_BOOLEAN("Tab.Organization.ThreeDotMenu.Clicked", true);
 
-  service->RestartSessionAndShowUI(browser);
+  service->RestartSessionAndShowUI(browser,
+                                   TabOrganizationEntryPoint::kThreeDotMenu);
 }
 
 void ShowTranslateBubble(Browser* browser) {

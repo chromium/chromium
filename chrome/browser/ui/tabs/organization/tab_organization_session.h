@@ -39,7 +39,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
   TabOrganizationSession();
   explicit TabOrganizationSession(
       std::unique_ptr<TabOrganizationRequest> request,
-      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::NONE);
+      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::kNone);
   ~TabOrganizationSession() override;
 
   const TabOrganizationRequest* request() const { return request_.get(); }
@@ -51,6 +51,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
       const Browser* browser,
+      const TabOrganizationEntryPoint entrypoint,
       const content::WebContents* base_session_webcontents = nullptr);
 
   const TabOrganization* GetNextTabOrganization() const;

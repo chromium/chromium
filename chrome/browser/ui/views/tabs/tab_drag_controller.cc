@@ -2169,7 +2169,7 @@ void TabDragController::CompleteDrag() {
   if (source_context_ == attached_context_) {
     LogTabStripOrganizationUKM(
         attached_context_->GetTabStripModel(),
-        SuggestedTabStripOrganizationReason::DRAGGED_WITHIN_SAME_TABSTRIP);
+        SuggestedTabStripOrganizationReason::kDraggedWithinSameTabstrip);
   }
 }
 
