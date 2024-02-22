@@ -28,6 +28,7 @@ import static org.chromium.chrome.features.tasks.SingleTabViewProperties.URL;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.Size;
 
 import org.junit.After;
@@ -363,6 +364,14 @@ public class SingleTabSwitcherMediatorUnitTest {
         verify(mOnTabSelectingListener).onTabSelecting(eq(mTabId));
 
         mMediator.hideTabSwitcherView(true);
+    }
+
+    @Test
+    public void testDomainUrl() {
+        String expectedUrl = "about";
+        GURL url = JUnitTestGURLs.CHROME_ABOUT;
+        assertNotNull(SingleTabSwitcherMediator.getDomainUrl(url));
+        assertTrue(TextUtils.equals(expectedUrl, SingleTabSwitcherMediator.getDomainUrl(url)));
     }
 
     private SingleTabSwitcherMediator createMediator(
