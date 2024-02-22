@@ -1933,13 +1933,9 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
   }
 
   // Open new window for the additional profile. This profile becomes active.
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   profiles::FindOrCreateNewWindowForProfile(
       profile, chrome::startup::IsProcessStartup::kNo,
       chrome::startup::IsFirstRun::kNo, false);
-  ui_test_utils::WaitForBrowserSetLastActive(
-      new_browser_observer.Wait(), /*wait_for_set_last_active_observed=*/true);
 
   // On Lacros SessionStartupPref::ShouldRestoreLastSession() returns true for
   // the new profile. The session is then restored before the browser is shown
