@@ -82,8 +82,7 @@ class BackgroundFetchRegistration final
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(progress, kProgress)
 
-  ScriptPromise abort(ScriptState* script_state,
-                      ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLBoolean> abort(ScriptState*, ExceptionState&);
 
   // EventTarget implementation.
   const AtomicString& InterfaceName() const override;
@@ -101,7 +100,7 @@ class BackgroundFetchRegistration final
           callback);
 
  private:
-  void DidAbort(ScriptPromiseResolver* resolver,
+  void DidAbort(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
                 mojom::blink::BackgroundFetchError error);
   void MatchImpl(ScriptState* script_state,
                  ScriptPromiseResolver*,

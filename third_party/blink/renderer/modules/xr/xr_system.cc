@@ -395,7 +395,8 @@ void XRSystem::PendingSupportsSessionQuery::Resolve(
                              kSessionNotSupported, exception_state);
     }
   } else {
-    resolver_->Resolve(supported);
+    static_cast<ScriptPromiseResolverTyped<IDLBoolean>*>(resolver_.Get())
+        ->Resolve(supported);
   }
 }
 
@@ -902,13 +903,22 @@ void XRSystem::SetFramesThrottled(const XRSession* session, bool throttled) {
 ScriptPromise XRSystem::supportsSession(ScriptState* script_state,
                                         const String& mode,
                                         ExceptionState& exception_state) {
-  return InternalIsSessionSupported(script_state, mode, exception_state, true);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  InternalIsSessionSupported(resolver, mode, exception_state, true);
+  return promise;
 }
 
-ScriptPromise XRSystem::isSessionSupported(ScriptState* script_state,
-                                           const String& mode,
-                                           ExceptionState& exception_state) {
-  return InternalIsSessionSupported(script_state, mode, exception_state, false);
+ScriptPromiseTyped<IDLBoolean> XRSystem::isSessionSupported(
+    ScriptState* script_state,
+    const String& mode,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  InternalIsSessionSupported(resolver, mode, exception_state, false);
+  return promise;
 }
 
 void XRSystem::AddConsoleMessage(mojom::blink::ConsoleMessageLevel error_level,
@@ -920,21 +930,16 @@ void XRSystem::AddConsoleMessage(mojom::blink::ConsoleMessageLevel error_level,
       mojom::blink::ConsoleMessageSource::kJavaScript, error_level, message));
 }
 
-ScriptPromise XRSystem::InternalIsSessionSupported(
-    ScriptState* script_state,
-    const String& mode,
-    ExceptionState& exception_state,
-    bool throw_on_unsupported) {
+void XRSystem::InternalIsSessionSupported(ScriptPromiseResolver* resolver,
+                                          const String& mode,
+                                          ExceptionState& exception_state,
+                                          bool throw_on_unsupported) {
   if (!GetExecutionContext()) {
     // Reject if the context is inaccessible.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNavigatorDetachedError);
-    return ScriptPromise();  // Will be rejected by generated bindings
+    return;  // Promise will be rejected by generated bindings
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
 
   device::mojom::blink::XRSessionMode session_mode = stringToSessionMode(mode);
   PendingSupportsSessionQuery* query =
@@ -947,13 +952,13 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
              << ": Immersive AR session is only supported if WebXRARModule "
                 "feature is enabled by a runtime feature and web settings";
     query->Resolve(false);
-    return promise;
+    return;
   }
 
   if (session_mode == device::mojom::blink::XRSessionMode::kInline) {
     // inline sessions are always supported.
     query->Resolve(true);
-    return promise;
+    return;
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
@@ -962,7 +967,7 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
     // Only allow the call to be made if the appropriate permissions policy is
     // in place.
     query->RejectWithSecurityError(kFeaturePolicyBlocked, &exception_state);
-    return promise;
+    return;
   }
 
   // If TryEnsureService() doesn't set |service_|, then we don't have any WebXR
@@ -970,7 +975,7 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
   TryEnsureService();
   if (!service_.is_bound()) {
     query->Resolve(false, &exception_state);
-    return promise;
+    return;
   }
 
   device::mojom::blink::XRSessionOptionsPtr session_options =
@@ -983,8 +988,6 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
       std::move(session_options),
       WTF::BindOnce(&XRSystem::OnSupportsSessionReturned, WrapPersistent(this),
                     WrapPersistent(query)));
-
-  return promise;
 }
 
 void XRSystem::RequestSessionInternal(

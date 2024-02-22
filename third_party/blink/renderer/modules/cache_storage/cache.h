@@ -79,10 +79,10 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   ScriptPromise addAll(ScriptState* script_state,
                        const HeapVector<Member<V8RequestInfo>>& requests,
                        ExceptionState& exception_state);
-  ScriptPromise Delete(ScriptState* script_state,
-                       const V8RequestInfo* request,
-                       const CacheQueryOptions* options,
-                       ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLBoolean> Delete(ScriptState* script_state,
+                                        const V8RequestInfo* request,
+                                        const CacheQueryOptions* options,
+                                        ExceptionState& exception_state);
   ScriptPromise put(ScriptState* script_state,
                     const V8RequestInfo* request,
                     Response* response,
@@ -120,10 +120,10 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
                            const String& method_name,
                            const HeapVector<Member<Request>>&,
                            ExceptionState&);
-  ScriptPromise DeleteImpl(ScriptState*,
-                           const Request*,
-                           const CacheQueryOptions*,
-                           ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> DeleteImpl(ScriptState*,
+                                            const Request*,
+                                            const CacheQueryOptions*,
+                                            ExceptionState&);
   void PutImpl(ScriptPromiseResolver*,
                const String& method_name,
                const HeapVector<Member<Request>>&,

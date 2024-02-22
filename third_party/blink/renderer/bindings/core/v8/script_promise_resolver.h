@@ -377,9 +377,7 @@ class CORE_EXPORT ScriptPromiseResolver
 
   static v8::Local<v8::Value> ToV8(bool value,
                                    v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return v8::Boolean::New(isolate, value);
-  }
+                                   v8::Isolate* isolate) = delete;
 
   // Identity operator
   static v8::Local<v8::Value> ToV8(v8::Local<v8::Value> value,

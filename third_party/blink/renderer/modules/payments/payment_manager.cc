@@ -33,14 +33,14 @@ void PaymentManager::setUserHint(const String& user_hint) {
   manager_->SetUserHint(user_hint_);
 }
 
-ScriptPromise PaymentManager::enableDelegations(
+ScriptPromiseTyped<IDLBoolean> PaymentManager::enableDelegations(
     ScriptState* script_state,
     const Vector<V8PaymentDelegation>& delegations,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot enable payment delegations");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
   if (enable_delegations_resolver_) {
@@ -48,7 +48,7 @@ ScriptPromise PaymentManager::enableDelegations(
         DOMExceptionCode::kInvalidStateError,
         "Cannot call enableDelegations() again until the previous "
         "enableDelegations() is finished");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
   using MojoPaymentDelegation = payments::mojom::blink::PaymentDelegation;
@@ -78,8 +78,9 @@ ScriptPromise PaymentManager::enableDelegations(
       std::move(mojo_delegations),
       WTF::BindOnce(&PaymentManager::OnEnableDelegationsResponse,
                     WrapPersistent(this)));
-  enable_delegations_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  enable_delegations_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+          script_state, exception_state.GetContext());
   return enable_delegations_resolver_->Promise();
 }
 

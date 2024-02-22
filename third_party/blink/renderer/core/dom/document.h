@@ -1245,7 +1245,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Storage Access API methods to check for or request access to storage that
   // may otherwise be blocked.
-  ScriptPromise hasStorageAccess(ScriptState* script_state);
+  ScriptPromiseTyped<IDLBoolean> hasStorageAccess(ScriptState* script_state);
   ScriptPromise requestStorageAccess(ScriptState* script_state);
   ScriptPromise requestStorageAccessFor(ScriptState* script_state,
                                         const AtomicString& site);
@@ -1259,18 +1259,18 @@ class CORE_EXPORT Document : public ContainerNode,
   // with the top-level origin would exceed the top-level origin's limit on the
   // number of associated issuers) or on other internal errors (e.g. the network
   // service is unavailable).
-  ScriptPromise hasPrivateToken(ScriptState* script_state,
-                                const String& issuer,
-                                ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> hasPrivateToken(ScriptState* script_state,
+                                                 const String& issuer,
+                                                 ExceptionState&);
 
   // Sends a query via Mojo to ask whether the user has a redemption record.
   // This can reject on permissions errors (e.g. associating |issuer| with the
   // top-level origin would exceed the top-level origin's limit on the number of
   // associated issuers) or on other internal errors (e.g. the network service
   // is unavailable).
-  ScriptPromise hasRedemptionRecord(ScriptState* script_state,
-                                    const String& issuer,
-                                    ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> hasRedemptionRecord(ScriptState* script_state,
+                                                     const String& issuer,
+                                                     ExceptionState&);
 
   void ariaNotify(const String& announcement, const AriaNotificationOptions*);
 

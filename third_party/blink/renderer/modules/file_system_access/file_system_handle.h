@@ -64,9 +64,9 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
                        const FileSystemRemoveOptions* options,
                        ExceptionState&);
 
-  ScriptPromise isSameEntry(ScriptState*,
-                            FileSystemHandle* other,
-                            ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> isSameEntry(ScriptState*,
+                                             FileSystemHandle* other,
+                                             ExceptionState&);
   ScriptPromise getUniqueId(ScriptState*, ExceptionState&);
   ScriptPromiseTyped<IDLSequence<FileSystemCloudIdentifier>>
   getCloudIdentifiers(ScriptState*, ExceptionState&);

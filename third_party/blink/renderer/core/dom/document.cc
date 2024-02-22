@@ -6549,7 +6549,8 @@ void Document::PermissionServiceConnectionError() {
   data_->permission_service_.reset();
 }
 
-ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
+ScriptPromiseTyped<IDLBoolean> Document::hasStorageAccess(
+    ScriptState* script_state) {
   // See
   // https://privacycg.github.io/storage-access/#dom-document-hasstorageaccess
   // for the steps implemented here.
@@ -6558,17 +6559,16 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
   // return p.
   if (!GetFrame()) {
     // Note that in detached frames, resolvers are not able to return a promise.
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLBoolean>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "hasStorageAccess: Cannot be used unless the "
                           "document is fully active."));
   }
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
+  auto promise = resolver->Promise();
   resolver->Resolve([&]() -> bool {
     // #3: if doc's origin is opaque, return false.
     if (GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
@@ -6903,13 +6903,13 @@ FragmentDirective& Document::fragmentDirective() const {
   return *fragment_directive_;
 }
 
-ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
-                                        const String& issuer,
-                                        ExceptionState& exception_state) {
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+ScriptPromiseTyped<IDLBoolean> Document::hasPrivateToken(
+    ScriptState* script_state,
+    const String& issuer,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   // Private State Tokens state is keyed by issuer and top-frame origins that
   // are both (1) HTTP or HTTPS and (2) potentially trustworthy. Consequently,
@@ -6965,7 +6965,7 @@ ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
   data_->trust_token_query_answerer_->HasTrustTokens(
       issuer_origin,
       WTF::BindOnce(
-          [](WeakPersistent<ScriptPromiseResolver> resolver,
+          [](WeakPersistent<ScriptPromiseResolverTyped<IDLBoolean>> resolver,
              WeakPersistent<Document> document,
              network::mojom::blink::HasTrustTokensResultPtr result) {
             // If there was a Mojo connection error, the promise was already
@@ -7018,13 +7018,13 @@ ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Document::hasRedemptionRecord(ScriptState* script_state,
-                                            const String& issuer,
-                                            ExceptionState& exception_state) {
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+ScriptPromiseTyped<IDLBoolean> Document::hasRedemptionRecord(
+    ScriptState* script_state,
+    const String& issuer,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   // Private State Tokens state is keyed by issuer and top-frame origins that
   // are both (1) HTTP or HTTPS and (2) potentially trustworthy. Consequently,
@@ -7080,7 +7080,7 @@ ScriptPromise Document::hasRedemptionRecord(ScriptState* script_state,
   data_->trust_token_query_answerer_->HasRedemptionRecord(
       issuer_origin,
       WTF::BindOnce(
-          [](WeakPersistent<ScriptPromiseResolver> resolver,
+          [](WeakPersistent<ScriptPromiseResolverTyped<IDLBoolean>> resolver,
              WeakPersistent<Document> document,
              network::mojom::blink::HasRedemptionRecordResultPtr result) {
             // If there was a Mojo connection error, the promise was already

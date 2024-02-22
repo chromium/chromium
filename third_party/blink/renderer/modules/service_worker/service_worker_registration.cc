@@ -53,7 +53,7 @@ void DidUpdate(ScriptPromiseResolver* resolver,
   resolver->Resolve(registration);
 }
 
-void DidUnregister(ScriptPromiseResolver* resolver,
+void DidUnregister(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
                    mojom::ServiceWorkerErrorType error,
                    const String& error_msg) {
   if (!resolver->GetExecutionContext() ||
@@ -315,7 +315,7 @@ ScriptPromise ServiceWorkerRegistration::update(
   return resolver->Promise();
 }
 
-ScriptPromise ServiceWorkerRegistration::unregister(
+ScriptPromiseTyped<IDLBoolean> ServiceWorkerRegistration::unregister(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!GetExecutionContext()) {
@@ -323,10 +323,11 @@ ScriptPromise ServiceWorkerRegistration::unregister(
                                       "Failed to unregister a "
                                       "ServiceWorkerRegistration: No "
                                       "associated provider is available.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
 
   // Defer unregister() from a prerendered page until page activation.
   // https://wicg.github.io/nav-speculation/prerendering.html#patch-service-workers
@@ -413,7 +414,7 @@ void ServiceWorkerRegistration::UpdateInternal(
 }
 
 void ServiceWorkerRegistration::UnregisterInternal(
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLBoolean>* resolver) {
   if (!host_.is_bound()) {
     return;
   }

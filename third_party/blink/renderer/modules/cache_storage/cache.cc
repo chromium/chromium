@@ -797,10 +797,10 @@ ScriptPromise Cache::addAll(ScriptState* script_state,
                     exception_state);
 }
 
-ScriptPromise Cache::Delete(ScriptState* script_state,
-                            const V8RequestInfo* request,
-                            const CacheQueryOptions* options,
-                            ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLBoolean> Cache::Delete(ScriptState* script_state,
+                                             const V8RequestInfo* request,
+                                             const CacheQueryOptions* options,
+                                             ExceptionState& exception_state) {
   DCHECK(request);
   Request* request_object = nullptr;
   switch (request->GetContentType()) {
@@ -811,7 +811,7 @@ ScriptPromise Cache::Delete(ScriptState* script_state,
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException())
-        return ScriptPromise();
+        return ScriptPromiseTyped<IDLBoolean>();
       break;
   }
   return DeleteImpl(script_state, request_object, options, exception_state);
@@ -1128,13 +1128,14 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Cache::DeleteImpl(ScriptState* script_state,
-                                const Request* request,
-                                const CacheQueryOptions* options,
-                                ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+ScriptPromiseTyped<IDLBoolean> Cache::DeleteImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+  const auto promise = resolver->Promise();
 
   Vector<mojom::blink::BatchOperationPtr> batch_operations;
   batch_operations.push_back(mojom::blink::BatchOperation::New());
@@ -1162,7 +1163,8 @@ ScriptPromise Cache::DeleteImpl(ScriptState* script_state,
       std::move(batch_operations), trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
-             int64_t trace_id, Cache* _, ScriptPromiseResolver* resolver,
+             int64_t trace_id, Cache* _,
+             ScriptPromiseResolverTyped<IDLBoolean>* resolver,
              mojom::blink::CacheStorageVerboseErrorPtr error) {
             UMA_HISTOGRAM_LONG_TIMES(
                 "ServiceWorkerCache.Cache.Renderer.DeleteOne",

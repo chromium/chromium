@@ -86,7 +86,7 @@ class ServiceWorkerRegistration final
                                   ScriptPromiseResolver* resolver);
 
   ScriptPromise update(ScriptState*, ExceptionState&);
-  ScriptPromise unregister(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> unregister(ScriptState*, ExceptionState&);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(updatefound, kUpdatefound)
 
@@ -113,7 +113,7 @@ class ServiceWorkerRegistration final
   void UpdateInternal(
       mojom::blink::FetchClientSettingsObjectPtr mojom_settings_object,
       ScriptPromiseResolver* resolver);
-  void UnregisterInternal(ScriptPromiseResolver* resolver);
+  void UnregisterInternal(ScriptPromiseResolverTyped<IDLBoolean>* resolver);
 
   Member<ServiceWorker> installing_;
   Member<ServiceWorker> waiting_;

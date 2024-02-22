@@ -173,17 +173,19 @@ ScriptPromise FileSystemHandle::remove(ScriptState* script_state,
   return result;
 }
 
-ScriptPromise FileSystemHandle::isSameEntry(ScriptState* script_state,
-                                            FileSystemHandle* other,
-                                            ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+ScriptPromiseTyped<IDLBoolean> FileSystemHandle::isSameEntry(
+    ScriptState* script_state,
+    FileSystemHandle* other,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto result = resolver->Promise();
 
   IsSameEntryImpl(
       other->Transfer(),
       WTF::BindOnce(
-          [](FileSystemHandle*, ScriptPromiseResolver* resolver,
+          [](FileSystemHandle*,
+             ScriptPromiseResolverTyped<IDLBoolean>* resolver,
              FileSystemAccessErrorPtr result, bool same) {
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.

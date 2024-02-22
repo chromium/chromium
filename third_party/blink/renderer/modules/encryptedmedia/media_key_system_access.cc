@@ -43,9 +43,10 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
       ScriptState* script_state,
       const MediaKeysConfig& config,
       const WebVector<WebEncryptedMediaSessionType>& supported_session_types)
-      : ContentDecryptionModuleResultPromise(script_state,
-                                             config,
-                                             EmeApiType::kCreateMediaKeys),
+      : ContentDecryptionModuleResultPromise(
+            MakeGarbageCollected<ScriptPromiseResolver>(script_state),
+            config,
+            EmeApiType::kCreateMediaKeys),
         config_(config),
         supported_session_types_(supported_session_types) {}
 

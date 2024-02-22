@@ -39,12 +39,10 @@ ExceptionCode WebCdmExceptionToExceptionCode(
 }
 
 ContentDecryptionModuleResultPromise::ContentDecryptionModuleResultPromise(
-    ScriptState* script_state,
+    ScriptPromiseResolver* resolver,
     const MediaKeysConfig& config,
     EmeApiType api_type)
-    : resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      config_(config),
-      api_type_(api_type) {}
+    : resolver_(resolver), config_(config), api_type_(api_type) {}
 
 ContentDecryptionModuleResultPromise::~ContentDecryptionModuleResultPromise() =
     default;

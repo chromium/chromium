@@ -39,9 +39,11 @@ const String& StorageBucket::name() {
   return name_;
 }
 
-ScriptPromise StorageBucket::persist(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLBoolean> StorageBucket::persist(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -57,9 +59,11 @@ ScriptPromise StorageBucket::persist(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise StorageBucket::persisted(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLBoolean> StorageBucket::persisted(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -214,9 +218,10 @@ void StorageBucket::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-void StorageBucket::DidRequestPersist(ScriptPromiseResolver* resolver,
-                                      bool persisted,
-                                      bool success) {
+void StorageBucket::DidRequestPersist(
+    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+    bool persisted,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -232,9 +237,10 @@ void StorageBucket::DidRequestPersist(ScriptPromiseResolver* resolver,
   resolver->Resolve(persisted);
 }
 
-void StorageBucket::DidGetPersisted(ScriptPromiseResolver* resolver,
-                                    bool persisted,
-                                    bool success) {
+void StorageBucket::DidGetPersisted(
+    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+    bool persisted,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;

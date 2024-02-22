@@ -133,9 +133,11 @@ bool ImageDecoderExternal::DecodeRequest::IsFinal() const {
 }
 
 // static
-ScriptPromise ImageDecoderExternal::isTypeSupported(ScriptState* script_state,
-                                                    String type) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLBoolean> ImageDecoderExternal::isTypeSupported(
+    ScriptState* script_state,
+    String type) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
   auto promise = resolver->Promise();
   resolver->Resolve(IsTypeSupportedInternal(type));
   return promise;

@@ -38,8 +38,8 @@ class StorageBucket final : public ScriptWrappable,
   ~StorageBucket() override = default;
 
   const String& name();
-  ScriptPromise persist(ScriptState*);
-  ScriptPromise persisted(ScriptState*);
+  ScriptPromiseTyped<IDLBoolean> persist(ScriptState*);
+  ScriptPromiseTyped<IDLBoolean> persisted(ScriptState*);
   ScriptPromise estimate(ScriptState*);
   ScriptPromise durability(ScriptState*);
   ScriptPromise setExpires(ScriptState*, const DOMHighResTimeStamp&);
@@ -58,10 +58,10 @@ class StorageBucket final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  void DidRequestPersist(ScriptPromiseResolver* resolver,
+  void DidRequestPersist(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
                          bool persisted,
                          bool success);
-  void DidGetPersisted(ScriptPromiseResolver* resolver,
+  void DidGetPersisted(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
                        bool persisted,
                        bool success);
   void DidGetEstimate(ScriptPromiseResolver* resolver,

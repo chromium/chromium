@@ -213,7 +213,8 @@ void CryptoResultImpl::CompleteWithBoolean(bool b) {
   if (!resolver_)
     return;
 
-  resolver_->Resolve(b);
+  resolver_->Resolve(
+      v8::Boolean::New(resolver_->GetScriptState()->GetIsolate(), b));
   ClearResolver();
 }
 

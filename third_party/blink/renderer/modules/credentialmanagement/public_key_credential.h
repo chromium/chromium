@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_response.h"
@@ -24,7 +25,6 @@ enum class AuthenticatorAttachment;
 class AuthenticatorResponse;
 class PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialCreationOptionsJSON;
-class ScriptPromise;
 class ScriptState;
 class V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON;
 
@@ -45,10 +45,11 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
   std::optional<String> authenticatorAttachment() const {
     return authenticator_attachment_;
   }
-  static ScriptPromise isUserVerifyingPlatformAuthenticatorAvailable(
-      ScriptState*);
+  static ScriptPromiseTyped<IDLBoolean>
+  isUserVerifyingPlatformAuthenticatorAvailable(ScriptState*);
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
-  static ScriptPromise isConditionalMediationAvailable(ScriptState*);
+  static ScriptPromiseTyped<IDLBoolean> isConditionalMediationAvailable(
+      ScriptState*);
   static const PublicKeyCredentialCreationOptions* parseCreationOptionsFromJSON(
       ScriptState*,
       const PublicKeyCredentialCreationOptionsJSON*,

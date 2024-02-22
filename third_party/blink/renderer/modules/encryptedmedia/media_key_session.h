@@ -99,7 +99,9 @@ class MediaKeySession final
                                 const String& init_data_type,
                                 const DOMArrayPiece& init_data,
                                 ExceptionState&);
-  ScriptPromise load(ScriptState*, const String& session_id, ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> load(ScriptState*,
+                                      const String& session_id,
+                                      ExceptionState&);
   ScriptPromise update(ScriptState*,
                        const DOMArrayPiece& response,
                        ExceptionState&);

@@ -49,7 +49,8 @@ class MODULES_EXPORT ImageDecoderExternal final
   ImageDecoderExternal(ScriptState*, const ImageDecoderInit*, ExceptionState&);
   ~ImageDecoderExternal() override;
 
-  static ScriptPromise isTypeSupported(ScriptState*, String type);
+  static ScriptPromiseTyped<IDLBoolean> isTypeSupported(ScriptState*,
+                                                        String type);
 
   // image_decoder.idl implementation.
   ScriptPromise decode(const ImageDecodeOptions* options = nullptr);

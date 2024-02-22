@@ -43,7 +43,7 @@ class Bluetooth final : public EventTarget,
   ~Bluetooth() override;
 
   // IDL exposed bluetooth interface:
-  ScriptPromise getAvailability(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> getAvailability(ScriptState*, ExceptionState&);
   ScriptPromiseTyped<IDLSequence<BluetoothDevice>> getDevices(ScriptState*,
                                                               ExceptionState&);
   ScriptPromise requestDevice(ScriptState*,

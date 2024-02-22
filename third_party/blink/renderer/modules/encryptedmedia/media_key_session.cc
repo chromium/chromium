@@ -132,17 +132,25 @@ static ScriptPromise CreateRejectedPromiseNotCallable(
   return ScriptPromise();
 }
 
-static ScriptPromise CreateRejectedPromiseAlreadyClosed(
-    ExceptionState& exception_state) {
+static void ThrowAlreadyClosed(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     "The session is already closed.");
+}
+
+static ScriptPromise CreateRejectedPromiseAlreadyClosed(
+    ExceptionState& exception_state) {
+  ThrowAlreadyClosed(exception_state);
   return ScriptPromise();
+}
+
+static void ThrowAlreadyInitialized(ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                    "The session is already initialized.");
 }
 
 static ScriptPromise CreateRejectedPromiseAlreadyInitialized(
     ExceptionState& exception_state) {
-  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                    "The session is already initialized.");
+  ThrowAlreadyInitialized(exception_state);
   return ScriptPromise();
 }
 
@@ -250,9 +258,10 @@ class NewSessionResultPromise : public ContentDecryptionModuleResultPromise {
   NewSessionResultPromise(ScriptState* script_state,
                           const MediaKeysConfig& config,
                           MediaKeySession* session)
-      : ContentDecryptionModuleResultPromise(script_state,
-                                             config,
-                                             EmeApiType::kGenerateRequest),
+      : ContentDecryptionModuleResultPromise(
+            MakeGarbageCollected<ScriptPromiseResolver>(script_state),
+            config,
+            EmeApiType::kGenerateRequest),
         session_(session) {}
 
   ~NewSessionResultPromise() override = default;
@@ -287,10 +296,10 @@ class NewSessionResultPromise : public ContentDecryptionModuleResultPromise {
 // is not expected to be called, and will reject the promise.
 class LoadSessionResultPromise : public ContentDecryptionModuleResultPromise {
  public:
-  LoadSessionResultPromise(ScriptState* script_state,
+  LoadSessionResultPromise(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
                            const MediaKeysConfig& config,
                            MediaKeySession* session)
-      : ContentDecryptionModuleResultPromise(script_state,
+      : ContentDecryptionModuleResultPromise(resolver,
                                              config,
                                              EmeApiType::kLoad),
         session_(session) {}
@@ -307,13 +316,13 @@ class LoadSessionResultPromise : public ContentDecryptionModuleResultPromise {
       return;
 
     if (status == WebContentDecryptionModuleResult::kSessionNotFound) {
-      Resolve(false);
+      Resolve<IDLBoolean>(false);
       return;
     }
 
     DCHECK_EQ(status, WebContentDecryptionModuleResult::kNewSession);
     session_->FinishLoad();
-    Resolve(true);
+    Resolve<IDLBoolean>(true);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -334,9 +343,10 @@ class CloseSessionResultPromise : public ContentDecryptionModuleResultPromise {
   CloseSessionResultPromise(ScriptState* script_state,
                             const MediaKeysConfig& config,
                             MediaKeySession* session)
-      : ContentDecryptionModuleResultPromise(script_state,
-                                             config,
-                                             EmeApiType::kClose),
+      : ContentDecryptionModuleResultPromise(
+            MakeGarbageCollected<ScriptPromiseResolver>(script_state),
+            config,
+            EmeApiType::kClose),
         session_(session) {}
 
   ~CloseSessionResultPromise() override = default;
@@ -374,7 +384,10 @@ class SimpleResultPromise : public ContentDecryptionModuleResultPromise {
                       const MediaKeysConfig& config,
                       MediaKeySession* session,
                       EmeApiType type)
-      : ContentDecryptionModuleResultPromise(script_state, config, type),
+      : ContentDecryptionModuleResultPromise(
+            MakeGarbageCollected<ScriptPromiseResolver>(script_state),
+            config,
+            type),
         session_(session) {}
 
   ~SimpleResultPromise() override = default;
@@ -603,9 +616,10 @@ void MediaKeySession::FinishGenerateRequest() {
   //         (Done by NewSessionResultPromise.)
 }
 
-ScriptPromise MediaKeySession::load(ScriptState* script_state,
-                                    const String& session_id,
-                                    ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLBoolean> MediaKeySession::load(
+    ScriptState* script_state,
+    const String& session_id,
+    ExceptionState& exception_state) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL)
       << __func__ << "(" << this << ") " << session_id;
 
@@ -615,13 +629,16 @@ ScriptPromise MediaKeySession::load(ScriptState* script_state,
 
   // 1. If this object's closing or closed value is true, return a promise
   //    rejected with an InvalidStateError.
-  if (is_closing_ || is_closed_)
-    return CreateRejectedPromiseAlreadyClosed(exception_state);
+  if (is_closing_ || is_closed_) {
+    ThrowAlreadyClosed(exception_state);
+    return ScriptPromiseTyped<IDLBoolean>();
+  }
 
   // 2. If this object's uninitialized value is false, return a promise
   //    rejected with an InvalidStateError.
   if (!is_uninitialized_) {
-    return CreateRejectedPromiseAlreadyInitialized(exception_state);
+    ThrowAlreadyInitialized(exception_state);
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
   // 3. Let this object's uninitialized value be false.
@@ -631,7 +648,7 @@ ScriptPromise MediaKeySession::load(ScriptState* script_state,
   //    a newly created TypeError.
   if (session_id.empty()) {
     exception_state.ThrowTypeError("The sessionId parameter is empty.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
   // 5. If the result of running the "Is persistent session type?" algorithm
@@ -639,17 +656,18 @@ ScriptPromise MediaKeySession::load(ScriptState* script_state,
   //    with a newly created TypeError.
   if (!IsPersistentSessionType(session_type_)) {
     exception_state.ThrowTypeError("The session type is not persistent.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
   // 6. Let origin be the origin of this object's Document.
   //    (Available as getExecutionContext()->getSecurityOrigin() anytime.)
 
   // 7. Let promise be a new promise.
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
+  auto promise = resolver->Promise();
   LoadSessionResultPromise* result =
-      MakeGarbageCollected<LoadSessionResultPromise>(script_state, config_,
-                                                     this);
-  ScriptPromise promise = result->Promise();
+      MakeGarbageCollected<LoadSessionResultPromise>(resolver, config_, this);
 
   // 8. Run the following steps asynchronously (done in loadTask())
   pending_actions_.push_back(

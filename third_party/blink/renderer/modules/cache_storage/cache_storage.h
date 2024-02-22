@@ -44,12 +44,12 @@ class CacheStorage final : public ScriptWrappable,
   ScriptPromise open(ScriptState*,
                      const String& cache_name,
                      ExceptionState& exception_state);
-  ScriptPromise has(ScriptState*,
-                    const String& cache_name,
-                    ExceptionState& exception_state);
-  ScriptPromise Delete(ScriptState*,
-                       const String& cache_name,
-                       ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLBoolean> has(ScriptState*,
+                                     const String& cache_name,
+                                     ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLBoolean> Delete(ScriptState*,
+                                        const String& cache_name,
+                                        ExceptionState& exception_state);
   ScriptPromiseTyped<IDLSequence<IDLString>> keys(ScriptState*,
                                                   ExceptionState&);
   ScriptPromise match(ScriptState* script_state,
@@ -80,10 +80,10 @@ class CacheStorage final : public ScriptWrappable,
                 ScriptPromiseResolver* resolver);
   void HasImpl(const String& cache_name,
                int64_t trace_id,
-               ScriptPromiseResolver* resolver);
+               ScriptPromiseResolverTyped<IDLBoolean>* resolver);
   void DeleteImpl(const String& cache_name,
                   int64_t trace_id,
-                  ScriptPromiseResolver* resolver);
+                  ScriptPromiseResolverTyped<IDLBoolean>* resolver);
   void KeysImpl(int64_t trace_id,
                 ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver);
   ScriptPromise MatchImpl(ScriptState*,

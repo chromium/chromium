@@ -89,9 +89,10 @@ class XRSystem final : public EventTarget,
   ScriptPromise supportsSession(ScriptState*,
                                 const String&,
                                 ExceptionState& exception_state);
-  ScriptPromise isSessionSupported(ScriptState*,
-                                   const String&,
-                                   ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLBoolean> isSessionSupported(
+      ScriptState*,
+      const String&,
+      ExceptionState& exception_state);
   ScriptPromise requestSession(ScriptState*,
                                const String&,
                                XRSessionInit*,
@@ -364,10 +365,10 @@ class XRSystem final : public EventTarget,
   void AddConsoleMessage(mojom::blink::ConsoleMessageLevel error_level,
                          const String& message);
 
-  ScriptPromise InternalIsSessionSupported(ScriptState*,
-                                           const String&,
-                                           ExceptionState& exception_state,
-                                           bool throw_on_unsupported);
+  void InternalIsSessionSupported(ScriptPromiseResolver*,
+                                  const String&,
+                                  ExceptionState& exception_state,
+                                  bool throw_on_unsupported);
 
   const char* CheckInlineSessionRequestAllowed(
       LocalFrame* frame,
