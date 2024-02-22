@@ -575,7 +575,7 @@ PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch() {
             .emplace(is_isolated_network_context_required,
                      std::make_unique<PrefetchNetworkContext>(
                          is_isolated_network_context_required, prefetch_type_,
-                         referring_render_frame_host_id_))
+                         referring_render_frame_host_id_, referring_origin_))
             .first;
   }
 

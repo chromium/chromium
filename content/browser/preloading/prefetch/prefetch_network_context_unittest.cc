@@ -110,7 +110,7 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
-          main_rfh()->GetGlobalId());
+          main_rfh()->GetGlobalId(), main_rfh()->GetLastCommittedOrigin());
 
   prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }
@@ -142,7 +142,7 @@ TEST_F(PrefetchNetworkContextTest,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
-          main_rfh()->GetGlobalId());
+          main_rfh()->GetGlobalId(), main_rfh()->GetLastCommittedOrigin());
 
   prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }

@@ -32,7 +32,8 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   PrefetchNetworkContext(
       bool use_isolated_network_context,
       const PrefetchType& prefetch_type,
-      const GlobalRenderFrameHostId& referring_render_frame_host_id);
+      const GlobalRenderFrameHostId& referring_render_frame_host_id,
+      const url::Origin& referring_origin);
   ~PrefetchNetworkContext();
 
   PrefetchNetworkContext(const PrefetchNetworkContext&) = delete;
@@ -73,6 +74,12 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   // The referring RenderFrameHost is used when considering to proxy
   // |url_loader_factory_| by calling WillCreateURLLoaderFactory.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
+
+  // The origin that initiates the prefetch request, used when considering to
+  // proxy |url_loader_factory_| by calling WillCreateURLLoaderFactory.
+  // For renderer-initiated prefetch, this is calculated by referring
+  // RenderFrameHost's LastCommittedOrigin.
+  const url::Origin referring_origin_;
 
   // The network context and URL loader factory to use when making prefetches.
   mojo::Remote<network::mojom::NetworkContext> network_context_;
