@@ -1449,6 +1449,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Context menu inspect"/>
   <int value="4" label="Inspect mode shortcut"/>
   <int value="5" label="Toggle shortcut"/>
+  <int value="6" label="Inspect link"/>
+  <int value="7" label="Automatic for new target"/>
+  <int value="8" label="Target reload"/>
+  <int value="9" label="Open for node from another target"/>
+  <int value="10" label="Pinned toolbar button"/>
 </enum>
 
 <enum name="DevToolsPanel">

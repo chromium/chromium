@@ -58,9 +58,11 @@ enum class DevToolsOpenedByAction {
   kTargetReload = 8,
   // Open Node DevTools button in a regular app
   kOpenForNodeFromAnotherTarget = 9,
+  // User-pinned button in the toolbar
+  kPinnedToolbarButton = 10,
   // Add values above this line with a corresponding label in
-  // tools/metrics/histograms/enums.xml
-  kMaxValue = kOpenForNodeFromAnotherTarget,
+  // tools/metrics/histograms/metadata/dev/enums.xml
+  kMaxValue = kPinnedToolbarButton,
 };
 
 enum class DevToolsClosedByAction {
@@ -72,7 +74,8 @@ enum class DevToolsClosedByAction {
   kToggleShortcut = 2,
   kCloseButton = 3,
   kTargetDetach = 4,
-  kMaxValue = kTargetDetach,
+  kPinnedToolbarButton = 5,
+  kMaxValue = kPinnedToolbarButton,
 };
 
 class DevToolsWindow : public DevToolsUIBindings::Delegate,

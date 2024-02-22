@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -276,4 +277,17 @@ void BrowserActions::InitializeBrowserActions() {
                          kTaskManagerIcon)
             .Build());
   }
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             chrome::ToggleDevToolsWindow(
+                                 browser, DevToolsToggleAction::Show(),
+                                 DevToolsOpenedByAction::kPinnedToolbarButton);
+                           },
+                           base::Unretained(&(browser_.get()))),
+                       kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS,
+                       kDeveloperToolsIcon)
+          .Build());
 }

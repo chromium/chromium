@@ -858,9 +858,22 @@ void DevToolsWindow::ToggleDevToolsWindow(
   if (!window->is_docked_ || do_open) {
     window->ScheduleShow(action);
   } else {
-    window->Close(toggled_by == DevToolsOpenedByAction::kMainMenuOrMainShortcut
-                      ? DevToolsClosedByAction::kMainMenuOrMainShortcut
-                      : DevToolsClosedByAction::kToggleShortcut);
+    DevToolsClosedByAction closed_by;
+    switch (toggled_by) {
+      case DevToolsOpenedByAction::kMainMenuOrMainShortcut:
+        closed_by = DevToolsClosedByAction::kMainMenuOrMainShortcut;
+        break;
+      case DevToolsOpenedByAction::kToggleShortcut:
+        closed_by = DevToolsClosedByAction::kToggleShortcut;
+        break;
+      case DevToolsOpenedByAction::kPinnedToolbarButton:
+        closed_by = DevToolsClosedByAction::kPinnedToolbarButton;
+        break;
+      default:
+        closed_by = DevToolsClosedByAction::kUnknown;
+        break;
+    }
+    window->Close(closed_by);
   }
 }
 

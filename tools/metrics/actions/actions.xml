@@ -42209,6 +42209,7 @@ should be able to be added at any place in this file.
   <suffix name="NewTabButton" label="New tab button for thumbnail tab strip"/>
   <suffix name="PinnedClearBrowsingDataButton"
       label="Pinned clear browsing data button"/>
+  <suffix name="PinnedDevToolsButton" label="Pinned developer tools button"/>
   <suffix name="PinnedNewIncognitoWindowButton"
       label="Pinned new incognito window button"/>
   <suffix name="PinnedPrintButton" label="Pinned print button"/>
