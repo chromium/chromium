@@ -39,6 +39,9 @@ class PinTextfield : public views::Textfield {
   void OnThemeChanged() override;
 
  private:
+  // Returns true for the first empty cell when the whole view has focus.
+  bool HasCellFocus(int cell) const;
+
   // Render text for each of the pin cells.
   std::vector<std::unique_ptr<gfx::RenderText>> render_texts_;
 
