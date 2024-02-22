@@ -4088,6 +4088,23 @@
             ]
         }
     ],
+    "ClankMagicStack": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MagicStackAndroid",
+                        "PriceChangeModule",
+                        "SegmentationPlatformAndroidHomeModuleRanker"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionImagesCache": [
         {
             "platforms": [
