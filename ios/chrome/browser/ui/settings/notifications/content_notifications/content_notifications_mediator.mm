@@ -94,7 +94,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
              switchItemWithType:ItemTypeContentNotifications
                            text:
                                l10n_util::GetNSString(
-                                   IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE)
+                                   IDS_IOS_CONTENT_NOTIFICATIONS_PERSONALIZED_NEWS_SETTINGS_TOGGLE_TITLE)
                          symbol:DefaultSettingsRootSymbol(kNewspaperSFSymbol)
                      symbolTint:UIColor.whiteColor
           symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
@@ -109,14 +109,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (TableViewSwitchItem*)sportsNotificationsItem {
   if (!_sportsNotificationsItem) {
-    _sportsNotificationsItem =
-        [self switchItemWithType:ItemTypeSportsNotifications
-                               text:@"Sports"
-                             symbol:DefaultSettingsRootSymbol(kMedalSymbol)
-                         symbolTint:UIColor.whiteColor
-              symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
-                  symbolBorderWidth:0
-            accessibilityIdentifier:kSportsNotificationsCellId];
+    _sportsNotificationsItem = [self
+             switchItemWithType:ItemTypeSportsNotifications
+                           text:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_NOTIFICATIONS_SPORTS_SETTINGS_TOGGLE_TITLE)
+                         symbol:DefaultSettingsRootSymbol(kMedalSymbol)
+                     symbolTint:UIColor.whiteColor
+          symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
+              symbolBorderWidth:0
+        accessibilityIdentifier:kSportsNotificationsCellId];
     _sportsNotificationsItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kSports, _gaiaID);
