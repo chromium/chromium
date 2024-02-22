@@ -63,6 +63,7 @@
 #include "ash/display/display_configuration_observer.h"
 #include "ash/display/display_error_observer.h"
 #include "ash/display/display_highlight_controller.h"
+#include "ash/display/display_performance_mode_controller.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/display_shutdown_observer.h"
 #include "ash/display/event_transformation_handler.h"
@@ -879,6 +880,8 @@ Shell::~Shell() {
   window_bounds_tracker_.reset();
 
   display_highlight_controller_.reset();
+
+  display_performance_mode_controller_.reset();
 
   // VideoActivityNotifier must be deleted before |video_detector_| is
   // deleted because it's observing video activity through
@@ -1729,6 +1732,9 @@ void Shell::Init(
   // DisplayAlignmentController.
   display_highlight_controller_ =
       std::make_unique<DisplayHighlightController>();
+
+  display_performance_mode_controller_ =
+      std::make_unique<DisplayPerformanceModeController>();
 
   if (features::IsDisplayAlignmentAssistanceEnabled()) {
     display_alignment_controller_ =
