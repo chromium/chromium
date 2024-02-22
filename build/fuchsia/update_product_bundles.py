@@ -145,7 +145,7 @@ def main():
   common.get_host_os()
 
   new_products = convert_to_products(args.products.split(','))
-  logging.info('Searching for the following products: %s', str(new_products))
+  logging.debug('Searching for the following products: %s', str(new_products))
 
   logging.debug('Getting new SDK hash')
   if args.internal:

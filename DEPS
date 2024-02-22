@@ -5229,7 +5229,7 @@ hooks = [
   },
 
   {
-    'name': 'Download Fuchsia SDK from GCS',
+    'name': 'Download Fuchsia SDK',
     'pattern': '.',
     'condition': 'checkout_fuchsia',
     'action': [
