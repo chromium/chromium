@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 
+#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "content/public/browser/navigation_handle.h"
@@ -38,9 +39,7 @@ AutofillPopupHideHelper::AutofillPopupHideHelper(
       hiding_params_(std::move(hiding_params)),
       hiding_callback_(std::move(hiding_callback)),
       pip_detection_callback_(std::move(pip_detection_callback)) {
-  content::RenderFrameHost* rfh = web_contents->GetFocusedFrame();
-  CHECK(rfh);
-  rfh_id_ = rfh->GetGlobalId();
+  rfh_id_ = CHECK_DEREF(web_contents->GetFocusedFrame()).GetGlobalId();
 
 #if !BUILDFLAG(IS_ANDROID)
   // There may not always be a ZoomController, e.g., in tests.
@@ -50,13 +49,10 @@ AutofillPopupHideHelper::AutofillPopupHideHelper(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  PictureInPictureWindowManager* picture_in_picture_window_manager =
-      PictureInPictureWindowManager::GetInstance();
-  CHECK(picture_in_picture_window_manager);
   picture_in_picture_window_observation_.Observe(
-      picture_in_picture_window_manager);
+      PictureInPictureWindowManager::GetInstance());
 
-  if (hiding_params.hide_on_text_field_change) {
+  if (hiding_params_.hide_on_text_field_change) {
     autofill_managers_observation_.Observe(
         web_contents, ScopedAutofillManagersObservation::InitializationPolicy::
                           kObservePreexistingManagers);
