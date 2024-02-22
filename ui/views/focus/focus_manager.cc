@@ -330,7 +330,10 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   // hidden.
   SetStoredFocusView(focused_view_);
   if (focused_view_) {
-    focused_view_->AddObserver(this);
+    // TODO(40763787): Remove this once reentrant callsites have been addressed.
+    if (!focused_view_->HasObserver(this)) {
+      focused_view_->AddObserver(this);
+    }
     focused_view_->Focus();
   }
 
