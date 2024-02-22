@@ -551,6 +551,42 @@ TEST(CommandLineTest, CopySwitches) {
                                               FILE_PATH_LITERAL("--c")));
 }
 
+TEST(CommandLineTest, Move) {
+  static constexpr std::string_view kSwitches[] = {
+      "a",
+      "bbbbbbbbb",
+      "c",
+  };
+  static constexpr CommandLine::StringPieceType kArgs[] = {
+      FILE_PATH_LITERAL("beebop"),
+      FILE_PATH_LITERAL("alouie"),
+  };
+  CommandLine initial(CommandLine::NO_PROGRAM);
+  for (auto a_switch : kSwitches) {
+    initial.AppendSwitch(a_switch);
+  }
+  for (auto an_arg : kArgs) {
+    initial.AppendArgNative(an_arg);
+  }
+
+  // Move construct and verify.
+  CommandLine move_constructed(std::move(initial));
+  initial = CommandLine(CommandLine::NO_PROGRAM);
+  for (auto a_switch : kSwitches) {
+    EXPECT_TRUE(move_constructed.HasSwitch(a_switch));
+  }
+  EXPECT_THAT(move_constructed.GetArgs(),
+              ::testing::ElementsAre(kArgs[0], kArgs[1]));
+
+  // Move assign and verify
+  initial = std::move(move_constructed);
+  move_constructed = CommandLine(CommandLine::NO_PROGRAM);
+  for (auto a_switch : kSwitches) {
+    EXPECT_TRUE(initial.HasSwitch(a_switch));
+  }
+  EXPECT_THAT(initial.GetArgs(), ::testing::ElementsAre(kArgs[0], kArgs[1]));
+}
+
 TEST(CommandLineTest, PrependSimpleWrapper) {
   CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
   cl.AppendSwitch("a");

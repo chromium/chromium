@@ -80,6 +80,9 @@ class BASE_EXPORT CommandLine {
   CommandLine(const CommandLine& other);
   CommandLine& operator=(const CommandLine& other);
 
+  CommandLine(CommandLine&& other) noexcept;
+  CommandLine& operator=(CommandLine&& other) noexcept;
+
   ~CommandLine();
 
 #if BUILDFLAG(IS_WIN)
@@ -269,10 +272,10 @@ class BASE_EXPORT CommandLine {
       return *this;
     }
 
-    // Disallow move.
-    InstanceBoundSequenceChecker(InstanceBoundSequenceChecker&&) = delete;
+    // Allow move as per SequenceChecker.
+    InstanceBoundSequenceChecker(InstanceBoundSequenceChecker&&) = default;
     InstanceBoundSequenceChecker& operator=(InstanceBoundSequenceChecker&&) =
-        delete;
+        default;
 
     void Detach() { DETACH_FROM_SEQUENCE(sequence_checker_); }
     void Check() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }

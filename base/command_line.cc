@@ -188,9 +188,37 @@ CommandLine::CommandLine(const StringVector& argv)
 }
 
 CommandLine::CommandLine(const CommandLine& other) = default;
-
+CommandLine::CommandLine(CommandLine&& other) noexcept
+    :
+#if BUILDFLAG(IS_WIN)
+      raw_command_line_string_(
+          std::exchange(other.raw_command_line_string_, StringPieceType())),
+      has_single_argument_switch_(
+          std::exchange(other.has_single_argument_switch_, false)),
+#endif  // BUILDFLAG(IS_WIN)
+      argv_(std::exchange(other.argv_, StringVector(1))),
+      switches_(std::move(other.switches_)),
+      begin_args_(std::exchange(other.begin_args_, 1)) {
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+  other.sequence_checker_.Detach();
+#endif
+}
 CommandLine& CommandLine::operator=(const CommandLine& other) = default;
-
+CommandLine& CommandLine::operator=(CommandLine&& other) noexcept {
+#if BUILDFLAG(IS_WIN)
+  raw_command_line_string_ =
+      std::exchange(other.raw_command_line_string_, StringPieceType());
+  has_single_argument_switch_ =
+      std::exchange(other.has_single_argument_switch_, false);
+#endif  // BUILDFLAG(IS_WIN)
+  argv_ = std::exchange(other.argv_, StringVector(1));
+  switches_ = std::move(other.switches_);
+  begin_args_ = std::exchange(other.begin_args_, 1);
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+  other.sequence_checker_.Detach();
+#endif
+  return *this;
+}
 CommandLine::~CommandLine() = default;
 
 #if BUILDFLAG(IS_WIN)
