@@ -137,54 +137,8 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   void Shutdown() override;
 
  private:
+  friend class SafeBrowsingMetricsCollectorTest;
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest, GetUserState);
-  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest,
-                           ProtegoRequestIsNotLoggedWhenEsbIsNotEnabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsNoneIfNotRecordedBeforeFirstRunOfCollector);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithTokenWhenPingSincePreviousLogTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithoutTokenWhenPingSincePreviousLogTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithTokenWhenPingMoreRecentThanWithoutToken);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithoutTokenWhenPingMoreRecentThanWithToken);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsNoneWhenNoPingWithTokenSincePreviousLogTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsNoneWhenNoPingWithoutTokenSincePreviousLogTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithTokenWhenPingBeforeCollectorHasEverRun);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithoutTokenWhenPingBeforeCollectorHasEverRun);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      NewProtegoRequestLogsWithTokenWhenWithTokenWasSendWithinLast24HRS);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      NewProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSendWithinLast24HRS);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      NewProtegoRequestLogsWithTokenWhenNoPingWasSendWithinLast24HRS);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithTokenWhenWithTokenWasSentWithinLast7Days);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSentWithinLast7Days);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsNoneWhenNoPingWasSentWithinLast7Days);
 
   // The type of Protego ping that was sent by an enhanced protection
   // user. These values are persisted to logs. Entries should not be renumbered

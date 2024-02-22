@@ -29,6 +29,8 @@ using UserState = SafeBrowsingMetricsCollector::UserState;
 
 class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
  public:
+  using ProtegoPingType = SafeBrowsingMetricsCollector::ProtegoPingType;
+
   SafeBrowsingMetricsCollectorTest() = default;
 
   void SetUp() override {
@@ -787,7 +789,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 
@@ -802,7 +804,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      ProtegoPingType::kWithToken,
       /* expected_count */ 1);
 }
 
@@ -818,7 +820,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
 
@@ -839,7 +841,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      ProtegoPingType::kWithToken,
       /* expected_count */ 1);
 }
 
@@ -860,7 +862,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
 
@@ -877,7 +879,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 
@@ -895,7 +897,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 
@@ -911,7 +913,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      ProtegoPingType::kWithToken,
       /* expected_count */ 1);
 }
 
@@ -928,7 +930,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
 
@@ -947,11 +949,11 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      ProtegoPingType::kWithToken,
       /* expected_count */ 1);
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
 
@@ -969,7 +971,7 @@ TEST_F(
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
 
@@ -988,7 +990,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 
@@ -1010,7 +1012,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      ProtegoPingType::kWithToken,
       /* expected_count */ 1);
 }
 
@@ -1027,7 +1029,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
 
@@ -1046,7 +1048,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 
