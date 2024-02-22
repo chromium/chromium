@@ -5730,7 +5730,7 @@
             ]
         }
     ],
-    "DevToolsConsoleInsightsDogfood": [
+    "DevToolsConsoleInsights": [
         {
             "platforms": [
                 "chromeos",
