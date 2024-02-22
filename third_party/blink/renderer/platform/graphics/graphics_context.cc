@@ -86,14 +86,13 @@ std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(gfx::PointF pt,
   return {gfx::Point(pt.x(), y), gfx::Point(pt.x() + width, y)};
 }
 
-Color DarkModeColor(GraphicsContext& context,
-                    const Color& color,
-                    const AutoDarkMode& auto_dark_mode) {
+SkColor4f DarkModeColor(GraphicsContext& context,
+                        const SkColor4f& color,
+                        const AutoDarkMode& auto_dark_mode) {
   if (auto_dark_mode.enabled) {
-    return Color::FromSkColor4f(
-        context.GetDarkModeFilter()->InvertColorIfNeeded(
-            color.toSkColor4f(), auto_dark_mode.role,
-            SkColor4f::FromColor(auto_dark_mode.contrast_color)));
+    return context.GetDarkModeFilter()->InvertColorIfNeeded(
+        color, auto_dark_mode.role,
+        SkColor4f::FromColor(auto_dark_mode.contrast_color));
   }
   return color;
 }
@@ -350,9 +349,9 @@ void GraphicsContext::DrawFocusRingPath(const SkPath& path,
                                         float width,
                                         float corner_radius,
                                         const AutoDarkMode& auto_dark_mode) {
-  DrawPlatformFocusRing(path, canvas_,
-                        DarkModeColor(*this, color, auto_dark_mode).Rgb(),
-                        width, corner_radius);
+  DrawPlatformFocusRing(
+      path, canvas_, DarkModeColor(*this, color.toSkColor4f(), auto_dark_mode),
+      width, corner_radius);
 }
 
 void GraphicsContext::DrawFocusRingRect(const SkRRect& rrect,
@@ -360,7 +359,8 @@ void GraphicsContext::DrawFocusRingRect(const SkRRect& rrect,
                                         float width,
                                         const AutoDarkMode& auto_dark_mode) {
   DrawPlatformFocusRing(
-      rrect, canvas_, DarkModeColor(*this, color, auto_dark_mode).Rgb(), width);
+      rrect, canvas_, DarkModeColor(*this, color.toSkColor4f(), auto_dark_mode),
+      width);
 }
 
 static void EnforceDotsAtEndpoints(GraphicsContext& context,

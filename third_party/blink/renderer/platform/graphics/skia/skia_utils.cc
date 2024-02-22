@@ -390,7 +390,7 @@ bool ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
   return skcms_ApproximatelyEqualProfiles(&src_profile, &dst_profile);
 }
 
-static cc::PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
+static cc::PaintFlags PaintFlagsForFocusRing(SkColor4f color, float width) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
@@ -401,14 +401,14 @@ static cc::PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
 
 void DrawPlatformFocusRing(const SkRRect& rrect,
                            cc::PaintCanvas* canvas,
-                           SkColor color,
+                           SkColor4f color,
                            float width) {
   canvas->drawRRect(rrect, PaintFlagsForFocusRing(color, width));
 }
 
 void DrawPlatformFocusRing(const SkPath& path,
                            cc::PaintCanvas* canvas,
-                           SkColor color,
+                           SkColor4f color,
                            float width,
                            float corner_radius) {
   cc::PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
