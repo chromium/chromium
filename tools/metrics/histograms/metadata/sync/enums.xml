@@ -530,6 +530,7 @@ chromium-metrics-reviews@google.com.
   <int value="100266" label="kAccessibilityFaceGazeCursorSpeedRight"/>
   <int value="100267" label="kAccessibilityFaceGazeCursorSmoothing"/>
   <int value="100268" label="kAccessibilityFaceGazeCursorUseAcceleration"/>
+  <int value="100269" label="AntiFingerprintingEnabled"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>

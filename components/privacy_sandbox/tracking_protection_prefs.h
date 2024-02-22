@@ -110,6 +110,11 @@ inline constexpr char kTrackingProtection3pcdEnabled[] =
 inline constexpr char kIpProtectionEnabled[] =
     "tracking_protection.ip_protection_enabled";
 
+// Synced boolean that indicates whether the user has enabled the
+// anti-fingerprinting setting.
+inline constexpr char kAntiFingerprintingEnabled[] =
+    "tracking_protection.anti_fingerprinting_enabled";
+
 // Whether to send the DNT header.
 inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
 

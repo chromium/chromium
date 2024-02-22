@@ -24,6 +24,7 @@ class MockTrackingProtectionSettingsObserver
     : public TrackingProtectionSettingsObserver {
  public:
   MOCK_METHOD(void, OnDoNotTrackEnabledChanged, (), (override));
+  MOCK_METHOD(void, OnAntiFingerprintingEnabledChanged, (), (override));
   MOCK_METHOD(void, OnIpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
   MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
@@ -38,7 +39,10 @@ class TrackingProtectionSettingsTest : public testing::Test {
   }
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+    feature_list_.InitWithFeatures(
+        {privacy_sandbox::kIpProtectionV1,
+         privacy_sandbox::kAntiFingerprintingSetting},
+        {});
     tracking_protection_settings_ =
         std::make_unique<TrackingProtectionSettings>(
             prefs(), onboarding_service_.get(), /*is_incognito=*/false);
@@ -73,6 +77,12 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
   EXPECT_FALSE(tracking_protection_settings()->IsIpProtectionEnabled());
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
   EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
+}
+
+TEST_F(TrackingProtectionSettingsTest, ReturnsAntiFingerprintingStatus) {
+  EXPECT_FALSE(tracking_protection_settings()->IsAntiFingerprintingEnabled());
+  prefs()->SetBoolean(prefs::kAntiFingerprintingEnabled, true);
+  EXPECT_TRUE(tracking_protection_settings()->IsAntiFingerprintingEnabled());
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
@@ -154,6 +164,20 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForDoNotTrack) {
 
   EXPECT_CALL(observer, OnDoNotTrackEnabledChanged());
   prefs()->SetBoolean(prefs::kEnableDoNotTrack, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       CorrectlyCallsObserversForAntiFingerprinting) {
+  MockTrackingProtectionSettingsObserver observer;
+  tracking_protection_settings()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnAntiFingerprintingEnabledChanged());
+  prefs()->SetBoolean(prefs::kAntiFingerprintingEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnAntiFingerprintingEnabledChanged());
+  prefs()->SetBoolean(prefs::kAntiFingerprintingEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
