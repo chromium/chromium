@@ -69,7 +69,11 @@ ChooserDialogView::ChooserDialogView(
                      base::Unretained(device_chooser_content_view_)));
 }
 
-ChooserDialogView::~ChooserDialogView() = default;
+ChooserDialogView::~ChooserDialogView() {
+  // This ensures that the `DeviceChooserContentView`'s table view, which keeps
+  // a pointer to `this`, does not outlive `this`.
+  device_chooser_content_view_.ClearAndDelete();
+}
 
 bool ChooserDialogView::IsDialogButtonEnabled(ui::DialogButton button) const {
   return device_chooser_content_view_->IsDialogButtonEnabled(button);
