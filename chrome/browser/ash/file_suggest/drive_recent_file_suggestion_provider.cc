@@ -418,7 +418,9 @@ void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
   }
 
   on_drive_results_ready_callback_list_.Notify(results);
-  NotifySuggestionUpdate(FileSuggestionType::kDriveFile);
+  if (can_use_cache_) {
+    NotifySuggestionUpdate(FileSuggestionType::kDriveFile);
+  }
 }
 
 }  // namespace ash
