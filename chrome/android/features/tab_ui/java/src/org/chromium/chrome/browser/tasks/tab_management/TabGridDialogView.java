@@ -116,6 +116,7 @@ public class TabGridDialogView extends FrameLayout {
     @ColorInt private int mUngroupBarTextColor;
     @ColorInt private int mUngroupBarHoveredTextColor;
     private Integer mBindingToken;
+    private boolean mShouldShowShare;
 
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -805,6 +806,17 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     /**
+     * Update whether the share bar should be shown.
+     *
+     * @param shouldShowShare Whether the share bar should be shown in the view.
+     */
+    void updateShouldShowShare(boolean shouldShowShare) {
+        assert getVisibility() != VISIBLE
+                : "ShouldShowShare state only changes when the dialog is hidden.";
+        mShouldShowShare = shouldShowShare;
+    }
+
+    /**
      * Reset the dialog content with {@code toolbarView} and {@code recyclerView}.
      *
      * @param toolbarView The toolbarview to be added to dialog.
@@ -815,7 +827,8 @@ public class TabGridDialogView extends FrameLayout {
         mDialogContainerView.addView(toolbarView);
         mDialogContainerView.addView(recyclerView);
         mDialogContainerView.addView(mUngroupBar);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)
+                && mShouldShowShare) {
             // Add the data sharing bottom toolbar view.
             LayoutInflater inflater = LayoutInflater.from(mDialogContainerView.getContext());
             View shareBar =

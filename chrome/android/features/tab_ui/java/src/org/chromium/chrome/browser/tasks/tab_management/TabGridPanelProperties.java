@@ -38,6 +38,8 @@ class TabGridPanelProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey IS_DIALOG_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_SHARE =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<TabGridDialogView.VisibilityListener>
             VISIBILITY_LISTENER = new WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<Runnable> SCRIMVIEW_CLICK_RUNNABLE =
@@ -105,6 +107,7 @@ class TabGridPanelProperties {
                 IS_KEYBOARD_VISIBLE,
                 COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                 IS_DIALOG_VISIBLE,
+                SHOULD_SHOW_SHARE,
                 CONTENT_TOP_MARGIN,
                 IS_MAIN_CONTENT_VISIBLE,
                 INITIAL_SCROLL_INDEX

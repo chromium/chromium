@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelPrope
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.MENU_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.PRIMARY_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.SHOULD_SHOW_SHARE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TINT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_CURSOR_VISIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER;
@@ -205,6 +206,8 @@ class TabGridPanelViewBinder {
         } else if (COLLAPSE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
             viewHolder.toolbarView.setLeftButtonContentDescription(
                     model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
+        } else if (SHOULD_SHOW_SHARE == propertyKey) {
+            viewHolder.dialogView.updateShouldShowShare(model.get(SHOULD_SHOW_SHARE));
         }
     }
 

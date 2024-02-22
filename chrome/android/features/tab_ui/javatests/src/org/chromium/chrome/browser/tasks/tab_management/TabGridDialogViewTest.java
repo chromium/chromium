@@ -182,6 +182,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         View recyclerView = new View(getActivity());
         recyclerView.setVisibility(View.GONE);
 
+        mTabGridDialogView.updateShouldShowShare(true);
         mTabGridDialogView.resetDialog(toolbarView, recyclerView);
 
         // It should contain five child views: top tool bar, recyclerview, ungroup bar, data sharing

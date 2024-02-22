@@ -768,8 +768,10 @@ public class TabGridDialogMediator
         removeTabModelFilterObserver(oldFilter);
 
         if (newFilter != null) {
-            updateColorProperties(mContext, newFilter.isIncognito());
+            boolean isIncognito = newFilter.isIncognito();
+            updateColorProperties(mContext, isIncognito);
             newFilter.addObserver(mTabModelObserver);
+            mModel.set(TabGridPanelProperties.SHOULD_SHOW_SHARE, !isIncognito);
         }
     }
 
