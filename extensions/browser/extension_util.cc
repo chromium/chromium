@@ -99,8 +99,8 @@ bool CanBeIncognitoEnabled(const Extension* extension) {
 bool IsIncognitoEnabled(const ExtensionId& extension_id,
                         content::BrowserContext* context) {
   const Extension* extension =
-      ExtensionRegistry::Get(context)->GetExtensionById(
-          extension_id, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
   if (extension) {
     if (!CanBeIncognitoEnabled(extension))
       return false;
@@ -440,8 +440,8 @@ bool IsAppLaunchable(const ExtensionId& extension_id,
 
 bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context) {
-  return ExtensionRegistry::Get(context)->GetExtensionById(
-             extension_id, ExtensionRegistry::ENABLED) != nullptr;
+  return ExtensionRegistry::Get(context)->enabled_extensions().Contains(
+      extension_id);
 }
 
 }  // namespace util
