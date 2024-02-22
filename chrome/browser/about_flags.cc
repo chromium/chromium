@@ -225,7 +225,6 @@
 #include "ui/display/display_switches.h"
 #include "ui/events/blink/blink_features.h"
 #include "ui/events/event_switches.h"
-#include "ui/events/events_features.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_features.h"
@@ -9637,11 +9636,6 @@ const FeatureEntry kFeatureEntries[] = {
          blink::features::kQuickIntensiveWakeUpThrottlingAfterLoading)},
 
 #if BUILDFLAG(IS_MAC)
-    {"swap-backquote-keys-in-iso-keyboard",
-     flag_descriptions::kSwapBackquoteKeysInISOKeyboardName,
-     flag_descriptions::kSwapBackquoteKeysInISOKeyboardDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kSwapBackquoteKeysInISOKeyboard)},
-
     {"system-color-chooser", flag_descriptions::kSystemColorChooserName,
      flag_descriptions::kSystemColorChooserDescription, kOsMac,
      FEATURE_VALUE_TYPE(blink::features::kSystemColorChooser)},
