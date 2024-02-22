@@ -2543,14 +2543,14 @@
             ]
         }
     ],
-    "BoardingPassDetector": [
+    "BoardingPassDetectorMultiArms": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_US",
                     "params": {
                         "boarding_pass_detector_urls": "https://www.aa.com,https://www.delta.com,https://www.hawaiianairlines.com"
                     },
