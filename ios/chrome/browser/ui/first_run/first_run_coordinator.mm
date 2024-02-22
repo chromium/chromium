@@ -12,6 +12,7 @@
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -149,6 +150,11 @@
                                      firstRunDelegate:self];
     case kOmniboxPosition:
       return [[OmniboxPositionChoiceCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
+    case kDockingPromo:
+      return [[DockingPromoCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self];

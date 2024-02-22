@@ -41,8 +41,14 @@
 
   [screens addObject:@(kDefaultBrowserPromo)];
 
-  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE) &&
-      ShouldShowOmniboxPositionChoiceInFRE(browserState)) {
+  DockingPromoDisplayTriggerArm experimentArm =
+      DockingPromoExperimentTypeEnabled();
+
+  if (IsDockingPromoEnabled() &&
+      experimentArm == DockingPromoDisplayTriggerArm::kDuringFRE) {
+    [screens addObject:@(kDockingPromo)];
+  } else if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE) &&
+             ShouldShowOmniboxPositionChoiceInFRE(browserState)) {
     [screens addObject:@(kOmniboxPosition)];
   }
 

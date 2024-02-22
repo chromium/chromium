@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
@@ -32,12 +33,43 @@
 
 @end
 
-@implementation DockingPromoCoordinator
+@implementation DockingPromoCoordinator {
+  /// Whether the screen is being shown in the FRE.
+  BOOL _firstRun;
+  /// First run screen delegate.
+  __weak id<FirstRunScreenDelegate> _firstRunDelegate;
+}
+
+@synthesize baseNavigationController = _baseNavigationController;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  if (self = [super initWithBaseViewController:viewController
+                                       browser:browser]) {
+    _firstRun = NO;
+  }
+  return self;
+}
+
+- (instancetype)initWithBaseNavigationController:
+                    (UINavigationController*)navigationController
+                                         browser:(Browser*)browser
+                                        delegate:(id<FirstRunScreenDelegate>)
+                                                     delegate {
+  if ([self initWithBaseViewController:navigationController browser:browser]) {
+    _baseNavigationController = navigationController;
+    _firstRun = YES;
+    _firstRunDelegate = delegate;
+  }
+  return self;
+}
 
 - (void)start {
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(DockingPromoCommands)];
+  if (!_firstRun) {
+    [self.browser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(DockingPromoCommands)];
+  }
 
   PromosManager* promosManager =
       PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
@@ -54,20 +86,41 @@
   self.mediator = [[DockingPromoMediator alloc]
         initWithPromosManager:promosManager
       timeSinceLastForeground:timeSinceLastForeground];
+
+  if (_firstRun) {
+    self.viewController = [[DockingPromoViewController alloc] init];
+    self.mediator.consumer = self.viewController;
+    self.mediator.tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    self.viewController.actionHandler = self;
+    self.viewController.presentationController.delegate = self;
+    self.viewController.modalInPresentation = YES;
+
+    [self.mediator configureConsumer];
+
+    BOOL animated = self.baseNavigationController.topViewController != nil;
+    [self.baseNavigationController setViewControllers:@[ self.viewController ]
+                                             animated:animated];
+  }
 }
 
 - (void)stop {
   [super stop];
 
-  [self.browser->GetCommandDispatcher()
-      stopDispatchingForProtocol:@protocol(DockingPromoCommands)];
+  if (!_firstRun) {
+    [self.browser->GetCommandDispatcher()
+        stopDispatchingForProtocol:@protocol(DockingPromoCommands)];
 
-  [self.viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
+    [self.viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+  }
 
   self.mediator = nil;
   self.viewController = nil;
+  _baseNavigationController = nil;
+  _firstRunDelegate = nil;
 }
 
 #pragma mark - DockingPromoCommands
@@ -96,7 +149,12 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self hidePromo];
+  if (_firstRun) {
+    [_firstRunDelegate screenWillFinishPresenting];
+  } else {
+    [self hidePromo];
+  }
+
   [self promoWasDismissed];
   RecordDockingPromoAction(IOSDockingPromoAction::kGotIt);
 }
@@ -107,7 +165,12 @@
           self.browser->GetBrowserState());
   tracker->NotifyEvent(feature_engagement::events::kDockingPromoRemindMeLater);
 
-  [self hidePromo];
+  if (_firstRun) {
+    [_firstRunDelegate screenWillFinishPresenting];
+  } else {
+    [self hidePromo];
+  }
+
   [self.mediator registerPromoWithPromosManager];
   [self promoWasDismissed];
   RecordDockingPromoAction(IOSDockingPromoAction::kRemindMeLater);

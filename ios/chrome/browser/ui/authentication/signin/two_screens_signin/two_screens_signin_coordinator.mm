@@ -179,6 +179,7 @@ using base::UserMetricsAction;
     case kDefaultBrowserPromo:
     case kChoice:
     case kOmniboxPosition:
+    case kDockingPromo:
     case kStepsCompleted:
       break;
   }
