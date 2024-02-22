@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_FREEZING_POLICY_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_FREEZING_POLICY_H_
+#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_FREEZING_POLICY_H_
+#define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_FREEZING_POLICY_H_
 
 #include <array>
 
@@ -18,7 +18,7 @@
 namespace performance_manager {
 
 namespace mechanism {
-class PageFreezer;
+class Freezer;
 }  // namespace mechanism
 
 namespace policies {
@@ -41,21 +41,20 @@ namespace policies {
 //
 // Note that visible tabs can't be frozen and tabs that becomes visible are
 // automatically unfrozen, there's no need to track this feature here.
-class PageFreezingPolicy : public GraphObserver,
-                           public GraphOwnedDefaultImpl,
-                           public PageNode::ObserverDefaultImpl,
-                           public PageLiveStateObserverDefaultImpl {
+class FreezingPolicy : public GraphObserver,
+                       public GraphOwnedDefaultImpl,
+                       public PageNode::ObserverDefaultImpl,
+                       public PageLiveStateObserverDefaultImpl {
  public:
-  PageFreezingPolicy();
-  PageFreezingPolicy(const PageFreezingPolicy&) = delete;
-  PageFreezingPolicy(PageFreezingPolicy&&) = delete;
-  PageFreezingPolicy& operator=(const PageFreezingPolicy&) = delete;
-  PageFreezingPolicy& operator=(PageFreezingPolicy&&) = delete;
-  ~PageFreezingPolicy() override;
+  FreezingPolicy();
+  FreezingPolicy(const FreezingPolicy&) = delete;
+  FreezingPolicy(FreezingPolicy&&) = delete;
+  FreezingPolicy& operator=(const FreezingPolicy&) = delete;
+  FreezingPolicy& operator=(FreezingPolicy&&) = delete;
+  ~FreezingPolicy() override;
 
-  void SetPageFreezerForTesting(
-      std::unique_ptr<mechanism::PageFreezer> page_freezer) {
-    page_freezer_ = std::move(page_freezer);
+  void SetFreezerForTesting(std::unique_ptr<mechanism::Freezer> freezer) {
+    freezer_ = std::move(freezer);
   }
 
  protected:
@@ -136,10 +135,10 @@ class PageFreezingPolicy : public GraphObserver,
   raw_ptr<const PageNode> page_node_being_removed_ = nullptr;
 
   // The freezing mechanism used to do the actual freezing.
-  std::unique_ptr<mechanism::PageFreezer> page_freezer_;
+  std::unique_ptr<mechanism::Freezer> freezer_;
 };
 
 }  // namespace policies
 }  // namespace performance_manager
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_FREEZING_POLICY_H_
+#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_FREEZING_POLICY_H_

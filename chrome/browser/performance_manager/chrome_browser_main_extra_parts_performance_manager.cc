@@ -68,10 +68,10 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
+#include "chrome/browser/performance_manager/mechanisms/freezer.h"
+#include "chrome/browser/performance_manager/policies/freezing_policy.h"
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
-#include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
@@ -195,7 +195,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   // with the freezing logic already in place in renderers. This logic should be
   // moved to PerformanceManager, this is tracked in https://crbug.com/1156803.
   graph->PassToGraph(
-      std::make_unique<performance_manager::policies::PageFreezingPolicy>());
+      std::make_unique<performance_manager::policies::FreezingPolicy>());
 
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::MemorySaverModePolicy>());

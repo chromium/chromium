@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
+#include "chrome/browser/performance_manager/mechanisms/freezer.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -41,7 +41,7 @@ void MaybeFreezePageNode(content::WebContents* content) {
           [](base::WeakPtr<PageNode> page_node,
              base::OnceClosure quit_closure) {
             EXPECT_TRUE(page_node);
-            mechanism::PageFreezer freezer;
+            mechanism::Freezer freezer;
             freezer.MaybeFreezePageNode(page_node.get());
             std::move(quit_closure).Run();
           },
@@ -64,7 +64,7 @@ void UnfreezePageNode(content::WebContents* content) {
           [](base::WeakPtr<PageNode> page_node,
              base::OnceClosure quit_closure) {
             EXPECT_TRUE(page_node);
-            mechanism::PageFreezer freezer;
+            mechanism::Freezer freezer;
             freezer.UnfreezePageNode(page_node.get());
             std::move(quit_closure).Run();
           },
@@ -80,12 +80,12 @@ void UnfreezePageNode(content::WebContents* content) {
 
 }  // namespace
 
-class PageFreezerTest : public ChromeRenderViewHostTestHarness {
+class FreezerTest : public ChromeRenderViewHostTestHarness {
  public:
-  PageFreezerTest() = default;
-  ~PageFreezerTest() override = default;
-  PageFreezerTest(const PageFreezerTest& other) = delete;
-  PageFreezerTest& operator=(const PageFreezerTest&) = delete;
+  FreezerTest() = default;
+  ~FreezerTest() override = default;
+  FreezerTest(const FreezerTest& other) = delete;
+  FreezerTest& operator=(const FreezerTest&) = delete;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -101,7 +101,7 @@ class PageFreezerTest : public ChromeRenderViewHostTestHarness {
   performance_manager::PerformanceManagerTestHarnessHelper pm_harness_;
 };
 
-TEST_F(PageFreezerTest, FreezeAndUnfreezePage) {
+TEST_F(FreezerTest, FreezeAndUnfreezePage) {
   SetContents(CreateTestWebContents());
 
   content::WebContentsTester* web_contents_tester =
@@ -118,7 +118,7 @@ TEST_F(PageFreezerTest, FreezeAndUnfreezePage) {
   EXPECT_FALSE(web_contents_tester->IsPageFrozen());
 }
 
-TEST_F(PageFreezerTest, CantFreezePageWithNotificationPermission) {
+TEST_F(FreezerTest, CantFreezePageWithNotificationPermission) {
   SetContents(CreateTestWebContents());
 
   // Allow permissions.

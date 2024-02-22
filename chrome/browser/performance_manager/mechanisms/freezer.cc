@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
+#include "chrome/browser/performance_manager/mechanisms/freezer.h"
 
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
@@ -25,8 +25,9 @@ namespace {
 void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* const contents = contents_proxy.Get();
-  if (!contents)
+  if (!contents) {
     return;
+  }
 
   content::PermissionController* permission_controller =
       contents->GetBrowserContext()->GetPermissionController();
@@ -53,26 +54,28 @@ void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
 void UnfreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* const content = contents_proxy.Get();
-  if (!content)
+  if (!content) {
     return;
+  }
 
   // A visible page is automatically unfrozen.
-  if (content->GetVisibility() == content::Visibility::VISIBLE)
+  if (content->GetVisibility() == content::Visibility::VISIBLE) {
     return;
+  }
 
   content->SetPageFrozen(false);
 }
 
 }  // namespace
 
-void PageFreezer::MaybeFreezePageNode(const PageNode* page_node) {
+void Freezer::MaybeFreezePageNode(const PageNode* page_node) {
   DCHECK(page_node);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&MaybeFreezePageOnUIThread,
                                 page_node->GetContentsProxy()));
 }
 
-void PageFreezer::UnfreezePageNode(const PageNode* page_node) {
+void Freezer::UnfreezePageNode(const PageNode* page_node) {
   DCHECK(page_node);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

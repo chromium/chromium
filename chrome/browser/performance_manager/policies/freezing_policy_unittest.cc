@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
+#include "chrome/browser/performance_manager/policies/freezing_policy.h"
 
 #include <memory>
 #include <optional>
@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
-#include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
+#include "chrome/browser/performance_manager/mechanisms/freezer.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
@@ -32,20 +32,19 @@ const freezing::FreezingVote kCanFreezeVote(
     freezing::FreezingVoteValue::kCanFreeze,
     "can freeze");
 
-class PageFreezingPolicyAccess : public PageFreezingPolicy {
+class FreezingPolicyAccess : public FreezingPolicy {
  public:
-  using PageFreezingPolicy::CannotFreezeReason;
-  using PageFreezingPolicy::CannotFreezeReasonToString;
+  using FreezingPolicy::CannotFreezeReason;
+  using FreezingPolicy::CannotFreezeReasonToString;
 };
 
-// Mock version of a performance_manager::mechanism::PageFreezer.
-class LenientMockPageFreezer
-    : public performance_manager::mechanism::PageFreezer {
+// Mock version of a performance_manager::mechanism::Freezer.
+class LenientMockFreezer : public performance_manager::mechanism::Freezer {
  public:
-  LenientMockPageFreezer() = default;
-  ~LenientMockPageFreezer() override = default;
-  LenientMockPageFreezer(const LenientMockPageFreezer& other) = delete;
-  LenientMockPageFreezer& operator=(const LenientMockPageFreezer&) = delete;
+  LenientMockFreezer() = default;
+  ~LenientMockFreezer() override = default;
+  LenientMockFreezer(const LenientMockFreezer& other) = delete;
+  LenientMockFreezer& operator=(const LenientMockFreezer&) = delete;
 
   MOCK_METHOD1(MaybeFreezePageNodeImpl, void(const PageNode* page_node));
   MOCK_METHOD1(UnfreezePageNodeImpl, void(const PageNode* page_node));
@@ -62,17 +61,17 @@ class LenientMockPageFreezer
         performance_manager::mojom::LifecycleState::kRunning);
   }
 };
-using MockPageFreezer = ::testing::StrictMock<LenientMockPageFreezer>;
+using MockFreezer = ::testing::StrictMock<LenientMockFreezer>;
 
 }  // namespace
 
-class PageFreezingPolicyTest : public GraphTestHarness {
+class FreezingPolicyTest : public GraphTestHarness {
  public:
-  PageFreezingPolicyTest()
+  FreezingPolicyTest()
       : GraphTestHarness(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~PageFreezingPolicyTest() override = default;
-  PageFreezingPolicyTest(const PageFreezingPolicyTest& other) = delete;
-  PageFreezingPolicyTest& operator=(const PageFreezingPolicyTest&) = delete;
+  ~FreezingPolicyTest() override = default;
+  FreezingPolicyTest(const FreezingPolicyTest& other) = delete;
+  FreezingPolicyTest& operator=(const FreezingPolicyTest&) = delete;
 
   void OnGraphCreated(GraphImpl* graph) override {
     // The freezing logic relies on the existence of the page live state data.
@@ -80,7 +79,7 @@ class PageFreezingPolicyTest : public GraphTestHarness {
         PageLiveStateDelegateImpl::Create()));
     graph->PassToGraph(std::make_unique<FreezingVoteDecorator>());
     // Create the policy and pass it to the graph.
-    auto policy = std::make_unique<policies::PageFreezingPolicy>();
+    auto policy = std::make_unique<policies::FreezingPolicy>();
     policy_ = policy.get();
     graph->PassToGraph(std::move(policy));
 
@@ -89,178 +88,174 @@ class PageFreezingPolicyTest : public GraphTestHarness {
 
   PageNodeImpl* page_node() { return page_node_.get(); }
 
-  PageFreezingPolicy* policy() { return policy_; }
+  FreezingPolicy* policy() { return policy_; }
 
  private:
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       page_node_;
 
-  raw_ptr<PageFreezingPolicy> policy_;
+  raw_ptr<FreezingPolicy> policy_;
 };
 
-TEST_F(PageFreezingPolicyTest, AudiblePageGetsCannotFreezeVote) {
+TEST_F(FreezingPolicyTest, AudiblePageGetsCannotFreezeVote) {
   page_node()->SetIsAudible(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
-            PageFreezingPolicyAccess::CannotFreezeReasonToString(
-                PageFreezingPolicyAccess::CannotFreezeReason::kAudible));
+            FreezingPolicyAccess::CannotFreezeReasonToString(
+                FreezingPolicyAccess::CannotFreezeReason::kAudible));
 }
 
-TEST_F(PageFreezingPolicyTest, RecentlyAudiblePageGetsCannotFreezeVote) {
+TEST_F(FreezingPolicyTest, RecentlyAudiblePageGetsCannotFreezeVote) {
   page_node()->SetIsAudible(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   task_env().FastForwardBy(base::Seconds(1));
   page_node()->SetIsAudible(false);
-  EXPECT_EQ(
-      page_node()->GetFreezingVote()->reason(),
-      PageFreezingPolicyAccess::CannotFreezeReasonToString(
-          PageFreezingPolicyAccess::CannotFreezeReason::kRecentlyAudible));
+  EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
+            FreezingPolicyAccess::CannotFreezeReasonToString(
+                FreezingPolicyAccess::CannotFreezeReason::kRecentlyAudible));
   task_env().FastForwardBy(policies::kTabAudioProtectionTime);
   EXPECT_FALSE(page_node()->GetFreezingVote().has_value());
 }
 
-TEST_F(PageFreezingPolicyTest, PageHoldingWeblockGetsCannotFreezeVote) {
+TEST_F(FreezingPolicyTest, PageHoldingWeblockGetsCannotFreezeVote) {
   page_node()->SetIsHoldingWebLockForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
-            PageFreezingPolicyAccess::CannotFreezeReasonToString(
-                PageFreezingPolicyAccess::CannotFreezeReason::kHoldingWebLock));
+            FreezingPolicyAccess::CannotFreezeReasonToString(
+                FreezingPolicyAccess::CannotFreezeReason::kHoldingWebLock));
 }
 
-TEST_F(PageFreezingPolicyTest, PageHoldingIndexedDBLockGetsCannotFreezeVote) {
+TEST_F(FreezingPolicyTest, PageHoldingIndexedDBLockGetsCannotFreezeVote) {
   page_node()->SetIsHoldingIndexedDBLockForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   EXPECT_EQ(
       page_node()->GetFreezingVote()->reason(),
-      PageFreezingPolicyAccess::CannotFreezeReasonToString(
-          PageFreezingPolicyAccess::CannotFreezeReason::kHoldingIndexedDBLock));
+      FreezingPolicyAccess::CannotFreezeReasonToString(
+          FreezingPolicyAccess::CannotFreezeReason::kHoldingIndexedDBLock));
 }
 
-TEST_F(PageFreezingPolicyTest, CannotFreezeIsConnectedToUSBDevice) {
+TEST_F(FreezingPolicyTest, CannotFreezeIsConnectedToUSBDevice) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsConnectedToUSBDeviceForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   EXPECT_EQ(
       page_node()->GetFreezingVote()->reason(),
-      PageFreezingPolicyAccess::CannotFreezeReasonToString(
-          PageFreezingPolicyAccess::CannotFreezeReason::kConnectedToUsbDevice));
+      FreezingPolicyAccess::CannotFreezeReasonToString(
+          FreezingPolicyAccess::CannotFreezeReason::kConnectedToUsbDevice));
 }
 
-TEST_F(PageFreezingPolicyTest, CannotFreezePageConnectedToBluetoothDevice) {
+TEST_F(FreezingPolicyTest, CannotFreezePageConnectedToBluetoothDevice) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsConnectedToBluetoothDeviceForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
-            PageFreezingPolicyAccess::CannotFreezeReasonToString(
-                PageFreezingPolicyAccess::CannotFreezeReason::
+            FreezingPolicyAccess::CannotFreezeReasonToString(
+                FreezingPolicyAccess::CannotFreezeReason::
                     kConnectedToBluetoothDevice));
 }
 
-TEST_F(PageFreezingPolicyTest, CannotFreezePageCapturingVideo) {
+TEST_F(FreezingPolicyTest, CannotFreezePageCapturingVideo) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingVideoForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
-            PageFreezingPolicyAccess::CannotFreezeReasonToString(
-                PageFreezingPolicyAccess::CannotFreezeReason::kCapturingVideo));
+            FreezingPolicyAccess::CannotFreezeReasonToString(
+                FreezingPolicyAccess::CannotFreezeReason::kCapturingVideo));
 }
 
-TEST_F(PageFreezingPolicyTest, CannotFreezePageCapturingAudio) {
+TEST_F(FreezingPolicyTest, CannotFreezePageCapturingAudio) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingAudioForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
-            PageFreezingPolicyAccess::CannotFreezeReasonToString(
-                PageFreezingPolicyAccess::CannotFreezeReason::kCapturingAudio));
+            FreezingPolicyAccess::CannotFreezeReasonToString(
+                FreezingPolicyAccess::CannotFreezeReason::kCapturingAudio));
 }
 
-TEST_F(PageFreezingPolicyTest, CannotFreezePageBeingMirrored) {
+TEST_F(FreezingPolicyTest, CannotFreezePageBeingMirrored) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsBeingMirroredForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
   EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
-            PageFreezingPolicyAccess::CannotFreezeReasonToString(
-                PageFreezingPolicyAccess::CannotFreezeReason::kBeingMirrored));
+            FreezingPolicyAccess::CannotFreezeReasonToString(
+                FreezingPolicyAccess::CannotFreezeReason::kBeingMirrored));
 }
 
-TEST_F(PageFreezingPolicyTest, CannotFreezePageCapturingWindow) {
+TEST_F(FreezingPolicyTest, CannotFreezePageCapturingWindow) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingWindowForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
 }
 
-TEST_F(PageFreezingPolicyTest, CannotFreezePageCapturingDisplay) {
+TEST_F(FreezingPolicyTest, CannotFreezePageCapturingDisplay) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingDisplayForTesting(true);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCannotFreeze);
-  EXPECT_EQ(
-      page_node()->GetFreezingVote()->reason(),
-      PageFreezingPolicyAccess::CannotFreezeReasonToString(
-          PageFreezingPolicyAccess::CannotFreezeReason::kCapturingDisplay));
+  EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
+            FreezingPolicyAccess::CannotFreezeReasonToString(
+                FreezingPolicyAccess::CannotFreezeReason::kCapturingDisplay));
 }
 
-TEST_F(PageFreezingPolicyTest, FreezingVotes) {
-  std::unique_ptr<MockPageFreezer> page_freezer =
-      std::make_unique<MockPageFreezer>();
-  auto* page_freezer_raw = page_freezer.get();
-  policy()->SetPageFreezerForTesting(std::move(page_freezer));
+TEST_F(FreezingPolicyTest, FreezingVotes) {
+  std::unique_ptr<MockFreezer> freezer = std::make_unique<MockFreezer>();
+  auto* freezer_raw = freezer.get();
+  policy()->SetFreezerForTesting(std::move(freezer));
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
 
-  EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
+  EXPECT_CALL(*freezer_raw, MaybeFreezePageNodeImpl(page_node()));
   page_node()->set_freezing_vote(kCanFreezeVote);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  ::testing::Mock::VerifyAndClearExpectations(freezer_raw);
 
-  EXPECT_CALL(*page_freezer_raw, UnfreezePageNodeImpl(page_node()));
+  EXPECT_CALL(*freezer_raw, UnfreezePageNodeImpl(page_node()));
   page_node()->set_freezing_vote(kCannotFreezeVote);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  ::testing::Mock::VerifyAndClearExpectations(freezer_raw);
 
-  EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
+  EXPECT_CALL(*freezer_raw, MaybeFreezePageNodeImpl(page_node()));
   page_node()->set_freezing_vote(kCanFreezeVote);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  ::testing::Mock::VerifyAndClearExpectations(freezer_raw);
 
-  EXPECT_CALL(*page_freezer_raw, UnfreezePageNodeImpl(page_node()));
+  EXPECT_CALL(*freezer_raw, UnfreezePageNodeImpl(page_node()));
   page_node()->set_freezing_vote(std::nullopt);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  ::testing::Mock::VerifyAndClearExpectations(freezer_raw);
 
   // Sending a kCannotFreezeVote shouldn't unfreeze the page as it's already
   // in a non-freezable state.
   page_node()->set_freezing_vote(kCannotFreezeVote);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  ::testing::Mock::VerifyAndClearExpectations(freezer_raw);
 
   // Same for removing a kCannotFreezeVote.
   page_node()->set_freezing_vote(std::nullopt);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  ::testing::Mock::VerifyAndClearExpectations(freezer_raw);
 }
 
-TEST_F(PageFreezingPolicyTest, PageNodeIsntFrozenBeforeLoadingCompletes) {
-  std::unique_ptr<MockPageFreezer> page_freezer =
-      std::make_unique<MockPageFreezer>();
-  auto* page_freezer_raw = page_freezer.get();
-  policy()->SetPageFreezerForTesting(std::move(page_freezer));
+TEST_F(FreezingPolicyTest, PageNodeIsntFrozenBeforeLoadingCompletes) {
+  std::unique_ptr<MockFreezer> freezer = std::make_unique<MockFreezer>();
+  auto* freezer_raw = freezer.get();
+  policy()->SetFreezerForTesting(std::move(freezer));
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
   page_node()->set_freezing_vote(kCanFreezeVote);
   // The page freezer shouldn't be called as the page node isn't fully loaded
   // yet.
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  ::testing::Mock::VerifyAndClearExpectations(freezer_raw);
   EXPECT_EQ(page_node()->GetFreezingVote()->value(),
             freezing::FreezingVoteValue::kCanFreeze);
 
-  EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
+  EXPECT_CALL(*freezer_raw, MaybeFreezePageNodeImpl(page_node()));
   // A transition to the fully loaded state should cause the page node to be
   // frozen.
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-  ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
+  ::testing::Mock::VerifyAndClearExpectations(freezer_raw);
 }
 
 }  // namespace performance_manager::policies
