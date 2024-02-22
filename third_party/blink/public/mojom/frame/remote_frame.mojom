@@ -447,6 +447,15 @@ interface RemoteFrame {
   //
   // `params`: An array of the root's immediate children.
   CreateRemoteChildren(array<CreateRemoteChildParams> params);
+
+  // Propagates a censored version of the event from a fenced frame to its
+  // embedder that omits privacy-sensitive information like mouse coordinates or
+  // timestamps. Fires events named `event_type` targeting the frame owner.
+  // Only intended to be called on remote content frames owned by an
+  // `HTMLFencedFrameElement`. Specifically, this method is only called by the
+  // browser process on RemoteFrames that are the outer delegate of a fenced
+  // frame root.
+  ForwardFencedFrameEventToEmbedder(string event_type);
 };
 
 // Implemented in Blink, this interface defines remote main-frame-specific

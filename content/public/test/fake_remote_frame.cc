@@ -107,4 +107,7 @@ void FakeRemoteFrame::CreateRemoteChild(
 
 void FakeRemoteFrame::CreateRemoteChildren(
     std::vector<blink::mojom::CreateRemoteChildParamsPtr> params) {}
+
+void FakeRemoteFrame::ForwardFencedFrameEventToEmbedder(
+    const std::string& event_type) {}
 }  // namespace content
