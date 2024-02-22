@@ -7826,7 +7826,7 @@
   {
     "name": "tab-link-drag-drop",
     "owners": [ "skavuluru@google.com", "twellington@google.com","clank-large-form-factors@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 127
   },
   {
     "name": "tab-pickup-minimum-delay",
