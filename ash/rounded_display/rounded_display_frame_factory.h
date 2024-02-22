@@ -12,10 +12,6 @@
 #include "ash/frame_sink/ui_resource.h"
 #include "components/viz/common/quads/compositor_frame.h"
 
-namespace gfx {
-class GpuMemoryBuffer;
-}  // namespace gfx
-
 namespace aura {
 class Window;
 }  // namespace aura
@@ -37,8 +33,6 @@ class RoundedDisplayUiResource : public UiResource {
   RoundedDisplayUiResource& operator=(const RoundedDisplayUiResource&) = delete;
 
   ~RoundedDisplayUiResource() override;
-
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
 };
 
 class ASH_EXPORT RoundedDisplayFrameFactory {
@@ -88,7 +82,7 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
       const RoundedDisplayGutter& gutter,
       UiResourceManager& resource_manager) const;
 
-  // Paints the gutter's texture into the buffer held by `resource`.
+  // Paints the gutter's texture into the SharedImage held by `resource`.
   void Paint(const RoundedDisplayGutter& gutter,
              RoundedDisplayUiResource* resource) const;
 };

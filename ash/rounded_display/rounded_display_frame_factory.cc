@@ -22,7 +22,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ipc/common/surface_handle.h"
@@ -37,7 +36,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace ash {
 namespace {
@@ -123,8 +121,6 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
 
   auto resource = std::make_unique<RoundedDisplayUiResource>();
 
-  auto buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-
   if (!resource->context_provider) {
     resource->context_provider = aura::Env::GetInstance()
                                      ->context_factory()
@@ -147,7 +143,7 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
   auto client_shared_image = sii->CreateSharedImage(
       format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, usage, "RoundedDisplayFrameUi",
-      gpu::kNullSurfaceHandle, buffer_usage);
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
   if (!client_shared_image) {
     LOG(ERROR) << "Failed to create MappableSharedImage";
     return nullptr;
@@ -274,15 +270,11 @@ std::unique_ptr<RoundedDisplayUiResource> RoundedDisplayFrameFactory::Draw(
 void RoundedDisplayFrameFactory::Paint(
     const RoundedDisplayGutter& gutter,
     RoundedDisplayUiResource* resource) const {
-  gfx::GpuMemoryBuffer* buffer = resource->gpu_memory_buffer.get();
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
-
   gfx::Canvas canvas(gutter.bounds().size(), 1.0, true);
   gutter.Paint(&canvas);
 
-  DCHECK(!buffer);
   CHECK(resource->client_shared_image());
-  mapping = resource->client_shared_image()->Map();
+  auto mapping = resource->client_shared_image()->Map();
   if (!mapping) {
     return;
   }
@@ -294,9 +286,6 @@ void RoundedDisplayFrameFactory::Paint(
       SkImageInfo::MakeN32Premul(mapping->Size().width(),
                                  mapping->Size().height()),
       data, stride, 0, 0);
-
-  // Unmap to flush writes to buffer.
-  mapping.reset();
 }
 
 void RoundedDisplayFrameFactory::AppendQuad(
