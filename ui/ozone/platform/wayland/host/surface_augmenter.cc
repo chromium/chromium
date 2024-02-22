@@ -61,11 +61,6 @@ bool SurfaceAugmenter::SupportsSubpixelAccuratePosition() const {
          SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
 }
 
-bool SurfaceAugmenter::SupportsClipRect() const {
-  return GetSurfaceAugmentorVersion() >=
-         AUGMENTED_SUB_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
-}
-
 bool SurfaceAugmenter::SupportsClipRectOnAugmentedSurface() const {
   return GetSurfaceAugmentorVersion() >=
          AUGMENTED_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
