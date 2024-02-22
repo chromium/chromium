@@ -60,6 +60,12 @@ export class TabSearchItem extends TabSearchItemBase {
         type: Boolean,
         value: false,
       },
+
+      compact: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -67,6 +73,7 @@ export class TabSearchItem extends TabSearchItemBase {
   private buttonRipples_: boolean;
   index: number;
   inSuggestedGroup: boolean;
+  compact: boolean;
 
   /**
    * @return Whether a close action can be performed on the item.

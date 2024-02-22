@@ -71,7 +71,6 @@
     color: var(--cr-primary-text-color);
     font-size: var(--mwb-primary-text-font-size);
     font-weight: var(--mwb-primary-text-font-weight);
-    margin-bottom: 3px;
   }
 
   #secondaryContainer {
@@ -82,8 +81,13 @@
     font-weight: var(--mwb-secondary-text-font-weight);
   }
 
+  :host([compact]) #secondaryContainer {
+    display: none;
+  }
+
   #primaryContainer {
     display: flex;
+    gap: 3px;
   }
 
   #secondaryTimestamp {
@@ -164,6 +168,11 @@
     justify-content: center;
     overflow: hidden;
     width: 40px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([compact]) #iconContainer {
+    height: 24px;
+    width: 24px;
   }
 </style>
 
