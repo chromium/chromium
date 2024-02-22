@@ -33,6 +33,7 @@
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -74,6 +75,25 @@ PermissionToggleRowView::PermissionToggleRowView(
     toggle_accessible_name = l10n_util::GetStringFUTF16(
         IDS_CONCAT_TWO_STRINGS_WITH_COMMA, toggle_accessible_name,
         requesting_origin_string);
+  }
+
+  int settings_text_id = 0, settings_link_id = 0;
+  if (delegate->ShouldShowSettingsLinkForPermission(
+          permission.type, &settings_text_id, &settings_link_id)) {
+    std::u16string settings_text_for_link =
+        l10n_util::GetStringUTF16(settings_link_id);
+    size_t offset;
+    views::StyledLabel* label =
+        row_view_->AddSecondaryStyledLabel(l10n_util::GetStringFUTF16(
+            settings_text_id, settings_text_for_link, &offset));
+    base::RepeatingClosure clicked = base::BindRepeating(
+        [](PermissionToggleRowView* row, ContentSettingsType type) {
+          row->delegate_->SettingsLinkClicked(type);
+        },
+        base::Unretained(this), permission.type);
+    label->AddStyleRange(
+        gfx::Range(offset, offset + settings_text_for_link.length()),
+        views::StyledLabel::RangeStyleInfo::CreateForLink(clicked));
   }
 
   if (permission.source == content_settings::SETTING_SOURCE_USER) {

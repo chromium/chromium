@@ -16,6 +16,7 @@
 namespace views {
 class ImageView;
 class Label;
+class StyledLabel;
 }  // namespace views
 
 // A view that contains basic layout for a container with controls.
@@ -35,6 +36,7 @@ class RichControlsContainerView : public views::FlexLayoutView {
   void SetIcon(const ui::ImageModel image);
   void SetTitle(std::u16string title);
   views::Label* AddSecondaryLabel(std::u16string text);
+  views::StyledLabel* AddSecondaryStyledLabel(std::u16string text);
   template <typename T>
   T* AddControl(std::unique_ptr<T> control_view) {
     control_view->SetProperty(views::kInternalPaddingKey,

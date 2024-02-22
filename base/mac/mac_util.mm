@@ -408,7 +408,8 @@ std::string GetPlatformSerialNumber() {
   return base::SysCFStringRefToUTF8(serial_number_cfstring);
 }
 
-void OpenSystemSettingsPane(SystemSettingsPane pane) {
+void OpenSystemSettingsPane(SystemSettingsPane pane,
+                            const std::string& id_param) {
   NSString* url = nil;
   NSString* pane_file = nil;
   NSData* subpane_data = nil;
@@ -453,6 +454,26 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
       } else {
         pane_file = @"/System/Library/PreferencePanes/Network.prefPane";
         subpane_data = [@"Proxies" dataUsingEncoding:NSASCIIStringEncoding];
+      }
+      break;
+    case SystemSettingsPane::kNotifications:
+      if (MacOSMajorVersion() >= 13) {
+        url = @"x-apple.systempreferences:com.apple.Notifications-Settings."
+              @"extension";
+        if (!id_param.empty()) {
+          url = [url stringByAppendingFormat:@"?id=%s", id_param.c_str()];
+        }
+      } else {
+        pane_file = @"/System/Library/PreferencePanes/Notifications.prefPane";
+        NSDictionary* subpane_dict = @{
+          @"command" : @"show",
+          @"identifier" : SysUTF8ToNSString(id_param)
+        };
+        subpane_data = [NSPropertyListSerialization
+            dataWithPropertyList:subpane_dict
+                          format:NSPropertyListXMLFormat_v1_0
+                         options:0
+                           error:nil];
       }
       break;
     case SystemSettingsPane::kPrintersScanners:

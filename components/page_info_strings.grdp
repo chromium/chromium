@@ -495,6 +495,16 @@
       Go to site settings
     </message>
 
+    <!-- Link to guide users to system notification permission settings. -->
+    <if expr="is_macosx">
+      <message name="IDS_PAGE_INFO_SYSTEM_SETTINGS_LINK" desc="This is the text of the link pointing to macOS's System Settings. This sometimes appears under the notification permission in the Page Info bubble.">
+        System Settings
+      </message>
+      <message name="IDS_PAGE_INFO_NOTIFICATIONS_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the notifications permission with a link to macOS's System Settings.">
+        Enable notifications in the Notification Center. Open <ph name="LINK">$1<ex>System Settings</ex></ph>.
+      </message>
+    </if>
+
     <!-- Permission decision strings -->
     <message name="IDS_PAGE_INFO_PERMISSION_ALLOWED_BY_POLICY" desc="The label used underneath a permission listed in the Page Info bubble if the permission was explicitly allowed by the user's enterprise policy.">
       Allowed by your administrator

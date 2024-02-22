@@ -104,6 +104,10 @@ enum class SystemSettingsPane {
   // Network > Proxies
   kNetwork_Proxies,
 
+  // Notifications; optionally pass a bundle identifier as `id_param` to
+  // directly open the notification settings page for the given app.
+  kNotifications,
+
   // Printers & Scanners
   kPrintersScanners,
 
@@ -135,8 +139,10 @@ enum class SystemSettingsPane {
 
 // Opens the specified System Settings pane. If the specified subpane does not
 // exist on the release of macOS that is running, the parent pane will open
-// instead.
-BASE_EXPORT void OpenSystemSettingsPane(SystemSettingsPane pane);
+// instead. For some panes, `id_param` can be used to specify a subpane. See the
+// various SystemSettingsPane values for details.
+BASE_EXPORT void OpenSystemSettingsPane(SystemSettingsPane pane,
+                                        const std::string& id_param = "");
 
 // ------- For testing --------
 

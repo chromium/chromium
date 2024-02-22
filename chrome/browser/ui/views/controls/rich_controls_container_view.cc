@@ -11,6 +11,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
@@ -92,6 +93,33 @@ views::Label* RichControlsContainerView::AddSecondaryLabel(
           .WithWeight(1));
   secondary_label->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kStart);
+  // TODO(https://crbug.com/326376201): Consider using
+  // views::style::STYLE_BODY_5 when CR2023 is enabled to
+  // be consistent with AddSecondaryStyledLabel, as most uses of this method
+  // already change the text style to that anyway.
+  return labels_wrapper_->AddChildView(std::move(secondary_label));
+}
+
+views::StyledLabel* RichControlsContainerView::AddSecondaryStyledLabel(
+    std::u16string text) {
+  auto secondary_label = std::make_unique<views::StyledLabel>();
+  secondary_label->SetText(text);
+  secondary_label->SetTextContext(views::style::CONTEXT_LABEL);
+  secondary_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  secondary_label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/true)
+          .WithWeight(1));
+  secondary_label->SetProperty(views::kCrossAxisAlignmentKey,
+                               views::LayoutAlignment::kStart);
+  if (features::IsChromeRefresh2023()) {
+    secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+    secondary_label->SetDefaultEnabledColorId(
+        ui::kColorLabelForegroundSecondary);
+  }
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 
