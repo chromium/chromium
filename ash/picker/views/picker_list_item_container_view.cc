@@ -4,13 +4,17 @@
 
 #include "ash/picker/views/picker_list_item_container_view.h"
 
+#include <iterator>
 #include <memory>
 #include <utility>
 
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -21,6 +25,48 @@ PickerListItemContainerView::PickerListItemContainerView() {
 }
 
 PickerListItemContainerView::~PickerListItemContainerView() = default;
+
+PickerItemView* PickerListItemContainerView::GetTopItem() {
+  return children().empty()
+             ? nullptr
+             : views::AsViewClass<PickerItemView>(children().front().get());
+}
+
+PickerItemView* PickerListItemContainerView::GetBottomItem() {
+  return children().empty()
+             ? nullptr
+             : views::AsViewClass<PickerItemView>(children().back().get());
+}
+
+PickerItemView* PickerListItemContainerView::GetItemAbove(
+    const PickerItemView* item) {
+  const views::View::Views::const_iterator it = FindChild(item);
+  return it == children().cend() || it == children().cbegin()
+             ? nullptr
+             : views::AsViewClass<PickerItemView>(std::prev(it)->get());
+}
+
+PickerItemView* PickerListItemContainerView::GetItemBelow(
+    const PickerItemView* item) {
+  const views::View::Views::const_iterator it = FindChild(item);
+  if (it == children().cend()) {
+    return nullptr;
+  }
+  const views::View::Views::const_iterator next_it = std::next(it);
+  return next_it == children().cend()
+             ? nullptr
+             : views::AsViewClass<PickerItemView>(next_it->get());
+}
+
+PickerItemView* PickerListItemContainerView::GetItemLeftOf(
+    const PickerItemView* item) {
+  return nullptr;
+}
+
+PickerItemView* PickerListItemContainerView::GetItemRightOf(
+    const PickerItemView* item) {
+  return nullptr;
+}
 
 PickerListItemView* PickerListItemContainerView::AddListItem(
     std::unique_ptr<PickerListItemView> list_item) {
