@@ -70,6 +70,7 @@ missing_new_fields,components/variations/android/java/src/org/chromium/component
 missing_new_fields,ash/ambient/ambient_photo_cache.cc
 missing_new_fields,ash/ambient/ambient_weather_controller.cc
 missing_new_fields,ash/assistant/assistant_controller_impl.cc
+missing_new_fields,ash/birch/birch_weather_provider.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc
 missing_new_fields,ash/webui/projector_app/projector_xhr_sender.cc
@@ -193,7 +194,6 @@ missing_new_fields,components/feed/core/v2/feed_network_impl.cc
 missing_new_fields,components/feed/core/v2/image_fetcher.cc
 missing_new_fields,components/invalidation/impl/per_user_topic_subscription_request.cc
 missing_new_fields,components/media_router/common/providers/cast/channel/cast_socket.cc
-missing_new_fields,components/metrics/net/net_metrics_log_uploader.cc
 missing_new_fields,components/mirroring/service/udp_socket_client.cc
 missing_new_fields,components/network_time/network_time_tracker.cc
 missing_new_fields,components/ntp_tiles/icon_cacher_impl.cc

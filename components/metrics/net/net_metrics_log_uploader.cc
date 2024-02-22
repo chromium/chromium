@@ -70,6 +70,18 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           data:
             "A protocol buffer with usage statistics and crash related data."
           destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2024-02-15"
+          user_data {
+            type: BIRTH_DATE
+            type: GENDER
+            type: HW_OS_INFO
+            type: OTHER
+          }
+          internal {
+            contacts {
+              owners: "//components/metrics/OWNERS"
+            }
+          }
         }
         policy {
           cookies_allowed: NO
@@ -111,6 +123,19 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         data:
           "A protocol buffer with usage statistics and associated App Identifiers."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-02-15"
+        user_data {
+          type: BIRTH_DATE
+          type: GENDER
+          type: HW_OS_INFO
+          type: SENSITIVE_URL
+          type: OTHER
+        }
+        internal {
+          contacts {
+            owners: "//components/metrics/OWNERS"
+          }
+        }
       }
       policy {
         cookies_allowed: NO
@@ -161,6 +186,19 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         data:
           "A protocol buffer with usage statistics and associated URLs."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-02-15"
+        user_data {
+          type: BIRTH_DATE
+          type: GENDER
+          type: HW_OS_INFO
+          type: SENSITIVE_URL
+          type: OTHER
+        }
+        internal {
+          contacts {
+            owners: "//components/metrics/OWNERS"
+          }
+        }
       }
       policy {
         cookies_allowed: NO
@@ -213,6 +251,19 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         data:
           "A protocol buffer with usage statistics and associated URLs."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-02-15"
+        user_data {
+          type: BIRTH_DATE
+          type: GENDER
+          type: HW_OS_INFO
+          type: SENSITIVE_URL
+          type: OTHER
+        }
+        internal {
+          contacts {
+            owners: "//components/metrics/OWNERS"
+          }
+        }
       }
       policy {
         cookies_allowed: NO
