@@ -2330,6 +2330,9 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       SerializeHTMLAttributes(node_data);
     }
   }
+
+  SerializeImageDataAttributes(node_data);
+  SerializeTextInsertionDeletionOffsetAttributes(node_data);
 }
 
 void AXObject::SerializeComputedDetailsRelation(
@@ -2488,6 +2491,68 @@ const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute(
 
 void AXObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
   // Implemented in subclasses.
+}
+
+void AXObject::SerializeImageDataAttributes(ui::AXNodeData* node_data) const {
+  if (AXObjectID() != AXObjectCache().image_data_node_id()) {
+    return;
+  }
+
+  // In general, string attributes should be truncated using
+  // TruncateAndAddStringAttribute, but ImageDataUrl contains a data url
+  // representing an image, so add it directly using AddStringAttribute.
+  node_data->AddStringAttribute(
+      ax::mojom::blink::StringAttribute::kImageDataUrl,
+      ImageDataUrl(AXObjectCache().max_image_data_size()).Utf8());
+}
+
+void AXObject::SerializeTextInsertionDeletionOffsetAttributes(
+    ui::AXNodeData* node_data) const {
+  if (!IsEditable()) {
+    return;
+  }
+
+  WTF::Vector<TextChangedOperation>* offsets =
+      AXObjectCache().GetFromTextOperationInNodeIdMap(AXObjectID());
+  if (!offsets) {
+    return;
+  }
+
+  std::vector<int> start_offsets;
+  std::vector<int> end_offsets;
+  std::vector<int> start_anchor_ids;
+  std::vector<int> end_anchor_ids;
+  std::vector<int> operations_ints;
+
+  start_offsets.reserve(offsets->size());
+  end_offsets.reserve(offsets->size());
+  start_anchor_ids.reserve(offsets->size());
+  end_anchor_ids.reserve(offsets->size());
+  operations_ints.reserve(offsets->size());
+
+  for (auto operation : *offsets) {
+    start_offsets.push_back(operation.start);
+    end_offsets.push_back(operation.end);
+    start_anchor_ids.push_back(operation.start_anchor_id);
+    end_anchor_ids.push_back(operation.end_anchor_id);
+    operations_ints.push_back(static_cast<int>(operation.op));
+  }
+
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kTextOperationStartOffsets,
+      start_offsets);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kTextOperationEndOffsets,
+      end_offsets);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kTextOperationStartAnchorIds,
+      start_anchor_ids);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kTextOperationEndAnchorIds,
+      end_anchor_ids);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kTextOperations, operations_ints);
+  AXObjectCache().ClearTextOperationInNodeIdMap();
 }
 
 bool AXObject::IsAXNodeObject() const {

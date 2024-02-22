@@ -59,17 +59,6 @@ class MODULES_EXPORT BlinkAXTreeSource
   AXObject* GetNull() const override;
   std::string GetDebugString(AXObject* node) const override;
 
-  // Set the id of the node to fetch image data for. Normally the content
-  // of images is not part of the accessibility tree, but one node at a
-  // time can be designated as the image data node, which will send the
-  // contents of the image with each accessibility update until another
-  // node is designated.
-  int image_data_node_id() { return image_data_node_id_; }
-  void set_image_data_node_id(int id, const gfx::Size& max_size) {
-    image_data_node_id_ = id;
-    max_image_data_size_ = max_size;
-  }
-
   // Ignore code that limits based on the protocol (like https, file, etc.)
   // to enable tests to run.
   static void IgnoreProtocolChecksForTesting();
@@ -91,11 +80,6 @@ class MODULES_EXPORT BlinkAXTreeSource
                  ax::mojom::blink::TextAffinity& focus_affinity) const;
 
   AXObject* GetFocusedObject() const;
-
-  // The ID of the object to fetch image data for.
-  int image_data_node_id_ = -1;
-
-  gfx::Size max_image_data_size_;
 
   // Whether we should highlight annotation results visually on the page
   // for debugging.

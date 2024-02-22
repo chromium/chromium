@@ -346,61 +346,7 @@ void BlinkAXTreeSource::SerializeNode(AXObject* src,
     return;
   }
 
-  dst->id = src->AXObjectID();
-  dst->role = src->RoleValue();
-
-  // TODO(crbug.com/1068668): AX onion soup - finish migrating the rest of
-  // this function inside of AXObject::Serialize and removing
-  // unneeded AXObject interfaces.
   src->Serialize(dst, ax_object_cache_->GetAXMode());
-
-  if (dst->id == ax_object_cache_->image_data_node_id()) {
-    // In general, string attributes should be truncated using
-    // TruncateAndAddStringAttribute, but ImageDataUrl contains a data url
-    // representing an image, so add it directly using AddStringAttribute.
-    dst->AddStringAttribute(ax::mojom::blink::StringAttribute::kImageDataUrl,
-                            src->ImageDataUrl(max_image_data_size_).Utf8());
-  }
-
-  WTF::Vector<TextChangedOperation>* offsets =
-      ax_object_cache_->GetFromTextOperationInNodeIdMap(src->AXObjectID());
-  if (src->IsEditable() && offsets) {
-    std::vector<int> start_offsets;
-    std::vector<int> end_offsets;
-    std::vector<int> start_anchor_ids;
-    std::vector<int> end_anchor_ids;
-    std::vector<int> operations_ints;
-
-    start_offsets.reserve(offsets->size());
-    end_offsets.reserve(offsets->size());
-    start_anchor_ids.reserve(offsets->size());
-    end_anchor_ids.reserve(offsets->size());
-    operations_ints.reserve(offsets->size());
-
-    for (auto operation : *offsets) {
-      start_offsets.push_back(operation.start);
-      end_offsets.push_back(operation.end);
-      start_anchor_ids.push_back(operation.start_anchor_id);
-      end_anchor_ids.push_back(operation.end_anchor_id);
-      operations_ints.push_back(static_cast<int>(operation.op));
-    }
-
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperationStartOffsets,
-        start_offsets);
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperationEndOffsets,
-        end_offsets);
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperationStartAnchorIds,
-        start_anchor_ids);
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperationEndAnchorIds,
-        end_anchor_ids);
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperations, operations_ints);
-    ax_object_cache_->ClearTextOperationInNodeIdMap();
-  }
 }
 
 void BlinkAXTreeSource::Trace(Visitor* visitor) const {

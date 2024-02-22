@@ -1509,6 +1509,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Serialization implemented in specific subclasses.
   virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;
 
+  void SerializeImageDataAttributes(ui::AXNodeData* node_data) const;
+  void SerializeTextInsertionDeletionOffsetAttributes(
+      ui::AXNodeData* node_data) const;
+
  private:
   bool ComputeCanSetFocusAttribute() const;
   String KeyboardShortcut() const;

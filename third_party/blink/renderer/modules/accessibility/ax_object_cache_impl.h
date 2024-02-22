@@ -538,11 +538,18 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool HasDirtyObjects() const override { return !dirty_objects_.empty(); }
   bool IsDirty() override;
 
-  void SetImageAsDataNodeId(int id, const gfx::Size& max_size) {
-    ax_tree_source_->set_image_data_node_id(id, max_size);
+  // Set the id of the node to fetch image data for. Normally the content
+  // of images is not part of the accessibility tree, but one node at a
+  // time can be designated as the image data node, which will send the
+  // contents of the image with each accessibility update until another
+  // node is designated.
+  void SetImageAsDataNodeId(AXID id, const gfx::Size& max_size) {
+    image_data_node_id_ = id;
+    max_image_data_size_ = max_size;
   }
 
-  int image_data_node_id() { return ax_tree_source_->image_data_node_id(); }
+  AXID image_data_node_id() { return image_data_node_id_; }
+  const gfx::Size& max_image_data_size() { return max_image_data_size_; }
 
   static constexpr int kDataTableHeuristicMinRows = 20;
 
@@ -1156,6 +1163,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
                            UpdateAXForAllDocumentsAfterPausedUpdates);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveReferencesToAXID);
+
+  // The ID of the object to fetch image data for.
+  AXID image_data_node_id_ = ui::AXNodeData::kInvalidAXID;
+
+  gfx::Size max_image_data_size_;
 
   // So we can ensure the serialization pipeline never stalls with dirty objects
   // remaining to be serialized.
