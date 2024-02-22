@@ -18777,6 +18777,14 @@ be describing additional metrics about the same event.
       tools/metrics/histograms/enum.xml.
     </summary>
   </metric>
+  <metric name="MainFrameResource.NavigationStartToConnectStart">
+    <owner>nidhijaju@chromium.org</owner>
+    <owner>chrome-loading@google.com</owner>
+    <summary>
+      The duration from the start of the navigation to the start of the
+      connection establishment to the origin of the main frame request. In ms.
+    </summary>
+  </metric>
   <metric name="MainFrameResource.NavigationStartToReceiveHeadersStart">
     <summary>
       The duration from the start of the navigation to the start of the response
