@@ -22583,6 +22583,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePageLoadedWithToEdge" not_user_triggered="true">
+  <owner>lazzzis@google.com</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <description>
+    Reported when a web page is loaded with edge to edge drawing enabled for the
+    page. Android only.
+  </description>
+</action>
+
 <action name="MobilePasswordBreachOpenPasswordManager">
   <owner>noemies@google.com</owner>
   <description>

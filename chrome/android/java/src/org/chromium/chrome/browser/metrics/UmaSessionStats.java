@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
@@ -69,6 +70,9 @@ public class UmaSessionStats {
         }
         if (connectedDevices.contains(InputDevice.SOURCE_MOUSE)) {
             UmaSessionStatsJni.get().recordPageLoadedWithMouse();
+        }
+        if (EdgeToEdgeUtils.isEnabled() && EdgeToEdgeUtils.shouldDrawToEdge(tab)) {
+            UmaSessionStatsJni.get().recordPageLoadedWithToEdge();
         }
 
         // If the session has ended (i.e. chrome is in the background), escape early. Ideally we
@@ -306,5 +310,7 @@ public class UmaSessionStats {
         void recordPageLoadedWithMouse();
 
         void recordPageLoadedWithAccessory();
+
+        void recordPageLoadedWithToEdge();
     }
 }

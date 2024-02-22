@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.shouldDrawToEdge;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -23,14 +25,10 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.blink.mojom.ViewportFit;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
-import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
-import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController.SafeAreaInsetsTracker;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
@@ -115,37 +113,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
             }
         }
         maybeDrawToEdge(ROOT_UI_VIEW_ID, tab == null ? null : tab.getWebContents());
-    }
-
-    /**
-     * @return whether we should draw ToEdge based only on the given Tab and the viewport-fit value
-     *     from the tracking data of the Display Cutout Controller.
-     */
-    private boolean shouldDrawToEdge(Tab tab) {
-        return shouldDrawToEdge(
-                tab,
-                tab == null
-                        ? ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled()
-                        : getWasViewportFitCover(tab));
-    }
-
-    /**
-     * @return whether we should draw ToEdge based on the given Tab and the given new viewport-fit
-     *     value.
-     */
-    private boolean shouldDrawToEdge(Tab tab, @WebContentsObserver.ViewportFitType int value) {
-        return shouldDrawToEdge(
-                tab, value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
-    }
-
-    /**
-     * @return whether we should draw ToEdge based on the given Tab and a ToEdge preference boolean.
-     */
-    private boolean shouldDrawToEdge(Tab tab, boolean wantsToEdge) {
-        // The calling infrastructure has already checked the device configuration: mobile vs tablet
-        // and whether the Gesture Navigation is appropriately enabled or not.
-        if (alwaysDrawToEdgeForTabKind(tab)) return true;
-        return wantsToEdge;
     }
 
     @Override
@@ -330,32 +297,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      */
     private int scale(@Px int unscaledValuePx) {
         return (int) Math.ceil(unscaledValuePx * mPxToDp);
-    }
-
-    /**
-     * Decides whether to draw the given Tab ToEdge or not.
-     *
-     * @param tab The {@link Tab} to be drawn.
-     * @return {@code true} if it's OK to draw this Tab under system bars.
-     */
-    private boolean alwaysDrawToEdgeForTabKind(@Nullable Tab tab) {
-        boolean isNative = tab == null || tab.isNativePage();
-        if (isNative) {
-            // Check the flag for ToEdge on all native pages.
-            return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
-        }
-        return ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled();
-    }
-
-    /**
-     * Returns whether the given Tab has a web page that was already rendered with
-     * viewport-fit=cover.
-     */
-    private boolean getWasViewportFitCover(@NonNull Tab tab) {
-        assert tab != null;
-        SafeAreaInsetsTracker safeAreaInsetsTracker =
-                DisplayCutoutController.getSafeAreaInsetsTracker(tab);
-        return safeAreaInsetsTracker == null ? false : safeAreaInsetsTracker.isViewportFitCover();
     }
 
     @CallSuper

@@ -389,6 +389,10 @@ static void JNI_UmaSessionStats_RecordPageLoadedWithMouse(JNIEnv*) {
   base::RecordAction(UserMetricsAction("MobilePageLoadedWithMouse"));
 }
 
+static void JNI_UmaSessionStats_RecordPageLoadedWithToEdge(JNIEnv*) {
+  base::RecordAction(UserMetricsAction("MobilePageLoadedWithToEdge"));
+}
+
 static jlong JNI_UmaSessionStats_Init(JNIEnv* env) {
   // We should have only one UmaSessionStats instance.
   return reinterpret_cast<intptr_t>(UmaSessionStats::GetInstance());

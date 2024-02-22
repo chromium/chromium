@@ -26,14 +26,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -54,7 +56,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Testing startup behavior")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
@@ -104,6 +106,13 @@ public class EdgeToEdgeInstrumentationTest {
             return mBottomPadding;
         }
     }
+
+    // Declare the watcher before the app launches.
+    HistogramWatcher mEligibleHistograms =
+            HistogramWatcher.newBuilder()
+                    .expectBooleanRecord("Android.EdgeToEdge.Eligible", true)
+                    .expectNoRecords("Android.EdgeToEdge.IneligibilityReason")
+                    .build();
 
     @Before
     public void setUp() {
@@ -318,5 +327,17 @@ public class EdgeToEdgeInstrumentationTest {
         assertFalse(
                 "Should exit ToEdge when device no longer supported",
                 mEdgeToEdgeController.isToEdge());
+    }
+
+    @Test
+    @MediumTest
+    public void testEligibleHistogramRecord() {
+        UserActionTester userActionTester = new UserActionTester();
+        activateFeatureToEdge();
+
+        Assert.assertTrue(
+                "User action is not recorded",
+                userActionTester.getActions().contains("MobilePageLoadedWithToEdge"));
+        mEligibleHistograms.assertExpected("Incorrect histogram recordings");
     }
 }

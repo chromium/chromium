@@ -10,12 +10,20 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeController.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgePadAdjuster.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeSupplier.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java",
   ]
   deps = [
+    "//base:base_cached_flags_java",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//components/browser_ui/display_cutout/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/blink/public/mojom:mojom_core_java",
+    "//ui/android:ui_java",
   ]
 }
 

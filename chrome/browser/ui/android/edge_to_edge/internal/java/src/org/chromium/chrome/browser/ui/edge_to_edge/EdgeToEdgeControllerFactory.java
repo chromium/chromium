@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.hasTappableBottomBar;
+
 import android.app.Activity;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
-import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -69,16 +69,6 @@ public class EdgeToEdgeControllerFactory {
                 // TODO(https://crbug.com/325356134) use UiUtils#isGestureNavigationMode instead.
                 && !hasTappableBottomBar(activity.getWindow())
                 && !sHas3ButtonNavBarForTesting;
-    }
-
-    /**
-     * @return whether the given window's insets indicate a tappable bottom bar.
-     */
-    private static boolean hasTappableBottomBar(Window window) {
-        return WindowInsetsCompat.toWindowInsetsCompat(window.getDecorView().getRootWindowInsets())
-                        .getInsets(WindowInsetsCompat.Type.tappableElement())
-                        .bottom
-                != 0;
     }
 
     @VisibleForTesting
