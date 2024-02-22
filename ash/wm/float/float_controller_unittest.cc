@@ -2328,4 +2328,17 @@ TEST_F(TabletWindowFloatSplitviewTest, ResetFloatToMaximize) {
   ASSERT_TRUE(WindowState::Get(window_1.get())->IsMaximized());
 }
 
+// Tests that there is no crash when going from float to always on top in tablet
+// mode. Regression test for http://b/317064996.
+TEST_F(TabletWindowFloatTest, FloatStateToAlwaysOnTop) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Make the window always on top. It should exit float state.
+  window->SetProperty(aura::client::kZOrderingKey,
+                      ui::ZOrderLevel::kFloatingWindow);
+  EXPECT_FALSE(WindowState::Get(window.get())->IsFloated());
+}
+
 }  // namespace ash

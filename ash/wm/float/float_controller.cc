@@ -424,6 +424,17 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
       return;
     }
 
+    // Always on top window cannot be floated, so if a floated window becomes
+    // always on top, exit float state.
+    if (key == aura::client::kZOrderingKey) {
+      if (window->GetProperty(aura::client::kZOrderingKey) !=
+          ui::ZOrderLevel::kNormal) {
+        // Destroys `this`.
+        Shell::Get()->float_controller()->ResetFloatedWindow(floated_window_);
+      }
+      return;
+    }
+
     if (key != aura::client::kResizeBehaviorKey) {
       return;
     }
