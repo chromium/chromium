@@ -75,8 +75,9 @@ public interface ModuleDelegate {
      * Called when the user clicks a module.
      *
      * @param moduleType The type of the module clicked.
+     * @param modulePosition The position of the module clicked.
      */
-    void onModuleClicked(@ModuleType int moduleType);
+    void onModuleClicked(@ModuleType int moduleType, int modulePosition);
 
     /** Returns the type of the home surface which owns the magic stack. */
     @HostSurface

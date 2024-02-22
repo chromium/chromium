@@ -393,6 +393,25 @@ public class HomeModulesMediator {
         return mModuleTypeToModuleProviderMap.get(moduleType);
     }
 
+    /* Gets the rank of the module based on the given type. */
+    int getModuleRank(@ModuleType int moduleType) {
+        return findModuleIndexInRecyclerView(
+                moduleType, mModuleTypeToRankingIndexMap.get(moduleType));
+    }
+
+    /**
+     * Records whether the magic stack is scrollable and has been scrolled or not before it is
+     * hidden or destroyed.
+     */
+    void recordMagicStackScroll(boolean hasHomeModulesBeenScrolled) {
+        if (mModel.size() < 1) {
+            return;
+        }
+
+        HomeModulesMetricsUtils.recordHomeModulesScrollState(
+                mHostSurface, mModel.size() > 1, hasHomeModulesBeenScrolled);
+    }
+
     Map<Integer, ModuleProvider> getModuleTypeToModuleProviderMapForTesting() {
         return mModuleTypeToModuleProviderMap;
     }

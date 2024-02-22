@@ -59,6 +59,14 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS = ".Module.ProfileReadyDelayMs";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_MAGIC_STACK_SCROLLABLE_SCROLLED = ".Scrollable.Scrolled";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_MAGIC_STACK_SCROLLABLE_NOTSCROLLED = ".Scrollable.NotScrolled";
+
+    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_NOT_SCROLLABLE = ".NotScrollable";
+
     private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
     public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -66,7 +74,10 @@ public class HomeModulesMetricsUtils {
                     HOME_MODULES_SHOW_ALL_MODULES_PARAM,
                     false);
 
-    /** Returns a string name of a module. */
+    /**
+     * Returns a string name of a module. Remember to update the variant ModuleType in
+     * tools/metrics/histograms/metadata/magic_stack/histograms.xml when adding a new module type
+     */
     public static String getModuleName(@ModuleType int moduleType) {
         switch (moduleType) {
             case SINGLE_TAB:
@@ -103,16 +114,6 @@ public class HomeModulesMetricsUtils {
      */
     public static void recordModuleShown(@HostSurface int hostSurface, @ModuleType int moduleType) {
         recordUma(hostSurface, moduleType, HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION);
-    }
-
-    /**
-     * Records a module is clicked.
-     *
-     * @param hostSurface The type of the host surface of the magic stack.
-     * @param moduleType The type of module.
-     */
-    public static void recordModuleClick(@HostSurface int hostSurface, @ModuleType int moduleType) {
-        recordUma(hostSurface, moduleType, HISTOGRAM_MAGIC_STACK_MODULE_CLICK);
     }
 
     /**
@@ -239,6 +240,50 @@ public class HomeModulesMetricsUtils {
      */
     public static void recordProfileReadyDelay(@HostSurface int hostSurface, long durationMs) {
         recordUma(hostSurface, HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS, durationMs);
+    }
+
+    /**
+     * Records the total count of times that magic stack being scrollable or not, and, when it is
+     * scrollable, the number of times it has been scrolled.
+     *
+     * @param hostSurface The type of the host surface of the magic stack.
+     * @param isScrollable True if the home modules are scrollable.
+     * @param hasScrolled True if home modules has been scrolled.
+     */
+    public static void recordHomeModulesScrollState(
+            @HostSurface int hostSurface, boolean isScrollable, boolean hasScrolled) {
+        String umaName;
+        if (isScrollable) {
+            if (hasScrolled) {
+                umaName = HISTOGRAM_MAGIC_STACK_SCROLLABLE_SCROLLED;
+            } else {
+                umaName = HISTOGRAM_MAGIC_STACK_SCROLLABLE_NOTSCROLLED;
+            }
+        } else {
+            umaName = HISTOGRAM_MAGIC_STACK_NOT_SCROLLABLE;
+        }
+        RecordHistogram.recordCount1MHistogram(
+                HISTOGRAM_OS_PREFIX + BrowserUiUtils.getHostName(hostSurface) + umaName, 1);
+    }
+
+    /**
+     * Records the type and position of the module when the home modules are clicked.
+     *
+     * @param hostSurface The type of the host surface of the magic stack.
+     * @param moduleType The type of module.
+     * @param modulePosition The position of the module which got clicked.
+     */
+    public static void recordModuleClickedPosition(
+            @HostSurface int hostSurface, @ModuleType int moduleType, int modulePosition) {
+        assert 0 <= modulePosition && modulePosition < ModuleType.NUM_ENTRIES;
+        RecordHistogram.recordCount1MHistogram(
+                HISTOGRAM_OS_PREFIX
+                        + BrowserUiUtils.getHostName(hostSurface)
+                        + HISTOGRAM_MAGIC_STACK_MODULE_CLICK
+                        + getModuleName(moduleType)
+                        + "."
+                        + modulePosition,
+                1);
     }
 
     private static void recordUma(
