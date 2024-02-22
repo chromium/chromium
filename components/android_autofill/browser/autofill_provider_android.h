@@ -203,7 +203,7 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   void Reset();
 
-  // Cancels the current Autofill session.
+  // Cancels the current Autofill session, resetting cached session data.
   void CancelSession();
 
   // Returns a new session id. Session ids are required when creating a

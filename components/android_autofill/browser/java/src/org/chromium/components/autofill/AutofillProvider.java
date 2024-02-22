@@ -781,6 +781,7 @@ public class AutofillProvider {
     @CalledByNative
     public void cancelSession() {
         mAutofillManager.cancel();
+        mPrefillRequest = null;
         mRequest = null;
     }
 
