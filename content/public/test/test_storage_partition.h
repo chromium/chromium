@@ -157,6 +157,10 @@ class TestStoragePartition : public StoragePartition {
 
   CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() override;
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  CdmStorageDataModel* GetCdmStorageDataModel() override;
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
   void set_browsing_topics_site_data_manager(
       BrowsingTopicsSiteDataManager* manager) {
     browsing_topics_site_data_manager_ = manager;

@@ -159,6 +159,12 @@ TestStoragePartition::GetCookieDeprecationLabelManager() {
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
+  return nullptr;
+}
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
 BrowsingTopicsSiteDataManager*
 TestStoragePartition::GetBrowsingTopicsSiteDataManager() {
   return browsing_topics_site_data_manager_;

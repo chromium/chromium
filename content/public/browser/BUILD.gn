@@ -95,6 +95,7 @@ source_set("browser_sources") {
     "browsing_instance_id.h",
     "browsing_topics_site_data_manager.h",
     "cdm_registry.h",
+    "cdm_storage_data_model.h",
     "certificate_request_result_type.h",
     "child_process_data.cc",
     "child_process_data.h",

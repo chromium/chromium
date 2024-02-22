@@ -179,10 +179,8 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     // is, we should proceed with opening in MediaLicenseManager.
     if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
         !base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
-      CdmStorageManager* cdm_storage_manager =
-          static_cast<StoragePartitionImpl*>(
-              render_frame_host_->GetStoragePartition())
-              ->GetCdmStorageManager();
+      CdmStorageManager* cdm_storage_manager = static_cast<CdmStorageManager*>(
+          render_frame_host_->GetStoragePartition()->GetCdmStorageDataModel());
 
       cdm_storage_manager->OpenCdmStorage(
           CdmStorageBindingContext(storage_key, cdm_type_),

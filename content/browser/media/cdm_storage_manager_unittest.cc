@@ -220,8 +220,8 @@ TEST_P(CdmStorageManagerSingularTest, DeleteDataForStorageKey) {
   Write(cdm_file_for_remote_two, kPopulatedFileValue);
   ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
 
-  cdm_storage_manager_->DeleteDataForStorageKey(
-      kTestStorageKey, base::Time::Min(), base::Time::Max(), base::DoNothing());
+  cdm_storage_manager_->DeleteDataForStorageKey(kTestStorageKey,
+                                                base::DoNothing());
 
   ExpectFileContents(cdm_file_for_remote_one, kEmptyFileValue);
   ExpectFileContents(cdm_file_two_for_remote_one, kEmptyFileValue);
@@ -291,8 +291,8 @@ TEST_P(CdmStorageManagerMultipleTest, DeleteDataForStorageKey) {
   Write(cdm_file_for_remote_two, kPopulatedFileValue);
   ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
 
-  cdm_storage_manager_->DeleteDataForStorageKey(
-      kTestStorageKey, base::Time::Min(), base::Time::Max(), base::DoNothing());
+  cdm_storage_manager_->DeleteDataForStorageKey(kTestStorageKey,
+                                                base::DoNothing());
 
   ExpectFileContents(cdm_file_for_remote_one, kEmptyFileValue);
   ExpectFileContents(cdm_file_two_for_remote_one, kEmptyFileValue);

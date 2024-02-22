@@ -88,6 +88,21 @@ void CdmStorageManager::Open(const std::string& file_name,
                            std::move(callback)));
 }
 
+void CdmStorageManager::GetUsagePerAllStorageKeys(
+    base::OnceCallback<void(
+        const std::vector<std::pair<blink::StorageKey, uint64_t>>&)> callback) {
+  // stub until implementation.
+  std::move(callback).Run({});
+}
+
+void CdmStorageManager::DeleteDataForStorageKey(
+    const blink::StorageKey& storage_key,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DeleteDataForStorageKey(storage_key, base::Time::Min(), base::Time::Max(),
+                          std::move(callback));
+}
+
 void CdmStorageManager::OpenCdmStorage(
     const CdmStorageBindingContext& binding_context,
     mojo::PendingReceiver<media::mojom::CdmStorage> receiver) {
