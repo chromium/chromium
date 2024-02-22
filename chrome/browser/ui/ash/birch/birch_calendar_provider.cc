@@ -69,17 +69,32 @@ void BirchCalendarProvider::OnEventsFetched(
     return;
   }
 
-  std::vector<BirchCalendarItem> birch_items;
+  std::vector<BirchCalendarItem> calendar_items;
+  std::vector<BirchAttachmentItem> attachment_items;
   for (const auto& item : events->items()) {
     if (!item) {
       continue;
     }
-    // TODO(jamescook): Convert additional fields.
-    birch_items.emplace_back(base::UTF8ToUTF16(item->summary()), GURL(),
-                             item->start_time().date_time(),
-                             item->end_time().date_time());
+    // Convert the data from google_apis format to birch format.
+    BirchCalendarItem birch_item(base::UTF8ToUTF16(item->summary()));
+    birch_item.start_time = item->start_time().date_time();
+    birch_item.end_time = item->end_time().date_time();
+    birch_item.conference_url = item->conference_data_uri();
+    calendar_items.push_back(std::move(birch_item));
+
+    // Attachments are stored as separate items.
+    for (const auto& attachment : item->attachments()) {
+      BirchAttachmentItem birch_attachment(
+          base::UTF8ToUTF16(attachment.title()));
+      birch_attachment.file_url = attachment.file_url();
+      birch_attachment.icon_url = attachment.icon_link();
+      birch_attachment.start_time = birch_item.start_time;
+      birch_attachment.end_time = birch_item.end_time;
+      attachment_items.push_back(std::move(birch_attachment));
+    }
   }
-  birch_model->SetCalendarItems(std::move(birch_items));
+  birch_model->SetCalendarItems(std::move(calendar_items));
+  birch_model->SetAttachmentItems(std::move(attachment_items));
 }
 
 void BirchCalendarProvider::SetFetcherForTest(

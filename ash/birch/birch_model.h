@@ -31,6 +31,7 @@ class ASH_EXPORT BirchModel {
   void RequestBirchDataFetch(base::OnceClosure callback);
 
   void SetCalendarItems(std::vector<BirchCalendarItem> calendar_items);
+  void SetAttachmentItems(std::vector<BirchAttachmentItem> attachment_items);
   void SetFileSuggestItems(std::vector<BirchFileItem> file_suggest_items);
   void SetRecentTabItems(std::vector<BirchTabItem> recent_tab_items);
   void SetWeatherItems(std::vector<BirchWeatherItem> weather_items);
@@ -39,6 +40,9 @@ class ASH_EXPORT BirchModel {
 
   const std::vector<BirchCalendarItem>& GetCalendarItemsForTest() const {
     return calendar_items_;
+  }
+  const std::vector<BirchAttachmentItem>& GetAttachmentItemsForTest() const {
+    return attachment_items_;
   }
   const std::vector<BirchFileItem>& GetFileSuggestItemsForTest() const {
     return file_suggest_items_;
@@ -79,6 +83,11 @@ class ASH_EXPORT BirchModel {
   // Whether the calendar event data is freshly fetched.
   bool is_calendar_data_fresh_ = false;
 
+  // Whether the calendar event attachment data is freshly fetched. In practice
+  // this should mirror `is_calendar_data_fresh_` but it makes the code more
+  // consistent to track this separately.
+  bool is_attachment_data_fresh_ = false;
+
   // Whether the current files data is freshly fetched.
   bool is_files_data_fresh_ = false;
 
@@ -96,6 +105,9 @@ class ASH_EXPORT BirchModel {
 
   // A type-specific list of calendar event items.
   std::vector<BirchCalendarItem> calendar_items_;
+
+  // A type-specific list of calendar event attachment items.
+  std::vector<BirchAttachmentItem> attachment_items_;
 
   // A type-specific list of items for all file suggestion items.
   std::vector<BirchFileItem> file_suggest_items_;

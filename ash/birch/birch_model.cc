@@ -43,6 +43,15 @@ void BirchModel::SetCalendarItems(
   MaybeRespondToDataFetchRequest();
 }
 
+void BirchModel::SetAttachmentItems(
+    std::vector<BirchAttachmentItem> attachment_items) {
+  if (attachment_items != attachment_items_) {
+    attachment_items_ = std::move(attachment_items);
+  }
+  is_attachment_data_fresh_ = true;
+  MaybeRespondToDataFetchRequest();
+}
+
 void BirchModel::SetFileSuggestItems(
     std::vector<BirchFileItem> file_suggest_items) {
   if (file_suggest_items_ != file_suggest_items) {
@@ -85,6 +94,7 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
   }
 
   is_calendar_data_fresh_ = false;
+  is_attachment_data_fresh_ = false;
   is_files_data_fresh_ = false;
   is_tabs_data_fresh_ = false;
   is_weather_data_fresh_ = false;
@@ -119,8 +129,9 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() const {
 }
 
 bool BirchModel::IsDataFresh() {
-  return (!birch_client_ || (is_calendar_data_fresh_ && is_files_data_fresh_ &&
-                             is_tabs_data_fresh_)) &&
+  return (!birch_client_ ||
+          (is_calendar_data_fresh_ && is_attachment_data_fresh_ &&
+           is_files_data_fresh_ && is_tabs_data_fresh_)) &&
          (!weather_provider_ || is_weather_data_fresh_);
 }
 
