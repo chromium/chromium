@@ -221,7 +221,7 @@ template("single_apple_toolchain") {
 
     # Specify an explicit path for the strip binary.
     _strippath = invoker.bin_path + "strip"
-    _installnametoolpath = invoker.bin_path + "install_name_tool"
+    _installnametoolpath = "${prefix}install_name_tool"
     linker_driver_args += " -Wcrl,strippath,${_strippath} -Wcrl,installnametoolpath,${_installnametoolpath}"
     _enable_dsyms = enable_dsyms
     _save_unstripped_output = save_unstripped_output
