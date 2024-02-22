@@ -342,7 +342,9 @@ public final class DualControlLayout extends ViewGroup {
             primaryButtonText = a.getString(R.styleable.DualControlLayout_primaryButtonText);
         }
         if (!TextUtils.isEmpty(primaryButtonText)) {
-            addView(createButtonForLayout(getContext(), true, primaryButtonText, null));
+            addView(
+                    createButtonForLayout(
+                            getContext(), ButtonType.PRIMARY_FILLED, primaryButtonText, null));
         }
 
         // Build the secondary button, but only if there's a primary button set.
@@ -351,7 +353,9 @@ public final class DualControlLayout extends ViewGroup {
             secondaryButtonText = a.getString(R.styleable.DualControlLayout_secondaryButtonText);
         }
         if (!TextUtils.isEmpty(primaryButtonText) && !TextUtils.isEmpty(secondaryButtonText)) {
-            addView(createButtonForLayout(getContext(), false, secondaryButtonText, null));
+            addView(
+                    createButtonForLayout(
+                            getContext(), ButtonType.SECONDARY, secondaryButtonText, null));
         }
 
         // Set the alignment.

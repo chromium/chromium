@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
@@ -49,12 +50,16 @@ public class DeviceLockView extends LinearLayout {
         mDescription = findViewById(R.id.device_lock_description);
         mNoticeText = findViewById(R.id.device_lock_notice);
 
-        mDismissButton = DualControlLayout.createButtonForLayout(getContext(), false, "", null);
+        mDismissButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(), ButtonType.SECONDARY, "", null);
         mDismissButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        mContinueButton = DualControlLayout.createButtonForLayout(getContext(), true, "", null);
+        mContinueButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(), ButtonType.PRIMARY_FILLED, "", null);
         mContinueButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.HorizontalListDividerDrawable;
 import org.chromium.ui.UiUtils;
@@ -431,7 +432,10 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         Resources resources = parent.getResources();
         Button view =
                 DualControlLayout.createButtonForLayout(
-                        parent.getContext(), true, resources.getString(R.string.choose), this);
+                        parent.getContext(),
+                        ButtonType.PRIMARY_FILLED,
+                        resources.getString(R.string.choose),
+                        this);
         view.setId(R.id.payments_section);
 
         LayoutParams params =

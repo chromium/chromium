@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.download.home.list.holder.GenericViewHolder;
 import org.chromium.chrome.browser.download.home.list.holder.InProgressGenericViewHolder;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,7 +57,9 @@ class DownloadInterstitialView {
         fileInfo.addView(mGenericViewHolder.itemView);
         fileInfo.addView(mInProgressGenericViewHolder.itemView);
 
-        mPrimaryButton = DualControlLayout.createButtonForLayout(context, true, "", null);
+        mPrimaryButton =
+                DualControlLayout.createButtonForLayout(
+                        context, ButtonType.PRIMARY_FILLED, "", null);
         mPrimaryButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -64,7 +67,10 @@ class DownloadInterstitialView {
 
         mSecondaryButton =
                 DualControlLayout.createButtonForLayout(
-                        context, false, mView.getResources().getString(R.string.cancel), null);
+                        context,
+                        ButtonType.SECONDARY,
+                        mView.getResources().getString(R.string.cancel),
+                        null);
         mSecondaryButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 
 /**
  * View shown to a user who has removed the device lock to inform them that their private data will
@@ -48,7 +49,7 @@ public class MissingDeviceLockView extends LinearLayout {
         mCreateDeviceLockButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(),
-                        false,
+                        ButtonType.SECONDARY,
                         getResources().getString(R.string.device_lock_create_lock_button),
                         null);
         mCreateDeviceLockButton.setLayoutParams(
@@ -58,7 +59,7 @@ public class MissingDeviceLockView extends LinearLayout {
         mContinueButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(),
-                        true,
+                        ButtonType.PRIMARY_FILLED,
                         getResources().getString(R.string.delete_and_continue),
                         null);
         mContinueButton.setLayoutParams(

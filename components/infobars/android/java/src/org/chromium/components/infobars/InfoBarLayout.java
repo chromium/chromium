@@ -28,6 +28,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.widget.ButtonCompat;
@@ -237,7 +238,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         if (!TextUtils.isEmpty(secondaryText)) {
             secondaryButton =
                     DualControlLayout.createButtonForLayout(
-                            getContext(), false, secondaryText, this);
+                            getContext(), ButtonType.SECONDARY, secondaryText, this);
         }
 
         setBottomViews(
@@ -258,7 +259,8 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     public void setBottomViews(String primaryText, View secondaryView, int alignment) {
         assert !TextUtils.isEmpty(primaryText);
         Button primaryButton =
-                DualControlLayout.createButtonForLayout(getContext(), true, primaryText, this);
+                DualControlLayout.createButtonForLayout(
+                        getContext(), ButtonType.PRIMARY_FILLED, primaryText, this);
 
         assert mButtonRowLayout == null;
         mButtonRowLayout = new DualControlLayout(getContext(), null);
