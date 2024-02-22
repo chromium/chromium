@@ -1152,6 +1152,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "full_mte",
+    args = {
+        "use_full_mte": True,
+    },
+)
+
+gn_args.config(
     name = "thin_lto",
     args = {
         "use_thin_lto": True,

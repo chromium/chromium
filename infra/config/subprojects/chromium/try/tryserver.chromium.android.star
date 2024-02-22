@@ -208,6 +208,23 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+try_.builder(
+    name = "android-mte-arm64-rel",
+    description_html = "Run chromium tests on Android with MTE enabled in SYNC mode.",
+    mirrors = [
+        "ci/android-mte-arm64-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-mte-arm64-rel",
+            "release_try_builder",
+            "minimal_symbols",
+        ],
+    ),
+    contact_team_email = "chrome-mte@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
 # TODO(crbug.com/1367523): Reenable this builder once the reboot issue is resolved.
 # try_.builder(
 #     name = "android-asan",

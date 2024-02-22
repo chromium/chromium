@@ -69,6 +69,7 @@
     "android-chrome-pie-x86-wpt-android-specific": "ci/android-chrome-pie-x86-wpt-android-specific/gn-args.json",
     "android-chrome-pie-x86-wpt-fyi-rel": "ci/android-chrome-pie-x86-wpt-fyi-rel/gn-args.json",
     "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json",
+    "android-mte-arm64-rel": "ci/android-mte-arm64-rel/gn-args.json",
     "android-webview-13-x64-dbg-hostside": "ci/android-webview-13-x64-dbg-hostside/gn-args.json",
     "android-webview-pie-x86-wpt-fyi-rel": "ci/android-webview-pie-x86-wpt-fyi-rel/gn-args.json"
   },
@@ -598,6 +599,7 @@
     "android-deterministic-dbg": "try/android-deterministic-dbg/gn-args.json",
     "android-deterministic-rel": "try/android-deterministic-rel/gn-args.json",
     "android-fieldtrial-rel": "try/android-fieldtrial-rel/gn-args.json",
+    "android-mte-arm64-rel": "try/android-mte-arm64-rel/gn-args.json",
     "android-oreo-arm64-dbg": "try/android-oreo-arm64-dbg/gn-args.json",
     "android-oreo-x86-rel": "try/android-oreo-x86-rel/gn-args.json",
     "android-perfetto-rel": "try/android-perfetto-rel/gn-args.json",
