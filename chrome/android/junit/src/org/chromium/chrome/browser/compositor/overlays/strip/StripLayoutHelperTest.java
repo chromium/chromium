@@ -158,7 +158,7 @@ public class StripLayoutHelperTest {
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        when(mTabGroupModelFilter.hasOtherRelatedTabs(any())).thenReturn(false);
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -2598,7 +2598,7 @@ public class StripLayoutHelperTest {
         int numTabs = endIndex - startIndex;
 
         for (int i = startIndex; i < endIndex; i++) {
-            when(mTabGroupModelFilter.hasOtherRelatedTabs(eq(mModel.getTabAt(i)))).thenReturn(true);
+            when(mTabGroupModelFilter.isTabInTabGroup(eq(mModel.getTabAt(i)))).thenReturn(true);
             when(mModel.getTabAt(i).getRootId()).thenReturn(groupRootId);
         }
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(groupRootId))).thenReturn(numTabs);

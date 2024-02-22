@@ -2436,7 +2436,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (!mReorderingForTabDrop || mInteractingTab == null) return Tab.INVALID_TAB_ID;
 
         Tab tab = getTabById(mInteractingTab.getId());
-        return mTabGroupModelFilter.hasOtherRelatedTabs(tab) ? tab.getRootId() : Tab.INVALID_TAB_ID;
+        return mTabGroupModelFilter.isTabInTabGroup(tab) ? tab.getRootId() : Tab.INVALID_TAB_ID;
     }
 
     void mergeToGroupForTabDropIfNeeded(int rootId, int draggedTabId, int index) {
@@ -2641,7 +2641,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // container.
         Tab tab = getTabById(mInteractingTab.getId());
         computeAndUpdateTabGroupMargins(true, animationList);
-        if (mTabGroupModelFilter.hasOtherRelatedTabs(tab)) {
+        if (mTabGroupModelFilter.isTabInTabGroup(tab)) {
             setTabGroupBackgroundContainersVisible(tab.getRootId(), true);
         }
 
@@ -2807,9 +2807,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 2. Set the starting and trailing margin for the tab strip.
         boolean firstTabIsInGroup =
-                mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mStripTabs[0].getId()));
+                mTabGroupModelFilter.isTabInTabGroup(getTabById(mStripTabs[0].getId()));
         boolean lastTabIsInGroup =
-                mTabGroupModelFilter.hasOtherRelatedTabs(
+                mTabGroupModelFilter.isTabInTabGroup(
                         getTabById(mStripTabs[mStripTabs.length - 1].getId()));
         float startMargin = firstTabIsInGroup ? mTabMarginWidth : 0f;
         float startMarginDelta = startMargin - mStripStartMarginForReorder;
@@ -3024,8 +3024,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private boolean notRelatedAndEitherTabInGroup(Tab curTab, Tab adjTab) {
         assert curTab != null && adjTab != null;
         return !(curTab.getRootId() == adjTab.getRootId())
-                && (mTabGroupModelFilter.hasOtherRelatedTabs(curTab)
-                        || mTabGroupModelFilter.hasOtherRelatedTabs(adjTab));
+                && (mTabGroupModelFilter.isTabInTabGroup(curTab)
+                        || mTabGroupModelFilter.isTabInTabGroup(adjTab));
     }
 
     private void updateReorderPosition(float deltaX) {
@@ -3044,7 +3044,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int destIndex = TabModel.INVALID_TAB_INDEX;
         boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
         boolean isInGroup =
-                mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
+                mTabGroupModelFilter.isTabInTabGroup(getTabById(mInteractingTab.getId()));
 
         // Whether the tab dragging for reordering will interact with tab groups, such as the tab is
         // being dragged out of its current group, or into an adjacent group.
@@ -3204,7 +3204,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             if (mInteractingTab != null) {
                 setTrailingMarginForTab(mInteractingTab, mLastTrailingMargin, animationList);
                 Tab tab = getTabById(mInteractingTab.getId());
-                if (mTabGroupModelFilter.hasOtherRelatedTabs(tab)) {
+                if (mTabGroupModelFilter.isTabInTabGroup(tab)) {
                     setTabGroupBackgroundContainersVisible(tab.getRootId(), false);
                 }
             }
@@ -3213,7 +3213,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mLastTrailingMargin = hoveredTab.getTrailingMargin();
             setTrailingMarginForTab(hoveredTab, mTabMarginWidth, animationList);
             Tab tab = getTabById(hoveredTab.getId());
-            if (mTabGroupModelFilter.hasOtherRelatedTabs(tab)) {
+            if (mTabGroupModelFilter.isTabInTabGroup(tab)) {
                 setTabGroupBackgroundContainersVisible(tab.getRootId(), true);
             }
             mInteractingTab = hoveredTab;
