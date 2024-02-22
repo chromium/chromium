@@ -51,6 +51,8 @@ class CORE_EXPORT SoftNavigationHeuristics
     : public GarbageCollected<SoftNavigationHeuristics>,
       public Supplement<LocalDOMWindow>,
       public scheduler::TaskAttributionTracker::Observer {
+  USING_PRE_FINALIZER(SoftNavigationHeuristics, Dispose);
+
  public:
   FRIEND_TEST_ALL_PREFIXES(SoftNavigationHeuristicsTest,
                            EarlyReturnOnInvalidPendingInteractionTimestamp);
@@ -86,6 +88,8 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   // GarbageCollected boilerplate.
   void Trace(Visitor*) const override;
+
+  void Dispose();
 
   // The class's API.
   void SameDocumentNavigationStarted();
@@ -145,6 +149,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   };
 
   void ReportSoftNavigationToMetrics(LocalFrame* frame) const;
+  void RecordUmaForNonSoftNavigationInteractions() const;
   void CheckSoftNavigationConditions(const PerInteractionData& data);
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
 

@@ -32288,6 +32288,14 @@ Called by update_net_error_codes.py.-->
              start"/>
 </enum>
 
+<enum name="SoftNavigationOutcome">
+  <int value="0" label="Soft navigation detected"/>
+  <int value="1" label="No ancestor task"/>
+  <int value="2" label="No conditions met"/>
+  <int value="3" label="Only paint condition met"/>
+  <int value="4" label="Only DOM modification condition met"/>
+</enum>
+
 <enum name="SoftwareImageDecodeState">
   <int value="0" label="Wasted"/>
   <int value="1" label="Used"/>

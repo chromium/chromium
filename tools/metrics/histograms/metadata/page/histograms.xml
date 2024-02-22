@@ -2691,6 +2691,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Internal.SoftNavigationOutcome"
+    enum="SoftNavigationOutcome" expires_after="2024-08-20">
+  <owner>iclelland@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the outcome of the soft navigation heuristics when the page's URL is
+    changed through the history API. This is recorded at most once for each URL
+    change. If the URL change was not attributable to a user intertaction, that
+    is recorded immediately. If a soft navigation is detected, then it is
+    recorded as soon as we detect it (when all conditions are satisfied).
+    Otherwise, to be sure that all tasks associated with the user interaction
+    have completed, we wait until all TaskAttributionInfo objects created within
+    the SoftNavigationHeuristics::EventScope are garbage-collected, and then
+    record which of the conditions was not satisfied.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Internal.SuppressedEventsCountBeforePaint2"
     units="count" expires_after="2024-07-07">
   <owner>mustaq@chromium.org</owner>

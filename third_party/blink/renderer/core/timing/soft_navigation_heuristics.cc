@@ -27,6 +27,23 @@ namespace {
 const size_t SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE = 2;
 const size_t HUNDRED_PERCENT = 100;
 
+const char kPageLoadInternalSoftNavigationOutcome[] =
+    "PageLoad.Internal.SoftNavigationOutcome";
+
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "SoftNavigationOutcome" in tools/metrics/histograms/enums.xml.
+// LINT.IfChange
+enum SoftNavigationOutcome {
+  kSoftNavigationDetected = 0,
+  kNoAncestorTask = 1,
+  kNoConditionsMet = 2,
+  kOnlyPaintConditionMet = 3,
+  kOnlyDomMoficationConditionMet = 4,
+  kMaxValue = kOnlyDomMoficationConditionMet,
+};
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SoftNavigationOutcome)
+
 void LogAndTraceDetectedSoftNavigation(LocalFrame* frame,
                                        LocalDOMWindow* window,
                                        String url,
@@ -81,6 +98,7 @@ void RecordUmaForPageLoadInternalSoftNavigationFromReferenceInvalidTiming(
     }
   }
 }
+
 }  // namespace internal
 
 // static
@@ -113,6 +131,39 @@ SoftNavigationHeuristics* SoftNavigationHeuristics::From(
     ProvideTo(window, heuristics);
   }
   return heuristics;
+}
+
+void SoftNavigationHeuristics::Dispose() {
+  if (has_potential_soft_navigation_task_ &&
+      potential_soft_navigation_tasks_.empty()) {
+    RecordUmaForNonSoftNavigationInteractions();
+  }
+}
+
+void SoftNavigationHeuristics::RecordUmaForNonSoftNavigationInteractions()
+    const {
+  for (const auto& task_id_and_interaction_data :
+       interaction_task_id_to_interaction_data_) {
+    const PerInteractionData& data = *task_id_and_interaction_data.value;
+
+    // For all interactions which included a URL modification, log the
+    // criteria which were met.
+    if (data.flag_set.Has(kURLChange)) {
+      if (data.flag_set.Has(FlagType::kMainModification)) {
+        CHECK(!paint_conditions_met_);
+        base::UmaHistogramEnumeration(
+            kPageLoadInternalSoftNavigationOutcome,
+            SoftNavigationOutcome::kOnlyDomMoficationConditionMet);
+      } else if (paint_conditions_met_) {
+        base::UmaHistogramEnumeration(
+            kPageLoadInternalSoftNavigationOutcome,
+            SoftNavigationOutcome::kOnlyPaintConditionMet);
+      } else {
+        base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
+                                      SoftNavigationOutcome::kNoConditionsMet);
+      }
+    }
+  }
 }
 
 void SoftNavigationHeuristics::SetIsTrackingSoftNavigationHeuristicsOnDocument(
@@ -210,6 +261,10 @@ SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(FlagType type) {
 void SoftNavigationHeuristics::SameDocumentNavigationStarted() {
   last_soft_navigation_ancestor_task_ =
       SetFlagIfDescendantAndCheck(FlagType::kURLChange);
+  if (!last_soft_navigation_ancestor_task_) {
+    base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
+                                  SoftNavigationOutcome::kNoAncestorTask);
+  }
   TRACE_EVENT1("scheduler",
                "SoftNavigationHeuristics::SameDocumentNavigationStarted",
                "descendant", !!last_soft_navigation_ancestor_task_);
@@ -441,6 +496,10 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
     // This notifies UKM about this soft navigation.
     frame_client->DidObserveSoftNavigation(metrics);
   }
+
+  // Count "successful soft nav" in histogram
+  base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
+                                SoftNavigationOutcome::kSoftNavigationDetected);
 }
 
 void SoftNavigationHeuristics::ResetPaintsIfNeeded() {
@@ -561,6 +620,7 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
   // can schedule a task or microtask to reset the heuristic.
   if (has_potential_soft_navigation_task_ &&
       potential_soft_navigation_tasks_.empty()) {
+    RecordUmaForNonSoftNavigationInteractions();
     ResetHeuristic();
   }
 }
