@@ -81,6 +81,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="OS prompt was shown to user"/>
   <int value="1" label="Promo shown when OS notifications are active"/>
   <int value="2" label="Error displaying the OS prompt"/>
+  <int value="3" label="Prompt shown but dismissed without interaction"/>
 </enum>
 
 <enum name="ContentSettingBubbleAction">

@@ -50,6 +50,7 @@ source_set("feed_top_section") {
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/ntp:utils",
+    "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
     "//ios/chrome/browser/ui/push_notification:presenters",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

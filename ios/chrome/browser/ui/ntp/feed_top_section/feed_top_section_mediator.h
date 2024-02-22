@@ -13,7 +13,6 @@
 
 class AuthenticationService;
 @protocol NotificationsAlertPresenter;
-@protocol NotificationsConfirmationPresenter;
 @protocol FeedTopSectionConsumer;
 @protocol NewTabPageDelegate;
 class PrefService;
@@ -22,34 +21,6 @@ class PrefService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
-
-// Enum actions for content notification promo UMA metrics. Entries should not
-// be renumbered and numeric values should never be reused. This should align
-// with the ContentNotificationTopOfFeedPromoAction enum in enums.xml.
-//
-// LINT.IfChange
-enum class ContentNotificationTopOfFeedPromoAction {
-  kAccept = 0,
-  kDecline = 1,
-  kMainButtonTapped = 2,
-  kDismissedFromCloseButton = 3,
-  kDismissedFromSecondaryButton = 4,
-  kMaxValue = kDismissedFromSecondaryButton,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
-
-// Enum events for content notification promo UMA metrics. Entries should not
-// be renumbered and numeric values should never be reused. This should align
-// with the ContentNotificationTopOfFeedPromoEvent enum in enums.xml.
-//
-// LINT.IfChange
-enum class ContentNotificationTopOfFeedPromoEvent {
-  kPromptShown = 0,
-  kNotifActive = 1,
-  kError = 2,
-  kMaxValue = kError,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 
 // Enum Provisional notifications entrypoint for UMA metrics. Entries should not
 // be renumbered and numeric values should never be reused. This should align
@@ -88,12 +59,7 @@ enum class ContentNotificationPromoProvisionalEntrypoint {
 @property(nonatomic, assign) BOOL isSignInPromoEnabled;
 
 // Handler for displaying notification related alerts.
-@property(nonatomic, weak) id<NotificationsAlertPresenter>
-    notificationsPresenter;
-
-// The presenter displays the notification confirmation message.
-@property(nonatomic, weak) id<NotificationsConfirmationPresenter>
-    messagePresenter;
+@property(nonatomic, weak) id<NotificationsAlertPresenter> presenter;
 
 // Initializes the mediator.
 - (void)setUp;

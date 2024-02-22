@@ -15,8 +15,7 @@
 
 // The top-level owner of the feed top section.
 @interface FeedTopSectionCoordinator
-    : ChromeCoordinator <NotificationsAlertPresenter,
-                         NotificationsConfirmationPresenter>
+    : ChromeCoordinator <NotificationsAlertPresenter>
 
 @property(nonatomic, readonly, strong) UIViewController* viewController;
 

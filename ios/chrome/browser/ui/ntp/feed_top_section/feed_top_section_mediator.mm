@@ -188,84 +188,11 @@ using base::UserMetricsAction;
       "ContentNotifications.Promo.TopOfFeed.MainButtonTapped"));
   [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
                                   kMainButtonTapped];
-  __weak FeedTopSectionMediator* weakSelf = self;
-  // Request displaying the OS notifications permission prompt.
-  [PushNotificationUtil requestPushNotificationPermission:^(
-                            BOOL granted, BOOL promptShown, NSError* error) {
-    if (error) {
-      [self closeNotificationPromoAndEnablePref:NO];
-      [self
-          logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::kError];
-      return;
-    }
-    if (!promptShown && !granted) {
-      // If the OS notification prompt has been previously shown, display a
-      // custom alert to ask for permission.
-      // This callback can be executed on a background thread, make sure the UI
-      // is updated on the main thread.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf
-                .notificationsPresenter presentPushNotificationPermissionAlert];
-        [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
-                                       kPromptShown];
-      });
-      return;
-    }
-    if (promptShown && granted) {
-      // If the OS prompt is shown and the user granted notifications access,
-      // save the preference and close the promo.
-      [weakSelf.messagePresenter presentNotificationsConfirmationMessage];
-      [self closeNotificationPromoAndEnablePref:YES];
-      RecordAction(UserMetricsAction(
-          "ContentNotifications.Promo.TopOfFeed.Permission.Accepted"));
-      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
-                                      kAccept];
-      return;
-    }
-    if (promptShown && !granted) {
-      // If the OS prompt is shown and the user denied notifications access,
-      // close the promo.
-      [self closeNotificationPromoAndEnablePref:NO];
-      RecordAction(UserMetricsAction(
-          "ContentNotifications.Promo.TopOfFeed.Permission.Declined"));
-      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
-                                      kDecline];
-      return;
-    }
-    if (!promptShown && granted) {
-      // If the OS prompt has been previously shown but notifications are not
-      // active on Chrome activate the notifications. This is an edge case.
-      [weakSelf.messagePresenter presentNotificationsConfirmationMessage];
-      [self closeNotificationPromoAndEnablePref:YES];
-      [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
-                                     kNotifActive];
-      return;
-    }
-  }];
+  [self.presenter presentPushNotificationPermissionAlert];
+  [self updateFeedTopSectionWhenClosed];
 }
 
 #pragma mark - Private
-
-// Helper method to close the promo on the main thread. Takes `enablePref` as a
-// parameter which toggles the pref ON only.
-- (void)closeNotificationPromoAndEnablePref:(BOOL)enablePref {
-  // This callback can be executed on a background thread, make sure the UI
-  // is updated on the main thread.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (enablePref) {
-      PushNotificationService* service =
-          GetApplicationContext()->GetPushNotificationService();
-      id<SystemIdentity> identity =
-          self.authenticationService->GetPrimaryIdentity(
-              signin::ConsentLevel::kSignin);
-      service->SetPreference(identity.gaiaID,
-                             PushNotificationClientId::kContent, true);
-      service->SetPreference(identity.gaiaID, PushNotificationClientId::kSports,
-                             true);
-    }
-    [self updateFeedTopSectionWhenClosed];
-  });
-}
 
 // Handles closing the promo, and the NTP and Feed Top Section layout when the
 // promo is closed.
@@ -436,10 +363,6 @@ using base::UserMetricsAction;
 - (void)logHistogramForAction:(ContentNotificationTopOfFeedPromoAction)action {
   UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Action",
                           action);
-}
-
-- (void)logHistogramForEvent:(ContentNotificationTopOfFeedPromoEvent)event {
-  UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Event", event);
 }
 
 - (void)logHistogramForEntrypoint:
