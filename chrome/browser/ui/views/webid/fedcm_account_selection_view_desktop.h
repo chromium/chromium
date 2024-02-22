@@ -70,7 +70,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      bool show_auto_reauthn_checkbox) override;
+      const std::optional<content::IdentityProviderData>& new_account_idp)
+      override;
   void ShowFailureDialog(
       const std::string& top_frame_etld_plus_one,
       const std::optional<std::string>& iframe_etld_plus_one,
@@ -126,7 +127,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
-      bool show_auto_reauthn_checkbox,
       bool has_modal_support);
 
   // Gets the type of dialog shown. Virtual for testing purposes.

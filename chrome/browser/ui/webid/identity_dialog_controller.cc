@@ -41,10 +41,9 @@ void IdentityDialogController::ShowAccountsDialog(
   on_accounts_displayed_ = std::move(accounts_displayed_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-  // TODO(crbug.com/41490360): Use the `new_account_idp` in the UI.
   account_view_->Show(top_frame_for_display, iframe_for_display,
                       identity_provider_data, sign_in_mode, rp_mode,
-                      /*show_auto_reauthn_checkbox=*/false);
+                      new_account_idp);
 }
 
 void IdentityDialogController::ShowFailureDialog(

@@ -47,9 +47,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   AccountSelectionBubbleViewTest() = default;
 
  protected:
-  void CreateAccountSelectionBubble(bool exclude_title,
-                                    bool exclude_iframe,
-                                    bool show_auto_reauthn_checkbox) {
+  void CreateAccountSelectionBubble(bool exclude_title, bool exclude_iframe) {
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -66,8 +64,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                        : std::make_optional<std::u16string>(kIframeETLDPlusOne);
     dialog_ = new AccountSelectionBubbleView(
         kTopFrameETLDPlusOne, iframe_etld_plus_one, title,
-        blink::mojom::RpContext::kSignIn, show_auto_reauthn_checkbox,
-        /*browser=*/nullptr, anchor_widget_->GetContentsView(),
+        blink::mojom::RpContext::kSignIn,
+        /*web_contents=*/nullptr, anchor_widget_->GetContentsView(),
         shared_url_loader_factory(),
         /*observer=*/nullptr, /*widget_observer=*/nullptr);
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
@@ -78,11 +76,9 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata,
       const std::string& terms_of_service_url,
-      bool show_auto_reauthn_checkbox = false,
       bool exclude_iframe = true,
       bool request_permission = true) {
-    CreateAccountSelectionBubble(/*exclude_title=*/false, exclude_iframe,
-                                 show_auto_reauthn_checkbox);
+    CreateAccountSelectionBubble(/*exclude_title=*/false, exclude_iframe);
     IdentityProviderDisplayData idp_data(
         kIdpETLDPlusOne, idp_metadata,
         CreateTestClientMetadata(terms_of_service_url), {account},
@@ -104,8 +100,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
             content::IdentityRequestAccount::LoginState::kSignUp);
 
     CreateAccountSelectionBubble(/*exclude_title=*/false,
-                                 /*exclude_iframe=*/true,
-                                 /*show_auto_reauthn_checkbox=*/false);
+                                 /*exclude_iframe=*/true);
     std::vector<IdentityProviderDisplayData> idp_data;
     content::IdentityProviderMetadata metadata;
     metadata.supports_add_account = supports_add_account;
@@ -120,8 +115,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   void CreateMultiIdpAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) {
     CreateAccountSelectionBubble(/*exclude_title=*/true,
-                                 /*exclude_iframe=*/true,
-                                 /*show_auto_reauthn_checkbox=*/false);
+                                 /*exclude_iframe=*/true);
     dialog_->ShowMultiAccountPicker(idp_data_list);
     dialog_->SizeToContents();
   }
@@ -262,8 +256,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
     CreateAccountSelectionBubble(
         /*exclude_title=*/false,
-        /*exclude_iframe=*/!expected_subtitle.has_value(),
-        /*show_auto_reauthn_checkbox=*/false);
+        /*exclude_iframe=*/!expected_subtitle.has_value());
     dialog_->ShowFailureDialog(
         kTopFrameETLDPlusOne,
         expected_subtitle.has_value()
@@ -307,8 +300,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                        const GURL& error_url) {
     CreateAccountSelectionBubble(
         /*exclude_title=*/false,
-        /*exclude_iframe=*/!expected_subtitle.has_value(),
-        /*show_auto_reauthn_checkbox=*/false);
+        /*exclude_iframe=*/!expected_subtitle.has_value());
     dialog_->ShowErrorDialog(
         kTopFrameETLDPlusOne,
         expected_subtitle.has_value()
@@ -536,7 +528,7 @@ TEST_F(AccountSelectionBubbleViewTest, NewAccountWithoutRequestPermission) {
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp);
   CreateSingleAccountPicker(
       /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
-      /*terms_of_service_url=*/"", /*show_auto_reauthn_checkbox=*/false,
+      /*terms_of_service_url=*/"",
       /*exclude_iframe=*/true, /*request_permission=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
@@ -568,8 +560,8 @@ TEST_F(AccountSelectionBubbleViewTest,
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
-                               /*show_auto_reauthn_checkbox=*/false);
+  CreateAccountSelectionBubble(/*exclude_title=*/false,
+                               /*exclude_iframe=*/true);
 
   // Set the dialog background color to white.
   dialog()->set_color(SK_ColorWHITE);
@@ -613,8 +605,8 @@ TEST_F(AccountSelectionBubbleViewTest,
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
-                               /*show_auto_reauthn_checkbox=*/false);
+  CreateAccountSelectionBubble(/*exclude_title=*/false,
+                               /*exclude_iframe=*/true);
 
   // Set the dialog background color to white.
   dialog()->set_color(SK_ColorWHITE);
@@ -663,8 +655,8 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
       content::ClientMetadata(GURL(), GURL()), {account},
       /*request_permission=*/true, /*has_login_status_mismatch=*/false);
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
-                               /*show_auto_reauthn_checkbox=*/false);
+  CreateAccountSelectionBubble(/*exclude_title=*/false,
+                               /*exclude_iframe=*/true);
   dialog_->ShowVerifyingSheet(
       account, idp_data, l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 
@@ -689,8 +681,8 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
       content::ClientMetadata(GURL(), GURL()), {account},
       /*request_permission=*/true, /*has_login_status_mismatch=*/false);
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
-                               /*show_auto_reauthn_checkbox=*/false);
+  CreateAccountSelectionBubble(/*exclude_title=*/false,
+                               /*exclude_iframe=*/true);
   const auto title =
       l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN);
   dialog_->ShowVerifyingSheet(account, idp_data, title);
@@ -707,40 +699,6 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
   CheckNonHoverableAccountRow(row_container->children()[0], kAccountSuffix);
 }
 
-TEST_F(AccountSelectionBubbleViewTest, AutoReauthnCheckboxDisplayed) {
-  const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      {kAccountSuffix}, content::IdentityRequestAccount::LoginState::kSignUp);
-  CreateSingleAccountPicker(
-      /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
-      /*terms_of_service_url=*/"",
-      /*show_auto_reauthn_checkbox=*/true);
-
-  std::vector<raw_ptr<views::View, VectorExperimental>> children =
-      dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], kTitleSignIn,
-                      /*expected_subtitle=*/std::nullopt,
-                      /*expect_idp_brand_icon_in_header=*/true);
-
-  views::View* single_account_chooser = children[2];
-  ASSERT_EQ(single_account_chooser->children().size(), 4u);
-
-  // Check the "Continue as" button.
-  views::MdTextButton* button =
-      static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
-  ASSERT_TRUE(button);
-  EXPECT_EQ(button->GetText(),
-            base::UTF8ToUTF16("Continue as " + std::string(kGivenNameBase) +
-                              kAccountSuffix));
-
-  // Check the auto re-authn checkbox.
-  views::Checkbox* checkbox =
-      static_cast<views::Checkbox*>(single_account_chooser->children()[2]);
-
-  ASSERT_TRUE(checkbox->GetEnabled());
-}
-
 TEST_F(AccountSelectionBubbleViewTest, Failure) {
   TestFailureDialog(u"Sign in to top-frame-example.com with idp-example.com",
                     /*expected_subtitle=*/std::nullopt,
@@ -755,8 +713,7 @@ TEST_F(AccountSelectionBubbleViewTest, SuccessIframeSubtitleInHeader) {
       {kAccountSuffix}, content::IdentityRequestAccount::LoginState::kSignUp);
   CreateSingleAccountPicker(
       /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
-      /*terms_of_service_url=*/"",
-      /*show_auto_reauthn_checkbox=*/false, /*exclude_iframe=*/false);
+      /*terms_of_service_url=*/"", /*exclude_iframe=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();

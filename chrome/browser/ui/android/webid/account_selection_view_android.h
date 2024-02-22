@@ -28,7 +28,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      bool show_auto_reauthn_checkbox) override;
+      const std::optional<content::IdentityProviderData>& new_account_idp)
+      override;
   void ShowFailureDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,

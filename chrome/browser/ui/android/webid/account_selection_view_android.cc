@@ -156,7 +156,7 @@ void AccountSelectionViewAndroid::Show(
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
-    bool show_auto_reauthn_checkbox) {
+    const std::optional<content::IdentityProviderData>& new_account_idp) {
   // TODO(crbug.com/1518356): Use rp_mode for button flows on Android.
   if (!MaybeCreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
@@ -181,6 +181,7 @@ void AccountSelectionViewAndroid::Show(
       ConvertToJavaClientIdMetadata(env,
                                     identity_provider_data[0].client_metadata);
 
+  // TODO(crbug.com/41490360): Use `new_account_idp` on Android.
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_,
       ConvertUTF8ToJavaString(env, top_frame_for_display),

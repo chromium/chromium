@@ -204,7 +204,6 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::optional<std::u16string>& iframe_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
-    bool show_auto_reauthn_checkbox,
     content::WebContents* web_contents,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -239,7 +238,6 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
 
   rp_context_ = rp_context;
-  show_auto_reauthn_checkbox_ = show_auto_reauthn_checkbox;
   title_ = GetTitle(top_frame_for_display, iframe_for_display, idp_title,
                     rp_context);
   accessible_title_ = GetAccessibleTitle(
@@ -686,13 +684,6 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
                                  base::UTF8ToUTF16(display_name)),
       this, idp_metadata);
   continue_button_ = row->AddChildView(std::move(button));
-
-  if (show_auto_reauthn_checkbox_) {
-    auto_reauthn_checkbox_ =
-        row->AddChildView(std::make_unique<views::Checkbox>(
-            l10n_util::GetStringUTF16(IDS_AUTO_REAUTHN_OPTOUT_CHECKBOX)));
-    auto_reauthn_checkbox_->SetChecked(true);
-  }
 
   // Do not add disclosure text if this is a sign in or if we were requested
   // to skip it.

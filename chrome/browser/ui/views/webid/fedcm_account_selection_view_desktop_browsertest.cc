@@ -40,7 +40,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
           blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
           /*has_login_status_mismatch=*/false}},
         Account::SignInMode::kExplicit, blink::mojom::RpMode::kWidget,
-        /*show_auto_reauthn_checkbox=*/false);
+        /*new_account_idp*/ std::nullopt);
   }
 
   void Show() {

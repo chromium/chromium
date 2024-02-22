@@ -63,16 +63,15 @@ class AccountSelectionView {
   // stored in `idps_for_display`. `sign_in_mode` represents whether this is an
   // auto re-authn flow. If it is the auto re-authn flow, `idps_for_display`
   // will only include the single returning account and its IDP.
-  // `show_auto_reauthn_checkbox` represents whether we should show a checkbox
-  // for users to opt out of auto re-authn. After user interaction either
-  // OnAccountSelected() or OnDismiss() gets invoked.
+  // `new_account_idp` represents the account information of a newly logged in
+  // account that ought to be prioritized in the UI.
   virtual void Show(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      bool show_auto_reauthn_checkbox) = 0;
+      const std::optional<content::IdentityProviderData>& new_account_idp) = 0;
 
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is
