@@ -257,6 +257,26 @@ void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
   [field_ setText:as userTextLength:user_text_length];
 }
 
+void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
+  if (!IsRichAutocompletionEnabled()) {
+    return;
+  }
+
+  if (!text.length()) {
+    // TODO(b/325035406): Remove additional text.
+    return;
+  }
+
+  // TODO(b/325035406): Temporary string and colors. Update if needed.
+  NSMutableAttributedString* additional_text =
+      [[NSMutableAttributedString alloc]
+          initWithString:base::SysUTF16ToNSString(u" — " + text)];
+  [additional_text
+      addAttributes:@{NSForegroundColorAttributeName : UIColor.systemBlueColor}
+              range:NSMakeRange(0, additional_text.length)];
+  // TODO(b/325035406): Set additional text.
+}
+
 void OmniboxViewIOS::OnBeforePossibleChange() {
   GetState(&state_before_change_);
   marked_text_before_change_ = [[field_ markedText] copy];

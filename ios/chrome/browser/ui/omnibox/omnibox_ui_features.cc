@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 
-#include "base/metrics/field_trial_params.h"
+#import "base/metrics/field_trial_params.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "ui/base/device_form_factor.h"
 
 BASE_FEATURE(kEnableSuggestionsScrollingOnIPad,
@@ -34,4 +35,8 @@ BASE_FEATURE(kOmniboxPopupRowContentConfiguration,
 bool IsIpadPopoutOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kEnablePopoutOmniboxIpad) &&
          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+}
+
+bool IsRichAutocompletionEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }

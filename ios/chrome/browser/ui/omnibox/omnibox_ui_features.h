@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_
 
-#include "base/feature_list.h"
+#import "base/feature_list.h"
 
 // Feature flag to enable omnibox suggestions scrolling on iPad. This will also
 // disable suggestions hiding on keyboard dismissal.
@@ -30,5 +30,8 @@ BASE_DECLARE_FEATURE(kOmniboxLockIconEnabled);
 
 // Feature flag to enable the use of content configuration for the popup rows.
 BASE_DECLARE_FEATURE(kOmniboxPopupRowContentConfiguration);
+
+// Returns whether kRichAutocompletion feature is enabled.
+bool IsRichAutocompletionEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

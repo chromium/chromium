@@ -354,6 +354,7 @@ source_set("features") {
   ]
   public_deps = [ "//base" ]
   deps = [
+    "//components/omnibox/common",
     "//ios/chrome/browser/shared/public/features",
     "//ui/base",
   ]

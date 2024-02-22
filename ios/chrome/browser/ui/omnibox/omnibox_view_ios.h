@@ -103,10 +103,10 @@ class OmniboxViewIOS : public OmniboxView,
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
   bool IsImeComposing() const override;
   bool IsIndicatingQueryRefinement() const override;
+  void SetAdditionalText(const std::u16string& text) override;
 
   // OmniboxView stubs.
   void Update() override {}
-  void SetAdditionalText(const std::u16string& text) override {}
   void EnterKeywordModeForDefaultSearchProvider() override {}
   bool IsSelectAll() const override;
   void GetSelectionBounds(std::u16string::size_type* start,
