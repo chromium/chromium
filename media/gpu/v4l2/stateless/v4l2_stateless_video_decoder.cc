@@ -653,7 +653,13 @@ void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
     uint64_t frame_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4) << "frame id: " << frame_id;
-  output_queue_->QueueBufferByFrameID(frame_id);
+  // The surface needs to be created for |SubmitFrame| to be called. But
+  // |output_queue_| is only setup during |SubmitFrame|. If |output_queue_| can
+  // not be created, this function will still get called on the destruction of
+  // the surface.
+  if (output_queue_) {
+    output_queue_->QueueBufferByFrameID(frame_id);
+  }
 
   last_frame_id_dequeued_ = frame_id;
 
