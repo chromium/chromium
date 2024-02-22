@@ -104,7 +104,26 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
   }
   NOTREACHED_NORETURN();
 }
+
+// Returns a pointer to the first Suggestion whose GUID matches that of a
+// PersonalDataManager::test_addresses() profile.
+const Suggestion* FindFirstTestSuggestion(
+    PersonalDataManager& pdm,
+    base::span<const Suggestion> suggestions) {
+  auto is_test_suggestion = [&pdm](const Suggestion& suggestion) {
+    auto* backend_id = absl::get_if<Suggestion::BackendId>(&suggestion.payload);
+    auto* guid =
+        backend_id ? absl::get_if<Suggestion::Guid>(backend_id) : nullptr;
+    return guid && base::Contains(pdm.test_addresses(), guid->value(),
+                                  &AutofillProfile::guid);
+  };
+  auto it = base::ranges::find_if(suggestions, is_test_suggestion);
+  return it != suggestions.end() ? &*it : nullptr;
+}
+
 }  // namespace
+
+bool AutofillExternalDelegate::shortcut_autofill_popup_for_testing_ = false;
 
 AutofillExternalDelegate::AutofillExternalDelegate(
     BrowserAutofillManager* manager)
@@ -234,8 +253,16 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   for (const Suggestion& suggestion : input_suggestions) {
     shown_suggestion_types_.push_back(suggestion.popup_item_id);
   }
+
   // Send to display.
   if (query_field_.is_focusable && manager_->driver().CanShowAutofillUi()) {
+    if (shortcut_autofill_popup_for_testing_) {
+      const Suggestion* test_suggestion = FindFirstTestSuggestion(
+          *manager_->client().GetPersonalDataManager(), suggestions);
+      CHECK(test_suggestion) << "Only test suggestions can shortcut the UI";
+      DidAcceptSuggestion(*test_suggestion, {});
+      return;
+    }
     AutofillClient::PopupOpenArgs open_args(element_bounds_,
                                             query_field_.text_direction,
                                             suggestions, trigger_source_);

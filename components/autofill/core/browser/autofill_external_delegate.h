@@ -33,14 +33,12 @@ class BrowserAutofillManager;
 class CreditCard;
 enum class CreditCardFetchResult;
 
-// TODO(csharp): A lot of the logic in this class is copied from AutofillAgent.
-// Once Autofill is moved out of WebKit this class should be the only home for
-// this logic. See http://crbug.com/51644
-
 // Delegate for in-browser Autocomplete and Autofill display and selection.
 class AutofillExternalDelegate : public AutofillPopupDelegate,
                                  public PersonalDataManagerObserver {
  public:
+  class ScopedAutofillPopupShortcutForTesting;
+
   // Creates an AutofillExternalDelegate for the specified
   // BrowserAutofillManager and AutofillDriver.
   explicit AutofillExternalDelegate(BrowserAutofillManager* manager);
@@ -248,6 +246,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // delete address profile dialog is closed.
   AutofillSuggestionTriggerSource GetReopenTriggerSource() const;
 
+  // If true, OnSuggestionsReturned() passes one of the suggestions directly to
+  // DidAcceptSuggestion(). See ScopedAutofillPopupShortcutForTesting for
+  // details.
+  static bool shortcut_autofill_popup_for_testing_;
+
   const raw_ref<BrowserAutofillManager> manager_;
 
   // The current form and field selected by Autofill.
@@ -281,6 +284,29 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
       pdm_observation_{this};
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
+};
+
+// When in scope, OnSuggestionsReturned() directly passes one of the Suggestions
+// to DidAcceptSuggestion() rather than displaying the Autofill popup.
+//
+// For security reasons, the passed suggestion must correspond to a testing
+// profile from PersonalDataManager. This is asserted by a CHECK().
+//
+// Typical usage is as a member of a test fixture. It can also be used at a
+// narrower scope around, for example, AutofillDriver::AskForValuesToFill(),
+// but beware of potential asynchronicity (e.g., due to asynchronous parsing or
+// asynchronous fetching of suggestions).
+class AutofillExternalDelegate::ScopedAutofillPopupShortcutForTesting {
+ public:
+  ScopedAutofillPopupShortcutForTesting() {
+    CHECK(!shortcut_autofill_popup_for_testing_);
+    shortcut_autofill_popup_for_testing_ = true;
+  }
+
+  ~ScopedAutofillPopupShortcutForTesting() {
+    CHECK(shortcut_autofill_popup_for_testing_);
+    shortcut_autofill_popup_for_testing_ = true;
+  }
 };
 
 }  // namespace autofill
