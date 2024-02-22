@@ -1328,13 +1328,11 @@ public class ReadAloudControllerUnitTest {
         // Play tab.
         requestAndStartPlayback();
 
-        // One observer should be registered on the playing tab to stop playback if translated, and
-        // one is registered regardless of playback for refreshing the entrypoint.
-        assertEquals(2, mFakeTranslateBridge.getObserverCount());
-
-        // stopping playback should unregister the listener that stops playback
-        mController.maybeStopPlayback(mTab);
         assertEquals(1, mFakeTranslateBridge.getObserverCount());
+
+        // stopping playback should unregister a listener
+        mController.maybeStopPlayback(mTab);
+        assertEquals(0, mFakeTranslateBridge.getObserverCount());
     }
 
     @Test
@@ -1367,19 +1365,6 @@ public class ReadAloudControllerUnitTest {
         // Fail to translate (status code 1). Playback should not stop.
         mController.getTranslationObserverForTest().onPageTranslated("en", "es", 1);
         verify(mPlayback, never()).release();
-    }
-
-    @Test
-    public void testPageTranslatedNotifiesReadabilityChanged() {
-        Runnable runnable = Mockito.mock(Runnable.class);
-        mController.addReadabilityUpdateListener(runnable);
-
-        var translationObserver = mController.getCurrentTabTranslationObserverForTest();
-        translationObserver.onPageTranslated("en", "es", 1);
-        verify(runnable, times(1)).run();
-
-        translationObserver.onIsPageTranslatedChanged(null);
-        verify(runnable, times(2)).run();
     }
 
     @Test
@@ -1435,14 +1420,13 @@ public class ReadAloudControllerUnitTest {
     public void testReadabilitySupplier() {
         String testUrl = "https://en.wikipedia.org/wiki/Google";
 
-        Runnable runnable = Mockito.mock(Runnable.class);
-        mController.addReadabilityUpdateListener(runnable);
         mController.maybeCheckReadability(new GURL(testUrl));
 
         verify(mHooksImpl, times(1)).isPageReadable(eq(testUrl), mCallbackCaptor.capture());
 
         mCallbackCaptor.getValue().onSuccess(testUrl, true, false);
-        verify(runnable).run();
+
+        assertEquals(mController.getReadabilitySupplier().get(), testUrl);
     }
 
     @Test
