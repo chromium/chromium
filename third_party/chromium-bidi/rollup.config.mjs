@@ -14,9 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import path from 'path';
+
 import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
+import license from 'rollup-plugin-license';
 
 export default {
   input: 'lib/cjs/bidiTab/bidiTab.js',
@@ -27,6 +30,13 @@ export default {
     format: 'iife',
   },
   plugins: [
+    license({
+      thirdParty: {
+        output: {
+          file: path.join('lib', 'THIRD_PARTY_NOTICES'),
+        },
+      },
+    }),
     nodeResolve(),
     commonjs({
       // `crypto` is only imported in the uuid polyfill for Node versions

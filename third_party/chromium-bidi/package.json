@@ -203,6 +203,7 @@
     "prettier": "3.2.4",
     "rimraf": "5.0.5",
     "rollup": "4.9.6",
+    "rollup-plugin-license": "3.2.0",
     "selenium-webdriver": "4.17.0",
     "sinon": "17.0.1",
     "source-map-support": "0.5.21",
