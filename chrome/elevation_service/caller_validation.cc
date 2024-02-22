@@ -13,6 +13,7 @@
 
 #include "base/logging.h"
 #include "base/process/process.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 
@@ -22,6 +23,44 @@ namespace {
 
 constexpr char kPathValidationPrefix[] = "PATH";
 constexpr char kNoneValidationPrefix[] = "NONE";
+
+// Paths look like this: "\Device\HarddiskVolume6\Program Files\Blah\app.exe".
+// This function will remove the final EXE, then it will remove paths that match
+// 'Temp' or 'Application' if they are the final directory.
+//
+// Examples:
+// "\Device\HarddiskVolume6\Program Files\Blah\app.exe" ->
+// "\Device\HarddiskVolume6\Program Files\Blah\"
+//
+// "\Device\HarddiskVolume6\Program Files\Blah\app2.exe" ->
+// "\Device\HarddiskVolume6\Program Files\Blah\"
+//
+// "\Device\HarddiskVolume6\Program Files\Blah\Temp\app.exe" ->
+// "\Device\HarddiskVolume6\Program Files\Blah\"
+//
+// "\Device\HarddiskVolume6\Program Files\Blah\Application\app.exe" ->
+// "\Device\HarddiskVolume6\Program Files\Blah\"
+//
+// Note: base::FilePath is not used here because NT paths are not real paths.
+std::string MaybeTrimProcessPath(const std::string& full_path) {
+  auto tokens = base::SplitString(full_path, "\\", base::KEEP_WHITESPACE,
+                                  base::SPLIT_WANT_ALL);
+  std::string output;
+  size_t token = 0;
+  for (auto it = tokens.rbegin(); it != tokens.rend(); ++it) {
+    token++;
+    if (token == 1 &&
+        base::EndsWith(*it, ".exe", base::CompareCase::INSENSITIVE_ASCII)) {
+      continue;
+    }
+    if (token == 2 && (base::EqualsCaseInsensitiveASCII(*it, "Temp") ||
+                       base::EqualsCaseInsensitiveASCII(*it, "Application"))) {
+      continue;
+    }
+    output = *it + "\\" + output;
+  }
+  return output;
+}
 
 std::string GetProcessExecutablePath(const base::Process& process) {
   std::string image_path(MAX_PATH, L'\0');
@@ -52,7 +91,8 @@ std::string GeneratePathValidationData(const base::Process& process) {
 }
 
 bool ValidatePath(const base::Process& process, const std::string& data) {
-  return data == GetProcessExecutablePath(process);
+  return MaybeTrimProcessPath(data) ==
+         MaybeTrimProcessPath(GetProcessExecutablePath(process));
 }
 
 }  // namespace

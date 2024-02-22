@@ -4,6 +4,8 @@
 
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -185,18 +187,26 @@ class AppBoundEncryptionWinTestMultiProcess : public AppBoundEncryptionWinTest {
     AppBoundEncryptionWinTest::SetUp();
   }
 
-  void EncryptOrDecryptInTestProcess(base::FilePath::StringPieceType filename,
-                                     const std::string& input_data,
-                                     std::string& output_data,
-                                     Operation op,
-                                     HRESULT& result) {
+  void EncryptOrDecryptInTestProcess(
+      base::FilePath::StringPieceType filename,
+      std::optional<base::FilePath::StringPieceType> sub_dir,
+      const std::string& input_data,
+      std::string& output_data,
+      Operation op,
+      HRESULT& result) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     const auto input_file_path = temp_dir_.GetPath().Append(L"input-file");
     const auto output_file_path = temp_dir_.GetPath().Append(L"output-file");
     ASSERT_TRUE(base::WriteFile(input_file_path, input_data));
 
-    auto executable_file_path = temp_dir_.GetPath().Append(filename);
+    auto executable_file_dir = temp_dir_.GetPath();
+    if (sub_dir) {
+      executable_file_dir = executable_file_dir.Append(*sub_dir);
+      base::CreateDirectory(executable_file_dir);
+    }
+
+    const auto executable_file_path = executable_file_dir.Append(filename);
     std::ignore = base::DeleteFile(executable_file_path);
 
     const auto orig_exe = base::PathService::CheckedGet(base::DIR_EXE)
@@ -240,20 +250,60 @@ class AppBoundEncryptionWinTestMultiProcess : public AppBoundEncryptionWinTest {
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestMultiProcess,
                        EncryptDecryptProcess) {
   const std::string kSecret("secret");
-  std::string ciphertext;
-  HRESULT result;
-  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
-      L"app1.exe", kSecret, ciphertext, Operation::kEncrypt, result));
-  EXPECT_EQ(S_OK, result);
-  std::string plaintext;
-  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
-      L"app1.exe", ciphertext, plaintext, Operation::kDecrypt, result));
-  EXPECT_EQ(S_OK, result);
-  EXPECT_EQ(kSecret, plaintext);
+  {
+    std::string ciphertext;
+    HRESULT result;
+    ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+        L"app1.exe", {}, kSecret, ciphertext, Operation::kEncrypt, result));
+    EXPECT_EQ(S_OK, result);
+    std::string plaintext;
+    ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+        L"app1.exe", {}, ciphertext, plaintext, Operation::kDecrypt, result));
+    EXPECT_EQ(S_OK, result);
+    EXPECT_EQ(kSecret, plaintext);
 
-  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
-      L"app2.exe", ciphertext, plaintext, Operation::kDecrypt, result));
-  EXPECT_EQ(elevation_service::Elevator::kValidationDidNotPass, result);
+    ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+        L"app2.exe", {}, ciphertext, plaintext, Operation::kDecrypt, result));
+    EXPECT_EQ(S_OK, result);
+    EXPECT_EQ(kSecret, plaintext);
+
+    ASSERT_NO_FATAL_FAILURE(
+        EncryptOrDecryptInTestProcess(L"app1.exe", L"Application", ciphertext,
+                                      plaintext, Operation::kDecrypt, result));
+    EXPECT_EQ(S_OK, result);
+    EXPECT_EQ(kSecret, plaintext);
+
+    ASSERT_NO_FATAL_FAILURE(
+        EncryptOrDecryptInTestProcess(L"app1.exe", L"Temp", ciphertext,
+                                      plaintext, Operation::kDecrypt, result));
+    EXPECT_EQ(S_OK, result);
+    EXPECT_EQ(kSecret, plaintext);
+
+    ASSERT_NO_FATAL_FAILURE(
+        EncryptOrDecryptInTestProcess(L"app1.exe", L"Bad", ciphertext,
+                                      plaintext, Operation::kDecrypt, result));
+    EXPECT_EQ(elevation_service::Elevator::kValidationDidNotPass, result);
+  }
+  {
+    // Explicitly test the most frequent chrome-specific cases.
+    std::string ciphertext;
+    HRESULT result;
+    ASSERT_NO_FATAL_FAILURE(
+        EncryptOrDecryptInTestProcess(L"chrome.exe", L"Application", kSecret,
+                                      ciphertext, Operation::kEncrypt, result));
+    EXPECT_EQ(S_OK, result);
+    std::string plaintext;
+    ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+        L"new_chrome.exe", L"Application", ciphertext, plaintext,
+        Operation::kDecrypt, result));
+    EXPECT_EQ(S_OK, result);
+    EXPECT_EQ(kSecret, plaintext);
+    ASSERT_NO_FATAL_FAILURE(
+        EncryptOrDecryptInTestProcess(L"old_chrome.exe", L"Temp", ciphertext,
+                                      plaintext, Operation::kDecrypt, result));
+    EXPECT_EQ(S_OK, result);
+    EXPECT_EQ(kSecret, plaintext);
+  }
 }
 #endif  // !defined(COMPONENT_BUILD)
 
