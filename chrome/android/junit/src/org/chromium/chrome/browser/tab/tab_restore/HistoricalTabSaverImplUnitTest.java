@@ -291,9 +291,9 @@ public class HistoricalTabSaverImplUnitTest {
         entries.add(new HistoricalEntry(3, "Group 3", Arrays.asList(new Tab[] {tab10, tab11})));
         mHistoricalTabSaver.createHistoricalBulkClosure(entries);
 
-        int[] groupIds = new int[] {1, 3};
+        int[] rootIds = new int[] {1, 3};
         String[] groupTitles = new String[] {"Group 1", "Group 3"};
-        int[] perTabGroupIds =
+        int[] perTabRootIds =
                 new int[] {Tab.INVALID_TAB_ID, 1, 1, Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID, 3, 3};
         Tab[] tabs = new Tab[] {tab0, tab4, tab6, tab7, tab8, tab10, tab11};
 
@@ -304,9 +304,9 @@ public class HistoricalTabSaverImplUnitTest {
         verify(mHistoricalTabSaverJni, times(1))
                 .createHistoricalBulkClosure(
                         eq(mTabModel),
-                        eq(groupIds),
+                        eq(rootIds),
                         eq(groupTitles),
-                        eq(perTabGroupIds),
+                        eq(perTabRootIds),
                         eq(tabs),
                         eq(buffers),
                         eq(versions));

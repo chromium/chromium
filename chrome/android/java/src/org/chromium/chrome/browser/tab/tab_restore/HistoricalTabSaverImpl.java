@@ -84,11 +84,11 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         // All tabs to be saved - one entry per tab.
         List<Tab> allTabs = new ArrayList<>();
         // Group IDs corresponding to each element of allTabs.
-        List<Integer> perTabGroupId = new ArrayList<>();
+        List<Integer> perTabRootId = new ArrayList<>();
 
         // Distinct group IDs that will be saved - one per group.
-        List<Integer> groupIds = new ArrayList<>();
-        // Titles corresponding to each element in groupIds.
+        List<Integer> rootIds = new ArrayList<>();
+        // Titles corresponding to each element in rootIds.
         List<String> groupTitles = new ArrayList<>();
 
         // Byte buffer associated with WebContentsState per tab by index.
@@ -100,18 +100,18 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             if (entry.isSingleTab()) {
                 WebContentsState tabWebContentsState = getWebContentsState(entry.getTabs().get(0));
                 allTabs.add(entry.getTabs().get(0));
-                perTabGroupId.add(Tab.INVALID_TAB_ID);
+                perTabRootId.add(Tab.INVALID_TAB_ID);
                 byteBuffers.add(tabWebContentsState.buffer());
                 savedStateVersions.add(tabWebContentsState.version());
                 continue;
             }
 
-            groupIds.add(entry.getGroupId());
+            rootIds.add(entry.getRootId());
             groupTitles.add(entry.getGroupTitle() == null ? "" : entry.getGroupTitle());
             for (Tab tab : entry.getTabs()) {
                 WebContentsState tabWebContentsState = getWebContentsState(tab);
                 allTabs.add(tab);
-                perTabGroupId.add(entry.getGroupId());
+                perTabRootId.add(entry.getRootId());
                 byteBuffers.add(tabWebContentsState.buffer());
                 savedStateVersions.add(tabWebContentsState.version());
             }
@@ -147,9 +147,9 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         HistoricalTabSaverImplJni.get()
                 .createHistoricalBulkClosure(
                         mTabModel,
-                        CollectionUtil.integerCollectionToIntArray(groupIds),
+                        CollectionUtil.integerCollectionToIntArray(rootIds),
                         groupTitles.toArray(new String[0]),
-                        CollectionUtil.integerCollectionToIntArray(perTabGroupId),
+                        CollectionUtil.integerCollectionToIntArray(perTabRootId),
                         allTabs.toArray(new Tab[0]),
                         byteBuffers.toArray(new ByteBuffer[0]),
                         CollectionUtil.integerCollectionToIntArray(savedStateVersions));
@@ -221,7 +221,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 continue;
             }
             validatedEntries.add(
-                    new HistoricalEntry(entry.getGroupId(), entry.getGroupTitle(), validTabs));
+                    new HistoricalEntry(entry.getRootId(), entry.getGroupTitle(), validTabs));
         }
         return validatedEntries;
     }
@@ -254,9 +254,9 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         void createHistoricalBulkClosure(
                 TabModel model,
-                int[] groupIds,
+                int[] rootIds,
                 String[] titles,
-                int[] perTabGroupId,
+                int[] perTabRootId,
                 Tab[] tabs,
                 ByteBuffer[] byteBuffers,
                 int[] savedStateVersions);

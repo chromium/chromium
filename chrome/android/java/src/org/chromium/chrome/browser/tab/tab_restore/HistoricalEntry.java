@@ -11,7 +11,7 @@ import java.util.List;
 
 /** Base class representing a historical entry. Can be used for either a group or single tab. */
 public class HistoricalEntry {
-    private final int mGroupId;
+    private final int mRootId;
     private final String mGroupTitle;
     private final List<Tab> mTabs;
 
@@ -19,49 +19,41 @@ public class HistoricalEntry {
      * @param tab The tab for this entry.
      */
     public HistoricalEntry(Tab tab) {
-        mGroupId = Tab.INVALID_TAB_ID;
+        mRootId = Tab.INVALID_TAB_ID;
         mGroupTitle = null;
         mTabs = Collections.singletonList(tab);
     }
 
     /**
-     * @param groupId The group ID of this entry. This is only used for grouping purposes and is not
-     *           saved.
+     * @param rootId The root ID of this entry. This is only used for grouping purposes and is not
+     *     saved.
      * @param groupTitle The title of the group or null if the default group name should be used.
      * @param tabs The list of {@link Tab} in this group.
      */
-    public HistoricalEntry(int groupId, String groupTitle, List<Tab> tabs) {
-        assert groupId != Tab.INVALID_TAB_ID;
-        mGroupId = groupId;
+    public HistoricalEntry(int rootId, String groupTitle, List<Tab> tabs) {
+        assert rootId != Tab.INVALID_TAB_ID;
+        mRootId = rootId;
         mGroupTitle = groupTitle;
         // Allow single tab groups here. These can be collapsed to tab form during validation.
         mTabs = tabs;
     }
 
-    /**
-     * @return Whether this entry is a single tab.
-     */
+    /** Returns whether this entry is a single tab. */
     public boolean isSingleTab() {
-        return mTabs.size() == 1 && mGroupId == Tab.INVALID_TAB_ID;
+        return mTabs.size() == 1 && mRootId == Tab.INVALID_TAB_ID;
     }
 
-    /**
-     * @return The Android Group Id for the group this entry represents.
-     */
-    public int getGroupId() {
-        return mGroupId;
+    /** Returns the root ID for the group this entry represents. */
+    public int getRootId() {
+        return mRootId;
     }
 
-    /**
-     * @return The title of the group this entry represents.
-     */
+    /** Returns the title of the group this entry represents. */
     public String getGroupTitle() {
         return mGroupTitle;
     }
 
-    /**
-     * @return The list of tabs in this group.
-     */
+    /** Returns the list of tabs in this group. */
     public List<Tab> getTabs() {
         return mTabs;
     }
