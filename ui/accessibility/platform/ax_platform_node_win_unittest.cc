@@ -3575,19 +3575,19 @@ TEST_F(AXPlatformNodeWinTest,
 TEST_F(AXPlatformNodeWinTest, IGridProviderGetRowCount) {
   Init(BuildAriaColumnAndRowCountGrids());
 
-  // Empty Grid
+  // Empty Grid.
   ComPtr<IGridProvider> grid1_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[0]);
 
-  // Grid with a cell that defines aria-rowindex (4) and aria-colindex (5)
+  // Grid with a cell that defines aria-rowindex (4) and aria-colindex (5).
   ComPtr<IGridProvider> grid2_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[1]);
 
-  // Grid that specifies aria-rowcount (2) and aria-colcount (3)
+  // Grid that specifies aria-rowcount (2) and aria-colcount (3).
   ComPtr<IGridProvider> grid3_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[2]);
 
-  // Grid that specifies aria-rowcount and aria-colcount are both (-1)
+  // Grid that specifies aria-rowcount and aria-colcount are both (-1).
   ComPtr<IGridProvider> grid4_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[3]);
 
@@ -3608,19 +3608,19 @@ TEST_F(AXPlatformNodeWinTest, IGridProviderGetRowCount) {
 TEST_F(AXPlatformNodeWinTest, IGridProviderGetColumnCount) {
   Init(BuildAriaColumnAndRowCountGrids());
 
-  // Empty Grid
+  // Empty Grid.
   ComPtr<IGridProvider> grid1_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[0]);
 
-  // Grid with a cell that defines aria-rowindex (4) and aria-colindex (5)
+  // Grid with a cell that defines aria-rowindex (4) and aria-colindex (5).
   ComPtr<IGridProvider> grid2_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[1]);
 
-  // Grid that specifies aria-rowcount (2) and aria-colcount (3)
+  // Grid that specifies aria-rowcount (2) and aria-colcount (3).
   ComPtr<IGridProvider> grid3_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[2]);
 
-  // Grid that specifies aria-rowcount and aria-colcount are both (-1)
+  // Grid that specifies aria-rowcount and aria-colcount are both (-1).
   ComPtr<IGridProvider> grid4_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[3]);
 
@@ -3668,6 +3668,35 @@ TEST_F(AXPlatformNodeWinTest, IGridProviderGetItem) {
   EXPECT_HRESULT_SUCCEEDED(root_igridprovider->GetItem(0, 0, &grid_item));
   EXPECT_NE(nullptr, grid_item);
   EXPECT_EQ(cell1_irawelementprovidersimple.Get(), grid_item);
+}
+
+TEST_F(AXPlatformNodeWinTest, IGridProviderGetItemCustomAria) {
+  Init(BuildAriaColumnAndRowCountGrids());
+
+  // Empty Grid.
+  ComPtr<IGridProvider> grid1_provider =
+      QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[0]);
+
+  // Grid with a cell that defines aria-rowindex (4) and aria-colindex (5).
+  ComPtr<IGridProvider> grid2_provider =
+      QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[1]);
+
+  // Grid that specifies aria-rowcount (2) and aria-colcount (3).
+  ComPtr<IGridProvider> grid3_provider =
+      QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[2]);
+
+  // Grid that specifies aria-rowcount and aria-colcount are both (-1).
+  ComPtr<IGridProvider> grid4_provider =
+      QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[3]);
+
+  IRawElementProviderSimple* grid_item = nullptr;
+  EXPECT_HRESULT_FAILED(grid1_provider->GetItem(0, 0, &grid_item));
+  EXPECT_HRESULT_SUCCEEDED(grid2_provider->GetItem(3, 4, &grid_item));
+  EXPECT_EQ(QueryInterfaceFromNodeId<IRawElementProviderSimple>(5).Get(),
+            grid_item);
+  // This is an empty grid, so we should not be able to get any items.
+  EXPECT_HRESULT_FAILED(grid3_provider->GetItem(1, 2, &grid_item));
+  EXPECT_HRESULT_FAILED(grid4_provider->GetItem(-1, -1, &grid_item));
 }
 
 TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersForTable) {

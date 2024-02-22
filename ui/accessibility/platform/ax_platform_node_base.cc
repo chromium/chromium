@@ -1089,6 +1089,37 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int row,
       table->delegate_->GetFromNodeID(*cell_id));
 }
 
+AXPlatformNodeBase* AXPlatformNodeBase::GetAriaTableCell(int aria_row,
+                                                         int aria_column) const {
+  if (!IsTableLike(GetRole()) && !IsCellOrTableHeader(GetRole())) {
+    return nullptr;
+  }
+
+  AXPlatformNodeBase* table = GetTable();
+  if (!table) {
+    return nullptr;
+  }
+  std::optional<int> aria_row_count = GetTableAriaRowCount();
+  std::optional<int> aria_col_count = GetTableAriaColumnCount();
+  if (!aria_row_count || !aria_col_count) {
+    return nullptr;
+  }
+
+  if (aria_row < 1 || aria_row > *aria_row_count || aria_column < 1 ||
+      aria_column > *aria_col_count) {
+    return nullptr;
+  }
+
+  DCHECK(table->delegate_);
+  std::optional<int32_t> cell_id =
+      table->delegate_->GetCellIdAriaCoords(aria_row, aria_column);
+  if (!cell_id) {
+    return nullptr;
+  }
+  return static_cast<AXPlatformNodeBase*>(
+      table->delegate_->GetFromNodeID(*cell_id));
+}
+
 std::optional<int> AXPlatformNodeBase::GetTableCellIndex() const {
   if (!delegate_)
     return std::nullopt;

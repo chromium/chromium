@@ -1376,6 +1376,49 @@ AXNode* AXNode::GetTableCellFromCoords(int row_index, int col_index) const {
                                               [static_cast<size_t>(col_index)]);
 }
 
+AXNode* AXNode::GetTableCellFromAriaCoords(int aria_row_index,
+                                           int aria_col_index) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  const AXTableInfo* table_info = GetAncestorTableInfo();
+  if (!table_info) {
+    return nullptr;
+  }
+
+  if (aria_row_index < 1 || aria_row_index > table_info->aria_row_count ||
+      aria_col_index < 1 || aria_col_index > table_info->aria_col_count) {
+    return nullptr;
+  }
+
+  // Aria rows/columns are not guaranteed to be contiguous, and can also
+  // span multiple "rows" or "columns".
+  // So while we do need to check many of the internal rows/columns, we can do
+  // some skipping around, and don't need to continue to search if we are past
+  // the specified row/column.
+  for (size_t row = 0; row < table_info->row_count; ++row) {
+    for (size_t col = 0; col < table_info->col_count; ++col) {
+      AXNode* node = tree_->GetFromId(table_info->cell_ids[row][col]);
+      CHECK(node);
+
+      std::optional<int> current_aria_row = node->GetTableCellAriaRowIndex();
+      std::optional<int> current_aria_col = node->GetTableCellAriaColIndex();
+      if (!current_aria_row || *current_aria_row < aria_row_index) {
+        break;
+      } else if (*current_aria_row > aria_row_index) {
+        return nullptr;
+      }
+      if (!current_aria_col || *current_aria_col < aria_col_index) {
+        continue;
+      } else if (*current_aria_col > aria_col_index) {
+        return nullptr;
+      }
+      DCHECK(*current_aria_row == aria_row_index &&
+             *current_aria_col == aria_col_index);
+      return node;
+    }
+  }
+  return nullptr;
+}
+
 std::vector<AXNodeID> AXNode::GetTableColHeaderNodeIds() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();

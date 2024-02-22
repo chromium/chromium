@@ -131,6 +131,8 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   std::optional<int> GetTableCellAriaColIndex() const override;
   std::optional<int> GetTableCellAriaRowIndex() const override;
   std::optional<int32_t> GetCellId(int row_index, int col_index) const override;
+  std::optional<int32_t> GetCellIdAriaCoords(int aria_row_index,
+                                             int aria_col_index) const override;
   std::optional<int32_t> CellIndexToId(int cell_index) const override;
   bool IsCellOrHeaderOfAriaGrid() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;

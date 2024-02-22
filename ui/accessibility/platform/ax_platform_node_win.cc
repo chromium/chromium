@@ -2781,9 +2781,15 @@ IFACEMETHODIMP AXPlatformNodeWin::GetItem(int row,
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GRID_GETITEM);
   UIA_VALIDATE_CALL_1_ARG(result);
 
-  AXPlatformNodeBase* cell = GetTableCell(row, column);
-  if (!cell)
+  // While UIA is 0-based, aria is 1-based, so correct here.
+  AXPlatformNodeBase* cell = GetAriaTableCell(row + 1, column + 1);
+  if (!cell) {
+    cell = GetTableCell(row, column);
+  }
+
+  if (!cell) {
     return E_INVALIDARG;
+  }
 
   auto* node_win = static_cast<AXPlatformNodeWin*>(cell);
   node_win->AddRef();

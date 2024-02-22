@@ -541,6 +541,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   //
   // Tables. All of these should be called on a node that has a table-like
   // role, otherwise they return nullopt.
+  // Methods with "Aria" in their name work with author-privided aria
+  // values, or computed values derived from the author-specified ones.
+  // Please note that aria has 1-based rows and columns.
   //
   bool IsTable() const;
   virtual std::optional<int> GetTableColCount() const;
@@ -572,6 +575,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   virtual std::optional<int> GetTableCellAriaColIndex() const;
   virtual std::optional<int> GetTableCellAriaRowIndex() const;
   virtual std::optional<int32_t> GetCellId(int row_index, int col_index) const;
+  virtual std::optional<int32_t> GetCellIdAriaCoords(int aria_row_index,
+                                                     int aria_col_index) const;
   virtual std::optional<int32_t> CellIndexToId(int cell_index) const;
 
   // Returns true if this node is a cell or a row/column header in an ARIA grid

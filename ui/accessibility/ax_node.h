@@ -568,6 +568,7 @@ class AX_EXPORT AXNode final {
   AXNode* GetTableCaption() const;
   AXNode* GetTableCellFromIndex(int index) const;
   AXNode* GetTableCellFromCoords(int row_index, int col_index) const;
+  AXNode* GetTableCellFromAriaCoords(int aria_row_index, int aria_col_index) const;
   // Get all the column header node ids of the table.
   std::vector<AXNodeID> GetTableColHeaderNodeIds() const;
   // Get the column header node ids associated with |col_index|.

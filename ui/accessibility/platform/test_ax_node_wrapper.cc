@@ -552,6 +552,15 @@ std::optional<int32_t> TestAXNodeWrapper::GetCellId(int row_index,
     return std::nullopt;
   return cell->id();
 }
+std::optional<int32_t> TestAXNodeWrapper::GetCellIdAriaCoords(
+    int aria_row_index,
+    int aria_col_index) const {
+  AXNode* cell = node_->GetTableCellFromAriaCoords(aria_row_index, aria_col_index);
+  if (!cell) {
+    return std::nullopt;
+  }
+  return cell->id();
+}
 
 gfx::AcceleratedWidget
 TestAXNodeWrapper::GetTargetForNativeAccessibilityEvent() {

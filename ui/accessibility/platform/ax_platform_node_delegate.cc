@@ -1099,6 +1099,20 @@ std::optional<int32_t> AXPlatformNodeDelegate::GetCellId(int row_index,
   return std::nullopt;
 }
 
+std::optional<int32_t> AXPlatformNodeDelegate::GetCellIdAriaCoords(
+    int aria_row_index,
+    int aria_col_index) const {
+  if (node_) {
+    AXNode* cell =
+        node()->GetTableCellFromAriaCoords(aria_row_index, aria_col_index);
+    if (!cell) {
+      return std::nullopt;
+    }
+    return cell->id();
+  }
+  return std::nullopt;
+}
+
 std::optional<int32_t> AXPlatformNodeDelegate::CellIndexToId(
     int cell_index) const {
   if (node_) {

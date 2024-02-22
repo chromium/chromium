@@ -226,6 +226,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // table.
   AXPlatformNodeBase* GetTableCell(int row, int column) const;
 
+  // If inside a table or ARIA grid and given 1-based row and column,
+  // returns the cell in ARIA grid or table that matches the corresponding
+  // 1-based aria-rowindex and aria-colindex values, if one exists.
+  AXPlatformNodeBase* GetAriaTableCell(int aria_row, int aria_column) const;
+
   // If inside a table or ARIA grid, returns the zero-based index of the cell.
   // Indices are in row major order and each cell is counted once regardless of
   // its span. Returns std::nullopt if not a cell or if not inside a table.
