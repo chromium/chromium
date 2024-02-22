@@ -915,6 +915,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirCreateWithContextMenu").NewDirectoryTree(),
         TestCase("dirCreateWithKeyboard").NewDirectoryTree(),
         TestCase("dirCreateWithoutChangingCurrent").NewDirectoryTree(),
+        TestCase("dirCreateMultipleFolders").NewDirectoryTree(),
         TestCase("dirContextMenuZip").NewDirectoryTree(),
         TestCase("dirContextMenuZipEject").NewDirectoryTree(),
         TestCase("dirContextMenuRecent").NewDirectoryTree(),
@@ -984,8 +985,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirCreateWithContextMenu"),
         TestCase("dirCreateWithKeyboard"),
         TestCase("dirCreateWithoutChangingCurrent"),
-        // TODO(http://crbug.com/1480973): Enable
-        // TestCase("dirCreateMultipleFolders"),
+        TestCase("dirCreateMultipleFolders"),
         TestCase("dirContextMenuZip"),
         TestCase("dirContextMenuZipEject"),
         TestCase("dirContextMenuRecent"),

@@ -666,13 +666,9 @@ export async function dirCreateMultipleFolders() {
   // folders in random order. crbug.com/1004717
   const names = ['aaa', '111'];
   while (names.length) {
-    const getRandomIndex = () => {
-      return Math.floor(Math.random() * Math.floor(names.length));
-    };
-    const name = names.splice(getRandomIndex(), 1);
-    // TODO(b/40930516): This seems to be wrong here, it's an array being passed
-    // as string.
-    await createNewFolder(name as unknown as string);
+    const index = Math.floor(Math.random() * names.length);
+    const [deletedName] = names.splice(index, 1);
+    await createNewFolder(deletedName!);
   }
 
   // Check: the new folders should have been created in the right order.

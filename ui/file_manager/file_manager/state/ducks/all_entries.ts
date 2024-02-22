@@ -638,7 +638,7 @@ async function*
       window.fileManager.dialogType !== DialogType.SELECT_SAVEAS_FILE;
 
   for (const childEntry of driveChildren) {
-    // For fake entries ("Shared with me" and)
+    // For fake entries ("Shared with me" and "Offline").
     if (isFakeEntryInDrives(childEntry)) {
       if (isFakeEntryVisible) {
         filteredChildren.push(childEntry);
