@@ -43,6 +43,11 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
   }
 
  protected:
+  size_t pending_task_count() {
+    return PreFreezeBackgroundMemoryTrimmer::Instance()
+        .GetNumberOfPendingBackgroundTasksForTesting();
+  }
+
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -50,20 +55,33 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
   test::ScopedFeatureList fl_;
 };
 
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeDisabled) {
+  PreFreezeBackgroundMemoryTrimmer::SetIsRespectingModernTrimForTesting(false);
+
+  PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
+      SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
+      base::BindRepeating(&IncGlobalCounter), base::Seconds(30));
+
+  ASSERT_EQ(pending_task_count(), 0u);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  ASSERT_EQ(pending_task_count(), 0u);
+
+  EXPECT_EQ(s_counter, 1);
+}
+
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostDelayedTaskSimple) {
   PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
       base::BindRepeating(&IncGlobalCounter), base::Seconds(30));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            1u);
+  ASSERT_EQ(pending_task_count(), 1u);
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            0u);
+  ASSERT_EQ(pending_task_count(), 0u);
+
   EXPECT_EQ(s_counter, 1);
 }
 
@@ -76,23 +94,17 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostDelayedTaskMultiple) {
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
       base::BindRepeating(&IncGlobalCounter), base::Seconds(30));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            2u);
+  ASSERT_EQ(pending_task_count(), 2u);
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            1u);
+  ASSERT_EQ(pending_task_count(), 1u);
 
   EXPECT_EQ(s_counter, 1);
 
   task_environment_.FastForwardBy(base::Seconds(10));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            0u);
+  ASSERT_EQ(pending_task_count(), 0u);
 
   EXPECT_EQ(s_counter, 2);
 }
@@ -102,17 +114,14 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostDelayedTaskPreFreeze) {
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
       base::BindRepeating(&IncGlobalCounter), base::Seconds(60));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            1u);
+  ASSERT_EQ(pending_task_count(), 1u);
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            0u);
+  ASSERT_EQ(pending_task_count(), 0u);
+
   EXPECT_EQ(s_counter, 1);
 }
 
@@ -147,17 +156,13 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostDelayedTaskMultiThreaded) {
 
   event1.Wait();
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            1u);
+  ASSERT_EQ(pending_task_count(), 1u);
 
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
   event2.Wait();
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            0u);
+  ASSERT_EQ(pending_task_count(), 0u);
 
   EXPECT_EQ(s_counter, 1);
 }
@@ -172,22 +177,18 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest,
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
       base::BindRepeating(&IncGlobalCounter), base::Seconds(30));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            2u);
+  ASSERT_EQ(pending_task_count(), 2u);
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            1u);
+  ASSERT_EQ(pending_task_count(), 1u);
+
   EXPECT_EQ(s_counter, 1);
 
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            0u);
+  ASSERT_EQ(pending_task_count(), 0u);
+
   EXPECT_EQ(s_counter, 2);
 }
 
@@ -196,15 +197,11 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, AddDuringPreFreeze) {
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
       base::BindRepeating(&PostDelayedIncGlobal), base::Seconds(10));
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            1u);
+  ASSERT_EQ(pending_task_count(), 1u);
 
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
-  ASSERT_EQ(PreFreezeBackgroundMemoryTrimmer::Instance()
-                .GetNumberOfPendingBackgroundTasksForTesting(),
-            0u);
+  ASSERT_EQ(pending_task_count(), 0u);
 
   EXPECT_EQ(s_counter, 1);
 }

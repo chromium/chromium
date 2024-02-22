@@ -154,6 +154,7 @@ void PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTaskInternal(
   // Preserve previous behaviour on versions before Android U.
   if (!IsRespectingModernTrim()) {
     task_runner->PostDelayedTask(from_here, std::move(task), delay);
+    return;
   }
 
   {
