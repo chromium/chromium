@@ -44,6 +44,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Auto with translate"/>
   <int value="9" label="Add to bookmarks"/>
   <int value="10" label="Auto with add to bookmarks"/>
+  <int value="11" label="Read Aloud (Listen to this page)"/>
+  <int value="12" label="Auto with Read Aloud (Listen to this page)"/>
 </enum>
 
 <enum name="Android.MemoryPressureNotification">
