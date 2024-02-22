@@ -63,6 +63,13 @@ export interface PrintPreviewPreviewAreaElement {
   $: {marginControlContainer: PrintPreviewMarginControlContainerElement};
 }
 
+// <if expr="is_chromeos">
+export function shouldShowCrosPrinterSetupError(
+    state: State, error: Error): boolean {
+  return state === State.ERROR && error === Error.INVALID_PRINTER;
+}
+// </if>
+
 const PrintPreviewPreviewAreaElementBase =
     WebUiListenerMixin(I18nMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
 
@@ -813,11 +820,12 @@ export class PrintPreviewPreviewAreaElement extends
    */
   private computeShowCrosPrinterSetupInfo(): boolean {
     // <if expr="is_chromeos">
-    if (this.isPrintPreviewSetupAssistanceEnabled_) {
-      return this.state === State.ERROR && this.error === Error.INVALID_PRINTER;
-    }
+    return this.isPrintPreviewSetupAssistanceEnabled_ &&
+        shouldShowCrosPrinterSetupError(this.state, this.error);
     // </if>
+    // <if expr="not is_chromeos">
     return false;
+    // </if>
   }
 }
 

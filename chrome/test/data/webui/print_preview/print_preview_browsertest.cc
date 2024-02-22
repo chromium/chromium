@@ -1237,6 +1237,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass_FlagOn) {
   RunTestCase("StatusTextClass_FlagOn");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
+                       OverrideStatusForPrinterSetupInfo) {
+  RunTestCase("OverrideStatusForPrinterSetupInfo");
+}
+
 class PrintPreviewDestinationDropdownCrosTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {

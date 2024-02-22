@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement} from 'chrome://print/print_preview.js';
-import {Destination, DestinationOrigin, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, Error, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity, State} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -601,5 +601,34 @@ suite('PrinterStatusTest', function() {
     assertTrue(
         statusText.classList.contains('status-red'),
         `contains red: ${statusText.className}`);
+  });
+
+  test('OverrideStatusForPrinterSetupInfo', async function() {
+    await waitBeforeNextRender(destinationSelect);
+
+    // Set to a destination without printer status errors.
+    const destinationNoError =
+        createDestination('ID1', 'One', DestinationOrigin.CROS);
+    destinationSelect.recentDestinationList = [destinationNoError];
+    await nativeLayerCros.whenCalled('requestPrinterStatusUpdate');
+    destinationSelect.destination = destinationNoError;
+    destinationSelect.updateDestination();
+
+    // Confirm there is no error text and the printer status icon is green.
+    const destinationStatus =
+        destinationSelect.shadowRoot!.querySelector<HTMLElement>(
+            '.destination-additional-info')!;
+    const statusText: HTMLElement =
+        destinationStatus.querySelector<HTMLElement>('#statusText')!;
+    assertEquals('', statusText.textContent);
+    const dropdown = destinationSelect.$.dropdown;
+    assertEquals(PRINTER_ICON_GREEN, dropdown.destinationIcon);
+
+    // Set the preview in an error state that shows the printer setup info UI
+    // then verify the status text and icon update accordingly.
+    destinationSelect.state = State.ERROR;
+    destinationSelect.error = Error.INVALID_PRINTER;
+    assertEquals('Not connected to printer', statusText.textContent!.trim());
+    assertEquals(PRINTER_ICON_RED, dropdown.destinationIcon);
   });
 });
