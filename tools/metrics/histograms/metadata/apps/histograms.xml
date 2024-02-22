@@ -1391,12 +1391,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.UserAction{TabletOrClamshell}"
-    enum="LauncherUserAction" expires_after="2023-06-19">
+    enum="LauncherUserAction" expires_after="2025-02-22">
   <owner>gzadina@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
     Tracks different launcher worflow actions the user performs in the launcher.
     Logged when the user performs an action. Recorded for {TabletOrClamshell}.
+    Warning: this histogram was expired from 2023-06-19 to 2024-02-22; data may
+    be missing.
   </summary>
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
