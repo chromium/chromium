@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_education/common/feature_promo_data.h"
@@ -69,7 +70,12 @@ void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kIPHPromoDataPath);
   registry->RegisterTimePref(kIPHSessionStartPath, base::Time());
-  registry->RegisterTimePref(kIPHSessionLastActiveTimePath, base::Time());
+  // This pref is updated frequently and an exact value is not required on e.g.
+  // browser crash, so marking as `LOSSY_PREF` will prevent frequent disk
+  // writes that could harm performance. The pref should still be written both
+  // occasionally during browser operation and at shutdown.
+  registry->RegisterTimePref(kIPHSessionLastActiveTimePath, base::Time(),
+                             PrefRegistry::LOSSY_PREF);
   registry->RegisterTimePref(kIPHPolicyLastHeavyweightPromoPath, base::Time());
 }
 
@@ -204,7 +210,15 @@ BrowserFeaturePromoStorageService::ReadSessionData() const {
 void BrowserFeaturePromoStorageService::SaveSessionData(
     const user_education::FeaturePromoSessionData& session_data) {
   auto* const prefs = profile_->GetPrefs();
-  prefs->SetTime(kIPHSessionStartPath, session_data.start_time);
+
+  // Only write session start time if it has changed.
+  const auto old_session_time = prefs->GetTime(kIPHSessionStartPath);
+  if (old_session_time != session_data.start_time) {
+    prefs->SetTime(kIPHSessionStartPath, session_data.start_time);
+  }
+
+  // This is a "lossy" pref which means we can write it whenever; it will get
+  // written through to disk occasionally during operation and and shutdown.
   prefs->SetTime(kIPHSessionLastActiveTimePath,
                  session_data.most_recent_active_time);
 }
