@@ -199,6 +199,7 @@ include_rules = [
   "+chrome/browser/upgrade_detector/upgrade_observer.h",
   "+chrome/browser/user_education/user_education_service.h",
   "+chrome/browser/user_education/user_education_service_factory.h",
+  "+chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h",
   "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",
   "+chrome/browser/web_applications/locks/app_lock.h",

@@ -397,8 +397,9 @@ void SystemWebAppManager::Shutdown() {
   shutting_down_ = true;
   StopBackgroundTasks();
 
-  // Icon check might be in progress, we need to cancel it.
-  icon_checker_->StopCheck();
+  // Icon check might be in progress, destroying the icon_checker_ ensures that
+  // any pending callbacks are dropped.
+  icon_checker_.reset();
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
