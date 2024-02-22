@@ -24,8 +24,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.MediaCaptureOverlayController;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -54,14 +54,14 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     private static final String NOTIFICATION_MEDIA_TYPE_EXTRA = "NotificationMediaType";
     private static final String NOTIFICATION_MEDIA_URL_EXTRA = "NotificationMediaUrl";
 
-    private NotificationManagerProxy mNotificationManager;
+    private BaseNotificationManagerProxy mNotificationManager;
     private SharedPreferencesManager mSharedPreferences;
     private final SparseIntArray mNotifications = new SparseIntArray();
 
     @Override
     public void onCreate() {
         mNotificationManager =
-                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
+                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext());
         mSharedPreferences = ChromeSharedPreferences.getInstance();
         super.onCreate();
     }

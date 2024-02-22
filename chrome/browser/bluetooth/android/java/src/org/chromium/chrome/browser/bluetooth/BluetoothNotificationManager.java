@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -58,12 +58,12 @@ public class BluetoothNotificationManager {
     }
 
     private BluetoothNotificationManagerDelegate mDelegate;
-    private NotificationManagerProxy mNotificationManager;
+    private BaseNotificationManagerProxy mNotificationManager;
     private SharedPreferencesManager mSharedPreferences;
     private final SparseIntArray mNotifications = new SparseIntArray();
 
     public BluetoothNotificationManager(
-            NotificationManagerProxy notificationManager,
+            BaseNotificationManagerProxy notificationManager,
             BluetoothNotificationManagerDelegate delegate) {
         mDelegate = delegate;
         mNotificationManager = notificationManager;

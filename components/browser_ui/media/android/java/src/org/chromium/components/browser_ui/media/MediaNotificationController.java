@@ -28,9 +28,9 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -629,7 +629,8 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo.supportsSwipeAway() && mMediaNotificationInfo.isPaused) {
             ForegroundServiceUtils.getInstance()
                     .stopForeground(mService, Service.STOP_FOREGROUND_DETACH);
-            NotificationManagerProxy manager = new NotificationManagerProxyImpl(getContext());
+            BaseNotificationManagerProxy manager =
+                    BaseNotificationManagerProxyFactory.create(getContext());
             manager.notify(notification);
         } else if (!finishedForegroundingService) {
             // We did not foreground the service and update the notification above, so we should do
@@ -645,7 +646,8 @@ public class MediaNotificationController {
                                 notification.getNotification(),
                                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
             } catch (RuntimeException e) {
-                NotificationManagerProxy manager = new NotificationManagerProxyImpl(getContext());
+                BaseNotificationManagerProxy manager =
+                        BaseNotificationManagerProxyFactory.create(getContext());
                 manager.notify(notification);
             }
         }

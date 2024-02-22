@@ -34,8 +34,8 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -189,7 +189,7 @@ public class AutoFetchNotifier {
                                         deleteIntent,
                                         /* flags= */ 0));
 
-        NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
         NotificationWrapper notification = builder.buildNotificationWrapper();
         manager.notify(notification);
         NotificationUmaTracker.getInstance()
@@ -362,7 +362,7 @@ public class AutoFetchNotifier {
                                         /* flags= */ 0));
 
         NotificationWrapper notification = builder.buildNotificationWrapper();
-        NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
         manager.notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(

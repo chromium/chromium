@@ -33,8 +33,10 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationMetadata;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -99,7 +101,7 @@ public class DownloadNotificationService {
 
     private static DownloadNotificationService sInstanceForTesting;
 
-    private NotificationManagerProxy mNotificationManager;
+    private BaseNotificationManagerProxy mNotificationManager;
     private Bitmap mDownloadSuccessLargeIcon;
     private DownloadSharedPreferenceHelper mDownloadSharedPreferenceHelper;
     private DownloadForegroundServiceManager mDownloadForegroundServiceManager;
@@ -123,7 +125,7 @@ public class DownloadNotificationService {
     @VisibleForTesting
     DownloadNotificationService() {
         mNotificationManager =
-                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
+                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext());
         mDownloadSharedPreferenceHelper = DownloadSharedPreferenceHelper.getInstance();
         mDownloadForegroundServiceManager = new DownloadForegroundServiceManager();
         mDownloadUserInitiatedTaskManager = new DownloadUserInitiatedTaskManager();
@@ -612,7 +614,13 @@ public class DownloadNotificationService {
         // TODO(b/65052774): Add back NOTIFICATION_NAMESPACE when able to.
         // Disabling StrictMode to avoid violations (crbug.com/789134).
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mNotificationManager.notify(id, notification);
+            mNotificationManager.notify(
+                    new NotificationWrapper(
+                            notification,
+                            new NotificationMetadata(
+                                    NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES,
+                                    /* tag= */ null,
+                                    id)));
         }
     }
 

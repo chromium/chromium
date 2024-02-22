@@ -24,8 +24,8 @@ import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -115,7 +115,7 @@ public class AnnouncementNotificationManager {
 
     private static void close() {
         // Dismiss the notification.
-        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext())
+        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
                 .cancel(ANNOUNCEMENT_NOTIFICATION_TAG, ANNOUNCEMENT_NOTIFICATION_ID);
     }
 
@@ -148,7 +148,7 @@ public class AnnouncementNotificationManager {
                 createIntent(context, IntentType.OPEN, url),
                 NotificationUmaTracker.ActionType.ANNOUNCEMENT_OPEN);
 
-        NotificationManagerProxy nm = new NotificationManagerProxyImpl(context);
+        BaseNotificationManagerProxy nm = BaseNotificationManagerProxyFactory.create(context);
         NotificationWrapper notification = builder.buildNotificationWrapper();
         nm.notify(notification);
 

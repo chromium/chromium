@@ -26,8 +26,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.sync.ui.PassphraseActivity;
 import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -61,7 +61,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     private static ProfileKeyedMap<SyncErrorNotifier> sProfileMap =
             new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
-    private final NotificationManagerProxy mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
     private final SyncService mSyncService;
     private final TrustedVaultClient mTrustedVaultClient;
 
@@ -81,7 +81,8 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                 profile,
                 () -> {
                     return new SyncErrorNotifier(
-                            new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
+                            BaseNotificationManagerProxyFactory.create(
+                                    ContextUtils.getApplicationContext()),
                             syncService,
                             TrustedVaultClient.get());
                 });
@@ -89,7 +90,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
 
     @VisibleForTesting
     public SyncErrorNotifier(
-            NotificationManagerProxy notificationManager,
+            BaseNotificationManagerProxy notificationManager,
             SyncService syncService,
             TrustedVaultClient trustedVaultClient) {
         mNotificationManager = notificationManager;
