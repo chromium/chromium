@@ -119,6 +119,10 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void SetIsSelected(bool selected);
 
+  // Hides this view from the accessibility APIs.
+  void SetIsIgnored(bool is_ignored);
+  bool GetIsIgnored() const;
+
   // Note that `pos_in_set` starts from 1 not 0.
   void SetPosInSet(int pos_in_set);
   void SetSetSize(int set_size);
@@ -226,6 +230,8 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Hides this View from the accessibility tree that is exposed to platform
   // APIs.
+  // Deprecated. Use ViewAccessibility::SetIsIgnored instead.
+  // See https://crbug.com/324485311.
   void OverrideIsIgnored(bool value);
   virtual bool IsIgnored() const;
 

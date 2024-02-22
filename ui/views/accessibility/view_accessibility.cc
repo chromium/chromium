@@ -460,6 +460,24 @@ void ViewAccessibility::SetIsSelected(bool selected) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
 }
 
+void ViewAccessibility::SetIsIgnored(bool is_ignored) {
+  if (is_ignored == data_.IsIgnored()) {
+    return;
+  }
+
+  if (is_ignored) {
+    data_.AddState(ax::mojom::State::kIgnored);
+  } else {
+    data_.RemoveState(ax::mojom::State::kIgnored);
+  }
+
+  view_->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+}
+
+bool ViewAccessibility::GetIsIgnored() const {
+  return data_.IsIgnored();
+}
+
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
   DCHECK(IsValidRoleForViews(role)) << "Invalid role for Views.";
   override_data_.role = role;
