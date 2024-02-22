@@ -94,11 +94,9 @@ void LayoutAppButtonsView(views::View* buttons_view) {
   if (visible_children.empty()) {
     return;
   }
-  const int visible_child_width =
-      std::accumulate(visible_children.cbegin(), visible_children.cend(), 0,
-                      [](int width, const views::View* v) {
-                        return width + v->GetPreferredSize().width();
-                      });
+  const int visible_child_width = std::transform_reduce(
+      visible_children.cbegin(), visible_children.cend(), 0, std::plus<>(),
+      [](const views::View* v) { return v->GetPreferredSize().width(); });
 
   int spacing = 0;
   if (visible_children.size() > 1) {

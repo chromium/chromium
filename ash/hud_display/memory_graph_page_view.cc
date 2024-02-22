@@ -191,7 +191,7 @@ void MemoryGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
   used_buckets.push_back(gpu_kernel);
 
   const float mem_used_unknown =
-      1 - std::accumulate(used_buckets.begin(), used_buckets.end(), 0.0f);
+      1 - std::reduce(used_buckets.begin(), used_buckets.end(), 0.0f);
   const float mem_used_unknown_unscaled = mem_used_unknown * total;
 
   if (mem_used_unknown < 0)

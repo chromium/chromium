@@ -135,10 +135,10 @@ class SystemUIComponentsGridView::GridLayout : public views::LayoutManager {
       return gfx::Size();
 
     // Preferred Size = Grid Size + Total Spacing + Border Size.
-    int width = std::accumulate(col_width_.begin(), col_width_.end(), 0) +
+    int width = std::reduce(col_width_.begin(), col_width_.end(), 0) +
                 (col_num_ - 1) / col_group_size_ * col_group_spacing_ +
                 border_insets_.width();
-    int height = std::accumulate(row_height_.begin(), row_height_.end(), 0) +
+    int height = std::reduce(row_height_.begin(), row_height_.end(), 0) +
                  (row_num_ - 1) / row_group_size_ * row_group_spacing_ +
                  border_insets_.height();
     return gfx::Size(width, height);

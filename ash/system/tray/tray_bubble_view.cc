@@ -535,11 +535,11 @@ gfx::Size TrayBubbleView::CalculatePreferredSize() const {
 
 int TrayBubbleView::GetHeightForWidth(int width) const {
   width = std::max(width - GetInsets().width(), 0);
-  const auto visible_height = [width](int height, const views::View* child) {
-    return height + (child->GetVisible() ? child->GetHeightForWidth(width) : 0);
-  };
-  const int height = std::accumulate(children().cbegin(), children().cend(),
-                                     GetInsets().height(), visible_height);
+  const int height = std::transform_reduce(
+      children().cbegin(), children().cend(), GetInsets().height(),
+      std::plus<>(), [width](const views::View* child) {
+        return child->GetVisible() ? child->GetHeightForWidth(width) : 0;
+      });
   if (params_.use_fixed_height) {
     return (params_.max_height != 0) ? params_.max_height : height;
   }
