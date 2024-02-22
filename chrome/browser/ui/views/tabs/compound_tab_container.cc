@@ -293,17 +293,17 @@ void CompoundTabContainer::MoveTab(int from_model_index, int to_model_index) {
   if (prev_pinned != next_pinned) {
     TransferTabBetweenContainers(from_model_index, to_model_index);
   } else if (prev_pinned) {
-    CHECK(to_model_index < NumPinnedTabs());
+    CHECK_LT(to_model_index, NumPinnedTabs());
     pinned_tab_container_->MoveTab(from_model_index, to_model_index);
   } else {  // !prev_pinned
-    CHECK(to_model_index >= NumPinnedTabs());
+    CHECK_GE(to_model_index, NumPinnedTabs());
     unpinned_tab_container_->MoveTab(from_model_index - NumPinnedTabs(),
                                      to_model_index - NumPinnedTabs());
   }
 }
 
 void CompoundTabContainer::RemoveTab(int index, bool was_active) {
-  CHECK(IsValidViewModelIndex(index));
+  CHECK(IsValidViewModelIndex(index)) << index;
   if (index < NumPinnedTabs()) {
     pinned_tab_container_->RemoveTab(index, was_active);
   } else {
@@ -451,7 +451,7 @@ std::optional<int> CompoundTabContainer::GetModelIndexOf(
 }
 
 Tab* CompoundTabContainer::GetTabAtModelIndex(int index) const {
-  CHECK(index < GetTabCount());
+  CHECK_LT(index, GetTabCount());
   const int num_pinned_tabs = NumPinnedTabs();
   if (index < num_pinned_tabs) {
     return pinned_tab_container_->GetTabAtModelIndex(index);
