@@ -130,6 +130,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::AUTOMATIC_FULLSCREEN, 116},
     {ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS, 117},
     {ContentSettingsType::SPEAKER_SELECTION, 118},
+    {ContentSettingsType::DIRECT_SOCKETS, 119},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

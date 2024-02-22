@@ -398,6 +398,8 @@ enum ContentSettingsType {
   // Whether an application can enumerate audio output device.
   SPEAKER_SELECTION,
 
+  // Content settings for access to the Direct Sockets API.
+  DIRECT_SOCKETS,
 
   NUM_TYPES,
 };

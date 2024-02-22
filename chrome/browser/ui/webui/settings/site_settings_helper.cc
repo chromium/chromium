@@ -214,6 +214,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::SMART_CARD_DATA, nullptr},
     {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
     {ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS, nullptr},
+    {ContentSettingsType::DIRECT_SOCKETS, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==
