@@ -7,6 +7,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/cards.js';
 import type {CardsElement} from 'chrome://customize-chrome-side-panel.top-chrome/cards.js';
 import {CartHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/chrome_cart.mojom-webui.js';
 import {ChromeCartProxy} from 'chrome://customize-chrome-side-panel.top-chrome/chrome_cart_proxy.js';
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote, ModuleSettings} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
@@ -590,5 +591,21 @@ suite('CardsTest', () => {
           assertCardCheckedStatus(cards, 'History Cluster', false);
           assertCardCheckedStatus(cards, 'bar name', false);
         });
+  });
+
+  suite('Metrics', () => {
+    test('Clicking show cards toggle sets metric', async () => {
+      getToggleElement().click();
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(customizeCards);
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.SHOW_CARDS_TOGGLE_CLICKED));
+    });
   });
 });
