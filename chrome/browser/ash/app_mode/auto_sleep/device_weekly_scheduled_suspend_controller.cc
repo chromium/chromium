@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 #include "chrome/browser/browser_process.h"
@@ -27,12 +27,12 @@ namespace {
 std::vector<std::unique_ptr<WeeklyTimeInterval>>
 GetPolicyConfigAsWeeklyTimeIntervals(const base::Value::List& policy_config) {
   std::vector<std::unique_ptr<WeeklyTimeInterval>> intervals;
-  base::ranges::transform(policy_config, std::back_inserter(intervals),
-                          [](const base::Value& value) {
-                            return WeeklyTimeInterval::ExtractFromDict(
-                                value.GetDict(),
-                                /*timezone_offset=*/std::nullopt);
-                          });
+  std::ranges::transform(policy_config, std::back_inserter(intervals),
+                         [](const base::Value& value) {
+                           return WeeklyTimeInterval::ExtractFromDict(
+                               value.GetDict(),
+                               /*timezone_offset=*/std::nullopt);
+                         });
   return intervals;
 }
 
@@ -75,7 +75,7 @@ BuildIntervalExecutorsFromConfig(
       GetPolicyConfigAsWeeklyTimeIntervals(policy_config);
 
   std::vector<std::unique_ptr<RepeatingTimeIntervalTaskExecutor>> executors;
-  base::ranges::transform(
+  std::ranges::transform(
       intervals, std::back_inserter(executors),
       [&](const std::unique_ptr<WeeklyTimeInterval>& interval) {
         CHECK(interval != nullptr);

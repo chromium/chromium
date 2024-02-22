@@ -4,9 +4,8 @@
 
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
 
+#include <algorithm>
 #include <string_view>
-
-#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -102,12 +101,12 @@ std::vector<std::unique_ptr<WeeklyTimeInterval>>
 DeviceWeeklyScheduledSuspendTestPolicyBuilder::GetAsWeeklyTimeIntervals()
     const {
   std::vector<std::unique_ptr<WeeklyTimeInterval>> ret;
-  base::ranges::transform(policy_value_, std::back_inserter(ret),
-                          [](const base::Value& value) {
-                            return WeeklyTimeInterval::ExtractFromDict(
-                                value.GetDict(),
-                                /*timezone_offset=*/std::nullopt);
-                          });
+  std::ranges::transform(policy_value_, std::back_inserter(ret),
+                         [](const base::Value& value) {
+                           return WeeklyTimeInterval::ExtractFromDict(
+                               value.GetDict(),
+                               /*timezone_offset=*/std::nullopt);
+                         });
   return ret;
 }
 
