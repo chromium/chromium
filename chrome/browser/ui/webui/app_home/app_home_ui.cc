@@ -46,6 +46,10 @@ AppHomeUI::AppHomeUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kAppHomeResources, kAppHomeResourcesSize),
       IDR_APP_HOME_APP_HOME_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc,
+      "img-src chrome://resources chrome://theme chrome://image "
+      "chrome://favicon2 chrome://app-icon data: 'self';");
 }
 
 void AppHomeUI::BindInterface(
