@@ -20541,6 +20541,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileContentNotificationsSettingsBack">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    Reported when user goes back from Content Notification Settings UI to the
+    root Notification Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileContentNotificationsSettingsClose">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    Is reported when the Content Notification Settings UI is dismissed. iOS
+    only.
+  </description>
+</action>
+
 <action name="MobileContentSettingsBack">
   <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

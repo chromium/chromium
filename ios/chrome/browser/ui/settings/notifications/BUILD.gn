@@ -34,6 +34,7 @@ source_set("notifications") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
     "//ios/chrome/browser/ui/push_notification:presenters",
+    "//ios/chrome/browser/ui/settings/notifications/content_notifications",
     "//ios/chrome/browser/ui/settings/notifications/tracking_price",
     "//ios/chrome/common/ui/colors",
     "//ui/base",

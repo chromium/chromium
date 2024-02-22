@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content_notifications") {
+  sources = [
+    "content_notifications_coordinator.h",
+    "content_notifications_coordinator.mm",
+    "content_notifications_mediator.h",
+    "content_notifications_mediator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":content_notifications_ui",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/push_notification/model:browser_state_service",
+    "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols:symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
+    "//ios/chrome/browser/ui/push_notification:presenters",
+    "//ios/chrome/browser/ui/settings/notifications:constants",
+    "//ios/chrome/browser/ui/settings/notifications:utils",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ui/base",
+  ]
+}
+
+source_set("content_notifications_ui") {
+  sources = [
+    "content_notifications_consumer.h",
+    "content_notifications_view_controller.h",
+    "content_notifications_view_controller.mm",
+    "content_notifications_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "content_notifications_constants.h",
+    "content_notifications_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "content_notifications_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
