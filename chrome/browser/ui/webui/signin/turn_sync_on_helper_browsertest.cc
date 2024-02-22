@@ -291,8 +291,13 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
         EXPECT_EQ(second_account_id, identity_manager()->GetPrimaryAccountId(
                                          signin::ConsentLevel::kSignin));
 #else
-        // With Dice, all accounts are removed, because the first account in
-        // cookies doesn't match.
+        // With Dice, the signin manager clears the primary account and removes
+        // all accounts because the first account in cookies doesn't match.
+        // Note: This check will fail with
+        // If `switches::ExplicitBrowserSigninPhase::kFull` is enabled, the
+        // primary account is set/cleared explicitly by the user and doesn't
+        // depend on cookies. This expectation should be updated accordingly
+        // when the feature is enabled in tests.
         EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
         EXPECT_FALSE(identity_manager()->HasPrimaryAccount(
             signin::ConsentLevel::kSignin));
