@@ -37,6 +37,8 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   // shown it. We need to clean up the dialog in that case.
   void CleanUpDialogIfNotShown();
 
+  void GetDialogSize(gfx::Size* size) const override;
+
  private:
   AppInstallDialog();
   ~AppInstallDialog() override;

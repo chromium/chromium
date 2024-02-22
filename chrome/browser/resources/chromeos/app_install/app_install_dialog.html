@@ -1,10 +1,56 @@
 <style>
+  #icon {
+    fill: var(--cros-sys-primary);
+  }
+
+  #title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-display-6-font);
+    padding-top: 14px;
+    margin: 0;
+  }
+
+  #content-card {
+    background-color: var(--cros-sys-base_elevated);
+    border-radius: 16px;
+    margin: 24px 0px;
+  }
+
+  #essential-details {
+    display: flex;
+    flex-direction: row;
+    height: 68px;
+    padding: 0px 24px;
+  }
+
+  #app-icon {
+    padding-inline-end: 14px;
+    margin-block: auto;
+  }
+
+  #name-and-url {
+    margin-block: auto;
+  }
+
+  #name {
+    margin: 0 0 2px 0;
+    font: var(--cros-button-1-font);
+    color: var(--cros-sys-on_surface);
+  }
+
+  #url {
+    margin: 0;
+    font: var(--cros-annotation-1-font);
+    color: var(--cros-sys-on_surface);
+  }
+
+  #url-link {
+    color: var(--cros-sys-primary);
+  }
+
   div[slot=button-container] {
     display: flex;
     justify-content: flex-end;
-    padding-block-end: 24px;
-    padding-block-start: 32px;
-    padding-inline: 24px;
     height: 36px;
   }
 
@@ -14,15 +60,19 @@
 </style>
 
 <cr-dialog id="dialog">
-  <!-- TODO(crbug.com/1488697): Localisation of strings. -->
-  <div slot="title">Install app</div>
-  <div slot="body">
-    <!-- TODO(crbug.com/1488697): Add app details (name, icon, url, description,
-                                  screenshots). -->
-    <p id="name"></p>
-    <p id="url"></p>
+  <svg id="icon" xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"></svg>
+  <h1 id="title">Install app to your Chromebook</h1>
+  <div id="content-card">
+    <!-- TODO(crbug.com/1488697): Localisation of strings. -->
+    <div id="essential-details">
+      <img id="app-icon" is="cr-auto-img" width="32" height="32">
+      <div id="name-and-url">
+        <p id="name"></p>
+        <p id="url">Developer information: <a id="url-link"></a></p>
+      </div>
+    </div>
+    <!-- TODO(crbug.com/1488697): Add screenshots. -->
     <p id="description"></p>
-    <img id="icon" is="cr-auto-img" width="32" height="32">
   </div>
   <div slot="button-container">
     <cros-button

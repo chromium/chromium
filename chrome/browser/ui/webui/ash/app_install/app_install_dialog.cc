@@ -75,4 +75,9 @@ base::WeakPtr<AppInstallDialog> AppInstallDialog::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
+  // TODO(crbug.com/1488697): Make the height change depending on the content.
+  size->SetSize(SystemWebDialogDelegate::kDialogWidth, 480);
+}
+
 }  // namespace ash::app_install

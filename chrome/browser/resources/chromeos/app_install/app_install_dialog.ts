@@ -60,7 +60,7 @@ class AppInstallDialogElement extends HTMLElement {
       assert(nameElement);
       nameElement.textContent = dialogArgs.args.name;
 
-      const urlElement = this.$<HTMLSpanElement>('#url');
+      const urlElement = this.$<HTMLSpanElement>('#url-link');
       assert(urlElement);
       urlElement.textContent = dialogArgs.args.url.url;
 
@@ -68,7 +68,7 @@ class AppInstallDialogElement extends HTMLElement {
       assert(descriptionElement);
       descriptionElement.textContent = dialogArgs.args.description;
 
-      const iconElement = this.$<HTMLImageElement>('#icon');
+      const iconElement = this.$<HTMLImageElement>('#app-icon');
       assert(iconElement);
       iconElement.setAttribute('auto-src', dialogArgs.args.iconUrl.url);
 
