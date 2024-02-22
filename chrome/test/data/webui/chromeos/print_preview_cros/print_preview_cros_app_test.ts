@@ -19,6 +19,7 @@ suite('PrintPreviewCrosApp', () => {
         PrintPreviewCrosAppElement;
     assertTrue(!!element);
     document.body.append(element);
-    assertTrue(isVisible(element));
+    assertTrue(
+        isVisible(element), `Should display ${PrintPreviewCrosAppElement.is}`);
   });
 });

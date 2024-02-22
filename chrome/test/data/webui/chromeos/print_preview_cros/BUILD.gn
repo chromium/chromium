@@ -14,7 +14,10 @@ build_webui_tests("build_webui_tests") {
                     target_gen_dir),
   ]
 
-  files = [ "print_preview_cros_app_test.ts" ]
+  files = [
+    "print_preview_cros_app_test.ts",
+    "summary_panel_test.ts",
+  ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",

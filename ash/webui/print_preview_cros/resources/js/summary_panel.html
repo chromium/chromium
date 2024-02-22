@@ -1,0 +1,28 @@
+<style>
+  :host {
+    align-items: flex-start;
+    display: inline-flex;
+    flex-flow: row nowrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .control-container {
+    align-items: flex-end;
+    display: inline-flex;
+    flex-flow: row nowrap;
+    gap: 8px;
+    justify-content: center;
+  }
+</style>
+<!-- TODO(b/323421684, b/323585997): Use localized string to correctly display
+  count of sheets used or pages depending on print settings and destination. -->
+<span id="sheetsUsed">sheets used</span>
+<div class="control-container">
+  <!-- TODO(b/323585997): Replace label localized string. -->
+  <cros-button id="cancel" label="Cancel" button-style="secondary">
+  </cros-button>
+  <!-- TODO(b/323585997): Replace label localized string. -->
+  <cros-button id="print" label="Print" button-style="primary">
+  </cros-button>
+</div>
