@@ -9,6 +9,7 @@
 import '//resources/js/action_link.js';
 import '../../components/throbber_notice.js';
 
+import {assert} from '//resources/js/assert.js';
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -108,13 +109,18 @@ class AppLaunchSplash extends AppLaunchSplashBase {
    * Event handler that is invoked just before the frame is shown.
    * @param data Screen init payload.
    */
-  onBeforeShow(data: AppLaunchSplashScreenData): void {
-    this.shadowRoot!.getElementById('configNetwork')!.hidden = true;
+  onBeforeShow(data?: AppLaunchSplashScreenData): void {
+    assert(this.shadowRoot);
+    this.shadowRoot.getElementById('configNetwork')!.hidden = true;
     this.toggleNetworkConfig(false);
-    this.updateApp(data['appInfo']);
-
-    this.shadowRoot!.getElementById('shortcutInfo')!.hidden =
-        !data['shortcutEnabled'];
+    // If the screen is reshown from the ErrorScreen using the default callback
+    // data might be undefined.
+    if (data) {
+      this.updateApp(data['appInfo']);
+      const shortcutInfo = this.shadowRoot.getElementById('shortcutInfo');
+      assert(shortcutInfo instanceof HTMLElement);
+      shortcutInfo.hidden = !data['shortcutEnabled'];
+    }
   }
 
   /**
