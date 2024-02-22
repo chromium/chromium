@@ -2340,6 +2340,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // painted. This is used to compute metrics around unnecessary layout calls.
   int layouts_since_last_paint_ = 0;
 
+  // How many times InvalidateLayout() is called during a Layout() call.
+  // This should never be necessary, but we don't yet know how often
+  // it is happening.
+  int invalidates_during_layout_ = 0;
+
   // The View's LayoutManager defines the sizing heuristics applied to child
   // Views. The default is absolute positioning according to bounds_.
   std::unique_ptr<LayoutManager> layout_manager_;
