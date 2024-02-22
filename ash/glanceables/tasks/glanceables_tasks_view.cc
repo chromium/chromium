@@ -28,15 +28,18 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -65,6 +68,29 @@ constexpr gfx::Insets kFooterBorderInsets = gfx::Insets::TLBR(4, 6, 8, 2);
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
+
+// Returns a displayable last modified time for kCantUpdateList.
+std::u16string GetLastUpdateTimeMessage(base::Time time) {
+  const std::u16string time_of_day = base::TimeFormatTimeOfDay(time);
+  const std::u16string relative_date =
+      ui::TimeFormat::RelativeDate(time, nullptr);
+  if (relative_date.empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_GLANCEABLES_TASKS_ERROR_LAST_UPDATE_DATE_AND_TIME, time_of_day,
+        base::TimeFormatShortDate(time));
+  }
+
+  const auto midnight_today = base::Time::Now().LocalMidnight();
+  const auto midnight_tomorrow = midnight_today + base::Days(1);
+  if (midnight_today <= time && time < midnight_tomorrow) {
+    return l10n_util::GetStringFUTF16(
+        IDS_GLANCEABLES_TASKS_ERROR_LAST_UPDATE_TIME, time_of_day);
+  } else {
+    return l10n_util::GetStringFUTF16(
+        IDS_GLANCEABLES_TASKS_ERROR_LAST_UPDATE_DATE_AND_TIME, time_of_day,
+        relative_date);
+  }
+}
 
 class AddNewTaskButton : public views::LabelButton {
   METADATA_HEADER(AddNewTaskButton, views::LabelButton)
@@ -271,11 +297,9 @@ void GlanceablesTasksView::OnViewFocused(views::View* view) {
 }
 
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
-  const auto* const active_task_list = tasks_combobox_model_->GetTaskListAt(
-      task_list_combo_box_view_->GetSelectedIndex().value());
   // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
   auto* const pending_new_task = task_items_container_view_->AddChildViewAt(
-      CreateTaskView(active_task_list->id, /*task=*/nullptr),
+      CreateTaskView(GetActiveTaskList()->id, /*task=*/nullptr),
       /*index=*/0);
   pending_new_task->UpdateTaskTitleViewForState(
       GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
@@ -296,7 +320,9 @@ std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
                           base::Unretained(this), task_list_id),
       base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                           base::Unretained(this),
-                          TasksLaunchSource::kEditInGoogleTasksButton));
+                          TasksLaunchSource::kEditInGoogleTasksButton),
+      base::BindRepeating(&GlanceablesTasksView::ShowErrorMessageWithType,
+                          base::Unretained(this)));
 }
 
 void GlanceablesTasksView::SelectedTasksListChanged() {
@@ -314,8 +340,7 @@ void GlanceablesTasksView::ScheduleUpdateTasksList(bool initial_update) {
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
   task_list_combo_box_view_->SetAccessibleDescription(u"");
 
-  const auto* const active_task_list = tasks_combobox_model_->GetTaskListAt(
-      task_list_combo_box_view_->GetSelectedIndex().value());
+  const auto* const active_task_list = GetActiveTaskList();
   tasks_combobox_model_->SaveLastSelectedTaskList(active_task_list->id);
   Shell::Get()->glanceables_controller()->GetTasksClient()->GetTasks(
       active_task_list->id, /*force_fetch=*/false,
@@ -331,6 +356,20 @@ void GlanceablesTasksView::UpdateTasksList(
     bool fetch_success,
     const ui::ListModel<api::Task>* tasks) {
   const gfx::Size old_preferred_size = GetPreferredSize();
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
+
+  if (!fetch_success) {
+    if (initial_update) {
+      // TODO(b/323959143): Show "Couldn't load item" view.
+      return;
+    } else {
+      // TODO(b/323959143): The error message should only be shown after we
+      // implement caching the fetched tasks and show cached tasks in UI.
+      // Revisit this to see if it works.
+      ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantUpdateList);
+      return;
+    }
+  }
 
   if (initial_update) {
     add_new_task_button_->SetVisible(true);
@@ -342,8 +381,6 @@ void GlanceablesTasksView::UpdateTasksList(
                              user_with_no_tasks_);
     added_tasks_ = 0;
   }
-
-  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   task_items_container_view_->RemoveAllChildViews();
 
@@ -472,7 +509,7 @@ void GlanceablesTasksView::OnTaskSaved(
     api::TasksClient::OnTaskSavedCallback callback,
     const api::Task* task) {
   if (!task) {
-    ShowErrorMessage(u"[l10n] Error");
+    ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantUpdateTitle);
     if (task_id.empty() && view) {
       // Empty `task_id` means that the task has not yet been created. Delete
       // the corresponding `view` from the scrollable container in case of
@@ -486,6 +523,41 @@ void GlanceablesTasksView::OnTaskSaved(
   std::move(callback).Run(task);
   list_footer_view_->SetVisible(task_items_container_view_->children().size() >=
                                 kMaximumTasks);
+}
+
+const api::TaskList* GlanceablesTasksView::GetActiveTaskList() const {
+  return tasks_combobox_model_->GetTaskListAt(
+      task_list_combo_box_view_->GetSelectedIndex().value());
+}
+
+void GlanceablesTasksView::ShowErrorMessageWithType(
+    GlanceablesTasksErrorType error_type) {
+  ShowErrorMessage(GetErrorString(error_type));
+}
+
+std::u16string GlanceablesTasksView::GetErrorString(
+    GlanceablesTasksErrorType error_type) const {
+  switch (error_type) {
+    case GlanceablesTasksErrorType::kCantUpdateList: {
+      auto last_modified_time =
+          Shell::Get()
+              ->glanceables_controller()
+              ->GetTasksClient()
+              ->GetTasksLastUpdateTime(GetActiveTaskList()->id);
+      CHECK(last_modified_time.has_value());
+      return GetLastUpdateTimeMessage(last_modified_time.value());
+    }
+    case GlanceablesTasksErrorType::kCantMarkComplete:
+      return l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_ERROR_MARK_COMPLETE_FAILED);
+    case GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork:
+      return l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_ERROR_MARK_COMPLETE_FAILED_WHILE_OFFLINE);
+    case GlanceablesTasksErrorType::kCantUpdateTitle:
+    case GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork:
+      // TODO(b/323959143): Add the string when it is ready.
+      return u"Error";
+  }
 }
 
 BEGIN_METADATA(GlanceablesTasksView)

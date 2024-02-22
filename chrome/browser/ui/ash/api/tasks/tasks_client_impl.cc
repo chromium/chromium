@@ -204,6 +204,15 @@ void TasksClientImpl::UpdateTask(const std::string& task_list_id,
                      base::Time::Now(), std::move(callback))));
 }
 
+std::optional<base::Time> TasksClientImpl::GetTasksLastUpdateTime(
+    const std::string& task_list_id) const {
+  const auto iter = tasks_fetch_state_.find(task_list_id);
+  if (iter == tasks_fetch_state_.end()) {
+    return std::nullopt;
+  }
+  return iter->second->last_updated_time;
+}
+
 void TasksClientImpl::InvalidateCache() {
   for (auto& task_list_state : tasks_fetch_state_) {
     if (task_list_state.second->status == FetchStatus::kRefreshing) {
@@ -423,6 +432,8 @@ void TasksClientImpl::RunGetTasksCallbacks(
   }
 
   const auto iter = tasks_in_task_lists_.find(task_list_id);
+  TasksFetchState* fetch_state = fetch_state_it->second.get();
+
   if (final_fetch_status == FetchStatus::kFresh &&
       iter != tasks_in_task_lists_.end()) {
     iter->second.DeleteAll();
@@ -434,9 +445,9 @@ void TasksClientImpl::RunGetTasksCallbacks(
     // TODO(b/323975767): Generalize this histogram to the Tasks API.
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.ProcessedTasksCount",
                                 iter->second.item_count());
+    fetch_state->last_updated_time = base::Time::Now();
   }
 
-  TasksFetchState* fetch_state = fetch_state_it->second.get();
   fetch_state->status = final_fetch_status;
 
   std::vector<GetTasksCallback> callbacks;

@@ -18,12 +18,17 @@
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -50,6 +55,9 @@
 
 namespace ash {
 namespace {
+
+// A global flag for tests to manually set the connection of the network.
+std::optional<bool> g_is_network_connected_for_test = std::nullopt;
 
 constexpr int kIconSize = 20;
 constexpr char kFormatterPattern[] = "EEE, MMM d";  // "Wed, Feb 28"
@@ -111,6 +119,17 @@ std::unique_ptr<views::ImageView> CreateSecondRowIcon(
   icon_view->SetImage(ui::ImageModel::FromVectorIcon(
       icon, cros_tokens::kCrosSysOnSurfaceVariant));
   return icon_view;
+}
+
+bool IsNetworkConnected() {
+  if (g_is_network_connected_for_test.has_value()) {
+    return g_is_network_connected_for_test.value();
+  }
+
+  const auto* network =
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
+
+  return network->IsConnectedState();
 }
 
 class TaskViewTextField : public SystemTextfield,
@@ -291,12 +310,14 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
     const api::Task* task,
     MarkAsCompletedCallback mark_as_completed_callback,
     SaveCallback save_callback,
-    base::RepeatingClosure edit_in_browser_callback)
+    base::RepeatingClosure edit_in_browser_callback,
+    ShowErrorMessageCallback show_error_message_callback)
     : task_id_(task ? task->id : ""),
       task_title_(task ? base::UTF8ToUTF16(task->title) : u""),
       mark_as_completed_callback_(std::move(mark_as_completed_callback)),
       save_callback_(std::move(save_callback)),
-      edit_in_browser_callback_(std::move(edit_in_browser_callback)) {
+      edit_in_browser_callback_(std::move(edit_in_browser_callback)),
+      show_error_message_callback_(std::move(show_error_message_callback)) {
   CHECK(features::IsGlanceablesTimeManagementTasksViewEnabled());
   SetAccessibleRole(ax::mojom::Role::kListItem);
 
@@ -436,6 +457,11 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
   UpdateContentsMargins(state);
 }
 
+// static
+void GlanceablesTaskViewV2::SetIsNetworkConnectedForTest(bool connected) {
+  g_is_network_connected_for_test = connected;
+}
+
 void GlanceablesTaskViewV2::UpdateContentsMargins(TaskTitleViewState state) {
   switch (state) {
     case TaskTitleViewState::kNotInitialized:
@@ -459,6 +485,12 @@ void GlanceablesTaskViewV2::UpdateContentsMargins(TaskTitleViewState state) {
 }
 
 void GlanceablesTaskViewV2::CheckButtonPressed() {
+  if (!IsNetworkConnected()) {
+    show_error_message_callback_.Run(
+        GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork);
+    return;
+  }
+
   bool target_state = !check_button_->checked();
   check_button_->SetChecked(target_state);
 
@@ -470,6 +502,11 @@ void GlanceablesTaskViewV2::CheckButtonPressed() {
 }
 
 void GlanceablesTaskViewV2::TaskTitleButtonPressed() {
+  if (!IsNetworkConnected()) {
+    show_error_message_callback_.Run(
+        GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork);
+    return;
+  }
   RecordUserModifyingTask();
 
   UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);

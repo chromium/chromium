@@ -67,8 +67,6 @@ void GlanceableTrayChildBubble::ShowErrorMessage(
                           base::Unretained(this)),
       error_message));
   error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
-  error_message_->SetID(
-      base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView));
 }
 
 void GlanceableTrayChildBubble::MaybeDismissErrorMessage() {

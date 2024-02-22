@@ -687,6 +687,7 @@ component("ash") {
     "glanceables/common/glanceables_list_footer_view.h",
     "glanceables/common/glanceables_progress_bar_view.cc",
     "glanceables/common/glanceables_progress_bar_view.h",
+    "glanceables/common/glanceables_tasks_error_type.h",
     "glanceables/common/glanceables_view_id.h",
     "glanceables/glanceables_controller.cc",
     "glanceables/glanceables_controller.h",

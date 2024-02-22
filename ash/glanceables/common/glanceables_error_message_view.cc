@@ -28,6 +28,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+namespace ash {
 namespace {
 
 constexpr int kErrorMessageRoundedCornerRadius = 13;
@@ -36,10 +37,6 @@ constexpr int kErrorMessageHorizontalMargin = 4;
 constexpr int kErrorMessageBottomMargin = 4;
 constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(8, 4, 8, 10);
 constexpr gfx::Insets kLabelInsets = gfx::Insets::TLBR(0, 16, 0, 0);
-
-}  // namespace
-
-namespace ash {
 
 class DismissErrorLabelButton : public views::LabelButton {
   METADATA_HEADER(DismissErrorLabelButton, views::LabelButton)
@@ -63,6 +60,8 @@ class DismissErrorLabelButton : public views::LabelButton {
 BEGIN_METADATA(DismissErrorLabelButton)
 END_METADATA
 
+}  // namespace
+
 GlanceablesErrorMessageView::GlanceablesErrorMessageView(
     views::Button::PressedCallback callback,
     const std::u16string& error_message) {
@@ -71,9 +70,9 @@ GlanceablesErrorMessageView::GlanceablesErrorMessageView(
       gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));
   SetBackground(
       views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemBase));
+  SetID(base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView));
 
   const auto* const typography_provider = TypographyProvider::Get();
-
   error_message_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetID(base::to_underlying(

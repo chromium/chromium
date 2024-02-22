@@ -70,6 +70,8 @@ class TasksClientImpl : public TasksClient {
                   bool completed,
                   TasksClient::OnTaskSavedCallback callback) override;
   void InvalidateCache() override;
+  std::optional<base::Time> GetTasksLastUpdateTime(
+      const std::string& task_list_id) const override;
   void OnGlanceablesBubbleClosed(
       TasksClient::OnAllPendingCompletedTasksSavedCallback callback =
           base::DoNothing()) override;
@@ -111,6 +113,10 @@ class TasksClientImpl : public TasksClient {
     ~TasksFetchState();
 
     FetchStatus status = FetchStatus::kNotFresh;
+
+    // The last time that the tasks were fetched and the status became kFresh.
+    std::optional<base::Time> last_updated_time = std::nullopt;
+
     // Callbacks to be called when all tasks in a task list get fetched using
     // tasks API.
     // Should be non-empty if a tasks fetch for the target task list is in

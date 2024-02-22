@@ -50,6 +50,8 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
                   bool completed,
                   TasksClient::OnTaskSavedCallback callback) override;
   void InvalidateCache() override {}
+  std::optional<base::Time> GetTasksLastUpdateTime(
+      const std::string& task_list_id) const override;
   void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
                                      callback = base::DoNothing()) override;
 
@@ -59,6 +61,8 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   // Helper function for loading in pre-built `Task` objects.
   void AddTask(const std::string& task_list_id,
                std::unique_ptr<Task> task_data);
+
+  void SetTasksLastUpdateTime(base::Time time);
 
   // Returns `bubble_closed_count_`, while also resetting the counter.
   int GetAndResetBubbleClosedCount();
@@ -109,6 +113,10 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   // If `false` - callbacks are executed normally; if `true` - executed with
   // simulated error (currently works for `AddTask` and `UpdateTask` only).
   bool run_with_errors_ = false;
+
+  // The last time when the tasks were updated. This is manually set by
+  // `SetTasksLastUpdateTime`.
+  base::Time last_updated_time_;
 
   // If `false` - callbacks are executed immediately; if `true` - callbacks get
   // saved to the corresponding list and executed once

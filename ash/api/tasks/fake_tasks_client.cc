@@ -110,6 +110,11 @@ void FakeTasksClient::UpdateTask(const std::string& task_list_id,
   }
 }
 
+std::optional<base::Time> FakeTasksClient::GetTasksLastUpdateTime(
+    const std::string& task_list_id) const {
+  return last_updated_time_;
+}
+
 void FakeTasksClient::OnGlanceablesBubbleClosed(
     TasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
   ++bubble_closed_count_;
@@ -137,6 +142,10 @@ void FakeTasksClient::AddTask(const std::string& task_list_id,
   auto& tasks = task_list_iter->second;
   CHECK(!base::Contains(*tasks, task_data->id, &Task::id));
   tasks->Add(std::move(task_data));
+}
+
+void FakeTasksClient::SetTasksLastUpdateTime(base::Time time) {
+  last_updated_time_ = time;
 }
 
 int FakeTasksClient::GetAndResetBubbleClosedCount() {

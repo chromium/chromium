@@ -7342,7 +7342,18 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_TEXTFIELD_PLACEHOLDER" desc="The text used as a placeholder for the textfield used when adding or editing a task.">
         Title
       </message>
-
+      <message name="IDS_GLANCEABLES_TASKS_ERROR_LAST_UPDATE_DATE_AND_TIME" desc="The error message used in the task glanceable to notify users that the task list is not updated since the shown date and time. The date could be a relative one, such as Yesterday, or an actual date like Nov 7, 2007.">
+        Tasks last updated: <ph name="TIME">$1<ex>3:17 PM</ex></ph>, <ph name="DATE">$2<ex>Yesterday</ex></ph>.
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_ERROR_LAST_UPDATE_TIME" desc="The error message used in the task glanceable to notify users that the task list is not updated since the shown time today.">
+        Tasks last updated: <ph name="TIME">$1<ex>3:17 PM</ex></ph>.
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_ERROR_MARK_COMPLETE_FAILED" desc="The error message used in the task glanceable to notify users that clicking on the check button to mark a task as complete failed.">
+        Couldn't mark as complete.
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_ERROR_MARK_COMPLETE_FAILED_WHILE_OFFLINE" desc="The error message used in the task glanceable to notify users that clicking on the check button to mark a task as complete failed because the device is offline. Also guide the user to try again when the device is connected to the network.">
+        Couldn't mark as complete. Try again when online.
+      </message>
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
         Do Not Disturb is on

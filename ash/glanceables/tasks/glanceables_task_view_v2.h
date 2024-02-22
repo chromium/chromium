@@ -9,6 +9,7 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/ash_export.h"
+#include "ash/glanceables/common/glanceables_tasks_error_type.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -54,6 +55,8 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
       const std::string& task_id,
       const std::string& title,
       api::TasksClient::OnTaskSavedCallback callback)>;
+  using ShowErrorMessageCallback =
+      base::RepeatingCallback<void(GlanceablesTasksErrorType)>;
 
   // Modes of `tasks_title_view_` (simple label or text field).
   enum class TaskTitleViewState { kNotInitialized, kView, kEdit };
@@ -61,7 +64,8 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
   GlanceablesTaskViewV2(const api::Task* task,
                         MarkAsCompletedCallback mark_as_completed_callback,
                         SaveCallback save_callback,
-                        base::RepeatingClosure edit_in_browser_callback);
+                        base::RepeatingClosure edit_in_browser_callback,
+                        ShowErrorMessageCallback show_error_message_callback);
   GlanceablesTaskViewV2(const GlanceablesTaskViewV2&) = delete;
   GlanceablesTaskViewV2& operator=(const GlanceablesTaskViewV2&) = delete;
   ~GlanceablesTaskViewV2() override;
@@ -71,6 +75,9 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
 
   // Updates `tasks_title_view_` according to `state`.
   void UpdateTaskTitleViewForState(TaskTitleViewState state);
+
+  // Sets the network to be connected. This should only be used in tests.
+  static void SetIsNetworkConnectedForTest(bool connected);
 
  private:
   class CheckButton;
@@ -116,6 +123,9 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
 
   // `edit_in_browser_button_` callback that opens the Tasks in browser.
   const base::RepeatingClosure edit_in_browser_callback_;
+
+  // Shows an error message in the parent `GlanceablesTasksView`.
+  const ShowErrorMessageCallback show_error_message_callback_;
 
   base::WeakPtrFactory<GlanceablesTaskViewV2> weak_ptr_factory_{this};
 };

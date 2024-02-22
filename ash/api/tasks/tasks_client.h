@@ -69,6 +69,12 @@ class ASH_EXPORT TasksClient {
   // pending callbacks.
   virtual void InvalidateCache() = 0;
 
+  // Returns the time when the tasks in the task list with `task_list_id` is
+  // last updated from the client. Returns a nullptr if the task list with
+  // `task_list_id` has not been updated in current session.
+  virtual std::optional<base::Time> GetTasksLastUpdateTime(
+      const std::string& task_list_id) const = 0;
+
   // Method called when the glanceables bubble UI closes. The client can use
   // this as a signal to invalidate cached tasks data.
   virtual void OnGlanceablesBubbleClosed(
