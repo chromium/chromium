@@ -18,6 +18,7 @@ template("manifest") {
     ]
     sources = [ template_file ]
     outputs = [ output_file ]
+    data = [ output_file ]
     args = [
       "--key=$key",
       "--version_file=" + rebase_path(version_file, root_build_dir),
