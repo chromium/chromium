@@ -3488,6 +3488,9 @@ extern const char kCrostiniTerminaDlcForceOtaDescription[];
 extern const char kCameraAppAutoQRDetectionName[];
 extern const char kCameraAppAutoQRDetectionDescription[];
 
+extern const char kCameraAppCrosEventsName[];
+extern const char kCameraAppCrosEventsDescription[];
+
 extern const char kCameraAppDigitalZoomName[];
 extern const char kCameraAppDigitalZoomDescription[];
 

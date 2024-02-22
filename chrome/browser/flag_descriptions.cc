@@ -6041,6 +6041,10 @@ const char kCameraAppAutoQRDetectionName[] =
 const char kCameraAppAutoQRDetectionDescription[] =
     "Enable this flag to detect QR code in Camera app Photo mode.";
 
+const char kCameraAppCrosEventsName[] = "Camera App Cros Events";
+const char kCameraAppCrosEventsDescription[] =
+    "Enable this flag to send camera app metrics through CrOS Events.";
+
 const char kCameraAppDigitalZoomName[] = "Camera App Digital Zoom";
 const char kCameraAppDigitalZoomDescription[] =
     "Enable this flag to use digital zoom in Camera app.";

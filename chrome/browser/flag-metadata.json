@@ -1059,6 +1059,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "camera-app-cros-events",
+    "owners": [ "wtlee@chromium.org", "chromeos-camera-app-eng@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "camera-app-digital-zoom",
     "owners": [ "kamchonlathorn@chromium.org", "chromeos-camera-app-eng@google.com" ],
     "expiry_milestone": 128
