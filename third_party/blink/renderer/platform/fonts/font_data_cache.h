@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 
 namespace blink {
 
@@ -58,17 +59,29 @@ class FontDataCache final {
   FontDataCache(const FontDataCache&) = delete;
   FontDataCache& operator=(const FontDataCache&) = delete;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(cache_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(cache_);
+    visitor->Trace(strong_reference_lru_);
+  }
 
   const SimpleFontData* Get(const FontPlatformData*,
                             bool subpixel_ascent_descent = false);
-  void Clear() { cache_.clear(); }
+  void Clear() {
+    cache_.clear();
+    strong_reference_lru_.clear();
+  }
 
  private:
   HeapHashMap<Member<const FontPlatformData>,
               WeakMember<const SimpleFontData>,
               FontDataCacheKeyHashTraits>
       cache_;
+
+  // The above `cache_` is weak, meaning its entries will potentially be
+  // cleared if no other references exist.
+  // This LRU keeps a small (limited) number of strong references alive so they
+  // won't be cleared in the above cache for performance reasons.
+  HeapLinkedHashSet<Member<const SimpleFontData>> strong_reference_lru_;
 };
 
 }  // namespace blink
