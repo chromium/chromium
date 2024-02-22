@@ -50,6 +50,13 @@ class TabResumptionPageHandler
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  void DismissModule(const std::vector<GURL>& urls) override;
+  void RestoreModule() override;
+
+ private:
+  // Method to determine if a url is in the list of previously dismissed urls.
+  bool IsNewURL(GURL url);
+
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate();
 
   std::vector<history::mojom::TabPtr> GetForeignTabs();
@@ -65,13 +72,6 @@ class TabResumptionPageHandler
       std::vector<history::mojom::TabPtr> tabs,
       GetTabsCallback callback,
       const std::vector<history::AnnotatedVisit> annotated_visits);
-
-  void DismissModule(const std::vector<GURL>& urls) override;
-  void RestoreModule() override;
-
- private:
-  // Method to determine if a url is in the list of previously dismissed urls.
-  bool IsNewURL(GURL url);
 
   // The task tracker for the HistoryService callbacks.
   base::CancelableTaskTracker task_tracker_;
