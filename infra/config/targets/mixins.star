@@ -1252,7 +1252,7 @@ targets.mixin(
     name = "nvidia_geforce_gtx_1660",
     swarming = targets.swarming(
         dimensions = {
-            "gpu": "10de:2184-31.0.15.4601",
+            "gpu": "10de:2184",
         },
     ),
 )

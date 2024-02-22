@@ -191,6 +191,23 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
+        "swarming": {
+          "dimensions": {
+            "gpu": "10de:2184",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
@@ -282,6 +299,33 @@
         "test": "ondevice_stability_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
         "variant_id": "Intel UHD 630"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "chrome"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "10de:2184",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
       }
     ]
   },
@@ -731,7 +775,7 @@
         "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-31.0.15.4601",
+            "gpu": "10de:2184",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -885,7 +929,7 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-31.0.15.4601",
+            "gpu": "10de:2184",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -995,7 +1039,7 @@
         "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-31.0.15.4601",
+            "gpu": "10de:2184",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1145,7 +1189,7 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "10de:2184-31.0.15.4601",
+            "gpu": "10de:2184",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },

@@ -1385,10 +1385,10 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
-            # TODO(b:322815244): Add AMD and NVIDIA variants once driver issues
-            # are resolved.
+            # TODO(b:322815244): Add AMD variant once driver issues are fixed.
             variants = [
                 "INTEL_UHD_630",
+                "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
     },
@@ -1409,6 +1409,7 @@ targets.legacy_matrix_compound_suite(
         "ondevice_stability_tests": targets.legacy_matrix_config(
             variants = [
                 "INTEL_UHD_630",
+                "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
     },

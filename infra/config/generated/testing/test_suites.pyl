@@ -8108,6 +8108,7 @@
       'optimization_guide_gpu_gtests': {
         'variants': [
           'INTEL_UHD_630',
+          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'optimization_guide_nogpu_gtests': {
@@ -8130,6 +8131,7 @@
       'ondevice_stability_tests': {
         'variants': [
           'INTEL_UHD_630',
+          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
     },
