@@ -941,17 +941,13 @@ void ConvertToContentUrls(
   }
 }
 
-bool ReplacePrefix(std::string* const s,
-                   const std::string_view prefix,
-                   const std::string_view replacement) {
-  DCHECK(s);
-  if (s->starts_with(prefix) &&
-      (prefix.ends_with('/') || s->size() <= prefix.size() ||
-       (*s)[prefix.size()] == '/')) {
-    s->replace(0, prefix.size(), replacement);
+bool ReplacePrefix(std::string* s,
+                   const std::string& prefix,
+                   const std::string& replacement) {
+  if (base::StartsWith(*s, prefix, base::CompareCase::SENSITIVE)) {
+    base::ReplaceFirstSubstringAfterOffset(s, 0, prefix, replacement);
     return true;
   }
-
   return false;
 }
 
@@ -987,14 +983,10 @@ std::string GetPathDisplayTextForSettings(Profile* const profile,
       service->GetMountPointPath().AppendRelativePath(in, &out)) {
     // In "Google Drive"
     std::vector<std::string> p = out.GetComponents();
-    if (auto it = p.begin(); it != p.end()) {
-      if (const std::optional<int> i = DriveFsFolderToMessageId(*it)) {
-        *it = GetStringUTF8(*i);
-        if (*i == IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL &&
-            ++it != p.end()) {
-          it = p.erase(it);
-          DCHECK(it != p.end());
-        }
+    if (!p.empty()) {
+      std::string& f = p.front();
+      if (const std::optional<int> i = DriveFsFolderToMessageId(f)) {
+        f = GetStringUTF8(*i);
         return base::JoinString(p, sep);
       }
     }
@@ -1008,19 +1000,33 @@ std::string GetPathDisplayTextForSettings(Profile* const profile,
     return result;
   }
 
-  std::string result(path);
-
-  // Check if in "Play files", "Linux files", "Archive" or "Removable"
-  if (ReplacePrefix(&result, GetAndroidFilesPath().value(),
-                    GetStringUTF8(IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL)) ||
-      ReplacePrefix(&result, GetCrostiniMountDirectory(profile).value(),
-                    GetStringUTF8(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL)) ||
-      ReplacePrefix(&result, kRemovableMediaPath, "") ||
-      ReplacePrefix(&result, kArchiveMountPath, "")) {
-    ReplacePrefix(&result, "/", "");
+  // Check if in "Play files"
+  out = Path(GetStringUTF8(IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL));
+  if (GetAndroidFilesPath().AppendRelativePath(in, &out)) {
+    std::string result;
+    base::ReplaceChars(out.value(), "/", sep, &result);
+    return result;
   }
 
-  base::ReplaceChars(result, "/", sep, &result);
+  // Check if in "Linux files"
+  out = Path(GetStringUTF8(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL));
+  if (GetCrostiniMountDirectory(profile).AppendRelativePath(in, &out)) {
+    std::string result;
+    base::ReplaceChars(out.value(), "/", sep, &result);
+    return result;
+  }
+
+  // Check if in "Archive" or "Removable"
+  out.clear();
+  if (Path(kRemovableMediaPath).AppendRelativePath(in, &out) ||
+      Path(kArchiveMountPath).AppendRelativePath(in, &out)) {
+    std::string result;
+    base::ReplaceChars(out.value(), "/", sep, &result);
+    return result;
+  }
+
+  std::string result;
+  base::ReplaceChars(in.value(), "/", sep, &result);
   return result;
 }
 

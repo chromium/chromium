@@ -208,10 +208,10 @@ void ConvertToContentUrls(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback);
 
-// Replace `prefix` with `replacement` at the beginning of `*s`.
+// Replace `prefix` with `replacement` on `s`.
 bool ReplacePrefix(std::string* s,
-                   std::string_view prefix,
-                   std::string_view replacement);
+                   const std::string& prefix,
+                   const std::string& replacement);
 
 // Converts the given `path` into a string suitable for display in settings.
 // Replacements:

@@ -181,25 +181,9 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
                 profile_.get(),
                 "/home/chronos/u-0123456789abcdef/MyFiles/other-folder"));
 
-  EXPECT_EQ("My files › Downloads 2",
-            GetPathDisplayTextForSettings(
-                profile_.get(), "/home/chronos/user/MyFiles/Downloads 2"));
-  EXPECT_EQ("My files › Downloads 2",
-            GetPathDisplayTextForSettings(
-                profile_.get(),
-                "/home/chronos/u-0123456789abcdef/MyFiles/Downloads 2"));
-
-  EXPECT_EQ("Play files",
-            GetPathDisplayTextForSettings(profile_.get(),
-                                          "/run/arc/sdcard/write/emulated/0"));
   EXPECT_EQ("Play files › foo › bar",
             GetPathDisplayTextForSettings(
                 profile_.get(), "/run/arc/sdcard/write/emulated/0/foo/bar"));
-
-  EXPECT_EQ("Linux files",
-            GetPathDisplayTextForSettings(
-                profile_.get(),
-                "/media/fuse/crostini_0123456789abcdef_termina_penguin"));
   EXPECT_EQ("Linux files › foo",
             GetPathDisplayTextForSettings(
                 profile_.get(),
@@ -232,12 +216,12 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
                 &profile2,
                 "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
                 "Computers/My Other Computer/bar"));
-  EXPECT_EQ("Shared with me › shared",
+  EXPECT_EQ("Shared with me › 1234 › shared",
             GetPathDisplayTextForSettings(
                 &profile2,
                 "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
                 ".files-by-id/1234/shared"));
-  EXPECT_EQ("Shared with me › shortcut",
+  EXPECT_EQ("Shared with me › 1-abc-xyz › shortcut",
             GetPathDisplayTextForSettings(
                 &profile2,
                 "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
