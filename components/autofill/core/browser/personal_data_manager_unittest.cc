@@ -180,8 +180,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     test::SetCreditCardInfo(&credit_card2, "Bonnie Parker",
                             "5105105105105100" /* Mastercard */, "12", "2999",
                             "1");
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
+    PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->AddCreditCard(credit_card2);
     std::move(waiter).Wait();
     ASSERT_EQ(3U, personal_data_->GetCreditCards().size());
@@ -199,8 +198,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     masked_server_card.set_server_id("masked_id");
     masked_server_card.set_use_count(15);
     {
-      PersonalDataProfileTaskWaiter waiter(*personal_data_);
-      EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
+      PersonalDataChangedWaiter waiter(*personal_data_);
       // TODO(crbug.com/1497734): Switch to an appropriate setter for masked
       // cards, as full cards have been removed.
       personal_data_->AddFullServerCreditCardForTesting(masked_server_card);
@@ -216,8 +214,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     local_card.set_record_type(CreditCard::RecordType::kLocalCard);
     local_card.set_use_count(5);
     {
-      PersonalDataProfileTaskWaiter waiter(*personal_data_);
-      EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
+      PersonalDataChangedWaiter waiter(*personal_data_);
       personal_data_->AddCreditCard(local_card);
       std::move(waiter).Wait();
     }
@@ -231,15 +228,13 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
+    PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->AddProfile(profile);
     std::move(waiter).Wait();
   }
 
   void RemoveByGUIDFromPersonalDataManager(const std::string& guid) {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
+    PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->RemoveByGUID(guid);
     std::move(waiter).Wait();
   }
@@ -255,7 +250,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
 
   void AddLocalIban(Iban& iban) {
     iban.set_identifier(Iban::Guid(personal_data_->AddAsLocalIban(iban)));
-    PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+    PersonalDataChangedWaiter(*personal_data_).Wait();
     iban.set_record_type(Iban::kLocalIban);
   }
 
@@ -514,7 +509,7 @@ TEST_F(PersonalDataManagerTest, AddAndReloadServerIbans) {
   GetServerDataTable()->SetServerIbansForTesting({server_iban1, server_iban2});
   std::vector<const Iban*> expected_ibans = {&server_iban1, &server_iban2};
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   ExpectSameElements(expected_ibans, personal_data_->GetServerIbans());
 
   // Reset the PersonalDataManager. This tests that the personal data was saved
@@ -541,7 +536,7 @@ TEST_F(PersonalDataManagerTest, GetIbans) {
 
   GetServerDataTable()->SetServerIbansForTesting({server_iban1, server_iban2});
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   std::vector<const Iban*> all_ibans = {&local_iban1, &local_iban2,
                                         &server_iban1, &server_iban2};
@@ -572,7 +567,7 @@ TEST_F(PersonalDataManagerTest, GetIbansToSuggest) {
 
   GetServerDataTable()->SetServerIbansForTesting({server_iban1, server_iban2});
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   std::vector<const Iban*> ibans_to_suggest = {&server_iban1, &server_iban2,
                                                &local_iban2};
@@ -600,7 +595,7 @@ TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
   iban.set_value(std::u16string(test::kIbanValue16));
 
   personal_data_->AddAsLocalIban(iban);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   // Adding an IBAN permanently enables the pref.
   EXPECT_TRUE(personal_data_->IsAutofillHasSeenIbanPrefEnabled());
 }
@@ -622,7 +617,7 @@ TEST_F(PersonalDataManagerTest, AddLocalIbans) {
   // identical to `iban2`.
   AddLocalIban(iban1);
   AddLocalIban(iban2);
-  // Do not add `PersonalDataProfileTaskWaiter(*personal_data_).Wait()` for this
+  // Do not add `PersonalDataChangedWaiter(*personal_data_).Wait()` for this
   // `AddAsLocalIban` operation, as it will be terminated prematurely for
   // `iban2_with_different_nickname` due to the presence of an IBAN with the
   // same value.
@@ -645,7 +640,7 @@ TEST_F(PersonalDataManagerTest, UpdateLocalIbans) {
   // Update the `iban` with new value.
   iban.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
   personal_data_->UpdateIban(iban);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ibans = {&iban};
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
@@ -653,7 +648,7 @@ TEST_F(PersonalDataManagerTest, UpdateLocalIbans) {
   // Update the `iban` with new nickname.
   iban.set_nickname(u"Another nickname");
   personal_data_->UpdateIban(iban);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ibans = {&iban};
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
@@ -688,7 +683,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {
   iban0.set_record_type(Iban::kLocalIban);
 
   // Make sure everything is set up correctly.
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetLocalIbans().size());
 
   // Creates a new IBAN and call `OnAcceptedLocalIbanSave()` and verify that
@@ -696,7 +691,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {
   Iban iban1;
   iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
   guid = personal_data_->OnAcceptedLocalIbanSave(iban1);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   iban1.set_identifier(Iban::Guid(guid));
   iban1.set_record_type(Iban::kLocalIban);
 
@@ -714,11 +709,11 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {
   Iban iban2 = iban0;
   iban2.set_nickname(u"Nickname 2");
   personal_data_->OnAcceptedLocalIbanSave(iban2);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   // Updates the nickname for `iban1` and call `OnAcceptedLocalIbanSave()`.
   iban1.set_nickname(u"Nickname 1 updated");
   personal_data_->OnAcceptedLocalIbanSave(iban1);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ibans.clear();
   ibans.push_back(&iban1);
@@ -760,7 +755,7 @@ TEST_F(PersonalDataManagerTest, RecordIbanUsage_LocalIban) {
   // Use `local_iban`, then verify usage stats.
   EXPECT_EQ(personal_data_->GetLocalIbans().size(), 1u);
   personal_data_->RecordUseOfIban(local_iban);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   histogram_tester.ExpectTotalCount(
       "Autofill.DaysSinceLastUse.StoredIban.Local", 1);
   EXPECT_EQ(local_iban.use_count(), 2u);
@@ -779,7 +774,7 @@ TEST_F(PersonalDataManagerTest, RecordIbanUsage_ServerIban) {
   EXPECT_EQ(server_iban.modification_date(), kArbitraryTime);
   GetServerDataTable()->SetServerIbansForTesting({server_iban});
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Set the current time to sometime later.
   test_clock.SetNow(kSomeLaterTime);
@@ -787,7 +782,7 @@ TEST_F(PersonalDataManagerTest, RecordIbanUsage_ServerIban) {
   // Use `server_iban`, then verify usage stats.
   EXPECT_EQ(personal_data_->GetServerIbans().size(), 1u);
   personal_data_->RecordUseOfIban(server_iban);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   histogram_tester.ExpectTotalCount(
       "Autofill.DaysSinceLastUse.StoredIban.Server", 1);
   EXPECT_EQ(server_iban.use_count(), 2u);
@@ -819,7 +814,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   personal_data_->AddCreditCard(credit_card0);
   personal_data_->AddCreditCard(credit_card1);
 
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   std::vector<CreditCard*> cards;
   cards.push_back(&credit_card0);
@@ -833,7 +828,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   RemoveByGUIDFromPersonalDataManager(credit_card1.guid());
   personal_data_->AddCreditCard(credit_card2);
 
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   cards.clear();
   cards.push_back(&credit_card0);
@@ -860,7 +855,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   credit_card3.set_server_id("server_id");
 
   personal_data_->AddFullServerCreditCardForTesting(credit_card3);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   cards.push_back(&credit_card3);
   ExpectSameElements(cards, personal_data_->GetCreditCards());
@@ -891,14 +886,14 @@ TEST_F(PersonalDataManagerTest, UpdateLocalCvc) {
   CreditCard credit_card = test::GetCreditCard();
   const std::u16string kCvc = u"111";
   credit_card.set_cvc(kCvc);
-  PersonalDataProfileTaskWaiter add_waiter(*personal_data_);
+  PersonalDataChangedWaiter add_waiter(*personal_data_);
   personal_data_->AddCreditCard(credit_card);
   std::move(add_waiter).Wait();
   ASSERT_EQ(personal_data_->GetLocalCreditCards().size(), 1U);
   EXPECT_EQ(personal_data_->GetLocalCreditCards()[0]->cvc(), kCvc);
 
   const std::u16string kNewCvc = u"222";
-  PersonalDataProfileTaskWaiter update_waiter(*personal_data_);
+  PersonalDataChangedWaiter update_waiter(*personal_data_);
   personal_data_->UpdateLocalCvc(credit_card.guid(), kNewCvc);
   std::move(update_waiter).Wait();
   ASSERT_EQ(personal_data_->GetLocalCreditCards().size(), 1U);
@@ -915,7 +910,7 @@ TEST_F(PersonalDataManagerTest, ServerCvc) {
   EXPECT_DEATH_IF_SUPPORTED(personal_data_->AddServerCvc(1, u""), "");
 
   personal_data_->AddServerCvc(credit_card.instrument_id(), kCvc);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   ASSERT_EQ(personal_data_->GetCreditCards().size(), 1U);
   EXPECT_EQ(personal_data_->GetCreditCards()[0]->cvc(), kCvc);
 
@@ -927,11 +922,11 @@ TEST_F(PersonalDataManagerTest, ServerCvc) {
 
   const std::u16string kNewCvc = u"222";
   personal_data_->UpdateServerCvc(credit_card.instrument_id(), kNewCvc);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(personal_data_->GetCreditCards()[0]->cvc(), kNewCvc);
 
   personal_data_->RemoveServerCvc(credit_card.instrument_id());
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   ASSERT_EQ(personal_data_->GetCreditCards().size(), 1U);
   EXPECT_TRUE(personal_data_->GetCreditCards()[0]->cvc().empty());
 }
@@ -943,13 +938,13 @@ TEST_F(PersonalDataManagerTest, ClearServerCvc) {
   CreditCard credit_card = test::GetMaskedServerCard();
   SetServerCards({credit_card});
   personal_data_->AddServerCvc(credit_card.instrument_id(), kCvc);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   ASSERT_EQ(personal_data_->GetCreditCards().size(), 1U);
   EXPECT_EQ(personal_data_->GetCreditCards()[0]->cvc(), kCvc);
 
   // After we clear server cvcs we should expect empty cvc.
   personal_data_->ClearServerCvcs();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_TRUE(personal_data_->GetCreditCards()[0]->cvc().empty());
 }
 
@@ -1030,7 +1025,7 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_CrazyCharacters) {
 
   personal_data_->SetCreditCards(&cards);
 
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(cards.size(), personal_data_->GetCreditCards().size());
   for (size_t i = 0; i < cards.size(); ++i) {
@@ -1055,7 +1050,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardByServerId) {
   CreditCard card = test::GetFullServerCard();
   card.set_server_id("server id");
   personal_data_->AddFullServerCreditCardForTesting(card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(1u, personal_data_->GetCreditCards().size());
   EXPECT_TRUE(personal_data_->GetCreditCardByServerId("server id"));
@@ -1103,7 +1098,7 @@ TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
   CreditCard card = test::GetFullServerCard();
   card.set_server_id("card_server_id");
   personal_data_->AddFullServerCreditCardForTesting(card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   card.set_server_id("card_server_id");
   card.set_card_art_url(GURL("https://www.example.com/card1"));
@@ -1129,7 +1124,7 @@ TEST_F(PersonalDataManagerTest, UpdateUnverifiedCreditCards) {
 
   // Add the data to the database.
   personal_data_->AddCreditCard(credit_card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   EXPECT_THAT(personal_data_->GetCreditCards(),
               testing::UnorderedElementsAre(Pointee(credit_card)));
@@ -1147,7 +1142,7 @@ TEST_F(PersonalDataManagerTest, UpdateUnverifiedCreditCards) {
   // Try to update with data changed as well.
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Joe");
   personal_data_->UpdateCreditCard(credit_card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   EXPECT_THAT(personal_data_->GetCreditCards(),
               testing::UnorderedElementsAre(Pointee(credit_card)));
@@ -1172,7 +1167,7 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
   local_card.set_record_type(CreditCard::RecordType::kLocalCard);
   local_card.set_use_count(5);
   personal_data_->AddCreditCard(local_card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   // Sign in.
@@ -1265,7 +1260,7 @@ TEST_F(PersonalDataManagerTest, SaveCardLocallyIfNewWithNewCard) {
 
   // Add the credit card to the database.
   bool is_saved = personal_data_->SaveCardLocallyIfNew(credit_card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Expect that the credit card was saved.
   EXPECT_TRUE(is_saved);
@@ -1286,7 +1281,7 @@ TEST_F(PersonalDataManagerTest, SaveCardLocallyIfNewWithExistingCard) {
 
   // Add the credit card to the database.
   personal_data_->AddCreditCard(credit_card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   // Create a new credit card with the same card number but different detailed
@@ -1323,7 +1318,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalCreditCardSaveWithVerifiedData) {
   personal_data_->AddCreditCard(credit_card);
 
   // Make sure everything is set up correctly.
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   CreditCard new_verified_card = credit_card;
@@ -1334,7 +1329,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalCreditCardSaveWithVerifiedData) {
 
   personal_data_->OnAcceptedLocalCreditCardSave(new_verified_card);
 
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Expect that the saved credit card is updated.
   const std::vector<CreditCard*>& results = personal_data_->GetCreditCards();
@@ -1463,7 +1458,7 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
   // profiles.
   prefs::SetAutofillProfileEnabled(prefs_.get(), false);
   prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(default_country,
             personal_data_->GetDefaultCountryCodeForNewAddress());
 
@@ -1537,7 +1532,7 @@ TEST_F(PersonalDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {
 
   // Disable Profile autofill.
   prefs::SetAutofillProfileEnabled(prefs_.get(), false);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Check that profiles were saved.
   const size_t expected_profiles = 1;
@@ -1562,7 +1557,7 @@ TEST_F(PersonalDataManagerTest,
   AddProfileToPersonalDataManager(local_profile);
 
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Expect that all profiles are suggested.
   const size_t expected_profiles = 1;
@@ -1599,7 +1594,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   CreditCard cardToCompare;
@@ -1618,7 +1613,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesFullServerCard) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   CreditCard cardToCompare;
@@ -1636,7 +1631,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesLocalCard) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   CreditCard cardToCompare;
@@ -1654,7 +1649,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_TypeDoesNotMatch) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   CreditCard cardToCompare;
@@ -1672,7 +1667,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_LastFourDoesNotMatch) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   CreditCard cardToCompare;
@@ -1698,7 +1693,7 @@ TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfFullServerCard) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
 
   CreditCard cardToCompare;
@@ -1726,7 +1721,7 @@ TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfMaskedServerCard) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
 
   CreditCard cardToCompare;
@@ -1753,7 +1748,7 @@ TEST_F(PersonalDataManagerTest, IsServerCard_AlreadyServerCard) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
 
   ASSERT_TRUE(personal_data_->IsServerCard(&full_server_card));
@@ -1770,7 +1765,7 @@ TEST_F(PersonalDataManagerTest, IsServerCard_UniqueLocalCard) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   ASSERT_FALSE(personal_data_->IsServerCard(&local_card));
@@ -1819,7 +1814,7 @@ TEST_F(PersonalDataManagerTest,
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
 
   std::vector<CreditCard*> card_to_suggest =
@@ -1862,11 +1857,11 @@ TEST_F(PersonalDataManagerTest,
 
   SetServerCards(server_cards);
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Disable Credit card autofill.
   prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Check that profiles were saved.
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
@@ -1902,7 +1897,7 @@ TEST_F(PersonalDataManagerTest,
   SetServerCards(server_cards);
 
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Expect 5 autofilled values or suggestions.
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
@@ -1963,7 +1958,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(4U, personal_data_->GetCreditCards().size());
 
   std::vector<CreditCard*> card_to_suggest =
@@ -2001,7 +1996,7 @@ TEST_F(PersonalDataManagerTest,
 
   // Make sure everything is set up correctly.
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_EQ(4U, personal_data_->GetCreditCards().size());
 
   std::vector<CreditCard*> card_to_suggest =
@@ -2015,7 +2010,7 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&credit_card3, "Clyde Barrow", "", "04", "", "");
   personal_data_->AddCreditCard(credit_card3);
 
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   card_to_suggest = personal_data_->GetCreditCardsToSuggest();
   ASSERT_EQ(3U, card_to_suggest.size());
@@ -2157,11 +2152,11 @@ TEST_F(PersonalDataManagerTest, RecordUseOfCard) {
   ASSERT_EQ(card.use_date(), kArbitraryTime);
   ASSERT_EQ(card.modification_date(), kArbitraryTime);
   personal_data_->AddCreditCard(card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   test_clock.SetNow(kSomeLaterTime);
   personal_data_->RecordUseOf(&card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   CreditCard* pdm_card = personal_data_->GetCreditCardByGUID(card.guid());
   ASSERT_TRUE(pdm_card);
@@ -2216,7 +2211,7 @@ TEST_F(PersonalDataManagerTest, DeleteLocalCreditCards) {
   personal_data_->DeleteLocalCreditCards(cards);
 
   // Wait for the data to be refreshed.
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
@@ -2236,7 +2231,7 @@ TEST_F(PersonalDataManagerTest, DeleteAllLocalCreditCards) {
   personal_data_->DeleteAllLocalCreditCards();
 
   // Wait for the data to be refreshed.
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Expect the local credit cards to have been deleted.
   EXPECT_EQ(0U, personal_data_->GetLocalCreditCards().size());
@@ -2289,7 +2284,7 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
   SetServerCards(server_cards);
 
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(4U, personal_data_->GetCreditCards().size());
 
@@ -2334,7 +2329,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCards_NoSyncService) {
   // Set no sync service.
   personal_data_->SetSyncServiceForTest(nullptr);
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // No sync service is the same as payments integration being disabled, i.e.
   // IsAutofillWalletImportEnabled() returning false. Only local credit
@@ -2419,7 +2414,7 @@ TEST_F(
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
   personal_data_->AddCreditCard(credit_card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Turn off payments sync.
   syncer::UserSelectableTypeSet user_selectable_type_set =
@@ -2467,7 +2462,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, SwitchServerStorages) {
   // Switch to persistent storage.
   sync_service_.SetHasSyncConsent(true);
   personal_data_->OnStateChanged(&sync_service_);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   EXPECT_EQ(0U, personal_data_->GetServerCreditCards().size());
 
@@ -2482,7 +2477,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, SwitchServerStorages) {
   // TODO(crbug.com/1497734): Switch to an appropriate setter for masked
   // cards, as full cards have been removed.
   personal_data_->AddFullServerCreditCardForTesting(server_card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
 
@@ -2490,7 +2485,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, SwitchServerStorages) {
   // original card.
   sync_service_.SetHasSyncConsent(false);
   personal_data_->OnStateChanged(&sync_service_);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(1U, personal_data_->GetServerCreditCards().size());
   EXPECT_EQ(u"3456", personal_data_->GetServerCreditCards()[0]->number());
@@ -2514,7 +2509,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   server_card.set_use_count(15);
   personal_data_->UpdateServerCardsMetadata({server_card});
 
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Expect that the server card is stored in the account autofill table.
   std::vector<std::unique_ptr<CreditCard>> cards;
@@ -2532,7 +2527,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   local_card.set_use_date(AutofillClock::Now() - base::Days(5));
   personal_data_->AddCreditCard(local_card);
 
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Expect that the local card is stored in the profile autofill table.
   profile_autofill_table_->GetCreditCards(&cards);
@@ -2735,7 +2730,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
                           "2999", "1");
   SetServerCards(server_cards);
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Make sure the function returns true.
   EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
@@ -2758,13 +2753,13 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   // false.
   SetServerCards({});
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-set some server cards. Check that the function now returns true.
   SetServerCards(server_cards);
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user enabled the sync feature. Check that the function now
@@ -2802,7 +2797,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
                           "2999", "1");
   SetServerCards(server_cards);
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Make sure the function returns false.
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
@@ -2825,13 +2820,13 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   // returns false.
   SetServerCards({});
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-set some server cards. Check that the function still returns false.
   SetServerCards(server_cards);
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user enabled the sync feature. Check that the function still
@@ -3034,14 +3029,14 @@ TEST_F(PersonalDataManagerTest, ClearAllCvcs) {
   const std::u16string server_cvc = u"111";
   SetServerCards({server_card});
   personal_data_->AddServerCvc(server_card.instrument_id(), server_cvc);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   // Add a local card and its CVC.
   CreditCard local_card = test::GetCreditCard();
   const std::u16string local_cvc = u"999";
   local_card.set_cvc(local_cvc);
   personal_data_->AddCreditCard(local_card);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(personal_data_->GetLocalCreditCards().size(), 1U);
   ASSERT_EQ(personal_data_->GetServerCreditCards().size(), 1U);
@@ -3051,7 +3046,7 @@ TEST_F(PersonalDataManagerTest, ClearAllCvcs) {
   // Clear out all the CVCs (local + server).
   personal_data_->ClearLocalCvcs();
   personal_data_->ClearServerCvcs();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   EXPECT_TRUE(personal_data_->GetServerCreditCards()[0]->cvc().empty());
   EXPECT_TRUE(personal_data_->GetLocalCreditCards()[0]->cvc().empty());
 }

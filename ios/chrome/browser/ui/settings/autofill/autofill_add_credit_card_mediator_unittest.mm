@@ -58,7 +58,7 @@ class AutofillAddCreditCardMediatorTest : public PlatformTest {
 // Test saving a credit card with invalid card number.
 TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidNumber) {
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorHasInvalidCardNumber|expected to be called by
   // `add_credit_card_mediator_` if the credit card has invalid number.
@@ -89,7 +89,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 // Test saving a credit card with invalid expiration month.
 TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidMonth) {
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
   // `add_credit_card_mediator_` if the credit card has invalid expiration date.
@@ -117,7 +117,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 
 // Test saving a credit card with invalid expiration year.
 TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
   // `add_credit_card_mediator_` if the credit card has invalid expiration date.
@@ -147,7 +147,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
 // Test saving a credit card with invalid nickname.
 TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidNickname) {
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
   // `add_credit_card_mediator_` if the credit card has invalid expiration date.
@@ -175,7 +175,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 
 // Test saving a valid credit card.
 TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorDidFinish` expected to be called by
   // `add_credit_card_mediator_` if the credit card has valid data.
@@ -203,7 +203,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
 
 // Test saving duplicated credit card with the same card number.
 TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorDidFinish` expected to be called by
   // `add_credit_card_mediator_` if the credit card has valid data.

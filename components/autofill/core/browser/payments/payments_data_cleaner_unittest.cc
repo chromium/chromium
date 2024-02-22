@@ -138,7 +138,7 @@ TEST_F(PaymentsDataCleanerTest,
   SetServerCards(server_cards);
   personal_data().UpdateServerCardsMetadata({credit_card5, credit_card6});
 
-  PersonalDataProfileTaskWaiter(personal_data()).Wait();
+  PersonalDataChangedWaiter(personal_data()).Wait();
   EXPECT_EQ(6U, personal_data().GetCreditCards().size());
 
   // Setup histograms capturing.
@@ -148,7 +148,7 @@ TEST_F(PaymentsDataCleanerTest,
   EXPECT_TRUE(DeleteDisusedCreditCards());
 
   // Wait for the data to be refreshed.
-  PersonalDataProfileTaskWaiter(personal_data()).Wait();
+  PersonalDataChangedWaiter(personal_data()).Wait();
 
   EXPECT_EQ(5U, personal_data().GetCreditCards().size());
   std::unordered_set<std::u16string> expectedToRemain = {
@@ -200,12 +200,12 @@ TEST_F(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
   credit_card3.set_use_count(10);
   personal_data().AddCreditCard(credit_card3);
 
-  PersonalDataProfileTaskWaiter(personal_data()).Wait();
+  PersonalDataChangedWaiter(personal_data()).Wait();
   ASSERT_EQ(4U, personal_data().GetCreditCards().size());
 
   ClearCreditCardNonSettingsOrigins();
 
-  PersonalDataProfileTaskWaiter(personal_data()).Wait();
+  PersonalDataChangedWaiter(personal_data()).Wait();
   ASSERT_EQ(4U, personal_data().GetCreditCards().size());
 
   // The first three profiles' origin should be cleared and the fourth one still

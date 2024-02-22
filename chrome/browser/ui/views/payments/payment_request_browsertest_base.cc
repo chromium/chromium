@@ -476,7 +476,7 @@ void PaymentRequestBrowserTestBase::AddAutofillProfile(
     const autofill::AutofillProfile& profile) {
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
   size_t profile_count = personal_data_manager->GetProfiles().size();
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
   personal_data_manager->AddProfile(profile);
   std::move(waiter).Wait();
   EXPECT_EQ(profile_count + 1, personal_data_manager->GetProfiles().size());
@@ -491,7 +491,7 @@ void PaymentRequestBrowserTestBase::AddCreditCard(
     return;
   }
   size_t card_count = personal_data_manager->GetCreditCards().size();
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
   personal_data_manager->AddCreditCard(card);
   std::move(waiter).Wait();
   EXPECT_EQ(card_count + 1, personal_data_manager->GetCreditCards().size());
@@ -499,7 +499,7 @@ void PaymentRequestBrowserTestBase::AddCreditCard(
 
 void PaymentRequestBrowserTestBase::WaitForOnPersonalDataChanged() {
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  autofill::PersonalDataProfileTaskWaiter(*personal_data_manager).Wait();
+  autofill::PersonalDataChangedWaiter(*personal_data_manager).Wait();
 }
 
 void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(

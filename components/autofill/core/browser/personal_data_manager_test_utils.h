@@ -23,32 +23,26 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
   MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
 };
 
-// Helper class to wait for a `OnPersonalDataFinishedProfileTasks()` call from
-// the `pdm`. This is necessary, since the PDM operates asynchronously on the
-// WebDatabase.
-// Additional expectations can be set using `mock_observer()`.
+// Helper class to wait for an `OnPersonalDataChanged()` call from the `pdm`.
+// This is necessary, since the PDM operates asynchronously on the WebDatabase.
 // Example usage:
 //   PersonalDataManagerWaiter waiter(pdm);
-//   EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged()).Times(1);
 //   pdm.AddProfile(AutofillProfile());
-//   waiter.Wait();
-
+//   std::move(waiter).Wait();
+//
 // Initializing the waiter after the operation (`AddProfile()`, in this case) is
 // not recommended, because the notifications might fire before the expectations
 // are set.
-class PersonalDataProfileTaskWaiter {
+class PersonalDataChangedWaiter {
  public:
-  explicit PersonalDataProfileTaskWaiter(PersonalDataManager& pdm);
-  ~PersonalDataProfileTaskWaiter();
+  explicit PersonalDataChangedWaiter(PersonalDataManager& pdm);
+  ~PersonalDataChangedWaiter();
 
-  // Waits for `OnPersonalDataFinishedProfileTasks()` to trigger. As a safety
-  // mechanism, this can only be called once per `PersonalDataProfileTaskWaiter`
-  // instance. This is because gMock doesn't support setting expectations after
-  // a function (here the mock_observer_'s
-  // `OnPersonalDataFinishedProfileTasks()`) was called.
+  // Waits for `OnPersonalDataChanged()` to trigger. As a safety mechanism, this
+  // can only be called once per `PersonalDataChangedWaiter` instance. This
+  // is because gMock doesn't support setting expectations after a function
+  // (here the mock_observer_'s `OnPersonalDataChanged()`) was called.
   void Wait() &&;
-
-  PersonalDataLoadedObserverMock& mock_observer() { return mock_observer_; }
 
  private:
   testing::NiceMock<PersonalDataLoadedObserverMock> mock_observer_;
@@ -59,15 +53,15 @@ class PersonalDataProfileTaskWaiter {
 
 // Operations on the PDM like "adding a profile" asynchronously update the
 // database. In such cases, it generally suffices to wait for the operation to
-// complete using `PersonalDataProfileTaskWaiter` above.
+// complete using `PersonalDataChangedWaiter` above.
 // But in cases where it is unclear if a profile was added, for example during
 // a form submission in browser tests, this doesn't work; if no profile was
-// added, the `PersonalDataProfileTaskWaiter` would wait forever.
+// added, the `PersonalDataChangedWaiter` would wait forever.
 // In this case, `WaitForPendingDBTasks()` can help: It queues a task to the
 // WebDataService's SequencedTaskRunner and returns once it has executed,
 // implying that all the prior tasks have finished. In the case of form
 // submission, if no profile was added, it will thus return immediately.
-// If possible, prefer `PersonalDataProfileTaskWaiter`, since it is more
+// If possible, prefer `PersonalDataChangedWaiter`, since it is more
 // explicit which event is waited for.
 void WaitForPendingDBTasks(AutofillWebDataService& webdata_service);
 

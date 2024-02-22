@@ -510,7 +510,7 @@ void AutofillControllerTest::SetUpForSuggestions(
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
-  PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+  PersonalDataChangedWaiter waiter(*personal_data_manager);
   personal_data_manager->AddProfile(profile);
   std::move(waiter).Wait();
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
@@ -612,7 +612,7 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   profile2.SetRawInfo(ADDRESS_HOME_ZIP, u"94043");
 
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
-  PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+  PersonalDataChangedWaiter waiter(*personal_data_manager);
   personal_data_manager->AddProfile(profile);
   personal_data_manager->AddProfile(profile2);
   std::move(waiter).Wait();
@@ -817,7 +817,7 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
 
   // This call cause a modification of the PersonalDataManager, so wait until
   // the asynchronous task complete in addition to waiting for the UI update.
-  PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+  PersonalDataChangedWaiter waiter(*personal_data_manager);
   confirm_infobar->Accept();
   std::move(waiter).Wait();
 

@@ -883,7 +883,7 @@ class RemoveAutofillTester {
   void AddProfileAndCard() {
     personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
     personal_data_manager_->AddCreditCard(autofill::test::GetCreditCard());
-    autofill::PersonalDataProfileTaskWaiter(*personal_data_manager_).Wait();
+    autofill::PersonalDataChangedWaiter(*personal_data_manager_).Wait();
   }
 
  private:

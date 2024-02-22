@@ -75,7 +75,7 @@ class AutofillProfileTableViewControllerTest
     personal_data_manager->get_alternative_state_name_map_updater_for_testing()
         ->set_local_state_for_testing(local_state_.Get());
     personal_data_manager->SetSyncServiceForTest(nullptr);
-    autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+    autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
 
     autofill::AutofillProfile autofill_profile(
         autofill::i18n_model_definition::kLegacyHierarchyCountryCode);

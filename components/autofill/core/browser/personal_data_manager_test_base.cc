@@ -95,7 +95,7 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
   sync_service_.SetAccountInfo(account_info);
   sync_service_.SetHasSyncConsent(!use_sync_transport_mode);
 
-  PersonalDataProfileTaskWaiter waiter(*personal_data);
+  PersonalDataChangedWaiter waiter(*personal_data);
   personal_data->Init(
       profile_database_service_, account_database_service_, prefs_.get(),
       prefs_.get(), identity_test_env_.identity_manager(),

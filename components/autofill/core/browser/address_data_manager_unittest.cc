@@ -57,22 +57,19 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
   }
 
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
+    PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->AddProfile(profile);
     std::move(waiter).Wait();
   }
 
   void UpdateProfileOnPersonalDataManager(const AutofillProfile& profile) {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
+    PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->UpdateProfile(profile);
     std::move(waiter).Wait();
   }
 
   void RemoveByGUIDFromPersonalDataManager(const std::string& guid) {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
+    PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->RemoveByGUID(guid);
     std::move(waiter).Wait();
   }
@@ -239,7 +236,7 @@ TEST_F(AddressDataManagerTest, AddRemoveUpdateProfileSequence) {
   personal_data_->AddProfile(profile);
   personal_data_->RemoveByGUID(profile.guid());
   personal_data_->UpdateProfile(profile);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   auto profiles = personal_data_->GetProfiles();
   ASSERT_EQ(0U, profiles.size());
@@ -247,7 +244,7 @@ TEST_F(AddressDataManagerTest, AddRemoveUpdateProfileSequence) {
   personal_data_->AddProfile(profile);
   personal_data_->RemoveByGUID(profile.guid());
   personal_data_->RemoveByGUID(profile.guid());
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   profiles = personal_data_->GetProfiles();
   ASSERT_EQ(0U, profiles.size());
@@ -255,7 +252,7 @@ TEST_F(AddressDataManagerTest, AddRemoveUpdateProfileSequence) {
   personal_data_->AddProfile(profile);
   profile.SetRawInfo(EMAIL_ADDRESS, u"new@email.com");
   personal_data_->UpdateProfile(profile);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   profiles = personal_data_->GetProfiles();
   ASSERT_EQ(1U, profiles.size());
@@ -265,7 +262,7 @@ TEST_F(AddressDataManagerTest, AddRemoveUpdateProfileSequence) {
   personal_data_->UpdateProfile(profile);
   profile.SetRawInfo(EMAIL_ADDRESS, u"newest@email.com");
   personal_data_->UpdateProfile(profile);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   profiles = personal_data_->GetProfiles();
   ASSERT_EQ(1U, profiles.size());
@@ -543,7 +540,7 @@ TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
   AddProfileToPersonalDataManager(kLocalProfile);
 
   personal_data_->MigrateProfileToAccount(kLocalProfile);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
   const std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
 
   // `kLocalProfile` should be gone and only the migrated account profile should
@@ -632,7 +629,7 @@ TEST_F(AddressDataManagerTest, Refresh) {
 
   personal_data_->Refresh();
 
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   EXPECT_THAT(personal_data_->GetProfiles(),
               UnorderedElementsAre(Pointee(profile0), Pointee(profile1),
@@ -644,7 +641,7 @@ TEST_F(AddressDataManagerTest, Refresh) {
       profile2.guid(), AutofillProfile::Source::kLocalOrSyncable);
 
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   auto results = personal_data_->GetProfiles();
   ASSERT_EQ(1U, results.size());
@@ -654,7 +651,7 @@ TEST_F(AddressDataManagerTest, Refresh) {
   profile_database_service_->UpdateAutofillProfile(profile0);
 
   personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   results = personal_data_->GetProfiles();
   ASSERT_EQ(1U, results.size());
@@ -752,10 +749,9 @@ TEST_F(AddressDataManagerTest,
   test_clock.Advance(base::Days(1));
   base::Time newer_use_data = AutofillClock::Now();
   updated_more_recently_used_profile.set_use_date(newer_use_data);
-  PersonalDataProfileTaskWaiter update_waiter(*personal_data_);
+  PersonalDataChangedWaiter update_waiter(*personal_data_);
   // Expect an update and a deletion. This only triggers a single notification
   // once both operations have finished.
-  EXPECT_CALL(update_waiter.mock_observer(), OnPersonalDataChanged());
   personal_data_->UpdateProfile(updated_more_recently_used_profile);
   std::move(update_waiter).Wait();
 
@@ -778,7 +774,7 @@ TEST_F(AddressDataManagerTest, RecordUseOf) {
 
   test_clock.SetNow(kSomeLaterTime);
   personal_data_->RecordUseOf(&profile);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
 
   AutofillProfile* adm_profile =
       personal_data_->GetProfileByGUID(profile.guid());

@@ -65,7 +65,7 @@ class AutofillCreditCardTableViewControllerTest
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+    autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
 
     autofill::CreditCard credit_card(
         base::Uuid::GenerateRandomV4().AsLowercaseString(), origin);

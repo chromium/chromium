@@ -293,14 +293,14 @@ void SetCreditCards(int profile, std::vector<CreditCard>* credit_cards) {
 
 void AddProfile(int profile, const AutofillProfile& autofill_profile) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  autofill::PersonalDataProfileTaskWaiter waiter(*pdm);
+  autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->AddProfile(autofill_profile);
   std::move(waiter).Wait();
 }
 
 void RemoveProfile(int profile, const std::string& guid) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  autofill::PersonalDataProfileTaskWaiter waiter(*pdm);
+  autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->RemoveByGUID(guid);
   std::move(waiter).Wait();
 }
@@ -318,15 +318,14 @@ void UpdateProfile(int profile,
   AutofillProfile updated_profile = *pdm_profile;
   updated_profile.SetRawInfoWithVerificationStatus(type.GetStorableType(),
                                                    value, status);
-  autofill::PersonalDataProfileTaskWaiter waiter(*pdm);
+  autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->UpdateProfile(updated_profile);
   std::move(waiter).Wait();
 }
 
 std::vector<AutofillProfile*> GetAllAutoFillProfiles(int profile) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  autofill::PersonalDataProfileTaskWaiter waiter(*pdm);
-  EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged);
+  autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->Refresh();
   // PersonalDataManager::GetProfiles() simply returns the current values that
   // have been last reported to the UI sequence. PersonalDataManager::Refresh()
@@ -406,7 +405,7 @@ bool AutofillProfileChecker::Wait() {
   PersonalDataManager* pdm_b =
       autofill_helper::GetPersonalDataManager(profile_b_);
 
-  autofill::PersonalDataProfileTaskWaiter waiter_a(*pdm_a);
+  autofill::PersonalDataChangedWaiter waiter_a(*pdm_a);
   pdm_a->Refresh();
   // Similar to GetAllAutoFillProfiles() we need to make sure we are not reading
   // before any locally instigated async writes. This is run exactly one time
@@ -415,7 +414,7 @@ bool AutofillProfileChecker::Wait() {
       GetWebDataService(profile_a_)->GetDBTaskRunner());
   std::move(waiter_a).Wait();
 
-  autofill::PersonalDataProfileTaskWaiter waiter_b(*pdm_b);
+  autofill::PersonalDataChangedWaiter waiter_b(*pdm_b);
   pdm_b->Refresh();
   WaitForCurrentTasksToComplete(
       GetWebDataService(profile_b_)->GetDBTaskRunner());

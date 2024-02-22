@@ -24,7 +24,7 @@ void AddAutofillProfile(content::BrowserContext* browser_context,
   autofill::PersonalDataManager* personal_data_manager =
       autofill::PersonalDataManagerFactory::GetForProfile(profile);
   size_t profile_count = personal_data_manager->GetProfiles().size();
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
   personal_data_manager->AddProfile(autofill_profile);
   std::move(waiter).Wait();
   EXPECT_EQ(profile_count + 1, personal_data_manager->GetProfiles().size());
@@ -41,7 +41,7 @@ void AddCreditCard(content::BrowserContext* browser_context,
     return;
   }
   size_t card_count = personal_data_manager->GetCreditCards().size();
-  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
+  autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
   personal_data_manager->AddCreditCard(card);
   std::move(waiter).Wait();
   EXPECT_EQ(card_count + 1, personal_data_manager->GetCreditCards().size());

@@ -175,7 +175,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
 
   void AddAutofillProfile(const autofill::AutofillProfile& profile) {
     size_t profile_count = personal_data_->GetProfiles().size();
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
+    PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->AddProfile(profile);
     std::move(waiter).Wait();
     EXPECT_EQ(profile_count + 1, personal_data_->GetProfiles().size());
@@ -188,7 +188,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
       return;
     }
     size_t card_count = personal_data_->GetCreditCards().size();
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
+    PersonalDataChangedWaiter waiter(*personal_data_);
     personal_data_->AddCreditCard(card);
     std::move(waiter).Wait();
     EXPECT_EQ(card_count + 1, personal_data_->GetCreditCards().size());
