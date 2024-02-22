@@ -385,10 +385,10 @@ using manual_fill::ManualFillDataType;
         break;
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kCompose:
-        // These cases are currently not available on iOS.
-        NOTREACHED_NORETURN();
       case FillingProduct::kNone:
-        return;
+        // `kMerchantPromoCode` and `kCompose` cases are currently not available
+        // on iOS. Also, there shouldn't be suggestions of type `kNone`.
+        NOTREACHED_NORETURN();
     }
 
     // VoiceOver message setup with
