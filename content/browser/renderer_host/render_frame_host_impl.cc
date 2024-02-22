@@ -9514,10 +9514,10 @@ void RenderFrameHostImpl::HandleAXEvents(
   }
 
   if (!accessibility_reset_start_.is_null()) {
-    base::UmaHistogramTimes(
+    base::UmaHistogramMediumTimes(
         is_first_accessibility_request_
-            ? "Accessibility.EventProcessingTime2.First"
-            : "Accessibility.EventProcessingTime2.NotFirst",
+            ? "Accessibility.EventProcessingTime3.First"
+            : "Accessibility.EventProcessingTime3.NotFirst",
         base::TimeTicks::Now() - accessibility_reset_start_);
     accessibility_reset_start_ = base::TimeTicks();
   }

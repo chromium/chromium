@@ -1140,8 +1140,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.EventProcessingTime2{Variation}" units="ms"
-    expires_after="2024-08-12">
+<histogram name="Accessibility.EventProcessingTime3{Variation}" units="ms"
+    expires_after="2024-08-22">
   <owner>grt@chromium.org</owner>
   <owner>aleventhal@chromium.org</owner>
   <summary>
