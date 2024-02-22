@@ -803,6 +803,9 @@ bool ExecuteFileTask(Profile* profile,
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
   if (IsWebDriveOfficeTask(task)) {
+    base::UmaHistogramSparse(
+        ash::cloud_upload::kNumberOfFilesToOpenWithGoogleDriveMetric,
+        file_urls.size());
     UMA_HISTOGRAM_ENUMERATION(
         ash::cloud_upload::kOpenInitialCloudProviderMetric,
         ash::cloud_upload::CloudProvider::kGoogleDrive);
@@ -824,6 +827,9 @@ bool ExecuteFileTask(Profile* profile,
     }
     return true;
   } else if (IsOpenInOfficeTask(task)) {
+    base::UmaHistogramSparse(
+        ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric,
+        file_urls.size());
     UMA_HISTOGRAM_ENUMERATION(
         ash::cloud_upload::kOpenInitialCloudProviderMetric,
         ash::cloud_upload::CloudProvider::kOneDrive);

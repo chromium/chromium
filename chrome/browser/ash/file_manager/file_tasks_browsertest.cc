@@ -1420,6 +1420,8 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
       ash::cloud_upload::kDriveOpenSourceVolumeMetric,
       ash::cloud_upload::OfficeFilesSourceVolume::kGoogleDrive, 1);
   histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithGoogleDriveMetric, 1, 1);
+  histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
   histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
@@ -1470,6 +1472,8 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
   histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithGoogleDriveMetric, 1, 1);
+  histogram_.ExpectUniqueSample(
       ash::cloud_upload::kDriveOpenSourceVolumeMetric,
       ash::cloud_upload::OfficeFilesSourceVolume::kGoogleDrive, 1);
   histogram_.ExpectUniqueSample(
@@ -1514,6 +1518,8 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileInDriveOpensSetUpDialog) {
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
   histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithGoogleDriveMetric, 1, 1);
+  histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
 }
@@ -1550,6 +1556,8 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithGoogleDriveMetric, 1, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
@@ -1834,6 +1842,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   CHECK_EQ(launches[0].intent_url, test::kODFSSampleUrl);
 
   histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric, 1, 1);
+  histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kOneDrive, 1);
   histogram_.ExpectUniqueSample(
@@ -1895,6 +1905,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
 
   ASSERT_EQ(0u, web_app_publisher_->GetLaunches().size());
 
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric, 1, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kOneDrive, 1);
@@ -2075,6 +2087,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
   CHECK_EQ(launches[0].intent_url, test::kODFSSampleUrl);
 
   histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric, 1, 1);
+  histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kOneDrive, 1);
   histogram_.ExpectUniqueSample(
@@ -2120,6 +2134,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFilesFromODFS) {
   CHECK_EQ(launches[1].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[1].intent_url, test::kODFSSampleUrl);
 
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric, 2, 1);
   // TODO(b/325514165): Expect 2 CloudProvider, SourceVolume and
   // TransferRequired metrics once a metric is logged for each file open.
   histogram_.ExpectUniqueSample(
@@ -2535,6 +2551,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileInOneDriveOpensSetUpDialog) {
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
   histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric, 1, 1);
+  histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kOneDrive, 1);
 }
@@ -2566,6 +2584,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric, 1, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kOneDrive, 1);

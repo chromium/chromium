@@ -255,6 +255,12 @@ constexpr char kOneDriveOpenSourceVolumeMetric[] =
 constexpr char kOneDriveOpenSourceVolumeMetricStateMetric[] =
     "FileBrowser.OfficeFiles.Open.SourceVolume.OneDrive.MetricState";
 
+constexpr char kNumberOfFilesToOpenWithGoogleDriveMetric[] =
+    "FileBrowser.OfficeFiles.Open.NumberOfFiles.GoogleDrive";
+
+constexpr char kNumberOfFilesToOpenWithOneDriveMetric[] =
+    "FileBrowser.OfficeFiles.Open.NumberOfFiles.OneDrive";
+
 constexpr char kOpenInitialCloudProviderMetric[] =
     "FileBrowser.OfficeFiles.Open.CloudProvider";
 

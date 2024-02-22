@@ -1125,6 +1125,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.Open.NumberOfFiles.{CloudProvider}"
+    units="count" expires_after="2024-08-04">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records the initial number of files selected when
+    opening with Drive web or Microsoft 365.
+  </summary>
+  <token key="CloudProvider" variants="CloudProvider"/>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.SourceVolume.{CloudProvider}"
     enum="OfficeFilesSourceVolume" expires_after="2024-08-04">
   <owner>austinct@chromium.org</owner>
