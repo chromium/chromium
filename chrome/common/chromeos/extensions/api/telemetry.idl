@@ -485,41 +485,38 @@ namespace os.telemetry {
   callback TpmInfoCallback = void (TpmInfo tpmInfo);
 
   interface Functions {
-    [supportsPromises] static void getAudioInfo(AudioInfoCallback callback);
+    static void getAudioInfo(AudioInfoCallback callback);
 
-    [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
+    static void getBatteryInfo(BatteryInfoCallback callback);
 
-    [supportsPromises] static void getNonRemovableBlockDevicesInfo(
+    static void getNonRemovableBlockDevicesInfo(
         NonRemovableBlockDevicesInfoCallback callback);
 
-    [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
+    static void getCpuInfo(CpuInfoCallback callback);
 
-    [supportsPromises] static void getInternetConnectivityInfo(
+    static void getInternetConnectivityInfo(
         InternetConnectivityInfoCallback callback);
 
-    [supportsPromises] static void getMarketingInfo(
-        MarketingInfoCallback callback);
+    static void getMarketingInfo(MarketingInfoCallback callback);
 
-    [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
+    static void getMemoryInfo(MemoryInfoCallback callback);
 
-    [supportsPromises] static void getOemData(OemDataCallback callback);
+    static void getOemData(OemDataCallback callback);
 
-    [supportsPromises] static void getOsVersionInfo(
-        OsVersionInfoCallback callback);
+    static void getOsVersionInfo(OsVersionInfoCallback callback);
 
-    [supportsPromises] static void getUsbBusInfo(
-        UsbBusDevicesCallback callback);
+    static void getUsbBusInfo(UsbBusDevicesCallback callback);
 
-    [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
+    static void getVpdInfo(VpdInfoCallback callback);
 
-    [supportsPromises] static void getStatefulPartitionInfo(
+    static void getStatefulPartitionInfo(
         StatefulPartitionInfoCallback callback);
 
-    [supportsPromises] static void getTpmInfo(TpmInfoCallback callback);
+    static void getTpmInfo(TpmInfoCallback callback);
 
-    [supportsPromises] static void getDisplayInfo(DisplayInfoCallback callback);
+    static void getDisplayInfo(DisplayInfoCallback callback);
 
-    [supportsPromises] static void getThermalInfo(ThermalInfoCallback callback);
+    static void getThermalInfo(ThermalInfoCallback callback);
   };
 
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)

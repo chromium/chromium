@@ -398,7 +398,7 @@ namespace os.events {
     interface Functions {
         // Checks whether an event is supported. The information returned by
         // this method is valid across reboots of the device.
-        [supportsPromises] static void isEventSupported(
+        static void isEventSupported(
             EventCategory category, EventSupportStatusInfoCallback callback);
 
         // Starts capturing events for `EventCategory`. After calling this
@@ -406,13 +406,13 @@ namespace os.events {
         // invocations of `on<EventCategory>Event`, until either the PWA is
         // closed or `stopCapturingEvents` is called. Note that an extension
         // is only able to subscribe to events if the PWA is currently open.
-        [supportsPromises] static void startCapturingEvents(
+        static void startCapturingEvents(
             EventCategory category, VoidCallback callback);
 
         // Stops capturing `EventCategory` events. This means
         // `on<EventCategory>Event` won't be invoked until
         // `startCapturingEvents` is succesfully called.
-        [supportsPromises] static void stopCapturingEvents(
+        static void stopCapturingEvents(
             EventCategory category, VoidCallback callback);
     };
 

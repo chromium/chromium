@@ -30,11 +30,11 @@ namespace os.management {
   interface Functions {
       // Sets the specified input audio device's gain to value. Returns false if
       // |args.nodeId| is invalid.
-      [supportsPromises] static void setAudioGain(
+      static void setAudioGain(
           SetAudioGainArguments args, OperationCallback callback);
       // Sets the specified output audio device's volume and mute state to the
       // given value. Returns false if |args.nodeId| is invalid.
-      [supportsPromises] static void setAudioVolume(
+      static void setAudioVolume(
           SetAudioVolumeArguments args, OperationCallback callback);
   };
 
