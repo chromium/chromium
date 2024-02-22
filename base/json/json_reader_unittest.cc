@@ -308,10 +308,10 @@ TEST_P(JSONReaderTest, EmptyString) {
 
 TEST_P(JSONReaderTest, BasicStringEscapes) {
   std::optional<Value> root =
-      JSONReader::Read("\" \\\"\\\\\\/\\b\\f\\n\\r\\t\\v\"");
+      JSONReader::Read("\" \\\"\\\\\\/\\b\\f\\n\\r\\t\"");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_string());
-  EXPECT_EQ(" \"\\/\b\f\n\r\t\v", root->GetString());
+  EXPECT_EQ(" \"\\/\b\f\n\r\t", root->GetString());
 }
 
 TEST_P(JSONReaderTest, UnicodeEscapes) {
@@ -1126,7 +1126,6 @@ TEST_P(JSONReaderTest, ChromiumExtensions) {
       {"[\"\r\"]", JSON_ALLOW_CONTROL_CHARS},
       {"[\"\t\"]", JSON_ALLOW_CONTROL_CHARS},
       {"[\"\v\"]", JSON_ALLOW_CONTROL_CHARS},
-      {"[\"\\v\"]", JSON_ALLOW_VERT_TAB},
   };
 
   for (size_t i = 0; i < std::size(kCases); ++i) {

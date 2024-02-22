@@ -80,9 +80,8 @@ enum JSONParserOptions {
   //
   // This set of options is mirrored in Rust
   // base::JsonOptions::with_chromium_extensions().
-  JSON_PARSE_CHROMIUM_EXTENSIONS = JSON_ALLOW_COMMENTS |
-                                   JSON_ALLOW_CONTROL_CHARS |
-                                   JSON_ALLOW_VERT_TAB | JSON_ALLOW_X_ESCAPES,
+  JSON_PARSE_CHROMIUM_EXTENSIONS =
+      JSON_ALLOW_COMMENTS | JSON_ALLOW_CONTROL_CHARS | JSON_ALLOW_X_ESCAPES,
 };
 
 class BASE_EXPORT JSONReader {
