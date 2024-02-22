@@ -33,6 +33,7 @@
 // List of items.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeContentNotifications = kItemTypeEnumZero,
+  ItemTypeSportsNotifications,
   ItemTypeContentFooter,
 };
 
@@ -41,6 +42,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Items for the Content Notifications settings.
 @property(nonatomic, strong, readonly)
     TableViewSwitchItem* contentNotificationsItem;
+// Items for the Sports Notifications settings.
+@property(nonatomic, strong, readonly)
+    TableViewSwitchItem* sportsNotificationsItem;
 // Header item.
 @property(nonatomic, strong)
     TableViewLinkHeaderFooterItem* contentNotificationsFooterItem;
@@ -57,6 +61,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @synthesize contentNotificationsItem = _contentNotificationsItem;
 @synthesize contentNotificationsFooterItem = _contentNotificationsFooterItem;
+@synthesize sportsNotificationsItem = _sportsNotificationsItem;
 
 - (instancetype)initWithPrefService:(PrefService*)prefs
                              gaiaID:(const std::string&)gaiaID {
@@ -102,6 +107,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _contentNotificationsItem;
 }
 
+- (TableViewSwitchItem*)sportsNotificationsItem {
+  if (!_sportsNotificationsItem) {
+    _sportsNotificationsItem =
+        [self switchItemWithType:ItemTypeSportsNotifications
+                               text:@"Sports"
+                             symbol:DefaultSettingsRootSymbol(kMedalSymbol)
+                         symbolTint:UIColor.whiteColor
+              symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
+                  symbolBorderWidth:0
+            accessibilityIdentifier:kSportsNotificationsCellId];
+    _sportsNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSports, _gaiaID);
+  }
+  return _sportsNotificationsItem;
+}
+
 - (TableViewLinkHeaderFooterItem*)contentNotificationsFooterItem {
   if (!_contentNotificationsFooterItem) {
     _contentNotificationsFooterItem = [[TableViewLinkHeaderFooterItem alloc]
@@ -119,6 +141,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
   _consumer = consumer;
   [_consumer setContentNotificationsItem:self.contentNotificationsItem];
+  [_consumer setSportsNotificationsItem:self.sportsNotificationsItem];
   [_consumer
       setContentNotificationsFooterItem:self.contentNotificationsFooterItem];
 }
@@ -137,6 +160,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
         self.contentNotificationsItem.on = push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
                 PushNotificationClientId::kContent, _gaiaID);
+      }
+      break;
+    }
+    case ItemTypeSportsNotifications: {
+      if (value) {
+        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                            {PushNotificationClientId::kSports}];
+      } else {
+        [self disablePreferenceFor:PushNotificationClientId::kSports];
+        self.sportsNotificationsItem.on = push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kSports, _gaiaID);
       }
       break;
     }
@@ -183,6 +218,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case PushNotificationClientId::kContent:
       return _contentNotificationsItem;
     case PushNotificationClientId::kSports:
+      return _sportsNotificationsItem;
     case PushNotificationClientId::kTips:
     case PushNotificationClientId::kCommerce:
       // Not a switch.

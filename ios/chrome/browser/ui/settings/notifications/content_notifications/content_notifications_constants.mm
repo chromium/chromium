@@ -7,3 +7,5 @@
 NSString* const kContentNotificationsTableViewId =
     @"ContentNotificationsTableViewId";
 NSString* const kContentNotificationsCellId = @"ContentNotificationsCellId";
+NSString* const kSportsNotificationsCellId = @"SportsNotificationsCellId";
+NSString* const kMedalSymbol = @"medal";

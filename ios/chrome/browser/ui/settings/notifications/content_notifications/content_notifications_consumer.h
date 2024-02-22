@@ -18,6 +18,9 @@
 // Initializes the content notifications item.
 - (void)setContentNotificationsItem:(TableViewItem*)contentNotificationsItem;
 
+// Initializes the sports notifications item.
+- (void)setSportsNotificationsItem:(TableViewItem*)sportsNotificationsItem;
+
 // Initializes the content notifications footer item.
 - (void)setContentNotificationsFooterItem:
     (TableViewHeaderFooterItem*)contentNotificationsFooterItem;

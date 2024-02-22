@@ -29,6 +29,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // All the items for the content notifications section received by mediator.
 @property(nonatomic, strong) TableViewSwitchItem* contentNotificationsItem;
+// All the items for the Sports notifications section received by mediator.
+@property(nonatomic, strong) TableViewSwitchItem* sportsNotificationsItem;
 // Content Notifications footer item received by the mediator.
 @property(nonatomic, strong)
     TableViewHeaderFooterItem* contentNotificationsFooterItem;
@@ -64,6 +66,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierContentNotifications];
   [model addItem:self.contentNotificationsItem
+      toSectionWithIdentifier:SectionIdentifierContentNotifications];
+  [model addItem:self.sportsNotificationsItem
       toSectionWithIdentifier:SectionIdentifierContentNotifications];
   [model setFooter:self.contentNotificationsFooterItem
       forSectionWithIdentifier:SectionIdentifierContentNotifications];
