@@ -438,12 +438,6 @@ class CORE_EXPORT FragmentBuilder {
     break_appeal_ = std::min(break_appeal_, appeal);
   }
 
-  // Specify that all child break tokens be added manually, instead of being
-  // added automatically as part of adding child fragments.
-  void SetShouldAddBreakTokensManually() {
-    should_add_break_tokens_manually_ = true;
-  }
-
   void SetHasDescendantThatDependsOnPercentageBlockSize(bool b = true) {
     has_descendant_that_depends_on_percentage_block_size_ = b;
   }
@@ -628,7 +622,6 @@ class CORE_EXPORT FragmentBuilder {
   bool is_empty_spanner_parent_ = false;
   bool should_force_same_fragmentation_flow_ = false;
   bool requires_content_before_breaking_ = false;
-  bool should_add_break_tokens_manually_ = false;
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
 

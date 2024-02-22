@@ -357,7 +357,10 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     }
 
     // Grid layout doesn't insert break before tokens, and instead set this bit
-    // to indicate there is content after the current break.
+    // to indicate there is content after the current break. Out-of-flow layout
+    // of fragmentainers also doesn't insert break-before tokens for OOFs that
+    // are to start in a later fragmentainer. But we still want the
+    // fragmentainer to create a break token, since there's going to be more.
     return has_subsequent_children_;
   }
 

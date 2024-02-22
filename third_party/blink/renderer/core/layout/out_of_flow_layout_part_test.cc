@@ -1789,5 +1789,51 @@ TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowBothInsets) {
       GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfBothInsets));
 }
 
+TEST_F(OutOfFlowLayoutPartTest, EmptyFragmentainersBeforeOOF) {
+  // There's an OOF in the fourth, fifth and sixth columns.
+  SetBodyInnerHTML(
+      R"HTML(
+      <div id="multicol" style="columns:6; column-fill:auto; height:100px;">
+        <div style="position:relative;">
+          <div style="position:absolute; width:50px; top:300px; height:300px;"></div>
+        </div>
+      </div>
+      )HTML");
+
+  const LayoutBox* multicol = GetLayoutBoxByElementId("multicol");
+  ASSERT_TRUE(multicol);
+  const auto columns = multicol->GetPhysicalFragment(0)->Children();
+  ASSERT_EQ(columns.size(), 6u);
+
+  const auto* fragmentainer = To<PhysicalBoxFragment>(columns[0].get());
+  const BlockBreakToken* break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[1].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[2].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[3].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ChildBreakTokens().size(), 1u);
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[4].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ChildBreakTokens().size(), 1u);
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[5].get());
+  break_token = fragmentainer->GetBreakToken();
+  EXPECT_FALSE(break_token);
+}
+
 }  // namespace
 }  // namespace blink

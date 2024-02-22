@@ -2334,11 +2334,15 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
 
   // If |index| is greater than the number of current children, and there are no
   // OOF children to be added, we will still need to add an empty fragmentainer
-  // in its place. Otherwise, return early since there is no work to do, unless
-  // there is overflowed monolithic content to take into account (in the case of
-  // pagination).
+  // in its place. We also need to update the fragmentainer in case of
+  // overflowed monolithic content (may happen in pagination for printing), or
+  // if this is the hitherto last fragmentainer (it needs to be updated with an
+  // outgoing break token, if nothing else).
+  //
+  // Otherwise, return early since there is no work to do.
   if (pending_descendants.empty() && descendants_continued.empty() &&
-      *monolithic_overflow <= LayoutUnit() && !is_new_fragment) {
+      *monolithic_overflow <= LayoutUnit() && !is_new_fragment &&
+      !is_last_fragmentainer_so_far) {
     return;
   }
 
