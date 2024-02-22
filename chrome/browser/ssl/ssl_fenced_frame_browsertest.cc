@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(SSLFencedFrameBrowserTest,
   ASSERT_TRUE(ExecJs(web_contents(), javascript));
 
   Browser* app_browser = InstallAndOpenTestWebApp(
-      embedded_test_server()->GetURL("/fenced_frames/basic.html"));
+      embedded_test_server()->GetURL("/fenced_frames/title2.html"));
   WebContents* app_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(IsShowingSSLInterstitial(app_contents));
