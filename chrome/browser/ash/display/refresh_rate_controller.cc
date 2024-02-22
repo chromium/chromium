@@ -40,6 +40,8 @@ RefreshRateController::RefreshRateController(
       force_throttle_(force_throttle) {
   power_status_observer_.Observe(power_status);
   game_mode_observer_.Observe(game_mode_controller);
+  // Ensure initial state is calculated.
+  RefreshState();
 }
 
 RefreshRateController::~RefreshRateController() = default;

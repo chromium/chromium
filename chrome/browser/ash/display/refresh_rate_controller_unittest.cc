@@ -144,6 +144,38 @@ class RefreshRateControllerTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_features_;
 };
 
+TEST_F(RefreshRateControllerTest, ThrottleStateSetAtConstruction) {
+  constexpr int64_t kDisplayId = 12345;
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  SetUpDisplays(std::move(snapshots));
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+
+  // Expect the initial state to be 120 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
+  }
+
+  // Create a new RefreshRateController, and force throttle it.
+  const bool force_throttle = true;
+  std::unique_ptr<RefreshRateController> controller =
+      std::make_unique<RefreshRateController>(
+          Shell::Get()->display_configurator(), PowerStatus::Get(),
+          game_mode_controller_.get(), force_throttle);
+
+  // Expect the state to be 60 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
+}
+
 TEST_F(RefreshRateControllerTest, ShouldNotThrottleOnAC) {
   constexpr int64_t kDisplayId = 12345;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
