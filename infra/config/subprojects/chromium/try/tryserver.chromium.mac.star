@@ -614,6 +614,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -626,6 +627,7 @@ try_.compilator_builder(
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
+    siso_enabled = True,
     xcode = xcode.xcode_default,
 )
 
