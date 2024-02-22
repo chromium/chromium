@@ -206,7 +206,8 @@ void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
 }
 
 void HlsRenditionImpl::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
-                                       base::TimeDelta delay) {
+                                        base::TimeDelta delay,
+                                        bool success) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::FetchManifestUpdates", this);
   auto update_duration = base::TimeTicks::Now() - last_download_time_;
   if (update_duration > delay) {

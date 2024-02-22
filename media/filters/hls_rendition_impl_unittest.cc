@@ -348,9 +348,10 @@ TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataFetchNewManifest) {
   task_environment_.FastForwardBy(base::Seconds(23));
   EXPECT_CALL(*mock_hrh_,
               UpdateRenditionManifestUri("test", GURL("http://example.com"), _))
-      .WillOnce([](std::string role, GURL uri, base::OnceClosure cb) {
-        std::move(cb).Run();
-      });
+      .WillOnce(
+          [](std::string role, GURL uri, base::OnceCallback<void(bool)> cb) {
+            std::move(cb).Run(true);
+          });
 
   // CheckState should in this case respond with a delay of 12 - 10/2 seconds.
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -457,7 +458,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // come back with a 0 second delay.
   EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(202)));
   EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
-      .WillOnce(base::test::RunOnceClosure<2>());
+      .WillOnce(base::test::RunOnceCallback<2>(true));
   task_environment_.FastForwardBy(base::Seconds(190));
   rendition->CheckState(base::Seconds(10), 1.0,
                         BindCheckState(base::Seconds(0)));

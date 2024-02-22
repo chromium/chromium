@@ -51,9 +51,10 @@ class MEDIA_EXPORT HlsRenditionHost {
                           HlsDataSourceProvider::ReadCb cb) = 0;
 
   // Fetch a new playlist for live content at the requested URI.
-  virtual void UpdateRenditionManifestUri(std::string role,
-                                          GURL uri,
-                                          base::OnceClosure cb) = 0;
+  virtual void UpdateRenditionManifestUri(
+      std::string role,
+      GURL uri,
+      base::OnceCallback<void(bool)> cb) = 0;
 
   // Used to set network speed (bits per second) for the adaptation selector.
   virtual void UpdateNetworkSpeed(uint64_t bps) = 0;

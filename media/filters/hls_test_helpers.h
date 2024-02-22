@@ -109,7 +109,7 @@ class MockHlsRenditionHost : public HlsRenditionHost {
 
   MOCK_METHOD(void,
               UpdateRenditionManifestUri,
-              (std::string, GURL, base::OnceClosure),
+              (std::string, GURL, base::OnceCallback<void(bool)>),
               (override));
 
   MOCK_METHOD(void,

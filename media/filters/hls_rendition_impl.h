@@ -78,7 +78,8 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
 
   // Callback helper to receive notice when a new manifest has been updated.
   void OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
-                        base::TimeDelta delay);
+                        base::TimeDelta delay,
+                        bool success);
 
   // Helper method to use duration to determine stream liveness.
   bool IsLive() const;
