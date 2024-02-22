@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.10](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.9...chromium-bidi-v0.5.10) (2024-02-22)
+
+
+### Features
+
+* support user context in permissions ([#1805](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1805)) ([a623dc7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a623dc751952817f4676e9f6836792a1e11de234))
+
+
+### Bug Fixes
+
+* limit the mapper tab to 200 lines of logs ([#1846](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1846)) ([9c60d0a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9c60d0a553ce75f9412843de7777baf8f3db1300)), closes [#1839](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1839)
+
 ## [0.5.9](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.8...chromium-bidi-v0.5.9) (2024-02-07)
 
 
