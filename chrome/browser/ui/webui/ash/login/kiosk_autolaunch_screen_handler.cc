@@ -43,8 +43,9 @@ KioskAutolaunchScreenHandler::AsWeakPtr() {
 }
 
 void KioskAutolaunchScreenHandler::UpdateKioskApp() {
-  if (!is_visible_)
+  if (!is_visible_) {
     return;
+  }
 
   KioskChromeAppManager* manager = KioskChromeAppManager::Get();
   KioskChromeAppManager::App app;
@@ -55,15 +56,14 @@ void KioskAutolaunchScreenHandler::UpdateKioskApp() {
     return;
   }
 
-  base::Value::Dict app_info;
-  app_info.Set("appName", app.name);
-
   std::string icon_url("chrome://theme/IDR_APP_DEFAULT_ICON");
-  if (!app.icon.isNull())
+  if (!app.icon.isNull()) {
     icon_url = webui::GetBitmapDataUrl(*app.icon.bitmap());
+  }
 
-  app_info.Set("appIconUrl", icon_url);
-  CallExternalAPI("updateApp", std::move(app_info));
+  CallExternalAPI(
+      "updateApp",
+      base::Value::Dict().Set("appName", app.name).Set("appIconUrl", icon_url));
 }
 
 void KioskAutolaunchScreenHandler::DeclareLocalizedValues(

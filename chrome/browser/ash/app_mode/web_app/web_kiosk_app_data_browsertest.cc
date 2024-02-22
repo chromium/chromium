@@ -82,10 +82,10 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
 
   void SetCached(bool installed, bool icon_valid = true) {
     const std::string app_key = std::string(kAppKey) + '.' + kAppId;
-    base::Value::Dict app_dict;
-
-    app_dict.SetByDottedPath(app_key + '.' + std::string(kTitleKey), kAppTitle);
-    app_dict.SetByDottedPath(app_key + '.' + std::string(kIconKey),
+    auto app_dict =
+        base::Value::Dict()
+            .SetByDottedPath(app_key + '.' + std::string(kTitleKey), kAppTitle)
+            .SetByDottedPath(app_key + '.' + std::string(kIconKey),
                              GetFullPathToImage(icon_valid).value());
     if (installed) {
       app_dict.SetByDottedPath(app_key + '.' + std::string(kLaunchUrlKey),
