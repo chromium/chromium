@@ -288,18 +288,19 @@ void DragWindowFromShelfController::Drag(const gfx::PointF& location_in_screen,
   presentation_time_recorder_->RequestNext();
   UpdateDraggedWindow(location_in_screen);
 
-  // Open overview if the window has been dragged far enough and the scroll
-  // delta has decreased to kOpenOverviewThreshold. Wait until all windows are
-  // minimized or they will not show up in overview.
   DCHECK(windows_hider_);
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   if (std::abs(scroll_y) <= kOpenOverviewThreshold &&
-      !overview_controller->InOverviewSession() &&
       windows_hider_->WindowsMinimized()) {
-    overview_controller->StartOverview(
-        OverviewStartAction::kDragWindowFromShelf,
-        OverviewEnterExitType::kImmediateEnter);
-    OnWindowDragStartedInOverview();
+    // Open overview if the window has been dragged far enough and the scroll
+    // delta has decreased to `kOpenOverviewThreshold`. Wait until all windows
+    // are minimized or they will not show up in overview.
+    if (!overview_controller->InOverviewSession() &&
+        overview_controller->StartOverview(
+            OverviewStartAction::kDragWindowFromShelf,
+            OverviewEnterExitType::kImmediateEnter)) {
+      OnWindowDragStartedInOverview();
+    }
   }
 
   // If overview is active, update its splitview indicator during dragging if

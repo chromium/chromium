@@ -119,8 +119,9 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
         GetAppListTestHelper()->GetAppListView()->GetWidget()->GetLayer();
     ui::Compositor* compositor = layer->GetCompositor();
 
-    while (layer->GetAnimator()->is_animating())
+    while (layer->GetAnimator()->is_animating()) {
       EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+    }
 
     // Ensure there is one more frame presented after animation finishes
     // to allow animation throughput data is passed from cc to ui.
@@ -1388,6 +1389,39 @@ TEST_F(DragWindowFromShelfControllerTest,
   window.reset();
 
   EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/std::nullopt);
+}
+
+// Tests that there should be no crash if we exit overview by switching desks
+// during window dragging. See details in http://b/326074747.
+TEST_F(DragWindowFromShelfControllerTest, NoCrashDuringDraggingIfExitOverview) {
+  UpdateDisplay("500x400");
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create a new Desk.
+  auto* desk_controller = DesksController::Get();
+  desk_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  const Desk* new_desk = desk_controller->GetDeskAtIndex(1);
+
+  auto window1 = CreateAppWindow();
+
+  StartDrag(window1.get(), GetShelfBounds().CenterPoint());
+  // Drag it far enough so overview should be open behind the dragged window.
+  Drag(gfx::Point(200, 200), 0.f, 1.f);
+  DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
+      window_drag_controller());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Switch desks which will end overview.
+  desk_controller->ActivateDesk(new_desk,
+                                DesksSwitchSource::kDeskButtonMiniViewButton);
+  WaitForOverviewExitAnimation();
+
+  // Before desk switch animation is done, continue dragging the window. There
+  // should be no crash.
+  Drag(gfx::Point(200, 100), 0.f, 1.f);
+
+  EndDrag(GetShelfBounds().CenterPoint(), /*velocity_y=*/std::nullopt);
 }
 
 class FloatDragWindowFromShelfControllerTest
