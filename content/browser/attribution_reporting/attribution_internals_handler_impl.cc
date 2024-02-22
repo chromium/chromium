@@ -75,8 +75,9 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
     Attributability attributability) {
   const CommonSourceInfo& common_info = source.common_info();
   return attribution_internals::mojom::WebUISource::New(
-      source.source_event_id(), common_info.source_origin(),
-      source.destination_sites(), common_info.reporting_origin(),
+      *source.source_id(), source.source_event_id(),
+      common_info.source_origin(), source.destination_sites(),
+      common_info.reporting_origin(),
       source.source_time().InMillisecondsFSinceUnixEpoch(),
       source.expiry_time().InMillisecondsFSinceUnixEpoch(),
       SerializeAttributionJson(source.trigger_specs().ToJson(),

@@ -1220,6 +1220,8 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
     return;
   }
 
+  NotifyReportSent(/*is_debug_report=*/false, report, info);
+
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
       .WithArgs(report.id())
       .Then(std::move(then));
@@ -1229,8 +1231,6 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   if (info.status == SendResult::Status::kSent) {
     LogMetricsOnReportSent(report);
   }
-
-  NotifyReportSent(/*is_debug_report=*/false, report, info);
 }
 
 void AttributionManagerImpl::NotifyReportSent(bool is_debug_report,

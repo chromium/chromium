@@ -89,6 +89,9 @@ struct WebUIDebugReport {
 
 // Struct representing a stored attribution source that will be displayed by WebUI.
 struct WebUISource {
+  // The source's internal ID, unique across all sources in storage.
+  // Not intended to be displayed.
+  int64 id;
   uint64 source_event_id;
   url.mojom.Origin source_origin;
   attribution_reporting.mojom.DestinationSet destinations;

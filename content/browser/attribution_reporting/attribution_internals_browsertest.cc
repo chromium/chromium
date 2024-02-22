@@ -302,6 +302,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillByDefault(base::test::RunOnceCallbackRepeatedly<
                      0>(std::vector<StoredSource>{
           SourceBuilder(now)
+              .SetSourceId(StoredSource::Id(1))
               .SetSourceEventId(std::numeric_limits<uint64_t>::max())
               .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
               .SetDebugKey(19)
@@ -313,6 +314,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetMaxEventLevelReports(3)
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))
+              .SetSourceId(StoredSource::Id(2))
               .SetSourceType(SourceType::kEvent)
               .SetPriority(std::numeric_limits<int64_t>::max())
               .SetDedupKeys({13, 17})
@@ -325,10 +327,12 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetMaxEventLevelReports(1)
               .BuildStored(),
           SourceBuilder(now + base::Hours(2))
+              .SetSourceId(StoredSource::Id(3))
               .SetActiveState(
                   StoredSource::ActiveState::kReachedEventLevelAttributionLimit)
               .BuildStored(),
           SourceBuilder(now + base::Hours(8))
+              .SetSourceId(StoredSource::Id(4))
               .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
               .BuildStored()}));
 
