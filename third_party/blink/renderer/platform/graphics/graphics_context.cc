@@ -864,13 +864,15 @@ void GraphicsContext::FillRoundedRect(const FloatRoundedRect& rrect,
     return;
   }
 
-  if (color == FillColor()) {
-    DrawRRect(SkRRect(rrect), ImmutableState()->FillFlags(), auto_dark_mode);
+  const cc::PaintFlags& fill_flags = ImmutableState()->FillFlags();
+  const SkColor4f sk_color = color.toSkColor4f();
+  if (sk_color == fill_flags.getColor4f()) {
+    DrawRRect(SkRRect(rrect), fill_flags, auto_dark_mode);
     return;
   }
 
-  cc::PaintFlags flags = ImmutableState()->FillFlags();
-  flags.setColor(color.toSkColor4f());
+  cc::PaintFlags flags = fill_flags;
+  flags.setColor(sk_color);
 
   DrawRRect(SkRRect(rrect), flags, auto_dark_mode);
 }
@@ -924,18 +926,18 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
                                  const AutoDarkMode& auto_dark_mode) {
   DCHECK(canvas_);
 
+  const cc::PaintFlags& fill_flags = ImmutableState()->FillFlags();
+  const SkColor4f sk_color = color.toSkColor4f();
   if (!IsSimpleDRRect(outer, inner)) {
-    if (color == FillColor()) {
-      canvas_->drawDRRect(
-          SkRRect(outer), SkRRect(inner),
-          DarkModeFlags(this, auto_dark_mode, ImmutableState()->FillFlags()));
+    if (sk_color == fill_flags.getColor4f()) {
+      canvas_->drawDRRect(SkRRect(outer), SkRRect(inner),
+                          DarkModeFlags(this, auto_dark_mode, fill_flags));
     } else {
-      cc::PaintFlags flags(ImmutableState()->FillFlags());
-      flags.setColor(color.toSkColor4f());
+      cc::PaintFlags flags(fill_flags);
+      flags.setColor(sk_color);
       canvas_->drawDRRect(SkRRect(outer), SkRRect(inner),
                           DarkModeFlags(this, auto_dark_mode, flags));
     }
-
     return;
   }
 
@@ -944,8 +946,8 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
   SkRRect stroke_r_rect(outer);
   stroke_r_rect.inset(stroke_width / 2, stroke_width / 2);
 
-  cc::PaintFlags stroke_flags(ImmutableState()->FillFlags());
-  stroke_flags.setColor(color.toSkColor4f());
+  cc::PaintFlags stroke_flags(fill_flags);
+  stroke_flags.setColor(sk_color);
   stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags.setStrokeWidth(stroke_width);
 
