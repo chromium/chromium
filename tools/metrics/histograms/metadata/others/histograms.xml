@@ -3545,6 +3545,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.RegistrationMethod"
+    enum="ConversionsRegistrationMethod" expires_after="M126">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the method used to register an attribution.
+
+    Recorded once per valid source, trigger or OS registrations header parsed
+    and submitted to the AttributionManager.
+
+    For buffered OS registrations, the event is emitted when buffering the
+    registrations items. There is negligible probability that items won't reach
+    the manager for the case where the AttributionDataHostManager is destroyed
+    before flushing the buffer.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.RegistrationsPerRedirectChain"
     units="registrations" expires_after="2024-07-14">
   <owner>linnan@chromium.org</owner>

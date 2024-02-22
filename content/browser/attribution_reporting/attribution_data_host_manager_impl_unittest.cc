@@ -127,6 +127,8 @@ constexpr char kNavigationUnexpectedRegistrationHistogram[] =
 constexpr char kBackgroundNavigationOutcome[] =
     "Conversions.BackgroundNavigation.Outcome";
 
+constexpr char kRegistrationMethod[] = "Conversions.RegistrationMethod";
+
 const GlobalRenderFrameHostId kFrameId = {0, 1};
 
 constexpr BeaconId kBeaconId(123);
@@ -159,6 +161,8 @@ MATCHER_P(SourceIsWithinFencedFrameIs, matcher, "") {
 }
 
 TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
+  base::HistogramTester histograms;
+
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
   auto destination_site =
       net::SchemefulSite::Deserialize("https://trigger.example");
@@ -194,6 +198,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 
   data_host_remote->SourceDataAvailable(reporting_origin, source_data);
   data_host_remote.FlushForTesting();
+
+  // kAttributionSrcBlink = 3
+  histograms.ExpectBucketCount(kRegistrationMethod, 3, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -248,6 +255,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
+  base::HistogramTester histograms;
+
   auto destination_origin =
       *SuitableOrigin::Deserialize("https://trigger.example");
   auto reporting_origin =
@@ -297,10 +306,15 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
   data_host_remote->TriggerDataAvailable(reporting_origin, trigger_data,
                                          /*verifications=*/{});
   data_host_remote.FlushForTesting();
+
+  // kAttributionSrcBlink = 3
+  histograms.ExpectBucketCount(kRegistrationMethod, 3, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHost_ReceiverModeCheckPerformed) {
+  base::HistogramTester histograms;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -361,6 +375,9 @@ TEST_F(AttributionDataHostManagerImplTest,
                                          std::move(trigger_data),
                                          /*verifications=*/{});
   data_host_remote.FlushForTesting();
+
+  // kLegacyBlink = 5
+  histograms.ExpectBucketCount(kRegistrationMethod, 5, 3);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -582,6 +599,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   // kRegistered = 0, kProcessed = 3.
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 0, 1);
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 1);
+
+  // kNavBackgroundBlink = 1
+  histograms.ExpectBucketCount(kRegistrationMethod, /*sample=*/1, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1255,6 +1275,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
+  base::HistogramTester histograms;
+
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       network::features::kAttributionReportingCrossAppWeb);
@@ -1293,6 +1315,9 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  // kNavForeground = 0
+  histograms.ExpectBucketCount(kRegistrationMethod, 0, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2251,6 +2276,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest, NavigationBeaconSource_Registered) {
+  base::HistogramTester histograms;
+
   EXPECT_CALL(mock_manager_, HandleSource);
 
   auto reporting_url = GURL("https://report.test");
@@ -2274,6 +2301,9 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationBeaconSource_Registered) {
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  // kFencedFrameAutomaticBeacon = 8
+  histograms.ExpectBucketCount(kRegistrationMethod, 8, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2764,6 +2794,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
+  base::HistogramTester histograms;
+
   EXPECT_CALL(mock_manager_,
               HandleSource(AllOf(SourceTypeIs(SourceType::kEvent),
                                  SourceIsWithinFencedFrameIs(true)),
@@ -2787,6 +2819,9 @@ TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  // kFencedFrameBeacon = 7
+  histograms.ExpectBucketCount(kRegistrationMethod, 7, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
@@ -2988,6 +3023,8 @@ class AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
        Background_NavigationTiedOsRegistrationsAreBuffered) {
+  base::HistogramTester histograms;
+
   const blink::AttributionSrcToken attribution_src_token;
 
   const auto reporting_url = GURL("https://report.test");
@@ -3093,6 +3130,11 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   checkpoint.Call(2);
 
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  // kNavForeground = 0, kNavBackgroundBrowser = 2
+  histograms.ExpectBucketCount(kRegistrationMethod, 0, 1);
+  // Even if OS registrations are buffered, each data received should record.
+  histograms.ExpectBucketCount(kRegistrationMethod, 2, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
@@ -3867,6 +3909,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
        BackgroundOsSource) {
+  base::HistogramTester histograms;
+
   const auto reporting_url = GURL("https://report.test");
   const auto context_origin =
       *SuitableOrigin::Deserialize("https://destination.test");
@@ -3897,6 +3941,9 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  // kAttributionSrcBrowser = 4
+  histograms.ExpectBucketCount(kRegistrationMethod, 4, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
@@ -3960,6 +4007,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
        BackgroundTrigger) {
+  base::HistogramTester histograms;
+
   const blink::AttributionSrcToken attribution_src_token;
 
   const auto reporting_url = GURL("https://report.test");
@@ -3991,6 +4040,9 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  // kLegacyBrowser = 6
+  histograms.ExpectBucketCount(kRegistrationMethod, 6, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
