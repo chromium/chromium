@@ -6128,6 +6128,8 @@ static_library("ui") {
       "views/web_apps/web_app_identity_update_confirmation_view.h",
       "views/web_apps/web_app_info_image_source.cc",
       "views/web_apps/web_app_info_image_source.h",
+      "views/web_apps/web_app_install_dialog_coordinator.cc",
+      "views/web_apps/web_app_install_dialog_coordinator.h",
       "views/web_apps/web_app_install_dialog_delegate.cc",
       "views/web_apps/web_app_install_dialog_delegate.h",
       "views/web_apps/web_app_uninstall_dialog_view.cc",

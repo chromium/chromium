@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -65,6 +66,12 @@ class PWAConfirmationBubbleViewBrowserTest
             webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   }
 
+ protected:
+  PWAConfirmationBubbleView* GetBubbleView(Browser* browser) {
+    return WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser)
+        ->GetBubbleView();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -109,11 +116,8 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
             loop.Quit();
           }));
 
-  PWAConfirmationBubbleView* bubble_dialog =
-      PWAConfirmationBubbleView::GetBubble();
-
   base::HistogramTester histograms;
-  bubble_dialog->CancelDialog();
+  GetBubbleView(browser())->CancelDialog();
   loop.Run();
 
   histograms.ExpectUniqueSample(
@@ -141,10 +145,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
           }),
       PwaInProductHelpState::kShown);
 
-  PWAConfirmationBubbleView* bubble_dialog =
-      PWAConfirmationBubbleView::GetBubble();
-
-  bubble_dialog->CancelDialog();
+  GetBubbleView(browser())->CancelDialog();
   loop.Run();
   PrefService* pref_service =
       Profile::FromBrowserContext(browser()
@@ -200,10 +201,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
           }),
       PwaInProductHelpState::kShown);
 
-  PWAConfirmationBubbleView* bubble_dialog =
-      PWAConfirmationBubbleView::GetBubble();
-
-  bubble_dialog->AcceptDialog();
+  GetBubbleView(browser())->AcceptDialog();
   loop.Run();
 
   EXPECT_EQ(GetIntWebAppPref(pref_service, app_id,
@@ -232,11 +230,10 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
               std::unique_ptr<WebAppInstallInfo> app_info_callback) {
             dialog_accepted_ = accepted;
           }));
-  PWAConfirmationBubbleView* bubble_dialog =
-      PWAConfirmationBubbleView::GetBubble();
 
   base::HistogramTester histograms;
-  views::test::WidgetDestroyedWaiter destroy_waiter(bubble_dialog->GetWidget());
+  views::test::WidgetDestroyedWaiter destroy_waiter(
+      GetBubbleView(browser())->GetWidget());
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), GURL(url::kAboutBlankURL), /*number_of_navigations=*/1);
 

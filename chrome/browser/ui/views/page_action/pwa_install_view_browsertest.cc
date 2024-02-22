@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
@@ -308,12 +309,15 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   void WaitPwaConfirmationBubbleClosed() {
-    if (PWAConfirmationBubbleView::IsShowing()) {
+    auto* install_dialog_coordinator =
+        web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(
+            browser());
+    if (install_dialog_coordinator->IsShowing()) {
       base::RunLoop run_loop;
-      PWAConfirmationBubbleView::GetBubble()->RegisterDeleteDelegateCallback(
-                                                      run_loop.QuitClosure());
-      PWAConfirmationBubbleView::GetBubble()->GetWidget()->CloseWithReason(
-                                  views::Widget::ClosedReason::kEscKeyPressed);
+      install_dialog_coordinator->GetBubbleView()
+          ->RegisterDeleteDelegateCallback(run_loop.QuitClosure());
+      install_dialog_coordinator->GetBubbleView()->GetWidget()->CloseWithReason(
+          views::Widget::ClosedReason::kEscKeyPressed);
       run_loop.Run();
     }
   }
@@ -459,7 +463,10 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   chrome::SelectNextTab(browser());
   WaitPwaConfirmationBubbleClosed();
   ASSERT_EQ(non_installable_web_contents, GetCurrentTab());
-  EXPECT_FALSE(PWAConfirmationBubbleView::IsShowing());
+
+  EXPECT_FALSE(
+      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser())
+          ->IsShowing());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 

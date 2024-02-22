@@ -16,8 +16,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -109,11 +111,19 @@ void PwaInstallView::UpdateImpl() {
     return;
   }
 
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser) {
+    return;
+  }
+
   SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents)));
 
   auto* manager = webapps::AppBannerManager::FromWebContents(web_contents);
+  auto* web_app_install_dialog_coordinator =
+      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser);
+
   // May not be present e.g. in incognito mode.
   if (!manager) {
     return;
@@ -132,7 +142,8 @@ void PwaInstallView::UpdateImpl() {
     ResetSlideAnimation(false);
   }
 
-  SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
+  SetVisible(is_probably_promotable ||
+             web_app_install_dialog_coordinator->IsShowing());
 
   // See above about safety of this call.
   std::optional<webapps::WebAppBannerData> data =
@@ -208,7 +219,19 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
 }
 
 views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
-  views::BubbleDialogDelegate* bubble = PWAConfirmationBubbleView::GetBubble();
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser) {
+    return nullptr;
+  }
+
+  views::BubbleDialogDelegate* bubble =
+      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser)
+          ->GetBubbleView();
   // Only return the active bubble if it's anchored to `this`. (This check takes
   // the more generic approach of verifying that it's the same widget as to
   // avoid depending too heavily on the exact details of how anchoring works.)

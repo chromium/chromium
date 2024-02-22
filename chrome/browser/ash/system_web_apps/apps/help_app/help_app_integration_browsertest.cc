@@ -46,7 +46,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -666,7 +666,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // PWAConfirmationBubbleView (Not to be confused with the omnibox icon).
   waiter.WaitIfNeededAndGet();
 
-  EXPECT_TRUE(PWAConfirmationBubbleView::IsShowing());
+  EXPECT_TRUE(
+      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser())
+          ->IsShowing());
 }
 
 // Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` crashes
