@@ -492,19 +492,6 @@ BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
 // of languages.
 BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Privacy Guide v3 update of the Privacy Guide feature
-// in Chrome Settings.
-BASE_FEATURE(kPrivacyGuide3,
-             "PrivacyGuide3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables the Privacy Guide preload card update of the Privacy
-// Guide feature in Chrome Settings. Also, this requires the PrivacyGuide3
-// feature to be enabled as well.
-BASE_FEATURE(kPrivacyGuidePreload,
-             "PrivacyGuidePreload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Defines if the linked services setting is eligible to be shown in Chrome
 // settings.
 BASE_FEATURE(kLinkedServicesSetting,

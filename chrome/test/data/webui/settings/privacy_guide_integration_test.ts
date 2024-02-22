@@ -165,8 +165,6 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
       });
 
       expectedArguments.add(
-          PrivacyGuideStepsEligibleAndReached.SEARCH_SUGGESTIONS_ELIGIBLE);
-      expectedArguments.add(
           PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE);
 
       await clickNextOnWelcomeStep(page);
@@ -203,19 +201,10 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
         nextButtonElementOnStep.click();
       }
 
-      expectedArguments.add(
-          PrivacyGuideStepsEligibleAndReached.SEARCH_SUGGESTIONS_REACHED);
-
-      assertTrue(
-          isSetEqual(
-              expectedArguments,
-              await getPromiseArguments(testMetricsBrowserProxy)),
-          'Sets differ for the step: SEARCH_SUGGESTIONS_REACHED');
-
-      const nextButtonElementOnSearchSuggestionsStep =
+      const nextButtonElementOnLastStep =
           page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
-      assertTrue(!!nextButtonElementOnSearchSuggestionsStep);
-      nextButtonElementOnSearchSuggestionsStep.click();
+      assertTrue(!!nextButtonElementOnLastStep);
+      nextButtonElementOnLastStep.click();
 
       expectedArguments.add(
           PrivacyGuideStepsEligibleAndReached.COMPLETION_REACHED);

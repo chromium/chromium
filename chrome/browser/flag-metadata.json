@@ -6686,14 +6686,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "privacy-guide-3",
-    "owners": [
-      "rainhard@chromium.org",
-      "msramek@chromium.org",
-      "chrome-privacy-controls@google.com"],
-    "expiry_milestone": 123
-  },
-  {
     "name": "privacy-guide-android",
     "owners": [
       "rubindl@chromium.org",
@@ -6716,14 +6708,6 @@
       "chrome-privacy-controls@google.com"
     ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "privacy-guide-preload",
-    "owners": [
-      "rainhard@chromium.org",
-      "msramek@chromium.org",
-      "chrome-privacy-controls@google.com"],
-    "expiry_milestone": 124
   },
   {
     "name": "privacy-guide-preload-android",
