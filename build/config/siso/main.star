@@ -95,6 +95,33 @@ def __use_large_b289968566(ctx, step_config):
         # use_remoteexec = true
         "./android_clang_arm/obj/content/browser/browser/browser_interface_binders.o",
 
+        # Fallback happens with follwoing args.gn (try/fuchsia-x64-cast-receiver-rel).
+        # Fallback may happen in other build config too.
+        # cast_streaming_enable_remoting = true
+        # chrome_pgo_phase = 0
+        # dcheck_always_on = true
+        # enable_cast_receiver = true
+        # enable_dav1d_decoder = false
+        # enable_hidpi = false
+        # enable_libaom = false
+        # enable_library_cdms = false
+        # enable_logging_override = true
+        # enable_pdf = false
+        # enable_plugins = false
+        # enable_printing = false
+        # fuchsia_code_coverage = true
+        # is_component_build = false
+        # is_debug = false
+        # optimize_for_size = true
+        # optional_trace_events_enabled = false
+        # produce_v8_compile_hints = false
+        # symbol_level = 0
+        # target_os = "fuchsia"
+        # use_remoteexec = true
+        # use_thin_lto = false
+        "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
+        "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
+
         # Fallback with unknown build configs.
         "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
         "./ash_clang_x64/obj/chrome/browser/ash/ash/user_session_manager.o",
@@ -165,8 +192,6 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/chrome/test/test_support_ui/offer_notification_bubble_views_test_base.o",
         "./obj/chrome/test/unit_tests/site_settings_handler_unittest.o",
         "./obj/fuchsia_web/runners/cast_runner_exe/main.o",
-        "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
-        "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
     ]
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
