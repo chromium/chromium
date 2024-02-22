@@ -92,6 +92,28 @@ BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(
+      kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  bool skipParentApprovalEnabled = base::FeatureList::IsEnabled(
+      kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+  bool permissionExtensionsForSupervisedUsersEnabled =
+      base::FeatureList::IsEnabled(
+          kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+  if (skipParentApprovalEnabled) {
+    DCHECK(permissionExtensionsForSupervisedUsersEnabled);
+  }
+  return skipParentApprovalEnabled &&
+         permissionExtensionsForSupervisedUsersEnabled;
+#else
+  NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Runs a shadow no-op safe-sites call alongside kids-api call, to compare
 // latencies.
 BASE_FEATURE(kShadowKidsApiWithSafeSites,

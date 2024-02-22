@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "extensions/browser/extension_prefs.h"
@@ -119,6 +120,10 @@ bool SupervisedUserExtensionsManager::IsExtensionAllowed(
 bool SupervisedUserExtensionsManager::CanInstallExtensions() const {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
+  if (supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    return supervised_user_service->HasACustodian();
+  }
   return supervised_user_service->HasACustodian() &&
          user_prefs_->GetBoolean(
              prefs::kSupervisedUserExtensionsMayRequestPermissions);
@@ -370,6 +375,12 @@ void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
 
 bool SupervisedUserExtensionsManager::ShouldBlockExtension(
     const std::string& extension_id) const {
+  if (supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    // On this extension handling mode, the user is never blocked from
+    // installing extensions.
+    return false;
+  }
   if (user_prefs_->GetBoolean(
           prefs::kSupervisedUserExtensionsMayRequestPermissions)) {
     return false;

@@ -50,8 +50,11 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   // Returns whether the extension is allowed by the parent.
   bool IsExtensionAllowed(const Extension& extension) const;
 
-  // Returns whether the supervised user can install extensions based on
-  // existing parental controls.
+  // Returns whether the supervised user can install extensions.
+  // If the feature that allows skipping parent approval is enabled, supervised
+  // user are always allowed to install extensions.
+  // If the feature is disabled, the permission to install is based on existing
+  // Family Link parental controls ("Permissions" switch).
   bool CanInstallExtensions() const;
 
   // Records the state of extension approvals.
@@ -131,8 +134,14 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   // idempotent.
   void ChangeExtensionStateIfNecessary(const std::string& extension_id);
 
-  // Returns whether we should block an extension based on the state of the
-  // "Permissions for sites, apps and extensions" toggle.
+  // Returns whether we should block an extension.
+  // If the toggle "Permissions for sites, apps and extensions" toggle
+  // is used to manage supervised user extensions, the result depends on the
+  // value of the toggle.
+  // If the new toggle "Extensions" is used to manage supervised user
+  // extensions, this method return always false.
+  // TODO(b/321239324): De-release when the "Extensions" toggle-management is
+  // launched.
   bool ShouldBlockExtension(const std::string& extension_id) const;
 
   // The current state of registration of this class as a management policy.

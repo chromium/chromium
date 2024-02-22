@@ -398,13 +398,14 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(FamilyLinkSwitchState::kEnabled,
                         FamilyLinkSwitchState::kDisabled),
         /*extensions_switch_target_value==*/
-        testing::Values(FamilyLinkSwitchState::kEnabled,
-                        FamilyLinkSwitchState::kDisabled),
+        testing::Values(
+            // TODO(b/321239324): Parametrize with Extensions switch ON once the
+            // handling of extensions on switch flipping is added.
+            FamilyLinkSwitchState::kDisabled),
         /*extensions_handling_mode=*/
         testing::Values(
-            // TODO(b/321239324): Parametrize with Extensions switch once the
-            // flow is added.
-            ExtensionHandlingMode::kExtensionsGovernedByPermissionsSwitch)),
+            ExtensionHandlingMode::kExtensionsGovernedByPermissionsSwitch,
+            ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch)),
     [](const auto& info) {
       return std::string(std::get<0>(info.param)->data()) +
              std::string(

@@ -51,6 +51,8 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/common/pref_names.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/gpu_feature_checker.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -373,6 +375,34 @@ void ReportWebStoreInstallNotAllowlistedInstalled(bool installed,
         installed);
   }
 }
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+// Grants parental approval to extensions installed dy supervised users
+// the end of the extension installation, if the parent has allowed installing
+// extensions without their intervention.
+void GrantExtensionApprovalForChildWhenSkipParentApprovalEnabled(
+    const std::string& extension_id,
+    content::BrowserContext& browser_context) {
+  const Profile* profile = Profile::FromBrowserContext(&browser_context);
+  if (!supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs()) ||
+      !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+          *profile->GetPrefs())) {
+    return;
+  }
+  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
+      ManagementAPI::GetFactoryInstance()
+          ->Get(&browser_context)
+          ->GetSupervisedUserExtensionsDelegate();
+  CHECK(supervised_user_extensions_delegate);
+  CHECK(supervised_user_extensions_delegate->CanInstallExtensions());
+  const ExtensionRegistry* registry = ExtensionRegistry::Get(&browser_context);
+  const Extension* extension =
+      registry->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
+  CHECK(extension);
+  supervised_user_extensions_delegate->AddExtensionApproval(*extension);
+}
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
 }  // namespace
 
 // static
@@ -503,11 +533,13 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
   }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  // Check if the supervised user is allowed to install extensions.
-  // NOTE: we do not block themes.
+  // Check if the supervised user is allowed to install extensions in the legacy
+  // flow. NOTE: we do not block themes.
   if (!dummy_extension_->is_theme()) {
     if (supervised_user::AreExtensionsPermissionsEnabled(
-            *profile_->GetPrefs())) {
+            *profile_->GetPrefs()) &&
+        !supervised_user::
+            IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
       SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
           ManagementAPI::GetFactoryInstance()
               ->Get(profile_)
@@ -730,9 +762,11 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
                                          // theme installation
           && g_browser_process->profile_manager()->IsValidProfile(profile_) &&
           supervised_user::AreExtensionsPermissionsEnabled(
+              *profile_->GetPrefs()) &&
+          !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
               *profile_->GetPrefs())) {
         if (PromptForParentApproval()) {
-          // If are showing parent permission dialog, return instead of
+          // If we are showing parent permission dialog, return instead of
           // break, so that we don't release the ref below.
           return;
         } else {
@@ -889,7 +923,11 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (!dummy_extension_->is_theme()) {
     const bool requires_parent_permission =
-        supervised_user::AreExtensionsPermissionsEnabled(*profile_->GetPrefs());
+        supervised_user::AreExtensionsPermissionsEnabled(
+            *profile_->GetPrefs()) &&
+        !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+            *profile_->GetPrefs());
+
     // We don't prompt for parent permission for themes, so no need
     // to configure the install prompt to indicate that this is a child
     // asking a parent for installation permission.
@@ -1037,6 +1075,12 @@ void WebstorePrivateCompleteInstallFunction::OnExtensionInstallSuccess(
   Respond(NoArguments());
 
   RecordWebstoreExtensionInstallResult(true);
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  CHECK(Profile::FromBrowserContext(browser_context()));
+  GrantExtensionApprovalForChildWhenSkipParentApprovalEnabled(
+      id, *Profile::FromBrowserContext(browser_context()));
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // Matches the AddRef in Run().
   Release();

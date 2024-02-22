@@ -317,9 +317,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, EmptyCrx) {
 static constexpr char kTestAppId[] = "iladmdjkfniedhfhcfoefgojhgaiaccc";
 static constexpr char kTestAppVersion[] = "0.1";
 
+enum class SupervisedUserExtensionManagedBySwitch : int {
+  kPermissions = 0,
+  kExtensions,
+};
+
 // Test fixture for various cases of installation for child accounts.
 class SupervisedUserExtensionWebstorePrivateApiTest
     : public ExtensionWebstorePrivateApiTest,
+      public ::testing::WithParamInterface<
+          SupervisedUserExtensionManagedBySwitch>,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       public TestExtensionApprovalsManagerObserver,
 #endif
@@ -347,13 +354,20 @@ class SupervisedUserExtensionWebstorePrivateApiTest
                 .sign_in_mode =
                     supervised_user::SupervisionMixin::SignInMode::kSupervised,
             }) {
+
+    std::vector<base::test::FeatureRef> enabled_features;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {supervised_user::
-             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop},
-        /*disabled_features=*/{});
+    enabled_features.push_back(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 #endif
+
+    if (GetParam() == SupervisedUserExtensionManagedBySwitch::kExtensions) {
+      enabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    }
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
   }
 
   ~SupervisedUserExtensionWebstorePrivateApiTest() override {
@@ -382,6 +396,8 @@ class SupervisedUserExtensionWebstorePrivateApiTest
 
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
+
+    parent_permission_dialog_appeared_ = false;
   }
 
   void TearDownOnMainThread() override {
@@ -400,6 +416,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     view->SetRepromptAfterIncorrectCredential(false);
     view->SetIdentityManagerForTesting(
         supervision_mixin_.GetIdentityTestEnvironment()->identity_manager());
+    parent_permission_dialog_appeared_ = true;
     // Everything is set up, so take the next action.
     if (next_dialog_action_) {
       switch (next_dialog_action_.value()) {
@@ -420,6 +437,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TestExtensionApprovalsManagerObserver override:
   void OnTestParentAccessDialogCreated() override {
+    parent_permission_dialog_appeared_ = true;
     if (next_dialog_action_) {
       switch (next_dialog_action_.value()) {
         case NextDialogAction::kCancel:
@@ -427,8 +445,12 @@ class SupervisedUserExtensionWebstorePrivateApiTest
           break;
         case NextDialogAction::kAccept:
           bool can_request_permission =
-              browser()->profile()->GetPrefs()->GetBoolean(
-                  prefs::kSupervisedUserExtensionsMayRequestPermissions);
+              (GetParam() ==
+               SupervisedUserExtensionManagedBySwitch::kPermissions)
+                  ? browser()->profile()->GetPrefs()->GetBoolean(
+                        prefs::kSupervisedUserExtensionsMayRequestPermissions)
+                  : true;
+
           if (!can_request_permission) {
             ash::ParentAccessDialog::GetInstance()->SetDisabled();
             break;
@@ -447,6 +469,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
 
  protected:
   std::unique_ptr<SupervisedUserExtensionsDelegateImpl> extensions_delegate_;
+  bool parent_permission_dialog_appeared_ = false;
 
  private:
   // Create another embedded test server to avoid starting the same one twice.
@@ -457,7 +480,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
 };
 
 // Tests install for a child when parent permission is granted.
-IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        ParentPermissionGranted) {
   WebstoreInstallListener listener;
   auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
@@ -478,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
 
 // Tests no install occurs for a child when the parent permission
 // dialog is canceled.
-IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        ParentPermissionCanceled) {
   WebstoreInstallListener listener;
   set_next_dialog_action(NextDialogAction::kCancel);
@@ -499,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
 }
 
 // Tests that no parent permission is required for a child to install a theme.
-IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        NoParentPermissionRequiredForTheme) {
   WebstoreInstallListener listener;
   auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
@@ -509,10 +532,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
   ASSERT_EQ("idlfhncioikpdnlhnmcjogambnefbbfp", listener.id());
 }
 
-// Tests that even if the kSupervisedUserInitiatedExtensionInstall feature flag
-// is enabled, supervised user extension installs are blocked if the
-// "Permissions for sites, apps and extensions" toggle is off.
-IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
+// Tests that supervised user extension installs are blocked if
+// 1) the "Permissions for sites, apps and extensions" toggle is off and
+// 2) the extensions are managed by this toggle.
+// If the extensions are managed by the "Extensions" toggle (regardless of its
+// value), an extension installation is never blocked.
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        InstallBlockedWhenPermissionsToggleOff) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -520,23 +545,98 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
 
+  WebstoreInstallListener listener;
+  auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
   set_next_dialog_action(NextDialogAction::kAccept);
   // Tell the Reauth API client to return a success for the next reauth
   // request.
   SetNextReAuthStatus(GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);
-  ASSERT_TRUE(RunInstallTest("install_blocked_child.html", "app.crx"));
+
+  // Expect the extension to be blocked or installed normally based on the
+  // toggle that manages supervised user extensions.
+  std::string page =
+      GetParam() == SupervisedUserExtensionManagedBySwitch::kPermissions
+          ? "install_blocked_child.html"
+          : "install_child.html";
+  ASSERT_TRUE(RunInstallTest(page, "app.crx"));
+
+  if (GetParam() == SupervisedUserExtensionManagedBySwitch::kExtensions) {
+    listener.Wait();
+    ASSERT_TRUE(listener.received_success());
+    ASSERT_EQ(kTestAppId, listener.id());
+
+    scoped_refptr<const Extension> extension =
+        extensions::ExtensionBuilder("test extension")
+            .SetID(kTestAppId)
+            .SetVersion(kTestAppVersion)
+            .Build();
+    ASSERT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+  }
+
+  int expected_count_failed =
+      GetParam() == SupervisedUserExtensionManagedBySwitch::kPermissions ? 1
+                                                                         : 0;
   histogram_tester.ExpectUniqueSample(
       SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
       SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
-      1);
+      expected_count_failed);
   histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName, 1);
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      expected_count_failed);
   EXPECT_EQ(
-      1,
+      expected_count_failed,
       user_action_tester.GetActionCount(
           SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
 }
 
+// Tests a successful install for a child when parent permission can be skipped
+// on installation: 1) when extensions are managed via the dedicated
+// "Extensions" toggle and 2) the toggle is enabled. If extensions are managed
+// via the "Permissions" toggle, the parent approval is required.
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
+                       InstallSuccessfulWhenExtensionsToggleOn) {
+  WebstoreInstallListener listener;
+  auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
+
+  // Turn on preference that skips parent approval on extension installations.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), true);
+  if (GetParam() == SupervisedUserExtensionManagedBySwitch::kPermissions) {
+    set_next_dialog_action(NextDialogAction::kAccept);
+  } else {
+    // Turn off the "Permissions for sites, apps and extensions" toggle. It does
+    // not affect the successful installation on this mode.
+    supervised_user_test_util::
+        SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
+  }
+
+  ASSERT_TRUE(RunInstallTest("install_child.html", "app.crx"));
+  listener.Wait();
+  ASSERT_TRUE(listener.received_success());
+  ASSERT_EQ(kTestAppId, listener.id());
+
+  ASSERT_EQ(GetParam() == SupervisedUserExtensionManagedBySwitch::kPermissions,
+            parent_permission_dialog_appeared_);
+
+  scoped_refptr<const Extension> extension =
+      extensions::ExtensionBuilder("test extension")
+          .SetID(kTestAppId)
+          .SetVersion(kTestAppVersion)
+          .Build();
+  ASSERT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserExtensionWebstorePrivateApiTest,
+    testing::Values(SupervisedUserExtensionManagedBySwitch::kExtensions,
+                    SupervisedUserExtensionManagedBySwitch::kPermissions),
+    [](const auto& info) {
+      return (info.param) ==
+                     SupervisedUserExtensionManagedBySwitch::kPermissions
+                 ? "ManagedByPermissionsToggle"
+                 : "ManagedByExtensionsToggle";
+    });
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {

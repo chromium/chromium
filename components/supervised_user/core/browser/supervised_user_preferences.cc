@@ -209,6 +209,16 @@ bool AreExtensionsPermissionsEnabled(const PrefService& pref_service) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
+bool SupervisedUserCanSkipExtensionParentApprovals(
+    const PrefService& pref_service) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return IsChildAccount(pref_service) &&
+         IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
+         pref_service.GetBoolean(prefs::kSkipParentApprovalToInstallExtensions);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
 }  // namespace supervised_user
 
 #if BUILDFLAG(IS_ANDROID)

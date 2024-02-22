@@ -45,6 +45,7 @@ source_set("features") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//extensions/buildflags",
   ]
 }
 

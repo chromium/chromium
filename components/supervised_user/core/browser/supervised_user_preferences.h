@@ -42,9 +42,17 @@ bool IsSubjectToParentalControls(const PrefService& pref_service);
 // Returns true if the URL filtering parental control is enabled.
 bool IsUrlFilteringEnabled(const PrefService& pref_service);
 
-// Returns true if the extensions permissions parental control is enabled.
+// Returns true if the extensions permissions parental control is enabled
+// for supervised users.
+// Returns false if the user is not supervised.
 bool AreExtensionsPermissionsEnabled(const PrefService& pref_service);
 
+// Returns true if the extension handling mode for skipping parent approval is
+// enabled and the parent has authorized installing extensions without their
+// approval.
+// Returns false if the user is not supervised.
+bool SupervisedUserCanSkipExtensionParentApprovals(
+    const PrefService& pref_service);
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREFERENCES_H_

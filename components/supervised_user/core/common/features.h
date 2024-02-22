@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace supervised_user {
 
@@ -30,6 +31,16 @@ BASE_DECLARE_FEATURE(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Returns whether the new mode for extension approval management is enabled.
+// Under this mode, supervised users may request parent approval on each
+// extension installation or the parent allows and approves by default all
+// extension installations.
+// On Win/Linux/Mac enabling the new mode requires that the feature
+// `kEnableExtensionsPermissionsForSupervisedUsersOnDesktop` is also enabled.
+bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Returns whether banner can be displayed to the user after website filtering
 // is enabled
