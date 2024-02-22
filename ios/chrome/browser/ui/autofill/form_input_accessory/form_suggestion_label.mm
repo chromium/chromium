@@ -36,6 +36,11 @@ const CGFloat kSpacing = 4.0f;
 // The corner radius of the label.
 const CGFloat kCornerRadius = 8.0f;
 
+// Shadow parameters.
+const CGFloat kShadowRadius = 0.5;
+const CGFloat kShadowVerticalOffset = 1.0;
+const CGFloat kShadowOpacity = 1.0;
+
 // Creates a label with the given `text` and `alpha` suitable for use in a
 // suggestion button in the keyboard accessory view.
 UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
@@ -148,6 +153,13 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 - (void)layoutSubviews {
   [super layoutSubviews];
   self.layer.cornerRadius = [self cornerRadius];
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.layer.shadowRadius = kShadowRadius;
+    self.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
+    self.layer.shadowOpacity = kShadowOpacity;
+    self.layer.shadowColor = [UIColor colorNamed:kGrey400Color].CGColor;
+    self.layer.masksToBounds = NO;
+  }
 }
 
 #pragma mark - UIResponder
