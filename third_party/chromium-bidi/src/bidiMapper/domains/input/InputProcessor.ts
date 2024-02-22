@@ -80,36 +80,68 @@ export class InputProcessor {
     const context = this.#browsingContextStorage.getContext(params.context);
     const realm = await context.getOrCreateSandbox(undefined);
 
-    let isFileInput;
+    const enum ErrorCode {
+      Object,
+      Type,
+      Disabled,
+      Multiple,
+    }
+
+    let result;
     try {
-      const result = await realm.callFunction(
-        String(function getFiles(this: unknown) {
-          return (
-            this instanceof HTMLInputElement &&
-            this.type === 'file' &&
-            !this.disabled
-          );
+      result = await realm.callFunction(
+        String(function getFiles(this: unknown, fileListLength: number) {
+          if (!(this instanceof HTMLInputElement)) {
+            return ErrorCode.Object;
+          }
+          if (this.type !== 'file') {
+            return ErrorCode.Type;
+          }
+          if (this.disabled) {
+            return ErrorCode.Disabled;
+          }
+          if (fileListLength > 1 && !this.multiple) {
+            return ErrorCode.Multiple;
+          }
+          return;
         }),
         params.element,
-        [],
+        [{type: 'number', value: params.files.length}],
         false,
         Script.ResultOwnership.None,
         {},
         false
       );
-      assert(result.type === 'success');
-      assert(result.result.type === 'boolean');
-      isFileInput = result.result.value;
     } catch {
       throw new NoSuchElementException(
         `Could not find element ${params.element.sharedId}`
       );
     }
 
-    if (!isFileInput) {
-      throw new UnableToSetFileInputException(
-        `Element ${params.element.sharedId} is not a mutable file input.`
-      );
+    assert(result.type === 'success');
+    if (result.result.type === 'number') {
+      switch (result.result.value as ErrorCode) {
+        case ErrorCode.Object: {
+          throw new NoSuchElementException(
+            `Could not find element ${params.element.sharedId}`
+          );
+        }
+        case ErrorCode.Type: {
+          throw new UnableToSetFileInputException(
+            `Element ${params.element.sharedId} is not a file input`
+          );
+        }
+        case ErrorCode.Disabled: {
+          throw new UnableToSetFileInputException(
+            `Input element ${params.element.sharedId} is disabled`
+          );
+        }
+        case ErrorCode.Multiple: {
+          throw new UnableToSetFileInputException(
+            `Cannot set multiple files on a non-multiple input element`
+          );
+        }
+      }
     }
 
     /**
