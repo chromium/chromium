@@ -19759,6 +19759,12 @@
                         "VCBackgroundReplace",
                         "VideoConference"
                     ]
+                },
+                {
+                    "name": "BackgroundReplaceOnlyEnabled",
+                    "enable_features": [
+                        "VCBackgroundReplace"
+                    ]
                 }
             ]
         }
