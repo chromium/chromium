@@ -341072,10 +341072,6 @@
         "07301e286d4573309d66c3ca4323f6d736c2ddb2",
         []
        ],
-       "line-height-expected.txt": [
-        "fdc060c725b07b20c94c805632c39f4594f0b456",
-        []
-       ],
        "list-style-type-expected.txt": [
         "a88dfe45f1e20e09391d0643e07dbf635169a996",
         []
@@ -350741,7 +350737,7 @@
       []
      ],
      "Document-createEvent.https-expected.txt": [
-      "fcec49048fc2b8d7789f78267d40be219a73db52",
+      "986d20afbe7773a68303f597f2035448797cfd10",
       []
      ],
      "Document-createEvent.js": [
@@ -351389,7 +351385,7 @@
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host_list=ol_action=Backspace-expected.txt": [
-      "cdb2a0ce81febe55dc97ed9e66a801a769e2292f",
+      "9bbc4ce95e37e31c4d2bd9a585aa7c8c08d58a10",
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host_list=ol_action=Delete-expected.txt": [
@@ -351397,7 +351393,7 @@
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host_list=ul_action=Backspace-expected.txt": [
-      "b601ed1e9b73b0125578b2eba692c482a6c0e5bf",
+      "db3fe8ca948c3997fc6409fc56af30583f9dcc87",
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host_list=ul_action=Delete-expected.txt": [
@@ -352135,7 +352131,7 @@
       []
      ],
      "outdent_2001-last-expected.txt": [
-      "956bd91cf4c46ae78d09bde2d9d9aa9030cb3ab4",
+      "eb642bc9a587754714809606f8fecdaa8483274d",
       []
      ],
      "removeformat-expected.txt": [
@@ -398069,6 +398065,12 @@
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
          []
         ]
+       },
+       "set_files": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
        }
       },
       "log": {
@@ -398816,6 +398818,10 @@
        ],
        "deleteframe.html": [
         "fd757e6db0dce6b3cd787e81091763cc77983a30",
+        []
+       ],
+       "files.html": [
+        "3a710f0989e6cd8d07c688a4ae83b6dc80dc4445",
         []
        ],
        "frames.html": [
@@ -399856,7 +399862,15 @@
      []
     ],
     "RTCPeerConnection-helper.js": [
-     "92e4ccfa43acd3340becf3b5c1f1298294a72069",
+     "6f35fde76ce274d4283ec77fd7ec8bf056cee257",
+     []
+    ],
+    "RTCPeerConnection-iceConnectionState-disconnected.https-expected.txt": [
+     "d746ca679f99c321a61400a1809c5c6777e27c27",
+     []
+    ],
+    "RTCPeerConnection-iceGatheringState-expected.txt": [
+     "223daae954484e08ad6b3541f9f56146a201d8c7",
      []
     ],
     "RTCPeerConnection-mandatory-getStats.https-expected.txt": [
@@ -408660,116 +408674,1268 @@
       {}
      ]
     ],
-    "idbobjectstore_add.htm": [
-     "33ea0943886bf1164ddbcccd9b4a12ee290edec4",
+    "idbobjectstore_add.any.js": [
+     "b3071c1f94cbf863d5deb531c6b0dad332b80135",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add with an inline key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add with an inline key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add with an inline key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add with an inline key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add10.htm": [
-     "d84004250de4d5ef674aa74cbf141a67fd9c7b45",
+    "idbobjectstore_add10.any.js": [
+     "7b93dec16a060398d5e01725a7e853081d589e69",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add10.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to call 'add' without an key parameter when the object store uses out-of-line keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add10.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to call 'add' without an key parameter when the object store uses out-of-line keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add10.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to call 'add' without an key parameter when the object store uses out-of-line keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add10.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to call 'add' without an key parameter when the object store uses out-of-line keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add11.htm": [
-     "b1d9f71fd0650fe01d4860ee8f0742feea0b5769",
+    "idbobjectstore_add11.any.js": [
+     "cff8f6f1a02f0251565c9c1c7344a41c1119c670",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add11.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the record's key does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add11.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the record's key does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add11.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the record's key does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add11.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the record's key does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add12.htm": [
-     "fc5a7bcebbea4bf9886baeb725b3470bd1deeac8",
+    "idbobjectstore_add12.any.js": [
+     "c7ebe751d7ef0d87ae29fc5f117abbeaad48c536",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add12.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the record's in-line key is not defined"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add12.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the record's in-line key is not defined"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add12.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the record's in-line key is not defined"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add12.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the record's in-line key is not defined"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add13.htm": [
-     "ec82989b01aacb72be4fc1f8b97a4e9f0514049b",
+    "idbobjectstore_add13.any.js": [
+     "fdd77751c0059e2b78b79705df7c8ff786b95928",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add13.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the out of line key provided does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add13.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the out of line key provided does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add13.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the out of line key provided does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add13.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record where the out of line key provided does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add14.htm": [
-     "10bf8a18ce417da86d30a89da15f1b050d82b271",
+    "idbobjectstore_add14.any.js": [
+     "9952a6d12c91c383f83e3139cd7591293ba219b6",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add14.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Add a record where a value being indexed does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add14.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Add a record where a value being indexed does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add14.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Add a record where a value being indexed does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add14.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Add a record where a value being indexed does not meet the constraints of a valid key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add15.htm": [
-     "a6f897911b2ffada9af1cdc9f26c8124bf2c4642",
+    "idbobjectstore_add15.any.js": [
+     "f1820b0259da82e1b675c8b904d492fac1a762c8",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add15.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - If the transaction this IDBObjectStore belongs to has its mode set to readonly, throw ReadOnlyError"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add15.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - If the transaction this IDBObjectStore belongs to has its mode set to readonly, throw ReadOnlyError"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add15.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - If the transaction this IDBObjectStore belongs to has its mode set to readonly, throw ReadOnlyError"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add15.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - If the transaction this IDBObjectStore belongs to has its mode set to readonly, throw ReadOnlyError"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add16.htm": [
-     "453082340fb8590c11dc9e78110c5c50201f8e54",
+    "idbobjectstore_add16.any.js": [
+     "42f943fd25f8875a90acc4f4c137ef98d391c86f",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add16.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add16.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add16.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add16.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - If the object store has been deleted, the implementation must throw a DOMException of type InvalidStateError"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add2.htm": [
-     "6f6e3eab27ceb902da97ae3e5fc15a485f0aebea",
+    "idbobjectstore_add2.any.js": [
+     "ddddb4ca13029fa22b2c45a4b90f7dd5cab5b8fb",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add2.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add with an out-of-line key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add2.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add with an out-of-line key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add2.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add with an out-of-line key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add2.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add with an out-of-line key"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add3.htm": [
-     "9209e7505da2c7d897ccf881416646617dd96a80",
+    "idbobjectstore_add3.any.js": [
+     "a108f6b132ce2763300c333d37b157eabb000b39",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add3.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - record with same key already exists"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add3.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - record with same key already exists"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add3.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - record with same key already exists"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add3.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - record with same key already exists"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add4.htm": [
-     "35d88fe3a2282c102040524b436ea4c8407feb7d",
+    "idbobjectstore_add4.any.js": [
+     "6a4f61e0d5b1b26c4bdb4f5a5915e4381c472ae7",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add4.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add where an index has unique:true specified"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add4.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add where an index has unique:true specified"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add4.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add where an index has unique:true specified"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add4.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - add where an index has unique:true specified"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add5.htm": [
-     "0cb124ff4b5a01ae0367725a936fdcefe8f49bd1",
+    "idbobjectstore_add5.any.js": [
+     "002e7dcf87e018a0c65f627fb30bba8559c56471",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add5.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - object store's key path is an object attribute"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add5.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - object store's key path is an object attribute"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add5.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - object store's key path is an object attribute"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add5.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - object store's key path is an object attribute"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add6.htm": [
-     "b6ff5a5a502c1c8e7e40e0f6feb14fd424682157",
+    "idbobjectstore_add6.any.js": [
+     "bc5242156d4b1fed08c171cf3d733d55fcb80ba7",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add6.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - autoIncrement and inline keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add6.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - autoIncrement and inline keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add6.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - autoIncrement and inline keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add6.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - autoIncrement and inline keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add7.htm": [
-     "cd63917c3fa9faf6ab6b56059d56c9e597da53e8",
+    "idbobjectstore_add7.any.js": [
+     "eb381c4d45ad66d3a20267564048c59e68f356ce",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add7.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - autoIncrement and out-of-line keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add7.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - autoIncrement and out-of-line keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add7.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - autoIncrement and out-of-line keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add7.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - autoIncrement and out-of-line keys"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add8.htm": [
-     "c827adf6efc4facfccbc365cda50dc8c80d4f097",
+    "idbobjectstore_add8.any.js": [
+     "60266835bcb3d3cc5559e2cc29ef0dece44d81ce",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add8.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - object store has autoIncrement:true and the key path is an object attribute"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add8.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - object store has autoIncrement:true and the key path is an object attribute"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add8.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - object store has autoIncrement:true and the key path is an object attribute"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add8.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - object store has autoIncrement:true and the key path is an object attribute"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_add9.htm": [
-     "27061afd9c228abf30aadac28d3837e06897977e",
+    "idbobjectstore_add9.any.js": [
+     "dba9655867e858087fb67406c6e74358c09d91a6",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_add9.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record that does not meet the constraints of an object store's inline key requirements"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add9.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record that does not meet the constraints of an object store's inline key requirements"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add9.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record that does not meet the constraints of an object store's inline key requirements"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_add9.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.add() - Attempt to add a record that does not meet the constraints of an object store's inline key requirements"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbobjectstore_clear.htm": [
@@ -484333,6 +485499,17 @@
        "06bf2e26b544184ba0df858fbfb0ff3adf9daa85",
        [
         "dom/observable/tentative/observable-map.window.html",
+        {}
+       ]
+      ],
+      "observable-take.any.js": [
+       "8350d0214ccc9d686cb4f8238e42e624aa158734",
+       [
+        "dom/observable/tentative/observable-take.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-take.any.worker.html",
         {}
        ]
       ],
@@ -672119,7 +673296,7 @@
      ]
     ],
     "RTCConfiguration-iceTransportPolicy.html": [
-     "ebc79048a3ae390b229fc9c73fb2535f21b3ceda",
+     "b84e6a30db0fe214b72d2192223cd00f93300645",
      [
       null,
       {
@@ -672279,10 +673456,12 @@
      ]
     ],
     "RTCIceTransport.html": [
-     "fe12c384e5e5b3f8ab2e2b96b740d91959d16d94",
+     "e80418bdc456f02924678fcb2fccbc4044bdefdb",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "RTCPeerConnection-GC.https.html": [
@@ -672417,7 +673596,7 @@
      ]
     ],
     "RTCPeerConnection-explicit-rollback-iceGatheringState.html": [
-     "e39b985bef2fe65d359e16152b8cff322016fd08",
+     "a28275047e4f6a4463fa164a39fb81a2fbbc084f",
      [
       null,
       {}
@@ -672454,7 +673633,7 @@
      ]
     ],
     "RTCPeerConnection-iceConnectionState-disconnected.https.html": [
-     "af55a0c003512f98dc96d11c07e8a5099ed1f5ea",
+     "04c2b9c333cb8960185882e14551f4117d97440b",
      [
       null,
       {
@@ -672463,7 +673642,7 @@
      ]
     ],
     "RTCPeerConnection-iceConnectionState.https.html": [
-     "5361cb2c1af2b6cd9606798cca63b4e7e9f0a20b",
+     "9e0afb7ce693f2388fd53c31103837e3273da35a",
      [
       null,
       {
@@ -672472,10 +673651,12 @@
      ]
     ],
     "RTCPeerConnection-iceGatheringState.html": [
-     "6afaf0fbfbd1dc212027a117c6ea36ddbf9d8d10",
+     "32a68953bc59311967c8e59c82cf70cecae3f32e",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "RTCPeerConnection-mandatory-getStats.https.html": [
@@ -672840,6 +674021,13 @@
       }
      ]
     ],
+    "RTCRtpReceiver.https.html": [
+     "eea013140f393a8c04cb5c19c673bdd08f899a6c",
+     [
+      null,
+      {}
+     ]
+    ],
     "RTCRtpSender-encode-same-track-twice.https.html": [
      "568543da70f8360a80f9ed0e633f55f35f57aa92",
      [
@@ -672907,7 +674095,7 @@
      ]
     ],
     "RTCRtpSender.https.html": [
-     "d17115c46af24eba05a812c683d3fc8d2b07d7c6",
+     "21058dfeedcad9fef7c4ffbc23f0c5cef196277f",
      [
       null,
       {}
@@ -711311,6 +712499,22 @@
         ],
         "sequence.py": [
          "603b29414153ff65aad67391c018439452c3a2e7",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "set_files": {
+        "invalid.py": [
+         "f0efeaa69c579e39286312cde12e4c36d86921a3",
+         [
+          null,
+          {}
+         ]
+        ],
+        "set_files.py": [
+         "642bd3e5423d57238ef57863b7ba36010c10730e",
          [
           null,
           {}

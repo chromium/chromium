@@ -1,0 +1,14 @@
+This is a wdspec test.
+[FAIL] test_set_files
+  AttributeError: 'Input' object has no attribute 'set_files'
+[FAIL] test_set_files_empty
+  AttributeError: 'Input' object has no attribute 'set_files'
+[FAIL] test_set_files_multiple
+  AttributeError: 'Input' object has no attribute 'set_files'
+[FAIL] test_set_files_something_then_empty
+  AttributeError: 'Input' object has no attribute 'set_files'
+[FAIL] test_set_files_twice
+  AttributeError: 'Input' object has no attribute 'set_files'
+[FAIL] test_set_files_twice_same
+  AttributeError: 'Input' object has no attribute 'set_files'
+Harness: the test ran to completion.

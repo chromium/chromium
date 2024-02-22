@@ -2646,6 +2646,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/webrtc/RTCIceTransport.html [ Skip Timeout ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/gamepad/gamepad-secure-context.html [ Failure Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-all.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.html [ Timeout ]
