@@ -16,10 +16,13 @@
 namespace {
 
 // Default Height for the accessory.
-const CGFloat kDefaultAccessoryHeight = 44;
+constexpr CGFloat kDefaultAccessoryHeight = 44;
 
 // Large Height for the accessory.
-const CGFloat kLargeAccessoryHeight = 59;
+constexpr CGFloat kLargeAccessoryHeight = 59;
+
+// Button target area for the large keyboard accessory.
+constexpr CGFloat kLargeButtonTargetArea = 44;
 
 // The width for the white gradient UIView.
 constexpr CGFloat ManualFillGradientWidth = 44;
@@ -317,6 +320,14 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
             accessibilityLabel:(NSString*)accessibilityLabel {
   UIButton* imageButton = [UIButton buttonWithType:UIButtonTypeSystem];
   [imageButton setImage:image forState:UIControlStateNormal];
+  if (_largeAccessoryViewEnabled) {
+    [imageButton.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
+        .active = YES;
+    [imageButton.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
+        .active = YES;
+  }
   [imageButton addTarget:self
                   action:action
         forControlEvents:UIControlEventTouchUpInside];
