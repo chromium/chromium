@@ -90,7 +90,7 @@ std::string IoctlToString(uint64_t request) {
 enum v4l2_buf_type BufferTypeToV4L2(BufferType type) {
   if (type == BufferType::kCompressedData) {
     return V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-  } else if (type == BufferType::kRawFrames) {
+  } else if (type == BufferType::kDecodedFrame) {
     return V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   }
 
@@ -115,7 +115,7 @@ BufferType V4L2ToBufferType(unsigned int type) {
   if (type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
     return BufferType::kCompressedData;
   } else if (type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
-    return BufferType::kRawFrames;
+    return BufferType::kDecodedFrame;
   }
 
   NOTREACHED();
@@ -256,8 +256,8 @@ std::string BufferTypeString(const BufferType buffer_type) {
   switch (buffer_type) {
     case BufferType::kCompressedData:
       return "compressed data";
-    case BufferType::kRawFrames:
-      return "raw frames";
+    case BufferType::kDecodedFrame:
+      return "decoded frame";
     case BufferType::kInvalid:
       return "INVALID";
   }

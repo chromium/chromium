@@ -93,22 +93,22 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   OutputQueue(scoped_refptr<StatelessDevice> device);
   ~OutputQueue() override;
 
-  // Drivers can support multiple raw formats. ChromeOS would like to use
-  // specific formats. |NegotiateFormat| chooses the raw format that satisfies
-  // both requirements.
+  // Drivers can support multiple decode formats. ChromeOS would like to
+  // use specific formats. |NegotiateFormat| chooses the decode format
+  // that satisfies both requirements.
   bool NegotiateFormat();
 
-  // Allocate and prepare the buffers that will store the decoded raw frames.
+  // Allocate and prepare the buffers that will store the decoded frames.
   bool PrepareBuffers(size_t num_buffers) override;
 
   // After a buffer has been used it needs to be returned to the pool of
   // available buffers. The client tracks using buffers using |frame_id|.
   bool QueueBufferByFrameID(uint64_t frame_id);
 
-  // Return the raw frame format chosen by |NegotiateFormat|
+  // Return the decoded frame format chosen by |NegotiateFormat|
   Fourcc GetQueueFormat() const { return buffer_format_.fourcc; }
 
-  // Return the resolution of the raw frames.
+  // Return the resolution of the decoded frames.
   gfx::Size GetVideoResolution() const { return buffer_format_.resolution; }
 
   // Record buffers that have finished decoded and have been dequeued so that

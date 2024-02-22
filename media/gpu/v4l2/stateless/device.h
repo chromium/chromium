@@ -21,7 +21,7 @@
 
 namespace media {
 
-enum class BufferType { kCompressedData, kRawFrames, kInvalid };
+enum class BufferType { kCompressedData, kDecodedFrame, kInvalid };
 enum class MemoryType { kMemoryMapped, kDmaBuf, kInvalid };
 
 std::string BufferTypeString(const BufferType buffer_type);

@@ -289,10 +289,10 @@ std::unique_ptr<OutputQueue> OutputQueue::Create(
 }
 
 OutputQueue::OutputQueue(scoped_refptr<StatelessDevice> device)
-    : BaseQueue(device, BufferType::kRawFrames, MemoryType::kMemoryMapped),
+    : BaseQueue(device, BufferType::kDecodedFrame, MemoryType::kMemoryMapped),
       buffer_format_(BufferFormat(Fourcc(Fourcc::UNDEFINED),
                                   gfx::Size(0, 0),
-                                  BufferType::kRawFrames)) {}
+                                  BufferType::kDecodedFrame)) {}
 
 OutputQueue::~OutputQueue() {}
 
