@@ -244,6 +244,10 @@ public class WebappInfo {
         return getWebApkExtras().lastUpdateTime;
     }
 
+    public boolean hasCustomName() {
+        return getWebApkExtras().hasCustomName;
+    }
+
     /**
      * Returns true if the WebappInfo was created for an Intent fired from a launcher shortcut (as
      * opposed to an intent from a push notification or other internal source).

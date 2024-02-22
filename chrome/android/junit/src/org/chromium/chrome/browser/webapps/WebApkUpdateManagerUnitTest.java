@@ -176,6 +176,7 @@ public class WebApkUpdateManagerUnitTest {
                 String scope,
                 String name,
                 String shortName,
+                boolean hasCustomName,
                 String manifestId,
                 String appKey,
                 String primaryIconUrl,
@@ -376,6 +377,7 @@ public class WebApkUpdateManagerUnitTest {
         public String scopeUrl;
         public String name;
         public String shortName;
+        public boolean hasCustomName;
         public String id;
         public String appKey;
         public Map<String, String> iconUrlToMurmur2HashMap;
@@ -536,6 +538,7 @@ public class WebApkUpdateManagerUnitTest {
         manifestData.scopeUrl = SCOPE_URL;
         manifestData.name = NAME;
         manifestData.shortName = SHORT_NAME;
+        manifestData.hasCustomName = false;
         manifestData.id = MANIFEST_ID;
         manifestData.appKey = MANIFEST_ID;
 
@@ -593,6 +596,7 @@ public class WebApkUpdateManagerUnitTest {
                 null,
                 manifestData.name,
                 manifestData.shortName,
+                manifestData.hasCustomName,
                 manifestData.displayMode,
                 manifestData.orientation,
                 -1,
@@ -1897,5 +1901,27 @@ public class WebApkUpdateManagerUnitTest {
         onGotDifferentData(updateManager);
         assertTrue(updateManager.updateRequested());
         assertEquals(WEB_MANIFEST_URL, updateManager.requestedAppKey());
+    }
+
+    /**
+     * Tests that WebAPK updates keeps the default appKey when no value specified from the WebAPK's
+     * Android Manifest <meta-data>.
+     */
+    @Test
+    public void testUpdateWithCustomName() {
+        ManifestData androidData = defaultManifestData();
+        androidData.name = "custom name";
+        androidData.hasCustomName = true;
+
+        registerWebApk(WEBAPK_PACKAGE_NAME, androidData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
+        mClockRule.advanceMillis(WebappDataStorage.UPDATE_INTERVAL);
+
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
+        updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
+        assertTrue(updateManager.updateCheckStarted());
+
+        onGotDifferentData(updateManager);
+        assertTrue(updateManager.updateRequested());
+        assertEquals(androidData.name, updateManager.requestedUpdateName());
     }
 }

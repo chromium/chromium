@@ -197,6 +197,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
                         new WebappIcon(splashIconData),
                         name,
                         shortName,
+                        mOldInfo.hasCustomName(),
                         displayMode,
                         orientation,
                         mOldInfo.source(),

@@ -208,6 +208,7 @@ public class WebApkInfoTest {
         bundle.putString(WebApkMetaDataKeys.SCOPE, SCOPE);
         bundle.putString(WebApkMetaDataKeys.NAME, NAME);
         bundle.putString(WebApkMetaDataKeys.SHORT_NAME, SHORT_NAME);
+        bundle.putBoolean(WebApkMetaDataKeys.HAS_CUSTOM_NAME, true);
         bundle.putString(WebApkMetaDataKeys.DISPLAY_MODE, DISPLAY_MODE);
         bundle.putString(WebApkMetaDataKeys.ORIENTATION, ORIENTATION);
         bundle.putString(WebApkMetaDataKeys.THEME_COLOR, THEME_COLOR);
@@ -255,6 +256,7 @@ public class WebApkInfoTest {
         Assert.assertEquals(SCOPE, info.scopeUrl());
         Assert.assertEquals(NAME, info.name());
         Assert.assertEquals(SHORT_NAME, info.shortName());
+        Assert.assertEquals(true, info.hasCustomName());
         Assert.assertEquals(MANIFEST_ID, info.manifestId());
         Assert.assertEquals(APP_KEY, info.appKey());
         Assert.assertEquals(DisplayMode.MINIMAL_UI, info.displayMode());
