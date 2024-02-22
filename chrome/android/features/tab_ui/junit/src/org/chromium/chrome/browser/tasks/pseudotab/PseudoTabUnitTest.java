@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -283,6 +284,32 @@ public class PseudoTabUnitTest {
         PseudoTab realTab = PseudoTab.fromTab(mTab1);
         Assert.assertNotEquals(tab, realTab);
         Assert.assertNotEquals(rootId, realTab.getRootId());
+    }
+
+    @Test
+    public void getTabGroupId_real() {
+        Token tabGroupId = new Token(123L, 456L);
+        doReturn(tabGroupId).when(mTab1).getTabGroupId();
+
+        PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
+        Assert.assertEquals(null, tab.getTabGroupId());
+
+        PseudoTab realTab = PseudoTab.fromTab(mTab1);
+        Assert.assertNotEquals(tab, realTab);
+        Assert.assertEquals(tabGroupId, realTab.getTabGroupId());
+    }
+
+    @Test
+    public void getTabGroupId_cache() {
+        Token tabGroupId = new Token(1L, 4L);
+        TabAttributeCache.setTabGroupIdForTesting(TAB1_ID, tabGroupId);
+
+        PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
+        Assert.assertEquals(tabGroupId, tab.getTabGroupId());
+
+        PseudoTab realTab = PseudoTab.fromTab(mTab1);
+        Assert.assertNotEquals(tab, realTab);
+        Assert.assertNotEquals(tabGroupId, realTab.getTabGroupId());
     }
 
     @Test

@@ -294,6 +294,16 @@ public class TabAttributeCache {
         cacheRootId(id, rootId);
     }
 
+    /**
+     * Set the tab group ID for a {@link PseudoTab}.
+     *
+     * @param id The ID of the {@link PseudoTab}.
+     * @param tabGroupId The tab group ID
+     */
+    public static void setTabGroupIdForTesting(int id, @Nullable Token tabGroupId) {
+        cacheTabGroupId(id, tabGroupId);
+    }
+
     private static String getTimestampMillisKey(int id) {
         return id + "_timestampMillis";
     }
