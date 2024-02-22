@@ -4951,21 +4951,6 @@
             ]
         }
     ],
-    "CrashOnInProcessANGLEContextLoss": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrashOnInProcessANGLEContextLoss"
-                    ]
-                }
-            ]
-        }
-    ],
     "CreateNewTabInitializeRenderer": [
         {
             "platforms": [
