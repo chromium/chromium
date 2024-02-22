@@ -632,7 +632,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
         Integer[] expectedItems = {
-            R.id.new_tab_menu_id, R.id.new_incognito_tab_menu_id, R.id.preferences_id
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.preferences_id,
+            R.id.quick_delete_menu_id
         };
         assertMenuItemsAreEqual(menu, expectedItems);
     }

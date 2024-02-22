@@ -206,5 +206,8 @@ found in the LICENSE file.
         <item android:id="@id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />
+        <item android:id="@id/quick_delete_menu_id"
+            android:title="@string/menu_quick_delete"
+            android:icon="@drawable/quick_delete_trash_bin_icon_24dp"/>
     </group>
 </menu>
