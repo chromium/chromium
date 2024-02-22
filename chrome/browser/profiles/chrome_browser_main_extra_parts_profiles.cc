@@ -102,6 +102,7 @@
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/optimization_guide/model_validator_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
@@ -982,6 +983,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   OptimizationGuideKeyedServiceFactory::GetInstance();
   OriginKeyedPermissionActionServiceFactory::GetInstance();
   OriginTrialsFactory::GetInstance();
+  PageContentAnnotationsServiceFactory::GetInstance();
   page_image_service::ImageServiceFactory::EnsureFactoryBuilt();
   page_load_metrics::PageLoadMetricsMemoryTrackerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

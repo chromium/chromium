@@ -32,7 +32,6 @@ class PrefService;
 class TemplateURLService;
 
 namespace optimization_guide {
-class EntityMetadataProvider;
 class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
@@ -65,7 +64,6 @@ class HistoryClustersService : public base::SupportsUserData,
   HistoryClustersService(
       const std::string& application_locale,
       history::HistoryService* history_service,
-      optimization_guide::EntityMetadataProvider* entity_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
       TemplateURLService* template_url_service,

@@ -37,7 +37,6 @@
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_backend.h"
-#include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
@@ -116,7 +115,6 @@ constexpr base::TimeDelta kAllKeywordsCacheRefreshAge = base::Hours(2);
 HistoryClustersService::HistoryClustersService(
     const std::string& application_locale,
     history::HistoryService* history_service,
-    optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
     TemplateURLService* template_url_service,
@@ -154,8 +152,7 @@ HistoryClustersService::HistoryClustersService(
   backend_ = FileClusteringBackend::CreateIfEnabled();
   if (!backend_) {
     backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        entity_metadata_provider, engagement_score_provider,
-        optimization_guide_decider, JourneysMidBlocklist());
+        engagement_score_provider, optimization_guide_decider);
   }
 
   LoadCachesFromPrefs();

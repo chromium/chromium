@@ -172,7 +172,6 @@ class HistoryClustersServiceTestBase : public testing::Test {
   void ResetHistoryClustersServiceWithLocale(const std::string& locale) {
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
         locale, history_service_.get(),
-        /*entity_metadata_provider=*/nullptr,
         /*url_loader_factory=*/nullptr,
         /*engagement_score_provider=*/nullptr,
         /*template_url_service=*/nullptr,
