@@ -6880,3 +6880,6 @@ crbug.com/40948868 external/wpt/webvtt/rendering/cues-with-video/processing-mode
 crbug.com/40944477 fast/events/scroll-event-handler-count.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40264022 external/wpt/webtransport/echo-large-bidirectional-streams.https.any.serviceworker.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Failure Pass Timeout ] # Flaky
+
+# Gardener 2024-02-22
+crbug.com/326478175 wpt_internal/dom/about_srcdoc/grandparent_location_aboutsrcdoc.sub.window.html [ Failure Pass Timeout ]
