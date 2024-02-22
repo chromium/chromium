@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"  // IWYU pragma: keep
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_utils.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -105,12 +106,29 @@ ScriptPromise DiscoverDigitalIdentityCredentialFromExternalSource(
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
       resolver->GetExecutionContext()));
 
+  if (!CheckGenericSecurityRequirementsForCredentialsContainerRequest(
+          resolver)) {
+    return resolver->Promise();
+  }
+
   // TODO(https://crbug.com/1416939): make sure the Digital Credentials
   // API works well with the Multiple IdP API.
   if (options.identity()->providers().size() > 1u) {
     exception_state.ThrowTypeError(
         "Digital identity API currently does not support multiple "
         "providers.");
+    resolver->Detach();
+    return ScriptPromise();
+  }
+
+  // TODO(http://crbug.com/325425533) Determine whether real world identity API
+  // should be accessible from <iframe>.
+  if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "The 'identity-credentials-get` feature is not enabled in this "
+        "document.");
     resolver->Detach();
     return ScriptPromise();
   }

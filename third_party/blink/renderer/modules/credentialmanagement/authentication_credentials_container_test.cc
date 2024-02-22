@@ -198,10 +198,11 @@ TEST(AuthenticationCredentialsContainerTest, RejectPublicKeyCredentialStoreOpera
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
-  auto promise =
-      AuthenticationCredentialsContainer::credentials(*context.DomWindow().navigator())
-          ->store(context.GetScriptState(),
-                  MakeGarbageCollected<MockPublicKeyCredential>());
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->store(context.GetScriptState(),
+                             MakeGarbageCollected<MockPublicKeyCredential>(),
+                             IGNORE_EXCEPTION_FOR_TESTING);
 
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
 }

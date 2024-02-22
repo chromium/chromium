@@ -37,7 +37,9 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
   ScriptPromise get(ScriptState*,
                     const CredentialRequestOptions*,
                     ExceptionState&) override;
-  ScriptPromise store(ScriptState*, Credential* = nullptr) override;
+  ScriptPromise store(ScriptState*,
+                      Credential*,
+                      ExceptionState& exception_state) override;
   ScriptPromise create(ScriptState*,
                        const CredentialCreationOptions*,
                        ExceptionState&) override;

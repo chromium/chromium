@@ -27,7 +27,7 @@ class MODULES_EXPORT CredentialsContainer : public ScriptWrappable {
   virtual ScriptPromise get(ScriptState*,
                             const CredentialRequestOptions*,
                             ExceptionState&) = 0;
-  virtual ScriptPromise store(ScriptState*, Credential*) = 0;
+  virtual ScriptPromise store(ScriptState*, Credential*, ExceptionState&) = 0;
   virtual ScriptPromise create(ScriptState*,
                                const CredentialCreationOptions*,
                                ExceptionState&) = 0;

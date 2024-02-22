@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"  // IWYU pragma: keep
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_utils.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_identity_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
@@ -203,25 +204,8 @@ bool IsAncestorChainValidForWebOTP(const Frame* frame) {
 bool CheckSecurityRequirementsBeforeRequest(
     ScriptPromiseResolver* resolver,
     RequiredOriginType required_origin_type) {
-  // Ignore calls if the current realm execution context is no longer valid,
-  // e.g., because the responsible document was detached.
-  DCHECK(resolver->GetExecutionContext());
-  if (resolver->GetExecutionContext()->IsContextDestroyed()) {
-    resolver->Reject();
-    return false;
-  }
-
-  // The API is not exposed to Workers or Worklets, so if the current realm
-  // execution context is valid, it must have a responsible browsing context.
-  SECURITY_CHECK(resolver->DomWindow());
-
-  // The API is not exposed in non-secure context.
-  SECURITY_CHECK(resolver->GetExecutionContext()->IsSecureContext());
-
-  if (resolver->DomWindow()->GetFrame()->IsInFencedFrameTree()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError,
-        "The credential operation is not allowed in a fenced frame tree."));
+  if (!CheckGenericSecurityRequirementsForCredentialsContainerRequest(
+          resolver)) {
     return false;
   }
 
@@ -1331,6 +1315,11 @@ ScriptPromise AuthenticationCredentialsContainer::get(
   ScriptPromise promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
 
+  if (IsDigitalIdentityCredentialType(*options)) {
+    return DiscoverDigitalIdentityCredentialFromExternalSource(
+        script_state, resolver, *options, exception_state);
+  }
+
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
   if (options->hasPublicKey()) {
@@ -1347,13 +1336,6 @@ ScriptPromise AuthenticationCredentialsContainer::get(
   }
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
     return promise;
-  }
-
-  // TODO(http://crbug.com/325082314): Move digital-identity-specific origin
-  // check to digital_identity_credential::DiscoverFromExternalSource().
-  if (IsDigitalIdentityCredentialType(*options)) {
-    return DiscoverDigitalIdentityCredentialFromExternalSource(
-        script_state, resolver, *options, exception_state);
   }
 
   // TODO(cbiesinger): Consider removing the hasIdentity() check after FedCM
@@ -1601,7 +1583,8 @@ ScriptPromise AuthenticationCredentialsContainer::get(
 
 ScriptPromise AuthenticationCredentialsContainer::store(
     ScriptState* script_state,
-    Credential* credential) {
+    Credential* credential,
+    ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
