@@ -14,6 +14,8 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
@@ -67,10 +69,13 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace file_manager {
-namespace util {
-
+namespace file_manager::util {
 namespace {
+
+using base::FilePath;
+using base::StrCat;
+using drive::DriveIntegrationService;
+using l10n_util::GetStringUTF8;
 
 constexpr char kAndroidFilesMountPointName[] = "android_files";
 constexpr char kCrostiniMapGoogleDrive[] = "GoogleDrive";
@@ -86,7 +91,6 @@ constexpr char kFolderNameMyFiles[] = "MyFiles";
 constexpr char kFolderNamePvmDefault[] = "PvmDefault";
 constexpr char kFolderNameCamera[] = "Camera";
 constexpr char kFolderNameShareCache[] = "ShareCache";
-constexpr char kDisplayNameGoogleDrive[] = "Google Drive";
 constexpr char kDriveFsDirComputers[] = "Computers";
 constexpr char kDriveFsDirSharedWithMe[] = ".files-by-id";
 constexpr char kDriveFsDirShortcutsSharedWithMe[] = ".shortcut-targets-by-id";
@@ -794,7 +798,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
 
   bool force_external = false;
   // Convert paths under DriveFS.
-  const drive::DriveIntegrationService* integration_service =
+  const DriveIntegrationService* integration_service =
       drive::util::GetIntegrationServiceByProfile(primary_profile);
   if (integration_service &&
       integration_service->GetMountPointPath().AppendRelativePath(
@@ -843,9 +847,8 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
         // TODO(b/157297349) Remove this condition.
         if (arc::IsArcVmEnabled()) {
           *arc_url_out =
-              GURL(base::StrCat(
-                       {"content://org.chromium.arc.volumeprovider/smb/",
-                        share->mount_id(), "/"}))
+              GURL(StrCat({"content://org.chromium.arc.volumeprovider/smb/",
+                           share->mount_id(), "/"}))
                   .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
           *requires_sharing_out = true;
           return true;
@@ -948,104 +951,82 @@ bool ReplacePrefix(std::string* s,
   return false;
 }
 
-std::string GetPathDisplayTextForSettings(Profile* profile,
-                                          const std::string& path) {
-  std::string result(path);
-  auto* drive_integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  if (drive_integration_service && !drive_integration_service->is_enabled()) {
-    drive_integration_service = nullptr;
-  }
-  if (ReplacePrefix(&result, "/home/chronos/user/Downloads",
-                    kFolderNameDownloads)) {
-  } else if (ReplacePrefix(&result,
-                           "/home/chronos/" + profile->GetBaseName().value() +
-                               "/Downloads",
-                           kFolderNameDownloads)) {
-  } else if (ReplacePrefix(
-                 &result,
-                 std::string("/home/chronos/user/") + kFolderNameMyFiles,
-                 "My files")) {
-  } else if (ReplacePrefix(&result,
-                           "/home/chronos/" + profile->GetBaseName().value() +
-                               "/" + kFolderNameMyFiles,
-                           "My files")) {
-  } else if (drive_integration_service &&
-             ReplacePrefix(&result,
-                           drive_integration_service->GetMountPointPath()
-                               .Append(kDriveFsDirRoot)
-                               .value(),
-                           base::FilePath(kDisplayNameGoogleDrive)
-                               .Append(l10n_util::GetStringUTF8(
-                                   IDS_FILE_BROWSER_DRIVE_MY_DRIVE_LABEL))
-                               .value())) {
-  } else if (ReplacePrefix(&result,
-                           download_dir_util::kDriveNamePolicyVariableName,
-                           base::FilePath(kDisplayNameGoogleDrive)
-                               .Append(l10n_util::GetStringUTF8(
-                                   IDS_FILE_BROWSER_DRIVE_MY_DRIVE_LABEL))
-                               .value())) {
-  } else if (drive_integration_service &&
-             ReplacePrefix(&result,
-                           drive_integration_service->GetMountPointPath()
-                               .Append(kDriveFsDirTeamDrives)
-                               .value(),
-                           base::FilePath(kDisplayNameGoogleDrive)
-                               .Append(l10n_util::GetStringUTF8(
-                                   IDS_FILE_BROWSER_DRIVE_SHARED_DRIVES_LABEL))
-                               .value())) {
-  } else if (drive_integration_service &&
-             ReplacePrefix(&result,
-                           drive_integration_service->GetMountPointPath()
-                               .Append(kDriveFsDirComputers)
-                               .value(),
-                           base::FilePath(kDisplayNameGoogleDrive)
-                               .Append(l10n_util::GetStringUTF8(
-                                   IDS_FILE_BROWSER_DRIVE_COMPUTERS_LABEL))
-                               .value())) {
-  } else if (
-      drive_integration_service &&
-      ReplacePrefix(
-          &result,
-          drive_integration_service->GetMountPointPath()
-              .Append(kDriveFsDirSharedWithMe)
-              .value(),
-          base::FilePath(kDisplayNameGoogleDrive)
-              .Append(l10n_util::GetStringUTF8(
-                  IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL))
-              .value())) {
-  } else if (
-      drive_integration_service &&
-      ReplacePrefix(
-          &result,
-          drive_integration_service->GetMountPointPath()
-              .Append(kDriveFsDirShortcutsSharedWithMe)
-              .value(),
-          base::FilePath(kDisplayNameGoogleDrive)
-              .Append(l10n_util::GetStringUTF8(
-                  IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL))
-              .value())) {
-  } else if (ReplacePrefix(&result, GetAndroidFilesPath().value(),
-                           l10n_util::GetStringUTF8(
-                               IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL))) {
-  } else if (ReplacePrefix(&result, GetCrostiniMountDirectory(profile).value(),
-                           l10n_util::GetStringUTF8(
-                               IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL))) {
-  } else if (ReplacePrefix(&result,
-                           base::FilePath(kRemovableMediaPath)
-                               .AsEndingWithSeparator()
-                               .value(),
-                           "")) {
-    // Strip prefix of "/media/removable/" including trailing slash.
-  } else if (ReplacePrefix(&result,
-                           base::FilePath(kArchiveMountPath)
-                               .AsEndingWithSeparator()
-                               .value(),
-                           "")) {
-    // Strip prefix of "/media/archive/" including trailing slash.
+std::string GetPathDisplayTextForSettings(Profile* const profile,
+                                          const std::string_view path) {
+  const std::string_view sep = " › ";
+  using Path = base::FilePath;
+  const Path in(path);
+  Path out;
+
+  // Check if in user's profile
+  if (Path("/home/chronos/user").AppendRelativePath(in, &out) ||
+      profile->GetPath().AppendRelativePath(in, &out)) {
+    std::vector<std::string> p = out.GetComponents();
+    // Check if in "My files"
+    if (!p.empty() && p.front() == "MyFiles") {
+      // Check if in "Downloads"
+      if (p.size() > 1 && p[1] == "Downloads") {
+        p[1] = GetStringUTF8(IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_LABEL);
+        return base::JoinString(base::span(p).subspan(1), sep);
+      }
+
+      // In "My files", but outside "Downloads"
+      p.front() = GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
+      return base::JoinString(p, sep);
+    }
   }
 
-  base::ReplaceChars(result, "/", " \u203a ", &result);
+  // Check if in "Google Drive"
+  if (const DriveIntegrationService* const service =
+          drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+      service && service->is_enabled() &&
+      service->GetMountPointPath().AppendRelativePath(in, &out)) {
+    // In "Google Drive"
+    std::vector<std::string> p = out.GetComponents();
+    if (!p.empty()) {
+      std::string& f = p.front();
+      if (const std::optional<int> i = DriveFsFolderToMessageId(f)) {
+        f = GetStringUTF8(*i);
+        return base::JoinString(p, sep);
+      }
+    }
+  }
+
+  out = Path(GetStringUTF8(IDS_FILE_BROWSER_DRIVE_MY_DRIVE_LABEL));
+  if (Path(download_dir_util::kDriveNamePolicyVariableName)
+          .AppendRelativePath(in, &out)) {
+    std::string result;
+    base::ReplaceChars(out.value(), "/", sep, &result);
+    return result;
+  }
+
+  // Check if in "Play files"
+  out = Path(GetStringUTF8(IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL));
+  if (GetAndroidFilesPath().AppendRelativePath(in, &out)) {
+    std::string result;
+    base::ReplaceChars(out.value(), "/", sep, &result);
+    return result;
+  }
+
+  // Check if in "Linux files"
+  out = Path(GetStringUTF8(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL));
+  if (GetCrostiniMountDirectory(profile).AppendRelativePath(in, &out)) {
+    std::string result;
+    base::ReplaceChars(out.value(), "/", sep, &result);
+    return result;
+  }
+
+  // Check if in "Archive" or "Removable"
+  out.clear();
+  if (Path(kRemovableMediaPath).AppendRelativePath(in, &out) ||
+      Path(kArchiveMountPath).AppendRelativePath(in, &out)) {
+    std::string result;
+    base::ReplaceChars(out.value(), "/", sep, &result);
+    return result;
+  }
+
+  std::string result;
+  base::ReplaceChars(in.value(), "/", sep, &result);
   return result;
 }
 
@@ -1145,7 +1126,7 @@ std::optional<base::FilePath> GetDisplayablePath(Profile* profile,
       if (!maybe_id.has_value()) {
         return std::nullopt;
       }
-      result = result.Append(l10n_util::GetStringUTF8(*maybe_id));
+      result = result.Append(GetStringUTF8(*maybe_id));
       cur_component++;
 
       // Skip the first directory in the Shared With Me folders as those are
@@ -1165,7 +1146,7 @@ std::optional<base::FilePath> GetDisplayablePath(Profile* profile,
       if (cur_component != path_components.end()) {
         auto maybe_id = MyFilesFolderToMessageId(*cur_component);
         if (maybe_id.has_value()) {
-          result = result.Append(l10n_util::GetStringUTF8(*maybe_id));
+          result = result.Append(GetStringUTF8(*maybe_id));
           ++cur_component;
         }
       }
@@ -1173,9 +1154,9 @@ std::optional<base::FilePath> GetDisplayablePath(Profile* profile,
     case VOLUME_TYPE_ANDROID_FILES:
     case VOLUME_TYPE_CROSTINI:
     case VOLUME_TYPE_GUEST_OS:
-      result = base::FilePath(l10n_util::GetStringUTF8(
-                                  IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL))
-                   .Append(volume->volume_label());
+      result =
+          base::FilePath(GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL))
+              .Append(volume->volume_label());
       break;
     case VOLUME_TYPE_MEDIA_VIEW:
     case VOLUME_TYPE_REMOVABLE_DISK_PARTITION:
@@ -1248,5 +1229,4 @@ std::vector<ui::FileInfo> ParseFileSystemSources(
   return file_info;
 }
 
-}  // namespace util
-}  // namespace file_manager
+}  // namespace file_manager::util
