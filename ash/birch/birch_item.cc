@@ -52,7 +52,7 @@ std::string BirchCalendarItem::ToString() const {
      << ", icon_url: " << icon_url.spec()
      << ", start: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(start_time))
      << ", end: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(end_time))
-     << "}";
+     << ", conference_url: " << conference_url.spec() << "}";
   return ss.str();
 }
 
