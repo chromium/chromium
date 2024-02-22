@@ -235,4 +235,11 @@ public class EntitySuggestionProcessorUnitTest {
     public void getViewTypeId_forFullTestCoverage() {
         Assert.assertEquals(OmniboxSuggestionUiType.ENTITY_SUGGESTION, mProcessor.getViewTypeId());
     }
+
+    @Test
+    public void populateModel_suggestionTextDoesNotWrap() {
+        SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
+        processSuggestion(suggHelper);
+        Assert.assertFalse(suggHelper.mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
+    }
 }
