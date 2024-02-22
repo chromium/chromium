@@ -1804,7 +1804,7 @@
     "owners": [ "chrome-knowledge-eng@google.com", "chromeos-touch-ml@google.com" ],
     // This flag is use to disable CancelAllTouches() function, which enable the
     // testing for implementation of canceling single touches.
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "disable-dns-proxy",
@@ -3320,7 +3320,7 @@
     "name": "enable-palm-suppression",
     "owners": [ "robsc@chromium.org", "napper@chromium.org", "hcutts@chromium.org", "chromeos-tango@google.com" ],
     // Added feature, for testing. expiry deep in future.
-    "expiry_milestone": 116
+    "expiry_milestone": 130
   },
   {
     "name": "enable-parallel-downloading",
