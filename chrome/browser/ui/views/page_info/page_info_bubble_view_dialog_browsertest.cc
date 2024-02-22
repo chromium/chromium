@@ -766,7 +766,6 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     if (is_temporary_exception_) {
       cookie_info.expiration = GetReferenceTime() + base::Days(30);
     }
-    cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
     if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
       browser()->profile()->GetPrefs()->SetBoolean(

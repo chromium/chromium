@@ -313,8 +313,6 @@ class PageInfo : private content_settings::CookieControlsObserver {
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
-  void OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel level) override;
 
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().
@@ -502,9 +500,6 @@ class PageInfo : private content_settings::CookieControlsObserver {
       CookieBlocking3pcdStatus::kNotIn3pcd;
 
   base::Time cookie_exception_expiration_;
-
-  CookieControlsBreakageConfidenceLevel cookie_controls_confidence_ =
-      CookieControlsBreakageConfidenceLevel::kUninitialized;
 
   bool is_subscribed_to_permission_change_for_testing = false;
 

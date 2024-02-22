@@ -36,40 +36,6 @@
 
 namespace {
 
-void RecordShownActionForConfidence(
-    CookieControlsBreakageConfidenceLevel confidence) {
-  if (confidence == CookieControlsBreakageConfidenceLevel::kHigh) {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.HighConfidence.Shown"));
-  } else if (confidence == CookieControlsBreakageConfidenceLevel::kMedium) {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.MediumConfidence.Shown"));
-  } else if (confidence == CookieControlsBreakageConfidenceLevel::kLow) {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.LowConfidence.Shown"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.OtherConfidence.Shown"));
-  }
-}
-
-void RecordOpenedActionForConfidence(
-    CookieControlsBreakageConfidenceLevel confidence) {
-  if (confidence == CookieControlsBreakageConfidenceLevel::kHigh) {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.HighConfidence.Opened"));
-  } else if (confidence == CookieControlsBreakageConfidenceLevel::kMedium) {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.MediumConfidence.Opened"));
-  } else if (confidence == CookieControlsBreakageConfidenceLevel::kLow) {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.LowConfidence.Opened"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("CookieControls.OtherConfidence.Opened"));
-  }
-}
-
 void RecordOpenedAction(bool icon_visible, bool protections_on) {
   if (!icon_visible) {
     base::RecordAction(
@@ -99,7 +65,6 @@ CookieControlsIconView::CookieControlsIconView(
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetPaintLabelOverSolidBackground(true);
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
-
   bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
 }
 
@@ -131,9 +96,10 @@ void CookieControlsIconView::UpdateImpl() {
               TrackingProtectionSettingsFactory::GetForProfile(profile));
       controller_observation_.Observe(controller_.get());
     }
+    // Reset whether we animated when web contents change.
+    did_animate_ = false;
     controller_->Update(web_contents);
   }
-  UpdateVisibilityAndAnimate();
 }
 
 bool CookieControlsIconView::MaybeShowIPH() {
@@ -143,14 +109,10 @@ bool CookieControlsIconView::MaybeShowIPH() {
 
   const base::Feature* feature = nullptr;
   if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
-    // Only show the reminder IPH if cookies are blocked on the current site.
-    if (!protections_on_) {
-      return false;
-    }
     // UB reminder IPH in 3PCD experiment.
     feature = &feature_engagement::kIPH3pcdUserBypassFeature;
-  } else if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
-    // UB IPH on high-confidence site.
+  } else if (should_highlight_) {
+    // UB IPH when icon should be highlighted.
     feature = &feature_engagement::kIPHCookieControlsFeature;
   } else {
     // In all other cases return without trying to show IPH.
@@ -166,6 +128,14 @@ bool CookieControlsIconView::MaybeShowIPH() {
   }
   SetHighlighted(true);
   return true;
+}
+
+bool CookieControlsIconView::IsManagedIPHActive() const {
+  CHECK(browser_->window());
+  return browser_->window()->IsFeaturePromoActive(
+             feature_engagement::kIPH3pcdUserBypassFeature) ||
+         browser_->window()->IsFeaturePromoActive(
+             feature_engagement::kIPHCookieControlsFeature);
 }
 
 void CookieControlsIconView::OnIPHClosed() {
@@ -188,47 +158,6 @@ void CookieControlsIconView::SetLabelAndTooltip() {
   SetLabel(l10n_util::GetStringUTF16(icon_label));
 }
 
-// TODO(b/317883749): Break out the animation logic to its own function
-// `OnHighlightUserBypass`.
-void CookieControlsIconView::UpdateVisibilityAndAnimate(
-    bool confidence_changed) {
-  bool should_be_visible = ShouldBeVisible();
-  if (should_be_visible) {
-    // TODO(crbug.com/1446230): Don't animate when the LHS toggle is used.
-    if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
-      if (!MaybeShowIPH() &&
-          confidence_ == CookieControlsBreakageConfidenceLevel::kHigh &&
-          protections_on_) {
-        int label = GetLabelForStatus();
-        if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
-          label = IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL;
-        }
-        AnimateIn(label);
-// VoiceOver on Mac already announces this text.
-#if !BUILDFLAG(IS_MAC)
-        GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(label));
-#endif
-        if (controller_) {
-          controller_->OnEntryPointAnimated();
-        } else {
-          CHECK_IS_TEST();
-        }
-      }
-      RecordShownActionForConfidence(confidence_);
-    }
-  } else {
-    UnpauseAnimation();
-    ResetSlideAnimation(false);
-  }
-  UpdateIconImage();
-  SetVisible(should_be_visible);
-  // The icon label should never change in response to confidence,
-  // other than to animate the label (handled above).
-  if (!confidence_changed) {
-    SetLabelAndTooltip();
-  }
-}
-
 int CookieControlsIconView::GetLabelForStatus() const {
   if (!protections_on_) {
     return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
@@ -239,27 +168,59 @@ int CookieControlsIconView::GetLabelForStatus() const {
   }
 }
 
-// TODO(b/317883749): Remove usage of this function and
-// `CookiesControlsBreakageConfidenceLevel`.
-void CookieControlsIconView::OnBreakageConfidenceLevelChanged(
-    CookieControlsBreakageConfidenceLevel level) {
-  if (confidence_ != level) {
-    confidence_ = level;
-    UpdateVisibilityAndAnimate(/*confidence_changed=*/true);
-  }
-}
-
 void CookieControlsIconView::OnUserBypassIconStatusChanged(
     bool icon_visible,
     bool protections_on,
-    CookieBlocking3pcdStatus blocking_status) {
+    CookieBlocking3pcdStatus blocking_status,
+    bool should_highlight) {
   if (icon_visible != icon_visible_ || protections_on != protections_on_ ||
-      blocking_status != blocking_status_) {
+      blocking_status != blocking_status_ || should_highlight_) {
     icon_visible_ = icon_visible;
     protections_on_ = protections_on;
     blocking_status_ = blocking_status;
-    // TODO(b/317883749): Remove this call and move relevant logic here.
-    UpdateVisibilityAndAnimate();
+    should_highlight_ = should_highlight;
+    UpdateIcon();
+  }
+}
+
+bool CookieControlsIconView::MaybeAnimateIcon() {
+  if (!should_highlight_ || GetAssociatedBubble() || IsManagedIPHActive() ||
+      slide_animation_.is_animating()) {
+    return false;
+  }
+
+  int label = blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd
+                  ? GetLabelForStatus()
+                  : IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL;
+  AnimateIn(label);
+// VoiceOver on Mac already announces this text.
+#if !BUILDFLAG(IS_MAC)
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(label));
+#endif
+  if (controller_) {
+    controller_->OnEntryPointAnimated();
+  } else {
+    CHECK_IS_TEST();
+  }
+  return true;
+}
+
+void CookieControlsIconView::UpdateIcon() {
+  if (!ShouldBeVisible()) {
+    ResetSlideAnimation(false);
+    SetVisible(false);
+    return;
+  }
+  UpdateIconImage();
+  SetVisible(true);
+  SetLabelAndTooltip();
+  if (protections_on_ && !MaybeShowIPH() && MaybeAnimateIcon()) {
+    did_animate_ = true;
+    base::RecordAction(
+        base::UserMetricsAction("TrackingProtection.UserBypass.Animated"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("TrackingProtection.UserBypass.Shown"));
   }
 }
 
@@ -269,6 +230,8 @@ void CookieControlsIconView::OnFinishedPageReloadWithChangedSettings() {
   // setting.
   if (ShouldBeVisible()) {
     SetAccessibleDescription(u"");
+    // Animate the icon to provide a visual confirmation to the user that their
+    // protection status on the site has changed.
     AnimateIn(GetLabelForStatus());
   }
 }
@@ -286,13 +249,7 @@ bool CookieControlsIconView::ShouldBeVisible() const {
     return false;
   }
 
-  if (!icon_visible_) {
-    return false;
-  }
-
-  // Only show the icon for medium & high confidence.
-  return (confidence_ == CookieControlsBreakageConfidenceLevel::kMedium ||
-          confidence_ == CookieControlsBreakageConfidenceLevel::kHigh);
+  return icon_visible_;
 }
 
 bool CookieControlsIconView::GetAssociatedBubble() const {
@@ -306,6 +263,7 @@ void CookieControlsIconView::ShowCookieControlsBubble() {
   bubble_coordinator_->ShowBubble(
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());
   CHECK(browser_->window());
+  CHECK(ShouldBeVisible());
   browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPH3pcdUserBypassFeature);
   browser_->window()->CloseFeaturePromo(
@@ -313,7 +271,13 @@ void CookieControlsIconView::ShowCookieControlsBubble() {
   browser_->window()->NotifyFeatureEngagementEvent(
       feature_engagement::events::kCookieControlsBubbleShown);
   RecordOpenedAction(icon_visible_, protections_on_);
-  RecordOpenedActionForConfidence(confidence_);
+  if (did_animate_) {
+    base::RecordAction(base::UserMetricsAction(
+        "TrackingProtection.UserBypass.Animated.Opened"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("TrackingProtection.UserBypass.Shown.Opened"));
+  }
 }
 
 void CookieControlsIconView::OnExecuting(

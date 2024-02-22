@@ -124,9 +124,6 @@ class PageInfoUI {
     // The expiration of the active third-party cookie exception.
     base::Time expiration;
 
-    // The confidence level of site breakage related to third-party cookies.
-    CookieControlsBreakageConfidenceLevel confidence;
-
     // Whether the current profile is "off the record".
     bool is_otr = false;
   };

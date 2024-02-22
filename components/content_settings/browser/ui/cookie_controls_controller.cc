@@ -147,7 +147,13 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
     observer.OnSitesCountChanged(third_party_allowed_sites,
                                  third_party_blocked_sites);
     observer.OnUserBypassIconStatusChanged(
-        status.controls_visible, status.protections_on, status.blocking_status);
+        ShouldUserBypassIconBeVisible(
+            status.protections_on, status.controls_visible,
+            third_party_allowed_sites + third_party_blocked_sites),
+        status.protections_on, status.blocking_status,
+        ShouldHighlightUserBypass());
+    // TODO(b/317883749): Deprecate this function after removing clank
+    // dependencies.
     observer.OnBreakageConfidenceLevelChanged(
         GetConfidenceLevel(status.status, status.enforcement,
                            SiteDataAccessed(third_party_allowed_sites,
@@ -239,6 +245,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           info.metadata.expiration()};
 }
 
+// TODO(b/317883749): Remove this function.
 CookieControlsBreakageConfidenceLevel
 CookieControlsController::GetConfidenceLevel(
     CookieControlsStatus status,
@@ -388,6 +395,7 @@ void CookieControlsController::SetUserChangedCookieBlockingForSite(
   user_changed_cookie_blocking_ = changed && !user_changed_cookie_blocking_;
 }
 
+// TODO(b/317883749): Update this function to not call `GetConfidenceLevel`.
 CookieControlsBreakageConfidenceLevel
 CookieControlsController::GetBreakageConfidenceLevel() {
   auto status = GetStatus(GetWebContents());
@@ -454,6 +462,14 @@ void CookieControlsController::PresentBlockedCookieCounter() {
   for (auto& observer : observers_) {
     observer.OnSitesCountChanged(third_party_allowed_sites,
                                  third_party_blocked_sites);
+    observer.OnUserBypassIconStatusChanged(
+        ShouldUserBypassIconBeVisible(
+            status.protections_on, status.controls_visible,
+            third_party_allowed_sites + third_party_blocked_sites),
+        status.protections_on, status.blocking_status,
+        ShouldHighlightUserBypass());
+    // TODO(b/317883749): Deprecate this function after removing clank
+    // dependencies.
     observer.OnBreakageConfidenceLevelChanged(
         GetConfidenceLevel(status.status, status.enforcement,
                            SiteDataAccessed(third_party_allowed_sites,
@@ -488,6 +504,7 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
 
   recent_reloads_count_ = recent_reloads_count;
 
+  // TODO(b/317883749): Remove logic below.
   // Only inform the observers if there is a potential confidence level change.
   if (recent_reloads_count_ < features::kUserBypassUIReloadCount.Get() &&
       !has_exception_expired_since_last_visit_) {
@@ -495,6 +512,15 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
   }
 
   for (auto& observer : observers_) {
+    observer.OnUserBypassIconStatusChanged(
+        ShouldUserBypassIconBeVisible(
+            status.protections_on, status.controls_visible,
+            GetAllowedThirdPartyCookiesSitesCount() +
+                GetBlockedThirdPartyCookiesSitesCount()),
+        status.protections_on, status.blocking_status,
+        ShouldHighlightUserBypass());
+    // TODO(b/317883749): Deprecate this function after removing clank
+    // dependencies.
     observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
         status.status, status.enforcement,
         SiteDataAccessed(GetAllowedThirdPartyCookiesSitesCount(),
@@ -592,6 +618,68 @@ void CookieControlsController::RecordActivationMetrics() {
   // TODO(crbug.com/1446230): Add metrics, related to repeated activations.
 }
 
+bool CookieControlsController::ShouldHighlightUserBypass() {
+  auto* web_contents = GetWebContents();
+  // We don't want to show UI animation, and IPH in this case as we can't
+  // persist their usage cross-session. This puts us at high risk of
+  // over-triggering noisy UI and annoying users.
+  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    return false;
+  }
+
+  // TODO(crbug.com/1446230): Check if FedCM was requested.
+  const GURL& url = web_contents->GetLastCommittedURL();
+  if (cookie_settings_->HasAnyFrameRequestedStorageAccess(url)) {
+    return false;
+  }
+
+  // If the user is returning to the site after their previous exception has
+  // expired, highlight user bypass. The order of this check is important,
+  // as the site may now be using SAA / FedCM instead of relying on 3PC. It
+  // should also come before any check for whether the entrypoint was already
+  // animated.
+  if (has_exception_expired_since_last_visit_) {
+    return true;
+  }
+
+  // Check if the entry point was already animated for the site.
+  if (WasEntryPointAlreadyAnimated(GetMetadata(settings_map_, url))) {
+    return false;
+  }
+
+  if (recent_reloads_count_ >= features::kUserBypassUIReloadCount.Get()) {
+    return true;
+  }
+
+  if (SiteEngagementService::IsEngagementAtLeast(
+          GetSiteEngagementScore(), blink::mojom::EngagementLevel::HIGH)) {
+    return true;
+  }
+
+  return false;
+}
+
+bool CookieControlsController::ShouldUserBypassIconBeVisible(
+    bool protections_on,
+    bool controls_visible,
+    int third_party_sites_count) {
+  // If no 3P sites have attempted to access site data, nor were any stateful
+  // bounces recorded, the icon should not be displayed. Take into account both
+  // allow and blocked counts, since the breakage might be related to storage
+  // partitioning. Partitioned site will be allowed to access partitioned
+  // storage.
+  bool site_data_access_attempted =
+      third_party_sites_count + GetStatefulBounceCount() != 0;
+
+  // 3PCD prevents SameSite=None cookies from being sent when the top-level
+  // document is sandboxed without `allow-origin`. For instance when loaded
+  // with: `Content-Security-Policy: sandbox`. In that case, we render the UI to
+  // allow the user to opt into sending SameSite=None cookies again in those
+  // contexts.
+  return controls_visible && (HasOriginSandboxedTopLevelDocument() ||
+                              !protections_on || site_data_access_attempted);
+}
+
 CookieControlsController::TabObserver::TabObserver(
     CookieControlsController* cookie_controls,
     content::WebContents* web_contents)
@@ -630,7 +718,6 @@ void CookieControlsController::TabObserver::OnSiteDataAccessed(
   if (cookie_accessed_set_.count(access_details)) {
     return;
   }
-
   cookie_accessed_set_.insert(access_details);
   cookie_controls_->PresentBlockedCookieCounter();
 }

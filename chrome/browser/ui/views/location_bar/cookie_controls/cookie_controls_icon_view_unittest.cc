@@ -44,20 +44,15 @@ std::u16string SiteNotWorkingLabel() {
       IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL);
 }
 
-const char kUMAHighConfidenceShown[] = "CookieControls.HighConfidence.Shown";
-const char kUMAHighConfidenceOpened[] = "CookieControls.HighConfidence.Opened";
-const char kUMAMediumConfidenceShown[] =
-    "CookieControls.MediumConfidence.Shown";
-const char kUMAMediumConfidenceOpened[] =
-    "CookieControls.MediumConfidence.Opened";
-const char kUMALowConfidenceShown[] = "CookieControls.LowConfidence.Shown";
-const char kUMALowConfidenceOpened[] = "CookieControls.LowConfidence.Opened";
+const char kUMAIconShown[] = "TrackingProtection.UserBypass.Shown";
+const char kUMAIconOpened[] = "TrackingProtection.UserBypass.Shown.Opened";
+const char kUMAIconAnimated[] = "TrackingProtection.UserBypass.Animated";
+const char kUMAIconAnimatedOpened[] =
+    "TrackingProtection.UserBypass.Animated.Opened";
 const char kUMABubbleOpenedBlocked[] =
     "CookieControls.Bubble.CookiesBlocked.Opened";
 const char kUMABubbleOpenedAllowed[] =
     "CookieControls.Bubble.CookiesAllowed.Opened";
-const char kUMABubbleOpenedUnknown[] =
-    "CookieControls.Bubble.UnknownState.Opened";
 
 // A fake CookieControlsBubbleCoordinator that has a no-op ShowBubble().
 class MockCookieControlsBubbleCoordinator
@@ -143,20 +138,15 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(CookieControlsIconViewUnitTest, DefaultNotVisible) {
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  // Execute a improperly initialized icon view.
-  ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedUnknown), 1);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
 }
 
-TEST_P(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
+TEST_P(CookieControlsIconViewUnitTest,
+       IconAnimatesWhenShouldHighlightIsTrueAndProtectionsAreOn) {
   view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kHigh);
+                                       /*protections_on=*/true, GetParam(),
+                                       /*should_highlight=*/true);
   EXPECT_TRUE(Visible());
-  EXPECT_TRUE(LabelShown());  // Animation for high confidence
+  EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
   EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
@@ -164,17 +154,19 @@ TEST_P(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
 #endif
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 1);
   ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceOpened), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimatedOpened), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
 }
 
-TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceLabelAnimation) {
+TEST_P(CookieControlsIconViewUnitTest,
+       IconAnimatesOnPageReloadWithChangedSettings) {
   view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kMedium);
+                                       /*protections_on=*/true, GetParam(),
+                                       /*should_highlight=*/false);
   ExecuteIcon();
   // Force the icon to animate and set the label again
   view_->OnFinishedPageReloadWithChangedSettings();
@@ -187,14 +179,38 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceLabelAnimation) {
             CookiesLimited3pcd() ? LimitedLabel() : BlockedLabel());
 }
 
-TEST_P(CookieControlsIconViewUnitTest,
-       LowConfidenceDoesNotRetriggerA11yReadOut) {
+TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
   view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kHigh);
+                                       /*protections_on=*/true, GetParam(),
+                                       /*should_highlight=*/true);
   EXPECT_TRUE(Visible());
-  EXPECT_TRUE(LabelShown());  // Animation for high confidence
+  EXPECT_TRUE(LabelShown());
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimatedOpened), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 0);
+  // Simulate a change in web content.
+  view_->UpdateImpl();
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/true, GetParam(),
+                                       /*should_highlight=*/false);
+  ExecuteIcon();
+  EXPECT_TRUE(Visible());
+  EXPECT_FALSE(LabelShown());
+  // Animated user actions should not be counted.
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimatedOpened), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 1);
+}
+
+TEST_P(CookieControlsIconViewUnitTest, HidingIconDoesNotRetriggerA11yReadOut) {
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/true, GetParam(),
+                                       /*should_highlight=*/true);
+  EXPECT_TRUE(Visible());
+  EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
   EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
@@ -203,10 +219,13 @@ TEST_P(CookieControlsIconViewUnitTest,
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
 #endif
 
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kLow);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 0);
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
+                                       /*protections_on=*/true, GetParam(),
+                                       /*should_highlight=*/false);
   EXPECT_FALSE(Visible());
-  EXPECT_FALSE(LabelShown());  // Hidden for low confidence
+  EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
   EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
@@ -214,165 +233,64 @@ TEST_P(CookieControlsIconViewUnitTest,
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
 #endif
-
-  // Low confidence isn't currently shown.
-  EXPECT_EQ(user_actions_.GetActionCount(kUMALowConfidenceShown), 0);
+  // Verify no metrics are recorded when icon is hidden.
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 0);
 }
 
-TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
+TEST_P(CookieControlsIconViewUnitTest,
+       IconDoesNotAnimateWhenShouldHighlightIsFalse) {
   view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kMedium);
+                                       /*protections_on=*/true, GetParam(),
+                                       /*should_highlight=*/false);
   EXPECT_TRUE(Visible());
   EXPECT_FALSE(LabelShown());
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimatedOpened), 0);
+}
+
+TEST_P(CookieControlsIconViewUnitTest, IconHiddenWhenIconVisibleIsFalse) {
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
+                                       /*protections_on=*/false, GetParam(),
+                                       /*should_highlight=*/false);
+  EXPECT_FALSE(Visible());
+  EXPECT_FALSE(LabelShown());
+  EXPECT_EQ(TooltipText(), u"");
+  EXPECT_EQ(LabelText(), u"");
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
+#endif
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 0);
+}
+
+TEST_P(CookieControlsIconViewUnitTest,
+       RecordsIconOpenMetricWhenProtectionsAreOff) {
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/false, GetParam(),
+                                       /*should_highlight=*/false);
+  EXPECT_TRUE(Visible());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  ExecuteIcon();
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
+}
+
+TEST_P(CookieControlsIconViewUnitTest,
+       RecordsIconOpenMetricWhenProtectionsAreOn) {
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/true, GetParam(),
+                                       /*should_highlight=*/false);
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
   EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
-#endif
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 1);
-  ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceOpened), 1);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
-}
-
-TEST_P(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kLow);
-  EXPECT_FALSE(Visible());
-  EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(),
-            In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
-#endif
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMALowConfidenceShown), 0);
-  ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMALowConfidenceOpened), 1);
-}
-
-//// Default third-party cookie blocking disabled.
-
-TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
-                                       /*protections_on=*/false, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kHigh);
-  EXPECT_FALSE(Visible());
-  EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(), In3pcd() ? TrackingProtectionLabel() : u"");
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : u"");
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
-#endif
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
-  ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedUnknown), 1);
-}
-
-TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
-                                       /*protections_on=*/false, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kMedium);
-  EXPECT_FALSE(Visible());
-  EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(), In3pcd() ? TrackingProtectionLabel() : u"");
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : u"");
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
-#endif
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
-  ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedUnknown), 1);
-}
-
-TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
-                                       /*protections_on=*/false, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kLow);
-  EXPECT_FALSE(Visible());
-  EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(), In3pcd() ? TrackingProtectionLabel() : u"");
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : u"");
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
-#endif
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
-  ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedUnknown), 1);
-}
-
-/// Disabled third-party cookie blocking for site.
-
-TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/false, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_TRUE(Visible());
-  EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(),
-            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-#if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
-#endif
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 1);
   ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
-}
-
-TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/false, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kMedium);
-  EXPECT_TRUE(Visible());
-  EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(),
-            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
-#endif
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 1);
-  ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
-}
-
-TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/false, GetParam());
-  view_->OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel::kLow);
-  EXPECT_FALSE(Visible());
-  EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(),
-            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
-#endif
-  ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
 }

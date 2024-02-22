@@ -33,12 +33,10 @@ class CookieControlsIconView : public PageActionIconView,
   ~CookieControlsIconView() override;
 
   // CookieControlsObserver:
-  void OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel level) override;
-  void OnUserBypassIconStatusChanged(
-      bool icon_visible,
-      bool protections_on,
-      CookieBlocking3pcdStatus blocking_status) override;
+  void OnUserBypassIconStatusChanged(bool icon_visible,
+                                     bool protections_on,
+                                     CookieBlocking3pcdStatus blocking_status,
+                                     bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
   void ShowCookieControlsBubble();
@@ -61,26 +59,28 @@ class CookieControlsIconView : public PageActionIconView,
 
   bool GetAssociatedBubble() const;
   bool ShouldBeVisible() const;
+  // Whether a managed IPH is currently active.
+  bool IsManagedIPHActive() const;
   void OnIPHClosed();
 
   // Attempts to show IPH for the cookie controls icon.
   // Returns whether IPH was successfully shown.
   bool MaybeShowIPH();
 
-  // Set confidence_changed = true to animate if the confidence level changed
-  // even if the icon is already visible.
-  void UpdateVisibilityAndAnimate(bool confidence_changed = false);
+  bool MaybeAnimateIcon();
+  void UpdateIcon();
+
   int GetLabelForStatus() const;
   void SetLabelAndTooltip();
 
   bool icon_visible_ = false;
   bool protections_on_ = false;
+  bool did_animate_ = false;
+  // Whether we should have a visual indicator highlighting the icon.
+  bool should_highlight_ = false;
 
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
-
-  CookieControlsBreakageConfidenceLevel confidence_ =
-      CookieControlsBreakageConfidenceLevel::kUninitialized;
 
   raw_ptr<Browser> browser_ = nullptr;
 

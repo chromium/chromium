@@ -54,7 +54,6 @@ PageInfoCookiesContentView::CookiesNewInfo DefaultCookieInfoForTests(
   cookie_info.controls_visible = true;
   cookie_info.protections_on = true;
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
   cookie_info.is_otr = false;
   return cookie_info;
@@ -222,7 +221,6 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   PageInfoCookiesContentView::CookiesNewInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.protections_on = false;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -261,7 +259,6 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   PageInfoCookiesContentView::CookiesNewInfo cookie_info =
       DefaultCookieInfoForTests(kDaysToExpiration);
   cookie_info.protections_on = false;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -300,7 +297,6 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   PageInfoCookiesContentView::CookiesNewInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -338,7 +334,6 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
       DefaultCookieInfoForTests();
   cookie_info.protections_on = false;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -375,7 +370,6 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   PageInfoCookiesContentView::CookiesNewInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -413,7 +407,6 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
       DefaultCookieInfoForTests();
   cookie_info.protections_on = false;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -452,7 +445,6 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   PageInfoCookiesContentView::CookiesNewInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -491,7 +483,6 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
       DefaultCookieInfoForTests();
   cookie_info.protections_on = false;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
-  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
   content_view()->SetCookieInfo(cookie_info);
 

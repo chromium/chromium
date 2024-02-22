@@ -243,7 +243,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
     }
   }
 
-  void SetHighConfidenceForSite() {
+  void SetHighSiteEngagement() {
     // Force high site engagement.
     auto* site_engagement =
         site_engagement::SiteEngagementService::Get(browser()->profile());
@@ -305,7 +305,8 @@ class CookieControlsInteractiveUiNoFeedbackTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, BubbleOpens) {
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
+                       BubbleOpensWhenIconPressed) {
   BlockThirdPartyCookies(GetParam());
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
@@ -355,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   BlockThirdPartyCookies();
-  SetHighConfidenceForSite();
+  SetHighSiteEngagement();
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
   RunTestSequence(
@@ -372,9 +373,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
-                       NavigateHighConfidence) {
+                       IconAnimatesOnHighSiteEngagement) {
   BlockThirdPartyCookies(GetParam());
-  SetHighConfidenceForSite();
+  SetHighSiteEngagement();
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -393,9 +394,9 @@ class CookieControlsInteractiveUiWithCookieControlsIphTest
 };
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
-                       NavigateHighConfidenceDismissIph) {
+                       ShowAndDismissIphOnHighSiteEngagement) {
   BlockThirdPartyCookies();
-  SetHighConfidenceForSite();
+  SetHighSiteEngagement();
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -414,9 +415,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
-                       NavigateHighConfidenceOpenCookieControlsViaIph) {
+                       OpenUserBypassViaIph) {
   BlockThirdPartyCookies();
-  SetHighConfidenceForSite();
+  SetHighSiteEngagement();
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -432,9 +433,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
-                       NavigateHighConfidenceOpenCookieControlsViaIcon) {
+                       OpenUserBypassViaIconWhenIphVisible) {
   BlockThirdPartyCookies();
-  SetHighConfidenceForSite();
+  SetHighSiteEngagement();
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -740,8 +741,8 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest, RemoveException) {
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   BlockThirdPartyCookies(/*use_3pcd=*/true);
+  SetHighSiteEngagement();
   SetBlockAll3pcToggle(std::get<0>(GetParam()));
-  SetHighConfidenceForSite();
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
   RunTestSequence(
