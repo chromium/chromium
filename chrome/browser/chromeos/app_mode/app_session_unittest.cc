@@ -7,9 +7,11 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +19,9 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
@@ -68,6 +72,7 @@ constexpr char kTestAppId[] = "aaaabbbbaaaabbbbaaaabbbbaaaabbbb";
 constexpr char kTestWebAppName1[] = "test_web_app_name1";
 constexpr char kTestWebAppName2[] = "test_web_app_name2";
 constexpr char kTestUrl[] = "www.test.com";
+constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 constexpr char16_t kPepperPluginName1[] = u"pepper_plugin_name1";
@@ -237,11 +242,8 @@ template <typename AppSessionParamType = KioskSessionRestartTestCase>
 class AppSessionBaseTest
     : public ::testing::TestWithParam<AppSessionParamType> {
  public:
-  explicit AppSessionBaseTest(
-      base::test::TaskEnvironment::TimeSource time_source =
-          base::test::TaskEnvironment::TimeSource::DEFAULT)
-      : task_environment_{time_source},
-        local_state_(std::make_unique<ScopedTestingLocalState>(
+  AppSessionBaseTest()
+      : local_state_(std::make_unique<ScopedTestingLocalState>(
             TestingBrowserProcess::GetGlobal())) {}
 
   AppSessionBaseTest(const AppSessionBaseTest&) = delete;
@@ -367,7 +369,8 @@ class AppSessionBaseTest
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -553,6 +556,14 @@ TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
 
   EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
       *CreateBrowserForWebApp(kTestWebAppName1)));
+}
+
+TEST_F(AppSessionTest, DoNotCrashIfBrowserClosedSuccessfully) {
+  StartWebKioskSession(kTestWebAppName1);
+
+  auto browser = CreateBrowserForWebApp(kTestWebAppName1);
+
+  task_environment()->FastForwardBy(kCloseBrowserTimeout);
 }
 
 TEST_F(AppSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
