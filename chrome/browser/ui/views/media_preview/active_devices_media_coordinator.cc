@@ -107,7 +107,7 @@ void ActiveDevicesMediaCoordinator::UpdateMediaCoordinatorList() {
       stream_type_,
       base::BindOnce(
           &ActiveDevicesMediaCoordinator::GotDeviceIdsOpenedForWebContents,
-          base::Unretained(this)));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActiveDevicesMediaCoordinator::GotDeviceIdsOpenedForWebContents(

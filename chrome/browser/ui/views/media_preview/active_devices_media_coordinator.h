@@ -53,6 +53,7 @@ class ActiveDevicesMediaCoordinator
   base::flat_map<std::string, std::unique_ptr<MediaCoordinator>>
       media_coordinators_;
   base::flat_map<std::string, raw_ptr<views::Separator>> separators_;
+  base::WeakPtrFactory<ActiveDevicesMediaCoordinator> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_ACTIVE_DEVICES_MEDIA_COORDINATOR_H_
