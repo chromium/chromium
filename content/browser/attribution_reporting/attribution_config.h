@@ -72,15 +72,10 @@ struct CONTENT_EXPORT AttributionConfig {
     // destination.
     int max_reports_per_destination = 1024;
 
-    // Default constants for max info gain in bits per source type.
-    // Rounded up to nearest e-5 digit.
-    static constexpr double kDefaultMaxNavigationInfoGain = 11.5;
-    static constexpr double kDefaultMaxEventInfoGain = 6.5;
-
     // Controls the max number bits of information that can be associated with
     // a single a source.
-    double max_navigation_info_gain = kDefaultMaxNavigationInfoGain;
-    double max_event_info_gain = kDefaultMaxEventInfoGain;
+    double max_navigation_info_gain = 11.5;
+    double max_event_info_gain = 6.5;
 
     friend bool operator==(const EventLevelLimit&,
                            const EventLevelLimit&) = default;

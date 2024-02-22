@@ -28,16 +28,6 @@ const base::FeatureParam<base::TimeDelta> kAggregateReportDelaySpan{
     "aggregate_report_delay_span",
     AttributionConfig::AggregateLimit::kDefaultDelaySpan};
 
-const base::FeatureParam<double> kNavigationMaxInfoGain{
-    &attribution_reporting::features::kConversionMeasurement,
-    "navigation_max_info_gain",
-    AttributionConfig::EventLevelLimit::kDefaultMaxNavigationInfoGain};
-
-const base::FeatureParam<double> kEventMaxInfoGain{
-    &attribution_reporting::features::kConversionMeasurement,
-    "event_max_info_gain",
-    AttributionConfig::EventLevelLimit::kDefaultMaxEventInfoGain};
-
 }  // namespace
 
 bool AttributionConfig::Validate() const {
@@ -154,9 +144,7 @@ AttributionConfig& AttributionConfig::operator=(const AttributionConfig&) =
     default;
 AttributionConfig& AttributionConfig::operator=(AttributionConfig&&) = default;
 
-AttributionConfig::EventLevelLimit::EventLevelLimit()
-    : max_navigation_info_gain(kNavigationMaxInfoGain.Get()),
-      max_event_info_gain(kEventMaxInfoGain.Get()) {}
+AttributionConfig::EventLevelLimit::EventLevelLimit() = default;
 
 AttributionConfig::EventLevelLimit::EventLevelLimit(const EventLevelLimit&) =
     default;
