@@ -195,7 +195,7 @@ void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);
   RegisterExtension(ext_texture_filter_anisotropic_, kApprovedExtension);
-  RegisterExtension(ext_texture_mirror_clamp_to_edge_, kDraftExtension);
+  RegisterExtension(ext_texture_mirror_clamp_to_edge_);
   RegisterExtension(exts_rgb_);
   RegisterExtension(khr_parallel_shader_compile_);
   RegisterExtension(oes_element_index_uint_);

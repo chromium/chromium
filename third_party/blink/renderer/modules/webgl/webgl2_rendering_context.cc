@@ -180,7 +180,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);
   RegisterExtension(ext_texture_filter_anisotropic_);
-  RegisterExtension(ext_texture_mirror_clamp_to_edge_, kDraftExtension);
+  RegisterExtension(ext_texture_mirror_clamp_to_edge_);
   RegisterExtension(ext_texture_norm16_);
   RegisterExtension(khr_parallel_shader_compile_);
   RegisterExtension(nv_shader_noperspective_interpolation_);
@@ -207,9 +207,9 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
                     kDraftExtension);
   RegisterExtension(webgl_polygon_mode_);
   RegisterExtension(webgl_provoking_vertex_);
-  RegisterExtension(webgl_render_shared_exponent_, kDraftExtension);
+  RegisterExtension(webgl_render_shared_exponent_);
   RegisterExtension(webgl_shader_pixel_local_storage_, kDraftExtension);
-  RegisterExtension(webgl_stencil_texturing_, kDraftExtension);
+  RegisterExtension(webgl_stencil_texturing_);
 }
 
 void WebGL2RenderingContext::Trace(Visitor* visitor) const {
