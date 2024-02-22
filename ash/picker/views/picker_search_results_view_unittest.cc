@@ -92,6 +92,20 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
       ElementsAre(Pointee(MatchesResultSection(kSearchResults.sections()[0]))));
 }
 
+TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  const PickerSearchResults kSearchResults({{PickerSearchResults::Section(
+      u"Categories",
+      {{PickerSearchResult::Category(PickerCategory::kEmojis)}})}});
+  view.AppendSearchResults(kSearchResults);
+
+  EXPECT_THAT(view.children(), SizeIs(kSearchResults.sections().size()));
+  EXPECT_THAT(
+      view.section_views_for_testing(),
+      ElementsAre(Pointee(MatchesResultSection(kSearchResults.sections()[0]))));
+}
+
 TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
@@ -176,15 +190,17 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, PressingEnterSelectsResult) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     PickerSearchResultsViewResultSelectionTest,
-    testing::ValuesIn<PickerSearchResultTestCase>(
-        {{"Text", PickerSearchResult::Text(u"result")},
-         {"Emoji", PickerSearchResult::Emoji(u"😊")},
-         {"Symbol", PickerSearchResult::Symbol(u"♬")},
-         {"Emoticon", PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")},
-         {"Gif", PickerSearchResult::Gif(/*url=*/GURL(),
-                                         /*preview_image_url=*/GURL(),
-                                         gfx::Size(10, 10),
-                                         u"cat gif")}}),
+    testing::ValuesIn<PickerSearchResultTestCase>({
+        {"Text", PickerSearchResult::Text(u"result")},
+        {"Emoji", PickerSearchResult::Emoji(u"😊")},
+        {"Symbol", PickerSearchResult::Symbol(u"♬")},
+        {"Emoticon", PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")},
+        {"Gif", PickerSearchResult::Gif(/*url=*/GURL(),
+                                        /*preview_image_url=*/GURL(),
+                                        gfx::Size(10, 10),
+                                        u"cat gif")},
+        {"Category", PickerSearchResult::Category(PickerCategory::kEmojis)},
+    }),
     [](const testing::TestParamInfo<
         PickerSearchResultsViewResultSelectionTest::ParamType>& info) {
       return info.param.test_name;

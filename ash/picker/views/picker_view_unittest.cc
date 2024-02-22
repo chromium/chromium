@@ -283,6 +283,37 @@ TEST_F(PickerViewTest, SwitchesToCategoryView) {
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
 }
 
+TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
+  base::test::TestFuture<void> search_called;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        search_called.SetValue();
+        callback.Run(PickerSearchResults({{
+            PickerSearchResults::Section(
+                u"section", {{PickerSearchResult::Category(
+                                PickerCategory::kBrowsingHistory)}}),
+        }}));
+      }));
+  auto widget =
+      PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
+                               kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search_called.Wait());
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view =
+      picker_view->search_results_view_for_testing()
+          .section_views_for_testing()[0]
+          ->item_views_for_testing()[0];
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+}
+
 TEST_F(PickerViewTest, SelectingCategoryUpdatesSearchFieldPlaceholderText) {
   FakePickerViewDelegate delegate;
   auto widget =

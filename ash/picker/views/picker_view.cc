@@ -291,8 +291,13 @@ void PickerView::PublishSearchResults(const PickerSearchResults& results) {
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
-  delegate_->InsertResultOnNextFocus(result);
-  GetWidget()->Close();
+  if (const PickerSearchResult::CategoryData* category_data =
+          std::get_if<PickerSearchResult::CategoryData>(&result.data())) {
+    SelectCategory(category_data->category);
+  } else {
+    delegate_->InsertResultOnNextFocus(result);
+    GetWidget()->Close();
+  }
 }
 
 void PickerView::SelectCategory(PickerCategory category) {
