@@ -2827,7 +2827,14 @@ IN_PROC_BROWSER_TEST_F(
 // When there are multiple HttpAuthObservers (e.g., multiple HTTP auth dialogs
 // as in http://crbug.com/537823), ensure that credentials from PasswordStore
 // distributed to them are filtered by the realm.
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, BasicAuthSeparateRealms) {
+// TODO(crbug.com/326170284) Flaky on Mac, fix and re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BasicAuthSeparateRealms DISABLED_BasicAuthSeparateRealms
+#else
+#define MAYBE_BasicAuthSeparateRealms BasicAuthSeparateRealms
+#endif
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       MAYBE_BasicAuthSeparateRealms) {
   // We must use a new test server here because embedded_test_server() is
   // already started at this point and adding the request handler to it would
   // not be thread safe.
@@ -3087,8 +3094,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
 // Tests that no bubble shown when a password form without username submitted
 // and there is stored credentials with the same password.
+// TODO(crbug.com/326170284) Flaky on Mac, fix and re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PasswordRetryFormNoBubbleWhenPasswordTheSame \
+  DISABLED_PasswordRetryFormNoBubbleWhenPasswordTheSame
+#else
+#define MAYBE_PasswordRetryFormNoBubbleWhenPasswordTheSame \
+  PasswordRetryFormNoBubbleWhenPasswordTheSame
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       PasswordRetryFormNoBubbleWhenPasswordTheSame) {
+                       MAYBE_PasswordRetryFormNoBubbleWhenPasswordTheSame) {
   // At first let us save credentials to the PasswordManager.
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -4761,8 +4776,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerCredentiallessIframeTest, NoFormsSeen) {
   }
 }
 
+// TODO(crbug.com/326170284) Flaky on Mac, fix and re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DisablePasswordManagerOnCredentiallessIframe \
+  DISABLED_DisablePasswordManagerOnCredentiallessIframe
+#else
+#define MAYBE_DisablePasswordManagerOnCredentiallessIframe \
+  DisablePasswordManagerOnCredentiallessIframe
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerCredentiallessIframeTest,
-                       DisablePasswordManagerOnCredentiallessIframe) {
+                       MAYBE_DisablePasswordManagerOnCredentiallessIframe) {
   GURL base_url = https_test_server().GetURL("a.test", "/");
   GURL main_frame_url = https_test_server().GetURL(
       "a.test", "/password/password_form_in_credentialless_iframe.html");
