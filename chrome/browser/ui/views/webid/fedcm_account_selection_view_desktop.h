@@ -230,9 +230,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnGotIt(const ui::Event& event) override;
   void OnMoreDetails(const ui::Event& event) override;
 
-  // Returns false if `this` got deleted. In that case, the caller should not
-  // access any further member variables.
-  bool ShowVerifyingSheet(const Account& account,
+  void ShowVerifyingSheet(const Account& account,
                           const IdentityProviderDisplayData& idp_display_data);
 
   // Returns the SheetType to be used for metrics reporting.
