@@ -7,10 +7,12 @@
 <script src="resources/common.js"></script>
 <style></style>
 <script>
+const channel = new BroadcastChannel("testchannel");
+
 const params = new URLSearchParams(location.search);
-const is_initial_page_first_navigation = !params.has('new') && navigation.entries().length == 1;
-const is_initial_page_back_navigation = !params.has('new') && navigation.entries().length > 1;
+const is_initial_page_first_navigation = params.has('popup') && navigation.entries().length == 1;
 const is_new_page = params.has('new');
+const is_test_page = !params.has('popup') && !params.has('new');
 
 function enableViewTransition() {
   document.styleSheets[0].insertRule(`
@@ -23,44 +25,42 @@ function enableViewTransition() {
 if (is_new_page)
   enableViewTransition();
 
-function backNavOnDesinationPage() {
-  enableViewTransition();
+// The test page which opens a popup for the navigation sequence.
+if (is_test_page) {
+  const expectedUrl = location.href.split('?')[0] + "?popup";
+  const expectedEvents = ["pageconceal", "transition", expectedUrl, "traverse","from", "pagehide"];
 
-  promise_test(async () => {
-    const ev = await new Promise(
-        resolve => addEventListener('pagereveal', e => resolve(e)));
+  promise_test(async t => {
+    let popup;
+    onload = () => {
+      window.events = [];
+      popup = window.open("?popup");
+    };
 
-    assert_not_equals(ev.viewTransition, null, 'viewTransition should be enabled in pagereveal');
-  });
-}
-
-if (is_initial_page_first_navigation) {
-  // Navigate to the new page to populate the session history.
+    await new Promise(resolve => {
+      channel.addEventListener(
+        "message", t.step_func(async (e) => {
+          if (e.data === "nav") {
+            assert_array_equals(window.events, expectedEvents, 'incorrect event order');
+            popup.close();
+            resolve();
+          }
+      }));
+    });
+  }, `pageconceal on traverse navigation from script`);
+} else if (is_initial_page_first_navigation) {
+  // The popup page which the user navigates back to.
   onload = async () => {
     await disableBFCache();
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      location.href = location.href + '?new';
+      location.href = location.href.split('?')[0] + '?new';
     }));
-  };
-
-  let pageconcealfired = false;
-  onpageconceal = (e) => {
-    assert_equals(e.viewTransition, null, 'viewTransition should not be enabled in pageconceal on first navigation');
-    pageconcealfired = true;
-  };
-  onpagehide = (e) => {
-    assert_true(pageconcealfired);
   };
 
   onpageshow = (e) => {
     assert_false(e.persisted, 'the test should run without BFCache');
   }
-} else if (is_initial_page_back_navigation) {
-  // Without BFCache
-  backNavOnDesinationPage();
-} else {
-  assert_true(is_new_page);
-  assert_true(navigation.canGoBack);
+} else if (is_new_page) {
   onload = () => {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       navigation.back();
@@ -68,11 +68,18 @@ if (is_initial_page_first_navigation) {
   };
 
   onpageconceal = (e) => {
-    assert_not_equals(e.viewTransition, null, 'viewTransition should be enabled in pageconceal on back navigation');
-    assert_equals(e.activation.entry, navigation.entries()[0], 'activation url incorrect in pageconceal');
-    assert_equals(e.activation.navigationType, "traverse", 'navigation type incorrect in pageconceal');
-    assert_equals(e.activation.from, navigation.currentEntry, 'from entry incorrect in pageconceal');
-    assert_false(e.activation.entry.sameDocument, 'new entry must be cross-document');
+    window.opener.events.push("pageconceal");
+    if (e.viewTransition != null)
+      window.opener.events.push("transition");
+    window.opener.events.push(e.activation.entry.url);
+    window.opener.events.push(e.activation.navigationType);
+    if (e.activation.from == navigation.currentEntry)
+      window.opener.events.push("from");
+  };
+
+  onpagehide = () => {
+    window.opener.events.push("pagehide");
+    channel.postMessage("nav");
   };
 }
 </script>

@@ -16,34 +16,63 @@
 const expectedUrl = location.href + '?new';
 
 const params = new URLSearchParams(location.search);
-const is_initial_page = !params.has('new');
+// The page the popup navigates to.
+const is_new_page = params.has('new');
+// The initial page in the popup.
+const is_popup_page = params.has('popup');
+// The test page itself.
+const is_test_page = !is_popup_page && !is_new_page;
 
-if (is_initial_page) {
-  onload = () => {
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      test_driver.click(document.getElementById('nav_link'));
-    }));
-  };
+const channel = new BroadcastChannel("testchannel");
 
-  let pageconcealfired = false;
+if (is_test_page) {
+  const expectedUrl = location.href + "?new";
+  const expectedEvents = ["pageconceal", "transition", expectedUrl, "push","from", "pagehide"];
+
+  promise_test(async t => {
+    let popup;
+    onload = () => {
+      document.getElementById('nav_link').remove();
+      window.events = [];
+      popup = window.open("?popup");
+
+      popup.addEventListener("load", () => {
+        popup.requestAnimationFrame(
+          () => popup.requestAnimationFrame(() => {
+            let nav_link = popup.document.getElementById('nav_link');
+            test_driver
+                .click(nav_link)
+                .catch(() => assert_unreached("click failed"));
+          }));
+      });
+    };
+
+    await new Promise(resolve => {
+      channel.addEventListener(
+        "message", t.step_func(async (e) => {
+          if (e.data === "nav") {
+            assert_array_equals(window.events, expectedEvents, 'incorrect event order');
+            popup.close();
+            resolve();
+          }
+      }));
+    });
+  }, `pageconceal on navigation from user click`);
+} else if (is_popup_page) {
   onpageconceal = (e) => {
-    assert_not_equals(e.viewTransition, null, 'viewTransition should be enabled in pageconceal');
-    assert_equals(e.activation.entry.url, expectedUrl, 'activation url incorrect in pageconceal');
-    assert_equals(e.activation.navigationType, "push", 'navigation type incorrect in pageconceal');
-    assert_equals(e.activation.from, navigation.currentEntry, 'from entry incorrect in pageconceal');
-    assert_false(e.activation.entry.sameDocument, 'new entry must be cross-document');
-    pageconcealfired = true;
+    window.opener.events.push("pageconceal");
+    if (e.viewTransition != null)
+      window.opener.events.push("transition");
+    window.opener.events.push(e.activation.entry.url);
+    window.opener.events.push(e.activation.navigationType);
+    if (e.activation.from == navigation.currentEntry)
+      window.opener.events.push("from");
   };
-  onpagehide = (e) => {
-    assert_true(pageconcealfired);
-  };
-} else {
-  promise_test(async () => {
-    const ev = await new Promise(
-        resolve => addEventListener('pagereveal', e => resolve(e)));
 
-    assert_not_equals(ev.viewTransition, null, 'viewTransition should be enabled in pagereveal');
-  });
+  onpagehide = () => {
+    window.opener.events.push("pagehide");
+    channel.postMessage("nav");
+  };
 }
 </script>
 <body>

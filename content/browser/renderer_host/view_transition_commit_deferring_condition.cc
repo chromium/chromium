@@ -87,6 +87,7 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
 
   // TODO(crbug.com/1372584):  Implement a timeout, to avoid blocking the
   // navigation for too long.
+  CHECK(render_frame_host->IsRenderFrameLive());
   render_frame_host->GetAssociatedLocalFrame()
       ->SnapshotDocumentForViewTransition(
           std::move(page_conceal_event_params),

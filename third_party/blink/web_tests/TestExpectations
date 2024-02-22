@@ -6883,3 +6883,6 @@ crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-loa
 
 # Gardener 2024-02-22
 crbug.com/326478175 wpt_internal/dom/about_srcdoc/grandparent_location_aboutsrcdoc.sub.window.html [ Failure Pass Timeout ]
+
+# Test infra bug
+crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageconceal-push-from-click.html [ Timeout ]
