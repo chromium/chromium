@@ -433,6 +433,26 @@ void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
   client_->UpdateFormManagers();
 }
 
+bool PasswordFormManager::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
+    const {
+  signin::IdentityManager* identity_manager = client_->GetIdentityManager();
+  DCHECK(identity_manager);
+  const std::string gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+
+  const std::u16string& username = GetPendingCredentials().username_value;
+  //  If no match in the account store with the same username exists, then there
+  //  is nothing to update in this store.
+  auto same_username_in_account_store = [&](const PasswordForm* match) {
+    return match->IsUsingAccountStore() && match->username_value == username;
+  };
+  return base::ranges::any_of(form_fetcher_->GetBestMatches(),
+                              same_username_in_account_store) &&
+         !form_fetcher_->IsMovingBlocked(GaiaIdHash::FromGaiaId(gaia_id),
+                                         username);
+}
+
 void PasswordFormManager::OnUpdateUsernameFromPrompt(
     const std::u16string& new_username) {
   DCHECK(parsed_submitted_form_);

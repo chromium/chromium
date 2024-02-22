@@ -50,6 +50,10 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
   MOCK_METHOD(bool, IsMovableToAccountStore, (), (const override));
   MOCK_METHOD(void, Save, (), (override));
   MOCK_METHOD(void, Update, (const PasswordForm&), (override));
+  MOCK_METHOD(bool,
+              IsUpdateAffectingPasswordsStoredInTheGoogleAccount,
+              (),
+              (const override));
   MOCK_METHOD(void,
               OnUpdateUsernameFromPrompt,
               (const std::u16string&),

@@ -62,6 +62,7 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   bool IsMovableToAccountStore() const override;
   void Save() override;
   void Update(const PasswordForm& credentials_to_update) override;
+  bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const override;
   void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
   void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
   void OnNopeUpdateClicked() override;
@@ -157,6 +158,12 @@ void PasswordDataForUI::Save() {
 void PasswordDataForUI::Update(const PasswordForm&) {
   // The method is obsolete.
   NOTREACHED();
+}
+
+bool PasswordDataForUI::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
+    const {
+  // Generated passwords are always in the Google Account.
+  return true;
 }
 
 void PasswordDataForUI::OnUpdateUsernameFromPrompt(

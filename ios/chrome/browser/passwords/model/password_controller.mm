@@ -483,7 +483,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
       }
 
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-          accountToStorePassword,
+          form->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
+              ? accountToStorePassword
+              : std::nullopt,
           /*password_update=*/true, accountStorageUserState, std::move(form),
           self.dispatcher);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(

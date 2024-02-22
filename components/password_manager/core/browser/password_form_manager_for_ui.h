@@ -75,6 +75,10 @@ class PasswordFormManagerForUI {
   // credentials.
   virtual void Update(const PasswordForm& credentials_to_update) = 0;
 
+  // This method returns true if the current "update" is to a password that is
+  // saved in Google Account.
+  virtual bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const = 0;
+
   // Updates the username value. Called when user edits the username and clicks
   // the save button. Updates the username and modifies internal state
   // accordingly.
