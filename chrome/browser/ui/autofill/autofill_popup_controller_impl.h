@@ -213,7 +213,7 @@ class AutofillPopupControllerImpl
   // Returns `true` if this popup has no parent, and `false` for sub-popups.
   bool IsRootPopup() const;
 
-  raw_ptr<content::WebContents> web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
   base::WeakPtr<AutofillPopupView> view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;

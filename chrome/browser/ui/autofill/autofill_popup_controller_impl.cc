@@ -128,7 +128,7 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
              password_manager::metrics_util::PasswordMigrationWarningTriggers)>
         show_pwd_migration_warning_callback,
     std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent)
-    : web_contents_(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       controller_common_(element_bounds, text_direction, container_view),
       delegate_(delegate),
       show_pwd_migration_warning_callback_(
@@ -177,7 +177,7 @@ void AutofillPopupControllerImpl::Show(
   // The hide helper is destroyed on hide, so it cannot outlive the popup
   // controller.
   popup_hide_helper_ = AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
-      web_contents_, std::move(hiding_params), std::move(hiding_callback),
+      web_contents_.get(), std::move(hiding_params), std::move(hiding_callback),
       std::move(pip_detection_callback));
 
   // If the hide helper is null, then no frame has focus.
@@ -209,7 +209,7 @@ void AutofillPopupControllerImpl::Show(
     }
 
 #if BUILDFLAG(IS_ANDROID)
-    ManualFillingController::GetOrCreate(web_contents_)
+    ManualFillingController::GetOrCreate(web_contents_.get())
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                    !suggestions_.empty());
 #endif
@@ -340,7 +340,7 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
 #if BUILDFLAG(IS_ANDROID)
   // Assume that suggestions are (still) available. If this is wrong, the method
   // |HideViewAndDie| will be called soon after and will hide all suggestions.
-  ManualFillingController::GetOrCreate(web_contents_)
+  ManualFillingController::GetOrCreate(web_contents_.get())
       ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                  /*has_suggestions=*/true);
 #endif
@@ -399,7 +399,8 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
   // reference.
   Suggestion suggestion = suggestions_[index];
 #if BUILDFLAG(IS_ANDROID)
-  auto mf_controller = ManualFillingController::GetOrCreate(web_contents_);
+  auto mf_controller =
+      ManualFillingController::GetOrCreate(web_contents_.get());
   // Accepting a suggestion should hide all suggestions. To prevent them from
   // coming up in Multi-Window mode, mark the source as unavailable.
   mf_controller->UpdateSourceAvailability(FillingSource::AUTOFILL,
@@ -460,7 +461,7 @@ gfx::NativeView AutofillPopupControllerImpl::container_view() const {
 }
 
 content::WebContents* AutofillPopupControllerImpl::GetWebContents() const {
-  return web_contents_;
+  return web_contents_.get();
 }
 
 const gfx::RectF& AutofillPopupControllerImpl::element_bounds() const {
@@ -487,7 +488,7 @@ AutofillPopupControllerImpl::OpenSubPopup(
     std::vector<Suggestion> suggestions,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
-      delegate_, web_contents_, controller_common_.container_view,
+      delegate_, web_contents_.get(), controller_common_.container_view,
       anchor_bounds, controller_common_.text_direction, base::DoNothing(),
       /*parent=*/GetWeakPtr());
 
@@ -735,7 +736,7 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   // Mark the popup-like filling sources as unavailable.
   // Note: We don't invoke ManualFillingController::Hide() here, as we might
   // switch between text input fields.
-  ManualFillingController::GetOrCreate(web_contents_)
+  ManualFillingController::GetOrCreate(web_contents_.get())
       ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                  /*has_suggestions=*/false);
 #endif
@@ -748,11 +749,6 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
     view_->Hide();
     view_ = nullptr;
   }
-
-  // The deletion of the controller is asynchronous, so it can die after
-  // `web_contents_` is destroyed. In order to avoid dangling pointers,
-  // `web_contents_` is set to null.
-  web_contents_ = nullptr;
 
   if (self_deletion_weak_ptr_factory_.HasWeakPtrs())
     return;
