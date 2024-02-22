@@ -1679,29 +1679,41 @@ struct ElementWiseBinaryTester {
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
-    Test(helper, scope, builder, ElementWiseBinaryKind::kAdd);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kSub);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kMul);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kDiv);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kMin);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kMax);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kPow);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kAdd);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kSub);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kMul);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kDiv);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kMin);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kMax);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kPow);
   }
 
   void TestLogicalComparison(MLGraphTestMojo& helper,
                              V8TestingScope& scope,
                              MLGraphBuilder* builder) {
-    Test(helper, scope, builder, ElementWiseBinaryKind::kEqual);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kGreater);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kGreaterOrEqual);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kLesser);
-    Test(helper, scope, builder, ElementWiseBinaryKind::kLesserOrEqual);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kEqual);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kGreater);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kLesser);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual);
   }
 
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder,
-            ElementWiseBinaryKind kind) {
+            webnn::mojom::blink::ElementWiseBinary::Kind kind) {
     // Build the graph.
     auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions,
                                    lhs.data_type, scope.GetExceptionState());
@@ -1755,40 +1767,40 @@ struct ElementWiseBinaryTester {
 
     blink_mojom::ElementWiseBinary::Kind binary_kind;
     switch (kind) {
-      case ElementWiseBinaryKind::kAdd:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kAdd;
         break;
-      case ElementWiseBinaryKind::kSub:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kSub;
         break;
-      case ElementWiseBinaryKind::kMul:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kMul;
         break;
-      case ElementWiseBinaryKind::kDiv:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kDiv;
         break;
-      case ElementWiseBinaryKind::kMin:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kMin;
         break;
-      case ElementWiseBinaryKind::kMax:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kMax;
         break;
-      case ElementWiseBinaryKind::kPow:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kPow;
         break;
-      case ElementWiseBinaryKind::kEqual:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kEqual;
         break;
-      case ElementWiseBinaryKind::kGreater:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kGreater;
         break;
-      case ElementWiseBinaryKind::kGreaterOrEqual:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kGreaterOrEqual;
         break;
-      case ElementWiseBinaryKind::kLesser:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kLesser;
         break;
-      case ElementWiseBinaryKind::kLesserOrEqual:
+      case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kLesserOrEqual;
         break;
     }
@@ -3592,15 +3604,16 @@ struct Pool2dTester {
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
-    Test(helper, scope, builder, Pool2dKind::kAverage);
-    Test(helper, scope, builder, Pool2dKind::kL2);
-    Test(helper, scope, builder, Pool2dKind::kMax);
+    Test(helper, scope, builder,
+         webnn::mojom::blink::Pool2d::Kind::kAveragePool2d);
+    Test(helper, scope, builder, webnn::mojom::blink::Pool2d::Kind::kL2Pool2d);
+    Test(helper, scope, builder, webnn::mojom::blink::Pool2d::Kind::kMaxPool2d);
   }
 
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder,
-            Pool2dKind kind) {
+            webnn::mojom::blink::Pool2d::Kind kind) {
     // Build the graph.
     auto* input_operand =
         BuildInput(builder, "input", input.dimensions, input.data_type,
@@ -3643,13 +3656,13 @@ struct Pool2dTester {
     EXPECT_TRUE(operation->is_pool2d());
     auto& pool2d_mojo = operation->get_pool2d();
     switch (kind) {
-      case Pool2dKind::kAverage:
+      case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d:
         EXPECT_EQ(pool2d_mojo->kind, blink_mojom::Pool2d::Kind::kAveragePool2d);
         break;
-      case Pool2dKind::kL2:
+      case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
         EXPECT_EQ(pool2d_mojo->kind, blink_mojom::Pool2d::Kind::kL2Pool2d);
         break;
-      case Pool2dKind::kMax:
+      case webnn::mojom::blink::Pool2d::Kind::kMaxPool2d:
         EXPECT_EQ(pool2d_mojo->kind, blink_mojom::Pool2d::Kind::kMaxPool2d);
         break;
       default:
@@ -5084,22 +5097,22 @@ struct ReduceTester {
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
-    Test(helper, scope, builder, ReduceKind::kL1);
-    Test(helper, scope, builder, ReduceKind::kL2);
-    Test(helper, scope, builder, ReduceKind::kLogSum);
-    Test(helper, scope, builder, ReduceKind::kLogSumExp);
-    Test(helper, scope, builder, ReduceKind::kMax);
-    Test(helper, scope, builder, ReduceKind::kMean);
-    Test(helper, scope, builder, ReduceKind::kMin);
-    Test(helper, scope, builder, ReduceKind::kProduct);
-    Test(helper, scope, builder, ReduceKind::kSum);
-    Test(helper, scope, builder, ReduceKind::kSumSquare);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kL1);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kL2);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kLogSum);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kLogSumExp);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kMax);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kMean);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kMin);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kProduct);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kSum);
+    Test(helper, scope, builder, webnn::mojom::blink::Reduce::Kind::kSumSquare);
   }
 
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder,
-            ReduceKind kind) {
+            webnn::mojom::blink::Reduce::Kind kind) {
     // Build the graph.
     auto* input_operand =
         BuildInput(builder, "input", input.dimensions, input.data_type,
@@ -5126,34 +5139,34 @@ struct ReduceTester {
 
     blink_mojom::Reduce::Kind reduce_kind;
     switch (kind) {
-      case ReduceKind::kL1:
+      case webnn::mojom::blink::Reduce::Kind::kL1:
         reduce_kind = blink_mojom::Reduce::Kind::kL1;
         break;
-      case ReduceKind::kL2:
+      case webnn::mojom::blink::Reduce::Kind::kL2:
         reduce_kind = blink_mojom::Reduce::Kind::kL2;
         break;
-      case ReduceKind::kLogSum:
+      case webnn::mojom::blink::Reduce::Kind::kLogSum:
         reduce_kind = blink_mojom::Reduce::Kind::kLogSum;
         break;
-      case ReduceKind::kLogSumExp:
+      case webnn::mojom::blink::Reduce::Kind::kLogSumExp:
         reduce_kind = blink_mojom::Reduce::Kind::kLogSumExp;
         break;
-      case ReduceKind::kMax:
+      case webnn::mojom::blink::Reduce::Kind::kMax:
         reduce_kind = blink_mojom::Reduce::Kind::kMax;
         break;
-      case ReduceKind::kMean:
+      case webnn::mojom::blink::Reduce::Kind::kMean:
         reduce_kind = blink_mojom::Reduce::Kind::kMean;
         break;
-      case ReduceKind::kMin:
+      case webnn::mojom::blink::Reduce::Kind::kMin:
         reduce_kind = blink_mojom::Reduce::Kind::kMin;
         break;
-      case ReduceKind::kProduct:
+      case webnn::mojom::blink::Reduce::Kind::kProduct:
         reduce_kind = blink_mojom::Reduce::Kind::kProduct;
         break;
-      case ReduceKind::kSum:
+      case webnn::mojom::blink::Reduce::Kind::kSum:
         reduce_kind = blink_mojom::Reduce::Kind::kSum;
         break;
-      case ReduceKind::kSumSquare:
+      case webnn::mojom::blink::Reduce::Kind::kSumSquare:
         reduce_kind = blink_mojom::Reduce::Kind::kSumSquare;
         break;
     }
@@ -5744,14 +5757,14 @@ struct ArgMinMaxTester {
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
-    Test(helper, scope, builder, ArgMinMaxKind::kArgMin);
-    Test(helper, scope, builder, ArgMinMaxKind::kArgMax);
+    Test(helper, scope, builder, webnn::mojom::blink::ArgMinMax::Kind::kMin);
+    Test(helper, scope, builder, webnn::mojom::blink::ArgMinMax::Kind::kMax);
   }
 
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder,
-            ArgMinMaxKind kind) {
+            webnn::mojom::blink::ArgMinMax::Kind kind) {
     // Build the graph.
     auto* input_operand =
         BuildInput(builder, "input", input.dimensions, input.data_type,
@@ -5781,10 +5794,10 @@ struct ArgMinMaxTester {
 
     blink_mojom::ArgMinMax::Kind mojom_kind;
     switch (kind) {
-      case ArgMinMaxKind::kArgMin:
+      case webnn::mojom::blink::ArgMinMax::Kind::kMin:
         mojom_kind = blink_mojom::ArgMinMax::Kind::kMin;
         break;
-      case ArgMinMaxKind::kArgMax:
+      case webnn::mojom::blink::ArgMinMax::Kind::kMax:
         mojom_kind = blink_mojom::ArgMinMax::Kind::kMax;
         break;
     }
@@ -5940,7 +5953,8 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
       BuildInput(builder, "rhs", dimensions, V8MLOperandDataType::Enum::kUint8,
                  scope.GetExceptionState());
   auto* output_operand = BuildElementWiseBinary(
-      scope, builder, ElementWiseBinaryKind::kAdd, lhs_operand, rhs_operand);
+      scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+      lhs_operand, rhs_operand);
   auto [graph, build_exception] =
       BuildGraph(scope, builder, {{"output", output_operand}});
   ASSERT_THAT(graph, testing::NotNull());

@@ -278,15 +278,15 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
 
 MLOperand* BuildArgMinMax(V8TestingScope& scope,
                           MLGraphBuilder* builder,
-                          ArgMinMaxKind kind,
+                          webnn::mojom::blink::ArgMinMax::Kind kind,
                           const MLOperand* input,
                           const MLArgMinMaxOptions* options) {
   MLOperand* output = nullptr;
   switch (kind) {
-    case ArgMinMaxKind::kArgMin:
+    case webnn::mojom::blink::ArgMinMax::Kind::kMin:
       output = builder->argMin(input, options, scope.GetExceptionState());
       break;
-    case ArgMinMaxKind::kArgMax:
+    case webnn::mojom::blink::ArgMinMax::Kind::kMax:
       output = builder->argMax(input, options, scope.GetExceptionState());
       break;
   }
@@ -295,17 +295,17 @@ MLOperand* BuildArgMinMax(V8TestingScope& scope,
 
 void CheckArgMinMaxOutput(const MLOperand* input,
                           const MLOperand* output,
-                          ArgMinMaxKind kind) {
+                          webnn::mojom::blink::ArgMinMax::Kind kind) {
   ASSERT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt64);
   auto* arg_max_min = output->Operator();
   ASSERT_THAT(arg_max_min, testing::NotNull());
   switch (kind) {
-    case ArgMinMaxKind::kArgMin:
+    case webnn::mojom::blink::ArgMinMax::Kind::kMin:
       EXPECT_EQ(arg_max_min->Kind(), MLOperator::OperatorKind::kArgMin);
       break;
-    case ArgMinMaxKind::kArgMax:
+    case webnn::mojom::blink::ArgMinMax::Kind::kMax:
       EXPECT_EQ(arg_max_min->Kind(), MLOperator::OperatorKind::kArgMax);
       break;
   }
@@ -313,11 +313,11 @@ void CheckArgMinMaxOutput(const MLOperand* input,
   EXPECT_THAT(arg_max_min->Options(), testing::NotNull());
 }
 
-String ArgMinMaxKindToString(ArgMinMaxKind kind) {
+String ArgMinMaxKindToString(webnn::mojom::blink::ArgMinMax::Kind kind) {
   switch (kind) {
-    case ArgMinMaxKind::kArgMin:
+    case webnn::mojom::blink::ArgMinMax::Kind::kMin:
       return "argMin";
-    case ArgMinMaxKind::kArgMax:
+    case webnn::mojom::blink::ArgMinMax::Kind::kMax:
       return "argMax";
   }
 }
@@ -327,8 +327,9 @@ TEST_F(MLGraphBuilderTest, ArgMinMaxTest) {
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
-  const auto ArgMinMaxKinds = {ArgMinMaxKind::kArgMin, ArgMinMaxKind::kArgMax};
-  for (const auto kind : ArgMinMaxKinds) {
+  const auto kArgMinMaxKinds = {webnn::mojom::blink::ArgMinMax::Kind::kMin,
+                                webnn::mojom::blink::ArgMinMax::Kind::kMax};
+  for (const auto kind : kArgMinMaxKinds) {
     SCOPED_TRACE(testing::Message()
                  << "Testing for: " << ArgMinMaxKindToString(kind));
     {
@@ -2530,19 +2531,19 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
 
 MLOperand* BuildPool2d(V8TestingScope& scope,
                        MLGraphBuilder* builder,
-                       Pool2dKind kind,
+                       webnn::mojom::blink::Pool2d::Kind kind,
                        const MLOperand* input,
                        const MLPool2dOptions* options) {
   MLOperand* output = nullptr;
   switch (kind) {
-    case Pool2dKind::kAverage:
+    case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d:
       output =
           builder->averagePool2d(input, options, scope.GetExceptionState());
       break;
-    case Pool2dKind::kL2:
+    case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
       output = builder->l2Pool2d(input, options, scope.GetExceptionState());
       break;
-    case Pool2dKind::kMax:
+    case webnn::mojom::blink::Pool2d::Kind::kMaxPool2d:
       output = builder->maxPool2d(input, options, scope.GetExceptionState());
       break;
   }
@@ -2551,20 +2552,20 @@ MLOperand* BuildPool2d(V8TestingScope& scope,
 
 void CheckPool2dOutput(const MLOperand* input,
                        const MLOperand* output,
-                       Pool2dKind kind) {
+                       webnn::mojom::blink::Pool2d::Kind kind) {
   ASSERT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* pool2d = output->Operator();
   ASSERT_THAT(pool2d, testing::NotNull());
   switch (kind) {
-    case Pool2dKind::kAverage:
+    case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d:
       EXPECT_EQ(pool2d->Kind(), MLOperator::OperatorKind::kAveragePool2d);
       break;
-    case Pool2dKind::kL2:
+    case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
       EXPECT_EQ(pool2d->Kind(), MLOperator::OperatorKind::kL2Pool2d);
       break;
-    case Pool2dKind::kMax:
+    case webnn::mojom::blink::Pool2d::Kind::kMaxPool2d:
       EXPECT_EQ(pool2d->Kind(), MLOperator::OperatorKind::kMaxPool2d);
       break;
   }
@@ -2577,9 +2578,13 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
-  const auto Pool2dKinds = {Pool2dKind::kAverage, Pool2dKind::kL2,
-                            Pool2dKind::kMax};
-  for (const auto pool2d_kind : Pool2dKinds) {
+  const auto kPool2dKinds = {webnn::mojom::blink::Pool2d::Kind::kAveragePool2d,
+                             webnn::mojom::blink::Pool2d::Kind::kL2Pool2d,
+                             webnn::mojom::blink::Pool2d::Kind::kMaxPool2d};
+  static_assert(
+      1 + static_cast<size_t>(webnn::mojom::blink::Pool2d::Kind::kMaxValue) ==
+      3);
+  for (const auto pool2d_kind : kPool2dKinds) {
     {
       // Test pool2d with default options.
       auto* input = BuildInput(builder, "input", {1, 3, 4, 4},
@@ -3608,88 +3613,104 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
   }
 }
 
-std::string ElementWiseBinaryKindToString(ElementWiseBinaryKind kind) {
+std::string ElementWiseBinaryKindToString(
+    webnn::mojom::blink::ElementWiseBinary::Kind kind) {
   switch (kind) {
-    case ElementWiseBinaryKind::kAdd:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
       return "add";
-    case ElementWiseBinaryKind::kSub:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
       return "sub";
-    case ElementWiseBinaryKind::kMul:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
       return "mul";
-    case ElementWiseBinaryKind::kDiv:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
       return "div";
-    case ElementWiseBinaryKind::kMin:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
       return "min";
-    case ElementWiseBinaryKind::kMax:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
       return "max";
-    case ElementWiseBinaryKind::kPow:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
       return "pow";
-    case ElementWiseBinaryKind::kEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
       return "equal";
-    case ElementWiseBinaryKind::kGreater:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
       return "greater";
-    case ElementWiseBinaryKind::kGreaterOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
       return "greaterOrEqual";
-    case ElementWiseBinaryKind::kLesser:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
       return "lesser";
-    case ElementWiseBinaryKind::kLesserOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
       return "lesserOrEqual";
   }
-  NOTREACHED_NORETURN();
 }
 
 std::string TestParamElementWiseBinaryKindToString(
-    const ::testing::TestParamInfo<ElementWiseBinaryKind>& info) {
+    const ::testing::TestParamInfo<
+        webnn::mojom::blink::ElementWiseBinary::Kind>& info) {
   return ElementWiseBinaryKindToString(info.param);
 }
 
-MLOperand* BuildElementWiseBinaryOperator(MLGraphBuilder* builder,
-                                          V8TestingScope& scope,
-                                          const MLOperand* a,
-                                          const MLOperand* b,
-                                          ElementWiseBinaryKind kind) {
+MLOperand* BuildElementWiseBinaryOperator(
+    MLGraphBuilder* builder,
+    V8TestingScope& scope,
+    const MLOperand* a,
+    const MLOperand* b,
+    webnn::mojom::blink::ElementWiseBinary::Kind kind) {
   switch (kind) {
-    case ElementWiseBinaryKind::kAdd:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
       return builder->add(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kSub:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
       return builder->sub(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kMul:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
       return builder->mul(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kDiv:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
       return builder->div(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kMin:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
       return builder->min(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kMax:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
       return builder->max(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kPow:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
       return builder->pow(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
       return builder->equal(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kGreater:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
       return builder->greater(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kGreaterOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
       return builder->greaterOrEqual(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kLesser:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
       return builder->lesser(a, b, scope.GetExceptionState());
-    case ElementWiseBinaryKind::kLesserOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
       return builder->lesserOrEqual(a, b, scope.GetExceptionState());
   }
-  NOTREACHED_NORETURN();
 }
 
-constexpr bool IsLogicalBinaryOperator(ElementWiseBinaryKind kind) {
-  return kind == ElementWiseBinaryKind::kEqual ||
-         kind == ElementWiseBinaryKind::kGreater ||
-         kind == ElementWiseBinaryKind::kGreaterOrEqual ||
-         kind == ElementWiseBinaryKind::kLesser ||
-         kind == ElementWiseBinaryKind::kLesserOrEqual;
+// TODO: crbug.com/325598628 - Consolidate this with the method of the same name
+// in third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.cc.
+constexpr bool IsLogicalBinaryOperator(
+    webnn::mojom::blink::ElementWiseBinary::Kind kind) {
+  switch (kind) {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
+      return false;
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
+      return true;
+  }
 }
 
-MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
-                                  MLGraphBuilder* builder,
-                                  ElementWiseBinaryKind kind,
-                                  const MLOperand* a,
-                                  const MLOperand* b) {
+MLOperand* BuildElementWiseBinary(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    webnn::mojom::blink::ElementWiseBinary::Kind kind,
+    const MLOperand* a,
+    const MLOperand* b) {
   MLOperand* output =
       BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
   EXPECT_THAT(output, testing::NotNull());
@@ -3704,40 +3725,40 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
   auto* op = output->Operator();
   EXPECT_THAT(op, testing::NotNull());
   switch (kind) {
-    case ElementWiseBinaryKind::kAdd:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kAdd);
       break;
-    case ElementWiseBinaryKind::kSub:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kSub);
       break;
-    case ElementWiseBinaryKind::kMul:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kMul);
       break;
-    case ElementWiseBinaryKind::kDiv:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kDiv);
       break;
-    case ElementWiseBinaryKind::kMin:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kMin);
       break;
-    case ElementWiseBinaryKind::kMax:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kMax);
       break;
-    case ElementWiseBinaryKind::kPow:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kPow);
       break;
-    case ElementWiseBinaryKind::kEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kEqual);
       break;
-    case ElementWiseBinaryKind::kGreater:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kGreater);
       break;
-    case ElementWiseBinaryKind::kGreaterOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kGreaterOrEqual);
       break;
-    case ElementWiseBinaryKind::kLesser:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kLesser);
       break;
-    case ElementWiseBinaryKind::kLesserOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kLesserOrEqual);
       break;
   }
@@ -3746,7 +3767,8 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
 }
 
 class MLGraphBuilderElementWiseBinaryTest
-    : public testing::TestWithParam<ElementWiseBinaryKind> {
+    : public testing::TestWithParam<
+          webnn::mojom::blink::ElementWiseBinary::Kind> {
  public:
   void TestElementWiseBinary() {
     V8TestingScope scope;
@@ -3837,14 +3859,25 @@ TEST_P(MLGraphBuilderElementWiseBinaryTest, TestElementWiseBinary) {
   TestElementWiseBinary();
 }
 
-const ElementWiseBinaryKind kAllElementWiseBinaryOperators[] = {
-    ElementWiseBinaryKind::kAdd,     ElementWiseBinaryKind::kSub,
-    ElementWiseBinaryKind::kMul,     ElementWiseBinaryKind::kDiv,
-    ElementWiseBinaryKind::kMin,     ElementWiseBinaryKind::kMax,
-    ElementWiseBinaryKind::kPow,     ElementWiseBinaryKind::kEqual,
-    ElementWiseBinaryKind::kGreater, ElementWiseBinaryKind::kGreaterOrEqual,
-    ElementWiseBinaryKind::kLesser,  ElementWiseBinaryKind::kLesserOrEqual,
+constexpr webnn::mojom::blink::ElementWiseBinary::Kind
+    kAllElementWiseBinaryOperators[] = {
+        webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kSub,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kMul,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kDiv,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kMin,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kMax,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kPow,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kEqual,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kGreater,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kLesser,
+        webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual,
 };
+static_assert(
+    1 + static_cast<size_t>(
+            webnn::mojom::blink::ElementWiseBinary::Kind::kMaxValue) ==
+    12);
 
 INSTANTIATE_TEST_SUITE_P(ElementWiseBinaryTest,
                          MLGraphBuilderElementWiseBinaryTest,
@@ -3853,7 +3886,7 @@ INSTANTIATE_TEST_SUITE_P(ElementWiseBinaryTest,
 
 template <typename T>
 struct ElementWiseUnaryTester {
-  ElementWiseUnaryKind kind;
+  webnn::mojom::blink::ElementWiseUnary::Kind kind;
   OperandInfo<T> input_info;
 
   MLOperand* BuildElementWiseUnary(V8TestingScope& scope) {
@@ -3864,47 +3897,50 @@ struct ElementWiseUnaryTester {
                              input_info.data_type, scope.GetExceptionState());
     MLOperand* output = nullptr;
     switch (kind) {
-      case ElementWiseUnaryKind::kAbs:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kAbs:
         output = builder->abs(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kCeil:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kCeil:
         output = builder->ceil(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kCos:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kCos:
         output = builder->cos(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kExp:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kExp:
         output = builder->exp(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kFloor:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kFloor:
         output = builder->floor(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kLog:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kLog:
         output = builder->log(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kNeg:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kNeg:
         output = builder->neg(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kSin:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kSin:
         output = builder->sin(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kTan:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kTan:
         output = builder->tan(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kErf:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kErf:
         output = builder->erf(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kIdentity:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity:
         output = builder->identity(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kLogicalNot:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
         output = builder->logicalNot(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kReciprocal:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal:
         output = builder->reciprocal(input, scope.GetExceptionState());
         break;
-      case ElementWiseUnaryKind::kSqrt:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kSqrt:
         output = builder->sqrt(input, scope.GetExceptionState());
+        break;
+      case webnn::mojom::ElementWiseUnary_Kind::kCast:
+        // TODO: crbug.com/325598628 - Add tests for this case.
         break;
     }
     return output;
@@ -3919,47 +3955,50 @@ struct ElementWiseUnaryTester {
     auto* op = output->Operator();
     ASSERT_THAT(op, testing::NotNull());
     switch (kind) {
-      case ElementWiseUnaryKind::kAbs:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kAbs:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kAbs);
         break;
-      case ElementWiseUnaryKind::kCeil:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kCeil:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kCeil);
         break;
-      case ElementWiseUnaryKind::kCos:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kCos:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kCos);
         break;
-      case ElementWiseUnaryKind::kExp:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kExp:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kExp);
         break;
-      case ElementWiseUnaryKind::kFloor:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kFloor:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kFloor);
         break;
-      case ElementWiseUnaryKind::kLog:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kLog:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kLog);
         break;
-      case ElementWiseUnaryKind::kNeg:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kNeg:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kNeg);
         break;
-      case ElementWiseUnaryKind::kSin:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kSin:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kSin);
         break;
-      case ElementWiseUnaryKind::kTan:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kTan:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kTan);
         break;
-      case ElementWiseUnaryKind::kErf:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kErf:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kErf);
         break;
-      case ElementWiseUnaryKind::kIdentity:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kIdentity);
         break;
-      case ElementWiseUnaryKind::kLogicalNot:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kLogicalNot);
         break;
-      case ElementWiseUnaryKind::kReciprocal:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kReciprocal);
         break;
-      case ElementWiseUnaryKind::kSqrt:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kSqrt:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kSqrt);
+        break;
+      case webnn::mojom::ElementWiseUnary_Kind::kCast:
+        // TODO: crbug.com/325598628 - Add tests for this case.
         break;
     }
     EXPECT_TRUE(op->IsConnected());
@@ -3972,7 +4011,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise exp for scalar input.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kExp,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kExp,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {}}}
         .Test(scope);
@@ -3980,7 +4019,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise abs.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kAbs,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kAbs,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {2}}}
         .Test(scope);
@@ -3988,7 +4027,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise ceil.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kCeil,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kCeil,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {1, 2}}}
         .Test(scope);
@@ -3996,7 +4035,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise cos.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kCos,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kCos,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {5, 6}}}
         .Test(scope);
@@ -4004,7 +4043,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise exp.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kExp,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kExp,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {8, 5, 6}}}
         .Test(scope);
@@ -4012,7 +4051,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise floor.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kFloor,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kFloor,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {1, 2, 3}}}
         .Test(scope);
@@ -4020,7 +4059,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise log.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kLog,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kLog,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {8, 6}}}
         .Test(scope);
@@ -4028,7 +4067,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise neg.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kNeg,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kNeg,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {1, 2, 3, 4}}}
         .Test(scope);
@@ -4036,7 +4075,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise sin.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kSin,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kSin,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {6}}}
         .Test(scope);
@@ -4044,7 +4083,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise tan.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kTan,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kTan,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {8, 6, 2}}}
         .Test(scope);
@@ -4052,7 +4091,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test throwing exception when building ceil with int32 input.
     const MLOperand* output = ElementWiseUnaryTester<int32_t>{
-        .kind = ElementWiseUnaryKind::kCeil,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kCeil,
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kInt32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
@@ -4065,7 +4104,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test throwing exception when building exp with int32 input.
     const MLOperand* output = ElementWiseUnaryTester<uint32_t>{
-        .kind = ElementWiseUnaryKind::kExp,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kExp,
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
@@ -4078,7 +4117,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test throwing exception when building floor with int32 input.
     const MLOperand* output = ElementWiseUnaryTester<int32_t>{
-        .kind = ElementWiseUnaryKind::kFloor,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kFloor,
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kInt32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
@@ -4091,7 +4130,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test throwing exception when building sin with int32 input.
     const MLOperand* output = ElementWiseUnaryTester<uint32_t>{
-        .kind = ElementWiseUnaryKind::kSin,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kSin,
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
@@ -4104,7 +4143,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test throwing exception when building neg with uint32 input.
     const MLOperand* output = ElementWiseUnaryTester<uint32_t>{
-        .kind = ElementWiseUnaryKind::kNeg,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kNeg,
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
@@ -4118,7 +4157,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test throwing exception when building abs with uint8 input.
     const MLOperand* output = ElementWiseUnaryTester<uint8_t>{
-        .kind = ElementWiseUnaryKind::kAbs,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kAbs,
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint8,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
@@ -4132,7 +4171,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise Erf.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kErf,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kErf,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {8, 6, 2}}}
         .Test(scope);
@@ -4140,7 +4179,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise reciprocal.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kReciprocal,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {8, 6, 2}}}
         .Test(scope);
@@ -4148,7 +4187,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise sqrt.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kSqrt,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kSqrt,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {8, 6, 2}}}
         .Test(scope);
@@ -4156,7 +4195,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise logical not.
     ElementWiseUnaryTester<uint8_t>{
-        .kind = ElementWiseUnaryKind::kLogicalNot,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kUint8,
                        .dimensions = {8, 6, 2}}}
         .Test(scope);
@@ -4164,7 +4203,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test throwing exception when building logicalNot with uint32 input.
     const MLOperand* output = ElementWiseUnaryTester<uint32_t>{
-        .kind = ElementWiseUnaryKind::kLogicalNot,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot,
         .input_info = {
             .data_type = V8MLOperandDataType::Enum::kUint32,
             .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
@@ -4177,7 +4216,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise identity.
     ElementWiseUnaryTester<float>{
-        .kind = ElementWiseUnaryKind::kIdentity,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                        .dimensions = {8, 6, 2}}}
         .Test(scope);
@@ -4185,7 +4224,7 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise identity.
     ElementWiseUnaryTester<uint8_t>{
-        .kind = ElementWiseUnaryKind::kIdentity,
+        .kind = webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity,
         .input_info = {.data_type = V8MLOperandDataType::Enum::kUint8,
                        .dimensions = {8, 6, 2}}}
         .Test(scope);
@@ -4215,41 +4254,41 @@ TEST_F(MLGraphBuilderTest, Cast) {
 
 MLOperand* BuildReduce(V8TestingScope& scope,
                        MLGraphBuilder* builder,
-                       ReduceKind kind,
+                       webnn::mojom::blink::Reduce::Kind kind,
                        const MLOperand* input,
                        const MLReduceOptions* options) {
   MLOperand* output = nullptr;
   switch (kind) {
-    case ReduceKind::kL1:
+    case webnn::mojom::blink::Reduce::Kind::kL1:
       output = builder->reduceL1(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kL2:
+    case webnn::mojom::blink::Reduce::Kind::kL2:
       output = builder->reduceL2(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kLogSum:
+    case webnn::mojom::blink::Reduce::Kind::kLogSum:
       output = builder->reduceLogSum(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kLogSumExp:
+    case webnn::mojom::blink::Reduce::Kind::kLogSumExp:
       output =
           builder->reduceLogSumExp(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kMax:
+    case webnn::mojom::blink::Reduce::Kind::kMax:
       output = builder->reduceMax(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kMean:
+    case webnn::mojom::blink::Reduce::Kind::kMean:
       output = builder->reduceMean(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kMin:
+    case webnn::mojom::blink::Reduce::Kind::kMin:
       output = builder->reduceMin(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kProduct:
+    case webnn::mojom::blink::Reduce::Kind::kProduct:
       output =
           builder->reduceProduct(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kSum:
+    case webnn::mojom::blink::Reduce::Kind::kSum:
       output = builder->reduceSum(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kSumSquare:
+    case webnn::mojom::blink::Reduce::Kind::kSumSquare:
       output =
           builder->reduceSumSquare(input, options, scope.GetExceptionState());
       break;
@@ -4259,41 +4298,41 @@ MLOperand* BuildReduce(V8TestingScope& scope,
 
 void CheckReduceOutput(const MLOperand* input,
                        const MLOperand* output,
-                       ReduceKind kind) {
+                       webnn::mojom::blink::Reduce::Kind kind) {
   ASSERT_THAT(output, testing::NotNull());
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* reduce = output->Operator();
   ASSERT_THAT(reduce, testing::NotNull());
   switch (kind) {
-    case ReduceKind::kL1:
+    case webnn::mojom::blink::Reduce::Kind::kL1:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceL1);
       break;
-    case ReduceKind::kL2:
+    case webnn::mojom::blink::Reduce::Kind::kL2:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceL2);
       break;
-    case ReduceKind::kLogSum:
+    case webnn::mojom::blink::Reduce::Kind::kLogSum:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceLogSum);
       break;
-    case ReduceKind::kLogSumExp:
+    case webnn::mojom::blink::Reduce::Kind::kLogSumExp:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceLogSumExp);
       break;
-    case ReduceKind::kMax:
+    case webnn::mojom::blink::Reduce::Kind::kMax:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceMax);
       break;
-    case ReduceKind::kMean:
+    case webnn::mojom::blink::Reduce::Kind::kMean:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceMean);
       break;
-    case ReduceKind::kMin:
+    case webnn::mojom::blink::Reduce::Kind::kMin:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceMin);
       break;
-    case ReduceKind::kProduct:
+    case webnn::mojom::blink::Reduce::Kind::kProduct:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceProduct);
       break;
-    case ReduceKind::kSum:
+    case webnn::mojom::blink::Reduce::Kind::kSum:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceSum);
       break;
-    case ReduceKind::kSumSquare:
+    case webnn::mojom::blink::Reduce::Kind::kSumSquare:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceSumSquare);
       break;
   }
@@ -4306,12 +4345,17 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
   MLGraphBuilder* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
-  const auto kReduceKinds = {ReduceKind::kL1,     ReduceKind::kL2,
-                             ReduceKind::kLogSum, ReduceKind::kLogSumExp,
-                             ReduceKind::kMax,    ReduceKind::kMean,
-                             ReduceKind::kMin,    ReduceKind::kProduct,
-                             ReduceKind::kSum,    ReduceKind::kSumSquare};
-  for (const auto reduce_kind : kReduceKinds) {
+  const auto kinds = {webnn::mojom::blink::Reduce::Kind::kL1,
+                      webnn::mojom::blink::Reduce::Kind::kL2,
+                      webnn::mojom::blink::Reduce::Kind::kLogSum,
+                      webnn::mojom::blink::Reduce::Kind::kLogSumExp,
+                      webnn::mojom::blink::Reduce::Kind::kMax,
+                      webnn::mojom::blink::Reduce::Kind::kMean,
+                      webnn::mojom::blink::Reduce::Kind::kMin,
+                      webnn::mojom::blink::Reduce::Kind::kProduct,
+                      webnn::mojom::blink::Reduce::Kind::kSum,
+                      webnn::mojom::blink::Reduce::Kind::kSumSquare};
+  for (const auto reduce_kind : kinds) {
     {
       // Test reduce with default options.
       auto* input = BuildInput(builder, "input", {1, 3, 4, 4},
@@ -4379,9 +4423,11 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
   }
   // Test throw error when the input data type is not one of the floating point
   // types for these four reduce kind.
-  const auto kFloatRestrictReduceKinds = {ReduceKind::kL2, ReduceKind::kLogSum,
-                                          ReduceKind::kLogSumExp,
-                                          ReduceKind::kMean};
+  const auto kFloatRestrictReduceKinds = {
+      webnn::mojom::blink::Reduce::Kind::kL2,
+      webnn::mojom::blink::Reduce::Kind::kLogSum,
+      webnn::mojom::blink::Reduce::Kind::kLogSumExp,
+      webnn::mojom::blink::Reduce::Kind::kMean};
   for (const auto reduce_kind : kFloatRestrictReduceKinds) {
     // Test throwing exception when the two values are same in axes sequence.
     auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
