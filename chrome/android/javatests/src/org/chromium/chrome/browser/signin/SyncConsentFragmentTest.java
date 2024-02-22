@@ -56,6 +56,7 @@ import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
@@ -236,10 +237,37 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @DisableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSyncConsentFragmentDefaultAccount() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.BOOKMARK_MANAGER,
+                                            accountInfo.getEmail());
+                        });
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "sync_consent_fragment_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testSyncConsentFragmentDefaultAccountWithMinorModeRestrictionsEnabled()
+            throws IOException {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_NOT_REQUIRED);
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -280,10 +308,39 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @DisableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSyncConsentFragmentNotDefaultAccountWithPrimaryAccount() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSigninTestRule.addAccount("test.second.account@gmail.com");
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoChooseAccountFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.BOOKMARK_MANAGER,
+                                            accountInfo.getEmail());
+                        });
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "sync_consent_fragment_choose_primary_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void
+            testSyncConsentFragmentNotDefaultAccountWithPrimaryAccountWithMinorModeRestrictionsEnabled()
+                    throws IOException {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_NOT_REQUIRED);
         mSigninTestRule.addAccount("test.second.account@gmail.com");
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
@@ -428,6 +485,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @DisableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testFRESyncConsentFragmentWithChildAccount() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         var startPageHistogram =
@@ -450,6 +508,35 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "fre_sync_consent_fragment_with_regular_child_allow_sync_off");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testFRESyncConsentFragmentWithChildAccountWithMinorModeRestrictionsEnabled()
+            throws IOException {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        var startPageHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_REQUIRED);
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+
+        launchActivityWithFragment(fragment);
+        startPageHistogram.assertExpected();
+        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
+        // Espresso.
+        // We check the button is enabled rather than visible, as it may be off-screen on small
+        // devices.
+        onView(withId(R.id.button_primary)).check(matches(isEnabled()));
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "fre_sync_consent_fragment_with_regular_child_allow_sync_off_with_minor_mode_restrictions_enabled");
     }
 
     @Test
