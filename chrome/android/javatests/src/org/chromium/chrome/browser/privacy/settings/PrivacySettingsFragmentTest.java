@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.preference.Preference;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
@@ -393,5 +395,41 @@ public class PrivacySettingsFragmentTest {
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.privacy_guide_pref_summary)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP)
+    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    public void testClearBrowsingData_withQuickDeleteV2Disabled() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
+
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        Preference ClearBrowsingDataPreference =
+                fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA);
+        Preference ClearBrowsingDataAdvancedPreference =
+                fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA_ADVANCED);
+        assertTrue(ClearBrowsingDataPreference.isVisible());
+        assertFalse(ClearBrowsingDataAdvancedPreference.isVisible());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
+        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
+    })
+    public void testClearBrowsingData_withQuickDeleteV2Enabled() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
+
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        Preference ClearBrowsingDataPreference =
+                fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA);
+        Preference ClearBrowsingDataAdvancedPreference =
+                fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA_ADVANCED);
+        assertTrue(ClearBrowsingDataAdvancedPreference.isVisible());
+        assertFalse(ClearBrowsingDataPreference.isVisible());
     }
 }

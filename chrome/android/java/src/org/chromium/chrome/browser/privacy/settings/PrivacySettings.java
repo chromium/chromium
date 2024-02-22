@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -69,6 +71,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     private static final String PREF_TRACKING_PROTECTION = "tracking_protection";
+    @VisibleForTesting static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
+
+    @VisibleForTesting
+    static final String PREF_CLEAR_BROWSING_DATA_ADVANCED = "clear_browsing_data_advanced";
 
     private IncognitoLockSettings mIncognitoLockSettings;
 
@@ -201,6 +207,14 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     .putString(
                             SingleCategorySettings.EXTRA_TITLE,
                             thirdPartyCookies.getTitle().toString());
+        }
+
+        if (QuickDeleteController.isQuickDeleteFollowupEnabled()) {
+            Preference clearBrowsingDataPreference = findPreference(PREF_CLEAR_BROWSING_DATA);
+            Preference clearBrowsingDataAdvancedPreference =
+                    findPreference(PREF_CLEAR_BROWSING_DATA_ADVANCED);
+            clearBrowsingDataPreference.setVisible(false);
+            clearBrowsingDataAdvancedPreference.setVisible(true);
         }
 
         updatePreferences();
