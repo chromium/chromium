@@ -3638,7 +3638,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   BrowserAccessibilityManager* manager =
       rfh_a->GetOrCreateBrowserAccessibilityManager();
   manager->SetGeneratedEventCallbackForTesting(
-      base::BindRepeating([](RenderFrameHostImpl* render_frame_host,
+      base::BindRepeating([](BrowserAccessibilityManager* manager,
                              ui::AXEventGenerator::Event event,
                              ui::AXNodeID event_target_id) { FAIL(); }));
   // Generate an event.

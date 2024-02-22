@@ -228,8 +228,7 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
     const ui::AXNode* node) {
   if (!generated_event_callback_for_testing_.is_null()) {
-    generated_event_callback_for_testing_.Run(
-        delegate()->AccessibilityRenderFrameHost(), event_type, node->id());
+    generated_event_callback_for_testing_.Run(this, event_type, node->id());
   }
 }
 
