@@ -381,13 +381,22 @@ TabDragController::Liveness TabDragController::Init(
     ui::mojom::DragEventSource event_source) {
   DCHECK(!dragging_views.empty());
   DCHECK(base::Contains(dragging_views, source_view));
-  source_context_ = source_context;
-  was_source_maximized_ = source_context->GetWidget()->IsMaximized();
-  was_source_fullscreen_ = source_context->GetWidget()->IsFullscreen();
-  presentation_time_recorder_ = ui::CreatePresentationTimeHistogramRecorder(
-      source_context->GetWidget()->GetCompositor(),
-      kTabDraggingPresentationTimeHistogram,
-      kTabDraggingPresentationTimeMaxHistogram, base::Seconds(10));
+
+  // There's some rare condition on Windows where we are destroying ourselves
+  // during Init() at some point. It's unclear how this happens, so we'll take
+  // the nuke it from orbit approach and use a weak pointer throughout Init().
+  // TODO(b/324993098): Revert this and use weak pointers in more targeted ways
+  // once we know where the self-destruction is happening.
+  base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
+
+  ref->source_context_ = source_context;
+  ref->was_source_maximized_ = source_context->GetWidget()->IsMaximized();
+  ref->was_source_fullscreen_ = source_context->GetWidget()->IsFullscreen();
+  ref->presentation_time_recorder_ =
+      ui::CreatePresentationTimeHistogramRecorder(
+          source_context->GetWidget()->GetCompositor(),
+          kTabDraggingPresentationTimeHistogram,
+          kTabDraggingPresentationTimeMaxHistogram, base::Seconds(10));
   // Do not release capture when transferring capture between widgets on:
   // - Desktop Linux
   //     Mouse capture is not synchronous on desktop Linux. Chrome makes
@@ -396,21 +405,23 @@ TabDragController::Liveness TabDragController::Init(
   // - ChromeOS Ash
   //     Releasing capture on Ash cancels gestures so avoid it.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-  can_release_capture_ = false;
+  ref->can_release_capture_ = false;
 #endif
-  start_point_in_screen_ = gfx::Point(source_view_offset, mouse_offset.y());
-  views::View::ConvertPointToScreen(source_view, &start_point_in_screen_);
-  event_source_ = event_source;
-  mouse_offset_ = mouse_offset;
-  last_point_in_screen_ = start_point_in_screen_;
+  ref->start_point_in_screen_ =
+      gfx::Point(source_view_offset, mouse_offset.y());
+  views::View::ConvertPointToScreen(source_view,
+                                    &(ref->start_point_in_screen_));
+  ref->event_source_ = event_source;
+  ref->mouse_offset_ = mouse_offset;
+  ref->last_point_in_screen_ = start_point_in_screen_;
   // Detachable tabs are not supported on Mac if the window is an out-of-process
   // (remote_cocoa) window, i.e. a PWA window.
   // TODO(https://crbug.com/1076777): Make detachable tabs work in PWAs on Mac.
 #if BUILDFLAG(IS_MAC)
-  if (source_context_->GetWidget() &&
+  if (ref->source_context_->GetWidget() &&
       remote_cocoa::IsWindowRemote(
-          source_context_->GetWidget()->GetNativeWindow())) {
-    detach_behavior_ = NOT_DETACHABLE;
+          ref->source_context_->GetWidget()->GetNativeWindow())) {
+    ref->detach_behavior_ = NOT_DETACHABLE;
   }
 #else
   // If the dragged tabstrip exists in a PWA, and any of the dragged views
@@ -424,50 +435,52 @@ TabDragController::Liveness TabDragController::Init(
       web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
     for (TabSlotView* dragging_view : dragging_views) {
       if (source_context->GetIndexOf(dragging_view) == 0) {
-        detach_behavior_ = NOT_DETACHABLE;
+        ref->detach_behavior_ = NOT_DETACHABLE;
       }
     }
   }
 #endif
 
-  gfx::Point start_point_in_source_context =
-      gfx::Point(start_point_in_screen_.x(), start_point_in_screen_.y());
-  views::View::ConvertPointFromScreen(source_context,
-                                      &start_point_in_source_context);
-  last_move_attached_context_loc_ = start_point_in_source_context.x();
+  const gfx::Point start_point_in_source_context =
+      views::View::ConvertPointFromScreen(source_context,
+                                          ref->start_point_in_screen_);
+  ref->last_move_attached_context_loc_ = start_point_in_source_context.x();
 
-  source_context_emptiness_tracker_ =
+  ref->source_context_emptiness_tracker_ =
       std::make_unique<SourceTabStripEmptinessTracker>(
-          source_context_->GetTabStripModel(), this);
+          ref->source_context_->GetTabStripModel(), this);
 
-  header_drag_ = source_view->GetTabSlotViewType() ==
-                 TabSlotView::ViewType::kTabGroupHeader;
-  if (header_drag_)
-    group_ = source_view->group();
+  ref->header_drag_ = source_view->GetTabSlotViewType() ==
+                      TabSlotView::ViewType::kTabGroupHeader;
+  if (ref->header_drag_) {
+    ref->group_ = source_view->group();
+  }
 
-  drag_data_.resize(dragging_views.size());
-  for (size_t i = 0; i < dragging_views.size(); ++i)
-    InitDragData(dragging_views[i], &(drag_data_[i]));
-  source_view_index_ =
+  ref->drag_data_.resize(dragging_views.size());
+  for (size_t i = 0; i < dragging_views.size(); ++i) {
+    ref->InitDragData(dragging_views[i], &(ref->drag_data_[i]));
+  }
+  ref->source_view_index_ =
       base::ranges::find(dragging_views, source_view) - dragging_views.begin();
 
   // Listen for Esc key presses.
-  key_event_tracker_ = std::make_unique<KeyEventTracker>(
+  ref->key_event_tracker_ = std::make_unique<KeyEventTracker>(
       base::BindOnce(&TabDragController::EndDrag, base::Unretained(this),
                      END_DRAG_COMPLETE),
       base::BindOnce(&TabDragController::EndDrag, base::Unretained(this),
                      END_DRAG_CANCEL),
-      source_context_->GetWidget()->GetNativeWindow());
+      ref->source_context_->GetWidget()->GetNativeWindow());
 
   if (source_view->width() > 0) {
-    offset_to_width_ratio_ = static_cast<float>(source_view->GetMirroredXInView(
-                                 source_view_offset)) /
-                             source_view->width();
+    ref->offset_to_width_ratio_ =
+        static_cast<float>(
+            source_view->GetMirroredXInView(source_view_offset)) /
+        source_view->width();
   }
-  InitWindowCreatePoint();
-  initial_selection_model_ = std::move(initial_selection_model);
+  ref->InitWindowCreatePoint();
+  ref->initial_selection_model_ = std::move(initial_selection_model);
 
-  window_finder_ = std::make_unique<WindowFinder>();
+  ref->window_finder_ = std::make_unique<WindowFinder>();
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
       base::FeatureList::IsEnabled(features::kScrollableTabStripWithDragging)) {
@@ -477,15 +490,15 @@ TabDragController::Liveness TabDragController::Init(
 
     switch (drag_with_scroll_mode) {
       case static_cast<int>(ScrollWithDragStrategy::kConstantSpeed):
-        drag_with_scroll_mode_ = ScrollWithDragStrategy::kConstantSpeed;
-        tab_strip_scroll_session_ =
+        ref->drag_with_scroll_mode_ = ScrollWithDragStrategy::kConstantSpeed;
+        ref->tab_strip_scroll_session_ =
             std::make_unique<TabStripScrollSessionWithTimer>(
                 *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
                            kConstantTimer);
         break;
       case static_cast<int>(ScrollWithDragStrategy::kVariableSpeed):
-        drag_with_scroll_mode_ = ScrollWithDragStrategy::kVariableSpeed;
-        tab_strip_scroll_session_ =
+        ref->drag_with_scroll_mode_ = ScrollWithDragStrategy::kVariableSpeed;
+        ref->tab_strip_scroll_session_ =
             std::make_unique<TabStripScrollSessionWithTimer>(
                 *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
                            kVariableTimer);
@@ -498,9 +511,9 @@ TabDragController::Liveness TabDragController::Init(
   // Start listening for tabs to be closed or replaced in `source_context_`, in
   // case this happens before the mouse is moved enough to fully start the drag.
   // See crbug/1445776.
-  attached_context_tabs_closed_tracker_ =
+  ref->attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
-          source_context_->GetTabStripModel(), this);
+          ref->source_context_->GetTabStripModel(), this);
 
   ///////// DO NOT ADD INITIALIZATION CODE BELOW THIS LINE ////////
   // We need to be initialized at this point because SetCapture may reenter this
@@ -514,13 +527,13 @@ TabDragController::Liveness TabDragController::Init(
     // Chrome. This may result in the drag ending, destroying `this`. This
     // behavior has been observed on Windows in https://crbug.com/964322 and
     // ChromeOS in https://crbug.com/1431369.
-    base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
-    SetCapture(source_context_);
+    SetCapture(ref->source_context_);
     if (!ref) {
       return Liveness::DELETED;
     }
   }
 
+  CHECK(ref);
   return Liveness::ALIVE;
 }
 
