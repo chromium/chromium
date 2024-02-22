@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
@@ -32,13 +33,15 @@ void DefaultBrowserInfoBarDelegate::Create(
 
 DefaultBrowserInfoBarDelegate::DefaultBrowserInfoBarDelegate(Profile* profile)
     : profile_(profile) {
-  // We want the info-bar to stick-around for few seconds and then be hidden
-  // on the next navigation after that.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&DefaultBrowserInfoBarDelegate::AllowExpiry,
-                     weak_factory_.GetWeakPtr()),
-      base::Seconds(8));
+  if (!base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh)) {
+    // We want the info-bar to stick-around for few seconds and then be hidden
+    // on the next navigation after that.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DefaultBrowserInfoBarDelegate::AllowExpiry,
+                       weak_factory_.GetWeakPtr()),
+        base::Seconds(8));
+  }
 }
 
 DefaultBrowserInfoBarDelegate::~DefaultBrowserInfoBarDelegate() {
