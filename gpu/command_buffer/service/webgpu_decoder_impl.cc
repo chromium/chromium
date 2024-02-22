@@ -1090,8 +1090,9 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   if (gpu_preferences.enable_unsafe_webgpu) {
     safety_level_ = webgpu::SafetyLevel::kUnsafe;
   }
-  dawn_instance_ = DawnInstance::Create(dawn_platform_.get(), gpu_preferences,
-                                        safety_level_);
+  dawn_instance_ = DawnInstance::Create(
+      dawn_platform_.get(), gpu_preferences, safety_level_,
+      /*logging_callback=*/nullptr, /*logging_callback_userdata=*/nullptr);
 
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;

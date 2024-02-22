@@ -43,8 +43,24 @@
 namespace gpu {
 namespace {
 
+void SetDawnErrorCrashKey(std::string_view message) {
+  static crash_reporter::CrashKeyString<1024> error_key("dawn-error");
+  error_key.Set(message);
+}
+
 void LogInfo(WGPULoggingType type, char const* message, void* userdata) {
-  VLOG(1) << message;
+  switch (static_cast<wgpu::LoggingType>(type)) {
+    case wgpu::LoggingType::Warning:
+      LOG(WARNING) << message;
+      break;
+    case wgpu::LoggingType::Error:
+      LOG(ERROR) << message;
+      SetDawnErrorCrashKey(message);
+      base::debug::DumpWithoutCrashing();
+      break;
+    default:
+      break;
+  }
 }
 
 void LogError(WGPUErrorType type, char const* message, void* userdata) {
@@ -234,8 +250,11 @@ bool DawnContextProvider::Initialize(
 
   // Make Dawn experimental API and WGSL features available since access to this
   // instance doesn't exit the GPU process.
+  // LogInfo will be used to receive instance level errors. For example failures
+  // of loading libraries, initializing backend, etc
   instance_ = webgpu::DawnInstance::Create(platform_.get(), gpu_preferences,
-                                           webgpu::SafetyLevel::kUnsafe);
+                                           webgpu::SafetyLevel::kUnsafe,
+                                           LogInfo, nullptr);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
@@ -502,9 +521,7 @@ std::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
 void DawnContextProvider::OnError(WGPUErrorType error_type,
                                   const char* message) {
   LOG(ERROR) << message;
-
-  static crash_reporter::CrashKeyString<1024> error_key("dawn-error");
-  error_key.Set(message);
+  SetDawnErrorCrashKey(message);
 
 #if BUILDFLAG(IS_WIN)
   if (auto d3d11_device = GetD3D11Device()) {
