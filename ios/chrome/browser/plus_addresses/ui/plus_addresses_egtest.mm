@@ -312,9 +312,8 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
   [ChromeEarlGreyUI openSettingsMenu];
   // Take note of how many tabs are open before clicking the link in settings,
   // which should simply open a new tab.
-  NSUInteger oldRegularTabCount = [ChromeEarlGreyAppInterface mainTabCount];
-  NSUInteger oldIncognitoTabCount =
-      [ChromeEarlGreyAppInterface incognitoTabCount];
+  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
+  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:grey_accessibilityID(kSettingsPlusAddressesId)];
 
