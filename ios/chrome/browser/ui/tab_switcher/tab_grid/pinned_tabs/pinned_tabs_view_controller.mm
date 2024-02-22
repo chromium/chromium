@@ -298,7 +298,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return self.selectedIndex != NSNotFound;
 }
 
-#pragma mark - TabCollectionConsumer
+#pragma mark - PinnedTabCollectionConsumer
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(web::WebStateID)selectedItemID {

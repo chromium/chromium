@@ -6,6 +6,7 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("tab_switcher") {
   sources = [
+    "pinned_tab_collection_consumer.h",
     "tab_collection_consumer.h",
     "tab_collection_drag_drop_handler.h",
     "tab_collection_drag_drop_metrics.h",

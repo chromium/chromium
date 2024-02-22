@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/tabs/model/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -64,7 +64,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 // The browser state from the browser.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 // The UI consumer to which updates are made.
-@property(nonatomic, weak) id<TabCollectionConsumer> consumer;
+@property(nonatomic, weak) id<PinnedTabCollectionConsumer> consumer;
 
 @end
 
@@ -85,7 +85,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   web::WebStateID _dragItemID;
 }
 
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer {
+- (instancetype)initWithConsumer:(id<PinnedTabCollectionConsumer>)consumer {
   if (self = [super init]) {
     DCHECK(IsPinnedTabsEnabled());
     _consumer = consumer;

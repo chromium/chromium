@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TAB_COLLECTION_CONSUMER_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TAB_COLLECTION_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -13,7 +13,7 @@ class WebStateID;
 }  // namespace web
 
 // Supports idempotent insert/delete/updates tabs to a collection view.
-@protocol TabCollectionConsumer <NSObject>
+@protocol PinnedTabCollectionConsumer <NSObject>
 
 // Many of the following methods pass a `selectedItemID` as a parameter,
 // indicating the identifier of the item that should be in the selected state
@@ -56,21 +56,6 @@ class WebStateID;
 // Dismisses any presented modal UI.
 - (void)dismissModals;
 
-// Notifies the grid that all items will be closed.
-- (void)willCloseAll;
-
-// Notifies the grid that all items have been closed.
-- (void)didCloseAll;
-
-// Notifies the grid that all closed items will be restored.
-- (void)willUndoCloseAll;
-
-// Notifies the grid that all closed items have been restored.
-- (void)didUndoCloseAll;
-
-// Reloads the view.
-- (void)reload;
-
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TAB_COLLECTION_CONSUMER_H_

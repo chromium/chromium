@@ -1,13 +1,13 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/fake_pinned_tab_collection_consumer.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
 
-@implementation FakeTabCollectionConsumer {
+@implementation FakePinnedTabCollectionConsumer {
   std::vector<web::WebStateID> _items;
 }
 
@@ -59,21 +59,6 @@
 
 - (void)dismissModals {
   // No-op.
-}
-
-- (void)willCloseAll {
-}
-
-- (void)didCloseAll {
-}
-
-- (void)willUndoCloseAll {
-}
-
-- (void)didUndoCloseAll {
-}
-
-- (void)reload {
 }
 
 @end

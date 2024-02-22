@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drag_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drop_session.h"
-#import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/fake_pinned_tab_collection_consumer.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -60,7 +60,7 @@ class PinnedTabsMediatorTest : public PlatformTest {
 
     // The Pinned Tabs feature is not available on iPad.
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-      consumer_ = [[FakeTabCollectionConsumer alloc] init];
+      consumer_ = [[FakePinnedTabCollectionConsumer alloc] init];
       mediator_ = [[PinnedTabsMediator alloc] initWithConsumer:consumer_];
       mediator_.browser = regular_browser_.get();
     }
@@ -86,7 +86,7 @@ class PinnedTabsMediatorTest : public PlatformTest {
  protected:
   std::unique_ptr<TestBrowser> regular_browser_;
   std::unique_ptr<Browser> incognito_browser_;
-  FakeTabCollectionConsumer* consumer_;
+  FakePinnedTabCollectionConsumer* consumer_;
   PinnedTabsMediator* mediator_;
 
  private:

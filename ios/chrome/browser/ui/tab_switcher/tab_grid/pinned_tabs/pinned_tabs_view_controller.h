@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tab_collection_consumer.h"
 
 @class LegacyGridTransitionLayout;
 @class PinnedTabsViewController;
@@ -69,7 +69,7 @@ class WebStateID;
 
 // UICollectionViewController used to display pinned tabs.
 @interface PinnedTabsViewController
-    : UICollectionViewController <TabCollectionConsumer>
+    : UICollectionViewController <PinnedTabCollectionConsumer>
 
 // Delegate used to to relay relevant user interactions.
 @property(nonatomic, weak) id<PinnedTabsViewControllerDelegate> delegate;
