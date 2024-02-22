@@ -2036,9 +2036,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BlockedSrcDocRendererInitiated) {
   for (const char* url : about_srcdoc_urls) {
     DidStartNavigationObserver start_observer(web_contents());
     NavigationHandleObserver handle_observer(web_contents(), GURL(url));
-    // TODO(arthursonzogni): It shouldn't be possible to navigate to
-    // about:srcdoc by executing location.href= "about:srcdoc". Other web
-    // browsers like Firefox aren't allowing this.
     EXPECT_TRUE(ExecJs(main_frame(), JsReplace("location.href = $1", url)));
     start_observer.Wait();
     WaitForLoadStop(web_contents());
@@ -2047,7 +2044,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BlockedSrcDocRendererInitiated) {
     EXPECT_EQ(net::ERR_INVALID_URL, handle_observer.net_error_code());
   }
 
-  // 2. Subframe navigations to variations of about:srcdoc are not blocked.
+  // 2. Subframe navigations to variations of about:srcdoc are blocked unless
+  // they are same-document or the initiator is same origin to the srcdoc's
+  // parent. In this test suite, the subframe is self-navigating, but attempting
+  // a cross-origin navigation from a non-about:srcdoc page to about:srcdoc,
+  // which isn't allowed.
   for (const char* url : about_srcdoc_urls) {
     GURL main_url =
         embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html");
@@ -2056,10 +2057,67 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BlockedSrcDocRendererInitiated) {
     DidStartNavigationObserver start_observer(web_contents());
     NavigationHandleObserver handle_observer(web_contents(), GURL(url));
     FrameTreeNode* subframe = main_frame()->child_at(0);
-    // TODO(arthursonzogni): It shouldn't be possible to navigate to
-    // about:srcdoc by executing location.href= "about:srcdoc". Other web
-    // browsers like Firefox aren't allowing this.
+    // Executing location.href = "about:srcdoc" fails.
+    // Note: if the subframe had already been navigated to about:srcdoc, then
+    // executing location.href = 'about:srcdoc#foo' would be considered a same-
+    // document navigation, and would be allowed. This behavior is tested in
+    // web platform tests, e.g.
+    // grandparent_location_aboutsrcdoc.sub.window.js, added in the same CL that
+    // added this comment.
     EXPECT_TRUE(ExecJs(subframe, JsReplace("location.href = $1", url)));
+    start_observer.Wait();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+    EXPECT_TRUE(handle_observer.has_committed());
+    EXPECT_TRUE(handle_observer.is_error());
+    EXPECT_EQ(net::ERR_INVALID_URL, handle_observer.net_error_code());
+  }
+
+  // 3. Navigate the sub-frame to be same-origin to the mainframe, then do the
+  // about:srcdoc navigations with with the main frame as the initiator. The
+  // test should succeed since the initiator and the parent are the same.
+  {
+    DidStartNavigationObserver start_observer(web_contents());
+    EXPECT_TRUE(ExecJs(
+        main_frame(), "document.querySelector('iframe').src = 'title1.html';"));
+    start_observer.Wait();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  }
+  for (const char* url : about_srcdoc_urls) {
+    DidStartNavigationObserver start_observer(web_contents());
+    NavigationHandleObserver handle_observer(web_contents(), GURL(url));
+    EXPECT_TRUE(
+        ExecJs(main_frame(), JsReplace("frames[0].location.href = $1", url)));
+    start_observer.Wait();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+    EXPECT_TRUE(handle_observer.has_committed());
+    EXPECT_FALSE(handle_observer.is_error());
+    EXPECT_EQ(net::OK, handle_observer.net_error_code());
+  }
+
+  // 4. The subframe is now on about:srcdoc ... verify it can reload itself.
+  {
+    FrameTreeNode* subframe = main_frame()->child_at(0);
+    GURL url("about:srcdoc");
+    {
+      // First, navigate the subframe to about:srcdoc without a fragment, so
+      // that the subsequent reload will have a commit (i.e. it won't be
+      // reloading a same-document navigation).
+      DidStartNavigationObserver start_observer(web_contents());
+      NavigationHandleObserver handle_observer(web_contents(), GURL(url));
+      EXPECT_TRUE(
+          ExecJs(main_frame(), JsReplace("frames[0].location.href = $1", url)));
+      start_observer.Wait();
+      EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+      EXPECT_TRUE(handle_observer.has_committed());
+      EXPECT_FALSE(handle_observer.is_error());
+      EXPECT_EQ(net::OK, handle_observer.net_error_code());
+    }
+    DidStartNavigationObserver start_observer(web_contents());
+    NavigationHandleObserver handle_observer(web_contents(), url);
+    EXPECT_TRUE(ExecJs(subframe, "location.reload()"));
     start_observer.Wait();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -2073,42 +2131,87 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BlockedSrcDocRendererInitiated) {
 // parent frame (since that's where the content comes from) and not from the
 // initiator of the navigation (like about:blank cases). See also the
 // NavigateGrandchildToAboutBlank test. See https://crbug.com/1515381.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, GrandchildToAboutSrcdoc_BaseUrl) {
-  GURL url_a = embedded_test_server()->GetURL(
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       GrandchildToAboutSrcdoc_BaseUrl_CrossOrigin) {
+  GURL parent_url = embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_one_frame.html");
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_TRUE(NavigateToURL(shell(), parent_url));
   FrameTreeNode* subframe = main_frame()->child_at(0);
 
   // Navigate the subframe to a cross-site URL with a srcdoc subframe.
-  GURL url_b = embedded_test_server()->GetURL(
+  GURL child_url = embedded_test_server()->GetURL(
       "b.com", "/frame_tree/page_with_srcdoc_frame.html");
   TestNavigationObserver observer(web_contents());
-  EXPECT_TRUE(ExecJs(subframe, JsReplace("location.href = $1", url_b)));
+  EXPECT_TRUE(ExecJs(subframe, JsReplace("location.href = $1", child_url)));
   observer.Wait();
-  EXPECT_EQ(url_b, subframe->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(child_url, subframe->current_frame_host()->GetLastCommittedURL());
   FrameTreeNode* grandchild = subframe->child_at(0);
   EXPECT_EQ("hello",
             EvalJs(grandchild, "document.body.innerHTML").ExtractString());
 
-  // From the main frame, navigate the grandchild frame to about:srcdoc.
+  // From the main frame, attempt to navigate the grandchild frame to
+  // about:srcdoc. This should fail.
   TestNavigationObserver srcdoc_observer(web_contents());
-  // TODO(https://crbug.com/1169736): It shouldn't be possible to navigate to
-  // about:srcdoc by executing location.href = "about:srcdoc".
   EXPECT_TRUE(
       ExecJs(main_frame(), "frames[0][0].location.href = 'about:srcdoc';"));
   srcdoc_observer.Wait();
 
-  // The content comes from the parent frame and not the initiator.
-  EXPECT_EQ("hello",
-            EvalJs(grandchild, "document.body.innerHTML").ExtractString());
+  EXPECT_EQ(
+      "Could not load the requested resource.<br>Error code: -300 "
+      "(net::ERR_INVALID_URL)",
+      EvalJs(grandchild, "document.body.innerHTML").ExtractString());
 
-  // The origin and base URI should be inherited from the parent frame and not
-  // the initiator, unlike navigations to about:blank.
+  // Since the navigation attempt failed, the origin and base URI are inherited
+  // from the error page.
   EXPECT_EQ(GURL(url::kAboutSrcdocURL),
             grandchild->current_frame_host()->GetLastCommittedURL());
-  EXPECT_EQ(url::Origin::Create(url_b),
-            grandchild->current_frame_host()->GetLastCommittedOrigin());
-  EXPECT_EQ(url_b, EvalJs(grandchild, "document.baseURI").ExtractString());
+  EXPECT_TRUE(
+      grandchild->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ("chrome-error://chromewebdata/",
+            EvalJs(grandchild, "document.baseURI").ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       GrandchildToAboutSrcdoc_BaseUrl_SameOrigin) {
+  GURL mainframe_url = embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_one_frame.html");
+  EXPECT_TRUE(NavigateToURL(shell(), mainframe_url));
+  FrameTreeNode* sub_frame = main_frame()->child_at(0);
+
+  // Navigate `sub_frame` to a same-origin URL with a srcdoc subframe.
+  GURL subframe_url = embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_srcdoc_frame.html");
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(sub_frame, JsReplace("location.href = $1", subframe_url)));
+  observer.Wait();
+  EXPECT_EQ(subframe_url,
+            sub_frame->current_frame_host()->GetLastCommittedURL());
+  FrameTreeNode* srcdoc_frame = sub_frame->child_at(0);
+  EXPECT_EQ("hello",
+            EvalJs(srcdoc_frame, "document.body.innerHTML").ExtractString());
+  EXPECT_EQ(subframe_url,
+            EvalJs(srcdoc_frame, "document.baseURI").ExtractString());
+
+  // From the mainframe, attempt to navigate `srcdoc_frame` to about:srcdoc.
+  // This should succeed since the mainframe and `sub_frame` are same origin.
+  TestNavigationObserver srcdoc_observer(web_contents());
+  EXPECT_TRUE(
+      ExecJs(main_frame(), "frames[0][0].location.href = 'about:srcdoc';"));
+  srcdoc_observer.Wait();
+
+  EXPECT_EQ("hello",
+            EvalJs(srcdoc_frame, "document.body.innerHTML").ExtractString());
+
+  // The origin and base URI should be inherited from the initiator, since it's
+  // same-origin to the srcdoc's parent frame `sub_frame`.
+  EXPECT_EQ(GURL(url::kAboutSrcdocURL),
+            srcdoc_frame->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(subframe_url),
+            srcdoc_frame->current_frame_host()->GetLastCommittedOrigin());
+  // This picks up the mainframe's url since it's same-origin to `sub_frame`,
+  // which is `srcdoc_frame`'s parent.
+  EXPECT_EQ(mainframe_url,
+            EvalJs(srcdoc_frame, "document.baseURI").ExtractString());
 }
 
 // Ensure that about:blank navigations get their origin and base URL from the

@@ -6568,13 +6568,56 @@ NavigationRequest::AboutSrcDocCheckResult NavigationRequest::CheckAboutSrcDoc()
   if (frame_tree_node_->IsMainFrame())
     return AboutSrcDocCheckResult::BLOCK_REQUEST;
 
-  // TODO(arthursonzogni): Disallow navigations to about:srcdoc initiated from a
-  // different frame or from a different window.
+  if (!base::FeatureList::IsEnabled(
+          features::kBlockCrossOriginInitiatedAboutSrcdocNavigations)) {
+    // Retain previous behaviour if new behavior has been disabled.
+    return AboutSrcDocCheckResult::ALLOW_REQUEST;
+  }
 
-  // TODO(arthursonzogni): Disallow browser initiated navigations to
-  // about:srcdoc, except session history navigations.
+  // There are 4 cases where we allow a navigation to about:srcdoc:
 
-  return AboutSrcDocCheckResult::ALLOW_REQUEST;
+  // 1) We allow same-document navigations from any frame.
+  if (IsSameDocument()) {
+    return AboutSrcDocCheckResult::ALLOW_REQUEST;
+  }
+
+  const std::optional<url::Origin>& initiator_origin =
+      common_params().initiator_origin;
+  // 2) Browser-initiated navigations are (temporarily) allowed for
+  // about:srcdoc.
+  if (!initiator_origin) {
+    // TODO(https://crbug.com/40165505): for now, allow this, and land the
+    // change to block it in a separate CL in case it breaks things beyond our
+    // local test suites.
+    return AboutSrcDocCheckResult::ALLOW_REQUEST;
+  }
+
+  // 3) An about:srcdoc frame can reload itself (even if it is cross-origin from
+  // its parent due to being sandboxed).
+  if (frame_tree_node()
+          ->current_frame_host()
+          ->GetLastCommittedURL()
+          .IsAboutSrcdoc() &&
+      initiator_origin->IsSameOriginWith(
+          frame_tree_node()->current_frame_host()->GetLastCommittedOrigin())) {
+    return AboutSrcDocCheckResult::ALLOW_REQUEST;
+  }
+
+  // 4) Setting src = 'about:srcdoc' is allowed for now as long as the
+  // initiator's origin matches the origin of the srcdoc's parent. It is
+  // important not to allow initiators that are cross-origin with the parent,
+  // because the content comes from the parent and many places in the code
+  // assume the origin comes from the initiator.
+  // TODO(https://crbug.com/40165505): navigations to 'about:srcdoc' aren't
+  // supposed to ever be allowed according to spec.
+  if (*initiator_origin ==
+      frame_tree_node()->parent()->GetLastCommittedOrigin()) {
+    return AboutSrcDocCheckResult::ALLOW_REQUEST;
+  }
+
+  // Navigations with an initiator that is cross-origin to the about:srcdoc
+  // parent are not allowed.
+  return AboutSrcDocCheckResult::BLOCK_REQUEST;
 }
 
 void NavigationRequest::SetupCSPEmbeddedEnforcement() {
