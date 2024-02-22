@@ -37,6 +37,13 @@ using testing::Return;
 namespace net::test {
 namespace {
 
+class EstablishedCryptoStream : public quic::test::MockQuicCryptoStream {
+ public:
+  using quic::test::MockQuicCryptoStream::MockQuicCryptoStream;
+
+  bool encryption_established() const override { return true; }
+};
+
 class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
  public:
   explicit MockQuicClientSessionBase(quic::QuicConnection* connection);
@@ -53,6 +60,10 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
 
   quic::QuicCryptoStream* GetMutableCryptoStream() override {
     return crypto_stream_.get();
+  }
+
+  void SetCryptoStream(quic::QuicCryptoStream* crypto_stream) {
+    crypto_stream_.reset(crypto_stream);
   }
 
   // From quic::QuicSession.
@@ -178,6 +189,7 @@ class QuicChromiumClientStreamTest
     session_.ActivateStream(base::WrapUnique(stream_.get()));
     handle_ = stream_->CreateHandle();
     helper_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
+    session_.SetCryptoStream(new EstablishedCryptoStream(&session_));
     session_.connection()->SetEncrypter(
         quic::ENCRYPTION_FORWARD_SECURE,
         std::make_unique<quic::test::TaggingEncrypter>(
@@ -806,6 +818,19 @@ TEST_P(QuicChromiumClientStreamTest, WritevStreamDataAsync) {
   stream_->OnCanWrite();
   ASSERT_TRUE(callback.have_result());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
+}
+
+TEST_P(QuicChromiumClientStreamTest, WriteConnectUdpPayload) {
+  testing::InSequence seq;
+  std::string packet = {1, 2, 3, 4, 5, 6};
+
+  quic::test::QuicSpdySessionPeer::SetHttpDatagramSupport(
+      &session_, quic::HttpDatagramSupport::kRfc);
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      SendMessage(1, _, false))
+      .WillOnce(Return(quic::MESSAGE_STATUS_SUCCESS));
+  EXPECT_EQ(OK, handle_->WriteConnectUdpPayload(packet));
 }
 
 TEST_P(QuicChromiumClientStreamTest, HeadersBeforeHandle) {

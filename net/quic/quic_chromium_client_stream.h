@@ -102,6 +102,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
                          bool fin,
                          CompletionOnceCallback callback);
 
+    // Writes |packet| to server by constructing a UDP payload from
+    // packet and sending the datagram on the stream.
+    int WriteConnectUdpPayload(absl::string_view packet);
+
     // Reads at most |buf_len| bytes into |buf|. Returns the number of bytes
     // read.
     int Read(IOBuffer* buf, int buf_len);
