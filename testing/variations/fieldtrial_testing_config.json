@@ -10656,6 +10656,21 @@
             ]
         }
     ],
+    "MinorModeRestrictionsForHistorySyncOptInAndroidStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "LowDeadline",
+                    "enable_features": [
+                        "MinorModeRestrictionsForHistorySyncOptIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "MinorModeRestrictionsForHistorySyncOptInDesktopStudy": [
         {
             "platforms": [
