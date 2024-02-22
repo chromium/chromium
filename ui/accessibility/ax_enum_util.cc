@@ -1269,6 +1269,10 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "ariaBrailleLabel";
     case ax::mojom::StringAttribute::kAriaBrailleRoleDescription:
       return "ariaBrailleRoleDescription";
+    case ax::mojom::StringAttribute::kAriaNotificationId:
+      return "ariaNotificationId";
+    case ax::mojom::StringAttribute::kAriaNotificationMessage:
+      return "ariaNotificationMessage";
     case ax::mojom::StringAttribute::kCheckedStateDescription:
       return "checkedStateDescription";
     case ax::mojom::StringAttribute::kChildTreeId:
@@ -1348,6 +1352,10 @@ ax::mojom::StringAttribute StringToStringAttribute(
     return ax::mojom::StringAttribute::kAriaBrailleLabel;
   } else if (string_attribute == "kAriaBrailleRoleDescription") {
     return ax::mojom::StringAttribute::kAriaBrailleRoleDescription;
+  } else if (string_attribute == "kAriaNotificationId") {
+    return ax::mojom::StringAttribute::kAriaNotificationId;
+  } else if (string_attribute == "kAriaNotificationMessage") {
+    return ax::mojom::StringAttribute::kAriaNotificationMessage;
   } else if (string_attribute == "kCheckedStateDescription") {
     return ax::mojom::StringAttribute::kCheckedStateDescription;
   } else if (string_attribute == "kChildTreeId") {
