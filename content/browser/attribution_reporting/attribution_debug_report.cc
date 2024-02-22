@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -334,14 +333,9 @@ void SetLimit(base::Value::Dict& data_body, std::optional<T> limit) {
   SetLimit(data_body, *limit);
 }
 
-// `original_report_time` must be non-null when `data_type`'s body will contain
-// a `scheduled_report_time` field, which is only true for certain event-level
-// failures that use the entire body of the report that would have been stored
-// if attribution had succeeded.
 base::Value::Dict GetReportDataBody(DebugDataType data_type,
                                     const AttributionTrigger& trigger,
-                                    const CreateReportResult& result,
-                                    base::Time* original_report_time) {
+                                    const CreateReportResult& result) {
   base::Value::Dict data_body;
   data_body.Set(kAttributionDestination,
                 net::SchemefulSite(trigger.destination_origin()).Serialize());
@@ -392,9 +386,6 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerEventLowPriority:
     case DebugDataType::kTriggerEventExcessiveReports:
       DCHECK(result.dropped_event_level_report());
-      DCHECK(original_report_time);
-      *original_report_time =
-          result.dropped_event_level_report()->initial_report_time();
       return result.dropped_event_level_report()->ReportBody();
     case DebugDataType::kSourceDestinationLimit:
     case DebugDataType::kSourceNoised:
@@ -470,8 +461,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   base::Value::List report_body;
   report_body.Append(GetReportData(data->debug_data_type, std::move(body)));
   return AttributionDebugReport(std::move(report_body),
-                                source.common_info().reporting_origin(),
-                                /*original_report_time=*/base::Time());
+                                source.common_info().reporting_origin());
 }
 
 // static
@@ -489,15 +479,13 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   }
 
   base::Value::List report_body;
-  base::Time original_report_time;
 
   std::optional<DebugDataType> event_level_data_type =
       GetReportDataType(result.event_level_status(), is_debug_cookie_set);
   if (event_level_data_type) {
-    report_body.Append(
-        GetReportData(*event_level_data_type,
-                      GetReportDataBody(*event_level_data_type, trigger, result,
-                                        &original_report_time)));
+    report_body.Append(GetReportData(
+        *event_level_data_type,
+        GetReportDataBody(*event_level_data_type, trigger, result)));
     RecordVerboseDebugReportType(*event_level_data_type);
   }
 
@@ -507,8 +495,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
       aggregatable_data_type != event_level_data_type) {
     report_body.Append(GetReportData(
         *aggregatable_data_type,
-        GetReportDataBody(*aggregatable_data_type, trigger, result,
-                          /*original_report_time=*/nullptr)));
+        GetReportDataBody(*aggregatable_data_type, trigger, result)));
     RecordVerboseDebugReportType(*aggregatable_data_type);
   }
 
@@ -516,8 +503,8 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return std::nullopt;
   }
 
-  return AttributionDebugReport(
-      std::move(report_body), trigger.reporting_origin(), original_report_time);
+  return AttributionDebugReport(std::move(report_body),
+                                trigger.reporting_origin());
 }
 
 // static
@@ -558,17 +545,14 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   RecordVerboseDebugReportType(data_type);
 
   return AttributionDebugReport(std::move(report_body),
-                                std::move(*registration_origin),
-                                /*original_report_time=*/base::Time());
+                                std::move(*registration_origin));
 }
 
 AttributionDebugReport::AttributionDebugReport(
     base::Value::List report_body,
-    attribution_reporting::SuitableOrigin reporting_origin,
-    base::Time original_report_time)
+    attribution_reporting::SuitableOrigin reporting_origin)
     : report_body_(std::move(report_body)),
-      reporting_origin_(std::move(reporting_origin)),
-      original_report_time_(original_report_time) {
+      reporting_origin_(std::move(reporting_origin)) {
   DCHECK(!report_body_.empty());
 }
 

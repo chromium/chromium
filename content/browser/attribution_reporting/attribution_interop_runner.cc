@@ -133,12 +133,7 @@ class AttributionReportConverter {
               report_body.Set("histograms", std::move(list));
             },
             [&](const AttributionReport::EventLevelData&) {
-              // Report IDs are a source of nondeterminism, so remove
-              // them.
-              report_body.Remove("report_id");
-
-              AdjustScheduledReportTime(report_body,
-                                        report.initial_report_time());
+              AdjustEventLevelBody(report_body);
             },
             [](const AttributionReport::NullAggregatableData&) {
               NOTREACHED_NORETURN();
@@ -156,11 +151,7 @@ class AttributionReportConverter {
     for (auto& value : report_body) {
       if (base::Value::Dict* dict = value.GetIfDict()) {
         if (base::Value::Dict* body = dict->FindDict("body")) {
-          // Report IDs are a source of nondeterminism, so remove them.
-          body->Remove("report_id");
-
-          AdjustScheduledReportTime(*body,
-                                    report.GetOriginalReportTimeForTesting());
+          AdjustEventLevelBody(*body);
         }
       }
     }
@@ -169,15 +160,18 @@ class AttributionReportConverter {
   }
 
  private:
-  void AdjustScheduledReportTime(base::Value::Dict& report_body,
-                                 base::Time original_report_time) const {
+  void AdjustEventLevelBody(base::Value::Dict& report_body) const {
+    // Report IDs are a source of nondeterminism, so remove them.
+    report_body.Remove("report_id");
+
     // This field contains a string encoding seconds from the UNIX epoch. It
     // needs to be adjusted relative to the simulator's origin time in order
     // for test output to be consistent.
-    std::string* str = report_body.FindString("scheduled_report_time");
-    if (str) {
-      *str = base::NumberToString(
-          (original_report_time - time_origin_).InSeconds());
+    if (std::string* str = report_body.FindString("scheduled_report_time")) {
+      if (int64_t seconds; base::StringToInt64(*str, &seconds)) {
+        *str = base::NumberToString(seconds -
+                                    TimeOffset(time_origin_).InSeconds());
+      }
     }
   }
 
