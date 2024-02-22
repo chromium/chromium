@@ -281,8 +281,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.JSONParser.ChromiumExtensionUsage"
-    enum="JsonParserExtension" expires_after="2023-11-12">
-  <owner>rsesek@chromium.org</owner>
+    enum="JsonParserExtension" expires_after="2024-11-12">
+  <owner>ellyjones@chromium.org</owner>
   <owner>chrome-platform-security@google.com</owner>
   <summary>
     Records the usage of the base::JSONParser's non-RFC-8259-conforming
