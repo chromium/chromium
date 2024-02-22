@@ -259,20 +259,6 @@ class PLATFORM_EXPORT Length {
 
     return !value_;
   }
-  bool IsPositive() const {
-    if (IsNone())
-      return false;
-    if (IsCalculated())
-      return true;
-
-    return GetFloatValue() > 0;
-  }
-  bool IsNegative() const {
-    if (IsNone() || IsCalculated())
-      return false;
-
-    return GetFloatValue() < 0;
-  }
 
   // For the layout purposes, if this |Length| is a block-axis size, see
   // |IsAutoOrContentOrIntrinsic()|, it is usually a better choice.

@@ -3297,7 +3297,7 @@
       inherited: true,
       field_group: "inherited",
       field_template: "<length>",
-      default_value: "Length::Percent(-100.0)",
+      default_value: "Length::Auto()",
       getter: "SpecifiedLineHeight",
       computed_style_custom_functions: ["getter"],
       converter: "ConvertLineHeight",

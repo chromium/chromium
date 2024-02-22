@@ -969,7 +969,7 @@ ComputedStyleUtils::ValueForContentPositionAndDistributionWithOverflowAlignment(
 
 CSSValue* ComputedStyleUtils::ValueForLineHeight(const ComputedStyle& style) {
   const Length& length = style.LineHeight();
-  if (length.IsNegative()) {
+  if (length.IsAuto()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 
@@ -981,7 +981,7 @@ CSSValue* ComputedStyleUtils::ValueForLineHeight(const ComputedStyle& style) {
 CSSValue* ComputedStyleUtils::ComputedValueForLineHeight(
     const ComputedStyle& style) {
   const Length& length = style.LineHeight();
-  if (length.IsNegative()) {
+  if (length.IsAuto()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 

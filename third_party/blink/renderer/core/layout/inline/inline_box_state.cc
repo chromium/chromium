@@ -153,7 +153,7 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
 
   metrics.Unite(text_metrics);
 
-  include_used_fonts = styleref.LineHeight().IsNegative();
+  include_used_fonts = styleref.LineHeight().IsAuto();
 }
 
 void InlineBoxState::ResetTextMetrics() {
