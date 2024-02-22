@@ -6785,6 +6785,7 @@ interface OTPCredential : Credential
 interface Observable
     attribute @@toStringTag
     method constructor
+    method drop
     method filter
     method forEach
     method map

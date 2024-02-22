@@ -207,6 +207,74 @@ class OperatorForEachInternalObserver final
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
 
+class OperatorDropSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorDropSubscribeDelegate(Observable* source_observable,
+                                uint64_t number_to_drop)
+      : source_observable_(source_observable),
+        number_to_drop_(number_to_drop) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state,
+                                                     number_to_drop_),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* subscriber,
+                           ScriptState* script_state,
+                           uint64_t number_to_drop)
+        : subscriber_(subscriber),
+          script_state_(script_state),
+          number_to_drop_(number_to_drop) {
+      CHECK(subscriber_);
+      CHECK(script_state_);
+    }
+
+    void Next(ScriptValue value) override {
+      if (number_to_drop_ > 0) {
+        --number_to_drop_;
+        return;
+      }
+
+      CHECK_EQ(number_to_drop_, 0ull);
+      subscriber_->next(value);
+    }
+    void Error(ScriptState*, ScriptValue error) override {
+      subscriber_->error(script_state_, error);
+    }
+    void Complete() override { subscriber_->complete(script_state_); }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(subscriber_);
+      visitor->Trace(script_state_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> subscriber_;
+    Member<ScriptState> script_state_;
+    uint64_t number_to_drop_;
+  };
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  Member<Observable> source_observable_;
+  const uint64_t number_to_drop_;
+};
+
 class OperatorTakeSubscribeDelegate final
     : public Observable::SubscribeDelegate {
  public:
@@ -740,6 +808,14 @@ Observable* Observable::take(ScriptState*, uint64_t number_to_take) {
       GetExecutionContext(),
       MakeGarbageCollected<OperatorTakeSubscribeDelegate>(this,
                                                           number_to_take));
+  return return_observable;
+}
+
+Observable* Observable::drop(ScriptState*, uint64_t number_to_drop) {
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorDropSubscribeDelegate>(this,
+                                                          number_to_drop));
   return return_observable;
 }
 

@@ -42,6 +42,7 @@ interface Observable {
   [CallWith=ScriptState] Observable map(Mapper mapper);
   [CallWith=ScriptState] Observable filter(Predicate predicate);
   [CallWith=ScriptState] Observable take(unsigned long long number_to_take);
+  [CallWith=ScriptState] Observable drop(unsigned long long number_to_drop);
 
   // Promise-returning operators.
   // See https://wicg.github.io/observable/#promise-returning-operators.
