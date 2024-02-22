@@ -595,9 +595,7 @@ TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     Browser::Type::TYPE_CUSTOM_TAB,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    // TODO(b/325453088): Bring back PICTURE_IN_PICTURE once we invoke
-    // browser.window.Close() again.
+    Browser::Type::TYPE_PICTURE_IN_PICTURE,
   };
 
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
@@ -1009,9 +1007,7 @@ TEST_P(AppSessionTroubleshootingTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     Browser::Type::TYPE_CUSTOM_TAB,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    // TODO(b/325453088): Bring back PICTURE_IN_PICTURE once we invoke
-    // browser.window.Close() again.
+    Browser::TYPE_PICTURE_IN_PICTURE,
   };
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
