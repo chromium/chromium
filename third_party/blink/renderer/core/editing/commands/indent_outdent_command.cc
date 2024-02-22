@@ -180,7 +180,7 @@ void IndentOutdentCommand::IndentIntoBlockquote(const Position& start,
   // are then split it into its own block so it doesn't copy multiple
   // paragraphs.
   Node* highest_inline_node = HighestEnclosingNodeOfType(
-      end, IsInline, kCannotCrossEditingBoundary, outer_block);
+      end, IsInlineElement, kCannotCrossEditingBoundary, outer_block);
   if (highest_inline_node) {
     Position next_position = MostForwardCaretPosition(
         NextPositionOf(CreateVisiblePosition(end)).DeepEquivalent());
@@ -208,11 +208,11 @@ void IndentOutdentCommand::IndentIntoBlockquote(const Position& start,
       Node* split_point = HighestEnclosingNodeOfType(
           next_position, IsEnclosingBlock, kCannotCrossEditingBoundary,
           highest_inline_node);
-      split_point =
-          split_point ? split_point
-                      : HighestEnclosingNodeOfType(next_position, IsInline,
-                                                   kCannotCrossEditingBoundary,
-                                                   highest_inline_node);
+      split_point = split_point
+                        ? split_point
+                        : HighestEnclosingNodeOfType(
+                              next_position, IsInlineElement,
+                              kCannotCrossEditingBoundary, highest_inline_node);
       split_point = split_point ? split_point : next_position.AnchorNode();
       // Split the element to separate the paragraphs.
       SplitElement(DynamicTo<Element>(highest_inline_node), split_point);
@@ -385,9 +385,22 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
             enclosing_element, split_ancestor);
       }
     } else {
+      if (RuntimeEnabledFeatures::NonEmptyBlockquotesOnOutdentingEnabled()) {
+        // Insert BR after the previous sibling of `enclosing_element` if the
+        // LayoutObject of sibling is 'inline-level' and it gets merged into the
+        // splitted element below.
+        if (enclosing_element->HasPreviousSibling()) {
+          Node* previous_sibling = enclosing_element->previousSibling();
+          if (IsInlineNode(previous_sibling) &&
+              !IsA<HTMLBRElement>(previous_sibling)) {
+            InsertNodeAt(MakeGarbageCollected<HTMLBRElement>(GetDocument()),
+                         Position::AfterNode(*previous_sibling), editing_state);
+          }
+        }
+      }
       // We split the blockquote at where we start outdenting.
       Node* highest_inline_node = HighestEnclosingNodeOfType(
-          visible_start_of_paragraph.DeepEquivalent(), IsInline,
+          visible_start_of_paragraph.DeepEquivalent(), IsInlineElement,
           kCannotCrossEditingBoundary, enclosing_block_flow);
       SplitElement(
           enclosing_element,

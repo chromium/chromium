@@ -734,11 +734,11 @@ void InsertListCommand::MoveParagraphOverPositionIntoEmptyListItem(
   // enclosing block node so we can get the "outer" block node without crossing
   // block boundaries as that function only breaks when the loop hits the
   // editable boundary or the parent element has an inline style(as we pass
-  // |IsInline| to it).
+  // |IsInlineElement| to it).
   Node* const constraining_ancestor =
       EnclosingBlock(start.DeepEquivalent().AnchorNode());
   Node* const outer_block = HighestEnclosingNodeOfType(
-      start.DeepEquivalent(), &IsInline, kCannotCrossEditingBoundary,
+      start.DeepEquivalent(), &IsInlineElement, kCannotCrossEditingBoundary,
       constraining_ancestor);
   MoveParagraphWithClones(
       start, end, list_item_element,

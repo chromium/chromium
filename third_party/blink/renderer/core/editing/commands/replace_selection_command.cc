@@ -918,7 +918,7 @@ void ReplaceSelectionCommand::HandleStyleSpansBeforeInsertion(
   // |node| can be an inline element like <br> under <li>
   // e.g.) editing/execCommand/switch-list-type.html
   //       editing/deleting/backspace-merge-into-block.html
-  if (IsInline(node)) {
+  if (IsInlineElement(node)) {
     node = EnclosingBlock(insertion_pos.AnchorNode());
     if (!node)
       return;

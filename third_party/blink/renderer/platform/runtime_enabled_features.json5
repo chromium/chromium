@@ -2493,6 +2493,12 @@
       public: true,
       status: "stable",
     },
+    // Doesn't insert empty blockquotes on outdenting a blockquote. See
+    // https://crbug.com/323960902
+    {
+      name: "NonEmptyBlockquotesOnOutdenting",
+      status: "stable",
+    },
     {
       // TODO(crbug.com/924486): This feature enables the deprecated values
       // inner-spin-button, push-button, searchfield-cancel-button,
