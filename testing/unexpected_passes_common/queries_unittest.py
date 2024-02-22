@@ -267,8 +267,7 @@ class QueryBuilderUnittest(unittest.TestCase):
         return_value=unittest_utils.SimpleFixedQueryGenerator(
             self._builder, 'a real filter')), mock.patch.object(
                 self._querier,
-                '_RunBigQueryCommandsForJsonOutput',
-                return_value=[]) as query_mock:
+                '_RunBigQueryCommandsForJsonOutput') as query_mock:
       self._querier.QueryBuilder(self._builder)
       query_mock.assert_called_once()
       query = query_mock.call_args[0][0][0]

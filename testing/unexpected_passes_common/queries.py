@@ -154,10 +154,7 @@ class BigQueryQuerier(object):
     tmp_expectation_map = data_types.TestExpectationMap()
     all_unmatched_results = {}
 
-    # results is potentially rather large, so reduce the list as we iterate over
-    # it to avoid using excessive memory.
-    while results:
-      (unmatched_results, prefixed_builder_name, merge_map) = results.pop()
+    for (unmatched_results, prefixed_builder_name, merge_map) in results:
       tmp_expectation_map.Merge(merge_map, expectation_map)
       if unmatched_results:
         all_unmatched_results[prefixed_builder_name] = unmatched_results
@@ -307,7 +304,7 @@ class BigQueryQuerier(object):
       if step_name not in results_for_each_step:
         results_for_each_step[step_name] = qr
 
-    expectation_files = set()
+    expectation_files = []
     for qr in results_for_each_step.values():
       # None is a special value indicating "use all expectation files", so
       # handle that.
@@ -315,15 +312,11 @@ class BigQueryQuerier(object):
       if ef is None:
         expectation_files = None
         break
-      expectation_files |= set(ef)
+      expectation_files.extend(ef)
     if expectation_files is not None:
-      expectation_files = list(expectation_files)
+      expectation_files = list(set(expectation_files))
 
-    # The query result list is potentially very large, so reduce the list as we
-    # iterate over it instead of using a standard for/in so that we don't
-    # temporarily end up with a ~2x increase in memory.
-    while query_results:
-      r = query_results.pop()
+    for r in query_results:
       if self._ShouldSkipOverResult(r):
         continue
       results.append(self._ConvertJsonResultToResultObject(r))
