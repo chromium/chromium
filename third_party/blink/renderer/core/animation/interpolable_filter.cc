@@ -40,7 +40,9 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
 // static
 InterpolableFilter* InterpolableFilter::MaybeCreate(
     const FilterOperation& filter,
-    double zoom) {
+    double zoom,
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) {
   InterpolableValue* value = nullptr;
   FilterOperation::OperationType type = filter.GetType();
   switch (type) {
@@ -67,7 +69,8 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
 
     case FilterOperation::OperationType::kDropShadow:
       value = InterpolableShadow::Create(
-          To<DropShadowFilterOperation>(filter).Shadow(), zoom);
+          To<DropShadowFilterOperation>(filter).Shadow(), zoom, color_scheme,
+          color_provider);
       break;
 
     case FilterOperation::OperationType::kReference:
@@ -85,7 +88,9 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
 
 // static
 InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
-    const CSSValue& css_value) {
+    const CSSValue& css_value,
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) {
   if (css_value.IsURIValue())
     return nullptr;
 
@@ -115,7 +120,8 @@ InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
       break;
 
     case FilterOperation::OperationType::kDropShadow:
-      value = InterpolableShadow::MaybeConvertCSSValue(filter.Item(0));
+      value = InterpolableShadow::MaybeConvertCSSValue(
+          filter.Item(0), color_scheme, color_provider);
       break;
 
     default:

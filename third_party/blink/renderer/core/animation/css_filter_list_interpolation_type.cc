@@ -110,12 +110,14 @@ class InheritedFilterListChecker
 };
 
 InterpolationValue ConvertFilterList(const FilterOperations& filter_operations,
-                                     double zoom) {
+                                     double zoom,
+                                     mojom::blink::ColorScheme color_scheme,
+                                     const ui::ColorProvider* color_provider) {
   wtf_size_t length = filter_operations.size();
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   for (wtf_size_t i = 0; i < length; i++) {
     InterpolableFilter* result = InterpolableFilter::MaybeCreate(
-        *filter_operations.Operations()[i], zoom);
+        *filter_operations.Operations()[i], zoom, color_scheme, color_provider);
     if (!result) {
       return nullptr;
     }
@@ -150,10 +152,14 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertInitial(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
+  mojom::blink::ColorScheme color_scheme =
+      state.StyleBuilder().UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      state.GetDocument().GetColorProviderForPainting(color_scheme);
   return ConvertFilterList(
       GetFilterList(CssProperty(),
                     state.GetDocument().GetStyleResolver().InitialStyle()),
-      1);
+      1, color_scheme, color_provider);
 }
 
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
@@ -164,13 +170,18 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedFilterListChecker>(
           CssProperty(), inherited_filter_operations));
+  mojom::blink::ColorScheme color_scheme =
+      state.StyleBuilder().UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      state.GetDocument().GetColorProviderForPainting(color_scheme);
   return ConvertFilterList(inherited_filter_operations,
-                           state.StyleBuilder().EffectiveZoom());
+                           state.StyleBuilder().EffectiveZoom(), color_scheme,
+                           color_provider);
 }
 
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers&) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
@@ -185,8 +196,14 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
   wtf_size_t length = list.length();
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   for (wtf_size_t i = 0; i < length; i++) {
-    InterpolableFilter* result =
-        InterpolableFilter::MaybeConvertCSSValue(list.Item(i));
+    mojom::blink::ColorScheme color_scheme =
+        state ? state->StyleBuilder().UsedColorScheme()
+              : mojom::blink::ColorScheme::kLight;
+    const ui::ColorProvider* color_provider =
+        state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
+              : nullptr;
+    InterpolableFilter* result = InterpolableFilter::MaybeConvertCSSValue(
+        list.Item(i), color_scheme, color_provider);
     if (!result) {
       return nullptr;
     }
@@ -198,8 +215,10 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
 InterpolationValue
 CSSFilterListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
+  // TODO(crbug.com/1231644): Need to pass an appropriate color provider here.
   return ConvertFilterList(GetFilterList(CssProperty(), style),
-                           style.EffectiveZoom());
+                           style.EffectiveZoom(), style.UsedColorScheme(),
+                           /*color_provider=*/nullptr);
 }
 
 PairwiseInterpolationValue CSSFilterListInterpolationType::MaybeMergeSingles(

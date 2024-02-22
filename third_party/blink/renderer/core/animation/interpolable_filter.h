@@ -28,8 +28,15 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
     DCHECK(value_);
   }
 
-  static InterpolableFilter* MaybeCreate(const FilterOperation&, double zoom);
-  static InterpolableFilter* MaybeConvertCSSValue(const CSSValue&);
+  static InterpolableFilter* MaybeCreate(
+      const FilterOperation&,
+      double zoom,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
+  static InterpolableFilter* MaybeConvertCSSValue(
+      const CSSValue&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
 
   // Create an InterpolableFilter representing the 'initial value for
   // interpolation' for the given OperationType.

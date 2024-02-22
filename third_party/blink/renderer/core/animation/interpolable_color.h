@@ -13,6 +13,10 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 
 // InterpolableColors are created and manipulated by CSSColorInterpolationType.
@@ -42,7 +46,9 @@ class CORE_EXPORT InterpolableColor : public BaseInterpolableColor {
 
   static InterpolableColor* Create(Color color);
   static InterpolableColor* Create(ColorKeyword color_keyword);
-  static InterpolableColor* Create(CSSValueID keyword);
+  static InterpolableColor* Create(CSSValueID keyword,
+                                   mojom::blink::ColorScheme color_scheme,
+                                   const ui::ColorProvider* color_provider);
 
   Color GetColor() const;
   bool IsColor() const final { return true; }

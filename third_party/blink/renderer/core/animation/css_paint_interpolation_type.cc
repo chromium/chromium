@@ -57,8 +57,13 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInitial(
                 state.GetDocument().GetStyleResolver().InitialStyle(),
                 initial_color))
     return nullptr;
-  return InterpolationValue(
-      CSSColorInterpolationType::CreateInterpolableColor(initial_color));
+
+  mojom::blink::ColorScheme color_scheme =
+      state.StyleBuilder().UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      state.GetDocument().GetColorProviderForPainting(color_scheme);
+  return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
+      initial_color, color_scheme, color_provider));
 }
 
 PairwiseInterpolationValue CSSPaintInterpolationType::MaybeMergeSingles(
@@ -112,16 +117,27 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInherit(
   }
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedPaintChecker>(CssProperty(), parent_color));
-  return InterpolationValue(
-      CSSColorInterpolationType::CreateInterpolableColor(parent_color));
+  mojom::blink::ColorScheme color_scheme =
+      state.StyleBuilder().UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      state.GetDocument().GetColorProviderForPainting(color_scheme);
+  return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
+      parent_color, color_scheme, color_provider));
 }
 
 InterpolationValue CSSPaintInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers&) const {
+  mojom::blink::ColorScheme color_scheme =
+      state ? state->StyleBuilder().UsedColorScheme()
+            : mojom::blink::ColorScheme::kLight;
+  const ui::ColorProvider* color_provider =
+      state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
+            : nullptr;
   InterpolableValue* interpolable_color =
-      CSSColorInterpolationType::MaybeCreateInterpolableColor(value);
+      CSSColorInterpolationType::MaybeCreateInterpolableColor(
+          value, color_scheme, color_provider);
   if (!interpolable_color)
     return nullptr;
   return InterpolationValue(interpolable_color);
@@ -135,8 +151,9 @@ CSSPaintInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   StyleColor underlying_color;
   if (!GetColor(CssProperty(), style, underlying_color))
     return nullptr;
-  return InterpolationValue(
-      CSSColorInterpolationType::CreateInterpolableColor(underlying_color));
+  // TODO(crbug.com/1231644): Need to pass an appropriate color provider here.
+  return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
+      underlying_color, style.UsedColorScheme(), /*color_provider=*/nullptr));
 }
 
 void CSSPaintInterpolationType::ApplyStandardPropertyValue(

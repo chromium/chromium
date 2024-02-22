@@ -23,12 +23,15 @@ InterpolableLength* MaybeConvertLength(const CSSPrimitiveValue* value) {
   return InterpolableLength::CreatePixels(0);
 }
 
-InterpolableColor* MaybeConvertColor(const CSSValue* value) {
+InterpolableColor* MaybeConvertColor(const CSSValue* value,
+                                     mojom::blink::ColorScheme color_scheme,
+                                     const ui::ColorProvider* color_provider) {
   if (value) {
-    return CSSColorInterpolationType::MaybeCreateInterpolableColor(*value);
+    return CSSColorInterpolationType::MaybeCreateInterpolableColor(
+        *value, color_scheme, color_provider);
   }
   return CSSColorInterpolationType::CreateInterpolableColor(
-      StyleColor::CurrentColor());
+      StyleColor::CurrentColor(), color_scheme, color_provider);
 }
 }  // namespace
 
@@ -52,26 +55,36 @@ InterpolableShadow::InterpolableShadow(InterpolableLength* x,
 }
 
 // static
-InterpolableShadow* InterpolableShadow::Create(const ShadowData& shadow_data,
-                                               double zoom) {
+InterpolableShadow* InterpolableShadow::Create(
+    const ShadowData& shadow_data,
+    double zoom,
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) {
   return MakeGarbageCollected<InterpolableShadow>(
       InterpolableLength::CreatePixels(shadow_data.X() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Y() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Blur() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Spread() / zoom),
       CSSColorInterpolationType::CreateInterpolableColor(
-          shadow_data.GetColor()),
+          shadow_data.GetColor(), color_scheme, color_provider),
       shadow_data.Style());
 }
 
 // static
 InterpolableShadow* InterpolableShadow::CreateNeutral() {
-  return Create(ShadowData::NeutralValue(), 1);
+  // It is okay to pass in `kLight` for `color_scheme` and nullptr for
+  // `color_provider` because the neutral color value for shadow data is
+  // guaranteed not to be a system color.
+  return Create(ShadowData::NeutralValue(), 1,
+                /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+                /*color_provider=*/nullptr);
 }
 
 // static
 InterpolableShadow* InterpolableShadow::MaybeConvertCSSValue(
-    const CSSValue& value) {
+    const CSSValue& value,
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) {
   const auto* shadow = DynamicTo<CSSShadowValue>(value);
   if (!shadow) {
     return nullptr;
@@ -89,7 +102,8 @@ InterpolableShadow* InterpolableShadow::MaybeConvertCSSValue(
   InterpolableLength* y = MaybeConvertLength(shadow->y.Get());
   InterpolableLength* blur = MaybeConvertLength(shadow->blur.Get());
   InterpolableLength* spread = MaybeConvertLength(shadow->spread.Get());
-  InterpolableColor* color = MaybeConvertColor(shadow->color);
+  InterpolableColor* color =
+      MaybeConvertColor(shadow->color, color_scheme, color_provider);
 
   // If any of the conversations failed, we can't represent this CSSValue.
   if (!x || !y || !blur || !spread || !color) {

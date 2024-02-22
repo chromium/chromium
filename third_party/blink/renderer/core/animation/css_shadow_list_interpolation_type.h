@@ -27,7 +27,11 @@ class CSSShadowListInterpolationType : public CSSInterpolationType {
                                   StyleResolverState&) const final;
 
  private:
-  InterpolationValue ConvertShadowList(const ShadowList*, double zoom) const;
+  InterpolationValue ConvertShadowList(
+      const ShadowList*,
+      double zoom,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider) const;
   InterpolationValue CreateNeutralValue() const;
 
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
