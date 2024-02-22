@@ -150,6 +150,11 @@ void RecordFailedMigrationMetric(std::string_view infix_for_setting,
       static_cast<int>(api_error));
 }
 
+void RecordMigrationResult(bool result) {
+  base::UmaHistogramBoolean(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", result);
+}
+
 }  // namespace
 
 PasswordManagerSettingsServiceAndroidImpl::
@@ -496,6 +501,7 @@ void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded(
   // it might happen that two fetches for the same pref will finish first. We
   // want to ensure that each one of the settings was fetched successfully.
   if (DidAccessingGMSPrefsFailed(results)) {
+    RecordMigrationResult(false);
     return;
   }
 
@@ -553,9 +559,11 @@ void PasswordManagerSettingsServiceAndroidImpl::FinishSettingsMigration(
   migration_finished_callback_.Reset();
   // Check if setting settings prefs failed.
   if (DidAccessingGMSPrefsFailed(results)) {
+    RecordMigrationResult(false);
     return;
   }
 
+  RecordMigrationResult(true);
   pref_service_->SetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal, true);
 }

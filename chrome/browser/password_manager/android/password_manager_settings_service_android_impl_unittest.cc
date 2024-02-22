@@ -1445,6 +1445,9 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
+
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", true, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
@@ -1486,6 +1489,9 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
+
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", true, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
@@ -1552,6 +1558,9 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
+
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", true, 1);
 }
 
 // Checks if settings migration happens only once per browser lifetime.
@@ -1604,6 +1613,9 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kCredentialsEnableService));
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin));
+
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", true, 1);
 }
 
 // Checks that the migration algorithm determines what to do for each setting
@@ -1653,6 +1665,9 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
+
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", true, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
@@ -1696,6 +1711,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   histogram_tester()->ExpectUniqueSample(
       "PasswordManager.PasswordSettingsMigrationFailed.AutoSignIn.APIError",
       AndroidBackendAPIErrorCode::kUnexpectedError, 1);
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", false, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
@@ -1734,6 +1751,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", false, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
@@ -1776,4 +1795,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       "PasswordManager.PasswordSettingsMigrationFailed.OfferToSavePasswords."
       "APIError",
       AndroidBackendAPIErrorCode::kUnexpectedError, 1);
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSettingsMigrationSucceeded", false, 1);
 }

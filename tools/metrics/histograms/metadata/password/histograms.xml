@@ -2605,6 +2605,17 @@ chromium-metrics-reviews@google.com.
   <token key="Setting" variants="PasswordManagerSetting"/>
 </histogram>
 
+<histogram name="PasswordManager.PasswordSettingsMigrationSucceeded"
+    enum="BooleanYesNo" expires_after="2024-07-30">
+  <owner>sygiet@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of succesful password settings migration from Chrome to GMS.
+    Recorded for the local users on Android when migration finished because of a
+    success or failure along the way.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordsGrouping.Time" units="ms"
     expires_after="2024-07-21">
   <owner>vsemeniuk@google.com</owner>
