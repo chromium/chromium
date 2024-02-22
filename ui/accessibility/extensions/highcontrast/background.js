@@ -4,6 +4,7 @@
 
 class Background {
   constructor() {
+    this.readyTabs_ = new Set();
     this.init_();
   }
 
@@ -47,7 +48,9 @@ class Background {
         'enabled': Storage.enabled,
         'scheme': Storage.getSiteScheme(siteFromUrl(tab.url)),
       };
-      chrome.tabs.sendMessage(tab.id, msg);
+      if (this.readyTabs_.has(tab.id)) {
+        chrome.tabs.sendMessage(tab.id, msg);
+      }
     });
   }
 
@@ -95,6 +98,9 @@ class Background {
       let scheme = Storage.scheme;
       if (sender.tab) {
         scheme = Storage.getSiteScheme(siteFromUrl(sender.tab.url));
+        this.readyTabs_.add(sender.tab.id);
+      } else {
+        console.warn('No tab for init message from', JSON.stringify(sender));
       }
       const msg = {
         'enabled': Storage.enabled,
@@ -113,8 +119,8 @@ class Background {
 
     chrome.storage.onChanged.addListener(this.updateTabs_.bind(this));
 
-    if (navigator.appVersion.indexOf('Mac') != -1) {
-      chrome.browserAction.setTitle({'title': 'High Contrast (Cmd+Shift+F11)'});
+    if (navigator.userAgentData.platform.indexOf('Mac') != -1) {
+      chrome.action.setTitle({'title': 'High Contrast (Cmd+Shift+F11)'});
     }
   }
 }
