@@ -1423,18 +1423,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.Search.{RootType}.Open" units="count"
-    expires_after="2024-06-24">
+<histogram name="FileBrowser.Search.RootType" enum="SearchRootType"
+    expires_after="2024-07-28">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     ChromeOS File Browser: the root type in which search opened. Search can be
-    opened in either the standalone mode or in the file picker mode.
+    opened in either the Standalone mode or in the Picker mode.
   </summary>
-  <token key="RootType">
-    <variant name="Picker"/>
-    <variant name="Standalone"/>
-  </token>
 </histogram>
 
 <histogram name="FileBrowser.Search.{Source}.Latency" units="ms"

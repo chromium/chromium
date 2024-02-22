@@ -9,12 +9,11 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import type {SpliceEvent} from '../../common/js/array_data_model.js';
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
-import {isModal} from '../../common/js/dialog_type.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry, GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
-import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
+import {recordMediumCount} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
 import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -261,11 +260,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     }
     if (!lastSearch || (lastSearch as SearchData).query !== search.query ||
         (lastSearch as SearchData).options !== search.options) {
-      const dialogType = state.launchParams.dialogType;
-      if (dialogType) {
-        recordUserAction(
-            `Search.${isModal(dialogType) ? 'Picker' : 'Standalone'}.Open`);
-      }
       this.search_(
           search.query || '', search.options || getDefaultSearchOptions());
     }

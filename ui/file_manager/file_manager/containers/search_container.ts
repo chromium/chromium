@@ -7,10 +7,11 @@ import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import type {VolumeManager} from '../background/js/volume_manager.js';
+import {isModal} from '../common/js/dialog_type.js';
 import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {isEntryInsideDrive} from '../common/js/entry_utils.js';
 import type {FakeEntry} from '../common/js/files_app_entry_types.js';
-import {recordUserAction} from '../common/js/metrics.js';
+import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {RootType} from '../common/js/volume_manager_types.js';
 import {PathComponent} from '../foreground/js/path_component.js';
@@ -34,6 +35,12 @@ import type {XfOption} from '../widgets/xf_select.js';
 enum SearchInputState {
   CLOSED = 'closed',
   OPEN = 'open',
+}
+
+enum SearchRootType {
+  UNKNOWN = 'Unknown',
+  STANDALONE = 'Standalone',
+  PICKER = 'Picker',
 }
 
 /**
@@ -633,6 +640,16 @@ export class SearchContainer extends EventTarget {
       this.searchBox_.classList.add('has-cursor', 'has-text');
       this.searchButton_.tabIndex = -1;
       this.updateClearButton_(this.getQuery());
+      const dialogType = this.store_.getState().launchParams.dialogType;
+      const rootType: SearchRootType = dialogType ?
+          (isModal(dialogType) ? SearchRootType.PICKER :
+                                 SearchRootType.STANDALONE) :
+          SearchRootType.UNKNOWN;
+      recordEnum('Search.RootType', rootType, [
+        SearchRootType.UNKNOWN,
+        SearchRootType.STANDALONE,
+        SearchRootType.PICKER,
+      ]);
     }
   }
 

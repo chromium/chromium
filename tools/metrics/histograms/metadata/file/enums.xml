@@ -713,6 +713,12 @@ chromium-metrics-reviews@google.com.
       label="Multiple items with some parents removed, some still existing"/>
 </enum>
 
+<enum name="SearchRootType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Standalone"/>
+  <int value="2" label="Picker"/>
+</enum>
+
 <enum name="ZipFileCreator.Result">
   <int value="0" label="Success"/>
   <int value="1" label="Cancelled"/>
