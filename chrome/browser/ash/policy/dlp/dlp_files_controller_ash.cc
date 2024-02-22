@@ -527,12 +527,12 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
     if (destination.component()) {
       data_controls::Component dst_component = *destination.component();
       level = rules_manager_->IsRestrictedComponent(
-          GURL(file.source_url), dst_component,
-          DlpRulesManager::Restriction::kFiles, &source_pattern,
-          &rule_metadata);
+          file.source_url, dst_component, DlpRulesManager::Restriction::kFiles,
+          &source_pattern, &rule_metadata);
       actual_dst = DlpFileDestination(dst_component);
-      MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
-                       actual_dst, std::nullopt, rule_metadata, level);
+      MaybeReportEvent(file.inode, file.crtime, file.path,
+                       file.source_url.spec(), actual_dst, std::nullopt,
+                       rule_metadata, level);
     } else if (destination.IsFileSystem()) {
       level = DlpRulesManager::Level::kAllow;
     } else {
@@ -543,8 +543,9 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
           DlpRulesManager::Restriction::kFiles, &source_pattern,
           &destination_pattern.value(), &rule_metadata);
       if (!IsSystemAppURL(destination.url().value())) {
-        MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
-                         actual_dst, destination_pattern, rule_metadata, level);
+        MaybeReportEvent(file.inode, file.crtime, file.path,
+                         file.source_url.spec(), actual_dst,
+                         destination_pattern, rule_metadata, level);
       }
     }
 
@@ -782,8 +783,9 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
       data_controls::DlpHistogramEnumeration(
           data_controls::dlp::kFileActionWarnProceededUMA, files_action);
       MaybeReportEvent(warned_files[i].inode, warned_files[i].crtime,
-                       warned_files[i].path, warned_src_patterns[i], dst,
-                       dst_pattern, warned_rules_metadata[i], std::nullopt);
+                       warned_files[i].path, warned_files[i].source_url.spec(),
+                       dst, dst_pattern, warned_rules_metadata[i],
+                       std::nullopt);
     }
     files_levels.emplace_back(warned_files[i],
                               should_proceed
@@ -925,7 +927,7 @@ void DlpFilesControllerAsh::MaybeReportEvent(
     ino64_t inode,
     time_t crtime,
     const base::FilePath& path,
-    const std::string& source_pattern,
+    const std::string& source_url,
     const DlpFileDestination& dst,
     const std::optional<std::string>& dst_pattern,
     const DlpRulesManager::RuleMetadata& rule_metadata,
@@ -955,10 +957,10 @@ void DlpFilesControllerAsh::MaybeReportEvent(
   std::unique_ptr<data_controls::DlpPolicyEventBuilder> event_builder =
       is_warning_proceeded_event
           ? data_controls::DlpPolicyEventBuilder::WarningProceededEvent(
-                source_pattern, rule_metadata.name, rule_metadata.obfuscated_id,
+                source_url, rule_metadata.name, rule_metadata.obfuscated_id,
                 DlpRulesManager::Restriction::kFiles)
           : data_controls::DlpPolicyEventBuilder::Event(
-                source_pattern, rule_metadata.name, rule_metadata.obfuscated_id,
+                source_url, rule_metadata.name, rule_metadata.obfuscated_id,
                 DlpRulesManager::Restriction::kFiles, level.value());
 
   event_builder->SetContentName(path.BaseName().value());

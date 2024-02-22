@@ -191,8 +191,8 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   ASSERT_EQ(events.size(), 1u);
 
   auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
-      kExampleUrl, rule_name, rule_id, DlpRulesManager::Restriction::kFiles,
-      DlpRulesManager::Level::kBlock);
+      GURL(kExampleUrl).spec(), rule_name, rule_id,
+      DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock);
 
   event_builder->SetDestinationComponent(data_controls::Component::kOneDrive);
   event_builder->SetContentName(base::FilePath(file_path).BaseName().value());
