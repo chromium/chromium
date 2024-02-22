@@ -43,17 +43,13 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   static std::unique_ptr<DawnContextProvider> Create(
       const GpuPreferences& gpu_preferences = GpuPreferences(),
       const GpuDriverBugWorkarounds& gpu_driver_workarounds =
-          GpuDriverBugWorkarounds(),
-      webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
-      CacheBlobCallback callback = {});
+          GpuDriverBugWorkarounds());
   static std::unique_ptr<DawnContextProvider> CreateWithBackend(
       wgpu::BackendType backend_type,
       bool force_fallback_adapter = false,
       const GpuPreferences& gpu_preferences = GpuPreferences(),
       const GpuDriverBugWorkarounds& gpu_driver_workarounds =
-          GpuDriverBugWorkarounds(),
-      webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
-      CacheBlobCallback callback = {});
+          GpuDriverBugWorkarounds());
 
   static wgpu::BackendType GetDefaultBackendType();
   static bool DefaultForceFallbackAdapter();
@@ -70,15 +66,14 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   }
   wgpu::Instance GetInstance() const;
 
+  void SetCachingInterface(
+      std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
+
   bool InitializeGraphiteContext(
       const skgpu::graphite::ContextOptions& options);
 
   skgpu::graphite::Context* GetGraphiteContext() const {
     return graphite_context_.get();
-  }
-
-  webgpu::DawnCachingInterfaceFactory* caching_interface_factory() const {
-    return caching_interface_factory_.get();
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -92,16 +87,26 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   void OnError(WGPUErrorType error_type, const char* message);
 
  private:
-  explicit DawnContextProvider(
-      webgpu::DawnCachingInterfaceFactory* caching_interface_factory);
+  // Cache functions for Dawn device to use.
+  static size_t LoadCachedData(const void* key,
+                               size_t key_size,
+                               void* value,
+                               size_t value_size,
+                               void* userdata);
+  static void StoreCachedData(const void* key,
+                              size_t key_size,
+                              const void* value,
+                              size_t value_size,
+                              void* userdata);
+
+  explicit DawnContextProvider();
 
   bool Initialize(wgpu::BackendType backend_type,
                   bool force_fallback_adapter,
                   const GpuPreferences& gpu_preferences,
-                  const GpuDriverBugWorkarounds& gpu_driver_workarounds,
-                  CacheBlobCallback callback);
+                  const GpuDriverBugWorkarounds& gpu_driver_workarounds);
 
-  raw_ptr<webgpu::DawnCachingInterfaceFactory> caching_interface_factory_;
+  std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
   std::unique_ptr<dawn::platform::Platform> platform_;
   std::unique_ptr<webgpu::DawnInstance> instance_;
   wgpu::Device device_;

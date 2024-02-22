@@ -385,19 +385,22 @@ GpuServiceImpl::GpuServiceImpl(
 
   if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    // GpuServiceImpl holds the instance of DawnContextProvider, so it outlives
-    // the DawnContextProvider.
-    auto cache_blob_callback = base::BindRepeating(
-        [](GpuServiceImpl* self, gpu::GpuDiskCacheType type,
-           const std::string& key, const std::string& blob) {
-          self->StoreBlobToDisk(gpu::kGraphiteDawnGpuDiskCacheHandle, key,
-                                blob);
-        },
-        base::Unretained(this));
     dawn_context_provider_ = gpu::DawnContextProvider::Create(
-        gpu_preferences, gpu_driver_bug_workarounds_,
-        dawn_caching_interface_factory_.get(), std::move(cache_blob_callback));
-    if (!dawn_context_provider_) {
+        gpu_preferences, gpu_driver_bug_workarounds_);
+    if (dawn_context_provider_) {
+      // GpuServiceImpl holds the instance of DawnContextProvider, so it
+      // outlives the DawnContextProvider.
+      auto cache_blob_callback = base::BindRepeating(
+          [](GpuServiceImpl* self, gpu::GpuDiskCacheType type,
+             const std::string& key, const std::string& blob) {
+            self->StoreBlobToDisk(gpu::kGraphiteDawnGpuDiskCacheHandle, key,
+                                  blob);
+          },
+          base::Unretained(this));
+      auto caching_interface = dawn_caching_interface_factory_->CreateInstance(
+          gpu::kGraphiteDawnGpuDiskCacheHandle, std::move(cache_blob_callback));
+      dawn_context_provider_->SetCachingInterface(std::move(caching_interface));
+    } else {
       DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)

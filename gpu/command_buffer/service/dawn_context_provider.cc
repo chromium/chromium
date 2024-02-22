@@ -157,31 +157,25 @@ const char* HRESULTToString(HRESULT result) {
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
     const GpuPreferences& gpu_preferences,
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds,
-    webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
-    CacheBlobCallback callback) {
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
   return DawnContextProvider::CreateWithBackend(
       GetDefaultBackendType(), DefaultForceFallbackAdapter(), gpu_preferences,
-      gpu_driver_workarounds, caching_interface_factory, std::move(callback));
+      gpu_driver_workarounds);
 }
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds,
-    webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
-    CacheBlobCallback callback) {
-  auto context_provider =
-      base::WrapUnique(new DawnContextProvider(caching_interface_factory));
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
+  auto context_provider = base::WrapUnique(new DawnContextProvider());
 
   // TODO(rivr): This may return a GPU that is not the active one. Currently
   // the only known way to avoid this is platform-specific; e.g. on Mac, create
   // a Dawn device, get the actual Metal device from it, and compare against
   // MTLCreateSystemDefaultDevice().
   if (!context_provider->Initialize(backend_type, force_fallback_adapter,
-                                    gpu_preferences, gpu_driver_workarounds,
-                                    std::move(callback))) {
+                                    gpu_preferences, gpu_driver_workarounds)) {
     context_provider.reset();
   }
   return context_provider;
@@ -227,9 +221,7 @@ bool DawnContextProvider::DefaultForceFallbackAdapter() {
          gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
 }
 
-DawnContextProvider::DawnContextProvider(
-    webgpu::DawnCachingInterfaceFactory* caching_interface_factory)
-    : caching_interface_factory_(caching_interface_factory) {}
+DawnContextProvider::DawnContextProvider() = default;
 
 DawnContextProvider::~DawnContextProvider() {
   if (device_) {
@@ -243,15 +235,8 @@ bool DawnContextProvider::Initialize(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds,
-    CacheBlobCallback callback) {
-  std::unique_ptr<webgpu::DawnCachingInterface> caching_interface;
-  if (caching_interface_factory_) {
-    caching_interface = caching_interface_factory_->CreateInstance(
-        kGraphiteDawnGpuDiskCacheHandle, std::move(callback));
-  }
-
-  platform_ = std::make_unique<Platform>(std::move(caching_interface),
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
+  platform_ = std::make_unique<Platform>(nullptr,
                                          /*uma_prefix=*/"GPU.GraphiteDawn.");
 
   // Make Dawn experimental API and WGSL features available since access to this
@@ -290,8 +275,15 @@ bool DawnContextProvider::Initialize(
   toggles_desc.enabledToggleCount = enabled_toggles.size();
   toggles_desc.disabledToggleCount = disabled_toggles.size();
 
+  wgpu::DawnCacheDeviceDescriptor cache_desc;
+  cache_desc.loadDataFunction = &DawnContextProvider::LoadCachedData;
+  cache_desc.storeDataFunction = &DawnContextProvider::StoreCachedData;
+  // The dawn device is owned by this so a pointer back here is safe.
+  cache_desc.functionUserdata = this;
+  cache_desc.nextInChain = &toggles_desc;
+
   wgpu::DeviceDescriptor descriptor;
-  descriptor.nextInChain = &toggles_desc;
+  descriptor.nextInChain = &cache_desc;
 
   std::vector<wgpu::FeatureName> features = {
       wgpu::FeatureName::DawnInternalUsages,
@@ -505,6 +497,12 @@ wgpu::Instance DawnContextProvider::GetInstance() const {
   return instance_->Get();
 }
 
+void DawnContextProvider::SetCachingInterface(
+    std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
+  CHECK(!caching_interface_);
+  caching_interface_ = std::move(caching_interface);
+}
+
 #if BUILDFLAG(IS_WIN)
 Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
     const {
@@ -564,6 +562,34 @@ void DawnContextProvider::OnError(WGPUErrorType error_type,
     context_lost_reason_ = error::kGuilty;
   } else {
     context_lost_reason_ = error::kUnknown;
+  }
+}
+
+// static
+size_t DawnContextProvider::LoadCachedData(const void* key,
+                                           size_t key_size,
+                                           void* value,
+                                           size_t value_size,
+                                           void* userdata) {
+  auto* context_provider = static_cast<DawnContextProvider*>(userdata);
+  if (!context_provider->caching_interface_) {
+    return 0;
+  }
+
+  return context_provider->caching_interface_->LoadData(key, key_size, value,
+                                                        value_size);
+}
+
+// static
+void DawnContextProvider::StoreCachedData(const void* key,
+                                          size_t key_size,
+                                          const void* value,
+                                          size_t value_size,
+                                          void* userdata) {
+  auto* context_provider = static_cast<DawnContextProvider*>(userdata);
+  if (context_provider->caching_interface_) {
+    context_provider->caching_interface_->StoreData(key, key_size, value,
+                                                    value_size);
   }
 }
 
