@@ -53,8 +53,8 @@ ScriptPromiseTyped<IDLSequence<DetectedText>> TextDetector::detect(
     return promise;
   }
   if (!text_service_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Text detection service unavailable.");
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                     "Text detection service unavailable.");
     return promise;
   }
   text_service_requests_.insert(resolver);

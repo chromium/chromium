@@ -159,8 +159,8 @@ ScriptPromiseTyped<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
   }
 
   if (!service_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Barcode detection service unavailable.");
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                     "Barcode detection service unavailable.");
     return promise;
   }
   detect_requests_.insert(resolver);

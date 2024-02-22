@@ -73,8 +73,8 @@ ScriptPromiseTyped<IDLSequence<DetectedFace>> FaceDetector::detect(
   }
 
   if (!face_service_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Face detection service unavailable.");
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                     "Face detection service unavailable.");
     return promise;
   }
   face_service_requests_.insert(resolver);
