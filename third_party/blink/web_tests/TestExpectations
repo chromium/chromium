@@ -2721,7 +2721,6 @@ crbug.com/626703 external/wpt/css/css-nesting/has-nesting.html [ Failure ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-nearly-transparent.html [ Timeout ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-transparent.html [ Timeout ]
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-background.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/lock-unlock-check.html [ Timeout ]
 crbug.com/626703 external/wpt/html/rendering/widgets/input-checkbox-switch-rtl.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/svg/color-inherit-link-visited.svg [ Failure ]
@@ -6210,7 +6209,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] http/tests/devtools/network/network-not-modified-images-mime-type.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/disallowed-navigations-dangling-markup-urn.https.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-hidden-viewport-scrolling.html [ Skip Timeout ]
-[ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.serviceworker.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded/transitions/retargeted-matching-rotation-transforms.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/dark-mode-default/dark-mode/images/pattern.html [ Skip Timeout ]
@@ -6879,3 +6877,5 @@ crbug.com/326125688 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/exter
 crbug.com/40271908 virtual/fenced-frame-mparch/external/wpt/fenced-frame/navigate-ancestor-top-level-fenced-frame.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40948868 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/non-standard-pseudo-elements.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40944477 fast/events/scroll-event-handler-count.html [ Failure Pass Timeout ] # Flaky
+crbug.com/40264022 external/wpt/webtransport/echo-large-bidirectional-streams.https.any.serviceworker.html [ Failure Pass Timeout ] # Flaky
+crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Failure Pass Timeout ] # Flaky
