@@ -137,15 +137,22 @@ void PerformTabOrganizationExecution(
   }
 
   optimization_guide::proto::TabOrganizationRequest tab_organization_request;
+  int valid_tabs = 0;
   for (const std::unique_ptr<TabData>& tab_data : request->tab_datas()) {
     if (!tab_data->IsValidForOrganizing()) {
       continue;
     }
+    valid_tabs++;
 
     auto* tab = tab_organization_request.add_tabs();
     tab->set_tab_id(tab_data->tab_id());
     tab->set_title(base::UTF16ToUTF8(tab_data->web_contents()->GetTitle()));
     tab->set_url(tab_data->original_url().spec());
+  }
+
+  if (valid_tabs < 2) {
+    std::move(on_failure).Run();
+    return;
   }
 
   if (request->base_tab_id().has_value()) {
