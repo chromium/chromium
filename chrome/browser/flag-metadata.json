@@ -202,7 +202,7 @@
   {
     "name": "animated-image-drag-shadow",
     "owners": [ "shuyng@google.com", "wenyufu@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "animated-image-resume",
@@ -7144,7 +7144,7 @@
   {
     "name": "request-desktop-site-window-setting",
     "owners": [ "shuyng@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 126
   },
   {
     "name": "reset-shortcut-customizations",
