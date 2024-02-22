@@ -243,21 +243,6 @@ enum ArcCorePriAbiMigEvent {
   kWebviewDowngradeFailure = 7,
 };
 
-// Enumerates the types of a clipboard / drag-and-drop event, including its
-// direction (ARC to Chrome or Chrome to ARC) and its content type (text or
-// an image).
-[Extensible]
-enum ArcClipboardDragDropEvent {
-  kTextClipboardFromChrome = 0,
-  kImageClipboardFromChrome = 1,
-  kTextClipboardFromArc = 2,
-  kImageClipboardFromArc = 3,
-  kTextDragDropFromChrome = 4,
-  kImageDragDropFromChrome = 5,
-  kTextDragDropFromArc = 6,
-  kImageDragDropFromArc = 7,
-};
-
 [Extensible]
 enum ArcImageCopyPasteCompatAction {
   kPasteFromFiles = 0,
@@ -388,7 +373,7 @@ enum ArcKeyMintError {
 
 // This interface is implemented in ash by ArcMetricsService. It is called by
 // ARC side.
-// Deprecated method IDs: 25, 26, 27, 28, 29
+// Deprecated method IDs: 8, 25, 26, 27, 28, 29
 // Next method ID: 37
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
@@ -415,10 +400,6 @@ interface MetricsHost {
 
   // Reports boot time during ABI Migration by ARC Metrics Service.
   [MinVersion=7] ReportArcCorePriAbiMigBootTime@7(mojo_base.mojom.TimeDelta duration);
-
-  // Reports a clipboard / drag-and-drop event.
-  [MinVersion=8] ReportClipboardDragDropEvent@8(
-      ArcClipboardDragDropEvent event_type);
 
   // Reports ANR event.
   [MinVersion=9] ReportAnr@10(Anr anr);

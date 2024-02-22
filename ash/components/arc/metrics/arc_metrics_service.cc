@@ -678,12 +678,6 @@ void ArcMetricsService::ReportArcSystemHealthUpgrade(base::TimeDelta duration,
                             packages_deleted);
 }
 
-void ArcMetricsService::ReportClipboardDragDropEvent(
-    mojom::ArcClipboardDragDropEvent event_type) {
-  // This method is deprecated.
-  // TODO(yhanada): Remove this once all callers are removed.
-}
-
 void ArcMetricsService::ReportAnr(mojom::AnrPtr anr) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
