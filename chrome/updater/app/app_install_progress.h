@@ -91,8 +91,7 @@ class AppInstallProgress {
                                       const std::u16string& app_name,
                                       const base::Time& next_retry_time) = 0;
   virtual void OnWaitingToInstall(const std::string& app_id,
-                                  const std::u16string& app_name,
-                                  bool* can_start_install) = 0;
+                                  const std::u16string& app_name) = 0;
   virtual void OnInstalling(const std::string& app_id,
                             const std::u16string& app_name,
                             int time_remaining_ms,

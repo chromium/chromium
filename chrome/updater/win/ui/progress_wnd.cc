@@ -427,8 +427,7 @@ void ProgressWnd::OnWaitingRetryDownload(const std::string& app_id,
 
 // TODO(crbug.com/1290331): handle the install cancellation.
 void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
-                                     const std::u16string& app_name,
-                                     bool* /*can_start_install*/) {
+                                     const std::u16string& app_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow()) {
     return;

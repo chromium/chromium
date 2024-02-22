@@ -95,8 +95,7 @@ class InstallProgressSilentObserver : public AppInstallProgress {
                               const std::u16string& app_name,
                               const base::Time& next_retry_time) override;
   void OnWaitingToInstall(const std::string& app_id,
-                          const std::u16string& app_name,
-                          bool* can_start_install) override;
+                          const std::u16string& app_name) override;
   void OnInstalling(const std::string& app_id,
                     const std::u16string& app_name,
                     int time_remaining_ms,
@@ -151,8 +150,7 @@ void InstallProgressSilentObserver::OnWaitingRetryDownload(
 
 void InstallProgressSilentObserver::OnWaitingToInstall(
     const std::string& app_id,
-    const std::u16string& app_name,
-    bool* can_start_install) {
+    const std::u16string& app_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -258,15 +256,11 @@ class AppInstallProgressIPC : public AppInstallProgress {
   }
 
   void OnWaitingToInstall(const std::string& app_id,
-                          const std::u16string& app_name,
-                          bool* can_start_install) override {
+                          const std::u16string& app_name) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(observer_);
-
-    // TODO(crbug.com/1290331): handle `can_start_install`.
     PostClosure(base::BindOnce(&AppInstallProgress::OnWaitingToInstall,
-                               base::Unretained(observer_), app_id, app_name,
-                               nullptr));
+                               base::Unretained(observer_), app_id, app_name));
   }
 
   void OnInstalling(const std::string& app_id,
@@ -752,13 +746,8 @@ void AppInstallControllerImpl::StateChange(
     }
 
     case UpdateService::UpdateState::State::kInstalling: {
-      // TODO(crbug.com/1290331): handle the install cancellation.
-      bool can_start_install = false;
-      install_progress_observer_ipc_->OnWaitingToInstall(app_id_, app_name_,
-                                                         &can_start_install);
-
-      // Install progress goes from 0 to 100.
-      const int pos = update_state.install_progress;
+      install_progress_observer_ipc_->OnWaitingToInstall(app_id_, app_name_);
+      const int pos = update_state.install_progress;  // [0..100]
       if (pos >= 0) {
         install_progress_sampler_.AddSample(pos);
       }

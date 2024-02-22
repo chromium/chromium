@@ -163,8 +163,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
                               const std::u16string& app_name,
                               const base::Time& next_retry_time) override;
   void OnWaitingToInstall(const std::string& app_id,
-                          const std::u16string& app_name,
-                          bool* can_start_install) override;
+                          const std::u16string& app_name) override;
   void OnInstalling(const std::string& app_id,
                     const std::u16string& app_name,
                     int time_remaining_ms,
