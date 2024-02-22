@@ -35,6 +35,10 @@ bool TestDataSourceDelegate::CanAcceptDataEventsForSurface(
   return can_accept_;
 }
 
+SecurityDelegate* TestDataSourceDelegate::GetSecurityDelegate() const {
+  return security_delegate_.get();
+}
+
 void TestDataSourceDelegate::SetData(const std::string& mime_type,
                                      std::string data) {
   data_map_.insert_or_assign(mime_type, std::move(data));

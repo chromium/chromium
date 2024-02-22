@@ -148,6 +148,9 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
       wl_client_flush(wl_resource_get_client(data_source_resource_));
     }
   }
+  SecurityDelegate* GetSecurityDelegate() const override {
+    return ::exo::wayland::GetSecurityDelegate(client_);
+  }
 
  private:
   const raw_ptr<wl_client> client_;
@@ -179,8 +182,8 @@ const struct wl_data_source_interface data_source_implementation = {
 
 class WaylandDataOfferDelegate : public DataOfferDelegate {
  public:
-  explicit WaylandDataOfferDelegate(wl_resource* offer)
-      : data_offer_resource_(offer) {}
+  explicit WaylandDataOfferDelegate(wl_client* client, wl_resource* offer)
+      : client_(client), data_offer_resource_(offer) {}
 
   WaylandDataOfferDelegate(const WaylandDataOfferDelegate&) = delete;
   WaylandDataOfferDelegate& operator=(const WaylandDataOfferDelegate&) = delete;
@@ -209,8 +212,12 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
       wl_client_flush(wl_resource_get_client(data_offer_resource_));
     }
   }
+  SecurityDelegate* GetSecurityDelegate() const override {
+    return ::exo::wayland::GetSecurityDelegate(client_);
+  }
 
  private:
+  const raw_ptr<wl_client> client_;
   const raw_ptr<wl_resource> data_offer_resource_;
 };
 
@@ -281,7 +288,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
         wl_resource_create(client_, &wl_data_offer_interface,
                            wl_resource_get_version(data_device_resource_), 0);
     std::unique_ptr<DataOffer> data_offer = std::make_unique<DataOffer>(
-        new WaylandDataOfferDelegate(data_offer_resource));
+        new WaylandDataOfferDelegate(client_, data_offer_resource));
     SetDataOfferResource(data_offer.get(), data_offer_resource);
     SetImplementation(data_offer_resource, &data_offer_implementation,
                       std::move(data_offer));
