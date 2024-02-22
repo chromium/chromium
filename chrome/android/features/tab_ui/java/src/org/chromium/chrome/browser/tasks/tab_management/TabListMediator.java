@@ -18,6 +18,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -51,6 +52,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -445,7 +447,7 @@ class TabListMediator {
                     // Reset thumbnail to ensure the color of the blank tab slots is correct.
                     TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
                     Tab tab = TabModelUtils.getTabById(filter.getTabModel(), tabId);
-                    if (tab != null && filter.hasOtherRelatedTabs(tab)) {
+                    if (tab != null && filter.isTabInTabGroup(tab)) {
                         mModel.get(index)
                                 .model
                                 .set(
@@ -600,7 +602,7 @@ class TabListMediator {
                         // singular tab). However, always update the previous group to clean up old
                         // state. The addition of the new tab to an existing group is handled in
                         // didMergeTabToGroup().
-                        if (!filter.hasOtherRelatedTabs(movedTab)) {
+                        if (!filter.isTabInTabGroup(movedTab) && groupTab != movedTab) {
                             int filterIndex = filter.indexOf(movedTab);
                             addTabInfoToModel(
                                     PseudoTab.fromTab(movedTab),
@@ -860,7 +862,7 @@ class TabListMediator {
                             TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
                             int filterIndex = filter.indexOf(tab);
                             if (filterIndex == TabList.INVALID_TAB_INDEX
-                                    || getRelatedTabsForId(tab.getId()).size() == 1
+                                    || !filter.isTabInTabGroup(tab)
                                     || filterIndex >= mModel.size()) {
                                 return;
                             }
@@ -1393,9 +1395,10 @@ class TabListMediator {
      * not been seen.
      */
     private void saveSeenPriceDrops() {
+        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
         for (Integer tabId : sViewedTabIds) {
             Tab tab = TabModelUtils.getTabById(mRegularTabModelSupplier.get(), tabId);
-            if (tab != null && isUngroupedTab(tab.getId())) {
+            if (tab != null && !filter.isTabInTabGroup(tab)) {
                 ShoppingPersistedTabData.from(
                         tab,
                         (sptd) -> {
@@ -1422,19 +1425,22 @@ class TabListMediator {
 
         // TODO(wychen): refactor this.
         boolean isRealTab = pseudoTab.hasRealTab();
+        boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
         TabActionListener tabSelectedListener;
         if (!isRealTab) {
             tabSelectedListener = null;
-        } else if (mGridCardOnClickListenerProvider == null
-                || getRelatedTabsForId(pseudoTab.getId()).size() == 1
-                || !mActionsOnAllRelatedTabs) {
-            tabSelectedListener = mTabSelectedListener;
         } else {
-            tabSelectedListener =
-                    mGridCardOnClickListenerProvider.openTabGridDialog(pseudoTab.getTab());
-
-            if (tabSelectedListener == null) {
+            if (mGridCardOnClickListenerProvider == null
+                    || !isInTabGroup
+                    || !mActionsOnAllRelatedTabs) {
                 tabSelectedListener = mTabSelectedListener;
+            } else {
+                tabSelectedListener =
+                        mGridCardOnClickListenerProvider.openTabGridDialog(pseudoTab.getTab());
+
+                if (tabSelectedListener == null) {
+                    tabSelectedListener = mTabSelectedListener;
+                }
             }
         }
 
@@ -1461,17 +1467,13 @@ class TabListMediator {
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
         // TODO(crbug.com/1457653): Fetching thumbnail for group is expansive, we should consider to
         // improve it.
-        boolean forceUpdateGroupTab =
-                PseudoTab.getRelatedTabs(mContext, pseudoTab, mCurrentTabModelFilterSupplier.get())
-                                .size()
-                        > 1;
         if (mThumbnailProvider != null
                 && mVisible
                 && (mModel.get(index).model.get(TabProperties.THUMBNAIL_FETCHER) == null
                         || forceUpdate
                         || isUpdatingId
                         || forceUpdateLastSelected
-                        || forceUpdateGroupTab)) {
+                        || isInTabGroup)) {
             boolean isSelectable = mUiType == UiType.SELECTABLE;
             ThumbnailFetcher callback =
                     new ThumbnailFetcher(
@@ -1486,8 +1488,18 @@ class TabListMediator {
     }
 
     @VisibleForTesting
-    public boolean isUngroupedTab(int tabId) {
-        return getRelatedTabsForId(tabId).size() == 1;
+    public boolean isPseudoTabInTabGroup(@NonNull PseudoTab pseudoTab) {
+        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        if (filter.isTabModelRestored()) {
+            Tab tab = TabModelUtils.getTabById(filter.getTabModel(), pseudoTab.getId());
+            return filter.isTabInTabGroup(tab);
+        } else {
+            if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+                return pseudoTab.getTabGroupId() != null;
+            } else {
+                return PseudoTab.getRelatedTabs(mContext, pseudoTab, filter).size() > 1;
+            }
+        }
     }
 
     public Set<Integer> getViewedTabIdsForTesting() {
@@ -1678,14 +1690,15 @@ class TabListMediator {
         assert index != TabModel.INVALID_TAB_INDEX;
         boolean showIPH = false;
         boolean isRealTab = pseudoTab.hasRealTab();
+        boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
         if (mActionsOnAllRelatedTabs && !mShownIPH && isRealTab) {
-            showIPH = getRelatedTabsForId(pseudoTab.getId()).size() > 1;
+            showIPH = isInTabGroup;
         }
         TabActionListener tabSelectedListener;
         if (!isRealTab) {
             tabSelectedListener = null;
         } else if (mGridCardOnClickListenerProvider == null
-                || getRelatedTabsForId(pseudoTab.getId()).size() == 1
+                || !isInTabGroup
                 || !mActionsOnAllRelatedTabs) {
             tabSelectedListener = mTabSelectedListener;
         } else {
@@ -1832,20 +1845,24 @@ class TabListMediator {
 
     private void updateDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
         if (!mActionsOnAllRelatedTabs) return;
+        boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
         int numOfRelatedTabs = getRelatedTabsForId(pseudoTab.getId()).size();
-        if (numOfRelatedTabs > 1) {
+        if (isInTabGroup) {
             String title = getLatestTitleForTab(pseudoTab);
             title = title.equals(pseudoTab.getTitle(mContext, mTitleProvider)) ? "" : title;
+            Resources res = mContext.getResources();
             model.set(
                     TabProperties.CONTENT_DESCRIPTION_STRING,
                     title.isEmpty()
-                            ? mContext.getString(
-                                    R.string.accessibility_expand_tab_group,
-                                    String.valueOf(numOfRelatedTabs))
-                            : mContext.getString(
-                                    R.string.accessibility_expand_tab_group_with_group_name,
+                            ? res.getQuantityString(
+                                    R.plurals.accessibility_expand_tab_group,
+                                    numOfRelatedTabs,
+                                    numOfRelatedTabs)
+                            : res.getQuantityString(
+                                    R.plurals.accessibility_expand_tab_group_with_group_name,
+                                    numOfRelatedTabs,
                                     title,
-                                    String.valueOf(numOfRelatedTabs)));
+                                    numOfRelatedTabs));
         } else {
             model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
         }
@@ -1853,24 +1870,28 @@ class TabListMediator {
 
     private void updateCloseButtonDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
         if (mActionsOnAllRelatedTabs) {
+            boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
             int numOfRelatedTabs = getRelatedTabsForId(pseudoTab.getId()).size();
-            if (numOfRelatedTabs > 1) {
+            if (isInTabGroup) {
                 String title = getLatestTitleForTab(pseudoTab);
                 title = title.equals(pseudoTab.getTitle(mContext, mTitleProvider)) ? "" : title;
 
+                Resources res = mContext.getResources();
                 if (title.isEmpty()) {
                     model.set(
                             TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
-                            mContext.getString(
-                                    R.string.accessibility_close_tab_group_button,
-                                    String.valueOf(numOfRelatedTabs)));
+                            res.getQuantityString(
+                                    R.plurals.accessibility_close_tab_group_button,
+                                    numOfRelatedTabs,
+                                    numOfRelatedTabs));
                 } else {
                     model.set(
                             TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
-                            mContext.getString(
-                                    R.string.accessibility_close_tab_group_button_with_group_name,
+                            res.getQuantityString(
+                                    R.plurals.accessibility_close_tab_group_button_with_group_name,
+                                    numOfRelatedTabs,
                                     title,
-                                    String.valueOf(numOfRelatedTabs)));
+                                    numOfRelatedTabs));
                 }
                 return;
             }
@@ -1913,7 +1934,7 @@ class TabListMediator {
         String originalTitle = pseudoTab.getTitle(mContext, mTitleProvider);
         if (!mActionsOnAllRelatedTabs || mTabGroupTitleEditor == null) return originalTitle;
         // If the group degrades to a single tab, delete the stored title.
-        if (getRelatedTabsForId(pseudoTab.getId()).size() <= 1) {
+        if (!isPseudoTabInTabGroup(pseudoTab)) {
             return originalTitle;
         }
         String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(pseudoTab.getRootId());
@@ -1932,7 +1953,7 @@ class TabListMediator {
         if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()) {
             assert mProfile != null;
             if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile)
-                    && isUngroupedTab(pseudoTab.getId())) {
+                    && !isPseudoTabInTabGroup(pseudoTab)) {
                 mModel.get(index)
                         .model
                         .set(
@@ -1954,9 +1975,9 @@ class TabListMediator {
     void updateFaviconForTab(PseudoTab pseudoTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
         int modelIndex = mModel.indexFromId(pseudoTab.getId());
         if (modelIndex == Tab.INVALID_TAB_ID) return;
-        List<Tab> relatedTabList = getRelatedTabsForId(pseudoTab.getId());
 
-        if (mActionsOnAllRelatedTabs && relatedTabList.size() > 1) {
+        if (mActionsOnAllRelatedTabs && isPseudoTabInTabGroup(pseudoTab)) {
+            List<Tab> relatedTabList = getRelatedTabsForId(pseudoTab.getId());
             if (mMode != TabListMode.LIST) {
                 // For tab group card in grid tab switcher, the favicon is set to be null.
                 mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, null);

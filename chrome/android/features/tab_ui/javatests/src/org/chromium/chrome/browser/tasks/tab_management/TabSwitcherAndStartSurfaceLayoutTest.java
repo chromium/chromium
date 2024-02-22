@@ -1430,7 +1430,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Test group tab.
-        expectedDescription = "Close tab group with 2 tabs";
+        expectedDescription = "Close tab group with 2 tabs.";
         onView(
                         allOf(
                                 withParent(withId(R.id.content_view)),
