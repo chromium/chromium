@@ -31,7 +31,6 @@
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/optimization_guide/content/browser/in_memory_text_embedding_manager.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
-#include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
@@ -113,7 +112,6 @@ enum class PageContentAnnotationsType {
 
 // A KeyedService that annotates page content.
 class PageContentAnnotationsService : public KeyedService,
-                                      public EntityMetadataProvider,
                                       public history::HistoryServiceObserver,
                                       public ZeroSuggestCacheService::Observer {
  public:
@@ -164,11 +162,6 @@ class PageContentAnnotationsService : public KeyedService,
   // Returns the model info for the given annotation type, if the model file is
   // available.
   std::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
-
-  // EntityMetadataProvider:
-  void GetMetadataForEntityId(
-      const std::string& entity_id,
-      EntityMetadataRetrievedCallback callback) override;
 
   // history::HistoryServiceObserver:
   void OnURLsModified(history::HistoryService* history_service,
@@ -313,14 +306,6 @@ class PageContentAnnotationsService : public KeyedService,
   virtual void PersistSalientImageMetadata(
       const HistoryVisit& visit,
       const proto::SalientImageMetadata& salient_image_metadata);
-
-  // Called when entity metadata for |entity_id| that had weight |weight| on
-  // page with |url| has been retrieved.
-  void OnEntityMetadataRetrieved(
-      const GURL& url,
-      const std::string& entity_id,
-      int weight,
-      const std::optional<EntityMetadata>& entity_metadata);
 
   using PersistAnnotationsCallback = base::OnceCallback<void(history::VisitID)>;
   // Queries |history_service| for all the visits to the visited URL of |visit|.

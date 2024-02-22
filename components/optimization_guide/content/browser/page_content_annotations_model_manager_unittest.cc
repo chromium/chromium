@@ -167,25 +167,6 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
                                                        entity_metadata));
   }
 
-  std::optional<EntityMetadata> GetMetadataForEntityId(
-      const std::string& entity_id) {
-    std::optional<EntityMetadata> entities_metadata;
-    base::RunLoop run_loop;
-    model_manager()->GetMetadataForEntityId(
-        entity_id,
-        base::BindOnce(
-            [](base::RunLoop* run_loop,
-               std::optional<EntityMetadata>* out_entities_metadata,
-               const std::optional<EntityMetadata>& entities_metadata) {
-              *out_entities_metadata = entities_metadata;
-              run_loop->Quit();
-            },
-            &run_loop, &entities_metadata));
-    run_loop.Run();
-
-    return entities_metadata;
-  }
-
   ModelObserverTracker* model_observer_tracker() const {
     return model_observer_tracker_.get();
   }
@@ -209,11 +190,6 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
   std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 };
-
-TEST_F(PageContentAnnotationsModelManagerTest,
-       GetMetadataForEntityIdEntitiesAnnotatorNotInitialized) {
-  EXPECT_FALSE(GetMetadataForEntityId("someid").has_value());
-}
 
 TEST_F(PageContentAnnotationsModelManagerTest, PageEntities) {
   std::vector<ScoredEntityMetadata> input1_entities = {
@@ -624,19 +600,6 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   embeddings_run_loop.Run();
 
   EXPECT_TRUE(embeddings_callback_success);
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest,
-       GetMetadataForEntityIdEntitiesAnnotatorInitialized) {
-  EntityMetadata entity_metadata;
-  entity_metadata.human_readable_name = "entity1";
-  entity_metadata.human_readable_categories = {
-      {"category1", 0.5},
-  };
-  SetPageEntitiesModelHandler(/*entries=*/{}, {
-                                                  {"entity1", entity_metadata},
-                                              });
-  EXPECT_TRUE(GetMetadataForEntityId("entity1").has_value());
 }
 
 }  // namespace optimization_guide

@@ -22,11 +22,6 @@ namespace optimization_guide {
 class OptimizationGuideModelProvider;
 class PageEntitiesModelHandler;
 
-// Callback to inform the caller that the metadata for an entity ID has been
-// retrieved.
-using EntityMetadataRetrievedCallback =
-    base::OnceCallback<void(const std::optional<EntityMetadata>&)>;
-
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager : public PageContentAnnotator {
  public:
@@ -52,11 +47,6 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void RequestAndNotifyWhenModelAvailable(
       AnnotationType type,
       base::OnceCallback<void(bool)> callback) override;
-
-  // Retrieves the metadata associated with |entity_id|. Invokes |callback|
-  // when done.
-  void GetMetadataForEntityId(const std::string& entity_id,
-                              EntityMetadataRetrievedCallback callback);
 
  private:
   friend class PageContentAnnotationsModelManagerTest;

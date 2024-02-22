@@ -15,7 +15,6 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
-#include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,45 +46,6 @@ class TestSiteEngagementScoreProvider
 
  private:
   mutable size_t count_get_score_invocations_ = 0;
-};
-
-class TestEntityMetadataProvider
-    : public optimization_guide::EntityMetadataProvider {
- public:
-  explicit TestEntityMetadataProvider(
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
-      : main_thread_task_runner_(main_thread_task_runner) {}
-  ~TestEntityMetadataProvider() override = default;
-
-  // EntityMetadataProvider:
-  void GetMetadataForEntityId(
-      const std::string& entity_id,
-      optimization_guide::EntityMetadataRetrievedCallback callback) override {
-    main_thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const std::string& entity_id,
-               optimization_guide::EntityMetadataRetrievedCallback callback) {
-              optimization_guide::EntityMetadata metadata;
-              metadata.human_readable_name = "rewritten-" + entity_id;
-              // Add it in twice to verify that a category only gets added once
-              // and it takes the max.
-              metadata.human_readable_categories.insert(
-                  {"category-" + entity_id, 0.6});
-              metadata.human_readable_categories.insert(
-                  {"category-" + entity_id, 0.5});
-              metadata.human_readable_categories.insert(
-                  {"toolow-" + entity_id, 0.01});
-              metadata.human_readable_aliases.push_back("alias-" + entity_id);
-              std::move(callback).Run(entity_id == "nometadata"
-                                          ? std::nullopt
-                                          : std::make_optional(metadata));
-            },
-            entity_id, std::move(callback)));
-  }
-
- private:
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
 class TestOptimizationGuideDecider
@@ -557,9 +517,6 @@ class OnDeviceClusteringWithAllTheBackendsTest
     : public OnDeviceClusteringWithoutContentBackendTest {
  public:
   void SetUp() override {
-    entity_metadata_provider_ = std::make_unique<TestEntityMetadataProvider>(
-        task_environment_.GetMainThreadTaskRunner());
-
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
 
@@ -569,7 +526,6 @@ class OnDeviceClusteringWithAllTheBackendsTest
   }
 
  private:
-  std::unique_ptr<TestEntityMetadataProvider> entity_metadata_provider_;
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
 };
 

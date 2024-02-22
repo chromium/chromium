@@ -25,22 +25,6 @@ static_library("bloomfilter") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-static_library("entities") {
-  sources = [
-    "batch_entity_metadata_task.cc",
-    "batch_entity_metadata_task.h",
-    "entity_metadata.cc",
-    "entity_metadata.h",
-    "entity_metadata_provider.h",
-  ]
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
-  deps = [ ":features" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
 static_library("model_executor") {
   sources = [
     "execution_status.cc",
@@ -174,6 +158,8 @@ static_library("core") {
     "access_token_helper.h",
     "command_line_top_host_provider.cc",
     "command_line_top_host_provider.h",
+    "entity_metadata.cc",
+    "entity_metadata.h",
     "hint_cache.cc",
     "hint_cache.h",
     "hints_component_info.h",
@@ -295,7 +281,6 @@ static_library("core") {
   }
 
   public_deps = [
-    ":entities",
     ":features",
     ":model_executor",
     "//components/leveldb_proto",
@@ -448,7 +433,6 @@ if (is_ios) {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "batch_entity_metadata_task_unittest.cc",
     "bloom_filter_unittest.cc",
     "command_line_top_host_provider_unittest.cc",
     "hint_cache_unittest.cc",
@@ -522,7 +506,6 @@ source_set("unit_tests") {
   deps = [
     ":bloomfilter",
     ":core",
-    ":entities",
     ":prediction",
     ":test_support",
     ":unit_tests_bundle_data",

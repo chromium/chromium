@@ -404,7 +404,6 @@ static_library("browser") {
     deps += [
       "//components/history_clusters/core",
       "//components/keyed_service/content",
-      "//components/optimization_guide/core:entities",
       "//content/public/browser",
     ]
   }

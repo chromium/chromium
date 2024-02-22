@@ -45,7 +45,6 @@ static_library("browser") {
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//components/optimization_guide/core",
-    "//components/optimization_guide/core:entities",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search",
     "//components/search_engines",

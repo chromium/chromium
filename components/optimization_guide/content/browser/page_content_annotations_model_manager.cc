@@ -88,18 +88,6 @@ void PageContentAnnotationsModelManager::SetUpTextEmbeddingModel(
       std::nullopt);
 }
 
-void PageContentAnnotationsModelManager::GetMetadataForEntityId(
-    const std::string& entity_id,
-    EntityMetadataRetrievedCallback callback) {
-  if (page_entities_model_handler_) {
-    page_entities_model_handler_->GetMetadataForEntityId(entity_id,
-                                                         std::move(callback));
-    return;
-  }
-
-  std::move(callback).Run(std::nullopt);
-}
-
 void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
     AnnotationType type,
     base::OnceCallback<void(bool)> callback) {

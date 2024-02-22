@@ -538,26 +538,9 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   if (!content_annotations)
     return;
 
-  bool is_new_entry = false;
   if (annotated_text_cache_.Peek(*visit.text_to_annotate) ==
       annotated_text_cache_.end()) {
-    is_new_entry = true;
     annotated_text_cache_.Put(*visit.text_to_annotate, *content_annotations);
-  }
-
-  // Only log entities for new entries for local visits.
-  if (is_new_entry && !visit.visit_id) {
-    for (const auto& entity : content_annotations->entities) {
-      // Skip low weight entities.
-      if (entity.weight < 50)
-        continue;
-      GetMetadataForEntityId(
-          entity.id,
-          base::BindOnce(
-              &PageContentAnnotationsService::OnEntityMetadataRetrieved,
-              weak_ptr_factory_.GetWeakPtr(), visit.url, entity.id,
-              entity.weight));
-    }
   }
 
   MaybeRecordVisibilityUKM(visit, content_annotations);
@@ -762,16 +745,6 @@ void PageContentAnnotationsService::OnQueryEmbedded(
   std::move(callback_to_history_page).Run(results);
 }
 
-void PageContentAnnotationsService::GetMetadataForEntityId(
-    const std::string& entity_id,
-    EntityMetadataRetrievedCallback callback) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
-#else
-  std::move(callback).Run(std::nullopt);
-#endif
-}
-
 void PageContentAnnotationsService::OnURLsModified(
     history::HistoryService* history_service,
     const history::URLRows& changed_urls) {
@@ -966,37 +939,6 @@ void PageContentAnnotationsService::PersistSalientImageMetadata(
       history_service_->SetHasUrlKeyedImageForVisit(
           /*has_url_keyed_image=*/true, *visit.visit_id);
     }
-  }
-}
-
-void PageContentAnnotationsService::OnEntityMetadataRetrieved(
-    const GURL& url,
-    const std::string& entity_id,
-    int weight,
-    const std::optional<EntityMetadata>& entity_metadata) {
-  if (!entity_metadata.has_value())
-    return;
-
-  GURL::Replacements replacements;
-  replacements.ClearQuery();
-  replacements.ClearRef();
-
-  for (const auto& collection : entity_metadata->collections) {
-    PageEntityCollection page_entity_collection =
-        GetPageEntityCollectionForString(collection);
-    base::UmaHistogramEnumeration(
-        "OptimizationGuide.PageContentAnnotations.EntityCollection_50",
-        page_entity_collection);
-  }
-
-  if (optimization_guide_logger_ &&
-      optimization_guide_logger_->ShouldEnableDebugLogs()) {
-    OPTIMIZATION_GUIDE_LOGGER(
-        optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
-        optimization_guide_logger_)
-        << "Entities: Url=" << url.ReplaceComponents(replacements)
-        << " Weight=" << base::NumberToString(weight) << ". "
-        << entity_metadata->ToHumanReadableString();
   }
 }
 
