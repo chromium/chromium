@@ -1137,7 +1137,7 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
   if (devtools_observer_ && status.cors_error_status) {
     ReportCorsErrorToDevTools(*status.cors_error_status);
   }
-  // ORB "v0.1" (and earlier) signal CORB/ORB-related errors with a flag.
+  // ORB "v0.1" (and earlier) signal ORB-related errors with a flag.
   // ORB "v0.2" (and later) use a network error code. We should always report
   // the error-code style error to DevTools, since it has a less spammy
   // way of displaying them compared to just dumping them on the console.

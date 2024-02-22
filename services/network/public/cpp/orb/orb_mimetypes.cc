@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/corb/orb_mimetypes.h"
+#include "services/network/public/cpp/orb/orb_mimetypes.h"
 
 #include <stddef.h>
 
@@ -31,7 +31,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace network::corb {
+namespace network::orb {
 
 namespace {
 
@@ -226,4 +226,4 @@ MimeType GetCanonicalMimeType(std::string_view mime_type) {
   return MimeType::kOthers;
 }
 
-}  // namespace network::corb
+}  // namespace network::orb

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_MIMETYPES_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_MIMETYPES_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_MIMETYPES_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_MIMETYPES_H_
 
 #include <string_view>
 
 #include "base/component_export.h"
 
-namespace network::corb {
+namespace network::orb {
 
 // This enum describes how ORB will classify MIME types (content types).
 //
@@ -52,7 +52,6 @@ bool IsJavascriptMimeType(std::string_view mime_type);
 // type families such as application/xml, application/rss+xml.
 COMPONENT_EXPORT(NETWORK_CPP)
 MimeType GetCanonicalMimeType(std::string_view mime_type);
+}  // namespace network::orb
 
-}  // namespace network::corb
-
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_MIMETYPES_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_MIMETYPES_H_

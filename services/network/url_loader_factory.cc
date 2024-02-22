@@ -168,8 +168,8 @@ const cors::OriginAccessList& URLLoaderFactory::GetOriginAccessList() const {
   return context_->cors_origin_access_list();
 }
 
-corb::PerFactoryState& URLLoaderFactory::GetMutableCorbState() {
-  return corb_state_;
+orb::PerFactoryState& URLLoaderFactory::GetMutableOrbState() {
+  return orb_state_;
 }
 
 bool URLLoaderFactory::DataUseUpdatesEnabled() {

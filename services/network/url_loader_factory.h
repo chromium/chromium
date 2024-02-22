@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/corb/corb_api.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -86,7 +86,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   net::URLRequestContext* GetUrlRequestContext() const override;
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
-  corb::PerFactoryState& GetMutableCorbState() override;
+  orb::PerFactoryState& GetMutableOrbState() override;
   bool DataUseUpdatesEnabled() override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
@@ -132,11 +132,11 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   // responses that sniffed as an audio or video resource.  The lifetime of that
   // storage should cover the lifetime of media elements that are responsible
   // for the initial request and subsequent range requests.  The lifetime of
-  // `corb_per_factory_state_` is slightly bigger (URLLoaderFactory is typically
+  // `orb_per_factory_state_` is slightly bigger (URLLoaderFactory is typically
   // associated with a single HTML document and covers all media documents
   // within) but this approach seems easiest to implement.
   // TODO(https://crbug.com/1178928): Add UMA tracking the size of CORB state.
-  corb::PerFactoryState corb_state_;
+  orb::PerFactoryState orb_state_;
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::TrustTokenAccessObserver> trust_token_observer_;

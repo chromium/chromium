@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_IMPL_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_IMPL_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_IMPL_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_IMPL_H_
 
 #include <optional>
 #include <string_view>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "services/network/public/cpp/corb/corb_api.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 // This header provides an implementation of Opaque Response Blocking (ORB).
-// The implementation should typically be used through the public corb_api.h.
-// See the doc comment in corb_api.h for a more detailed description of ORB.
+// The implementation should typically be used through the public orb_api.h.
+// See the doc comment in orb_api.h for a more detailed description of ORB.
 
-namespace network {
-namespace corb {
+namespace network::orb {
 
 class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
     : public ResponseAnalyzer {
@@ -33,7 +32,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
   OpaqueResponseBlockingAnalyzer& operator=(
       const OpaqueResponseBlockingAnalyzer&) = delete;
 
-  // Implementation of the `corb::ResponseAnalyzer` abstract interface.
+  // Implementation of the `orb::ResponseAnalyzer` abstract interface.
   ~OpaqueResponseBlockingAnalyzer() override;
   Decision Init(const GURL& request_url,
                 const std::optional<url::Origin>& request_initiator,
@@ -102,7 +101,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
       mojom::RequestDestination::kEmpty;
 };
 
-}  // namespace corb
-}  // namespace network
+}  // namespace network::orb
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_IMPL_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_IMPL_H_

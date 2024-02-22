@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/corb/orb_sniffers.h"
+#include "services/network/public/cpp/orb/orb_sniffers.h"
 
 #include <stddef.h>
 
@@ -22,7 +22,7 @@
 #include "base/strings/string_util.h"
 #include "net/base/mime_sniffer.h"
 
-namespace network::corb {
+namespace network::orb {
 
 namespace {
 
@@ -312,4 +312,4 @@ SniffingResult SniffForFetchOnlyResource(std::string_view data) {
   return SniffForJSON(data);
 }
 
-}  // namespace network::corb
+}  // namespace network::orb

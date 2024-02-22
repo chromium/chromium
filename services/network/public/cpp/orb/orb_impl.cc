@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/corb/orb_impl.h"
+#include "services/network/public/cpp/orb/orb_impl.h"
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,15 +12,15 @@
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/corb/orb_mimetypes.h"
-#include "services/network/public/cpp/corb/orb_sniffers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/orb/orb_mimetypes.h"
+#include "services/network/public/cpp/orb/orb_sniffers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-using Decision = network::corb::ResponseAnalyzer::Decision;
+using Decision = network::orb::ResponseAnalyzer::Decision;
 
-namespace network::corb {
+namespace network::orb {
 
 namespace {
 
@@ -201,7 +201,8 @@ bool IsOpaqueResponse(const std::optional<url::Origin>& request_initiator,
   return true;
 }
 
-bool HasNoSniff(const mojom::URLResponseHead& response) {
+bool HasNoSniff(
+    const mojom::URLResponseHead& response) {
   // TODO(vogelheim): Check for compatibility with spec &
   //   ParseContentTypeOptionsHeader. Maybe move this to parsed_headers.
   if (!response.headers) {
@@ -278,7 +279,8 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
 
   // 2. Let nosniff be the result of determining nosniff given response's header
   //    list.
-  is_no_sniff_header_present_ = HasNoSniff(response);
+  is_no_sniff_header_present_ =
+      HasNoSniff(response);
 
   // 3. If mimeType is not failure, then:
   if (!mime_type_.empty()) {
@@ -511,4 +513,4 @@ bool OpaqueResponseBlockingAnalyzer::IsAllowedAudioVideoRequest(
   return base::Contains(*per_factory_state_, media_url);
 }
 
-}  // namespace network::corb
+}  // namespace network::orb

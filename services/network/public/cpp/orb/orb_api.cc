@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/corb/corb_api.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 
 #include <string>
 #include <unordered_set>
 
 #include "net/http/http_response_headers.h"
-#include "services/network/public/cpp/corb/orb_impl.h"
+#include "services/network/public/cpp/orb/orb_impl.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace network::corb {
+namespace network::orb {
 
 namespace {
 
@@ -45,4 +45,4 @@ void SanitizeBlockedResponseHeaders(network::mojom::URLResponseHead& response) {
     RemoveAllHttpResponseHeaders(response.headers);
 }
 
-}  // namespace network::corb
+}  // namespace network::orb

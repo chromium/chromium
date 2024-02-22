@@ -20,14 +20,14 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/public/cpp/corb/orb_impl.h"
-#include "services/network/public/cpp/corb/orb_mimetypes.h"
+#include "services/network/public/cpp/orb/orb_impl.h"
+#include "services/network/public/cpp/orb/orb_mimetypes.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace network::corb {
+namespace network::orb {
 
 namespace {
 
@@ -1921,4 +1921,4 @@ TEST(CrossOriginReadBlockingTest, OrbReportsIssuesOnARAResponse) {
   }
 }
 
-}  // namespace network::corb
+}  // namespace network::orb

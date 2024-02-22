@@ -6,7 +6,7 @@
 // analyzer's behavior in several parameterized test scenarios) and at the end
 // includes the CrossOriginReadBlockingTests, which are more typical unittests.
 
-#include "services/network/public/cpp/corb/orb_mimetypes.h"
+#include "services/network/public/cpp/orb/orb_mimetypes.h"
 
 #include <initializer_list>
 #include <memory>
@@ -18,7 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network::corb {
+namespace network::orb {
 
 TEST(CrossOriginReadBlockingTest, GetCanonicalMimeType) {
   std::vector<std::pair<const char*, MimeType>> tests = {
@@ -93,4 +93,4 @@ TEST(CrossOriginReadBlockingTest, GetCanonicalMimeType) {
   }
 }
 
-}  // namespace network::corb
+}  // namespace network::orb

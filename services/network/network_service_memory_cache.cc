@@ -30,9 +30,9 @@
 #include "services/network/network_service_memory_cache_url_loader.h"
 #include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/private_network_access_checker.h"
-#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -126,23 +126,24 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
   // TODO(https://crbug.com/1339708): Consider moving CORB/ORB handling from
   // URLLoader to CorsURLLoader. It will eliminate the need for CORB/ORB checks
   // here.
-  corb::PerFactoryState state;
-  auto analyzer = corb::ResponseAnalyzer::Create(state);
-  corb::ResponseAnalyzer::Decision decision = analyzer->Init(
+  orb::PerFactoryState state;
+  auto analyzer = orb::ResponseAnalyzer::Create(state);
+  orb::ResponseAnalyzer::Decision decision = analyzer->Init(
       resource_request.url, resource_request.request_initiator,
       resource_request.mode, resource_request.destination, response);
 
-  if (decision == corb::ResponseAnalyzer::Decision::kSniffMore) {
+  if (decision == orb::ResponseAnalyzer::Decision::kSniffMore) {
     const size_t size =
         std::min(static_cast<size_t>(net::kMaxBytesToSniff), content.size());
     decision = analyzer->Sniff(
         std::string_view(reinterpret_cast<const char*>(content.front()), size));
-    if (decision == corb::ResponseAnalyzer::Decision::kSniffMore)
+    if (decision == orb::ResponseAnalyzer::Decision::kSniffMore) {
       decision = analyzer->HandleEndOfSniffableResponseBody();
-    DCHECK_NE(decision, corb::ResponseAnalyzer::Decision::kSniffMore);
+    }
+    DCHECK_NE(decision, orb::ResponseAnalyzer::Decision::kSniffMore);
   }
 
-  return decision == corb::ResponseAnalyzer::Decision::kAllow;
+  return decision == orb::ResponseAnalyzer::Decision::kAllow;
 }
 
 bool CheckPrivateNetworkAccess(

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_API_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_API_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_API_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_API_H_
 
-#include <memory>
 #include <optional>
 #include <set>
 #include <string_view>
@@ -16,12 +15,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// This header file provides the public API that supports applying CORB and/or
-// ORB to HTTP responses.  For more details and resources about CORB and ORB
-// please see the README.md file.
+// This header file provides the public API that supports applying ORB to HTTP
+// responses.  For more details and resources about ORB please see the
+// README.md file.
 
-namespace network {
-namespace corb {
+namespace network::orb {
 
 // Used to strip response headers if CORB made a decision to block the response.
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -96,7 +94,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
   virtual ~ResponseAnalyzer();
 };
 
-}  // namespace corb
-}  // namespace network
+}  // namespace network::orb
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_API_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_API_H_

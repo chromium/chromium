@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_SNIFFERS_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_SNIFFERS_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_SNIFFERS_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_SNIFFERS_H_
 
 #include <string_view>
 
@@ -11,7 +11,7 @@
 
 // This header provides an implementation for "sniffers" used by ORB.
 // The implementation should typically be used through the public orb_api.h.
-namespace network::corb {
+namespace network::orb {
 
 // Three conclusions are possible from sniffing a byte sequence:
 //  - No: meaning that the data definitively doesn't match the indicated type.
@@ -39,6 +39,6 @@ SniffingResult SniffForJSON(std::string_view data);
 COMPONENT_EXPORT(NETWORK_CPP)
 SniffingResult SniffForFetchOnlyResource(std::string_view data);
 
-}  // namespace network::corb
+}  // namespace network::orb
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_SNIFFERS_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_SNIFFERS_H_

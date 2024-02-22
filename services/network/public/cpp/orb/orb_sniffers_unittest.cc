@@ -6,7 +6,7 @@
 // analyzer's behavior in several parameterized test scenarios) and at the end
 // includes the CrossOriginReadBlockingTests, which are more typical unittests.
 
-#include "services/network/public/cpp/corb/orb_sniffers.h"
+#include "services/network/public/cpp/orb/orb_sniffers.h"
 
 #include <initializer_list>
 #include <memory>
@@ -19,7 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network::corb {
+namespace network::orb {
 
 TEST(OrbSnifferTest, SniffForHTML) {
   // Something that technically matches the start of a valid HTML tag.
@@ -171,4 +171,4 @@ TEST(OrbSnifferTest, SniffForJSON) {
       << "A colon character inside a string does not trigger a match";
 }
 
-}  // namespace network::corb
+}  // namespace network::orb
