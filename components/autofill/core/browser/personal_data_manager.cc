@@ -242,7 +242,7 @@ void PersonalDataManager::Init(
   }
   if (!payments_data_manager_) {
     payments_data_manager_ = std::make_unique<PaymentsDataManager>(
-        profile_database, account_database, this);
+        profile_database, account_database, image_fetcher, this);
   }
 
   SetPrefService(pref_service);
@@ -264,8 +264,6 @@ void PersonalDataManager::Init(
     identity_manager_->AddObserver(this);
 
   SetSyncService(sync_service);
-
-  image_fetcher_ = image_fetcher;
 
   shared_storage_handler_ = std::move(shared_storage_handler);
 
@@ -877,7 +875,7 @@ void PersonalDataManager::ClearAllServerDataForTesting() {
   payments_data_manager_->payments_customer_data_.reset();
   payments_data_manager_->server_credit_card_cloud_token_data_.clear();
   payments_data_manager_->autofill_offer_data_.clear();
-  credit_card_art_images_.clear();
+  payments_data_manager_->credit_card_art_images_.clear();
 }
 
 void PersonalDataManager::ClearAllLocalData() {
@@ -1195,54 +1193,19 @@ PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
 }
 
 GURL PersonalDataManager::GetCardArtURL(const CreditCard& credit_card) const {
-  if (credit_card.record_type() == CreditCard::RecordType::kMaskedServerCard) {
-    return credit_card.card_art_url();
-  }
-
-  if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
-    const CreditCard* server_duplicate_card =
-        GetServerCardForLocalCard(&credit_card);
-    if (server_duplicate_card) {
-      return server_duplicate_card->card_art_url();
-    }
-  }
-
-  return GURL();
+  return payments_data_manager_->GetCardArtURL(credit_card);
 }
 
 gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
     const GURL& card_art_url) const {
-  if (!card_art_url.is_valid()) {
-    return nullptr;
-  }
-
-  gfx::Image* cached_image = GetCachedCardArtImageForUrl(card_art_url);
-  if (cached_image)
-    return cached_image;
-
-  FetchImagesForURLs(base::make_span(&card_art_url, 1u));
-  return nullptr;
+  return payments_data_manager_->GetCreditCardArtImageForUrl(card_art_url);
 }
 
 gfx::Image* PersonalDataManager::GetCachedCardArtImageForUrl(
     const GURL& card_art_url) const {
   if (!IsAutofillWalletImportEnabled())
     return nullptr;
-
-  if (!card_art_url.is_valid())
-    return nullptr;
-
-  auto images_iterator = credit_card_art_images_.find(card_art_url);
-
-  // If the cache contains the image, return it.
-  if (images_iterator != credit_card_art_images_.end()) {
-    gfx::Image* image = images_iterator->second.get();
-    if (!image->IsEmpty())
-      return image;
-  }
-
-  // The cache does not contain the image, return nullptr.
-  return nullptr;
+  return payments_data_manager_->GetCachedCardArtImageForUrl(card_art_url);
 }
 
 std::vector<VirtualCardUsageData*>
@@ -1398,12 +1361,7 @@ void PersonalDataManager::SetPrefService(PrefService* pref_service) {
 
 void PersonalDataManager::FetchImagesForURLs(
     base::span<const GURL> updated_urls) const {
-  if (!image_fetcher_)
-    return;
-
-  image_fetcher_->FetchImagesForURLs(
-      updated_urls, base::BindOnce(&PersonalDataManager::OnCardArtImagesFetched,
-                                   weak_factory_.GetMutableWeakPtr()));
+  payments_data_manager_->FetchImagesForURLs(updated_urls);
 }
 
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
@@ -1676,7 +1634,7 @@ bool PersonalDataManager::IsPaymentCardBenefitsEnabled() {
 }
 
 AutofillImageFetcherBase* PersonalDataManager::GetImageFetcher() const {
-  return image_fetcher_;
+  return payments_data_manager_->image_fetcher_;
 }
 
 bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
@@ -2045,16 +2003,6 @@ void PersonalDataManager::OnUserAcceptedCardsFromAccountOption() {
       /*opted_in=*/true);
 }
 
-void PersonalDataManager::OnCardArtImagesFetched(
-    const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images) {
-  for (auto& art_image : art_images) {
-    if (!art_image->card_art_image.IsEmpty()) {
-      credit_card_art_images_[art_image->card_art_url] =
-          std::make_unique<gfx::Image>(art_image->card_art_image);
-    }
-  }
-}
-
 void PersonalDataManager::LogServerCardLinkClicked() const {
   AutofillMetrics::LogServerCardLinkClicked(GetPaymentsSigninStateForMetrics());
 }
@@ -2091,27 +2039,11 @@ scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {
 }
 
 void PersonalDataManager::OnServerCreditCardsRefreshed() {
-  ProcessCardArtUrlChanges();
+  payments_data_manager_->ProcessCardArtUrlChanges();
   if (shared_storage_handler_) {
     shared_storage_handler_->OnServerCardDataRefreshed(
         payments_data_manager_->server_credit_cards_);
   }
-}
-
-void PersonalDataManager::ProcessCardArtUrlChanges() {
-  std::vector<GURL> updated_urls;
-  for (auto& card : payments_data_manager_->server_credit_cards_) {
-    if (!card->card_art_url().is_valid())
-      continue;
-
-    // Try to find the old entry with the same url.
-    auto it = credit_card_art_images_.find(card->card_art_url());
-    // No existing entry found.
-    if (it == credit_card_art_images_.end())
-      updated_urls.emplace_back(card->card_art_url());
-  }
-  if (!updated_urls.empty())
-    FetchImagesForURLs(updated_urls);
 }
 
 size_t PersonalDataManager::GetServerCardWithArtImageCount() const {

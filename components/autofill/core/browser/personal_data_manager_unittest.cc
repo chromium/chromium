@@ -313,10 +313,7 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   // Verifies the credit card art image fetching should begin.
   void WaitForFetchImagesForUrls() {
     base::RunLoop run_loop;
-    EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-        .Times(testing::AnyNumber());
-    EXPECT_CALL(*personal_data_, FetchImagesForURLs(testing::_))
-        .Times(1)
+    EXPECT_CALL(*personal_data_, FetchImagesForURLs)
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -1074,7 +1071,8 @@ TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
   std::vector<std::unique_ptr<CreditCardArtImage>> images;
   images.push_back(std::move(credit_card_art_image));
 
-  personal_data_->OnCardArtImagesFetched(std::move(images));
+  personal_data_->payments_data_manager_->OnCardArtImagesFetched(
+      std::move(images));
 
   gfx::Image* actual_image = personal_data_->GetCreditCardArtImageForUrl(
       GURL("https://www.example.com"));

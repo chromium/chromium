@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/base/model_type.h"
@@ -146,8 +149,9 @@ class PaymentsDatabaseHelper {
 PaymentsDataManager::PaymentsDataManager(
     scoped_refptr<AutofillWebDataService> profile_database,
     scoped_refptr<AutofillWebDataService> account_database,
+    AutofillImageFetcherBase* image_fetcher,
     PersonalDataManager* pdm)
-    : pdm_(pdm) {
+    : pdm_(pdm), image_fetcher_(image_fetcher) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
 }
@@ -298,6 +302,57 @@ void PaymentsDataManager::Refresh() {
   pdm_->LoadCreditCardBenefits();
 }
 
+GURL PaymentsDataManager::GetCardArtURL(const CreditCard& credit_card) const {
+  if (credit_card.record_type() == CreditCard::RecordType::kMaskedServerCard) {
+    return credit_card.card_art_url();
+  }
+
+  if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
+    const CreditCard* server_duplicate_card =
+        pdm_->GetServerCardForLocalCard(&credit_card);
+    if (server_duplicate_card) {
+      return server_duplicate_card->card_art_url();
+    }
+  }
+
+  return GURL();
+}
+
+gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
+    const GURL& card_art_url) const {
+  if (!card_art_url.is_valid()) {
+    return nullptr;
+  }
+
+  gfx::Image* cached_image = GetCachedCardArtImageForUrl(card_art_url);
+  if (cached_image) {
+    return cached_image;
+  }
+
+  FetchImagesForURLs(base::make_span(&card_art_url, 1u));
+  return nullptr;
+}
+
+gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
+    const GURL& card_art_url) const {
+  if (!card_art_url.is_valid()) {
+    return nullptr;
+  }
+
+  auto images_iterator = credit_card_art_images_.find(card_art_url);
+
+  // If the cache contains the image, return it.
+  if (images_iterator != credit_card_art_images_.end()) {
+    gfx::Image* image = images_iterator->second.get();
+    if (!image->IsEmpty()) {
+      return image;
+    }
+  }
+
+  // The cache does not contain the image, return nullptr.
+  return nullptr;
+}
+
 scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetLocalDatabase() {
   return database_helper_->GetLocalDatabase();
 }
@@ -435,6 +490,17 @@ void PaymentsDataManager::LoadPaymentsCustomerData() {
       database_helper_->GetServerDatabase()->GetPaymentsCustomerData(this);
 }
 
+void PaymentsDataManager::FetchImagesForURLs(
+    base::span<const GURL> updated_urls) const {
+  if (!image_fetcher_) {
+    return;
+  }
+
+  image_fetcher_->FetchImagesForURLs(
+      updated_urls, base::BindOnce(&PaymentsDataManager::OnCardArtImagesFetched,
+                                   weak_factory_.GetMutableWeakPtr()));
+}
+
 bool PaymentsDataManager::HasPendingPaymentQueries() const {
   return pending_creditcards_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
@@ -442,6 +508,35 @@ bool PaymentsDataManager::HasPendingPaymentQueries() const {
          pending_customer_data_query_ != 0 || pending_offer_data_query_ != 0 ||
          pending_virtual_card_usage_data_query_ != 0 ||
          pending_credit_card_benefit_query_ != 0;
+}
+
+void PaymentsDataManager::OnCardArtImagesFetched(
+    const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images) {
+  for (auto& art_image : art_images) {
+    if (!art_image->card_art_image.IsEmpty()) {
+      credit_card_art_images_[art_image->card_art_url] =
+          std::make_unique<gfx::Image>(art_image->card_art_image);
+    }
+  }
+}
+
+void PaymentsDataManager::ProcessCardArtUrlChanges() {
+  std::vector<GURL> updated_urls;
+  for (auto& card : server_credit_cards_) {
+    if (!card->card_art_url().is_valid()) {
+      continue;
+    }
+
+    // Try to find the old entry with the same url.
+    auto it = credit_card_art_images_.find(card->card_art_url());
+    // No existing entry found.
+    if (it == credit_card_art_images_.end()) {
+      updated_urls.emplace_back(card->card_art_url());
+    }
+  }
+  if (!updated_urls.empty()) {
+    pdm_->FetchImagesForURLs(updated_urls);
+  }
 }
 
 }  // namespace autofill

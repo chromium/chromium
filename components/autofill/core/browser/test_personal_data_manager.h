@@ -161,7 +161,9 @@ class TestPersonalDataManager : public PersonalDataManager {
     payments_cvc_storage_enabled_ = enabled;
   }
 
-  void ClearCreditCardArtImages() { credit_card_art_images_.clear(); }
+  void ClearCreditCardArtImages() {
+    payments_data_manager_->credit_card_art_images_.clear();
+  }
 
  private:
   // This should be called when you just want to delete the element via `guid`

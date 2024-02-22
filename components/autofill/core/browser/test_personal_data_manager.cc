@@ -22,7 +22,8 @@ TestPersonalDataManager::TestPersonalDataManager()
       base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
                           base::Unretained(this)));
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
-      /*profile_database=*/nullptr, /*account_database=*/nullptr, this);
+      /*profile_database=*/nullptr, /*account_database=*/nullptr,
+      /*image_fetcher=*/nullptr, this);
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
@@ -392,7 +393,8 @@ void TestPersonalDataManager::AddServerIban(const Iban& iban) {
 
 void TestPersonalDataManager::AddCardArtImage(const GURL& url,
                                               const gfx::Image& image) {
-  credit_card_art_images_[url] = std::make_unique<gfx::Image>(image);
+  payments_data_manager_->credit_card_art_images_[url] =
+      std::make_unique<gfx::Image>(image);
   NotifyPersonalDataObserver();
 }
 

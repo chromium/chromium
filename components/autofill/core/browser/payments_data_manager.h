@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -18,9 +21,13 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
+#include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
+class AutofillImageFetcherBase;
+struct CreditCardArtImage;
 class PaymentsDatabaseHelper;
 class PersonalDataManager;
 class TestPersonalDataManager;
@@ -30,6 +37,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
  public:
   PaymentsDataManager(scoped_refptr<AutofillWebDataService> profile_database,
                       scoped_refptr<AutofillWebDataService> account_database,
+                      AutofillImageFetcherBase* image_fetcher,
                       PersonalDataManager* pdm);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
@@ -47,6 +55,23 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Reloads all payments data from the database.
   void Refresh();
 
+  // Return the URL for the card art image, if available.
+  GURL GetCardArtURL(const CreditCard& credit_card) const;
+
+  // Returns the customized credit card art image for the |card_art_url|. If no
+  // image has been cached, an asynchronous request will be sent to fetch the
+  // image and this function will return nullptr.
+  virtual gfx::Image* GetCreditCardArtImageForUrl(
+      const GURL& card_art_url) const;
+
+  // Returns the cached card art image for the |card_art_url| if it was synced
+  // locally to the client. This function is called within
+  // GetCreditCardArtImageForUrl(), but can also be called separately as an
+  // optimization for situations where a separate fetch request after trying to
+  // retrieve local card art images is not needed. If the card art image is not
+  // present in the cache, this function will return a nullptr.
+  gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
+
   // TODO(b/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();
@@ -60,6 +85,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // TODO(b/322170538): Remove dependency.
   friend class PersonalDataManager;
   friend class TestPersonalDataManager;
+
+  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
+                           AddAndGetCreditCardArtImage);
 
   // Loads the saved credit cards from the web database.
   void LoadCreditCards();
@@ -90,6 +118,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // to the query handle.
   void CancelPendingServerQuery(WebDataServiceBase::Handle* handle);
 
+  // Asks `image_fetcher_` to fetch images.
+  void FetchImagesForURLs(base::span<const GURL> updated_urls) const;
+
   // Stores the PaymentsCustomerData obtained from the database.
   std::unique_ptr<PaymentsCustomerData> payments_customer_data_;
 
@@ -114,6 +145,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   std::vector<std::unique_ptr<VirtualCardUsageData>>
       autofill_virtual_card_usage_data_;
 
+  // The customized card art images for the URL.
+  std::map<GURL, std::unique_ptr<gfx::Image>> credit_card_art_images_;
+
   // Cached version of the credit card benefits obtained from the database.
   // Including credit-card-linked flat rate benefits, category benefits and
   // merchant benefits that are available for users' online purchases.
@@ -125,6 +159,15 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
  private:
   // Returns if there are any pending queries to the web database.
   bool HasPendingPaymentQueries() const;
+
+  // Triggered when all the card art image fetches have been completed,
+  // regardless of whether all of them succeeded.
+  void OnCardArtImagesFetched(
+      const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images);
+
+  // Checks whether any new card art url is synced. If so, attempt to fetch the
+  // image based on the url.
+  void ProcessCardArtUrlChanges();
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;
@@ -145,6 +188,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // TODO(b/322170538): Remove dependency.
   raw_ptr<PersonalDataManager> pdm_;
+
+  // The image fetcher to fetch customized images for Autofill data.
+  raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
+
+  base::WeakPtrFactory<PaymentsDataManager> weak_factory_{this};
 };
 
 }  // namespace autofill

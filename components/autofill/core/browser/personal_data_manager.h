@@ -69,7 +69,6 @@ class SyncService;
 namespace autofill {
 
 class AutofillImageFetcherBase;
-struct CreditCardArtImage;
 class PersonalDataManagerObserver;
 
 // The PersonalDataManager (PDM) has two main responsibilities:
@@ -742,7 +741,6 @@ class PersonalDataManager : public KeyedService,
   // TODO(b/322170538): The `PaymentsDataManager` shouldn't depend on the PDM
   // at all, let alone befriend it.
   friend class PaymentsDataManager;
-  friend class VirtualCardEnrollmentManagerTest;
 
   // Used to get a pointer to the strike database for migrating existing
   // profiles. Note, the result can be a nullptr, for example, on incognito
@@ -799,6 +797,8 @@ class PersonalDataManager : public KeyedService,
   void SetPrefService(PrefService* pref_service);
 
   // Asks `image_fetcher_` to fetch images. Virtual for testing.
+  // TODO(b/322170538): Remove and only rely on the implementation in
+  // `PaymentsDataManager`. This is only relied upon by some tests.
   virtual void FetchImagesForURLs(base::span<const GURL> updated_urls) const;
 
   // Responsible for all address-related logic of the PDM.
@@ -808,9 +808,6 @@ class PersonalDataManager : public KeyedService,
   // Responsible for all payments-related logic of the PDM.
   // Non-null after `Init()`.
   std::unique_ptr<PaymentsDataManager> payments_data_manager_;
-
-  // The customized card art images for the URL.
-  std::map<GURL, std::unique_ptr<gfx::Image>> credit_card_art_images_;
 
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
@@ -835,20 +832,11 @@ class PersonalDataManager : public KeyedService,
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();
 
-  // Triggered when all the card art image fetches have been completed,
-  // regardless of whether all of them succeeded.
-  void OnCardArtImagesFetched(
-      const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images);
-
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
 
   // Invoked when server credit card cache is refreshed.
   void OnServerCreditCardsRefreshed();
-
-  // Checks whether any new card art url is synced. If so, attempt to fetch the
-  // image based on the url.
-  void ProcessCardArtUrlChanges();
 
   // Returns the number of server credit cards that have a valid credit card art
   // image.
@@ -909,9 +897,6 @@ class PersonalDataManager : public KeyedService,
 
   // The sync service this instances uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
-
-  // The image fetcher to fetch customized images for Autofill data.
-  raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
 
   // An observer to listen for changes to prefs::kAutofillCreditCardEnabled.
   std::unique_ptr<BooleanPrefMember> credit_card_enabled_pref_;
