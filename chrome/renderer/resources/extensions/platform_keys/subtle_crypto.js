@@ -5,7 +5,7 @@
 var utils = require('utils');
 var internalAPI = getInternalApi('platformKeysInternal');
 var keyModule = require('platformKeys.Key');
-var getSpki = keyModule.getSpki;
+var getKeyIdentifier = keyModule.getKeyIdentifier;
 var KeyUsage = keyModule.KeyUsage;
 
 var normalizeAlgorithm =
@@ -118,8 +118,9 @@ SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
     var data = dataView.buffer.slice(dataView.byteOffset,
                                      dataView.byteOffset + dataView.byteLength);
     internalAPI.sign(
-        subtleCrypto.tokenId, getSpki(key), normalizedAlgorithmParameters.name,
-        hashAlgorithmName, data, function(signature) {
+        subtleCrypto.tokenId, getKeyIdentifier(key),
+        normalizedAlgorithmParameters.name, hashAlgorithmName, data,
+        function(signature) {
           if (catchInvalidTokenError(reject)) {
             return;
           }
@@ -136,14 +137,18 @@ SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
 SubtleCryptoImpl.prototype.exportKey = function(format, key) {
   return new Promise(function(resolve, reject) {
     if (format === 'pkcs8') {
-      // 'pkcs8' is intended for 'private' keys, which are always
-      // non-extractable in this API.
+      // The 'pkcs8' format is intended for 'private' keys, which are always
+      // non-extractable in this API. The 'raw' format is intended for 'secret'
+      // keys and could also be handled with |InvalidAccessError|, but is
+      // actually handled with |NotSupportedError| below, for legacy reasons.
       throw CreateInvalidAccessError();
     } else if (format === 'spki') {
-      if (key.type !== 'public')
+      if (key.type !== 'public') {
         throw CreateInvalidAccessError();
-      resolve(getSpki(key));
+      }
+      resolve(getKeyIdentifier(key));
     } else {
+      // All other exporting formats are unsupported.
       // TODO(pneubeck): It should be possible to export to format 'jwk'.
       throw CreateNotSupportedError();
     }

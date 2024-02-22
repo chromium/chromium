@@ -11,18 +11,18 @@ var KeyUsage = keyModule.KeyUsage;
 
 /**
  * Implementation of WebCrypto.CryptoKeyPair used in enterprise.platformKeys.
- * @param {ArrayBuffer} publicKeySpki The Subject Public Key Info in DER
- *   encoding.
+ * @param {ArrayBuffer} keyIdentifier The key identifier. For asymmetric keys,
+ *     it corresponds to the Subject Public Key Info (SPKI) in DER encoding.
  * @param {KeyAlgorithm} algorithm The algorithm identifier.
  * @param {KeyUsage[]} usages The allowed key usages.
  * @constructor
  */
-function KeyPairImpl(publicKeySpki, algorithm, usages) {
+function KeyPairImpl(keyIdentifier, algorithm, usages) {
   this.publicKey = new Key(
-      KeyType.public, publicKeySpki, algorithm,
+      KeyType.public, keyIdentifier, algorithm,
       intersect([KeyUsage.verify], usages), /*extractable=*/ true);
   this.privateKey = new Key(
-      KeyType.private, publicKeySpki, algorithm,
+      KeyType.private, keyIdentifier, algorithm,
       intersect([KeyUsage.sign], usages), /*extractable=*/ false);
 }
 $Object.setPrototypeOf(KeyPairImpl.prototype, null);

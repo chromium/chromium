@@ -5,7 +5,7 @@
 var internalAPI = getInternalApi('platformKeysInternal');
 
 var normalizeAlgorithm =
-    requireNative('platform_keys_natives').NormalizeAlgorithm;
+  requireNative('platform_keys_natives').NormalizeAlgorithm;
 
 // Returns the normalized parameters of |importParams|, which can be used to
 // import asymmetric keys. Unknown parameters will be ignored.
@@ -64,31 +64,46 @@ function getPublicKey(cert, importParams, callback) {
   // TODO(crbug.com/1096486): Check cert type is ArrayBuffer.
   importParams = normalizeImportParams(importParams);
   internalAPI.getPublicKey(
-      cert, importParams.name, function(publicKey, algorithm) {
-        if (chrome.runtime.lastError) {
-          callback();
-          return;
-        }
-        var combinedAlgorithm = combineAlgorithms(algorithm, importParams);
-        callback(publicKey, combinedAlgorithm);
-      });
+    cert, importParams.name, function (publicKey, algorithm) {
+      if (chrome.runtime.lastError) {
+        callback();
+        return;
+      }
+      var combinedAlgorithm = combineAlgorithms(algorithm, importParams);
+      callback(publicKey, combinedAlgorithm);
+    });
 }
 
 function getPublicKeyBySpki(publicKeySpkiDer, importParams, callback) {
-  if (!(publicKeySpkiDer instanceof ArrayBuffer)){
+  if (!(publicKeySpkiDer instanceof ArrayBuffer)) {
     throw $Error.self('publicKeySpkiDer: Not an ArrayBuffer');
   }
   importParams = normalizeImportParams(importParams);
   internalAPI.getPublicKeyBySpki(
-      publicKeySpkiDer, importParams.name, function(publicKey, algorithm) {
-        if (bindingUtil.hasLastError()) {
-          callback();
-          return;
-        }
-        var combinedAlgorithm = combineAlgorithms(algorithm, importParams);
-        callback(publicKey, combinedAlgorithm);
-      });
+    publicKeySpkiDer,
+    importParams.name,
+    function (foundKeySpki, foundKeyAlgorithm) {
+      if (bindingUtil.hasLastError()) {
+        callback();
+        return;
+      }
+      var combinedAlgorithm =
+        combineAlgorithms(foundKeyAlgorithm, importParams);
+      callback(foundKeySpki, combinedAlgorithm);
+    });
+}
+
+function getSymKeyById(symKeyId, callback) {
+  if (!(symKeyId instanceof ArrayBuffer)) {
+    throw $Error.self('symKeyId: Not an ArrayBuffer');
+  }
+
+  // TODO(b/288880151): Call |internalAPI.getSymKeyById()|, when the new method
+  // is added there.
+  throw $Error.self(
+    'getSymKeyById: method still not implemented by the internal API.');
 }
 
 exports.$set('getPublicKey', getPublicKey);
 exports.$set('getPublicKeyBySpki', getPublicKeyBySpki);
+exports.$set('getSymKeyById', getSymKeyById);

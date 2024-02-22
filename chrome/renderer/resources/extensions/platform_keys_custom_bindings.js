@@ -5,9 +5,10 @@
 // Custom bindings for the platformKeys API.
 
 var SubtleCrypto = require('platformKeys.SubtleCrypto').SubtleCrypto;
-var publicKeyUtil = require('platformKeys.getPublicKeyUtil');
-var getPublicKey = publicKeyUtil.getPublicKey;
-var getPublicKeyBySpki = publicKeyUtil.getPublicKeyBySpki;
+var cryptoKeyUtil = require('platformKeys.getCryptoKeyUtil');
+var getPublicKey = cryptoKeyUtil.getPublicKey;
+var getPublicKeyBySpki = cryptoKeyUtil.getPublicKeyBySpki;
+var getSymKeyById = cryptoKeyUtil.getSymKeyById;
 var internalAPI = getInternalApi('platformKeysInternal');
 
 var keyModule = require('platformKeys.Key');
@@ -15,15 +16,27 @@ var Key = keyModule.Key;
 var KeyType = keyModule.KeyType;
 var KeyUsage = keyModule.KeyUsage;
 
-function createPublicKey(publicKeySpki, algorithm) {
+// TODO(b/288880151): replace the fixed `usages` list below with the actual list
+// for the given key, which will be returned by the internal API.
+function createPublicKey(keyIdentifier, algorithm) {
   return new Key(
-      KeyType.public, publicKeySpki, algorithm, [KeyUsage.verify],
+      KeyType.public, keyIdentifier, algorithm, [KeyUsage.verify],
       /*extractable=*/ true);
 }
 
-function createPrivateKey(publicKeySpki, algorithm) {
+// TODO(b/288880151): replace the fixed `usages` list below with the actual list
+// for the given key, which will be returned by the internal API.
+function createPrivateKey(keyIdentifier, algorithm) {
   return new Key(
-      KeyType.private, publicKeySpki, algorithm, [KeyUsage.sign],
+      KeyType.private, keyIdentifier, algorithm, [KeyUsage.sign],
+      /*extractable=*/ false);
+}
+
+// TODO(b/288880151): replace the fixed `usages` list below with the actual list
+// for the given key, which will be returned by the internal API.
+function createSymKey(keyIdentifier, algorithm) {
+  return new Key(
+      KeyType.secret, keyIdentifier, algorithm, /*usages=*/[],
       /*extractable=*/ false);
 }
 
@@ -79,4 +92,14 @@ apiBridge.registerCustomHook(function(api) {
                   createPrivateKey(foundKeySpki, foundKeyAlgorithm));
             });
       });
+
+  apiFunctions.setHandleRequest('getSymKeyById', function(symKeyId, callback) {
+    getSymKeyById(symKeyId, function(foundKeyId, foundKeyAlgorithm) {
+      if (bindingUtil.hasLastError()) {
+        callback();
+        return;
+      }
+      callback(createSymKey(foundKeyId, foundKeyAlgorithm));
+    });
+  });
 });
