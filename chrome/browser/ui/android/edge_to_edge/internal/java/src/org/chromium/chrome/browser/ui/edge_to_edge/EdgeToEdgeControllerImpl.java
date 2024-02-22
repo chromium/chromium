@@ -25,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -59,6 +60,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private boolean mIsActivityToEdge;
     private @Nullable Insets mSystemInsets;
     private boolean mDidSetDecorAndListener;
+    private final @Nullable TotallyEdgeToEdge mTotallyEdgeToEdge;
 
     /**
      * Creates an implementation of the EdgeToEdgeController that will use the Android APIs to allow
@@ -68,11 +70,14 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param tabObservableSupplier A supplier for Tab changes so this implementation can adjust
      *     whether to draw under or not for each page.
      * @param edgeToEdgeOSWrapper An optional wrapper for OS calls for testing etc.
+     * @param browserControlsStateProvider Provides the state of the BrowserControls for Totally
+     *     Edge to Edge.
      */
     public EdgeToEdgeControllerImpl(
             Activity activity,
             ObservableSupplier<Tab> tabObservableSupplier,
-            @Nullable EdgeToEdgeOSWrapper edgeToEdgeOSWrapper) {
+            @Nullable EdgeToEdgeOSWrapper edgeToEdgeOSWrapper,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mActivity = activity;
         mEdgeToEdgeOSWrapper =
                 edgeToEdgeOSWrapper == null ? new EdgeToEdgeOSWrapperImpl() : edgeToEdgeOSWrapper;
@@ -100,6 +105,17 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                         updateWebContentsObserver(tab);
                     }
                 };
+        mTotallyEdgeToEdge =
+                TotallyEdgeToEdge.isEnabled()
+                        ? new TotallyEdgeToEdge(
+                                browserControlsStateProvider,
+                                () ->
+                                        maybeDrawToEdge(
+                                                ROOT_UI_VIEW_ID,
+                                                mCurrentTab == null
+                                                        ? null
+                                                        : mCurrentTab.getWebContents()))
+                        : null;
     }
 
     @VisibleForTesting
@@ -164,7 +180,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param webContents The {@link WebContents} to notify of inset env() changes.
      */
     private void maybeDrawToEdge(int viewId, @Nullable WebContents webContents) {
-        drawToEdge(viewId, shouldDrawToEdge(mCurrentTab), webContents);
+        Log.v(TAG, "maybeDrawToEdge? totally: %s", totallyToEdge());
+        drawToEdge(viewId, shouldDrawToEdge(mCurrentTab) || totallyToEdge(), webContents);
     }
 
     /**
@@ -179,7 +196,15 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
             int viewId,
             @WebContentsObserver.ViewportFitType int value,
             @Nullable WebContents webContents) {
-        drawToEdge(viewId, shouldDrawToEdge(mCurrentTab, value), webContents);
+        Log.v(TAG, "maybeDrawToEdge? totally: %s", totallyToEdge());
+        drawToEdge(viewId, shouldDrawToEdge(mCurrentTab, value) || totallyToEdge(), webContents);
+    }
+
+    /**
+     * @return if we should draw totally to the edge now.
+     */
+    private boolean totallyToEdge() {
+        return mTotallyEdgeToEdge != null && mTotallyEdgeToEdge.shouldDrawToEdge();
     }
 
     /**
@@ -308,6 +333,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         }
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mTabSupplierObserver.destroy();
+        if (mTotallyEdgeToEdge != null) mTotallyEdgeToEdge.destroy();
     }
 
     @VisibleForTesting

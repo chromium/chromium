@@ -868,7 +868,10 @@ public class RootUiCoordinator
         initMerchantTrustSignals();
         initScrollCapture();
         initializeEdgeToEdgeController(
-                mActivity, mActivityTabProvider, mEdgeToEdgeControllerSupplier);
+                mActivity,
+                mActivityTabProvider,
+                mEdgeToEdgeControllerSupplier,
+                mBrowserControlsManager);
         initBoardingPassDetector();
 
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
@@ -1746,11 +1749,13 @@ public class RootUiCoordinator
     protected void initializeEdgeToEdgeController(
             Activity activity,
             ActivityTabProvider activityTabProvider,
-            ObservableSupplierImpl<EdgeToEdgeController> supplier) {
+            ObservableSupplierImpl<EdgeToEdgeController> supplier,
+            BrowserControlsManager browserControlsManager) {
         EdgeToEdgeUtils.recordEligibility(activity);
         if (supportsEdgeToEdge() && EdgeToEdgeControllerFactory.isEnabled()) {
             mEdgeToEdgeController =
-                    EdgeToEdgeControllerFactory.create(activity, activityTabProvider);
+                    EdgeToEdgeControllerFactory.create(
+                            activity, activityTabProvider, browserControlsManager);
             supplier.set(mEdgeToEdgeController);
         }
     }

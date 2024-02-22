@@ -24252,6 +24252,7 @@ from previous Chrome versions.
   <int value="1632176267" label="PDFViewerUpdate:enabled"/>
   <int value="1633456034" label="chrome-home-swipe-logic"/>
   <int value="1634273054" label="OsIntegrationSubManagers:enabled"/>
+  <int value="1634572985" label="TotallyEdgeToEdge:disabled"/>
   <int value="1634732103" label="PassiveDocumentWheelEventListeners:enabled"/>
   <int value="1634884226"
       label="AutofillAlwaysReturnCloudTokenizedCard:enabled"/>
@@ -25132,6 +25133,7 @@ from previous Chrome versions.
   <int value="2006413281"
       label="ContextualSuggestionsAlternateCardLayout:enabled"/>
   <int value="2006856618" label="BiometricTouchToFill:enabled"/>
+  <int value="2006876222" label="TotallyEdgeToEdge:enabled"/>
   <int value="2007213924" label="VSyncDecoding:enabled"/>
   <int value="2007421572" label="EapGtcWifiAuthentication:disabled"/>
   <int value="2008599705" label="EnableFeedbackPanel:enabled"/>

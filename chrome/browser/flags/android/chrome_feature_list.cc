@@ -279,6 +279,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
+    &kTotallyEdgeToEdge,
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
@@ -918,6 +919,10 @@ BASE_FEATURE(kSurfacePolish, "SurfacePolish", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabResumptionModuleAndroid,
              "TabResumptionModuleAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTotallyEdgeToEdge,
+             "TotallyEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.

@@ -2668,6 +2668,9 @@ extern const char kTabStripGroupIndicatorsAndroidDescription[];
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
 
+extern const char kTotallyEdgeToEdgeName[];
+extern const char kTotallyEdgeToEdgeDescription[];
+
 extern const char kTouchDragAndContextMenuName[];
 extern const char kTouchDragAndContextMenuDescription[];
 

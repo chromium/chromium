@@ -58,6 +58,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.blink.mojom.ViewportFit;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -98,6 +99,7 @@ public class EdgeToEdgeControllerTest {
     @Mock private View mViewMock;
 
     @Mock private WindowInsetsCompat mWindowInsetsMock;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     @Implements(EdgeToEdgeControllerFactory.class)
     static class ShadowEdgeToEdgeControllerFactory extends EdgeToEdgeControllerFactory {
@@ -118,7 +120,11 @@ public class EdgeToEdgeControllerTest {
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         mObservableSupplierImpl = new ObservableSupplierImpl();
         mEdgeToEdgeControllerImpl =
-                new EdgeToEdgeControllerImpl(mActivity, mObservableSupplierImpl, mOsWrapper);
+                new EdgeToEdgeControllerImpl(
+                        mActivity,
+                        mObservableSupplierImpl,
+                        mOsWrapper,
+                        mBrowserControlsStateProvider);
         assertNotNull(mEdgeToEdgeControllerImpl);
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
 
@@ -262,7 +268,8 @@ public class EdgeToEdgeControllerTest {
         ObservableSupplierImpl liveSupplier = new ObservableSupplierImpl();
         EdgeToEdgeControllerImpl liveController =
                 (EdgeToEdgeControllerImpl)
-                        EdgeToEdgeControllerFactory.create(mActivity, liveSupplier);
+                        EdgeToEdgeControllerFactory.create(
+                                mActivity, liveSupplier, mBrowserControlsStateProvider);
         assertNotNull(liveController);
         liveController.setToEdgeForTesting(false);
         when(mTab.isNativePage()).thenReturn(true);
@@ -282,7 +289,8 @@ public class EdgeToEdgeControllerTest {
         ObservableSupplierImpl liveSupplier = new ObservableSupplierImpl();
         EdgeToEdgeControllerImpl liveController =
                 (EdgeToEdgeControllerImpl)
-                        EdgeToEdgeControllerFactory.create(mActivity, liveSupplier);
+                        EdgeToEdgeControllerFactory.create(
+                                mActivity, liveSupplier, mBrowserControlsStateProvider);
         assertNotNull(liveController);
         liveController.setToEdgeForTesting(true);
         liveController.setSystemInsetsForTesting(SYSTEM_INSETS);

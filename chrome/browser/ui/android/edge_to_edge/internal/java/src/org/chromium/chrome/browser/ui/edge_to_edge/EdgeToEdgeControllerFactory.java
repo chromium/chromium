@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -35,13 +36,18 @@ public class EdgeToEdgeControllerFactory {
      * @param activity The Android {@link Activity}
      * @param tabObservableSupplier Supplies an {@Link Observer} that is notified whenever the Tab
      *     changes.
+     * @param browserControlsStateProvider Provides the state of the BrowserControls so we can tell
+     *     if the Toolbar is changing.
      * @return An EdgeToEdgeController to control drawing under System Bars, or {@code null} if this
      *     version of Android does not support the APIs needed.
      */
     public static @Nullable EdgeToEdgeController create(
-            Activity activity, @NonNull ObservableSupplier<Tab> tabObservableSupplier) {
+            Activity activity,
+            @NonNull ObservableSupplier<Tab> tabObservableSupplier,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
-        return new EdgeToEdgeControllerImpl(activity, tabObservableSupplier, null);
+        return new EdgeToEdgeControllerImpl(
+                activity, tabObservableSupplier, null, browserControlsStateProvider);
     }
 
     public static EdgeToEdgePadAdjuster createForView(View view) {

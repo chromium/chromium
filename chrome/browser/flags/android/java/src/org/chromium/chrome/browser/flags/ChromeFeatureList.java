@@ -482,6 +482,7 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TOOLBAR_USE_HARDWARE_BITMAP_DRAW = "ToolbarUseHardwareBitmapDraw";
+    public static final String TOTALLY_EDGE_TO_EDGE = "TotallyEdgeToEdge";
     public static final String TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING =
             "TrackingProtectionNoticeRequestTracking";
     public static final String TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE =
