@@ -9,3 +9,5 @@ NSString* const kSettingsAccountsTableViewAddAccountCellId =
     @"SettingsAccountsTableViewAddAccountCellId";
 NSString* const kSettingsAccountsTableViewSignoutCellId =
     @"SettingsAccountsTableViewSignoutCellId";
+NSString* const kSettingsAccountsTableViewDoneButtonId =
+    @"SettingsAccountsTableViewDoneButtonId";

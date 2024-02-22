@@ -303,9 +303,15 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
     if (_baseNavigationController) {
       if (self.viewController.presentedViewController) {
-        [self.viewController.presentedViewController
-            dismissViewControllerAnimated:YES
-                               completion:nil];
+        if ([self.viewController.presentedViewController
+                isKindOfClass:[SettingsNavigationController class]]) {
+          [self.viewController.presentedViewController
+              performSelector:@selector(closeSettings)];
+        } else {
+          [self.viewController.presentedViewController.presentingViewController
+              dismissViewControllerAnimated:YES
+                                 completion:nil];
+        }
       }
       [self.baseNavigationController popToViewController:self.viewController
                                                 animated:NO];
@@ -421,9 +427,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)showAccountsPage {
   AccountsCoordinator* accountsCoordinator = [[AccountsCoordinator alloc]
-      initWithBaseNavigationController:self.navigationControllerForChildPages
-                               browser:self.browser
-             closeSettingsOnAddAccount:NO];
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+       closeSettingsOnAddAccount:NO];
   accountsCoordinator.signoutDismissalByParentCoordinator = YES;
   _accountsCoordinator = accountsCoordinator;
   [accountsCoordinator start];

@@ -189,7 +189,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
       assertWithMatcher:grey_nil()];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
 
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSettingsAccountsTableViewDoneButtonId)]
       performAction:grey_tap()];
 }
 

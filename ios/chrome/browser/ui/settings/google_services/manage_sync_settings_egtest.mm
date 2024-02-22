@@ -281,9 +281,9 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // The "manage accounts" view should be shown, tap on "Sign Out" button on
   // that page.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSettingsAccountsTableViewSignoutCellId)]
       performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedOut];

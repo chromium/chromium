@@ -11,15 +11,12 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 
 @interface AccountsCoordinator () <SettingsNavigationControllerDelegate>
 @end
 
 @implementation AccountsCoordinator {
-  // The navigation controller to use only when presenting the
-  // Accounts view modally.
-  SettingsNavigationController* _navigationControllerInModalView;
-
   // View controller.
   AccountsTableViewController* _viewController;
 
@@ -76,10 +73,15 @@
   } else {
     SettingsNavigationController* navigationController =
         [[SettingsNavigationController alloc]
-            initWithRootViewController:viewController
+            initWithRootViewController:_viewController
                                browser:self.browser
                               delegate:self];
-    _navigationControllerInModalView = navigationController;
+    UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector(closeSettings)];
+    doneButton.accessibilityIdentifier = kSettingsAccountsTableViewDoneButtonId;
+    _viewController.navigationItem.rightBarButtonItem = doneButton;
     [self.baseViewController presentViewController:navigationController
                                           animated:YES
                                         completion:nil];
@@ -94,9 +96,9 @@
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
+  [_viewController settingsWillBeDismissed];
   [_viewController.navigationController dismissViewControllerAnimated:YES
                                                            completion:nil];
-  [_viewController settingsWillBeDismissed];
   [self stop];
 }
 

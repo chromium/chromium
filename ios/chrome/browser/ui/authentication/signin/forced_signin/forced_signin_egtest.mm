@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -535,9 +536,9 @@ void CompleteSigninFlow() {
       performAction:grey_tap()];
 
   // Tap the "Sign out" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSettingsAccountsTableViewSignoutCellId)]
       performAction:grey_tap()];
 
   // Check that the sign-out snackbar does not show for BrowserSignin forced.

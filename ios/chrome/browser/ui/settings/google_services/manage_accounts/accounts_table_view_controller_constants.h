@@ -13,5 +13,7 @@ extern NSString* const kSettingsAccountsTableViewId;
 extern NSString* const kSettingsAccountsTableViewAddAccountCellId;
 // The accessibility identifier of the signout cell.
 extern NSString* const kSettingsAccountsTableViewSignoutCellId;
+// The accessibility identifier of the Done button.
+extern NSString* const kSettingsAccountsTableViewDoneButtonId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_ACCOUNTS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_
