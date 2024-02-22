@@ -86,6 +86,7 @@ const char* const kKnownSettings[] = {
     kDeviceDlcPredownloadList,
     kDeviceDockMacAddressSource,
     kDeviceEncryptedReportingPipelineEnabled,
+    kDeviceExtendedAutoUpdateEnabled,
     kDeviceHindiInscriptLayoutEnabled,
     kDeviceHostnameTemplate,
     kDeviceHostnameUserConfigurable,
@@ -679,6 +680,15 @@ void DecodeAutoUpdatePolicies(const em::ChromeDeviceSettingsProto& policy,
                            scheduled_update_check_policy
                                .device_scheduled_update_check_settings(),
                            new_values_cache);
+    }
+  }
+
+  if (policy.has_deviceextendedautoupdateenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceextendedautoupdateenabled());
+    if (container.has_value()) {
+      new_values_cache->SetValue(kDeviceExtendedAutoUpdateEnabled,
+                                 base::Value(container.value()));
     }
   }
 }

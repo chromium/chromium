@@ -99,6 +99,11 @@ const char kReleaseLtsTag[] = "cros.system.releaseLtsTag";
 const char kDeviceChannelDowngradeBehavior[] =
     "cros.system.channelDowngradeBehavior";
 
+// A boolean pref that allows a device owner to opt in eligible devices to
+// Extended Automatic Updates.
+const char kDeviceExtendedAutoUpdateEnabled[] =
+    "cros.system.device_extended_auto_update_enabled";
+
 // This setting is used to enforce usage of system audio echo cancellation.
 const char kDeviceSystemAecEnabled[] = "cros.audio.device_system_aec_enabled";
 

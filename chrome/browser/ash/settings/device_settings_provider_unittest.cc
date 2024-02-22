@@ -1444,4 +1444,26 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListDuplicateDlc) {
                    base::Value::List().Append("sane-backends-extras-dlc"));
 }
 
+TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueSet) {
+  device_policy_->payload()
+      .mutable_deviceextendedautoupdateenabled()
+      ->set_value(true);
+  BuildAndInstallDevicePolicy();
+
+  const base::Value* actual_value =
+      provider_->Get(kDeviceExtendedAutoUpdateEnabled);
+
+  EXPECT_TRUE(actual_value->GetBool());
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueUnset) {
+  device_policy_->payload().clear_deviceextendedautoupdateenabled();
+  BuildAndInstallDevicePolicy();
+
+  const base::Value* actual_value =
+      provider_->Get(kDeviceExtendedAutoUpdateEnabled);
+
+  EXPECT_FALSE(actual_value);
+}
+
 }  // namespace ash
