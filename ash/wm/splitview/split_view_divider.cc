@@ -142,9 +142,8 @@ void SplitViewDivider::CloseDividerWidget() {
   dragged_window_ = nullptr;
 
   if (divider_widget_) {
-    auto* widget_ptr = divider_widget_.get();
+    divider_widget_->Close();
     divider_widget_ = nullptr;
-    widget_ptr->CloseNow();
   }
 }
 
