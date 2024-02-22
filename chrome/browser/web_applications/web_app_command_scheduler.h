@@ -66,7 +66,6 @@ struct IsolatedWebAppApplyUpdateCommandError;
 struct IsolationData;
 struct SynchronizeOsOptions;
 struct WebAppInstallInfo;
-struct WebAppIconDiagnosticResult;
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -86,8 +85,6 @@ class WebAppCommandScheduler {
   using InstallIsolatedWebAppCallback = base::OnceCallback<void(
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError>)>;
-  using WebAppIconDiagnosticResultCallback =
-      base::OnceCallback<void(std::optional<WebAppIconDiagnosticResult>)>;
 
   explicit WebAppCommandScheduler(Profile& profile);
   virtual ~WebAppCommandScheduler();
@@ -461,14 +458,6 @@ class WebAppCommandScheduler {
       const webapps::AppId app_id,
       bool set_to_preferred,
       base::OnceClosure done,
-      const base::Location& location = FROM_HERE);
-
-  // Runs a series of icon health checks for |app_id|. Look into
-  // |WebAppIconDiagnosticResult| for more information on what icon diagnostics
-  // are returned by this command.
-  void RunIconDiagnosticsForApp(
-      const webapps::AppId& app_id,
-      WebAppIconDiagnosticResultCallback result_callback,
       const base::Location& location = FROM_HERE);
 
   base::WeakPtr<WebAppCommandScheduler> GetWeakPtr();

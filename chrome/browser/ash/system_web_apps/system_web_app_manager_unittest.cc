@@ -1006,7 +1006,6 @@ TEST_F(SystemWebAppManagerTest, SucceedsAfterOneRetry) {
   system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
-  provider().command_manager().AwaitAllCommandsCompleteForTesting();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
 
   EXPECT_EQ(2u, install_requests.size());
@@ -1016,7 +1015,6 @@ TEST_F(SystemWebAppManagerTest, SucceedsAfterOneRetry) {
   system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
-  provider().command_manager().AwaitAllCommandsCompleteForTesting();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
 
   // Retry a few times, but not until abandonment.
