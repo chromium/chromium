@@ -33,14 +33,12 @@ public class SyncConsentActivity extends SynchronousInitializationActivity
         implements SyncConsentDelegate {
     private static final String ARGUMENT_FRAGMENT_ARGS = "SigninActivity.FragmentArgs";
 
-    private Profile mProfile;
     private WindowAndroid mWindowAndroid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_activity);
-        mProfile = getProfileProvider().getOriginalProfile();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
@@ -107,6 +105,6 @@ public class SyncConsentActivity extends SynchronousInitializationActivity
     @NonNull
     @Override
     public Profile getProfile() {
-        return mProfile;
+        return getProfileProvider().getOriginalProfile();
     }
 }
