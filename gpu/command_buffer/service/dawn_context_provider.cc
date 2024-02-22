@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -42,6 +43,11 @@
 
 namespace gpu {
 namespace {
+
+// Used as a flag to test dawn initialization failure.
+BASE_FEATURE(kForceDawnInitializeFailure,
+             "ForceDawnInitializeFailure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void SetDawnErrorCrashKey(std::string_view message) {
   static crash_reporter::CrashKeyString<1024> error_key("dawn-error");
@@ -423,6 +429,11 @@ bool DawnContextProvider::Initialize(
         dawn::native::BackendValidationLevel::Partial);
     backend_validation_levels.push_back(
         dawn::native::BackendValidationLevel::Full);
+  }
+
+  if (base::FeatureList::IsEnabled(kForceDawnInitializeFailure)) {
+    LOG(ERROR) << "DawnContextProvider creation failed for testing";
+    return false;
   }
 
   wgpu::Device device;
