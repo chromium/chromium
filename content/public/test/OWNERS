@@ -44,3 +44,6 @@ per-file embedded_worker_instance_test_harness.*=file://content/browser/service_
 # For preloading changes.
 per-file preloading*=file://content/browser/preloading/OWNERS
 per-file prerender*=file://content/browser/preloading/OWNERS
+
+# For browsing data changes.
+per-file browsing_data_remover_test_util.*=file://content/browser/browsing_data/OWNERS
