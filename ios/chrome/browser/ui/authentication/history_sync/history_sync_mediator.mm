@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -88,24 +89,15 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
                                                                 self);
     _syncService = syncService;
     _showUserEmail = showUserEmail;
-    _accountCapabilitiesLatencyTracker =
-        std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
-            identityManager);
     _actionButtonsUpdated = NO;
 
-    // Fetch system capabilities for updating the history sync view.
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
-    CHECK(identity);
-    __weak __typeof(self) weakSelf = self;
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-            identity, base::BindOnce(^(SystemIdentityCapabilityResult result) {
-              [weakSelf processCanShowUnrestrictedOptInsCapability:
-                            signin::TriboolFromCapabilityResult(result)];
-            }));
+    if (![self useMinorModeRestrictions]) {
+      _accountCapabilitiesLatencyTracker =
+          std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
+              identityManager);
+    }
   }
+
   return self;
 }
 
@@ -131,6 +123,45 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs, true);
 }
 
+- (void)startFetchingCapabilities {
+  if (![self useMinorModeRestrictions]) {
+    return;
+  }
+
+  // The consumer must be present to receive updates based on successful
+  // capabilities fetches.
+  CHECK(self.consumer);
+
+  // Manually fetch AccountInfo::capabilities and attempt to update buttons. The
+  // capability might have been available and
+  // onExtendedAccountInfoUpdated would not be triggered.
+  CoreAccountInfo primaryAccount =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo accountInfo =
+      _identityManager->FindExtendedAccountInfo(primaryAccount);
+  [self
+      processCanShowUnrestrictedOptInsCapability:
+          accountInfo.capabilities
+              .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
+
+  if (!_actionButtonsUpdated) {
+    // AccountInfo::capabilities is not immediately avaiable and might be
+    // received through onExtendedAccountInfoUpdated. Start fetching system
+    // capabilities.
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    CHECK(identity);
+    __weak __typeof(self) weakSelf = self;
+    GetApplicationContext()
+        ->GetSystemIdentityManager()
+        ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
+            identity, base::BindOnce(^(SystemIdentityCapabilityResult result) {
+              [weakSelf processCanShowUnrestrictedOptInsCapability:
+                            signin::TriboolFromCapabilityResult(result)];
+            }));
+  }
+}
+
 #pragma mark - HistorySyncViewControllerAudience
 
 - (void)viewAppearedWithHiddenButtons {
@@ -144,17 +175,6 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
         [weakSelf processCanShowUnrestrictedOptInsCapability:
                       kCanShowUnrestrictedOptInsFallbackValue];
       }));
-
-  // Manually fetch AccountInfo::capabilities. The capability might have already
-  // been available and onExtendedAccountInfoUpdated would not be triggered.
-  CoreAccountInfo primaryAccount =
-      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  AccountInfo accountInfo =
-      _identityManager->FindExtendedAccountInfo(primaryAccount);
-  [self
-      processCanShowUnrestrictedOptInsCapability:
-          accountInfo.capabilities
-              .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
 }
 
 #pragma mark - Properties
@@ -206,11 +226,14 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
-  [self
-      processCanShowUnrestrictedOptInsCapability:
-          info.capabilities
-              .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
+  if ([self useMinorModeRestrictions]) {
+    [self
+        processCanShowUnrestrictedOptInsCapability:
+            info.capabilities
+                .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
+  } else {
+    _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
+  }
 }
 
 #pragma mark - Private
@@ -244,6 +267,11 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
     BOOL isRestricted = (capability == Tribool::kFalse);
     [self.consumer displayButtonsWithRestrictionStatus:isRestricted];
   }
+}
+
+- (BOOL)useMinorModeRestrictions {
+  return base::FeatureList::IsEnabled(
+      switches::kMinorModeRestrictionsForHistorySyncOptIn);
 }
 
 @end

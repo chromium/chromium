@@ -138,6 +138,9 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   [[self class] testForStartup];
   [super setUp];
 
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
   // Because this test suite changes the state of Sync passwords, wait
   // until the engine is initialized before startup.
   [ChromeEarlGrey
@@ -1201,6 +1204,31 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
               chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that latency metrics are recorded for when the system capability is
+  // immediately available.
+  GREYAssertNil([MetricsAppInterface
+                    expectUniqueSampleWithCount:1
+                                      forBucket:true
+                                   forHistogram:@"Signin.AccountCapabilities."
+                                                @"ImmediatelyAvailable"],
+                @"Incorrect immediate availability histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"Signin.AccountCapabilities.UserVisibleLatency"],
+      @"Failed to record user visibile latency histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:
+                             @"Signin.AccountCapabilities.UserVisibleLatency"],
+      @"User visibile latency should be zero.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"Signin.AccountCapabilities.FetchLatency"],
+      @"Fetch latency should not be recorded on immediate availability.");
 }
 
 // Tests that the History Sync Opt-In screen will not have equally weighted
@@ -1266,6 +1294,13 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()];
+  // Verify that the title and subtitle are present.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_HISTORY_SYNC_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_HISTORY_SYNC_SUBTITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
   // Verify that the primary and secondary buttons have the same foreground and
   // background colors.
   NSString* foregroundColorName = kBlueColor;
@@ -1284,6 +1319,24 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
               chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that latency metrics are recorded later for when the system
+  // capability is not immediately available.
+  GREYAssertNil([MetricsAppInterface
+                    expectUniqueSampleWithCount:1
+                                      forBucket:false
+                                   forHistogram:@"Signin.AccountCapabilities."
+                                                @"ImmediatelyAvailable"],
+                @"Incorrect immediate availability histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"Signin.AccountCapabilities.UserVisibleLatency"],
+      @"Failed to record user visibile latency histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"Signin.AccountCapabilities.FetchLatency"],
+      @"Fetch latency should not be recorded on immediate availability.");
 }
 
 #pragma mark - Sync UI Disabled

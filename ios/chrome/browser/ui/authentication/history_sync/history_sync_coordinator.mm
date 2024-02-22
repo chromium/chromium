@@ -179,6 +179,10 @@
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.audience = _mediator;
+
+  // Fetch minor mode restriction capabilities to update the viewController.
+  [_mediator startFetchingCapabilities];
+
   if (_firstRun) {
     _viewController.modalInPresentation = YES;
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
