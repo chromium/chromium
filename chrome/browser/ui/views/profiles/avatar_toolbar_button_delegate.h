@@ -46,8 +46,7 @@ enum class ButtonState;
 // - Explicit modifications override: such as displaying specific text when
 //   intercept bubbles are displayed.
 // - Sync paused/error state.
-class AvatarToolbarButtonDelegate : public BrowserListObserver,
-                                    public ProfileAttributesStorage::Observer,
+class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
                                     public signin::IdentityManager::Observer,
                                     public syncer::SyncServiceObserver {
  public:
@@ -100,10 +99,6 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   };
 
   internal::ButtonState ComputeState() const;
-
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
 
   // ProfileAttributesStorage::Observer:
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;

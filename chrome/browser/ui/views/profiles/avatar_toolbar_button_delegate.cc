@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -64,42 +65,73 @@ enum class ButtonState {
 
 namespace {
 
+enum class ElementToUpdate {
+  kText,
+  kIcon,
+  kAll,
+};
+
+class StateObserver {
+ public:
+  virtual void Update(ElementToUpdate element_to_update) = 0;
+
+  virtual ~StateObserver() = default;
+};
+
 // Each implementation of StateProvider should be able to manage itself with the
 // appropriate initial values such as a profile and observe/listen to changes in
 // order to affect their active status.
 class StateProvider {
  public:
+  explicit StateProvider(StateObserver& state_observer)
+      : state_observer_(state_observer) {}
+
   virtual bool IsActive() const = 0;
 
+  void NotifyUpdate(ElementToUpdate element_to_update) {
+    if (IsActive()) {
+      state_observer_->Update(element_to_update);
+    }
+  }
+
   virtual ~StateProvider() = default;
-};
-
-class GuestStateProvider : public StateProvider {
- public:
-  explicit GuestStateProvider(Profile* profile) : profile_(profile) {}
-  ~GuestStateProvider() override = default;
-
-  bool IsActive() const override { return profile_->IsGuestSession(); }
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ref<StateObserver> state_observer_;
 };
 
-class IncognitoStateProvider : public StateProvider {
+// Used for Guest and Incognito sessions.
+class PrivateStateProvider : public StateProvider, public BrowserListObserver {
  public:
-  explicit IncognitoStateProvider(Profile* profile) : profile_(profile) {}
-  ~IncognitoStateProvider() override = default;
+  explicit PrivateStateProvider(StateObserver& state_observer)
+      : StateProvider(state_observer) {
+    scoped_browser_list_observation_.Observe(BrowserList::GetInstance());
+  }
+  ~PrivateStateProvider() override = default;
 
-  bool IsActive() const override { return profile_->IsIncognitoProfile(); }
+  // This state is always active when the Profile is in private mode, the
+  // Profile type is not expected to change.
+  bool IsActive() const override { return true; }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    NotifyUpdate(ElementToUpdate::kAll);
+  }
+  void OnBrowserRemoved(Browser* browser) override {
+    NotifyUpdate(ElementToUpdate::kAll);
+  }
 
  private:
-  raw_ptr<Profile> profile_;
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      scoped_browser_list_observation_{this};
 };
 
 class ExplicitStateProvider : public StateProvider {
  public:
-  explicit ExplicitStateProvider(base::OnceClosure clear_avatar_text_closure)
-      : clear_avatar_text_closure_(std::move(clear_avatar_text_closure)) {}
+  explicit ExplicitStateProvider(StateObserver& state_observer,
+                                 base::OnceClosure clear_avatar_text_closure)
+      : StateProvider(state_observer),
+        clear_avatar_text_closure_(std::move(clear_avatar_text_closure)) {}
   ~ExplicitStateProvider() override = default;
 
   bool IsActive() const override { return active_; }
@@ -112,6 +144,11 @@ class ExplicitStateProvider : public StateProvider {
     }
 
     active_ = false;
+    // TODO(b/324018028): Once the default states are implemented through the
+    // state manager, remove this call back and replace it with a call to
+    // `NotifyUpdate(ElementToUpdate::kText)`. The concept of default state
+    // would not exist anymore, which is the main difference with the current
+    // call.
     std::move(clear_avatar_text_closure_).Run();
   }
 
@@ -130,6 +167,9 @@ class ExplicitStateProvider : public StateProvider {
 // TO BE USED at the end of the imlpementation.
 class NormalStateProvider : public StateProvider {
  public:
+  explicit NormalStateProvider(StateObserver& state_observer)
+      : StateProvider(state_observer) {}
+
   // Normal state is always active.
   bool IsActive() const override { return true; }
 };
@@ -140,22 +180,31 @@ class NormalStateProvider : public StateProvider {
 // priority.
 // `kExplicitTextShowing` with `ExplicitStateProvider` is the only state that
 // can change dynamically.
-class StateManager {
+class StateManager : public StateObserver {
  public:
-  explicit StateManager(Profile* profile) {
-    // While transitioning states should be added in the right order.
-
-    // Create all the implicit states, that do not require any specific trigger.
-    states_[ButtonState::kGuestSession] =
-        std::make_unique<GuestStateProvider>(profile);
-    states_[ButtonState::kIncognitoProfile] =
-        std::make_unique<IncognitoStateProvider>(profile);
+  explicit StateManager(AvatarToolbarButton& avatar_toolbar_button,
+                        Profile* profile)
+      : avatar_toolbar_button_(avatar_toolbar_button) {
+    // Add each possible state for each Profile type, since this structure is
+    // tied to Browser, in which a Profile cannot change, it is correct to
+    // compute the Profile type once.
+    if (profile->IsGuestSession()) {
+      states_[ButtonState::kGuestSession] =
+          std::make_unique<PrivateStateProvider>(
+              /*state_observer=*/*this);
+    } else if (profile->IsIncognitoProfile()) {
+      states_[ButtonState::kIncognitoProfile] =
+          std::make_unique<PrivateStateProvider>(
+              /*state_observer=*/*this);
+    }
 
     // TODO(b/324018028): The normal state should be added in the end since it
     // is always active. While transitioning, since we use nullptr state as not
     // implemented state yet we cannot activate this one yet.
-    // states_[ButtonState::kNormal] = std::make_unique<NormalStateProvider>();
+    // states_[ButtonState::kNormal] =
+    // std::make_unique<NormalStateProvider>(/*state_observer=*/*this);
   }
+  ~StateManager() override = default;
 
   // Returns the current active state with the highest priority.
   // Multiple states could be active at the same time.
@@ -188,8 +237,21 @@ class StateManager {
         std::move(explicit_state_provider);
   }
 
+  // StateObserver:
+  void Update(ElementToUpdate element_to_update) override {
+    if (element_to_update == ElementToUpdate::kAll ||
+        element_to_update == ElementToUpdate::kText) {
+      avatar_toolbar_button_->UpdateText();
+    }
+    if (element_to_update == ElementToUpdate::kAll ||
+        element_to_update == ElementToUpdate::kIcon) {
+      avatar_toolbar_button_->UpdateIcon();
+    }
+  }
+
  private:
   base::flat_map<ButtonState, std::unique_ptr<StateProvider>> states_;
+  raw_ref<AvatarToolbarButton> avatar_toolbar_button_;
 };
 
 }  // namespace internal
@@ -222,7 +284,9 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
       browser_(browser),
       profile_(browser->profile()),
       last_avatar_error_(::GetAvatarSyncErrorType(profile_)),
-      state_manager_(std::make_unique<internal::StateManager>(profile_)) {
+      state_manager_(
+          std::make_unique<internal::StateManager>(*avatar_toolbar_button_,
+                                                   profile_)) {
   profile_observation_.Observe(&GetProfileAttributesStorage());
 
   if (auto* sync_service = SyncServiceFactory::GetForProfile(profile_)) {
@@ -230,9 +294,7 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
   }
 
   bool is_incognito = profile_->IsOffTheRecord();
-  if (is_incognito || profile_->IsGuestSession()) {
-    BrowserList::AddObserver(this);
-  } else {
+  if (!is_incognito && !profile_->IsGuestSession()) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_);
     identity_manager_observation_.Observe(identity_manager);
@@ -254,9 +316,7 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-AvatarToolbarButtonDelegate::~AvatarToolbarButtonDelegate() {
-  BrowserList::RemoveObserver(this);
-}
+AvatarToolbarButtonDelegate::~AvatarToolbarButtonDelegate() = default;
 
 std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
   DCHECK_NE(ComputeState(), ButtonState::kIncognitoProfile);
@@ -463,16 +523,6 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
 #endif
 }
 
-void AvatarToolbarButtonDelegate::OnBrowserAdded(Browser* browser) {
-  avatar_toolbar_button_->UpdateIcon();
-  avatar_toolbar_button_->UpdateText();
-}
-
-void AvatarToolbarButtonDelegate::OnBrowserRemoved(Browser* browser) {
-  avatar_toolbar_button_->UpdateIcon();
-  avatar_toolbar_button_->UpdateText();
-}
-
 void AvatarToolbarButtonDelegate::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
   avatar_toolbar_button_->UpdateIcon();
@@ -632,6 +682,7 @@ base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
   // Create the new explicit state with the clear text callback.
   std::unique_ptr<ExplicitStateProvider> explicit_state_provider =
       std::make_unique<ExplicitStateProvider>(
+          /*state_observer=*/*state_manager_,
           /*clear_avatar_text_closure=*/base::BindOnce(
               &AvatarToolbarButtonDelegate::ClearExplicitText,
               // This state will exist in the `StateManager` which is part of
