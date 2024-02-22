@@ -170,8 +170,8 @@ BackForwardCacheBrowserTest::BackForwardCacheBrowserTest() = default;
 BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
   if (fail_for_unexpected_messages_while_cached_) {
     // If this is triggered, see MojoInterfaceName in
-    // tools/metrics/histograms/enums.xml for which values correspond which
-    // messages.
+    // tools/metrics/histograms/metadata/navigation/enums.xml for which values
+    // correspond which messages.
     std::vector<base::Bucket> samples = histogram_tester().GetAllSamples(
         "BackForwardCache.UnexpectedRendererToBrowserMessage."
         "InterfaceName");
