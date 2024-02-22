@@ -148,6 +148,7 @@ BASE_DECLARE_FEATURE(kTabStateFlatBuffer);
 BASE_DECLARE_FEATURE(kTabletTabSwitcherLongPressMenu);
 BASE_DECLARE_FEATURE(kTabletToolbarIncognitoStatus);
 BASE_DECLARE_FEATURE(kTabletToolbarReordering);
+BASE_DECLARE_FEATURE(kTabStripLayoutOptimization);
 BASE_DECLARE_FEATURE(kTabStripStartupRefactoring);
 BASE_DECLARE_FEATURE(kTabToGTSAnimation);
 BASE_DECLARE_FEATURE(kTabWindowManagerIndexReassignmentActivityFinishing);

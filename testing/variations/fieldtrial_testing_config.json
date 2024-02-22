@@ -17647,6 +17647,21 @@
             ]
         }
     ],
+    "TabStripLayoutOptimization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabStripLayoutOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabStripStartupRefactoring": [
         {
             "platforms": [

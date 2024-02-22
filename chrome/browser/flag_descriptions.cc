@@ -4519,6 +4519,10 @@ const char kTabGroupParityAndroidDescription[] =
     "Enables cross-platform tab group feature parity on Android, which "
     "includes colors and required titles.";
 
+const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
+const char kTabResumptionModuleAndroidDescription[] =
+    "Enable showing tab suggestions on Android";
+
 const char kTabStripGroupIndicatorsAndroidName[] =
     "Tab Strip Group Indicators Android";
 const char kTabStripGroupIndicatorsAndroidDescription[] =
@@ -4526,9 +4530,9 @@ const char kTabStripGroupIndicatorsAndroidDescription[] =
     "for selected tab, tab group title indicator and bottom indicator. This is "
     "M1 for Tab Group Parity";
 
-const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
-const char kTabResumptionModuleAndroidDescription[] =
-    "Enable showing tab suggestions on Android";
+const char kTabStripLayoutOptimizationName[] = "Tab Strip Layout Optimization";
+const char kTabStripLayoutOptimizationDescription[] =
+    "Allows adding horizontal and vertical margin to the tab strip.";
 
 const char kTabStripStartupRefactoringName[] =
     "Refactor for tablet tab strip startup.";

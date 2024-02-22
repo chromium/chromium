@@ -20551,6 +20551,7 @@ from previous Chrome versions.
   <int value="-86243376" label="LayoutNG:enabled"/>
   <int value="-85706353" label="VirtualDesksGestures:enabled"/>
   <int value="-85704140" label="ImageServiceSuggestPoweredImages:disabled"/>
+  <int value="-83561866" label="TabStripLayoutOptimization:enabled"/>
   <int value="-83431306" label="FSPsInRecents:enabled"/>
   <int value="-83386867" label="NtpTabResumptionModule:enabled"/>
   <int value="-82880083" label="CaptureModeDemoTools:enabled"/>
@@ -21775,6 +21776,7 @@ from previous Chrome versions.
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>
   <int value="462453078" label="cast-streaming-force-enable-hardware-h264"/>
   <int value="463582989" label="CompositorThreadedScrollbarScrolling:disabled"/>
+  <int value="463664416" label="TabStripLayoutOptimization:disabled"/>
   <int value="464226051" label="CrOSComponent:enabled"/>
   <int value="464425854" label="UnoDesktop:disabled"/>
   <int value="464773709" label="OmniboxExperimentalSuggestScoring:enabled"/>

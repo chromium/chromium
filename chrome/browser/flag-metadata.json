@@ -7859,6 +7859,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-strip-layout-optimization",
+    "owners": [ "wenyufu@chromium.org", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "tangible-sync",
     "owners": [ "aliceywang@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 120
