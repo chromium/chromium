@@ -719,9 +719,8 @@ void NavigationURLLoaderImpl::StartNonInterceptedRequest(
   }
 
   response_loader_receiver_.reset();
-  CreateThrottlingLoaderAndStart(
-      std::move(factory), /*additional_throttles=*/{},
-      GetURLLoaderOptions(resource_request_->is_outermost_main_frame));
+  CreateThrottlingLoaderAndStart(std::move(factory),
+                                 /*additional_throttles=*/{});
 }
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
     ResponseHeadUpdateParams head_update_params) {
@@ -865,8 +864,8 @@ NavigationURLLoaderImpl::CreateNonNetworkLoaderFactory(
 
 void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
-    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> additional_throttles,
-    uint32_t options) {
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+        additional_throttles) {
   CHECK(!url_loader_);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
@@ -874,6 +873,9 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
   for (auto&& throttle : additional_throttles) {
     throttles.push_back(std::move(throttle));
   }
+
+  uint32_t options =
+      GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
 
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
       std::move(factory), std::move(throttles), global_request_id_.request_id,

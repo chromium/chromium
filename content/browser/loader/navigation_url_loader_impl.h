@@ -179,8 +179,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void CreateThrottlingLoaderAndStart(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-          additional_throttles,
-      uint32_t options = network::mojom::kURLLoadOptionNone);
+          additional_throttles);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   void CheckPluginAndContinueOnReceiveResponse(
