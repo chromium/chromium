@@ -3794,9 +3794,17 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
 // Tests that commands work in a post commit interstitial if a pre commit
 // interstitial has been shown previously on the same webcontents. Regression
 // test for crbug.com/1021334
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/325491320): re-enable test
+#define MAYBE_PostCommitInterstitialProceedAfterPreCommitInterstitial \
+  DISABLED_PostCommitInterstitialProceedAfterPreCommitInterstitial
+#else
+#define MAYBE_PostCommitInterstitialProceedAfterPreCommitInterstitial \
+  PostCommitInterstitialProceedAfterPreCommitInterstitial
+#endif
 IN_PROC_BROWSER_TEST_P(
     SafeBrowsingBlockingPageAsyncChecksTimingTest,
-    PostCommitInterstitialProceedAfterPreCommitInterstitial) {
+    MAYBE_PostCommitInterstitialProceedAfterPreCommitInterstitial) {
   EnableAsyncCheck();
   // Trigger a pre commit interstitial and go back.
   GURL start_url = embedded_test_server()->GetURL(kEmptyPage);
