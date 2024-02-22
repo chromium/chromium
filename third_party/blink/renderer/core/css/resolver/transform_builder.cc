@@ -127,7 +127,7 @@ bool TransformBuilder::HasRelativeLengths(const CSSValueList& value_list) {
 
 namespace {
 
-scoped_refptr<TransformOperation> CreateTransformOperation(
+TransformOperation* CreateTransformOperation(
     const CSSFunctionValue& transform_value,
     const CSSToLengthConversionData& conversion_data) {
   TransformOperation::OperationType transform_type =
@@ -153,7 +153,8 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
           }
         }
       }
-      return ScaleTransformOperation::Create(sx, sy, 1.0, transform_type);
+      return MakeGarbageCollected<ScaleTransformOperation>(sx, sy, 1.0,
+                                                           transform_type);
     }
     case TransformOperation::kScaleZ:
     case TransformOperation::kScale3D: {
@@ -170,7 +171,8 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
         sz = To<CSSPrimitiveValue>(transform_value.Item(2))
                  .ComputeNumber(conversion_data);
       }
-      return ScaleTransformOperation::Create(sx, sy, sz, transform_type);
+      return MakeGarbageCollected<ScaleTransformOperation>(sx, sy, sz,
+                                                           transform_type);
     }
     case TransformOperation::kTranslate:
     case TransformOperation::kTranslateX:
@@ -190,7 +192,8 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
           }
         }
       }
-      return TranslateTransformOperation::Create(tx, ty, 0, transform_type);
+      return MakeGarbageCollected<TranslateTransformOperation>(tx, ty, 0,
+                                                               transform_type);
     }
     case TransformOperation::kTranslateZ:
     case TransformOperation::kTranslate3D: {
@@ -208,7 +211,8 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
                  .ComputeLength<double>(conversion_data);
       }
 
-      return TranslateTransformOperation::Create(tx, ty, tz, transform_type);
+      return MakeGarbageCollected<TranslateTransformOperation>(tx, ty, tz,
+                                                               transform_type);
     }
     case TransformOperation::kRotateX:
     case TransformOperation::kRotateY:
@@ -221,7 +225,8 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
         double y = transform_type == TransformOperation::kRotateY;
         double z = transform_type == TransformOperation::kRotateZ ||
                    transform_type == TransformOperation::kRotate;
-        return RotateTransformOperation::Create(x, y, z, angle, transform_type);
+        return MakeGarbageCollected<RotateTransformOperation>(x, y, z, angle,
+                                                              transform_type);
       } else {
         // For SVG 'transform' attributes we generate 3-argument rotate()
         // functions.
@@ -230,7 +235,7 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
             To<CSSPrimitiveValue>(transform_value.Item(1));
         const CSSPrimitiveValue& third_value =
             To<CSSPrimitiveValue>(transform_value.Item(2));
-        return RotateAroundOriginTransformOperation::Create(
+        return MakeGarbageCollected<RotateAroundOriginTransformOperation>(
             angle, second_value.ComputeLength<double>(conversion_data),
             third_value.ComputeLength<double>(conversion_data));
       }
@@ -244,7 +249,8 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
       double y = second_value.GetDoubleValue();
       double z = third_value.GetDoubleValue();
       double angle = fourth_value.ComputeDegrees();
-      return RotateTransformOperation::Create(x, y, z, angle, transform_type);
+      return MakeGarbageCollected<RotateTransformOperation>(x, y, z, angle,
+                                                            transform_type);
     }
     case TransformOperation::kSkew:
     case TransformOperation::kSkewX:
@@ -265,7 +271,8 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
           }
         }
       }
-      return SkewTransformOperation::Create(angle_x, angle_y, transform_type);
+      return MakeGarbageCollected<SkewTransformOperation>(angle_x, angle_y,
+                                                          transform_type);
     }
     case TransformOperation::kMatrix: {
       double a =
@@ -282,7 +289,7 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
       double f =
           conversion_data.Zoom() *
           To<CSSPrimitiveValue>(transform_value.Item(5)).GetDoubleValue();
-      return MatrixTransformOperation::Create(a, b, c, d, e, f);
+      return MakeGarbageCollected<MatrixTransformOperation>(a, b, c, d, e, f);
     }
     case TransformOperation::kMatrix3D: {
       auto matrix = gfx::Transform::ColMajor(
@@ -303,7 +310,7 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
           To<CSSPrimitiveValue>(transform_value.Item(14)).GetDoubleValue(),
           To<CSSPrimitiveValue>(transform_value.Item(15)).GetDoubleValue());
       matrix.Zoom(conversion_data.Zoom());
-      return Matrix3DTransformOperation::Create(matrix);
+      return MakeGarbageCollected<Matrix3DTransformOperation>(matrix);
     }
     case TransformOperation::kPerspective: {
       std::optional<double> p;
@@ -317,7 +324,7 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
                   CSSValueID::kNone);
         // leave p as nullopt to represent 'none'
       }
-      return PerspectiveTransformOperation::Create(p);
+      return MakeGarbageCollected<PerspectiveTransformOperation>(p);
     }
     default:
       NOTREACHED();

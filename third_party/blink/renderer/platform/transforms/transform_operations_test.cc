@@ -80,12 +80,14 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
 TEST(TransformOperationsTest, AbsoluteAnimatedTranslatedBoundsTest) {
   TransformOperations from_ops;
   TransformOperations to_ops;
-  from_ops.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Fixed(-30), Length::Fixed(20), 15,
-      TransformOperation::kTranslate3D));
-  to_ops.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Fixed(10), Length::Fixed(10), 200,
-      TransformOperation::kTranslate3D));
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Fixed(-30), Length::Fixed(20), 15,
+          TransformOperation::kTranslate3D));
+  to_ops.Operations().push_back(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Fixed(10), Length::Fixed(10), 200,
+          TransformOperation::kTranslate3D));
   gfx::BoxF box(0, 0, 0, 10, 10, 10);
   gfx::BoxF bounds;
 
@@ -122,14 +124,16 @@ TEST(TransformOperationsTest, EmpiricalAnimatedTranslatedBoundsTest) {
     for (size_t j = 0; j < std::size(progress); ++j) {
       TransformOperations from_ops;
       TransformOperations to_ops;
-      from_ops.Operations().push_back(TranslateTransformOperation::Create(
-          Length::Fixed(test_transforms[i][0][0]),
-          Length::Fixed(test_transforms[i][0][1]), test_transforms[i][0][2],
-          TransformOperation::kTranslate3D));
-      to_ops.Operations().push_back(TranslateTransformOperation::Create(
-          Length::Fixed(test_transforms[i][1][0]),
-          Length::Fixed(test_transforms[i][1][1]), test_transforms[i][1][2],
-          TransformOperation::kTranslate3D));
+      from_ops.Operations().push_back(
+          MakeGarbageCollected<TranslateTransformOperation>(
+              Length::Fixed(test_transforms[i][0][0]),
+              Length::Fixed(test_transforms[i][0][1]), test_transforms[i][0][2],
+              TransformOperation::kTranslate3D));
+      to_ops.Operations().push_back(
+          MakeGarbageCollected<TranslateTransformOperation>(
+              Length::Fixed(test_transforms[i][1][0]),
+              Length::Fixed(test_transforms[i][1][1]), test_transforms[i][1][2],
+              TransformOperation::kTranslate3D));
       EmpiricallyTestBounds(from_ops, to_ops, progress[j][0], progress[j][1]);
     }
   }
@@ -138,10 +142,10 @@ TEST(TransformOperationsTest, EmpiricalAnimatedTranslatedBoundsTest) {
 TEST(TransformOperationsTest, AbsoluteAnimatedScaleBoundsTest) {
   TransformOperations from_ops;
   TransformOperations to_ops;
-  from_ops.Operations().push_back(
-      ScaleTransformOperation::Create(4, -3, TransformOperation::kScale));
-  to_ops.Operations().push_back(
-      ScaleTransformOperation::Create(5, 2, TransformOperation::kScale));
+  from_ops.Operations().push_back(MakeGarbageCollected<ScaleTransformOperation>(
+      4, -3, TransformOperation::kScale));
+  to_ops.Operations().push_back(MakeGarbageCollected<ScaleTransformOperation>(
+      5, 2, TransformOperation::kScale));
 
   gfx::BoxF box(0, 0, 0, 10, 10, 10);
   gfx::BoxF bounds;
@@ -180,14 +184,16 @@ TEST(TransformOperationsTest, EmpiricalAnimatedScaleBoundsTest) {
     for (size_t j = 0; j < std::size(progress); ++j) {
       TransformOperations from_ops;
       TransformOperations to_ops;
-      from_ops.Operations().push_back(TranslateTransformOperation::Create(
-          Length::Fixed(test_transforms[i][0][0]),
-          Length::Fixed(test_transforms[i][0][1]), test_transforms[i][0][2],
-          TransformOperation::kTranslate3D));
-      to_ops.Operations().push_back(TranslateTransformOperation::Create(
-          Length::Fixed(test_transforms[i][1][0]),
-          Length::Fixed(test_transforms[i][1][1]), test_transforms[i][1][2],
-          TransformOperation::kTranslate3D));
+      from_ops.Operations().push_back(
+          MakeGarbageCollected<TranslateTransformOperation>(
+              Length::Fixed(test_transforms[i][0][0]),
+              Length::Fixed(test_transforms[i][0][1]), test_transforms[i][0][2],
+              TransformOperation::kTranslate3D));
+      to_ops.Operations().push_back(
+          MakeGarbageCollected<TranslateTransformOperation>(
+              Length::Fixed(test_transforms[i][1][0]),
+              Length::Fixed(test_transforms[i][1][1]), test_transforms[i][1][2],
+              TransformOperation::kTranslate3D));
       EmpiricallyTestBounds(from_ops, to_ops, progress[j][0], progress[j][1]);
     }
   }
@@ -197,9 +203,10 @@ TEST(TransformOperationsTest, AbsoluteAnimatedRotationBounds) {
   TransformOperations from_ops;
   TransformOperations to_ops;
   from_ops.Operations().push_back(
-      RotateTransformOperation::Create(0, TransformOperation::kRotate));
-  to_ops.Operations().push_back(
-      RotateTransformOperation::Create(360, TransformOperation::kRotate));
+      MakeGarbageCollected<RotateTransformOperation>(
+          0, TransformOperation::kRotate));
+  to_ops.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      360, TransformOperation::kRotate));
   float sqrt2 = sqrt(2.0f);
   gfx::BoxF box(-sqrt2, -sqrt2, 0, sqrt2, sqrt2, 0);
   gfx::BoxF bounds;
@@ -222,9 +229,10 @@ TEST(TransformOperationsTest, AbsoluteAnimatedExtremeRotationBounds) {
   // catching all 6.
   TransformOperations from_ops;
   TransformOperations to_ops;
-  from_ops.Operations().push_back(RotateTransformOperation::Create(
-      1, 1, 1, 30, TransformOperation::kRotate3D));
-  to_ops.Operations().push_back(RotateTransformOperation::Create(
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<RotateTransformOperation>(
+          1, 1, 1, 30, TransformOperation::kRotate3D));
+  to_ops.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
       1, 1, 1, 390, TransformOperation::kRotate3D));
 
   gfx::BoxF box(1, 0, 0, 0, 0, 0);
@@ -244,14 +252,17 @@ TEST(TransformOperationsTest, AbsoluteAnimatedAxisRotationBounds) {
   TransformOperations to_same;
   TransformOperations to_opposite;
   TransformOperations to_different;
-  from_ops.Operations().push_back(RotateTransformOperation::Create(
-      1, 1, 1, 30, TransformOperation::kRotate3D));
-  to_same.Operations().push_back(RotateTransformOperation::Create(
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<RotateTransformOperation>(
+          1, 1, 1, 30, TransformOperation::kRotate3D));
+  to_same.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
       1, 1, 1, 390, TransformOperation::kRotate3D));
-  to_opposite.Operations().push_back(RotateTransformOperation::Create(
-      -1, -1, -1, 390, TransformOperation::kRotate3D));
-  to_different.Operations().push_back(RotateTransformOperation::Create(
-      1, 3, 1, 390, TransformOperation::kRotate3D));
+  to_opposite.Operations().push_back(
+      MakeGarbageCollected<RotateTransformOperation>(
+          -1, -1, -1, 390, TransformOperation::kRotate3D));
+  to_different.Operations().push_back(
+      MakeGarbageCollected<RotateTransformOperation>(
+          1, 3, 1, 390, TransformOperation::kRotate3D));
 
   gfx::BoxF box(1, 0, 0, 0, 0, 0);
   gfx::BoxF bounds;
@@ -265,9 +276,10 @@ TEST(TransformOperationsTest, AbsoluteAnimatedOnAxisRotationBounds) {
   // change at all.
   TransformOperations from_ops;
   TransformOperations to_ops;
-  from_ops.Operations().push_back(RotateTransformOperation::Create(
-      1, 1, 1, 30, TransformOperation::kRotate3D));
-  to_ops.Operations().push_back(RotateTransformOperation::Create(
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<RotateTransformOperation>(
+          1, 1, 1, 30, TransformOperation::kRotate3D));
+  to_ops.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
       1, 1, 1, 390, TransformOperation::kRotate3D));
 
   gfx::BoxF box(1, 1, 1, 0, 0, 0);
@@ -312,11 +324,13 @@ TEST(TransformOperationsTest, AbsoluteAnimatedProblematicAxisRotationBounds) {
     float y = tests[i].y;
     float z = tests[i].z;
     TransformOperations from_ops;
-    from_ops.Operations().push_back(RotateTransformOperation::Create(
-        x, y, z, 0, TransformOperation::kRotate3D));
+    from_ops.Operations().push_back(
+        MakeGarbageCollected<RotateTransformOperation>(
+            x, y, z, 0, TransformOperation::kRotate3D));
     TransformOperations to_ops;
-    to_ops.Operations().push_back(RotateTransformOperation::Create(
-        x, y, z, 360, TransformOperation::kRotate3D));
+    to_ops.Operations().push_back(
+        MakeGarbageCollected<RotateTransformOperation>(
+            x, y, z, 360, TransformOperation::kRotate3D));
     gfx::BoxF box(1, 1, 1, 0, 0, 0);
     gfx::BoxF bounds;
 
@@ -348,10 +362,12 @@ TEST(TransformOperationsTest, BlendedBoundsForRotationEmpiricalTests) {
         TransformOperations from_ops;
         TransformOperations to_ops;
 
-        from_ops.Operations().push_back(RotateTransformOperation::Create(
-            x, y, z, angles[j][0], TransformOperation::kRotate3D));
-        to_ops.Operations().push_back(RotateTransformOperation::Create(
-            x, y, z, angles[j][1], TransformOperation::kRotate3D));
+        from_ops.Operations().push_back(
+            MakeGarbageCollected<RotateTransformOperation>(
+                x, y, z, angles[j][0], TransformOperation::kRotate3D));
+        to_ops.Operations().push_back(
+            MakeGarbageCollected<RotateTransformOperation>(
+                x, y, z, angles[j][1], TransformOperation::kRotate3D));
         EmpiricallyTestBounds(from_ops, to_ops, progress[k][0], progress[k][1]);
       }
     }
@@ -361,8 +377,10 @@ TEST(TransformOperationsTest, BlendedBoundsForRotationEmpiricalTests) {
 TEST(TransformOperationsTest, AbsoluteAnimatedPerspectiveBoundsTest) {
   TransformOperations from_ops;
   TransformOperations to_ops;
-  from_ops.Operations().push_back(PerspectiveTransformOperation::Create(20));
-  to_ops.Operations().push_back(PerspectiveTransformOperation::Create(40));
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<PerspectiveTransformOperation>(20));
+  to_ops.Operations().push_back(
+      MakeGarbageCollected<PerspectiveTransformOperation>(40));
   gfx::BoxF box(0, 0, 0, 10, 10, 10);
   gfx::BoxF bounds;
   to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
@@ -390,9 +408,9 @@ TEST(TransformOperationsTest, EmpiricalAnimatedPerspectiveBoundsTest) {
       TransformOperations to_ops;
 
       from_ops.Operations().push_back(
-          PerspectiveTransformOperation::Create(depths[i][0]));
+          MakeGarbageCollected<PerspectiveTransformOperation>(depths[i][0]));
       to_ops.Operations().push_back(
-          PerspectiveTransformOperation::Create(depths[i][1]));
+          MakeGarbageCollected<PerspectiveTransformOperation>(depths[i][1]));
 
       EmpiricallyTestBounds(from_ops, to_ops, progress[j][0], progress[j][1]);
     }
@@ -402,10 +420,10 @@ TEST(TransformOperationsTest, EmpiricalAnimatedPerspectiveBoundsTest) {
 TEST(TransformOperationsTest, AnimatedSkewBoundsTest) {
   TransformOperations from_ops;
   TransformOperations to_ops;
-  from_ops.Operations().push_back(
-      SkewTransformOperation::Create(-45, 0, TransformOperation::kSkew));
-  to_ops.Operations().push_back(
-      SkewTransformOperation::Create(0, 45, TransformOperation::kSkew));
+  from_ops.Operations().push_back(MakeGarbageCollected<SkewTransformOperation>(
+      -45, 0, TransformOperation::kSkew));
+  to_ops.Operations().push_back(MakeGarbageCollected<SkewTransformOperation>(
+      0, 45, TransformOperation::kSkew));
   gfx::BoxF box(0, 0, 0, 10, 10, 10);
   gfx::BoxF bounds;
 
@@ -424,14 +442,16 @@ TEST(TransformOperationsTest, AnimatedSkewBoundsTest) {
 
 TEST(TransformOperationsTest, NonCommutativeRotations) {
   TransformOperations from_ops;
-  from_ops.Operations().push_back(RotateTransformOperation::Create(
-      1, 0, 0, 0, TransformOperation::kRotate3D));
-  from_ops.Operations().push_back(RotateTransformOperation::Create(
-      0, 1, 0, 0, TransformOperation::kRotate3D));
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<RotateTransformOperation>(
+          1, 0, 0, 0, TransformOperation::kRotate3D));
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<RotateTransformOperation>(
+          0, 1, 0, 0, TransformOperation::kRotate3D));
   TransformOperations to_ops;
-  to_ops.Operations().push_back(RotateTransformOperation::Create(
+  to_ops.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
       1, 0, 0, 45, TransformOperation::kRotate3D));
-  to_ops.Operations().push_back(RotateTransformOperation::Create(
+  to_ops.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
       0, 1, 0, 135, TransformOperation::kRotate3D));
 
   gfx::BoxF box(0, 0, 0, 1, 1, 1);
@@ -458,10 +478,11 @@ TEST(TransformOperationsTest, NonInvertibleBlendTest) {
   TransformOperations from_ops;
   TransformOperations to_ops;
 
-  from_ops.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Fixed(5), Length::Fixed(-5), TransformOperation::kTranslate));
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Fixed(5), Length::Fixed(-5), TransformOperation::kTranslate));
   to_ops.Operations().push_back(
-      MatrixTransformOperation::Create(0, 0, 0, 0, 0, 0));
+      MakeGarbageCollected<MatrixTransformOperation>(0, 0, 0, 0, 0, 0));
 
   EXPECT_EQ(from_ops, to_ops.Blend(from_ops, 0.25));
   EXPECT_EQ(to_ops, to_ops.Blend(from_ops, 0.5));
@@ -473,22 +494,26 @@ TEST(TransformOperationsTest, AbsoluteSequenceBoundsTest) {
   TransformOperations to_ops;
 
   from_ops.Operations().push_back(
-      TranslateTransformOperation::Create(Length::Fixed(1), Length::Fixed(-5),
-                                          1, TransformOperation::kTranslate3D));
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Fixed(1), Length::Fixed(-5), 1,
+          TransformOperation::kTranslate3D));
+  from_ops.Operations().push_back(MakeGarbageCollected<ScaleTransformOperation>(
+      -1, 2, 3, TransformOperation::kScale3D));
   from_ops.Operations().push_back(
-      ScaleTransformOperation::Create(-1, 2, 3, TransformOperation::kScale3D));
-  from_ops.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Fixed(2), Length::Fixed(4), -1,
-      TransformOperation::kTranslate3D));
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Fixed(2), Length::Fixed(4), -1,
+          TransformOperation::kTranslate3D));
 
   to_ops.Operations().push_back(
-      TranslateTransformOperation::Create(Length::Fixed(13), Length::Fixed(-1),
-                                          5, TransformOperation::kTranslate3D));
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Fixed(13), Length::Fixed(-1), 5,
+          TransformOperation::kTranslate3D));
+  to_ops.Operations().push_back(MakeGarbageCollected<ScaleTransformOperation>(
+      -3, -2, 5, TransformOperation::kScale3D));
   to_ops.Operations().push_back(
-      ScaleTransformOperation::Create(-3, -2, 5, TransformOperation::kScale3D));
-  to_ops.Operations().push_back(
-      TranslateTransformOperation::Create(Length::Fixed(6), Length::Fixed(-2),
-                                          3, TransformOperation::kTranslate3D));
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Fixed(6), Length::Fixed(-2), 3,
+          TransformOperation::kTranslate3D));
 
   gfx::BoxF box(1, 2, 3, 4, 4, 4);
   gfx::BoxF bounds;
@@ -514,11 +539,12 @@ TEST(TransformOperationsTest, ZoomTest) {
   gfx::Point3F original_point(2, 3, 4);
 
   TransformOperations ops;
-  ops.Operations().push_back(TranslateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<TranslateTransformOperation>(
       Length::Fixed(1), Length::Fixed(2), 3, TransformOperation::kTranslate3D));
-  ops.Operations().push_back(PerspectiveTransformOperation::Create(1234));
   ops.Operations().push_back(
-      Matrix3DTransformOperation::Create(gfx::Transform::ColMajor(
+      MakeGarbageCollected<PerspectiveTransformOperation>(1234));
+  ops.Operations().push_back(
+      MakeGarbageCollected<Matrix3DTransformOperation>(gfx::Transform::ColMajor(
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)));
 
   // Apply unzoomed ops to unzoomed units, then zoom in
@@ -546,18 +572,19 @@ TEST(TransformOperationsTest, PerspectiveOpsTest) {
   EXPECT_FALSE(ops.HasNonPerspective3DOperation());
   EXPECT_FALSE(ops.HasNonTrivial3DComponent());
 
-  ops.Operations().push_back(TranslateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<TranslateTransformOperation>(
       Length::Fixed(1), Length::Fixed(2), TransformOperation::kTranslate));
   EXPECT_FALSE(ops.HasPerspective());
   EXPECT_FALSE(ops.HasNonPerspective3DOperation());
   EXPECT_FALSE(ops.HasNonTrivial3DComponent());
 
-  ops.Operations().push_back(PerspectiveTransformOperation::Create(1234));
+  ops.Operations().push_back(
+      MakeGarbageCollected<PerspectiveTransformOperation>(1234));
   EXPECT_TRUE(ops.HasPerspective());
   EXPECT_FALSE(ops.HasNonPerspective3DOperation());
   EXPECT_FALSE(ops.HasNonTrivial3DComponent());
 
-  ops.Operations().push_back(TranslateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<TranslateTransformOperation>(
       Length::Fixed(1), Length::Fixed(2), 3, TransformOperation::kTranslate3D));
   EXPECT_TRUE(ops.HasPerspective());
   EXPECT_TRUE(ops.HasNonPerspective3DOperation());
@@ -566,14 +593,14 @@ TEST(TransformOperationsTest, PerspectiveOpsTest) {
 
 TEST(TransformOperationsTest, CanBlendWithSkewTest) {
   TransformOperations ops_x, ops_y, ops_skew, ops_skew2;
-  ops_x.Operations().push_back(
-      SkewTransformOperation::Create(45, 0, TransformOperation::kSkewX));
-  ops_y.Operations().push_back(
-      SkewTransformOperation::Create(0, 45, TransformOperation::kSkewY));
-  ops_skew.Operations().push_back(
-      SkewTransformOperation::Create(45, 0, TransformOperation::kSkew));
-  ops_skew2.Operations().push_back(
-      SkewTransformOperation::Create(0, 45, TransformOperation::kSkew));
+  ops_x.Operations().push_back(MakeGarbageCollected<SkewTransformOperation>(
+      45, 0, TransformOperation::kSkewX));
+  ops_y.Operations().push_back(MakeGarbageCollected<SkewTransformOperation>(
+      0, 45, TransformOperation::kSkewY));
+  ops_skew.Operations().push_back(MakeGarbageCollected<SkewTransformOperation>(
+      45, 0, TransformOperation::kSkew));
+  ops_skew2.Operations().push_back(MakeGarbageCollected<SkewTransformOperation>(
+      0, 45, TransformOperation::kSkew));
 
   EXPECT_TRUE(ops_x.Operations()[0]->CanBlendWith(*ops_x.Operations()[0]));
   EXPECT_TRUE(ops_y.Operations()[0]->CanBlendWith(*ops_y.Operations()[0]));
@@ -594,13 +621,13 @@ TEST(TransformOperationsTest, CanBlendWithSkewTest) {
 TEST(TransformOperationsTest, CanBlendWithMatrixTest) {
   TransformOperations ops_a, ops_b;
   ops_a.Operations().push_back(
-      MatrixTransformOperation::Create(1, 0, 0, 1, 0, 0));
-  ops_a.Operations().push_back(
-      RotateTransformOperation::Create(0, TransformOperation::kRotate));
+      MakeGarbageCollected<MatrixTransformOperation>(1, 0, 0, 1, 0, 0));
+  ops_a.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      0, TransformOperation::kRotate));
   ops_b.Operations().push_back(
-      MatrixTransformOperation::Create(2, 0, 0, 2, 0, 0));
-  ops_b.Operations().push_back(
-      RotateTransformOperation::Create(360, TransformOperation::kRotate));
+      MakeGarbageCollected<MatrixTransformOperation>(2, 0, 0, 2, 0, 0));
+  ops_b.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      360, TransformOperation::kRotate));
 
   EXPECT_TRUE(ops_a.Operations()[0]->CanBlendWith(*ops_b.Operations()[0]));
 
@@ -614,14 +641,14 @@ TEST(TransformOperationsTest, CanBlendWithMatrixTest) {
 
 TEST(TransformOperationsTest, CanBlendWithMatrix3DTest) {
   TransformOperations ops_a, ops_b;
-  ops_a.Operations().push_back(Matrix3DTransformOperation::Create(
+  ops_a.Operations().push_back(MakeGarbageCollected<Matrix3DTransformOperation>(
       gfx::Transform::Affine(1, 0, 0, 1, 0, 0)));
-  ops_a.Operations().push_back(
-      RotateTransformOperation::Create(0, TransformOperation::kRotate));
-  ops_b.Operations().push_back(Matrix3DTransformOperation::Create(
+  ops_a.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      0, TransformOperation::kRotate));
+  ops_b.Operations().push_back(MakeGarbageCollected<Matrix3DTransformOperation>(
       gfx::Transform::Affine(2, 0, 0, 2, 0, 0)));
-  ops_b.Operations().push_back(
-      RotateTransformOperation::Create(360, TransformOperation::kRotate));
+  ops_b.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      360, TransformOperation::kRotate));
 
   EXPECT_TRUE(ops_a.Operations()[0]->CanBlendWith(*ops_b.Operations()[0]));
 
@@ -643,10 +670,12 @@ TEST(TransformOperationsTest, InterpolatedTransformBlendIdentityTest) {
   // box-size-dependent matrix interpolation and an empty transform list in
   // both directions.
   TransformOperations ops_a, ops_b, ops_empty;
-  ops_a.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Percent(100), Length::Fixed(0), TransformOperation::kTranslate));
-  ops_b.Operations().push_back(
-      RotateTransformOperation::Create(90, TransformOperation::kRotate));
+  ops_a.Operations().push_back(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Percent(100), Length::Fixed(0),
+          TransformOperation::kTranslate));
+  ops_b.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      90, TransformOperation::kRotate));
 
   // Equivalent to translateX(50%) rotate(45deg) but a deferred interpolation
   TransformOperations ops_c = ops_a.Blend(ops_b, 0.5);
@@ -659,10 +688,12 @@ TEST(TransformOperationsTest, InterpolatedTransformBlendIdentityTest) {
   TransformOperations ops_d2 = ops_empty.Blend(ops_c, 0.75);
 
   TransformOperations ops_d3;
-  ops_d3.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Percent(12.5), Length::Fixed(0), TransformOperation::kTranslate));
   ops_d3.Operations().push_back(
-      RotateTransformOperation::Create(11.25, TransformOperation::kRotate));
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Percent(12.5), Length::Fixed(0),
+          TransformOperation::kTranslate));
+  ops_d3.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      11.25, TransformOperation::kRotate));
 
   const gfx::SizeF box_size(100, 100);
   gfx::Transform mat_d1, mat_d2, mat_d3;
@@ -677,15 +708,19 @@ TEST(TransformOperationsTest, InterpolatedTransformBlendIdentityTest) {
 
 TEST(TransformOperationsTest, BlendPercentPrefixTest) {
   TransformOperations ops_a, ops_b;
-  ops_a.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Percent(100), Length::Fixed(0), TransformOperation::kTranslate));
   ops_a.Operations().push_back(
-      RotateTransformOperation::Create(180, TransformOperation::kRotate));
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Percent(100), Length::Fixed(0),
+          TransformOperation::kTranslate));
+  ops_a.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      180, TransformOperation::kRotate));
 
-  ops_b.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Fixed(0), Length::Percent(50), TransformOperation::kTranslate));
   ops_b.Operations().push_back(
-      ScaleTransformOperation::Create(2, 2, TransformOperation::kScale));
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Fixed(0), Length::Percent(50),
+          TransformOperation::kTranslate));
+  ops_b.Operations().push_back(MakeGarbageCollected<ScaleTransformOperation>(
+      2, 2, TransformOperation::kScale));
 
   EXPECT_EQ(ops_a.BoxSizeDependencies(), TransformOperation::kDependsWidth);
   EXPECT_EQ(ops_a.BoxSizeDependencies(1), TransformOperation::kDependsNone);
@@ -704,7 +739,7 @@ TEST(TransformOperationsTest, BlendPercentPrefixTest) {
   gfx::Transform mat_c =
       To<Matrix3DTransformOperation>(*ops_c.Operations()[1]).Matrix();
 
-  auto translate_ref = TranslateTransformOperation::Create(
+  auto* translate_ref = MakeGarbageCollected<TranslateTransformOperation>(
       Length::Percent(50), Length::Percent(25), TransformOperation::kTranslate);
   // scale(1.5) rotate(90deg)
   auto matrix_ref = gfx::Transform::Affine(0, 1.5, -1.5, 0, 0, 0);
@@ -714,15 +749,15 @@ TEST(TransformOperationsTest, BlendPercentPrefixTest) {
 
 TEST(TransformOperationsTest, SizeDependenciesCombineTest) {
   TransformOperations ops;
-  ops.Operations().push_back(
-      RotateTransformOperation::Create(90, TransformOperation::kRotate));
+  ops.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      90, TransformOperation::kRotate));
   EXPECT_EQ(ops.BoxSizeDependencies(), TransformOperation::kDependsNone);
 
-  ops.Operations().push_back(TranslateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<TranslateTransformOperation>(
       Length::Fixed(0), Length::Percent(50), TransformOperation::kTranslate));
   EXPECT_EQ(ops.BoxSizeDependencies(), TransformOperation::kDependsHeight);
 
-  ops.Operations().push_back(TranslateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<TranslateTransformOperation>(
       Length::Percent(100), Length::Fixed(0), TransformOperation::kTranslate));
   EXPECT_EQ(ops.Operations()[2]->BoxSizeDependencies(),
             TransformOperation::kDependsWidth);
@@ -732,7 +767,7 @@ TEST(TransformOperationsTest, SizeDependenciesCombineTest) {
 // https://crbug.com/1155018
 TEST(TransformOperationsTest, OutOfRangePercentage) {
   TransformOperations ops;
-  ops.Operations().push_back(TranslateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<TranslateTransformOperation>(
       Length::Percent(std::numeric_limits<float>::max()), Length::Percent(50),
       TransformOperation::kTranslate));
 
@@ -747,10 +782,12 @@ TEST(TransformOperationsTest, OutOfRangePercentage) {
 TEST(TranformOperationsTest, DisallowBlockSizeDependent_Disallowed) {
   TransformOperations from_ops;
   TransformOperations to_ops;
-  from_ops.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Percent(50), Length::Fixed(20), TransformOperation::kTranslate));
-  to_ops.Operations().push_back(
-      ScaleTransformOperation::Create(2, 2, TransformOperation::kScale));
+  from_ops.Operations().push_back(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Percent(50), Length::Fixed(20),
+          TransformOperation::kTranslate));
+  to_ops.Operations().push_back(MakeGarbageCollected<ScaleTransformOperation>(
+      2, 2, TransformOperation::kScale));
 
   const wtf_size_t matching_prefix_length = 0;
   const double progress = 0.8;
@@ -760,7 +797,7 @@ TEST(TranformOperationsTest, DisallowBlockSizeDependent_Disallowed) {
       TransformOperations::BoxSizeDependentMatrixBlending::kDisallow);
   EXPECT_EQ(blended_ops, to_ops);
 
-  scoped_refptr<TransformOperation> blended_op =
+  TransformOperation* blended_op =
       to_ops.BlendRemainingByUsingMatrixInterpolation(
           from_ops, matching_prefix_length, progress,
           TransformOperations::BoxSizeDependentMatrixBlending::kDisallow);

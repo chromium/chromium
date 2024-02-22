@@ -1656,7 +1656,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   builder = ComputedStyleBuilder(target->StyleRef());
   TransformOperations transform;
   transform.Operations().push_back(
-      RotateTransformOperation::Create(10, TransformOperation::kRotate));
+      MakeGarbageCollected<RotateTransformOperation>(
+          10, TransformOperation::kRotate));
   builder.SetTransform(transform);
   builder.SetTransformOrigin(
       TransformOrigin(Length::Fixed(70), Length::Fixed(30), 0));

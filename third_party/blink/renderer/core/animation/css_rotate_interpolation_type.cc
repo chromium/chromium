@@ -272,7 +272,7 @@ void CSSRotateInterpolationType::ApplyStandardPropertyValue(
     state.StyleBuilder().SetRotate(nullptr);
     return;
   }
-  state.StyleBuilder().SetRotate(RotateTransformOperation::Create(
+  state.StyleBuilder().SetRotate(MakeGarbageCollected<RotateTransformOperation>(
       rotation.GetRotation(), TransformOperation::kRotate3D));
 }
 

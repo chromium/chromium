@@ -279,7 +279,7 @@ void CSSScaleInterpolationType::ApplyStandardPropertyValue(
     state.StyleBuilder().SetScale(nullptr);
     return;
   }
-  state.StyleBuilder().SetScale(ScaleTransformOperation::Create(
+  state.StyleBuilder().SetScale(MakeGarbageCollected<ScaleTransformOperation>(
       scale.array[0], scale.array[1], scale.array[2],
       TransformOperation::kScale3D));
 }

@@ -48,9 +48,10 @@ TEST(ComputedStyleUtilsTest, MatrixZoom3D) {
 
 TEST(ComputedStyleUtilsTest, ValueForTransformFunction_Translate) {
   TransformOperations operations;
-  operations.Operations().push_back(TranslateTransformOperation::Create(
-      Length(Length::Type::kFixed), Length(10, Length::Type::kFixed),
-      TransformOperation::kTranslateY));
+  operations.Operations().push_back(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length(Length::Type::kFixed), Length(10, Length::Type::kFixed),
+          TransformOperation::kTranslateY));
   const CSSValue* value =
       ComputedStyleUtils::ValueForTransformFunction(operations);
   ASSERT_NE(value, nullptr);
@@ -59,9 +60,10 @@ TEST(ComputedStyleUtilsTest, ValueForTransformFunction_Translate) {
             CSSValueID::kTranslateY);
   EXPECT_EQ(value->CssText(), "translateY(10px)");
 
-  operations.Operations()[0] = TranslateTransformOperation::Create(
-      Length(50, Length::Type::kPercent), Length(Length::Type::kFixed),
-      TransformOperation::kTranslateX);
+  operations.Operations()[0] =
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length(50, Length::Type::kPercent), Length(Length::Type::kFixed),
+          TransformOperation::kTranslateX);
   value = ComputedStyleUtils::ValueForTransformFunction(operations);
   ASSERT_NE(value, nullptr);
   ASSERT_TRUE(value->IsFunctionValue());
@@ -69,9 +71,10 @@ TEST(ComputedStyleUtilsTest, ValueForTransformFunction_Translate) {
             CSSValueID::kTranslateX);
   EXPECT_EQ(value->CssText(), "translateX(50%)");
 
-  operations.Operations()[0] = TranslateTransformOperation::Create(
-      Length(Length::Type::kFixed), Length(Length::Type::kFixed), -100.0,
-      TransformOperation::kTranslateZ);
+  operations.Operations()[0] =
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length(Length::Type::kFixed), Length(Length::Type::kFixed), -100.0,
+          TransformOperation::kTranslateZ);
   value = ComputedStyleUtils::ValueForTransformFunction(operations);
   ASSERT_NE(value, nullptr);
   ASSERT_TRUE(value->IsFunctionValue());
@@ -79,9 +82,10 @@ TEST(ComputedStyleUtilsTest, ValueForTransformFunction_Translate) {
             CSSValueID::kTranslateZ);
   EXPECT_EQ(value->CssText(), "translateZ(-100px)");
 
-  operations.Operations()[0] = TranslateTransformOperation::Create(
-      Length(-20, Length::Type::kFixed), Length(40, Length::Type::kPercent),
-      0.0, TransformOperation::kTranslate);
+  operations.Operations()[0] =
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length(-20, Length::Type::kFixed), Length(40, Length::Type::kPercent),
+          0.0, TransformOperation::kTranslate);
   value = ComputedStyleUtils::ValueForTransformFunction(operations);
   ASSERT_NE(value, nullptr);
   ASSERT_TRUE(value->IsFunctionValue());
@@ -89,9 +93,10 @@ TEST(ComputedStyleUtilsTest, ValueForTransformFunction_Translate) {
             CSSValueID::kTranslate);
   EXPECT_EQ(value->CssText(), "translate(-20px, 40%)");
 
-  operations.Operations()[0] = TranslateTransformOperation::Create(
-      Length(-20, Length::Type::kFixed), Length(40, Length::Type::kPercent),
-      0.0, TransformOperation::kTranslate3D);
+  operations.Operations()[0] =
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length(-20, Length::Type::kFixed), Length(40, Length::Type::kPercent),
+          0.0, TransformOperation::kTranslate3D);
   value = ComputedStyleUtils::ValueForTransformFunction(operations);
   ASSERT_NE(value, nullptr);
   ASSERT_TRUE(value->IsFunctionValue());
@@ -99,9 +104,10 @@ TEST(ComputedStyleUtilsTest, ValueForTransformFunction_Translate) {
             CSSValueID::kTranslate3d);
   EXPECT_EQ(value->CssText(), "translate3d(-20px, 40%, 0px)");
 
-  operations.Operations()[0] = TranslateTransformOperation::Create(
-      Length(-20, Length::Type::kFixed), Length(40, Length::Type::kPercent),
-      0.0, TransformOperation::kTranslate);
+  operations.Operations()[0] =
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length(-20, Length::Type::kFixed), Length(40, Length::Type::kPercent),
+          0.0, TransformOperation::kTranslate);
   value = ComputedStyleUtils::ValueForTransformFunction(operations);
   ASSERT_NE(value, nullptr);
   ASSERT_TRUE(value->IsFunctionValue());
@@ -115,7 +121,7 @@ TEST(ComputedStyleUtilsTest, ValueForTransformFunction_Matrix) {
   gfx::Transform transform;
   transform.Translate(40.f, -20.f);
   operations.Operations().push_back(
-      MatrixTransformOperation::Create(transform));
+      MakeGarbageCollected<MatrixTransformOperation>(transform));
   const CSSValue* value =
       ComputedStyleUtils::ValueForTransformFunction(operations);
   ASSERT_NE(value, nullptr);
@@ -129,7 +135,7 @@ TEST(ComputedStyleUtilsTest, ValueForTransformFunction_Matrix3d) {
   gfx::Transform transform;
   transform.Translate(40.f, -20.f);
   operations.Operations().push_back(
-      Matrix3DTransformOperation::Create(transform));
+      MakeGarbageCollected<Matrix3DTransformOperation>(transform));
   const CSSValue* value =
       ComputedStyleUtils::ValueForTransformFunction(operations);
   ASSERT_NE(value, nullptr);

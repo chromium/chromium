@@ -37,10 +37,7 @@ namespace blink {
 class PLATFORM_EXPORT PerspectiveTransformOperation final
     : public TransformOperation {
  public:
-  static scoped_refptr<PerspectiveTransformOperation> Create(
-      std::optional<double> p) {
-    return base::AdoptRef(new PerspectiveTransformOperation(p));
-  }
+  explicit PerspectiveTransformOperation(std::optional<double> p) : p_(p) {}
 
   std::optional<double> Perspective() const { return p_; }
 
@@ -76,18 +73,14 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
     }
   }
 
-  scoped_refptr<TransformOperation> Accumulate(
-      const TransformOperation& other) override;
-  scoped_refptr<TransformOperation> Blend(
-      const TransformOperation* from,
-      double progress,
-      bool blend_to_identity = false) override;
-  scoped_refptr<TransformOperation> Zoom(double factor) final;
+  TransformOperation* Accumulate(const TransformOperation& other) override;
+  TransformOperation* Blend(const TransformOperation* from,
+                            double progress,
+                            bool blend_to_identity = false) override;
+  TransformOperation* Zoom(double factor) final;
 
   // Perspective does not, by itself, specify a 3D transform.
   bool HasNonTrivial3DComponent() const override { return false; }
-
-  explicit PerspectiveTransformOperation(std::optional<double> p) : p_(p) {}
 
   // !p_.has_value() means the value is `none`, which is equivalent to
   // infinity.

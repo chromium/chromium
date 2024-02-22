@@ -231,7 +231,8 @@ TEST_F(ComputedStyleTest,
   // An operation is necessary since having either a non-empty transform list
   // or a transform animation will set HasTransform();
   operations.Operations().push_back(
-      ScaleTransformOperation::Create(1, 1, TransformOperation::kScale));
+      MakeGarbageCollected<ScaleTransformOperation>(
+          1, 1, TransformOperation::kScale));
 
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
   builder.SetTransform(operations);

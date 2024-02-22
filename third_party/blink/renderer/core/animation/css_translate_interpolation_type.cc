@@ -29,11 +29,14 @@ bool IsNoneValue(const InterpolationValue& value) {
 class InheritedTranslateChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedTranslateChecker(
-      scoped_refptr<TranslateTransformOperation> inherited_translate)
-      : inherited_translate_(std::move(inherited_translate)) {}
+  InheritedTranslateChecker(TranslateTransformOperation* inherited_translate)
+      : inherited_translate_(inherited_translate) {}
   ~InheritedTranslateChecker() override = default;
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(inherited_translate_);
+  }
 
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
@@ -47,7 +50,7 @@ class InheritedTranslateChecker
   }
 
  private:
-  scoped_refptr<TransformOperation> inherited_translate_;
+  Member<TransformOperation> inherited_translate_;
 };
 
 enum TranslateComponentIndex : unsigned {
@@ -197,10 +200,9 @@ void CSSTranslateInterpolationType::ApplyStandardPropertyValue(
                 .CreateLength(conversion_data, Length::ValueRange::kAll)
                 .Pixels();
 
-  scoped_refptr<TranslateTransformOperation> result =
-      TranslateTransformOperation::Create(x, y, z,
-                                          TransformOperation::kTranslate3D);
-  state.StyleBuilder().SetTranslate(std::move(result));
+  state.StyleBuilder().SetTranslate(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          x, y, z, TransformOperation::kTranslate3D));
 }
 
 }  // namespace blink

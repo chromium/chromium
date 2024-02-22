@@ -25,10 +25,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_TRANSFORM_OPERATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_TRANSFORM_OPERATIONS_H_
 
-#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace gfx {
@@ -47,6 +47,8 @@ class PLATFORM_EXPORT TransformOperations {
  public:
   TransformOperations() = default;
   TransformOperations(const EmptyTransformOperations&) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(operations_); }
 
   bool operator==(const TransformOperations& o) const;
   bool operator!=(const TransformOperations& o) const { return !(*this == o); }
@@ -127,16 +129,16 @@ class PLATFORM_EXPORT TransformOperations {
 
   void clear() { operations_.clear(); }
 
-  Vector<scoped_refptr<TransformOperation>, 2>& Operations() {
+  HeapVector<Member<TransformOperation>, 2>& Operations() {
     return operations_;
   }
-  const Vector<scoped_refptr<TransformOperation>, 2>& Operations() const {
+  const HeapVector<Member<TransformOperation>, 2>& Operations() const {
     return operations_;
   }
 
   wtf_size_t size() const { return operations_.size(); }
   const TransformOperation* at(wtf_size_t index) const {
-    return index < operations_.size() ? operations_.at(index).get() : nullptr;
+    return index < operations_.size() ? operations_.at(index).Get() : nullptr;
   }
 
   bool BlendedBoundsForBox(const gfx::BoxF&,
@@ -162,7 +164,7 @@ class PLATFORM_EXPORT TransformOperations {
     kDisallow,
   };
 
-  scoped_refptr<TransformOperation> BlendRemainingByUsingMatrixInterpolation(
+  TransformOperation* BlendRemainingByUsingMatrixInterpolation(
       const TransformOperations& from,
       wtf_size_t matching_prefix_length,
       double progress,
@@ -181,7 +183,7 @@ class PLATFORM_EXPORT TransformOperations {
   TransformOperations Accumulate(const TransformOperations& to) const;
 
  private:
-  Vector<scoped_refptr<TransformOperation>, 2> operations_;
+  HeapVector<Member<TransformOperation>, 2> operations_;
 };
 
 }  // namespace blink

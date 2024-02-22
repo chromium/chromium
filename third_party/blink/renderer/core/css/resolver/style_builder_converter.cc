@@ -2612,9 +2612,9 @@ cc::ScrollSnapAlign StyleBuilderConverter::ConvertSnapAlign(
   return snapAlign;
 }
 
-scoped_refptr<TranslateTransformOperation>
-StyleBuilderConverter::ConvertTranslate(StyleResolverState& state,
-                                        const CSSValue& value) {
+TranslateTransformOperation* StyleBuilderConverter::ConvertTranslate(
+    StyleResolverState& state,
+    const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
     return nullptr;
@@ -2632,8 +2632,8 @@ StyleBuilderConverter::ConvertTranslate(StyleResolverState& state,
              .ComputeLength<double>(state.CssToLengthConversionData());
   }
 
-  return TranslateTransformOperation::Create(tx, ty, tz,
-                                             TransformOperation::kTranslate3D);
+  return MakeGarbageCollected<TranslateTransformOperation>(
+      tx, ty, tz, TransformOperation::kTranslate3D);
 }
 
 Rotation StyleBuilderConverter::ConvertRotation(const CSSValue& value) {
@@ -2660,7 +2660,7 @@ Rotation StyleBuilderConverter::ConvertRotation(const CSSValue& value) {
   return Rotation(gfx::Vector3dF(x, y, z), angle);
 }
 
-scoped_refptr<RotateTransformOperation> StyleBuilderConverter::ConvertRotate(
+RotateTransformOperation* StyleBuilderConverter::ConvertRotate(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -2668,11 +2668,11 @@ scoped_refptr<RotateTransformOperation> StyleBuilderConverter::ConvertRotate(
     return nullptr;
   }
 
-  return RotateTransformOperation::Create(ConvertRotation(value),
-                                          TransformOperation::kRotate3D);
+  return MakeGarbageCollected<RotateTransformOperation>(
+      ConvertRotation(value), TransformOperation::kRotate3D);
 }
 
-scoped_refptr<ScaleTransformOperation> StyleBuilderConverter::ConvertScale(
+ScaleTransformOperation* StyleBuilderConverter::ConvertScale(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -2695,8 +2695,8 @@ scoped_refptr<ScaleTransformOperation> StyleBuilderConverter::ConvertScale(
              .ComputeNumber(state.CssToLengthConversionData());
   }
 
-  return ScaleTransformOperation::Create(sx, sy, sz,
-                                         TransformOperation::kScale3D);
+  return MakeGarbageCollected<ScaleTransformOperation>(
+      sx, sy, sz, TransformOperation::kScale3D);
 }
 
 RespectImageOrientationEnum StyleBuilderConverter::ConvertImageOrientation(

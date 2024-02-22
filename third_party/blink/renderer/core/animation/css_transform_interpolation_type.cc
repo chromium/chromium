@@ -37,6 +37,11 @@ class InheritedTransformChecker
   InheritedTransformChecker(const TransformOperations& inherited_transform)
       : inherited_transform_(inherited_transform) {}
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(inherited_transform_);
+  }
+
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     return inherited_transform_ == state.ParentStyle()->Transform();

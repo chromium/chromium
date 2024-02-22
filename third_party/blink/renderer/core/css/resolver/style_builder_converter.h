@@ -295,15 +295,12 @@ class StyleBuilderConverter {
                                             const CSSValue&);
   static cc::ScrollSnapAlign ConvertSnapAlign(StyleResolverState&,
                                               const CSSValue&);
-  static scoped_refptr<TranslateTransformOperation> ConvertTranslate(
-      StyleResolverState&,
-      const CSSValue&);
-  static scoped_refptr<RotateTransformOperation> ConvertRotate(
-      StyleResolverState&,
-      const CSSValue&);
-  static scoped_refptr<ScaleTransformOperation> ConvertScale(
-      StyleResolverState&,
-      const CSSValue&);
+  static TranslateTransformOperation* ConvertTranslate(StyleResolverState&,
+                                                       const CSSValue&);
+  static RotateTransformOperation* ConvertRotate(StyleResolverState&,
+                                                 const CSSValue&);
+  static ScaleTransformOperation* ConvertScale(StyleResolverState&,
+                                               const CSSValue&);
   static RespectImageOrientationEnum ConvertImageOrientation(
       StyleResolverState&,
       const CSSValue&);

@@ -53,7 +53,10 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
   void Add(const InterpolableValue& other) final { NOTREACHED(); }
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
-  void Trace(Visitor* v) const override { InterpolableValue::Trace(v); }
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(operations_);
+  }
 
  private:
   InterpolableTransformList* RawClone() const final {

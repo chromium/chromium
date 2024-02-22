@@ -22,7 +22,7 @@ InterpolableTransformList* InterpolableTransformList::ConvertCSSValue(
 
 void InterpolableTransformList::PreConcat(
     const InterpolableTransformList& underlying) {
-  Vector<scoped_refptr<TransformOperation>> result;
+  HeapVector<Member<TransformOperation>> result;
   result.reserve(underlying.operations_.size() + operations_.size());
   result.AppendVector(underlying.operations_.Operations());
   result.AppendVector(operations_.Operations());
