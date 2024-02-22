@@ -318,7 +318,7 @@ public class RootUiCoordinator
     @Nullable protected final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
-    protected final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
+    private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;

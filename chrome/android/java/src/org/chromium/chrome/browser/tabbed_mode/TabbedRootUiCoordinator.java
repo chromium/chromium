@@ -91,7 +91,6 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogControlle
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
-import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
@@ -155,7 +154,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
-    private ReadAloudIPHController mReadAloudIPHController;
     private ReadLaterIPHController mReadLaterIPHController;
     private DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
@@ -433,10 +431,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mToolbarButtonInProductHelpController != null) {
             mToolbarButtonInProductHelpController.destroy();
-        }
-
-        if (mReadAloudIPHController != null) {
-            mReadAloudIPHController.destroy();
         }
 
         if (mWebFeedFollowIntroController != null) {
@@ -831,13 +825,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mIsInOverviewModeSupplier,
                         mToolbarManager.getMenuButtonView(),
                         mToolbarManager.getSecurityIconView());
-        mReadAloudIPHController =
-                new ReadAloudIPHController(
-                        mActivity,
-                        getToolbarManager().getMenuButtonView(),
-                        mAppMenuCoordinator.getAppMenuHandler(),
-                        mActivityTabProvider,
-                        mReadAloudControllerSupplier);
         mReadLaterIPHController =
                 new ReadLaterIPHController(
                         mActivity,
