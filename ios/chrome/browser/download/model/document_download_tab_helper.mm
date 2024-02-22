@@ -195,15 +195,15 @@ void DocumentDownloadTabHelper::PageLoaded(
 
     web::DownloadTask* active_task = tab_helper->GetActiveDownloadTask();
     if (active_task) {
+      if (observed_task_) {
+        observed_task_->RemoveObserver(this);
+      }
       // There is already an active download task. We don't want to prompt the
       // user on page load, so just observe this task. If it ever finishes while
       // the document is still displayed, we will trigger the new download.
       waiting_for_previous_task_ = true;
       active_task->AddObserver(this);
       current_task_is_document_download_ = false;
-      if (observed_task_) {
-        observed_task_->RemoveObserver(this);
-      }
       observed_task_ = active_task;
       observed_task_state_ = observed_task_->GetState();
     } else {
