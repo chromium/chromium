@@ -81,9 +81,9 @@ TEST(BorealisHardwareCheckerTest, Volteer) {
   EXPECT_FALSE(
       check("volteer", "lindar", "11th Gen Intel(R) Core(TM) 5 NOT_A_CPU", 2));
 
-  // Bad model
-  EXPECT_FALSE(check("volteer", "not_a_real_model",
-                     "11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz", 8));
+  // Any random model
+  EXPECT_TRUE(check("volteer", "not_a_real_model",
+                    "11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz", 8));
 }
 
 TEST(BorealisHardwareCheckerTest, GuybrushMajolica) {
