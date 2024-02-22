@@ -177,7 +177,7 @@ class GenerateSymKeyState : public NSSOperationState {
   GenerateSymKeyState(ServiceWeakPtr weak_ptr,
                       std::vector<uint8_t> key_id,
                       int key_size,
-                      GenerateSymKeyCallback callback)
+                      GenerateKeyCallback callback)
       : NSSOperationState(weak_ptr),
         key_id_(std::move(key_id)),
         key_size_(key_size),
@@ -208,7 +208,7 @@ class GenerateSymKeyState : public NSSOperationState {
   }
 
   // Must be called on origin thread, therefore use CallBack().
-  GenerateSymKeyCallback callback_;
+  GenerateKeyCallback callback_;
 };
 
 class GenerateRSAKeyState : public NSSOperationState {
@@ -570,6 +570,39 @@ class RemoveKeyState : public NSSOperationState {
   RemoveKeyCallback callback_;
 };
 
+class RemoveSymKeyState : public NSSOperationState {
+ public:
+  RemoveSymKeyState(ServiceWeakPtr weak_ptr,
+                    std::vector<uint8_t> key_id,
+                    RemoveKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        key_id_(std::move(key_id)),
+        callback_(std::move(callback)) {}
+
+  ~RemoveSymKeyState() override = default;
+
+  void OnError(const base::Location& from, Status status) override {
+    CallBack(from, status);
+  }
+
+  void OnSuccess(const base::Location& from) {
+    CallBack(from, Status::kSuccess);
+  }
+
+  const std::vector<uint8_t> key_id_;
+
+ private:
+  void CallBack(const base::Location& from, Status status) {
+    auto bound_callback = base::BindOnce(std::move(callback_), status);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        from, base::BindOnce(&NSSOperationState::RunCallback,
+                             std::move(bound_callback), service_weak_ptr_));
+  }
+
+  // Must be called on origin thread, therefore use CallBack().
+  RemoveKeyCallback callback_;
+};
+
 class GetTokensState : public NSSOperationState {
  public:
   GetTokensState(ServiceWeakPtr weak_ptr, GetTokensCallback callback)
@@ -766,6 +799,18 @@ crypto::ScopedSECKEYPrivateKey GetPrivateKey(
     return crypto::FindNSSKeyFromPublicKeyInfoInSlot(public_key_spki_der, slot);
   }
   return crypto::FindNSSKeyFromPublicKeyInfo(public_key_spki_der);
+}
+
+// Returns the symmetric key with CKA_ID equal to |key_id|
+// found in |slot|. |type| specifies the type of the key.
+crypto::ScopedPK11SymKey GetSymKey(
+    std::vector<uint8_t> key_id,
+    PK11SlotInfo* slot,
+    CK_MECHANISM_TYPE type = kDefaultSymKeyGenType) {
+  SECItem sec_key_id{siUTF8String, key_id.data(),
+                     static_cast<unsigned int>(key_id.size())};
+  return crypto::ScopedPK11SymKey(PK11_FindFixedKey(slot, type, &sec_key_id,
+                                                    /*wincx=*/nullptr));
 }
 
 void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
@@ -1404,6 +1449,44 @@ void RemoveKeyWithDb(std::unique_ptr<RemoveKeyState> state,
       base::BindOnce(&RemoveKeyOnWorkerThread, std::move(state)));
 }
 
+// Does the actual symmetric key removal on a worker thread. Used by
+// RemoveSymKeyWithDb().
+void RemoveSymKeyOnWorkerThread(std::unique_ptr<RemoveSymKeyState> state) {
+  if (!state->slot_) {
+    LOG(ERROR) << "No slot.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  auto key = GetSymKey(state->key_id_, state->slot_.get());
+  if (!key) {
+    LOG(ERROR) << "Couldn't find the symmetric key.";
+    state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
+    return;
+  }
+
+  if (PK11_DeleteTokenSymKey(key.get()) != SECSuccess) {
+    LOG(ERROR) << "Failed to delete key.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  state->OnSuccess(FROM_HERE);
+}
+
+// Continues removing the symmetric key with the obtained |cert_db|. Called by
+// RemoveSymKey().
+void RemoveSymKeyWithDb(std::unique_ptr<RemoveSymKeyState> state,
+                        net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&RemoveSymKeyOnWorkerThread, std::move(state)));
+}
+
 // Does the actual work to determine which tokens are available.
 void GetTokensWithDB(std::unique_ptr<GetTokensState> state,
                      net::NSSCertDatabase* cert_db) {
@@ -1618,7 +1701,7 @@ void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
 void PlatformKeysServiceImpl::GenerateSymKey(TokenId token_id,
                                              std::vector<uint8_t> key_id,
                                              int key_size,
-                                             GenerateSymKeyCallback callback) {
+                                             GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<GenerateSymKeyState>(
       weak_factory_.GetWeakPtr(), std::move(key_id), key_size,
@@ -1890,6 +1973,29 @@ void PlatformKeysServiceImpl::RemoveKey(
   // The NSSCertDatabase object is not required. But in case it's not available
   // we would get more informative status codes.
   GetCertDatabase(token_id, base::BindOnce(&RemoveKeyWithDb, std::move(state)),
+                  delegate_.get(), state_ptr);
+}
+
+void PlatformKeysServiceImpl::RemoveSymKey(TokenId token_id,
+                                           std::vector<uint8_t> key_id,
+                                           RemoveKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  auto state = std::make_unique<RemoveSymKeyState>(
+      weak_factory_.GetWeakPtr(), std::move(key_id), std::move(callback));
+  if (delegate_->IsShutDown()) {
+    state->OnError(FROM_HERE, Status::kErrorShutDown);
+    return;
+  }
+
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
+  NSSOperationState* state_ptr = state.get();
+
+  // The NSSCertDatabase object is not required. But in case it's not available
+  // we would get more informative status codes.
+  GetCertDatabase(token_id,
+                  base::BindOnce(&RemoveSymKeyWithDb, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 

@@ -28,12 +28,8 @@ class ClientCertStore;
 
 namespace ash::platform_keys {
 
-using GenerateSymKeyCallback =
-    base::OnceCallback<void(std::vector<uint8_t> key_id,
-                            chromeos::platform_keys::Status status)>;
-
 using GenerateKeyCallback =
-    base::OnceCallback<void(std::vector<uint8_t> public_key_spki_der,
+    base::OnceCallback<void(std::vector<uint8_t> key_identifier,
                             chromeos::platform_keys::Status status)>;
 
 using SignCallback =
@@ -144,7 +140,7 @@ class PlatformKeysService : public KeyedService {
   virtual void GenerateSymKey(chromeos::platform_keys::TokenId token_id,
                               std::vector<uint8_t> key_id,
                               int key_size,
-                              GenerateSymKeyCallback callback) = 0;
+                              GenerateKeyCallback callback) = 0;
 
   // Generates a RSA key pair with |modulus_length_bits|. |token_id| specifies
   // the token to store the key pair on. |callback| will be invoked with the
@@ -246,6 +242,13 @@ class PlatformKeysService : public KeyedService {
   virtual void RemoveKey(chromeos::platform_keys::TokenId token_id,
                          std::vector<uint8_t> public_key_spki_der,
                          RemoveKeyCallback callback) = 0;
+
+  // Removes the symmetric key with CKA_ID equal to |key_id|. Only keys in the
+  // given |token_id| are considered. |callback| will be invoked on the UI
+  // thread when the removal is finished, possibly with an error status.
+  virtual void RemoveSymKey(chromeos::platform_keys::TokenId token_id,
+                            std::vector<uint8_t> key_id,
+                            RemoveKeyCallback callback) = 0;
 
   // Gets the list of available tokens. |callback| will be invoked when the list
   // of available tokens is determined, possibly with an error status.
@@ -352,7 +355,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void GenerateSymKey(chromeos::platform_keys::TokenId token_id,
                       std::vector<uint8_t> key_id,
                       int key_size,
-                      GenerateSymKeyCallback callback) override;
+                      GenerateKeyCallback callback) override;
   void GenerateRSAKey(chromeos::platform_keys::TokenId token_id,
                       unsigned int modulus_length_bits,
                       bool sw_backed,
@@ -390,6 +393,9 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void RemoveKey(chromeos::platform_keys::TokenId token_id,
                  std::vector<uint8_t> public_key_spki_der,
                  RemoveKeyCallback callback) override;
+  void RemoveSymKey(chromeos::platform_keys::TokenId token_id,
+                    std::vector<uint8_t> key_id,
+                    RemoveKeyCallback callback) override;
   void GetTokens(GetTokensCallback callback) override;
   void GetKeyLocations(std::vector<uint8_t> public_key_spki_der,
                        const GetKeyLocationsCallback callback) override;

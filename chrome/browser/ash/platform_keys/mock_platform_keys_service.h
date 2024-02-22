@@ -40,7 +40,7 @@ class MockPlatformKeysService : public PlatformKeysService {
               (chromeos::platform_keys::TokenId token_id,
                std::vector<uint8_t> key_id,
                int key_size,
-               GenerateSymKeyCallback callback),
+               GenerateKeyCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -120,6 +120,13 @@ class MockPlatformKeysService : public PlatformKeysService {
               RemoveKey,
               (chromeos::platform_keys::TokenId token_id,
                std::vector<uint8_t> public_key_spki_der,
+               RemoveKeyCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              RemoveSymKey,
+              (chromeos::platform_keys::TokenId token_id,
+               std::vector<uint8_t> key_id,
                RemoveKeyCallback callback),
               (override));
 
