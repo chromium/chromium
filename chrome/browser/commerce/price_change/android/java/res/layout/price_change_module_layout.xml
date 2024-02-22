@@ -38,8 +38,9 @@ found in the LICENSE file.
             android:layout_marginHorizontal="20dp">
             <RelativeLayout
                 android:id="@+id/image_layout"
-                android:layout_height="@dimen/price_change_module_product_image_size"
-                android:layout_width="@dimen/price_change_module_product_image_size">
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:background="@drawable/price_change_module_image_background">
                 <org.chromium.components.browser_ui.widget.RoundedCornerImageView
                     android:id="@+id/product_image"
                     app:cornerRadiusBottomEnd="@dimen/price_change_module_product_image_corner_radius"
@@ -48,13 +49,14 @@ found in the LICENSE file.
                     app:cornerRadiusTopStart="@dimen/price_change_module_product_image_corner_radius"
                     android:layout_height="@dimen/price_change_module_product_image_size"
                     android:layout_width="@dimen/price_change_module_product_image_size"
+                    android:layout_margin="@dimen/price_change_module_product_image_margin"
                     android:scaleType="centerCrop" />
                 <org.chromium.ui.widget.ChromeImageView
                     android:id="@+id/favicon_image"
                     android:background="@drawable/price_change_module_favicon_background"
                     android:elevation="4dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
+                    android:layout_alignBottom="@id/product_image"
+                    android:layout_alignEnd="@id/product_image"
                     android:layout_height="@dimen/price_change_module_favicon_image_size"
                     android:layout_width="@dimen/price_change_module_favicon_image_size"
                     android:layout_marginBottom="8dp"

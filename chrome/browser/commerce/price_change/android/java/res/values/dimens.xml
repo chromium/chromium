@@ -8,8 +8,10 @@
   <!-- Price change module dimens -->
     <dimen name="price_change_module_favicon_background_radius">4dp</dimen>
     <dimen name="price_change_module_favicon_image_size">24dp</dimen>
+    <dimen name="price_change_module_image_placeholder_padding">34dp</dimen>
     <dimen name="price_change_module_margin_top">16dp</dimen>
-    <dimen name="price_change_module_product_image_size">116dp</dimen>
+    <dimen name="price_change_module_product_image_size">114dp</dimen>
+    <dimen name="price_change_module_product_image_margin">1dp</dimen>
     <dimen name="price_change_module_product_image_corner_radius">12dp</dimen>
     <dimen name="price_change_module_price_card_corner_radius">8dp</dimen>
 </resources>
