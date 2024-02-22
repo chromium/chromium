@@ -24,6 +24,8 @@ namespace media {
 enum class BufferType { kCompressedData, kRawFrames, kInvalid };
 enum class MemoryType { kMemoryMapped, kDmaBuf, kInvalid };
 
+std::string BufferTypeString(const BufferType buffer_type);
+
 // Abstraction to hold compressed and uncompressed buffers. This class
 // provides a structure that does not include and V4L2 references. This is done
 // so that users of the driver do not need to care about V4L2 specific

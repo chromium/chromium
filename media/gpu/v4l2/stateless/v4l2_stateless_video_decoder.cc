@@ -10,7 +10,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/task/thread_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -47,43 +46,10 @@
 // DVLOGF(5): Events that occur multiple times per frame.
 
 namespace {
-using DequeueCB = base::RepeatingCallback<void(media::Buffer)>;
-
-void DequeueOutput(scoped_refptr<media::StatelessDevice> device,
-                   DequeueCB dequeue_cb) {
-  while (true) {
-    DVLOGF(4) << "blocking on dequeue of output";
-    auto buffer = device->DequeueBuffer(media::BufferType::kRawFrames,
-                                        media::MemoryType::kMemoryMapped, 2);
-    if (buffer) {
-      DVLOGF(4) << "output buffer dequeued " << buffer->GetIndex();
-      dequeue_cb.Run(std::move(*buffer));
-    } else {
-      break;
-    }
-  }
-}
-
-void DequeueInput(scoped_refptr<media::StatelessDevice> device,
-                  DequeueCB dequeue_cb) {
-  while (true) {
-    DVLOGF(4) << "blocking on dequeue on input";
-    auto buffer = device->DequeueBuffer(media::BufferType::kCompressedData,
-                                        media::MemoryType::kMemoryMapped, 1);
-    if (buffer) {
-      DVLOGF(4) << "input buffer dequeued " << buffer->GetIndex();
-      dequeue_cb.Run(std::move(*buffer));
-    } else {
-      break;
-    }
-  }
-}
-
-}  // namespace
-namespace media {
-
 constexpr size_t kTimestampCacheSize = 128;
+}  // namespace
 
+namespace media {
 // static
 std::unique_ptr<VideoDecoderMixin> V4L2StatelessVideoDecoder::Create(
     std::unique_ptr<MediaLog> media_log,
@@ -192,24 +158,6 @@ void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   const int32_t bitstream_id =
       bitstream_id_generator_.GenerateNextId().GetUnsafeValue();
-
-  // |input_queue_task_runner_| and |output_queue_task_runner_| block on
-  // dequeuing a kernel ioctl call (VIDIOC_DQBUF). These don't need to be true
-  // task runners as there is never anything posted to those runners. They wait
-  // for an event and then post messages to the main task runner. Using task
-  // runners requires having a dedicated thread to prevent other runners that
-  // are put on the same thread from being blocked unintentionally.
-  if (!input_queue_task_runner_) {
-    input_queue_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  }
-
-  if (!output_queue_task_runner_) {
-    output_queue_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  }
 
   decode_request_queue_.push(
       DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
@@ -594,19 +542,19 @@ void V4L2StatelessVideoDecoder::ArmBufferMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
-  auto input_cb = base::BindPostTaskToCurrentDefault(base::BindRepeating(
-      &V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers,
-      weak_ptr_factory_for_events_.GetWeakPtr()));
+  media::DequeueCB input_cb =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers,
+          weak_ptr_factory_for_events_.GetWeakPtr()));
 
-  input_queue_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DequeueInput, device_, std::move(input_cb)));
+  input_queue_->ArmBufferMonitor(std::move(input_cb));
 
-  auto output_cb = base::BindPostTaskToCurrentDefault(base::BindRepeating(
-      &V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers,
-      weak_ptr_factory_for_events_.GetWeakPtr()));
+  media::DequeueCB output_cb =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers,
+          weak_ptr_factory_for_events_.GetWeakPtr()));
 
-  output_queue_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DequeueOutput, device_, std::move(output_cb)));
+  output_queue_->ArmBufferMonitor(std::move(output_cb));
 }
 
 void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {

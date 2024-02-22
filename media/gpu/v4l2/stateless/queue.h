@@ -17,6 +17,7 @@
 #include "media/gpu/v4l2/stateless/stateless_device.h"
 
 namespace media {
+using DequeueCB = base::RepeatingCallback<void(media::Buffer)>;
 
 // V4L2 has two similar queues. Capitalized OUTPUT (for compressed frames)
 // and CAPTURE (for uncompressed frames) are the designation that the V4L2
@@ -36,6 +37,7 @@ class MEDIA_GPU_EXPORT BaseQueue {
   bool StartStreaming();
   bool StopStreaming();
   uint32_t FreeBufferCount() const { return free_buffer_indices_.size(); }
+  void ArmBufferMonitor(DequeueCB cb);
 
  protected:
   bool AllocateBuffers(uint32_t num_planes, size_t num_buffers);
@@ -53,6 +55,9 @@ class MEDIA_GPU_EXPORT BaseQueue {
   // will be used more often than if it was a ring buffer. Using a set
   // enforces the elements be unique.
   std::set<uint32_t> free_buffer_indices_;
+
+  // Workers that block and wait for buffers to be ready to be dequeued.
+  scoped_refptr<base::SequencedTaskRunner> queue_task_runner_;
 };
 
 class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {

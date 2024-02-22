@@ -160,17 +160,6 @@ void BufferToV4L2Buffer(struct v4l2_buffer* v4l2_buffer, const Buffer& buffer) {
   }
 }
 
-std::string BufferTypeString(const BufferType buffer_type) {
-  switch (buffer_type) {
-    case BufferType::kCompressedData:
-      return "compressed data";
-    case BufferType::kRawFrames:
-      return "raw frames";
-    case BufferType::kInvalid:
-      return "INVALID";
-  }
-}
-
 using v4l2_enum_type = decltype(V4L2_PIX_FMT_H264);
 // Correspondence from V4L2 codec described as a pixel format to a Control ID.
 static const std::map<v4l2_enum_type, v4l2_enum_type>
@@ -262,6 +251,17 @@ void BufferFormatToV4L2Format(struct v4l2_format& v_format,
   }
 }
 }  // namespace
+
+std::string BufferTypeString(const BufferType buffer_type) {
+  switch (buffer_type) {
+    case BufferType::kCompressedData:
+      return "compressed data";
+    case BufferType::kRawFrames:
+      return "raw frames";
+    case BufferType::kInvalid:
+      return "INVALID";
+  }
+}
 
 Device::Device() {}
 

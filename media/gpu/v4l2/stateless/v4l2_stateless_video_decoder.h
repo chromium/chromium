@@ -194,10 +194,6 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // The decode request decode loop needs to keep this alive.
   std::optional<DecodeRequest> current_decode_request_;
 
-  // Workers that block and wait for buffers to be ready to be dequeued.
-  scoped_refptr<base::SequencedTaskRunner> input_queue_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> output_queue_task_runner_;
-
   // Queue holding surfaces in display order.
   std::queue<scoped_refptr<StatelessDecodeSurface>> display_queue_;
 
