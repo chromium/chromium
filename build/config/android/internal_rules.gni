@@ -2167,7 +2167,7 @@ if (enable_java_templates) {
     _script = "//build/android/gyp/compile_resources.py"
 
     _target_sdk_version = invoker.target_sdk_version
-    if(defined(invoker.override_target_sdk)) {
+    if (defined(invoker.override_target_sdk)) {
       _target_sdk_version = invoker.override_target_sdk
     }
 
@@ -4284,6 +4284,11 @@ if (enable_java_templates) {
           if (defined(invoker.jar_path)) {
             _abs_jar_path = get_path_info(invoker.jar_path, "abspath")
           }
+          _sdk_version = "current"
+          if (defined(invoker.alternative_android_sdk_dep)) {
+            _sdk_version = "system_current"
+          }
+
           # See crbug/1449896 for more details about the metadata fields
           # and why they are added.
           metadata = {
@@ -4291,6 +4296,7 @@ if (enable_java_templates) {
             source_files = _abs_path_source_files
             all_deps = _abs_deps
             target_type = [ _type ]
+            sdk_version = [ _sdk_version ]
           }
         }
         if (!defined(public_deps)) {
