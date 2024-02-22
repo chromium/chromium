@@ -97,10 +97,11 @@ void UBreakIteratorDeleter::operator()(UBreakIterator* ptr) {
   }
 }
 
-BreakIterator::BreakIterator(StringPiece16 str, BreakType break_type)
+BreakIterator::BreakIterator(std::u16string_view str, BreakType break_type)
     : string_(str), break_type_(break_type) {}
 
-BreakIterator::BreakIterator(StringPiece16 str, const std::u16string& rules)
+BreakIterator::BreakIterator(std::u16string_view str,
+                             const std::u16string& rules)
     : string_(str), rules_(rules), break_type_(RULE_BASED) {}
 
 BreakIterator::~BreakIterator() {
@@ -266,7 +267,7 @@ std::u16string BreakIterator::GetString() const {
   return std::u16string(GetStringPiece());
 }
 
-StringPiece16 BreakIterator::GetStringPiece() const {
+std::u16string_view BreakIterator::GetStringPiece() const {
   DCHECK(prev_ != npos && pos_ != npos);
   return string_.substr(prev_, pos_ - prev_);
 }

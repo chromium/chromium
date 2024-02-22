@@ -15,6 +15,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -136,7 +137,7 @@ struct TestFunctionDescription {
 };
 
 bool IsStringUTF8(const std::string& str) {
-  return base::IsStringUTF8(base::StringPiece(str));
+  return base::IsStringUTF8(std::string_view(str));
 }
 
 // IsString7Bit is intentionally placed last so it can be excluded easily.

@@ -9,9 +9,9 @@
 #define BASE_I18N_TIME_FORMATTING_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
@@ -120,7 +120,7 @@ BASE_I18N_EXPORT std::u16string TimeFormatFriendlyDate(const Time& time);
 // use case.
 BASE_I18N_EXPORT std::u16string LocalizedTimeFormatWithPattern(
     const Time& time,
-    StringPiece pattern);
+    std::string_view pattern);
 
 // Formats a time using a pattern to produce en-US-like output, e.g. "Feb. 2,
 // 18:00". See
@@ -141,7 +141,7 @@ BASE_I18N_EXPORT std::u16string LocalizedTimeFormatWithPattern(
 // `std::u16string` under the assumption that it will not be used in UI.
 BASE_I18N_EXPORT std::string UnlocalizedTimeFormatWithPattern(
     const Time& time,
-    StringPiece pattern,
+    std::string_view pattern,
     const icu::TimeZone* time_zone = nullptr);
 
 // Formats a time compliant to ISO 8601 in UTC, e.g. "2020-12-31T23:59:59.999Z".

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -205,9 +206,9 @@ TextDirection GetTextDirectionForLocaleInStartUp(const char* locale_name) {
   // This list needs to be updated in alphabetical order if we add more RTL
   // locales.
   static const char kRTLLanguageCodes[][3] = {"ar", "fa", "he", "iw", "ur"};
-  std::vector<StringPiece> locale_split =
+  std::vector<std::string_view> locale_split =
       SplitStringPiece(locale_name, "-_", KEEP_WHITESPACE, SPLIT_WANT_ALL);
-  const StringPiece& language_code = locale_split[0];
+  std::string_view language_code = locale_split[0];
   if (std::binary_search(kRTLLanguageCodes,
                          kRTLLanguageCodes + std::size(kRTLLanguageCodes),
                          language_code))

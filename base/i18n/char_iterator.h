@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/i18n/base_i18n_export.h"
-#include "base/strings/string_piece.h"
 
 // The CharIterator classes iterate through the characters in UTF8 and
 // UTF16 strings.  Example usage:
@@ -23,7 +24,7 @@ namespace i18n {
 class BASE_I18N_EXPORT UTF8CharIterator {
  public:
   // Requires |str| to live as long as the UTF8CharIterator does.
-  explicit UTF8CharIterator(StringPiece str);
+  explicit UTF8CharIterator(std::string_view str);
   UTF8CharIterator(const UTF8CharIterator&) = delete;
   UTF8CharIterator& operator=(const UTF8CharIterator&) = delete;
   ~UTF8CharIterator();
@@ -48,7 +49,7 @@ class BASE_I18N_EXPORT UTF8CharIterator {
 
  private:
   // The string we're iterating over.
-  StringPiece str_;
+  std::string_view str_;
 
   // Array index.
   size_t array_pos_;
@@ -66,7 +67,7 @@ class BASE_I18N_EXPORT UTF8CharIterator {
 class BASE_I18N_EXPORT UTF16CharIterator {
  public:
   // Requires |str| to live as long as the UTF16CharIterator does.
-  explicit UTF16CharIterator(StringPiece16 str);
+  explicit UTF16CharIterator(std::u16string_view str);
   UTF16CharIterator(UTF16CharIterator&& to_move);
   UTF16CharIterator& operator=(UTF16CharIterator&& to_move);
 
@@ -78,12 +79,14 @@ class BASE_I18N_EXPORT UTF16CharIterator {
   // Returns an iterator starting on the unicode character at offset
   // |array_index| into the string, or the previous array offset if
   // |array_index| is the second half of a surrogate pair.
-  static UTF16CharIterator LowerBound(StringPiece16 str, size_t array_index);
+  static UTF16CharIterator LowerBound(std::u16string_view str,
+                                      size_t array_index);
 
   // Returns an iterator starting on the unicode character at offset
   // |array_index| into the string, or the next offset if |array_index| is the
   // second half of a surrogate pair.
-  static UTF16CharIterator UpperBound(StringPiece16 str, size_t array_index);
+  static UTF16CharIterator UpperBound(std::u16string_view str,
+                                      size_t array_index);
 
   // Return the starting array index of the current character within the
   // string.
@@ -123,14 +126,14 @@ class BASE_I18N_EXPORT UTF16CharIterator {
   bool Rewind();
 
  private:
-  UTF16CharIterator(base::StringPiece16 str, size_t initial_pos);
+  UTF16CharIterator(std::u16string_view str, size_t initial_pos);
 
   // Fills in the current character we found and advances to the next
   // character, updating all flags as necessary.
   void ReadChar();
 
   // The string we're iterating over.
-  StringPiece16 str_;
+  std::u16string_view str_;
 
   // Array index.
   size_t array_pos_;

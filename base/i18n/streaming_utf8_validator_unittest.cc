@@ -10,12 +10,12 @@
 #include <string.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -174,8 +174,8 @@ class PartialIterator {
     return *this;
   }
 
-  base::StringPiece operator*() const {
-    return base::StringPiece(valid[index_], prefix_length_);
+  std::string_view operator*() const {
+    return std::string_view(valid[index_], prefix_length_);
   }
 
   bool operator==(const PartialIterator& rhs) const {
@@ -208,14 +208,14 @@ class PartialIterator {
 // byte sequence) at a time.
 class StreamingUtf8ValidatorSingleSequenceTest : public ::testing::Test {
  protected:
-  // Iterator must be convertible when de-referenced to StringPiece.
+  // Iterator must be convertible when de-referenced to std::string_view.
   template <typename Iterator>
   void CheckRange(Iterator begin,
                   Iterator end,
                   StreamingUtf8Validator::State expected) {
     for (Iterator it = begin; it != end; ++it) {
       StreamingUtf8Validator validator;
-      base::StringPiece sequence = *it;
+      std::string_view sequence = *it;
       EXPECT_EQ(expected, validator.AddBytes(base::as_byte_span(sequence)))
           << "Failed for \"" << sequence << "\"";
     }
@@ -228,7 +228,7 @@ class StreamingUtf8ValidatorSingleSequenceTest : public ::testing::Test {
                              StreamingUtf8Validator::State expected) {
     for (Iterator it = begin; it != end; ++it) {
       StreamingUtf8Validator validator;
-      base::StringPiece sequence = *it;
+      std::string_view sequence = *it;
       StreamingUtf8Validator::State state = VALID_ENDPOINT;
       for (const auto& cit : sequence) {
         state = validator.AddBytes(base::as_bytes(base::make_span(&cit, 1u)));
@@ -252,9 +252,9 @@ class StreamingUtf8ValidatorDoubleSequenceTest : public ::testing::Test {
                          StreamingUtf8Validator::State expected) {
     StreamingUtf8Validator validator;
     for (Iterator1 it1 = begin1; it1 != end1; ++it1) {
-      base::StringPiece c1 = *it1;
+      std::string_view c1 = *it1;
       for (Iterator2 it2 = begin2; it2 != end2; ++it2) {
-        base::StringPiece c2 = *it2;
+        std::string_view c2 = *it2;
         validator.AddBytes(base::as_byte_span(c1));
         EXPECT_EQ(expected, validator.AddBytes(base::as_byte_span(c2)))
             << "Failed for \"" << c1 << c2 << "\"";
