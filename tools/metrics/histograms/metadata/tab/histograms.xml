@@ -2225,6 +2225,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabState.RestoreMethod" enum="TabStateRestoreMethod"
+    expires_after="2025-02-21">
+  <owner>davidjm@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    TabState (Tab metadata persistence system on Chrome for Android) is being
+    migrated from a hand-written schema to a FlatBuffer based schema. This
+    metric records the whether a TabState was restored using the FlatBuffer
+    schema, legacy TabState schema (e.g. if a FlatBuffer file hasn't been saved
+    for the Tab yet) or if TabState was failed to be restored (e.g. both the
+    FlatBuffer and legacy TabState file are corrupt). Recorded once per TabState
+    restoration (i.e. once per tab) at cold startup.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabState.SaveTime" units="ms" expires_after="2024-05-14">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>

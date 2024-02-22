@@ -109,6 +109,27 @@ public class TabStateFileManager {
         int NUM_ENTRIES = 3;
     }
 
+    @IntDef({
+        TabStateRestoreMethod.FLATBUFFER,
+        TabStateRestoreMethod.LEGACY_HAND_WRITTEN,
+        TabStateRestoreMethod.FAILED,
+        TabStateRestoreMethod.NUM_ENTRIES,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public @interface TabStateRestoreMethod {
+        /** TabState restored using FlatBuffer schema */
+        int FLATBUFFER = 0;
+
+        /** TabState restored using Legacy Handwritten schema */
+        int LEGACY_HAND_WRITTEN = 1;
+
+        /** TabState failed to be restored. */
+        int FAILED = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
     /**
      * @param stateFolder folder {@link TabState} files are stored in
      * @param id {@link Tab} identifier
@@ -122,12 +143,28 @@ public class TabStateFileManager {
         if (isFlatBufferSchemaEnabled()) {
             TabState tabState = restoreTabState(stateFolder, id, true);
             if (tabState != null) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Tabs.TabState.RestoreMethod",
+                        TabStateRestoreMethod.FLATBUFFER,
+                        TabStateRestoreMethod.NUM_ENTRIES);
                 return tabState;
             }
         }
         // Flatbuffer flag is off or we couldn't restore the TabState using a FlatBuffer based
         // file e.g. file doesn't exist for the Tab or is corrupt.
-        return restoreTabState(stateFolder, id, false);
+        TabState tabState = restoreTabState(stateFolder, id, false);
+        if (tabState == null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.RestoreMethod",
+                    TabStateRestoreMethod.FAILED,
+                    TabStateRestoreMethod.NUM_ENTRIES);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.RestoreMethod",
+                    TabStateRestoreMethod.LEGACY_HAND_WRITTEN,
+                    TabStateRestoreMethod.NUM_ENTRIES);
+        }
+        return tabState;
     }
 
     /**

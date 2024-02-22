@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -42,6 +43,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -246,6 +248,62 @@ public class TabStateFlatBufferTest {
                         }
                     }
                 });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    public void testFlatBufferMetrics() throws ExecutionException, IOException {
+        TabState state = getTestTabState(false);
+        File file = getTestFile(1, false);
+        TabStateFileManager.saveStateInternal(file, state, false);
+        var histograms =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabState.RestoreMethod",
+                        TabStateFileManager.TabStateRestoreMethod.FLATBUFFER);
+        TabState restoredTabState =
+                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1);
+        Assert.assertNotNull(restoredTabState);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    public void testLegacyHandWrittenMetrics() throws ExecutionException, IOException {
+        TabState state = getTestTabState(false);
+        File file = getLegacyTestFile(1, false);
+        TabStateFileManager.saveStateInternal(file, state, false);
+        var histograms =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabState.RestoreMethod",
+                        TabStateFileManager.TabStateRestoreMethod.LEGACY_HAND_WRITTEN);
+        TabState restoredTabState =
+                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1);
+        Assert.assertNotNull(restoredTabState);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    public void testCorruptTabStateFile() throws ExecutionException, IOException {
+        File legacyFile = getLegacyTestFile(1, false);
+        FileOutputStream legacyOutputStream = new FileOutputStream(legacyFile);
+        legacyOutputStream.write(new byte[] {1, 2, 3, 4, 5});
+        legacyOutputStream.close();
+        File flatBufferFile = getTestFile(1, false);
+        FileOutputStream flatBufferOutputStream = new FileOutputStream(flatBufferFile);
+        flatBufferOutputStream.write(new byte[] {6, 7, 8, 9, 10});
+        flatBufferOutputStream.close();
+        var histograms =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabState.RestoreMethod",
+                        TabStateFileManager.TabStateRestoreMethod.FAILED);
+        TabState restoredTabState =
+                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1);
+        Assert.assertNull(restoredTabState);
+        histograms.assertExpected();
     }
 
     private static TabState getTestTabState(boolean isIncognito) throws ExecutionException {

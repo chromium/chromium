@@ -197,6 +197,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure IndexOutOfBoundsException"/>
 </enum>
 
+<enum name="TabStateRestoreMethod">
+  <int value="0" label="FlatBuffer Schema"/>
+  <int value="1" label="Legacy hand written Schema"/>
+  <int value="2" label="Failed to restore TabState"/>
+</enum>
+
 <enum name="TabStatus">
   <int value="0" label="Memory resident"/>
   <int value="1" label="Evicted and reloaded"/>
