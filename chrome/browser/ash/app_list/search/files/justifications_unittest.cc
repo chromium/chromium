@@ -25,7 +25,7 @@ class JustificationsTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_features_;
 };
 
-TEST(JustificationsTest, OpenedOrEdited) {
+TEST_F(JustificationsTest, OpenedOrEdited) {
   base::Time now = base::Time::Now();
 
   // Opened more recently than edited.
@@ -39,7 +39,7 @@ TEST(JustificationsTest, OpenedOrEdited) {
             l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW));
 }
 
-TEST(JustificationsTest, EditTimes) {
+TEST_F(JustificationsTest, EditTimes) {
   base::Time now = base::Time::Now();
 
   // Just now.
@@ -72,7 +72,7 @@ TEST(JustificationsTest, EditTimes) {
                                       now - base::Days(32), /*user_name=*/""));
 }
 
-TEST(JustificationsTest, OpenTimes) {
+TEST_F(JustificationsTest, OpenTimes) {
   base::Time now = base::Time::Now();
 
   // Just now.
