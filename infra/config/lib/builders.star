@@ -418,6 +418,7 @@ defaults = args.defaults(
     shadow_pool = None,
     shadow_service_account = None,
     shadow_reclient_instance = None,
+    shadow_siso_project = None,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -497,6 +498,7 @@ def builder(
         shadow_pool = args.DEFAULT,
         shadow_service_account = args.DEFAULT,
         shadow_reclient_instance = args.DEFAULT,
+        shadow_siso_project = args.DEFAULT,
         gn_args = None,
         targets = None,
         contact_team_email = args.DEFAULT,
@@ -730,6 +732,9 @@ def builder(
             use this as the reclient instance instead of reclient_instance. The
             other reclient_* values will continue to be used for the shadow
             build.
+        shadow_siso_project: If set, then led builds for this builder will
+            use this as the siso project instead of siso_project. The other
+            siso_* values will continue to be used for the shadow build.
         gn_args: If set, the GN args config to use for the builder. It can be
             set to the name of a predeclared config or an unnamed
             gn_args.config declaration for an unphased config. A builder can use
@@ -930,7 +935,7 @@ def builder(
     siso_project = defaults.get_value("siso_project", siso_project)
     use_siso = defaults.get_value("siso_enabled", siso_enabled) and siso_project
     if use_siso:
-        properties["$build/siso"] = {
+        siso = {
             "configs": defaults.get_value("siso_configs", siso_configs),
             "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
             "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
@@ -939,7 +944,12 @@ def builder(
         }
         remote_jobs = defaults.get_value("siso_remote_jobs", siso_remote_jobs)
         if remote_jobs:
-            properties["$build/siso"]["remote_jobs"] = remote_jobs
+            siso["remote_jobs"] = remote_jobs
+        properties["$build/siso"] = siso
+        if defaults.get_value("shadow_siso_project", shadow_siso_project):
+            shadow_siso = dict(siso)
+            shadow_siso["project"] = defaults.get_value("shadow_siso_project", shadow_siso_project)
+            shadow_properties["$build/siso"] = shadow_siso
 
     pgo = _pgo_property(
         use_pgo = use_pgo,

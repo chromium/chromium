@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders", "cpu", "reclient")
+load("//lib/builders.star", "builders", "cpu", "reclient", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -19,6 +19,7 @@ ci.defaults.set(
     shadow_free_space = None,
     shadow_pool = "luci.chromium.try",
     shadow_reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    shadow_siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 luci.bucket(
