@@ -1067,6 +1067,9 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Profile Menu -->
+      <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
+        Sign in to Chrome
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON" desc="The text label of the Customize Chrome button in the Profile Menu.">
           Customize your Chrome

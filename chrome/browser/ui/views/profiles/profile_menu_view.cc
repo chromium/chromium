@@ -697,8 +697,16 @@ void ProfileMenuView::BuildSyncInfo() {
     // There is always an account on ChromeOS.
     NOTREACHED_NORETURN();
 #else
-    description = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
-    button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+            switches::ExplicitBrowserSigninPhase::kFull)) {
+      description =
+          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
+      button_text =
+          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
+    } else {
+      description = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
+      button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+    }
     button_type = ActionableItem::kSigninButton;
 #endif
   }
