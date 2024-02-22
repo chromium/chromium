@@ -229,12 +229,15 @@ class IsolatedWebAppPolicyManager {
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
 
-  void Uninstall(base::OnceClosure next_step_callback);
+  void Uninstall(std::vector<web_package::SignedWebBundleId> to_be_removed,
+                 base::OnceClosure next_step_callback);
   void OnUninstalled(
       base::OnceClosure next_step_callback,
       std::vector<internal::BulkIwaUninstaller::Result> uninstall_results);
 
-  void Install(base::OnceClosure next_step_callback);
+  void Install(
+      std::vector<IsolatedWebAppExternalInstallOptions> to_be_installed,
+      base::OnceClosure next_step_callback);
   void OnInstalled(
       base::OnceClosure next_step_callback,
       std::vector<internal::BulkIwaInstaller::Result> install_results);
@@ -267,9 +270,6 @@ class IsolatedWebAppPolicyManager {
   bool reprocess_policy_needed_ = false;
   bool policy_is_being_processed_ = false;
   base::Value::Dict current_process_log_;
-
-  std::vector<IsolatedWebAppExternalInstallOptions> to_be_installed_;
-  std::vector<web_package::SignedWebBundleId> to_be_removed_;
 
   base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_ptr_factory_{this};
 };

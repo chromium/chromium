@@ -547,8 +547,6 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
     AllAppsLock& lock,
     base::Value::Dict& debug_info) {
   CHECK(provider_);
-  CHECK(to_be_installed_.empty());
-  CHECK(to_be_removed_.empty());
   CHECK(!bulk_installer_.get());
 
   std::vector<IsolatedWebAppExternalInstallOptions> apps_in_policy =
@@ -561,16 +559,18 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   // This currently only installs apps that aren't already installed.
   // TODO (peletskyi@): As soon as we support version pinning
   // implement force update.
+  std::vector<IsolatedWebAppExternalInstallOptions> to_be_installed;
   for (const IsolatedWebAppExternalInstallOptions& app : apps_in_policy) {
     if (!base::Contains(installed_apps, app.web_bundle_id())) {
-      to_be_installed_.push_back(app);
+      to_be_installed.push_back(app);
     }
   }
 
+  std::vector<web_package::SignedWebBundleId> to_be_removed;
   for (const web_package::SignedWebBundleId& installed_app : installed_apps) {
     if (!base::Contains(apps_in_policy, installed_app,
                         &IsolatedWebAppExternalInstallOptions::web_bundle_id)) {
-      to_be_removed_.push_back(installed_app);
+      to_be_removed.push_back(installed_app);
     }
   }
 
@@ -581,14 +581,14 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   debug_info.Set("installed_apps",
                  ToList(installed_apps, &web_package::SignedWebBundleId::id));
   debug_info.Set(
-      "to_be_installed", ToList(to_be_installed_, [](const auto& options) {
+      "to_be_installed", ToList(to_be_installed, [](const auto& options) {
         return base::Value::Dict()
             .Set("id", options.web_bundle_id().id())
             .Set("update_manifest_url",
                  options.update_manifest_url().possibly_invalid_spec());
       }));
   debug_info.Set("to_be_removed",
-                 ToList(to_be_removed_, &web_package::SignedWebBundleId::id));
+                 ToList(to_be_removed, &web_package::SignedWebBundleId::id));
   current_process_log_.Merge(debug_info.Clone());
 
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
@@ -598,16 +598,19 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
       // - usually there is a strong reason why an admin whats to uninstall an
       //   app (e.g. security vulnerability). So it is better to uninstall it
       //   ASAP.
-      base::BindOnce(&IsolatedWebAppPolicyManager::Uninstall, weak_ptr),
-      base::BindOnce(&IsolatedWebAppPolicyManager::Install, weak_ptr),
+      base::BindOnce(&IsolatedWebAppPolicyManager::Uninstall, weak_ptr,
+                     std::move(to_be_removed)),
+      base::BindOnce(&IsolatedWebAppPolicyManager::Install, weak_ptr,
+                     std::move(to_be_installed)),
       base::BindOnce(&IsolatedWebAppPolicyManager::OnPolicyProcessed,
                      weak_ptr));
 }
 
 void IsolatedWebAppPolicyManager::Uninstall(
+    std::vector<web_package::SignedWebBundleId> to_be_removed,
     base::OnceClosure next_step_callback) {
   bulk_uninstaller_->UninstallApps(
-      to_be_removed_,
+      std::move(to_be_removed),
       base::BindOnce(&IsolatedWebAppPolicyManager::OnUninstalled,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
@@ -630,12 +633,11 @@ void IsolatedWebAppPolicyManager::OnUninstalled(
             .Set("result", base::ToString(uninstall_result));
       }));
 
-  to_be_removed_.clear();
-
   std::move(next_step_callback).Run();
 }
 
 void IsolatedWebAppPolicyManager::Install(
+    std::vector<IsolatedWebAppExternalInstallOptions> to_be_installed,
     base::OnceClosure next_step_callback) {
   std::unique_ptr<internal::BulkIwaInstaller::IwaInstallCommandWrapper>
       installer = std::make_unique<
@@ -648,7 +650,7 @@ void IsolatedWebAppPolicyManager::Install(
       std::move(next_step_callback));
 
   bulk_installer_ = std::make_unique<internal::BulkIwaInstaller>(
-      profile_->GetPath(), to_be_installed_, url_loader_factory,
+      profile_->GetPath(), std::move(to_be_installed), url_loader_factory,
       std::move(installer), std::move(install_complete_callback));
   bulk_installer_->InstallEphemeralApps();
 }
@@ -672,7 +674,6 @@ void IsolatedWebAppPolicyManager::OnInstalled(
       }));
 
   bulk_installer_.reset();
-  to_be_installed_.clear();
 
   std::move(next_step_callback).Run();
 }
