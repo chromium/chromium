@@ -7641,10 +7641,12 @@ interface RTCIceCandidate
     getter protocol
     getter relatedAddress
     getter relatedPort
+    getter relayProtocol
     getter sdpMLineIndex
     getter sdpMid
     getter tcpType
     getter type
+    getter url
     getter usernameFragment
     method constructor
     method toJSON

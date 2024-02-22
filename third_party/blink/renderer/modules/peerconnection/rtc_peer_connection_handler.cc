@@ -608,6 +608,8 @@ class RTCPeerConnectionHandler::Observer
             String::FromUTF8(candidate->sdp_mid()),
             candidate->sdp_mline_index(), candidate->candidate().component(),
             candidate->candidate().address().family(),
+            String::FromUTF8(candidate->candidate().username()),
+            String::FromUTF8(candidate->server_url()),
             std::move(pending_local_description),
             std::move(current_local_description),
             std::move(pending_remote_description),
@@ -641,6 +643,8 @@ class RTCPeerConnectionHandler::Observer
                           int sdp_mline_index,
                           int component,
                           int address_family,
+                          const String& username_fragment,
+                          const String& url,
                           std::unique_ptr<webrtc::SessionDescriptionInterface>
                               pending_local_description,
                           std::unique_ptr<webrtc::SessionDescriptionInterface>
@@ -661,7 +665,7 @@ class RTCPeerConnectionHandler::Observer
     // garbage collection. Ensure that handler_ is still valid.
     if (handler_) {
       handler_->OnIceCandidate(sdp, sdp_mid, sdp_mline_index, component,
-                               address_family);
+                               address_family, username_fragment, url);
     }
   }
 
@@ -2001,7 +2005,9 @@ void RTCPeerConnectionHandler::OnIceCandidate(const String& sdp,
                                               const String& sdp_mid,
                                               int sdp_mline_index,
                                               int component,
-                                              int address_family) {
+                                              int address_family,
+                                              const String& usernameFragment,
+                                              const String& url) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   // In order to ensure that the RTCPeerConnection is not garbage collected
   // from under the function, we keep a pointer to it on the stack.
@@ -2010,9 +2016,13 @@ void RTCPeerConnectionHandler::OnIceCandidate(const String& sdp,
     return;
   }
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnIceCandidateImpl");
+  std::optional<String> url_or_null;
+  if (!url.empty()) {
+    url_or_null = url;
+  }
   // This line can cause garbage collection.
   auto* platform_candidate = MakeGarbageCollected<RTCIceCandidatePlatform>(
-      sdp, sdp_mid, sdp_mline_index);
+      sdp, sdp_mid, sdp_mline_index, usernameFragment, url_or_null);
   if (peer_connection_tracker_) {
     peer_connection_tracker_->TrackAddIceCandidate(
         this, platform_candidate, PeerConnectionTracker::kSourceLocal, true);

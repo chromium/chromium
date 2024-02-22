@@ -549,6 +549,7 @@ source_set("unit_tests") {
     "peerconnection/rtc_encoded_video_frame_test.cc",
     "peerconnection/rtc_encoded_video_underlying_sink_test.cc",
     "peerconnection/rtc_encoded_video_underlying_source_test.cc",
+    "peerconnection/rtc_ice_candidate_test.cc",
     "peerconnection/rtc_peer_connection_handler_test.cc",
     "peerconnection/rtc_peer_connection_test.cc",
     "peerconnection/rtc_rtp_receiver_impl_test.cc",

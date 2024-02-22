@@ -828,11 +828,15 @@ void PeerConnectionTracker::TrackAddIceCandidate(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
+  std::optional<String> relay_protocol = candidate->RelayProtocol();
+  std::optional<String> url = candidate->Url();
   String value =
       "sdpMid: " + String(candidate->SdpMid()) + ", " + "sdpMLineIndex: " +
       (candidate->SdpMLineIndex() ? String::Number(*candidate->SdpMLineIndex())
                                   : "null") +
-      ", " + "candidate: " + String(candidate->Candidate());
+      ", candidate: " + String(candidate->Candidate()) +
+      (relay_protocol ? ", relayProtocol: " + *relay_protocol : String()) +
+      (url ? ", url: " + *url : String());
 
   // OnIceCandidate always succeeds as it's a callback from the browser.
   DCHECK(source != kSourceLocal || succeeded);

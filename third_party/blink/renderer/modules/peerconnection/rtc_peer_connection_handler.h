@@ -273,7 +273,9 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                       const String& sdp_mid,
                       int sdp_mline_index,
                       int component,
-                      int address_family);
+                      int address_family,
+                      const String& usernameFragment,
+                      const String& url);
   void OnIceCandidateError(const String& address,
                            std::optional<uint16_t> port,
                            const String& host_candidate,

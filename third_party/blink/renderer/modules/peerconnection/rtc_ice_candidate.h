@@ -70,6 +70,8 @@ class MODULES_EXPORT RTCIceCandidate final : public ScriptWrappable {
   String relatedAddress() const;
   std::optional<uint16_t> relatedPort() const;
   String usernameFragment() const;
+  std::optional<String> relayProtocol() const;
+  std::optional<String> url() const;
 
   ScriptValue toJSONForBinding(ScriptState*);
 

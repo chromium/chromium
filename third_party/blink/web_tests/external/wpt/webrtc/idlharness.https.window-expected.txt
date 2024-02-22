@@ -1,19 +1,11 @@
 This is a testharness.js-based test.
-Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] RTCSessionDescription interface object length
   assert_equals: wrong value for RTCSessionDescription.length expected 1 but got 0
 [FAIL] RTCSessionDescription interface: attribute type
   assert_equals: setter must be undefined for readonly attributes expected (undefined) undefined but got (function) function "function set type() { [native code] }"
 [FAIL] RTCSessionDescription interface: attribute sdp
   assert_equals: setter must be undefined for readonly attributes expected (undefined) undefined but got (function) function "function set sdp() { [native code] }"
-[FAIL] RTCIceCandidate interface: attribute relayProtocol
-  assert_true: The prototype object must have a property "relayProtocol" expected true got false
-[FAIL] RTCIceCandidate interface: attribute url
-  assert_true: The prototype object must have a property "url" expected true got false
-[FAIL] RTCIceCandidate interface: new RTCIceCandidate({ sdpMid: 1 }) must inherit property "relayProtocol" with the proper type
-  assert_inherits: property "relayProtocol" not found in prototype chain
-[FAIL] RTCIceCandidate interface: new RTCIceCandidate({ sdpMid: 1 }) must inherit property "url" with the proper type
-  assert_inherits: property "url" not found in prototype chain
 [FAIL] RTCPeerConnectionIceEvent interface: attribute url
   assert_true: The prototype object must have a property "url" expected true got false
 [FAIL] RTCPeerConnectionIceEvent interface: new RTCPeerConnectionIceEvent('ice') must inherit property "url" with the proper type

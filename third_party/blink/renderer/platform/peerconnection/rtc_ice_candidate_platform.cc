@@ -23,17 +23,35 @@ String CandidateComponentToString(int component) {
   return String();
 }
 
+// Determine the relay protocol from local type preference which is the
+// lower 8 bits of the priority. The mapping to relay protocol is defined
+// in webrtc/p2p/base/port.h and only valid for relay candidates.
+String PriorityToRelayProtocol(uint32_t priority) {
+  uint8_t local_type_preference = priority >> 24;
+  switch (local_type_preference) {
+    case 0:
+      return String("tls");
+    case 1:
+      return String("tcp");
+    case 2:
+      return String("udp");
+  }
+  return String();
+}
+
 }  // namespace
 
 RTCIceCandidatePlatform::RTCIceCandidatePlatform(
     String candidate,
     String sdp_mid,
     std::optional<uint16_t> sdp_m_line_index,
-    String username_fragment)
+    String username_fragment,
+    std::optional<String> url)
     : candidate_(std::move(candidate)),
       sdp_mid_(std::move(sdp_mid)),
       sdp_m_line_index_(std::move(sdp_m_line_index)),
-      username_fragment_(std::move(username_fragment)) {
+      username_fragment_(std::move(username_fragment)),
+      url_(std::move(url)) {
   PopulateFields(false);
 }
 
@@ -75,6 +93,10 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
     related_address_ =
         String::FromUTF8(c.related_address().HostAsURIString().data());
     related_port_ = c.related_address().port();
+  }
+  // url_ is set only when the candidate was gathered locally.
+  if (type_ == "relay" && priority_ && url_) {
+    relay_protocol_ = PriorityToRelayProtocol(*priority_);
   }
 
   if (use_username_from_candidate)

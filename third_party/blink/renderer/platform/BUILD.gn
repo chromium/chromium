@@ -2195,6 +2195,7 @@ source_set("blink_platform_unittests_sources") {
     "peerconnection/resolution_monitor_unittest.cc",
     "peerconnection/rtc_encoded_audio_stream_transformer_test.cc",
     "peerconnection/rtc_encoded_video_stream_transformer_test.cc",
+    "peerconnection/rtc_ice_candidate_platform_test.cc",
     "peerconnection/rtc_rtp_source_test.cc",
     "peerconnection/rtc_video_decoder_adapter_test.cc",
     "peerconnection/rtc_video_decoder_factory_test.cc",
