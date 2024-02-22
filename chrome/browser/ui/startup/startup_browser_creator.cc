@@ -1202,9 +1202,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     } else {
       // TODO(http://crbug.com/1293024): Refactor command line processing logic
       // to validate the flag sets and reliably determine the startup mode.
-      LOG(ERROR) << "Failed start for jumplist action: couldn't pick a profile";
-      NOTREACHED();
-      base::debug::DumpWithoutCrashing();
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Failed start for jumplist action: couldn't pick a profile";
     }
   }
 

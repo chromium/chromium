@@ -464,10 +464,11 @@ void PaintController::CheckNewChunkId(const PaintChunk::Id& id) {
   auto it = new_paint_chunk_id_index_map_.find(id.AsHashKey());
   if (it != new_paint_chunk_id_index_map_.end()) {
     ShowDebugData();
-    NOTREACHED() << "New paint chunk id " << id.ToString(*new_paint_artifact_)
-                 << " is already used by a previous chuck "
-                 << new_paint_artifact_->PaintChunks()[it->value].ToString(
-                        *new_paint_artifact_);
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "New paint chunk id " << id.ToString(*new_paint_artifact_)
+        << " is already used by a previous chuck "
+        << new_paint_artifact_->PaintChunks()[it->value].ToString(
+               *new_paint_artifact_);
   }
 #endif
 }
