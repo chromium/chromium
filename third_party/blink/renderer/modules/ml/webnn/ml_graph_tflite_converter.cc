@@ -1185,19 +1185,19 @@ base::expected<int32_t, String> MLGraphTfLiteConverter::SerializeTensor(
   // graph have this attribute.
   std::optional<String> name;
   switch (operand->Kind()) {
-    case MLOperand::OperandKind::kInput: {
+    case webnn::mojom::blink::Operand::Kind::kInput: {
       name = operand->Name();
       // Fill the graph inputs with the index of input tensor.
       graph_input_ids_.push_back(tensor_index);
       break;
     }
-    case MLOperand::OperandKind::kConstant: {
+    case webnn::mojom::blink::Operand::Kind::kConstant: {
       // Serialize buffer and return buffer index which starts from 1, it is
       // used to create the constant's tensor.
       buffer_index = SerializeBuffer(operand);
       break;
     }
-    case MLOperand::OperandKind::kOutput: {
+    case webnn::mojom::blink::Operand::Kind::kOutput: {
       // The `kOutput` represents not only the intermediate operands of
       // operation, but also the outputs of graph.
       // It's a graph output if the argument `graph_output_name` has value.

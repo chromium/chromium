@@ -440,13 +440,13 @@ xnn_status DefineXnnValue(xnn_subgraph_t subgraph,
     // External Values should not be initialized with static data.
     CHECK(data.empty());
     switch (operand->Kind()) {
-      case MLOperand::OperandKind::kInput:
+      case webnn::mojom::blink::Operand::Kind::kInput:
         flags = XNN_VALUE_FLAG_EXTERNAL_INPUT;
         break;
-      case MLOperand::OperandKind::kOutput:
+      case webnn::mojom::blink::Operand::Kind::kOutput:
         flags = XNN_VALUE_FLAG_EXTERNAL_OUTPUT;
         break;
-      case MLOperand::OperandKind::kConstant:
+      case webnn::mojom::blink::Operand::Kind::kConstant:
         // Should not define an external Value for constant operand.
         NOTREACHED();
         break;
@@ -974,7 +974,7 @@ xnn_status DefineXnnNodeForElementWiseBinary(
       CHECK(operand_a);
       const auto* operand_b = binary->Inputs()[1].Get();
       CHECK(operand_b);
-      if (operand_b->Kind() != MLOperand::OperandKind::kConstant) {
+      if (operand_b->Kind() != webnn::mojom::blink::Operand::Kind::kConstant) {
         error_message = "Operand b should be defined as a constant for pow.";
         return xnn_status_unsupported_parameter;
       }
@@ -1381,7 +1381,7 @@ xnn_status DefineXnnNodeForPRelu(xnn_subgraph_t subgraph,
   // TODO(crbug.com/1273291): Consider implementing prelu by other XNNPACK ops
   // as max(0, x) + slope ∗ min(0, x) formula when slope is a non-constant
   // operand.
-  if (slope->Kind() != MLOperand::OperandKind::kConstant) {
+  if (slope->Kind() != webnn::mojom::blink::Operand::Kind::kConstant) {
     error_message = "Slope should be defined as a constant operand.";
     return xnn_status_invalid_parameter;
   }
@@ -2217,7 +2217,7 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
         continue;
       }
       switch (operand->Kind()) {
-        case MLOperand::OperandKind::kInput: {
+        case webnn::mojom::blink::Operand::Kind::kInput: {
           // Define an external XNNPACK Value for the graph's input operand.
           // The external ID should be in the [0, external_value_ids_num - 1]
           // range.
@@ -2235,7 +2235,7 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
           input_external_value_id_map_.insert(operand->Name(), value_id);
           break;
         }
-        case MLOperand::OperandKind::kConstant: {
+        case webnn::mojom::blink::Operand::Kind::kConstant: {
           // Define a static XNNPACK Value for this constant operand. Because
           // XNNPACK requires the static data of a static XNNPACK Value must
           // exceed the life-time of its Subgraph and Runtime objects, a new
@@ -2256,7 +2256,7 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
           static_data_buffers.push_back(std::move(buffer.value()));
           break;
         }
-        case MLOperand::OperandKind::kOutput:
+        case webnn::mojom::blink::Operand::Kind::kOutput:
           // Because the operators are visited in topological order, if this
           // operand is an intermediate operand, it should already be defined as
           // an output operand of the dependent operator.

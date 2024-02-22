@@ -78,15 +78,15 @@ base::expected<flatbuffers::DetachedBuffer, String> BuildTfLiteModel(
         continue;
       }
       switch (operand->Kind()) {
-        case MLOperand::OperandKind::kInput:
-        case MLOperand::OperandKind::kConstant: {
+        case webnn::mojom::blink::Operand::Kind::kInput:
+        case webnn::mojom::blink::Operand::Kind::kConstant: {
           // Serialize tensor for input or constant operand.
           auto tensor_index = converter.SerializeTensor(operand.Get());
           RETURN_IF_ERROR(tensor_index);
           operand_to_index_map.insert(operand, tensor_index.value());
           break;
         }
-        case MLOperand::OperandKind::kOutput:
+        case webnn::mojom::blink::Operand::Kind::kOutput:
           // Because the operators are visited in topological order, if this
           // operand is an intermediate operand, it should already be defined as
           // an output operand of the dependent operator.

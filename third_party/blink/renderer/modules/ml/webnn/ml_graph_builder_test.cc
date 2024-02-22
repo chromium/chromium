@@ -54,7 +54,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     ASSERT_THAT(input, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
-    EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
+    EXPECT_EQ(input->Kind(), webnn::mojom::blink::Operand::Kind::kInput);
     EXPECT_EQ(input->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(input->Dimensions(), Vector<uint32_t>({}));
     EXPECT_EQ(input->Name(), "input");
@@ -67,7 +67,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     ASSERT_THAT(input, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
-    EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
+    EXPECT_EQ(input->Kind(), webnn::mojom::blink::Operand::Kind::kInput);
     EXPECT_EQ(input->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(input->Dimensions(), Vector<uint32_t>({}));
     EXPECT_EQ(input->Name(), "input");
@@ -80,7 +80,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     ASSERT_THAT(input, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
-    EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
+    EXPECT_EQ(input->Kind(), webnn::mojom::blink::Operand::Kind::kInput);
     EXPECT_EQ(input->DataType(), V8MLOperandDataType::Enum::kInt64);
     EXPECT_EQ(input->Dimensions(), Vector<uint32_t>({3}));
     EXPECT_EQ(input->Name(), "input");
@@ -93,7 +93,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     ASSERT_THAT(input, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
-    EXPECT_EQ(input->Kind(), MLOperand::OperandKind::kInput);
+    EXPECT_EQ(input->Kind(), webnn::mojom::blink::Operand::Kind::kInput);
     EXPECT_EQ(input->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(input->Dimensions(), Vector<uint32_t>({3, 4}));
     EXPECT_EQ(input->Name(), "input");
@@ -163,7 +163,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_THAT(constant, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
-    EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
+    EXPECT_EQ(constant->Kind(), webnn::mojom::blink::Operand::Kind::kConstant);
     EXPECT_EQ(constant->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(constant->Dimensions(), Vector<uint32_t>({}));
   }
@@ -175,7 +175,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_THAT(constant, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
-    EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
+    EXPECT_EQ(constant->Kind(), webnn::mojom::blink::Operand::Kind::kConstant);
     EXPECT_EQ(constant->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(constant->Dimensions(), Vector<uint32_t>({}));
   }
@@ -187,7 +187,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_THAT(constant, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
-    EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
+    EXPECT_EQ(constant->Kind(), webnn::mojom::blink::Operand::Kind::kConstant);
     EXPECT_EQ(constant->DataType(), V8MLOperandDataType::Enum::kUint64);
     EXPECT_EQ(constant->Dimensions(), Vector<uint32_t>({5}));
   }
@@ -199,7 +199,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_THAT(constant, testing::NotNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kNoError);
-    EXPECT_EQ(constant->Kind(), MLOperand::OperandKind::kConstant);
+    EXPECT_EQ(constant->Kind(), webnn::mojom::blink::Operand::Kind::kConstant);
     EXPECT_EQ(constant->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(constant->Dimensions(), Vector<uint32_t>({2, 3}));
   }
@@ -297,7 +297,7 @@ void CheckArgMinMaxOutput(const MLOperand* input,
                           const MLOperand* output,
                           webnn::mojom::blink::ArgMinMax::Kind kind) {
   ASSERT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt64);
   auto* arg_max_min = output->Operator();
   ASSERT_THAT(arg_max_min, testing::NotNull());
@@ -424,7 +424,7 @@ MLOperand* BuildBatchNormalization(V8TestingScope& scope,
   auto* output = builder->batchNormalization(input, mean, variance, options,
                                              scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* batch_normalization = output->Operator();
   EXPECT_THAT(batch_normalization, testing::NotNull());
@@ -824,7 +824,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     uint32_t axis = 2;
     auto* output = builder->concat({input_a}, axis, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), output_shape);
     const MLOperator* concat = output->Operator();
@@ -848,7 +848,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), output_shape);
     const MLOperator* concat = output->Operator();
@@ -876,7 +876,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* output = builder->concat({input_a, input_b, input_c}, axis,
                                    scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), output_shape);
     const MLOperator* concat = output->Operator();
@@ -900,7 +900,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), output_shape);
     const MLOperator* concat = output->Operator();
@@ -1030,7 +1030,7 @@ MLOperand* BuildConv2d(V8TestingScope& scope,
   auto* output =
       builder->conv2d(input, filter, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* conv2d = output->Operator();
   EXPECT_THAT(conv2d, testing::NotNull());
@@ -1738,7 +1738,7 @@ MLOperand* BuildConvTranspose2d(V8TestingScope& scope,
   auto* output = builder->convTranspose2d(input, filter, options,
                                           scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* convTranspose2d = output->Operator();
   EXPECT_THAT(convTranspose2d, testing::NotNull());
@@ -2554,7 +2554,7 @@ void CheckPool2dOutput(const MLOperand* input,
                        const MLOperand* output,
                        webnn::mojom::blink::Pool2d::Kind kind) {
   ASSERT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* pool2d = output->Operator();
   ASSERT_THAT(pool2d, testing::NotNull());
@@ -3018,7 +3018,7 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* p_relu = output->Operator();
@@ -3038,7 +3038,7 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* p_relu = output->Operator();
@@ -3058,7 +3058,7 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* p_relu = output->Operator();
@@ -3079,7 +3079,7 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
                       scope.GetExceptionState());
     auto* output = builder->prelu(input, slope, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* p_relu = output->Operator();
@@ -3168,7 +3168,7 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
                              scope.GetExceptionState());
     auto* output = builder->relu(input, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* relu = output->Operator();
@@ -3185,7 +3185,7 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
                              scope.GetExceptionState());
     auto* output = builder->relu(input, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* relu = output->Operator();
@@ -3212,7 +3212,7 @@ MLOperand* BuildHardSigmoid(V8TestingScope& scope,
   auto* output =
       builder->hardSigmoid(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* hard_sigmoid = output->Operator();
@@ -3285,7 +3285,7 @@ TEST_F(MLGraphBuilderTest, HardSwishTest) {
                              scope.GetExceptionState());
     auto* output = builder->hardSwish(input, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({3, 4, 5}));
     auto* hard_swish = output->Operator();
@@ -3325,7 +3325,7 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      const MLGemmOptions* options) {
   auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), a->DataType());
   auto* gemm = output->Operator();
   EXPECT_THAT(gemm, testing::NotNull());
@@ -3714,7 +3714,7 @@ MLOperand* BuildElementWiseBinary(
   MLOperand* output =
       BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
 
   if (IsLogicalBinaryOperator(kind)) {
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kUint8);
@@ -3949,7 +3949,7 @@ struct ElementWiseUnaryTester {
   // Test valid arguments of operators.
   void Test(V8TestingScope& scope) {
     MLOperand* output = BuildElementWiseUnary(scope);
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), input_info.data_type);
     EXPECT_EQ(output->Dimensions(), input_info.dimensions);
     auto* op = output->Operator();
@@ -4242,7 +4242,7 @@ TEST_F(MLGraphBuilderTest, Cast) {
                            scope.GetExceptionState());
   MLOperand* output =
       builder->cast(input, int8_datatype.value(), scope.GetExceptionState());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt8);
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* op = output->Operator();
@@ -4300,7 +4300,7 @@ void CheckReduceOutput(const MLOperand* input,
                        const MLOperand* output,
                        webnn::mojom::blink::Reduce::Kind kind) {
   ASSERT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* reduce = output->Operator();
   ASSERT_THAT(reduce, testing::NotNull());
@@ -4456,7 +4456,7 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                              scope.GetExceptionState());
     auto* output = builder->reshape(input, {3, 8}, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({3, 8}));
     auto* reshape = output->Operator();
@@ -4471,7 +4471,7 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                              scope.GetExceptionState());
     auto* output = builder->reshape(input, {24}, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({24}));
     auto* reshape = output->Operator();
@@ -4486,7 +4486,7 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                    scope.GetExceptionState());
     auto* output = builder->reshape(input, {1}, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1}));
     auto* reshape = output->Operator();
@@ -4501,7 +4501,7 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                    scope.GetExceptionState());
     auto* output = builder->reshape(input, {}, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
     auto* reshape = output->Operator();
@@ -4516,7 +4516,7 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
                    scope.GetExceptionState());
     auto* output = builder->reshape(input, {1}, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1}));
     auto* reshape = output->Operator();
@@ -4574,7 +4574,7 @@ MLOperand* BuildResample2d(V8TestingScope& scope,
                            const MLResample2dOptions* options) {
   auto* output = builder->resample2d(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* resample2d = output->Operator();
   EXPECT_THAT(resample2d, testing::NotNull());
@@ -4815,7 +4815,7 @@ MLOperand* BuildTranspose(V8TestingScope& scope,
                           const MLTransposeOptions* options) {
   auto* output = builder->transpose(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* transpose = output->Operator();
   EXPECT_THAT(transpose, testing::NotNull());
@@ -4905,7 +4905,7 @@ MLOperand* BuildClamp(V8TestingScope& scope,
                       const MLClampOptions* options) {
   auto* output = builder->clamp(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* clamp = output->Operator();
   EXPECT_THAT(clamp, testing::NotNull());
@@ -4977,7 +4977,7 @@ void TestBuildElu(V8TestingScope& scope,
                   const MLEluOptions* options) {
   auto* output = builder->elu(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), output_shape);
   auto* elu = output->Operator();
@@ -5081,7 +5081,7 @@ struct ExpandTester {
   void Test(V8TestingScope& scope) {
     MLOperand* output = BuildExpandOperator(scope);
     EXPECT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), input.data_type);
     EXPECT_EQ(output->Dimensions(), new_shape);
     auto* op = output->Operator();
@@ -5179,7 +5179,7 @@ MLOperand* BuildGather(V8TestingScope& scope,
   auto* output =
       builder->gather(input, indices, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* gather = output->Operator();
   EXPECT_THAT(gather, testing::NotNull());
@@ -5283,7 +5283,7 @@ MLOperand* BuildInstanceNormalization(
   auto* output =
       builder->instanceNormalization(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* instance_normalization = output->Operator();
@@ -5506,7 +5506,7 @@ MLOperand* BuildLayerNormalization(V8TestingScope& scope,
   auto* output =
       builder->layerNormalization(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* layer_normalization = output->Operator();
@@ -5699,7 +5699,7 @@ MLOperand* BuildLeakyRelu(V8TestingScope& scope,
                           const MLLeakyReluOptions* options) {
   auto* output = builder->leakyRelu(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* leaky_relu = output->Operator();
   EXPECT_THAT(leaky_relu, testing::NotNull());
@@ -5742,7 +5742,7 @@ MLOperand* BuildLinear(V8TestingScope& scope,
                        const MLLinearOptions* options) {
   auto* output = builder->linear(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* linear = output->Operator();
   EXPECT_THAT(linear, testing::NotNull());
@@ -5821,7 +5821,7 @@ TEST_F(MLGraphBuilderTest, LstmTest) {
     ASSERT_EQ(outputs.size(), 2u);
     for (const auto& output : outputs) {
       ASSERT_THAT(output, testing::NotNull());
-      EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+      EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
       EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
       EXPECT_EQ(output->Dimensions(),
                 Vector<uint32_t>({direction_count, batch_size, hidden_size}));
@@ -5880,7 +5880,7 @@ TEST_F(MLGraphBuilderTest, LstmTest) {
     ASSERT_EQ(outputs.size(), 3u);
     for (const auto& output : outputs) {
       ASSERT_THAT(output, testing::NotNull());
-      EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+      EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
       EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     }
     EXPECT_EQ(outputs[0]->Dimensions(),
@@ -6323,7 +6323,7 @@ MLOperand* BuildPad(V8TestingScope& scope,
   auto* output = builder->pad(input, beginningPadding, endingPadding, options,
                               scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   auto* pad = output->Operator();
   EXPECT_THAT(pad, testing::NotNull());
@@ -6429,7 +6429,7 @@ TEST_F(MLGraphBuilderTest, Softmax) {
                              scope.GetExceptionState());
     auto* output = builder->softmax(input, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
     auto* softmax = output->Operator();
@@ -6470,7 +6470,7 @@ MLOperand* BuildSoftplus(V8TestingScope& scope,
                          const MLSoftplusOptions* options) {
   auto* output = builder->softplus(input, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), input->DataType());
   EXPECT_EQ(output->Dimensions(), input->Dimensions());
   auto* softplus = output->Operator();
@@ -6542,7 +6542,7 @@ TEST_F(MLGraphBuilderTest, SoftSignTest) {
                              scope.GetExceptionState());
     auto* output = builder->softsign(input, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* softsign = output->Operator();
@@ -6589,7 +6589,7 @@ TEST_F(MLGraphBuilderTest, SigmoidTest) {
                              scope.GetExceptionState());
     auto* output = builder->sigmoid(input, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* sigmoid = output->Operator();
@@ -6636,7 +6636,7 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
     auto* output =
         builder->slice(input, {0, 1, 2}, {1, 2, 3}, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3}));
     const MLOperator* slice = output->Operator();
@@ -6767,7 +6767,7 @@ TEST_F(MLGraphBuilderTest, Split) {
     EXPECT_EQ(outputs.size(), splits);
     for (auto output : outputs) {
       ASSERT_THAT(output, testing::NotNull());
-      EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+      EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
       EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 6}));
     }
@@ -6792,7 +6792,8 @@ TEST_F(MLGraphBuilderTest, Split) {
     EXPECT_EQ(outputs.size(), splits.size());
     for (uint32_t i = 0; i < outputs.size(); ++i) {
       ASSERT_THAT(outputs[i], testing::NotNull());
-      EXPECT_EQ(outputs[i]->Kind(), MLOperand::OperandKind::kOutput);
+      EXPECT_EQ(outputs[i]->Kind(),
+                webnn::mojom::blink::Operand::Kind::kOutput);
       EXPECT_EQ(outputs[i]->DataType(), V8MLOperandDataType::Enum::kFloat32);
       EXPECT_EQ(outputs[i]->Dimensions(), Vector<uint32_t>({2, splits[i]}));
     }
@@ -6924,7 +6925,7 @@ TEST_F(MLGraphBuilderTest, TanhTest) {
                              scope.GetExceptionState());
     auto* output = builder->tanh(input, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
     EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
     EXPECT_EQ(output->Dimensions(), input_shape);
     const MLOperator* tanh = output->Operator();
@@ -6963,7 +6964,7 @@ MLOperand* BuildMatmul(V8TestingScope& scope,
                        const MLOperand* b) {
   auto* output = builder->matmul(a, b, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), a->DataType());
   auto* matmul = output->Operator();
   EXPECT_THAT(matmul, testing::NotNull());
@@ -7105,7 +7106,7 @@ MLOperand* BuildWhere(V8TestingScope& scope,
   auto* output = builder->where(condition, true_value, false_value,
                                 scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
   EXPECT_EQ(output->DataType(), true_value->DataType());
   auto* where = output->Operator();
   EXPECT_THAT(where, testing::NotNull());

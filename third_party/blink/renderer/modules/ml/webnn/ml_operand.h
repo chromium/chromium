@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/types/expected.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -28,8 +29,6 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum class OperandKind { kInput, kConstant, kOutput };
-
   // Validate and create different kinds of operand if there are no errors.
   // Otherwise return nullptr and set the corresponding error message.
   static base::expected<MLOperand*, String> ValidateAndCreateInput(
@@ -51,7 +50,7 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   // The constructor shouldn't be called directly. The callers should use
   // Create* methods instead.
   MLOperand(MLGraphBuilder* builder,
-            OperandKind kind,
+            webnn::mojom::blink::Operand::Kind kind,
             const V8MLOperandDataType::Enum data_type,
             Vector<uint32_t> dimensions);
 
@@ -63,7 +62,7 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   MLGraphBuilder* Builder() const;
-  OperandKind Kind() const;
+  webnn::mojom::blink::Operand::Kind Kind() const;
   V8MLOperandDataType::Enum DataType() const;
   const Vector<uint32_t>& Dimensions() const;
   const String& Name() const;
@@ -85,7 +84,7 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
 
  private:
   Member<MLGraphBuilder> builder_;
-  OperandKind kind_;
+  webnn::mojom::blink::Operand::Kind kind_;
   V8MLOperandDataType::Enum data_type_;
   // The dimensions of the operand. For scalar value, set {1}.
   Vector<uint32_t> dimensions_;

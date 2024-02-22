@@ -96,7 +96,8 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
     return base::unexpected("Invalid operand descriptor: " + result.error());
   }
   auto* input = MakeGarbageCollected<MLOperand>(
-      builder, OperandKind::kInput, data_type, std::move(dimensions));
+      builder, webnn::mojom::blink::Operand::Kind::kInput, data_type,
+      std::move(dimensions));
   input->name_ = std::move(name);
   return input;
 }
@@ -125,7 +126,8 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateConstant(
         array_buffer_view->byteLength(), expected_byte_length.value()));
   }
   auto* constant = MakeGarbageCollected<MLOperand>(
-      builder, OperandKind::kConstant, data_type, std::move(dimensions));
+      builder, webnn::mojom::blink::Operand::Kind::kConstant, data_type,
+      std::move(dimensions));
   constant->array_buffer_view_ = array_buffer_view;
   return constant;
 }
@@ -142,13 +144,14 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateOutput(
     return base::unexpected("Invalid output operand: " + result.error());
   }
   auto* output = MakeGarbageCollected<MLOperand>(
-      builder, OperandKind::kOutput, data_type, std::move(dimensions));
+      builder, webnn::mojom::blink::Operand::Kind::kOutput, data_type,
+      std::move(dimensions));
   output->operator_ = ml_operator;
   return output;
 }
 
 MLOperand::MLOperand(MLGraphBuilder* builder,
-                     OperandKind kind,
+                     webnn::mojom::blink::Operand::Kind kind,
                      const V8MLOperandDataType::Enum data_type,
                      Vector<uint32_t> dimensions)
     : builder_(builder),
@@ -162,7 +165,7 @@ MLGraphBuilder* MLOperand::Builder() const {
   return builder_.Get();
 }
 
-MLOperand::OperandKind MLOperand::Kind() const {
+webnn::mojom::blink::Operand::Kind MLOperand::Kind() const {
   return kind_;
 }
 
@@ -175,17 +178,17 @@ const Vector<uint32_t>& MLOperand::Dimensions() const {
 }
 
 const String& MLOperand::Name() const {
-  DCHECK_EQ(kind_, OperandKind::kInput);
+  DCHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kInput);
   return name_;
 }
 
 const DOMArrayBufferView* MLOperand::ArrayBufferView() const {
-  DCHECK_EQ(kind_, OperandKind::kConstant);
+  DCHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kConstant);
   return array_buffer_view_.Get();
 }
 
 const MLOperator* MLOperand::Operator() const {
-  DCHECK_EQ(kind_, OperandKind::kOutput);
+  DCHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kOutput);
   return operator_.Get();
 }
 

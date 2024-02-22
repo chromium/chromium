@@ -156,7 +156,7 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
     const auto& name = output.first;
     const auto& operand = output.second;
     // Validate whether it is an output operand.
-    if (operand->Kind() != MLOperand::OperandKind::kOutput) {
+    if (operand->Kind() != webnn::mojom::blink::Operand::Kind::kOutput) {
       error_message = String::Format(
           "The operand with name \"%s\" is not an output operand.",
           name.Utf8().c_str());
@@ -181,7 +181,7 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
     // Enumerate the current operator's input operands.
     for (const auto& operand : current_operator->Inputs()) {
       switch (operand->Kind()) {
-        case MLOperand::OperandKind::kOutput:
+        case webnn::mojom::blink::Operand::Kind::kOutput:
           DCHECK(operand->Operator());
           // If the operand is an output operand and its dependent operator is
           // not visited, mark the dependent operator is visited and enqueue
@@ -191,7 +191,7 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
             operators_queue.push_back(operand->Operator());
           }
           break;
-        case MLOperand::OperandKind::kInput:
+        case webnn::mojom::blink::Operand::Kind::kInput:
           // If the operand has been validated, it doesn't need to be verified
           // multiple times.
           if (visited_input_operands.Contains(operand)) {
@@ -212,7 +212,7 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
               ResourceInfo({.data_type = operand->DataType(),
                             .byte_length = operand->ByteLength()}));
           break;
-        case MLOperand::OperandKind::kConstant:
+        case webnn::mojom::blink::Operand::Kind::kConstant:
           // If the operand has been validated, it doesn't need to be verified
           // multiple times.
           if (visited_input_operands.Contains(operand)) {

@@ -66,14 +66,14 @@ TypeConverter<blink_mojom::OperandPtr, blink::MLOperand*>::Convert(
   }
   auto mojo_operand = blink_mojom::Operand::New();
   switch (ml_operand->Kind()) {
-    case blink::MLOperand::OperandKind::kInput:
+    case webnn::mojom::blink::Operand::Kind::kInput:
       mojo_operand->kind = blink_mojom::Operand::Kind::kInput;
       mojo_operand->name = ml_operand->Name();
       break;
-    case blink::MLOperand::OperandKind::kConstant:
+    case webnn::mojom::blink::Operand::Kind::kConstant:
       mojo_operand->kind = blink_mojom::Operand::Kind::kConstant;
       break;
-    case blink::MLOperand::OperandKind::kOutput:
+    case webnn::mojom::blink::Operand::Kind::kOutput:
       mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
       break;
   }

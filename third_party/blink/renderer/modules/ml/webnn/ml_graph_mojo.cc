@@ -53,7 +53,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
         continue;
       }
       switch (operand->Kind()) {
-        case MLOperand::OperandKind::kInput: {
+        case webnn::mojom::blink::Operand::Kind::kInput: {
           // Create `mojo::Operand` for the input MLOperand.
           operand_id++;
           graph_info->id_to_operand_map.insert(
@@ -64,7 +64,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
-        case MLOperand::OperandKind::kConstant: {
+        case webnn::mojom::blink::Operand::Kind::kConstant: {
           // Convert `mojo::Operand` for constant operand.
           operand_id++;
           graph_info->id_to_operand_map.insert(
@@ -81,7 +81,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
-        case MLOperand::OperandKind::kOutput:
+        case webnn::mojom::blink::Operand::Kind::kOutput:
           // Because the operators are visited in topological order, if this
           // operand is an intermediate operand, it should already be defined as
           // an output operand of the dependent operator.

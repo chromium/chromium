@@ -55,7 +55,7 @@ HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
       // operators are visited or not.
       bool skip_visit = false;
       for (const auto& operand : current_operator->Inputs()) {
-        if (operand->Kind() == MLOperand::OperandKind::kOutput) {
+        if (operand->Kind() == webnn::mojom::blink::Operand::Kind::kOutput) {
           const auto* dependent_operator = operand->Operator();
           CHECK(dependent_operator);
           if (!visited_operators.Contains(dependent_operator)) {
