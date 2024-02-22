@@ -1498,58 +1498,6 @@ TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForDifferentSurfaces) {
   EXPECT_EQ(buffer_release_count, 1);
 }
 
-TEST_P(SurfaceTest, SubsurfaceClipRect) {
-  gfx::Size buffer_size(256, 256);
-  auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
-  auto surface = std::make_unique<Surface>();
-  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-  surface->Attach(buffer.get());
-
-  gfx::Size child_buffer_size(64, 128);
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(child_buffer_size));
-  auto child_surface = std::make_unique<Surface>();
-  auto sub_surface =
-      std::make_unique<SubSurface>(child_surface.get(), surface.get());
-  child_surface->Attach(child_buffer.get());
-  child_surface->Commit();
-  surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
-
-  {
-    // Subsurface initially has no clip.
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    ASSERT_EQ(2u, frame.render_pass_list.back()->quad_list.size());
-    const auto& quad_list = frame.render_pass_list[0]->quad_list;
-    EXPECT_EQ(std::nullopt, quad_list.front()->shared_quad_state->clip_rect);
-  }
-
-  int clip_size = 10;
-  std::optional<gfx::RectF> clip_rect =
-      gfx::RectF(clip_size, clip_size, clip_size, clip_size);
-  sub_surface->SetClipRect(clip_rect);
-  child_surface->Attach(child_buffer.get());
-  child_surface->Commit();
-  surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
-
-  {
-    // Subsurface has a clip applied.
-    std::optional<gfx::Rect> clip_rect_px =
-        gfx::Rect(clip_size, clip_size, clip_size, clip_size);
-
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    ASSERT_EQ(2u, frame.render_pass_list.back()->quad_list.size());
-    const auto& quad_list = frame.render_pass_list[0]->quad_list;
-    EXPECT_EQ(clip_rect_px, quad_list.front()->shared_quad_state->clip_rect);
-  }
-}
-
 //
 TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   auto canonical_form_check = [](const auto& frame) {

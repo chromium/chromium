@@ -270,15 +270,6 @@ class AugmentedSubSurface : public SubSurfaceObserver {
     sub_surface_->SetPosition(gfx::PointF(x, y));
   }
 
-  void SetClipRect(float x, float y, float width, float height) {
-    std::optional<gfx::RectF> clip_rect;
-    if (x >= 0 && y >= 0 && width >= 0 && height >= 0) {
-      clip_rect = gfx::RectF(x, y, width, height);
-    }
-    // TODO(rivr): Should we send a protocol error if there are invalid values?
-    sub_surface_->SetClipRect(clip_rect);
-  }
-
   void SetTransform(const gfx::Transform& transform) {
     sub_surface_->SetTransform(transform);
   }
@@ -311,13 +302,7 @@ void augmented_sub_surface_set_clip_rect_DEPRECATED(wl_client* client,
                                                     wl_fixed_t y,
                                                     wl_fixed_t width,
                                                     wl_fixed_t height) {
-  LOG(WARNING) << "Deprecated. Do NOT use this for new codes.";
-
-  // TODO(crbug.com/1457446): Remove the fallback implementation here once
-  // augmented_surface_set_clip_rect is spread enough.
-  GetUserDataAs<AugmentedSubSurface>(resource)->SetClipRect(
-      wl_fixed_to_double(x), wl_fixed_to_double(y), wl_fixed_to_double(width),
-      wl_fixed_to_double(height));
+  LOG(WARNING) << "Deprecated. The server doesn't support this request.";
 }
 
 void augmented_sub_surface_set_transform(wl_client* client,

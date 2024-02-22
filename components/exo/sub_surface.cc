@@ -49,16 +49,6 @@ void SubSurface::SetPosition(const gfx::PointF& position) {
   parent_->SetSubSurfacePosition(surface_, position);
 }
 
-void SubSurface::SetClipRect(const std::optional<gfx::RectF>& clip_rect) {
-  TRACE_EVENT1("exo", "SubSurface::SetClipRect", "clip_rect",
-               (clip_rect ? clip_rect->ToString() : "nullopt"));
-
-  if (!parent_ || !surface_)
-    return;
-
-  surface_->SetClipRectOnParentSurface(clip_rect);
-}
-
 void SubSurface::SetTransform(const gfx::Transform& transform) {
   TRACE_EVENT1("exo", "SubSurface::SetTransform", "transform",
                transform.ToString());

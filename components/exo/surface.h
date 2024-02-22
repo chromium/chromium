@@ -208,10 +208,6 @@ class Surface final : public ui::PropertyHandler {
   // surface commit.
   void SetFrameTraceId(int64_t frame_trace_id);
 
-  // Sets the surface's clip rectangle on parent surface coordinates.
-  // TODO(crbug.com/1457446): Remove this.
-  void SetClipRectOnParentSurface(const std::optional<gfx::RectF>& clip_rect);
-
   // Sets the surface's transformation matrix.
   void SetSurfaceTransform(const gfx::Transform& transform);
 
@@ -610,13 +606,6 @@ class Surface final : public ui::PropertyHandler {
     // should only be set for subsurfaces.
     // Persisted between commits.
     std::optional<gfx::RectF> clip_rect;
-    // True if `clip_rect` is on parent coordinate space. `clip_rect` should be
-    // on local surface coordinates, but the outdated implementation was on
-    // parent coordinate space. This flag is to support the fallback
-    // implementation.
-    // Persisted between commits.
-    // TODO(crbug.com/1457446): Remove this.
-    bool clip_rect_is_parent_coordinates = false;
     // The transform to apply when drawing this surface. This should only be set
     // for subsurfaces, and doesn't apply to children of this surface.
     // Persisted between commits.

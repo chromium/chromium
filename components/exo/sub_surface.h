@@ -50,9 +50,6 @@ class SubSurface : public SurfaceDelegate,
   // of the parent surface coordinate system.
   void SetPosition(const gfx::PointF& position);
 
-  // This schedules a clip rect to be applied when drawing this sub-surface.
-  void SetClipRect(const std::optional<gfx::RectF>& clip_rect);
-
   // This schedules a matrix transform to be applied when drawing this
   // sub-surface.
   void SetTransform(const gfx::Transform& transform);
