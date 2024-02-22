@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//tools/typescript/ts_library.gni")
+
+ts_library("library") {
+  composite = true
+  definitions = [
+    "accessibility_features.d.ts",
+    "accessibility_service_private.d.ts",
+    "activity_log_private.d.ts",
+    "autofill_private.d.ts",
+    "bookmarks.d.ts",
+    "chrome_downloads.d.ts",
+    "chrome_event.d.ts",
+    "chrome_send.d.ts",
+    "chrome_test.d.ts",
+    "chrome_timeticks.d.ts",
+    "content_settings.d.ts",
+    "context_menus.d.ts",
+    "developer_private.d.ts",
+    "dom_automation_controller.d.ts",
+    "extension_types.d.ts",
+    "feedback_private.d.ts",
+    "file_system.d.ts",
+    "language_settings_private.d.ts",
+    "management.d.ts",
+    "metrics_private.d.ts",
+    "mime_handler_private.d.ts",
+    "passwords_private.d.ts",
+    "pdf_viewer_private.d.ts",
+    "pending.d.ts",
+    "quick_unlock_private.d.ts",
+    "resources_private.d.ts",
+    "runtime.d.ts",
+    "scripting.d.ts",
+    "settings_private.d.ts",
+    "storage.d.ts",
+    "tabs.d.ts",
+    "webview_tag.d.ts",
+    "web_request.d.ts",
+    "windows.d.ts",
+  ]
+
+  if (is_chromeos_ash) {
+    definitions += [
+      "bluetooth.d.ts",
+      "bluetooth_private.d.ts",
+      "bookmark_manager_private.d.ts",
+      "command_line_private.d.ts",
+      "chromeos_info_private.d.ts",
+      "i18n.d.ts",
+      "input_method_private.d.ts",
+      "networking_private.d.ts",
+      "notifications.d.ts",
+      "system_display.d.ts",
+      "users_private.d.ts",
+      "wallpaper.d.ts",
+    ]
+  }
+}

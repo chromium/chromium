@@ -49,6 +49,7 @@ build_webui("build") {
   ts_deps = [
     "../shared:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//tools/typescript/definitions:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/cr_components/page_image_service:build_ts",

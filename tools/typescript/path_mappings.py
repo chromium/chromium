@@ -40,6 +40,13 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
     )]
 
 
+def _add_typescript_definitions_mappings(path_mappings, root_src_dir):
+  path_mappings[f'//tools/typescript/definitions:library'] = [
+      ('/tools/typescript/definitions/*',
+       f'{root_src_dir}/tools/typescript/definitions/*')
+  ]
+
+
 def _add_third_party_polymer_mappings(path_mappings, root_src_dir):
   path_mappings[f'//third_party/polymer/v3_0:library'] = [
       ('//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
@@ -106,6 +113,7 @@ def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
 def GetDepToPathMappings(root_gen_dir, root_src_dir, platform):
   path_mappings = {}
 
+  _add_typescript_definitions_mappings(path_mappings, root_src_dir)
   _add_ui_webui_resources_mappings(path_mappings, root_gen_dir)
   _add_third_party_polymer_mappings(path_mappings, root_src_dir)
   _add_third_party_lit_mappings(path_mappings, root_gen_dir)

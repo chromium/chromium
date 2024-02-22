@@ -89,7 +89,6 @@ ts_definitions = [
   "../definitions/storage_mv2.d.ts",
   "../definitions/tabs.d.ts",
   "../definitions/tts.d.ts",
-  "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/windows.d.ts",
 ]
 
@@ -99,7 +98,7 @@ ts_library("ts_build") {
   composite = true
   in_files = ts_modules + js_sources
 
-  deps = []
+  deps = [ "//tools/typescript/definitions:library" ]
 
   tsconfig_base = "../tsconfig.base.json"
 }
