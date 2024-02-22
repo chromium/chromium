@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.lifecycle.OnUserLeaveHintObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
@@ -48,6 +49,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     private final ObserverList<ConfigurationChangedObserver> mConfigurationChangedListeners =
             new ObserverList<>();
     private final ObserverList<RecreateObserver> mRecreateObservers = new ObserverList<>();
+    private final ObserverList<OnUserLeaveHintObserver> mOnUserLeaveHintObservers =
+            new ObserverList<>();
 
     private final Activity mActivity;
 
@@ -92,6 +95,9 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (observer instanceof RecreateObserver) {
             mRecreateObservers.addObserver((RecreateObserver) observer);
         }
+        if (observer instanceof OnUserLeaveHintObserver) {
+            mOnUserLeaveHintObservers.addObserver((OnUserLeaveHintObserver) observer);
+        }
     }
 
     @Override
@@ -126,6 +132,9 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         }
         if (observer instanceof RecreateObserver) {
             mRecreateObservers.removeObserver((RecreateObserver) observer);
+        }
+        if (observer instanceof OnUserLeaveHintObserver) {
+            mOnUserLeaveHintObservers.removeObserver((OnUserLeaveHintObserver) observer);
         }
     }
 
@@ -256,6 +265,12 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     void dispatchOnRecreate() {
         for (RecreateObserver observer : mRecreateObservers) {
             observer.onRecreate();
+        }
+    }
+
+    void dispatchOnUserLeaveHint() {
+        for (OnUserLeaveHintObserver observer : mOnUserLeaveHintObservers) {
+            observer.onUserLeaveHint();
         }
     }
 }

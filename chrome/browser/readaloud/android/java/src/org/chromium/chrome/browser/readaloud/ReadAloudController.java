@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.OnUserLeaveHintObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -71,7 +72,8 @@ public class ReadAloudController
                 Player.Delegate,
                 PlaybackListener,
                 ApplicationStatus.ApplicationStateListener,
-                InsetObserver.WindowInsetObserver {
+                InsetObserver.WindowInsetObserver,
+                OnUserLeaveHintObserver {
     private static final String TAG = "ReadAloudController";
     private static final Class<RestoreState> USER_DATA_KEY = RestoreState.class;
     private final Activity mActivity;
@@ -118,6 +120,8 @@ public class ReadAloudController
 
     // TODO(b/322052505): Remove this and just observe mProfileSupplier.
     @Nullable private Profile mProfile;
+
+    private boolean mOnUserLeaveHint;
 
     // Information about a tab playback necessary for resuming later. Does not
     // include language or voice which should come from current tab state or
@@ -325,12 +329,12 @@ public class ReadAloudController
         ApplicationStatus.registerApplicationStateListener(this);
         mActivityWindowAndroid = activityWindowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
     }
 
     public ObservableSupplier<String> getReadabilitySupplier() {
         return mReadabilitySupplier;
     }
-
     private void onProfileAvailable(Profile profile) {
         mProfile = profile;
         mReadabilityHooks =
@@ -708,6 +712,7 @@ public class ReadAloudController
         if (insetObserver != null) {
             insetObserver.removeObserver(this);
         }
+        mActivityLifecycleDispatcher.unregister(this);
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
@@ -1098,10 +1103,12 @@ public class ReadAloudController
 
     @Override
     public void onApplicationStateChange(@ApplicationState int newState) {
-        boolean isScreenLocked =
+
+        boolean isScreenOnAndUnlocked =
                 DeviceConditions.isCurrentlyScreenOnAndUnlocked(mActivity.getApplicationContext());
         // stop any playback if user left Chrome while screen is on and unlocked
-        if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES && isScreenLocked) {
+        if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
+                && (isScreenOnAndUnlocked || mOnUserLeaveHint)) {
             if (mCurrentlyPlayingTab != null) {
                 mStateToRestoreOnBringingToForeground =
                         new RestoreState(
@@ -1112,18 +1119,29 @@ public class ReadAloudController
                                 mDateModified);
             }
             resetCurrentPlayback();
+            mOnUserLeaveHint = false;
         } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
                 && mStateToRestoreOnBringingToForeground != null) {
             mStateToRestoreOnBringingToForeground.restore();
             mStateToRestoreOnBringingToForeground = null;
+            mOnUserLeaveHint = false;
         }
         if (mPlayerCoordinator != null) {
-            if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES && !isScreenLocked) {
+
+            if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES && !isScreenOnAndUnlocked) {
                 mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ true);
-            } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES && isScreenLocked) {
+            } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
+                    && isScreenOnAndUnlocked) {
                 mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ false);
             }
         }
+    }
+
+    // OnUserLeaveHintObserver
+    @Override
+    public void onUserLeaveHint() {
+        Log.d(TAG, "on user leave hint");
+        mOnUserLeaveHint = true;
     }
 
     // Tests.
