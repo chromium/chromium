@@ -21,7 +21,7 @@ import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon
 import type {DomRepeat, DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReadAnythingElement} from './app.js';
+import {PauseActionSource, ReadAnythingElement} from './app.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -700,7 +700,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (this.paused) {
       this.contentPage.playSpeech();
     } else {
-      this.contentPage.stopSpeech(/* pausedFromPlayClickButton = */ true);
+      this.contentPage.stopSpeech(PauseActionSource.BUTTON_CLICK);
     }
   }
 

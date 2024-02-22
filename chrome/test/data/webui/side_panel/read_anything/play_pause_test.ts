@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
-import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -36,12 +36,6 @@ suite('PlayPause', () => {
     };
   }
 
-  function assertAppPausedState(shouldBePaused: boolean): void {
-    // Bypass Typescript compiler to allow us to get a private property
-    // @ts-ignore
-    assertEquals(app.paused, shouldBePaused);
-  }
-
   setup(() => {
     suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
@@ -61,7 +55,7 @@ suite('PlayPause', () => {
 
   suite('by default', () => {
     test('is paused', () => {
-      assertAppPausedState(true);
+      assertTrue(app.speechPlayngState.paused);
       assertFalse(app.speechStarted);
     });
 
@@ -76,7 +70,7 @@ suite('PlayPause', () => {
     });
 
     test('starts speech', () => {
-      assertAppPausedState(false);
+      assertFalse(app.speechPlayngState.paused);
       // TODO: b/323960128 - Since this test browser doesn't have any
       // voices, speechStarted doesn't get set to true. Find a way to add a mock
       // voice to this browser, and test that app.speechStarted is true.
@@ -94,7 +88,7 @@ suite('PlayPause', () => {
     });
 
     test('stops speech', () => {
-      assertAppPausedState(true);
+      assertTrue(app.speechPlayngState.paused);
     });
 
     test('updates icon to play', () => {
@@ -111,13 +105,13 @@ suite('PlayPause', () => {
 
     test('first press plays', () => {
       app.$.flexParent!.dispatchEvent(kPress);
-      assertAppPausedState(false);
+      assertFalse(app.speechPlayngState.paused);
     });
 
     test('second press pauses', () => {
       app.$.flexParent!.dispatchEvent(kPress);
       app.$.flexParent!.dispatchEvent(kPress);
-      assertAppPausedState(true);
+      assertTrue(app.speechPlayngState.paused);
     });
   });
 });
