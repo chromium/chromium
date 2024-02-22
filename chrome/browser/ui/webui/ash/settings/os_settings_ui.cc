@@ -140,6 +140,13 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
 
+  // App icons on the os-settings page uses chrome://app-icon URLs which need to
+  // be supported by the img-src CSP.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc,
+      "img-src chrome://resources chrome://theme chrome://image "
+      "chrome://favicon2 chrome://app-icon data: 'self';");
+
   ManagedUIHandler::Initialize(web_ui, html_source);
 }
 
