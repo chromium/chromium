@@ -77,6 +77,8 @@ inline constexpr char kManagedDefaultThirdPartyStoragePartitioningSetting[] =
     "profile.managed_default_content_settings.third_party_storage_partitioning";
 inline constexpr char kManagedDefaultWebPrintingSetting[] =
     "profile.managed_default_content_settings.web_printing";
+inline constexpr char kManagedDefaultDirectSocketsSetting[] =
+    "profile.managed_default_content_settings.direct_sockets";
 
 // Preferences that are exclusively used to store managed content settings
 // patterns.
@@ -168,6 +170,10 @@ inline constexpr char kManagedWebPrintingAllowedForUrls[] =
     "profile.managed_web_printing_allowed_for_urls";
 inline constexpr char kManagedWebPrintingBlockedForUrls[] =
     "profile.managed_web_printing_blocked_for_urls";
+inline constexpr char kManagedDirectSocketsAllowedForUrls[] =
+    "profile.managed_direct_sockets_allowed_for_urls";
+inline constexpr char kManagedDirectSocketsBlockedForUrls[] =
+    "profile.managed_direct_sockets_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests. This and kEnableNotificationCPSS can't both be true

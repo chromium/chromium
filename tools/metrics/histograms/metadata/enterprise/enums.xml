@@ -2061,6 +2061,9 @@ chromium-metrics-reviews@google.com.
   <int value="1227" label="MutationEventsEnabled"/>
   <int value="1228" label="DevToolsGenAiSettings"/>
   <int value="1229" label="CACertificatesWithConstraints"/>
+  <int value="1230" label="DefaultDirectSocketsSetting"/>
+  <int value="1231" label="DirectSocketsAllowedForUrls"/>
+  <int value="1232" label="DirectSocketsBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -587,4 +587,84 @@ IN_PROC_BROWSER_TEST_F(WebPrintingPolicyTest, WebPrintingBlockedForUrls) {
 }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+class DirectSocketsPolicyTest : public PolicyTest {
+ public:
+  void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestingUrl()));
+  }
+
+ protected:
+  GURL GetTestingUrl() const {
+    return embedded_test_server()->GetURL("/empty.html");
+  }
+
+  ContentSetting GetDirectSocketsDefaultContentSetting() {
+    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->GetDefaultContentSetting(ContentSettingsType::DIRECT_SOCKETS,
+                                   /*provider_id=*/nullptr);
+  }
+
+  ContentSetting GetDirectSocketsContentSetting(const GURL& url) {
+    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
+                            ContentSettingsType::DIRECT_SOCKETS);
+  }
+
+  void SetDefaultDirectSocketsSettingToBlocked() {
+    SetPolicy(&policies_, key::kDefaultDirectSocketsSetting,
+              base::Value(kBlockSetting));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDirectSocketsAllowedFor(const GURL& url) {
+    SetPolicy(&policies_, key::kDirectSocketsAllowedForUrls,
+              base::Value(base::Value::List().Append(url.spec())));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDirectSocketsBlockedFor(const GURL& url) {
+    SetPolicy(&policies_, key::kDirectSocketsBlockedForUrls,
+              base::Value(base::Value::List().Append(url.spec())));
+    UpdateProviderPolicy(policies_);
+  }
+
+ private:
+  static constexpr int32_t kBlockSetting = 2;
+  base::test::ScopedFeatureList feature_list_;
+  PolicyMap policies_;
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsPolicyTest, DefaultDirectSocketsSetting) {
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetDirectSocketsDefaultContentSetting());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetDirectSocketsContentSetting(GetTestingUrl()));
+
+  SetDefaultDirectSocketsSettingToBlocked();
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetDirectSocketsDefaultContentSetting());
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            GetDirectSocketsContentSetting(GetTestingUrl()));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsPolicyTest, DirectSocketsAllowedForUrls) {
+  SetDefaultDirectSocketsSettingToBlocked();
+  SetDirectSocketsAllowedFor(GetTestingUrl());
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetDirectSocketsDefaultContentSetting());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetDirectSocketsContentSetting(GetTestingUrl()));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsPolicyTest, DirectSocketsBlockedForUrls) {
+  SetDirectSocketsBlockedFor(GetTestingUrl());
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetDirectSocketsDefaultContentSetting());
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            GetDirectSocketsContentSetting(GetTestingUrl()));
+}
+#endif
+
 }  // namespace policy

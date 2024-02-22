@@ -87,3 +87,9 @@ WebPrintingSettings:
   - DefaultWebPrintingSetting
   - WebPrintingAllowedForUrls
   - WebPrintingBlockedForUrls
+DirectSocketsSettings:
+  caption: Direct Sockets settings
+  policies:
+  - DefaultDirectSocketsSetting
+  - DirectSocketsAllowedForUrls
+  - DirectSocketsBlockedForUrls

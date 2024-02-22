@@ -1228,6 +1228,9 @@ policies:
   1227: MutationEventsEnabled
   1228: DevToolsGenAiSettings
   1229: CACertificatesWithConstraints
+  1230: DefaultDirectSocketsSetting
+  1231: DirectSocketsAllowedForUrls
+  1232: DirectSocketsBlockedForUrls
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1280,3 +1283,4 @@ atomic_groups:
   49: ProfileSeparation
   50: FloatingSso
   51: WebPrintingSettings
+  52: DirectSocketsSettings
