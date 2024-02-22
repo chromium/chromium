@@ -1215,6 +1215,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method forEach
 [Worker]     method map
 [Worker]     method subscribe
+[Worker]     method take
 [Worker]     method takeUntil
 [Worker]     method toArray
 [Worker] interface OffscreenCanvas : EventTarget

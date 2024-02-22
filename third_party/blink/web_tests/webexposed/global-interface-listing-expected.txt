@@ -6789,6 +6789,7 @@ interface Observable
     method forEach
     method map
     method subscribe
+    method take
     method takeUntil
     method toArray
 interface OfflineAudioCompletionEvent : Event

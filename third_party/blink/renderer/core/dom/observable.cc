@@ -207,6 +207,83 @@ class OperatorForEachInternalObserver final
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
 
+class OperatorTakeSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorTakeSubscribeDelegate(Observable* source_observable,
+                                uint64_t number_to_take)
+      : source_observable_(source_observable),
+        number_to_take_(number_to_take) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    if (number_to_take_ == 0) {
+      subscriber->complete(script_state);
+      return;
+    }
+
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state,
+                                                     number_to_take_),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* subscriber,
+                           ScriptState* script_state,
+                           uint64_t number_to_take)
+        : subscriber_(subscriber),
+          script_state_(script_state),
+          number_to_take_(number_to_take) {
+      CHECK(subscriber_);
+      CHECK(script_state_);
+      CHECK_GT(number_to_take_, 0ull);
+    }
+
+    void Next(ScriptValue value) override {
+      CHECK_GT(number_to_take_, 0ull);
+      // This can run script, which may detach the context, but that's OK
+      // because nothing below this invocation relies on an attached/valid
+      // context.
+      subscriber_->next(value);
+      --number_to_take_;
+
+      if (!number_to_take_) {
+        subscriber_->complete(script_state_);
+      }
+    }
+    void Error(ScriptState*, ScriptValue error) override {
+      subscriber_->error(script_state_, error);
+    }
+    void Complete() override { subscriber_->complete(script_state_); }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(subscriber_);
+      visitor->Trace(script_state_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> subscriber_;
+    Member<ScriptState> script_state_;
+    uint64_t number_to_take_;
+  };
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  Member<Observable> source_observable_;
+  uint64_t number_to_take_;
+};
+
 class OperatorFilterSubscribeDelegate final
     : public Observable::SubscribeDelegate {
  public:
@@ -655,6 +732,14 @@ Observable* Observable::filter(ScriptState*, V8Predicate* predicate) {
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
       MakeGarbageCollected<OperatorFilterSubscribeDelegate>(this, predicate));
+  return return_observable;
+}
+
+Observable* Observable::take(ScriptState*, uint64_t number_to_take) {
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorTakeSubscribeDelegate>(this,
+                                                          number_to_take));
   return return_observable;
 }
 

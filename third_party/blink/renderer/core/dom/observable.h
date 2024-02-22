@@ -59,6 +59,7 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   Observable* takeUntil(ScriptState*, Observable*);
   Observable* map(ScriptState*, V8Mapper*);
   Observable* filter(ScriptState*, V8Predicate*);
+  Observable* take(ScriptState*, uint64_t);
 
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.
