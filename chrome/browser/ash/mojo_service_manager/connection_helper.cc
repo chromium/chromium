@@ -13,8 +13,8 @@
 
 #if !BUILDFLAG(USE_REAL_CHROMEOS_SERVICES)
 #include "base/system/sys_info.h"
-#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"  // nogncheck
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"  // nogncheck
 #endif
 
 namespace {

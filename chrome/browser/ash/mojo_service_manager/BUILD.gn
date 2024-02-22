@@ -22,6 +22,6 @@ source_set("mojo_service_manager") {
     "//mojo/public/cpp/bindings",
   ]
   if (!use_real_chromeos_services) {
-    deps += [ "//chromeos/ash/services/cros_healthd/public/cpp" ]
+    deps += [ "//chromeos/ash/services/cros_healthd/public/cpp:fakes" ]
   }
 }

@@ -27,3 +27,12 @@ component("mojo_service_manager") {
     ]
   }
 }
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_mojo_service_manager.cc",
+    "fake_mojo_service_manager.h",
+  ]
+  public_deps = [ ":mojo_service_manager" ]
+}
