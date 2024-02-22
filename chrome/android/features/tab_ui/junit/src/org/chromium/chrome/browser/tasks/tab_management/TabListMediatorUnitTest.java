@@ -3060,7 +3060,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabClosure_updatesTabGroup_inTabSwitcher() {
+    public void tabClosure_updatesTabGroup_inTabSwitcher_notClosedByButton() {
         initAndAssertAllProperties();
         TabListMediator.TabActionListener actionListenerBeforeUpdate =
                 mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
@@ -3072,10 +3072,12 @@ public class TabListMediatorUnitTest {
 
         assertEquals(2, mModel.size());
 
+        // Not closed by button.
+        mMediator.setIsClosingGroupForTesting(false);
         mMediator.setActionOnAllRelatedTabsForTesting(true);
         doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
 
-        mMediatorTabModelObserver.willCloseTab(mTab1, false, true);
+        mMediatorTabModelObserver.willCloseTab(tab3, false, true);
 
         assertEquals(2, mModel.size());
 
@@ -3084,6 +3086,35 @@ public class TabListMediatorUnitTest {
         // The selection listener should be updated which indicates that corresponding property
         // model is updated.
         assertThat(actionListenerBeforeUpdate, not(actionListenerAfterUpdate));
+    }
+
+    @Test
+    public void tabClosure_updatesTabGroup_inTabSwitcher_closedByButton() {
+        initAndAssertAllProperties();
+        TabListMediator.TabActionListener actionListenerBeforeUpdate =
+                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
+
+        // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB1_ID);
+
+        assertEquals(2, mModel.size());
+
+        // Closed by button.
+        mMediator.setIsClosingGroupForTesting(true);
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
+
+        mMediatorTabModelObserver.willCloseTab(tab3, false, true);
+
+        assertEquals(2, mModel.size());
+
+        TabListMediator.TabActionListener actionListenerAfterUpdate =
+                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
+        // The selection listener should not be updated which indicates that corresponding property
+        // model was not updated.
+        assertThat(actionListenerBeforeUpdate, equalTo(actionListenerAfterUpdate));
     }
 
     @Test
