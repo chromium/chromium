@@ -2056,6 +2056,7 @@ export class GuestOsShareCommand extends FilesCommand {
     // Must be single directory not already shared.
     const entries = getCommandEntries(fileManager, event.target);
     event.canExecute = entries.length === 1 && entries[0]!.isDirectory &&
+        !isFakeEntry(entries[0]!) &&
         !fileManager.crostini.isPathShared(this.vmName_, entries[0]!) &&
         fileManager.crostini.canSharePath(
             this.vmName_, entries[0]!, true /* persist */);

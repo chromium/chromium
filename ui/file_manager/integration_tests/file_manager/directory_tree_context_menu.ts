@@ -1092,7 +1092,6 @@ export async function dirContextMenuUsbs() {
   const partitionsRootMenus = [
     ['#unmount', true],
     ['#format', false],
-    ['#share-with-linux', true],
   ];
   const partition1Menus = [
     ['#share-with-linux', true],
@@ -1112,7 +1111,6 @@ export async function dirContextMenuUsbs() {
   const ext4DeviceMenus = [
     ['#unmount', true],
     ['#erase-device', true],
-    ['#share-with-linux', true],
   ];
   const ext4PartitionMenus = [
     ['#share-with-linux', true],
@@ -1123,7 +1121,6 @@ export async function dirContextMenuUsbs() {
   const ntfsDeviceMenus = [
     ['#unmount', true],
     ['#erase-device', true],
-    ['#share-with-linux', true],
   ];
   const ntfsPartitionMenus = [
     ['#share-with-linux', true],
@@ -1134,7 +1131,6 @@ export async function dirContextMenuUsbs() {
   const deviceMenus = [
     ['#unmount', true],
     ['#erase-device', true],
-    ['#share-with-linux', true],
   ];
 
   // Mount removable volumes.

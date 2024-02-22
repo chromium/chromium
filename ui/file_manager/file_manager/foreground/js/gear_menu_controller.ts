@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
-import {isRecentRoot} from '../../common/js/entry_utils.js';
+import {isFakeEntry} from '../../common/js/entry_utils.js';
 import {str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 
@@ -62,7 +62,7 @@ export class GearMenuController {
    */
   private refreshRemainingSpace_() {
     const currentDirectory = this.directoryModel_.getCurrentDirEntry();
-    if (!currentDirectory || isRecentRoot(currentDirectory)) {
+    if (!currentDirectory || isFakeEntry(currentDirectory)) {
       this.gearMenu_.setSpaceInfo(null, false);
       return;
     }

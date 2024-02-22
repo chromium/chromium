@@ -9,7 +9,7 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
-import {getTeamDriveName} from '../../common/js/entry_utils.js';
+import {getTeamDriveName, isFakeEntry} from '../../common/js/entry_utils.js';
 import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
 import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
@@ -915,7 +915,7 @@ export class BannerController extends EventTarget {
     for (const {volumeType, volumeId} of this.pendingVolumeSizeUpdates_) {
       if (volumeType === VolumeType.DRIVE) {
         try {
-          if (!this.currentEntry_) {
+          if (!this.currentEntry_ || isFakeEntry(this.currentEntry_)) {
             continue;
           }
           this.driveQuotaMetadata_ =
