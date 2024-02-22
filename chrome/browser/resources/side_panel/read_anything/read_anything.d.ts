@@ -220,7 +220,7 @@ declare namespace chrome {
 
     // Called when the side panel has finished loading and it's safe to call
     // SidePanelWebUIView::ShowUI
-    function shouldShowUI(): boolean;
+    function shouldShowUi(): boolean;
 
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
@@ -257,7 +257,7 @@ declare namespace chrome {
     // Inits the AXPosition instance in ReadAnythingAppController with the
     // starting node. Currently needed to orient the AXPosition to the correct
     // position, but we should be able to remove this in the future.
-    function initAXPositionWithNode(startingNodeId: number): void;
+    function initAxPositionWithNode(startingNodeId: number): void;
 
     // Gets the starting text index for the current Read Aloud text segment
     // for the given node. nodeId should be a node returned by getCurrentText.

@@ -267,7 +267,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // artifacts from showing if the side panel is shown before content is
     // ready.
     listenOnce(this.$.flexParent, 'dom-change', () => {
-      setTimeout(() => chrome.readingMode.shouldShowUI(), 0);
+      setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
     });
 
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
@@ -785,7 +785,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // TODO(crbug.com/1474951): There should be a way to use AXPosition so
       // that this step can be skipped.
       if (this.firstTextNodeSetForReadAloud > 0) {
-        chrome.readingMode.initAXPositionWithNode(
+        chrome.readingMode.initAxPositionWithNode(
             this.firstTextNodeSetForReadAloud);
         this.highlightAndPlayMessage();
       }
@@ -1045,7 +1045,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private resetSpeechPostSettingChange_() {
-    // Don't call stopSpeech() if initAXPositionWithNode hasn't been called
+    // Don't call stopSpeech() if initAxPositionWithNode hasn't been called
     if (!this.speechStarted) {
       return;
     }

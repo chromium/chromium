@@ -230,10 +230,7 @@ export class FakeReadingMode {
 
   // Called when the side panel has finished loading and it's safe to call
   // SidePanelWebUIView::ShowUI
-  // TODO: b/323960128 - update method name everywhere and remove ts-ignore
-  // which is suppressing a naming convention error
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  shouldShowUI(): boolean {
+  shouldShowUi(): boolean {
     return true;
   }
 
@@ -265,10 +262,7 @@ export class FakeReadingMode {
   // Inits the AXPosition instance in ReadAnythingAppController with the
   // starting node. Currently needed to orient the AXPosition to the correct
   // position, but we should be able to remove this in the future.
-  // TODO: b/323960128 - update method name everywhere and remove ts-ignore
-  // which is suppressing a naming convention error
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  initAXPositionWithNode(_startingNodeId: number): void {}
+  initAxPositionWithNode(_startingNodeId: number): void {}
 
   // Gets the starting text index for the current Read Aloud text segment
   // for the given node. nodeId should be a node returned by getCurrentText.
