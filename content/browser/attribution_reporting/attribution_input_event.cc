@@ -4,6 +4,9 @@
 
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
+
 namespace content {
 
 AttributionInputEvent::AttributionInputEvent() = default;
@@ -20,5 +23,14 @@ AttributionInputEvent::AttributionInputEvent(AttributionInputEvent&&) = default;
 
 AttributionInputEvent& AttributionInputEvent::operator=(
     AttributionInputEvent&&) = default;
+
+bool AttributionInputEvent::operator==(
+    const AttributionInputEvent& other) const {
+#if BUILDFLAG(IS_ANDROID)
+  return input_event_id == other.input_event_id;
+#else
+  return true;
+#endif
+}
 
 }  // namespace content

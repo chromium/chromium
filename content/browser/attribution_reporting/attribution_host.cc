@@ -125,7 +125,10 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
   AttributionInputEvent input;
 #if BUILDFLAG(IS_ANDROID)
   if (input_event_tracker_android_) {
-    input.input_event = input_event_tracker_android_->GetMostRecentEvent();
+    AttributionInputEventTrackerAndroid::InputEvent input_event =
+        input_event_tracker_android_->GetMostRecentEvent();
+    input.input_event = std::move(input_event.event);
+    input.input_event_id = input_event.id;
   }
 #endif
   return input;
@@ -172,11 +175,10 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 
   auto* navigation_request = static_cast<NavigationRequest*>(navigation_handle);
 
-  suitable_context->data_host_manager()->NotifyNavigationRegistrationStarted(
-      impression->attribution_src_token, suitable_context->last_input_event(),
-      suitable_context->context_origin(),
-      suitable_context->is_nested_within_fenced_frame(),
-      suitable_context->root_render_frame_id(),
+  AttributionDataHostManager* manager = suitable_context->data_host_manager();
+  manager->NotifyNavigationRegistrationStarted(
+      std::move(*suitable_context), impression->attribution_src_token,
+
       navigation_handle->GetNavigationId(),
       // The devtools_navigation_token is going to be used as the
       // navigation's request devtools inspector ID if there is an enabled
@@ -282,11 +284,9 @@ void AttributionHost::RegisterDataHost(
     return;
   }
 
-  suitable_context->data_host_manager()->RegisterDataHost(
-      std::move(data_host), suitable_context->context_origin(),
-      suitable_context->is_nested_within_fenced_frame(),
-      registration_eligibility, suitable_context->root_render_frame_id(),
-      suitable_context->last_navigation_id());
+  AttributionDataHostManager* manager = suitable_context->data_host_manager();
+  manager->RegisterDataHost(std::move(data_host), std::move(*suitable_context),
+                            registration_eligibility);
 }
 
 void AttributionHost::NotifyNavigationWithBackgroundRegistrationsWillStart(
@@ -342,6 +342,9 @@ void AttributionHost::BindReceiver(
   attribution_host->receivers_.Bind(rfh, std::move(receiver));
 }
 
+// TODO(anthonygarant): this method not longer has to be in the
+// attribution_host. We can have the reporter call the manager directly like it
+// does when reporting data.
 bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     std::optional<int64_t> navigation_id,
@@ -358,14 +361,10 @@ bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     return false;
   }
 
-  suitable_context->data_host_manager()
-      ->NotifyFencedFrameReportingBeaconStarted(
-          beacon_id, navigation_id, suitable_context->context_origin(),
-          suitable_context->is_nested_within_fenced_frame(),
-          navigation_id.has_value() ? suitable_context->last_input_event()
-                                    : AttributionInputEvent(),
-          suitable_context->root_render_frame_id(),
-          std::move(devtools_request_id));
+  AttributionDataHostManager* manager = suitable_context->data_host_manager();
+  manager->NotifyFencedFrameReportingBeaconStarted(
+      beacon_id, std::move(*suitable_context), navigation_id,
+      std::move(devtools_request_id));
   return true;
 }
 

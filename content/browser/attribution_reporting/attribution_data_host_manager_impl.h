@@ -53,9 +53,9 @@ class TriggerVerification;
 namespace content {
 
 class AttributionManager;
+class AttributionSuitableContext;
 
 struct AttributionInputEvent;
-struct GlobalRenderFrameHostId;
 
 // Manages a receiver set of all ongoing `AttributionDataHost`s and forwards
 // events to the `AttributionManager` that owns `this`. Because attributionsrc
@@ -79,11 +79,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   // AttributionDataHostManager:
   void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-      attribution_reporting::SuitableOrigin context_origin,
-      bool is_within_fenced_frame,
-      attribution_reporting::mojom::RegistrationEligibility,
-      GlobalRenderFrameHostId render_frame_id,
-      int64_t last_navigation_id) override;
+      AttributionSuitableContext,
+      attribution_reporting::mojom::RegistrationEligibility) override;
   bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) override;
@@ -92,11 +89,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       size_t expected_registrations) override;
 
   void NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext suitable_context,
       const blink::AttributionSrcToken& attribution_src_token,
-      AttributionInputEvent input_event,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id,
       int64_t navigation_id,
       std::string devtools_request_id) override;
   bool NotifyNavigationRegistrationData(
@@ -109,11 +103,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
   void NotifyBackgroundRegistrationStarted(
       BackgroundRegistrationsId id,
-      const attribution_reporting::SuitableOrigin& context_origin,
-      bool is_within_fenced_frame,
+      AttributionSuitableContext,
       attribution_reporting::mojom::RegistrationEligibility,
-      GlobalRenderFrameHostId render_frame_id,
-      int64_t last_navigation_id,
       std::optional<blink::AttributionSrcToken> attribution_src_token,
       std::optional<std::string> devtools_request_id) override;
   bool NotifyBackgroundRegistrationData(
@@ -127,11 +118,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
   void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
+      AttributionSuitableContext,
       std::optional<int64_t> navigation_id,
-      attribution_reporting::SuitableOrigin source_origin,
-      bool is_within_fenced_frame,
-      AttributionInputEvent input_event,
-      GlobalRenderFrameHostId render_frame_id,
       std::string devtools_request_id) override;
   void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,

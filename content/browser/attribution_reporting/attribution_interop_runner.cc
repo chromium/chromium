@@ -56,6 +56,7 @@
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
+#include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/global_routing_id.h"
@@ -295,9 +296,14 @@ class AttributionEventHandler {
               data_host_remote.BindNewPipeAndPassReceiver(),
               attribution_src_token);
           attribution_data_host_manager->NotifyNavigationRegistrationStarted(
-              attribution_src_token, AttributionInputEvent(),
-              event.context_origin,
-              /*is_within_fenced_frame=*/false, GlobalRenderFrameHostId(),
+              AttributionSuitableContext::CreateForTesting(
+                  event.context_origin,
+                  /*is_nested_within_fenced_frame=*/false,
+                  GlobalRenderFrameHostId(),
+                  /*last_navigation_id=*/kNavigationId,
+                  /*last_input_event=*/AttributionInputEvent(),
+                  attribution_data_host_manager),
+              attribution_src_token,
               /*navigation_id=*/kNavigationId, /*devtools_request_id=*/"");
           attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
               attribution_src_token);
@@ -306,12 +312,15 @@ class AttributionEventHandler {
         case attribution_reporting::mojom::SourceType::kEvent:
           attribution_data_host_manager->RegisterDataHost(
               data_host_remote.BindNewPipeAndPassReceiver(),
-              std::move(event.context_origin),
-              /*is_within_fenced_frame=*/false,
+              AttributionSuitableContext::CreateForTesting(
+                  event.context_origin,
+                  /*is_nested_within_fenced_frame=*/false,
+                  GlobalRenderFrameHostId(),
+                  /*last_navigation_id=*/kNavigationId,
+                  /*last_input_event=*/AttributionInputEvent(),
+                  attribution_data_host_manager),
               attribution_reporting::mojom::RegistrationEligibility::
-                  kSourceOrTrigger,
-              GlobalRenderFrameHostId(),
-              /*last_navigation_id=*/kNavigationId);
+                  kSourceOrTrigger);
           break;
       }
 
@@ -332,11 +341,14 @@ class AttributionEventHandler {
 
     manager_->GetDataHostManager()->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
-        std::move(event.context_origin),
-        /*is_within_fenced_frame=*/false,
-        attribution_reporting::mojom::RegistrationEligibility::kSourceOrTrigger,
-        GlobalRenderFrameHostId(),
-        /*last_navigation_id=*/kNavigationId);
+        AttributionSuitableContext::CreateForTesting(
+            event.context_origin,
+            /*is_nested_within_fenced_frame=*/false, GlobalRenderFrameHostId(),
+            /*last_navigation_id=*/kNavigationId,
+            /*last_input_event=*/AttributionInputEvent(),
+            manager_->GetDataHostManager()),
+        attribution_reporting::mojom::RegistrationEligibility::
+            kSourceOrTrigger);
     data_host_remote->TriggerDataAvailable(std::move(event.reporting_origin),
                                            std::move(*registration),
                                            /*verifications=*/{});

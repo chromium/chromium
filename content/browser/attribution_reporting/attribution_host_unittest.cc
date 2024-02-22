@@ -21,6 +21,7 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
@@ -67,7 +68,9 @@ namespace {
 using ::attribution_reporting::SuitableOrigin;
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Optional;
+using ::testing::Property;
 using ::testing::Return;
 
 using ::attribution_reporting::mojom::RegistrationEligibility;
@@ -197,12 +200,17 @@ TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
 TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationStarted(
-                  impression.attribution_src_token, _,
-                  *SuitableOrigin::Deserialize("https://secure_impression.com"),
-                  /*is_within_fenced_frame=*/false, main_rfh()->GetGlobalId(),
-                  /*navigation_id=*/_, /*devtools_request_id*/ _));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationRegistrationStarted(
+          /*suitable_context=*/AllOf(
+              Property(&AttributionSuitableContext::context_origin,
+                       *SuitableOrigin::Deserialize(
+                           "https://secure_impression.com")),
+              Property(&AttributionSuitableContext::root_render_frame_id,
+                       main_rfh()->GetGlobalId())),
+          impression.attribution_src_token,
+          /*navigation_id=*/_, /*devtools_request_id*/ _));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -232,11 +240,16 @@ TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
   const SuitableOrigin d_origin = *SuitableOrigin::Create(d_url);
 
   GlobalRenderFrameHostId frame_id = main_rfh()->GetGlobalId();
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationStarted(
-                  impression.attribution_src_token, _, source_origin,
-                  /*is_within_fenced_frame=*/false, frame_id,
-                  /*navigation_id=*/_, /*devtools_request_id*/ _));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationRegistrationStarted(
+          /*suitable_context=*/AllOf(
+              Property(&AttributionSuitableContext::context_origin,
+                       source_origin),
+              Property(&AttributionSuitableContext::root_render_frame_id,
+                       frame_id)),
+          impression.attribution_src_token,
+          /*navigation_id=*/_, /*devtools_request_id*/ _));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
@@ -286,11 +299,16 @@ TEST_F(AttributionHostTest,
   const GURL d_url("http://d.com");
 
   GlobalRenderFrameHostId frame_id = main_rfh()->GetGlobalId();
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationStarted(
-                  impression.attribution_src_token, _, source_origin,
-                  /*is_within_fenced_frame=*/false, frame_id,
-                  /*navigation_id=*/_, /*devtools_request_id*/ _));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationRegistrationStarted(
+          /*suitable_context=*/AllOf(
+              Property(&AttributionSuitableContext::context_origin,
+                       source_origin),
+              Property(&AttributionSuitableContext::root_render_frame_id,
+                       frame_id)),
+          impression.attribution_src_token,
+          /*navigation_id=*/_, /*devtools_request_id*/ _));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
@@ -469,10 +487,13 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   EXPECT_CALL(
       *mock_data_host_manager(),
-      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/false,
-                       RegistrationEligibility::kSource,
-                       main_rfh()->GetGlobalId(), /*last_navigation_id=*/_));
+      RegisterDataHost(
+          _,
+          AllOf(Property(&AttributionSuitableContext::context_origin,
+                         *SuitableOrigin::Deserialize("https://top.example")),
+                Property(&AttributionSuitableContext::root_render_frame_id,
+                         main_rfh()->GetGlobalId())),
+          RegistrationEligibility::kSource));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   ScopedAttributionHostTargetFrame frame_scope(attribution_host(), main_rfh());
@@ -599,10 +620,13 @@ TEST_F(
 TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
   EXPECT_CALL(
       *mock_data_host_manager(),
-      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/false,
-                       RegistrationEligibility::kSource,
-                       main_rfh()->GetGlobalId(), /*last_navigation_id=*/_));
+      RegisterDataHost(
+          _,
+          AllOf(Property(&AttributionSuitableContext::context_origin,
+                         *SuitableOrigin::Deserialize("https://top.example")),
+                Property(&AttributionSuitableContext::root_render_frame_id,
+                         main_rfh()->GetGlobalId())),
+          RegistrationEligibility::kSource));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
 
@@ -658,10 +682,13 @@ TEST_F(AttributionHostTest,
 TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   EXPECT_CALL(
       *mock_data_host_manager(),
-      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/true,
-                       RegistrationEligibility::kSource,
-                       main_rfh()->GetGlobalId(), /*last_navigation_id=*/_));
+      RegisterDataHost(
+          _,
+          AllOf(Property(&AttributionSuitableContext::context_origin,
+                         *SuitableOrigin::Deserialize("https://top.example")),
+                Property(&AttributionSuitableContext::root_render_frame_id,
+                         main_rfh()->GetGlobalId())),
+          RegistrationEligibility::kSource));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   RenderFrameHost* fenced_frame =
@@ -728,12 +755,20 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
   for (const auto& test_case : kTestCases) {
     contents()->NavigateAndCommit(GURL(test_case.source_origin));
     if (test_case.expected_valid) {
-      EXPECT_CALL(*mock_data_host_manager(),
-                  NotifyFencedFrameReportingBeaconStarted(
-                      kBeaconId, Optional(kNavigationId),
-                      *SuitableOrigin::Deserialize(test_case.source_origin),
-                      /*is_within_fenced_frame=*/true, _,
-                      main_rfh()->GetGlobalId(), /*devtools_request_id=*/_));
+      EXPECT_CALL(
+          *mock_data_host_manager(),
+          NotifyFencedFrameReportingBeaconStarted(
+              kBeaconId,
+              AllOf(Property(
+                        &AttributionSuitableContext::context_origin,
+                        *SuitableOrigin::Deserialize(test_case.source_origin)),
+                    Property(&AttributionSuitableContext::root_render_frame_id,
+                             main_rfh()->GetGlobalId()),
+                    Property(&AttributionSuitableContext::
+                                 is_nested_within_fenced_frame,
+                             true)),
+              Optional(kNavigationId),
+              /*devtools_request_id=*/_));
     } else {
       EXPECT_CALL(*mock_data_host_manager(),
                   NotifyFencedFrameReportingBeaconStarted)
@@ -966,12 +1001,15 @@ TEST_F(AttributionHostTest, InsecureTaintTracking) {
   const GURL d_url("https://d.com");
   const SuitableOrigin d_origin = *SuitableOrigin::Create(d_url);
 
-  GlobalRenderFrameHostId frame_id = main_rfh()->GetGlobalId();
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationStarted(
-                  impression.attribution_src_token, _, source_origin,
-                  /*is_within_fenced_frame=*/false, frame_id,
-                  /*navigation_id=*/_, /*devtools_request_id=*/_));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationRegistrationStarted(
+          AllOf(Property(&AttributionSuitableContext::context_origin,
+                         source_origin),
+                Property(&AttributionSuitableContext::root_render_frame_id,
+                         main_rfh()->GetGlobalId())),
+          impression.attribution_src_token,
+          /*navigation_id=*/_, /*devtools_request_id=*/_));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),

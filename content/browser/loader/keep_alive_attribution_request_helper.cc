@@ -86,10 +86,8 @@ KeepAliveAttributionRequestHelper::CreateIfNeeded(
   BackgroundRegistrationsId id(unique_id_counter.GetNext());
 
   data_host_manager->NotifyBackgroundRegistrationStarted(
-      id, context.context_origin(), context.is_nested_within_fenced_frame(),
-      registration_eligibility,
-      /*render_frame_id=*/context.root_render_frame_id(),
-      context.last_navigation_id(), std::move(token), devtools_request_id);
+      id, context, registration_eligibility, std::move(token),
+      devtools_request_id);
   return base::WrapUnique(new KeepAliveAttributionRequestHelper(
       id, data_host_manager,
       /*reporting_url=*/request_url, runtime_features));
