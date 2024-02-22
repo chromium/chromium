@@ -937,6 +937,20 @@ enum HeaderBehaviour {
   self.viewVisible = YES;
   [self updateBroadcastState];
   [self updateToolbarState];
+
+  // If there is no first responder, try to make the webview the first
+  // responder to have it answer keyboard commands (e.g. space bar to scroll
+  // and respond to gampad controllers). The WKContentView must be the first
+  // responder before (or very shortly after) a load starts in order for
+  // gamepads to work. (Ref: crbug.com/325307469)
+  web::WebState* activeWebState = self.currentWebState;
+  if (activeWebState && !GetFirstResponder()) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(activeWebState);
+    if (!NTPHelper || !NTPHelper->IsActive()) {
+      [activeWebState->GetWebViewProxy() becomeFirstResponder];
+    }
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {

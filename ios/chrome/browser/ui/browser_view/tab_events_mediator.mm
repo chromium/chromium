@@ -102,8 +102,12 @@
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
 
-  // If there is no first responder, try to make the webview or the NTP first
-  // responder to have it answer keyboard commands (e.g. space bar to scroll).
+  // If there is no first responder, try to make the NTP first responder to have
+  // it answer keyboard commands (e.g. space bar to scroll). This is too late to
+  // make the WebView first responder for some features such as the Gamepad API
+  // which requires the WebView to be first responder when the page load starts.
+  // Thus, Webview will also become first responder in [BrowserViewController
+  // viewDidAppear:].
   if (!GetFirstResponder() && currentWebState) {
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webState);
