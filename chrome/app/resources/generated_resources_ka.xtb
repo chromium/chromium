@@ -2315,6 +2315,7 @@
 <translation id="2721695630904737430">კონტროლის ქვეშ მყოფი მომხმარებლები გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="2722540561488096675">კიდევ <ph name="TIME_LEFT" /> და თქვენი მოწყობილობა გამოირთვება. გამოიღეთ USB, სანამ მოწყობილობას ისევ ჩართავთ. ამის შემდეგ შეგიძლიათ, დაიწყოთ <ph name="DEVICE_OS" />-ით სარგებლობა.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">სტუმრის პროფილის გახსნა</translation>
 <translation id="2723819893410108315">ლიმონისფერი</translation>
 <translation id="2724841811573117416">WebRTC ჟურნალი</translation>
 <translation id="272488616838512378">საზომი ერთეულების გადაყვანა</translation>
@@ -3108,6 +3109,7 @@
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“-ს სურს, ამოშალოს ეს გაფართოება.</translation>
 <translation id="3345634917232014253">უსაფრთხოების შემოწმება ეს-ესაა შესრულდა</translation>
 <translation id="3345886924813989455">მხარდაჭერილი ბრაუზერი ვერ მოიძებნა</translation>
+<translation id="3346306152660142597">მოირგეთ ეს გვერდი ხელოვნური ინტელექტის დახმარებით</translation>
 <translation id="3347086966102161372">სურათის მისამართის კ&amp;ოპირება</translation>
 <translation id="3348038390189153836">აღმოჩენილია ამოშლადი მოწყობილობა</translation>
 <translation id="3348131053948466246">შემოთავაზებულია emoji. ნავიგაციისთვის დააჭირეთ კლავიშებს ზემოთ ან ქვემოთ მიმართული ისრით, შეყვანისთვის დააჭირეთ enter-ს.</translation>
@@ -9001,6 +9003,7 @@
 <translation id="7940265372707990269">დალაგება კრიტერიუმით: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">ტეტერინგის მზადყოფნა:</translation>
 <translation id="7942349550061667556">წითელი</translation>
+<translation id="7942846369224063421">სამომხმარებლო ინტერფეისის წინასწარ ჩატვირთული ვიზუალიზატორი</translation>
 <translation id="7943349879009553083">მიუწვდომელია სტუმრის რეჟიმში</translation>
 <translation id="7943368935008348579">PDF-ების ჩამოტვირთვა</translation>
 <translation id="7943837619101191061">მდებარეობის დამატება…</translation>

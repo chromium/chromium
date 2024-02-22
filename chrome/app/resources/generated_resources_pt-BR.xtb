@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Usar microfone e câmera</translation>
 <translation id="1005333234656240382">Ativar a depuração do adb?</translation>
 <translation id="1005671386794704751">Rosa</translation>
+<translation id="1006033052970139968">O acesso ao microfone é concedido a apps e sites com essa permissão e serviços do sistema</translation>
 <translation id="1006557561787696884">Usar chaves de acesso nos seus dispositivos Apple</translation>
 <translation id="1006873397406093306">Esta extensão pode ler e alterar seus dados em sites. É possível controlar a quais sites a extensão terá acesso.</translation>
 <translation id="1007057452468855774">Ativar a Google Play Store</translation>
@@ -1291,6 +1292,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1944535645109964458">Nenhuma chave de acesso disponível</translation>
 <translation id="1944921356641260203">Atualização encontrada</translation>
 <translation id="1947136734041527201">Permite fazer login em sites usando a conta que você tem com um serviço de identidade</translation>
+<translation id="1948528728718281125">O acesso à câmera é concedido a apps e sites com essa permissão e serviços do sistema</translation>
 <translation id="1949332606889020901">IDs de falha</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
 <translation id="1949849604471335579">Personalizar papel de parede, protetor de tela, cores de destaque e muito mais</translation>
@@ -2329,6 +2331,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2721695630904737430">Os usuários supervisionados foram desativados pelo administrador.</translation>
 <translation id="2722540561488096675">O dispositivo será desligado automaticamente em <ph name="TIME_LEFT" />. Remova o dispositivo USB antes de ligar novamente. Em seguida, use o <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Abrir perfil de visitante</translation>
 <translation id="2723819893410108315">Limão</translation>
 <translation id="2724841811573117416">Registros WebRTC</translation>
 <translation id="272488616838512378">Conversão de unidades</translation>
@@ -2485,6 +2488,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2822910719211888134">Erro ao fazer backup do Linux</translation>
 <translation id="2823176412251649407">Mude sua conexão de Internet e escolha "Tentar de novo" ou "Abrir no editor off-line" para usar as opções de edição e visualização limitadas.</translation>
 <translation id="2824942875887026017">O <ph name="IDS_SHORT_PRODUCT_NAME" /> está usando as configurações de proxy do seu administrador</translation>
+<translation id="2825151610926840364">Permita que apps e sites acessem a câmera Para usar a câmera, talvez seja necessário reiniciar o app ou atualizar a página.</translation>
 <translation id="2825758591930162672">Chave pública do requerente</translation>
 <translation id="2828375943530438449">Voltar da página de login</translation>
 <translation id="2828650939514476812">Conectar à rede Wi-Fi</translation>
@@ -4002,6 +4006,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4001540981461989979">Destacar cursor do mouse em movimento</translation>
 <translation id="4002347779798688515">Talvez não seja possível usar o perfil baixado se a operadora de rede móvel estiver bloqueada. Entre em contato com ela para receber ajuda.</translation>
 <translation id="4002440992267487163">Configuração do PIN</translation>
+<translation id="4003647532210142956">A programação atual está definida de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Para atualizar automaticamente as programações de pôr e nascer do sol, <ph name="BEGIN_LINK" />ative o acesso ao local<ph name="END_LINK" />.</translation>
 <translation id="4005817994523282006">Método de detecção de fuso horário</translation>
 <translation id="4007856537951125667">Ocultar atalhos</translation>
 <translation id="4010746393007464819">Um upgrade para o Debian 12 (Bookworm) está disponível</translation>
@@ -4040,6 +4045,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4036778507053569103">A política transferida do servidor por meio de download é inválida.</translation>
 <translation id="4037084878352560732">Cavalo</translation>
 <translation id="403725336528835653">Testar primeiro</translation>
+<translation id="4039966970282098406">Gerencie sua privacidade controlando o acesso ao microfone, à câmera e muito mais</translation>
 <translation id="4040041015953651705">Idioma a ser traduzido</translation>
 <translation id="4042660782729322247">Você está compartilhando sua tela</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Sair da página}one{Sair da página}other{Sair das páginas}}</translation>
@@ -4411,6 +4417,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="434198521554309404">Rápido. Seguro. Fácil de usar.</translation>
 <translation id="4342417854108207000">Com permissão para editar arquivos ou pastas no dispositivo</translation>
 <translation id="4343250402091037179">Para pesquisar em um site específico ou em uma parte do Chrome, digite o atalho dele na barra de endereço, seguido da tecla de atalho da sua preferência.</translation>
+<translation id="4343283008857332996">O acesso à câmera é concedido a apps e sites com essa permissão e serviços do sistema. Para usar a câmera, talvez seja necessário reiniciar o app ou atualizar a página.</translation>
 <translation id="4345457680916430965">&amp;Abrir no app <ph name="APP" /></translation>
 <translation id="4345587454538109430">Configurar...</translation>
 <translation id="4345732373643853732">Nome de usuário desconhecido pelo servidor</translation>
@@ -4718,6 +4725,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4576541033847873020">Parear dispositivo Bluetooth</translation>
 <translation id="4576763597586015380">Para continuar salvando senhas na Conta do Google, confirme sua identidade</translation>
 <translation id="4576965832613128988">Guia inativa em <ph name="WINDOW_TITLE" /></translation>
+<translation id="4577995939477504370">Apps e sites com permissão de uso do microfone e de serviços do sistema podem usar o microfone</translation>
 <translation id="4579453506923101210">Esquecer smartphone conectado</translation>
 <translation id="4579581181964204535">Não foi possível transmitir <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Para definir as notificações do navegador, acesse <ph name="LINK_BEGIN" />Configurações do navegador Chrome<ph name="LINK_END" /></translation>
@@ -5712,6 +5720,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5385628342687007304">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, salve-a na sua Conta do Google.</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">A política da empresa mudou. O botão "Experimentos" foi adicionado à barra de ferramentas. Clique nele para abrir uma caixa de diálogo e ativar os experimentos.</translation>
+<translation id="5388436023007579456">Apps e sites com permissões de uso da câmera e de serviços do sistema podem usar a câmera. Para usar a câmera, talvez seja necessário reiniciar o app ou atualizar a página.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site encontrado com muitas notificações}one{{NUM_SITES} site encontrado com muitas notificações}other{{NUM_SITES} sites encontrados com muitas notificações}}</translation>
 <translation id="5388885445722491159">Emparelhado</translation>
 <translation id="5389626883706033615">Os sites não podem pedir para usar as informações que salvaram sobre você</translation>
@@ -5812,6 +5821,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Anotações na tela de bloqueio</translation>
 <translation id="5459864179070366255">Continuar instalação</translation>
+<translation id="5460641065520325899">Gerencie os tipos de informação que os sites podem usar para rastrear você durante a navegação.</translation>
 <translation id="5460861858595506978">Inspiração</translation>
 <translation id="5461050611724244538">Conexão com o smartphone perdida</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
@@ -6898,6 +6908,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="630292539633944562">Sugestões de informações pessoais</translation>
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Reproduzir no volume normal mesmo se o ChromeVox estiver falando</translation>
+<translation id="6307268917612054609">Apps e sites com permissões de uso da câmera e de serviços do sistema podem usar a câmera</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Login fornecido por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Salvar &amp;link como...</translation>
@@ -8226,6 +8237,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7367714965999718019">Gerador de QR code</translation>
 <translation id="7368695150573390554">Todos os dados off-line serão excluídos</translation>
 <translation id="736877393389250337">Não foi possível abrir <ph name="URL" /> no <ph name="ALTERNATIVE_BROWSER_NAME" />. Entre em contato com o administrador do sistema.</translation>
+<translation id="7368927539449986686">Editar a Pesquisa no site</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7371490947952970241">Na configuração de localização principal do dispositivo é possível desativar esse recurso. Você também pode desativar o uso de Wi-Fi, redes móveis e sensores de local nessas configurações.</translation>
 <translation id="7371917887111892735">as guias são encolhidas para a largura da guia fixada</translation>
@@ -8492,6 +8504,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="756583107125124860">Alguns recursos podem usar o conteúdo de páginas recentes relacionadas e abertas para fornecer informações ou sugestões mais úteis</translation>
 <translation id="7566118625369982896">Gerenciar links do app Play</translation>
 <translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">Criar combinação de teclas</translation>
 <translation id="756809126120519699">Dados do Chrome apagados</translation>
 <translation id="756876171895853918">Personalizar avatar</translation>
 <translation id="7568790562536448087">Atualização</translation>
@@ -8753,6 +8766,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7757787379047923882">Texto compartilhado por <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ajuste os limites da sua tela</translation>
+<translation id="7758884017823246335">Adicionar a Pesquisa no site</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7762024824096060040">Não é possível usar esta conta</translation>
 <translation id="7762243782113123335">Algo deu errado. Envie um feedback com a #bruschetta na descrição. O código de erro é <ph name="ERROR" />.</translation>
@@ -10620,6 +10634,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9153274276370926498">Informações do sistema Lacros</translation>
 <translation id="9153367754133725216">Confira sugestões de novos apps e conteúdo da Web no acesso rápido e nos resultados da pesquisa. Envia estatísticas para melhorar as sugestões apenas se você tiver optado por enviar relatórios de erros e dados de uso e diagnóstico ao ChromeOS.</translation>
 <translation id="9154194610265714752">Atualizado</translation>
+<translation id="915485121129452731">Tablet com caneta</translation>
 <translation id="9155344700756733162">Desmarcar cor</translation>
 <translation id="9157096865782046368">0,8 segundo</translation>
 <translation id="9157697743260533322">Falha ao configurar atualizações automáticas para todos os usuários (erro de inicialização de simulação: <ph name="ERROR_NUMBER" />)</translation>

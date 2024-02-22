@@ -13,6 +13,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="1180362651362502943">Google Hesabınızdaki Chrome verilerini kullanmaya devam edin.</translation>
 <translation id="1200396280085622191">Mesajlardaki ve diğer uygulamalardaki bağlantılara her dokunduğunuzda Chrome'u kullanın.</translation>
 <translation id="1229222343402087523">Chrome'da ${searchPhrase} için arama yap</translation>
+<translation id="124228879633599436">Chrome'unuz güncel değil. Güvenliğiniz için güncelleyin.</translation>
 <translation id="1282031177488366470">Chrome'un Özelliklerini ve Performansını İyileştirmeye Yardımcı Olun</translation>
 <translation id="1320619893013575407">Chrome oturum açma ayarını kapattınız.</translation>
 <translation id="1333745675627230582">Chrome Dinozor Oyununu Oyna</translation>
@@ -293,6 +294,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="8788269841521769222">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
 <translation id="878917453316810648">Chrome İpucu: Varsayılan Olarak Chrome'u Kullanın</translation>
 <translation id="8808828119384186784">Chrome Ayarları</translation>
+<translation id="8850736900032787670">İlgi alanlarınıza dayalı kişiselleştirilmiş içerikler görmek için Chrome'da oturum açın.</translation>
 <translation id="8855781063981781621">Chrome'da Tam Gizlilik Modu'nu devre dışı bırakmak için bu ayarı iPad'inizde kapatın.</translation>
 <translation id="8856877214925961642">Parolayla şifreleme, ödeme yöntemlerini ve adresleri kapsamaz.
 

@@ -66,6 +66,7 @@
 <translation id="1367951781824006909">Een bestand selecteren</translation>
 <translation id="1371650399987522809">Feedback voor achtergrond mogelijk gemaakt door AI van Google</translation>
 <translation id="1387854245479784695">Dit is het totaal voor alle kernen</translation>
+<translation id="1393206549145430405">kasteel</translation>
 <translation id="1394661041439318933">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in de case.</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
 <translation id="1398634363027580500">Zeer lange HTTPS-latentie</translation>
@@ -78,6 +79,7 @@
 <translation id="1432110487435300883">Deel de waarde voor <ph name="CATEGORY_TEXT" /> door <ph name="CONVERSION_RATE" /> voor een resultaat bij benadering</translation>
 <translation id="1435763214710588005">Het datagebruik wordt elke maand automatisch gereset op de geselecteerde datum</translation>
 <translation id="1442433966118452622">Afbeeldingsbron</translation>
+<translation id="1446954767133808402">saffier</translation>
 <translation id="1449035143498573192">Openen in Google Zoeken</translation>
 <translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
 <translation id="1452939186874918380">paraplu's</translation>
@@ -99,6 +101,7 @@
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">kleur van achtergrondverlichting</translation>
+<translation id="1564356849266217610">organza</translation>
 <translation id="1565038567006703504">Kan <ph name="DEVICE_NAME" /> niet updaten</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
@@ -120,6 +123,7 @@
 <translation id="1664796644829245314">Voorbeeld van <ph name="PREVIEW_OBJECT" /> laten zien</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
 <translation id="1669047024429367828">Zichtbaarheid</translation>
+<translation id="1670478569471758522">Meer informatie met over je selectie</translation>
 <translation id="1672499492233627739">Videofeed van webcam</translation>
 <translation id="1676557873873341166">Video opnemen</translation>
 <translation id="1684279041537802716">Accentkleur</translation>
@@ -144,6 +148,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Verificatietype</translation>
 <translation id="1776228893584526149">Achtergrondtint</translation>
+<translation id="1777913922912475695">brug</translation>
 <translation id="1782199038061388045">vertaling</translation>
 <translation id="1788485524395674731">Deze app wordt beheerd door je beheerder</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
@@ -176,6 +181,7 @@
 <translation id="1923388006036088459">Accentkleuren</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1954818433534793392">gebouw</translation>
 <translation id="1962550982027027473">Een standaard APN is vereist</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profielfoto</translation>
@@ -210,6 +216,7 @@
 <translation id="2163937499206714165">Donkere modus aanzetten</translation>
 <translation id="2180197493692062006">Er is iets misgegaan. Open de app opnieuw.</translation>
 <translation id="2189104374785738357">APN-gegevens bewerken</translation>
+<translation id="2201758491318984023">fiets</translation>
 <translation id="2203222757805818543">Huidige planning is ingesteld op <ph name="SUNRISE" /> - <ph name="SUNSET" />. Als je het schema voor de donkere modus automatisch wilt updaten, <ph name="BEGIN_LINK" />zet je locatietoegang aan<ph name="END_LINK" />.</translation>
 <translation id="2203642483788377106">klif</translation>
 <translation id="2208388655216963643">impressionistisch</translation>
@@ -238,6 +245,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Zet Bluetooth aan om apparaten in de buurt te vinden</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2347064478402194325">stoel</translation>
 <translation id="2358070305000735383">Dialoogvenster Bewerken voor <ph name="DESCRIPTION" /> is geopend.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
@@ -255,9 +263,11 @@
 <translation id="2465272316171730950">We zijn nu erg druk. Probeer het later opnieuw.</translation>
 <translation id="2480572840229215612">krabben</translation>
 <translation id="248546197012830854">Het apparaat is offline. Maak verbinding met een wifi-netwerk om Help-content te bekijken.</translation>
+<translation id="2486301288428798846">hout</translation>
 <translation id="2491955442992294626">Toetsen worden niet getest als je een ander venster gebruikt</translation>
 <translation id="2493126929778606526">Je beste foto's, automatisch geselecteerd</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2501126912075504550">opaal</translation>
 <translation id="2505327257735685095">De huidige achtergrondafbeelding vernieuwen</translation>
 <translation id="2512979179176933762">vensters tonen</translation>
 <translation id="2513396635448525189">Inlogafbeelding</translation>
@@ -271,8 +281,10 @@
 <translation id="2561093647892030937">citroenen</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
+<translation id="2586146417912237930">blauw en indigo</translation>
 <translation id="2597774443162333062">Bestanden worden naar Google gestuurd voor foutopsporing</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scannen afgerond. 1 pagina gescand}other{Scannen afgerond. {NUMBER_OF_PAGES} pagina's gescand}}</translation>
+<translation id="2617397783536231890">katoen</translation>
 <translation id="2618015542787108131">duin</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
@@ -280,6 +292,7 @@
 <translation id="2640549051766135490">Album geselecteerd: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="2652403576514495859">dicteren aan- of uitzetten</translation>
 <translation id="2656001153562991489">Exclusief voor de Chromebook Plus</translation>
+<translation id="2665671725390405060">Luisteren naar de uitspraak</translation>
 <translation id="267442004702508783">vernieuwen</translation>
 <translation id="268270014981824665">toetsenbord gedimd</translation>
 <translation id="2712812801627182647">TLS-verificatiesleutel</translation>
@@ -290,10 +303,13 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Gedeeld</translation>
 <translation id="2751739896257479635">EAP Phase 2-verificatie</translation>
+<translation id="2754757901767760034">lamp</translation>
 <translation id="2783010256799387990">GESLAAGD</translation>
+<translation id="2786429550992142861">linnen</translation>
 <translation id="2787435249130282949">toetsenbord helderder</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Kan geen verbinding maken met internet. Klik om het opnieuw te proberen.</translation>
+<translation id="2855718259207180827">wol</translation>
 <translation id="2859243502336719778">Kritieke update</translation>
 <translation id="2860473693272905224">Leg een andere pagina op de scanner</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
@@ -400,6 +416,7 @@
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
 <translation id="3651050199673793219">Een temperatuureenheid selecteren</translation>
 <translation id="3654530588944650786">Een stralende bloeiende <ph name="FLOWER_TYPE" /> in het <ph name="FLOWER_COLOR" /></translation>
+<translation id="3662461537616691585">bordeauxrood en kastanjebruin</translation>
 <translation id="3668449597372804501">Achtergrond Wolkenstroom</translation>
 <translation id="3675132884790542448">varkens</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -427,7 +444,9 @@
 <translation id="3865289341173661845">Help-content is niet beschikbaar.</translation>
 <translation id="3865414814144988605">Resolutie</translation>
 <translation id="3866249974567520381">Beschrijving</translation>
+<translation id="3869314628814282185">tule</translation>
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
+<translation id="3877066159641251281">Vertaling beluisteren</translation>
 <translation id="3885327323343477505">Screensaver wijzigen</translation>
 <translation id="391412459402535266">Kan apparaat niet testen. Schakel over naar de laptopmodus om te testen.</translation>
 <translation id="3916998944874125962">screenshot maken</translation>
@@ -446,6 +465,7 @@
 <translation id="3993704782688964914">Je <ph name="DEVICE_NAME" /> is nu up-to-date</translation>
 <translation id="3998976413398910035">Printers beheren</translation>
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
+<translation id="401147258241215701">obsidiaan</translation>
 <translation id="4021031199988160623">Schakel over naar de laptopmodus om te testen</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4044093238444069296">Kan geen verbinding maken met de gateway</translation>
@@ -486,6 +506,7 @@
 <translation id="4244962993387259361">Je hebt minimaal 500 MB vrije ruimte nodig om een geheugentest uit te voeren. Ga naar Instellingen &gt; Opslagbeheer om ruimte vrij te maken.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">HTTP-vertraging</translation>
+<translation id="4266143281602681663">garen</translation>
 <translation id="4271957103967917607">Bekijken op volledig scherm</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4278766082079064416">Sneltoets wordt gebruikt voor <ph name="CONFLICT_ACCEL_NAME" />. Bewerk of verwijder dit om het conflict op te lossen.</translation>
@@ -494,6 +515,7 @@
 <translation id="4289849978083912975">Diavoorstelling</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> afbeeldingen</translation>
+<translation id="430786093962686457">chiffon</translation>
 <translation id="4310735698903592804">Recente achtergronden mogelijk gemaakt door AI van Google</translation>
 <translation id="4320904097188876154">neonroze</translation>
 <translation id="4333390807948134856">Er is op de toets <ph name="KEY_NAME" /> gedrukt</translation>
@@ -549,6 +571,7 @@
 <translation id="4646949265910132906">Beveiligde wifi-verbinding</translation>
 <translation id="4650608062294027130">Shift rechts</translation>
 <translation id="4654549501020883054">Dagelijks wijzigen</translation>
+<translation id="4664651912255946953">bont</translation>
 <translation id="4665014895760275686">Fabrikant</translation>
 <translation id="467510802200863975">De wachtwoorden komen niet overeen</translation>
 <translation id="467715984478005772">Vermoedelijke firewall</translation>
@@ -559,6 +582,7 @@
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
 <translation id="4771607256327216405">toetsenbord helderder maken</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
+<translation id="4778082030331381943">amethist</translation>
 <translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto('s)</translation>
 <translation id="4793710386569335688">Ga voor meer hulp naar het <ph name="BEGIN_LINK" />Helpcentrum<ph name="END_LINK" />.</translation>
@@ -585,6 +609,7 @@
 <translation id="4854586501323951986">Geïntegreerd touchscreen</translation>
 <translation id="4855250849489639581">Swipe omlaag voor meer indelingsopties</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
+<translation id="4868181314237714900">fleece</translation>
 <translation id="4873827928179867585">Verificatiealgoritme</translation>
 <translation id="4880328057631981605">Naam van toegangspunt</translation>
 <translation id="488307179443832524">Sneltoets wordt gebruikt voor <ph name="CONFLICT_ACCEL_NAME" />. Druk op een nieuwe sneltoets.</translation>
@@ -628,6 +653,7 @@
 <translation id="5130848777448318809">pony's</translation>
 <translation id="5137451382116112100">Volledig</translation>
 <translation id="5142961317498132443">Verificatie</translation>
+<translation id="5144887194300568405">Vertaling kopiëren</translation>
 <translation id="5145081769226915336">Donkere modus automatisch aanzetten?</translation>
 <translation id="5154917547274118687">Geheugen</translation>
 <translation id="5160857336552977725">Log in bij je <ph name="DEVICE_TYPE" /></translation>
@@ -679,6 +705,7 @@
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5457599981699367932">Gebruiken als gast</translation>
 <translation id="54609108002486618">Beheerd</translation>
+<translation id="5470776029649730099">jute</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Nog {0} poging}other{Nog {0} pogingen}}</translation>
 <translation id="5488280942828718790">magenta</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -688,6 +715,7 @@
 <translation id="550600468576850160">weide</translation>
 <translation id="551689408806449779">De verbinding met het apparaat is verbroken. Maak opnieuw verbinding om te testen.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="554067135846762198">koraal en lichtbruin</translation>
 <translation id="5543701552415191873">vergrendeld</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatisch overschakelen naar donker thema bij zonsondergang</translation>
@@ -723,6 +751,7 @@
 <translation id="576835345334454681">Helderheid van scherm verhogen</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
+<translation id="5790391387506209808">lapis lazuli</translation>
 <translation id="5810296156135698005">barok</translation>
 <translation id="5816802250591013230">Geen sneltoets toegewezen</translation>
 <translation id="5826644637650799838">Over de achtergrond</translation>
@@ -748,6 +777,7 @@
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Je bestand is gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Je bestanden zijn gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Knop Verwijderen voor <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="5930669310554144537">Droomlandschap</translation>
 <translation id="5931523347251946569">Bestand niet gevonden</translation>
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="594552776027197022">Willekeurig sleutelpaar genereren</translation>
@@ -756,6 +786,7 @@
 <translation id="5972388717451707488">Engine updaten</translation>
 <translation id="5975130252842127517">koraal</translation>
 <translation id="5984145644188835034">Standaardachtergrond</translation>
+<translation id="5996832681196460718">zijde</translation>
 <translation id="6017514345406065928">Groen</translation>
 <translation id="6019566113895157499">Sneltoetsen</translation>
 <translation id="6034694447310538551">Elke maand automatisch resetten aanzetten</translation>
@@ -827,6 +858,7 @@
 <translation id="6382182670717268353">Voorbeeld van screensaver</translation>
 <translation id="6388847657025262518">De documentinvoer van de scanner is vastgelopen. Check de invoer en probeer het opnieuw.</translation>
 <translation id="6394634179843537518">Bestand toevoegen</translation>
+<translation id="6400680457268373900">Een surrealistische <ph name="DREAMSCAPES_OBJECT" /> gemaakt van <ph name="DREAMSCAPES_MATERIAL" /> in <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">browserzoekopdracht</translation>
 <translation id="6410257289063177456">Afbeeldingsbestanden</translation>
 <translation id="641081527798843608">Overeenkomst van onderwerp</translation>
@@ -886,12 +918,15 @@
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="6723847290197874913">Achtergrondverlichting toetsenbord</translation>
 <translation id="672609503628871915">Wat is er nieuw?</translation>
+<translation id="6740695858234317715">crème en oranje</translation>
+<translation id="6741823073189174383">boot</translation>
 <translation id="6744441848304920043">jungle</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6753452347192452143">Apparaat is een computer.</translation>
 <translation id="6756731097889387912">Kan scannen niet annuleren</translation>
 <translation id="6760706756348334449">Volume omlaag</translation>
+<translation id="6761537227090937007">Afbeelding met hoge resolutie maken…</translation>
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
 <translation id="6791471867139427246">kleur van toetsenbordverlichting</translation>
@@ -943,6 +978,7 @@
 <translation id="7135814714616751706">Sneltoetsen zoeken</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
+<translation id="7144954474087165241">pagode</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
 <translation id="7154020516215182599">Deel je feedback of beschrijf je probleem. Voeg waar mogelijk stappen toe om het probleem te reproduceren.</translation>
 <translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
@@ -962,6 +998,7 @@
 <translation id="7216409898977639127">Mobiele provider</translation>
 <translation id="7233782086689993269">Sneltoets hersteld</translation>
 <translation id="725133483556299729">E-mailadres selecteren</translation>
+<translation id="7255187042098209569">roze en paars</translation>
 <translation id="7271000785316964275">classicistisch</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7271932918253517778">Sneltoets met toetsen op de bovenste rij moet de <ph name="META_KEY" />-toets bevatten.</translation>
@@ -977,6 +1014,7 @@
 <translation id="7311368985037279727">toetsenbordkleur</translation>
 <translation id="7317831949569936035">Schoolinschrijving</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7321055305895875150">groen en groenblauw</translation>
 <translation id="7328475450575141167">paradijsvogelbloem</translation>
 <translation id="7331297744262591636">Je moet minstens 18 jaar oud zijn en ermee akkoord gaan dat je gebruik van AI-achtergronden valt onder de <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Servicevoorwaarden van Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> en de <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Aanvullende Servicevoorwaarden voor generatieve AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
@@ -988,6 +1026,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="73631062356239394">Diagnostische gegevens delen</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7384004438856720753">paleis</translation>
 <translation id="7388959671917308825">Geïntegreerde touchpad</translation>
 <translation id="7397270852490618635">Licht thema uitzetten</translation>
 <translation id="7401543881546089382">Snelle link verwijderen</translation>
@@ -1015,6 +1054,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchscreen</translation>
+<translation id="757747079855995705">steen</translation>
 <translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Verplaats met de muis of pijltoetsen.</translation>
 <translation id="7618774594543487847">Neutraal</translation>
@@ -1057,6 +1097,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7841134249932030522">Donkere modus aanzetten</translation>
 <translation id="7846634333498149051">Toetsenbord</translation>
 <translation id="7849030488395653706">noorderlicht</translation>
+<translation id="7849737607196682401">kant</translation>
 <translation id="7850847810298646851">Achtergrond mogelijk gemaakt door AI van Google</translation>
 <translation id="785170686607360576">tulp</translation>
 <translation id="7856267634822906833">Bluetooth-touchscreen</translation>
@@ -1114,6 +1155,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
 <translation id="8246209727385807362">Onbekende provider</translation>
 <translation id="8250926778281121244">roestkleurig</translation>
+<translation id="8257572018929862473">Instellingen voor Snelle antwoorden openen</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8262870577632766028">1 uur</translation>
 <translation id="827422111966801947">Indigo</translation>
@@ -1157,6 +1199,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan geen verbinding maken met HTTP-websites via een firewall op Android-apparaten</translation>
+<translation id="8495070016475833911">vilt</translation>
 <translation id="8498220429738806196">Verkeerstellers</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
@@ -1186,6 +1229,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8726019395068607495">Gestopt: klep geopend</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8747900814994928677">Wijziging bevestigen</translation>
+<translation id="8755946156089753497">toren</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto's-album</translation>
 <translation id="8775713578693478175">Modem-APN</translation>
@@ -1199,6 +1243,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
+<translation id="8849799913685544685">vuurtoren</translation>
 <translation id="8851859208664803097">Gestopt: printer kan niet worden bereikt</translation>
 <translation id="8855781559874488009">Kan geen verbinding maken met HTTP-websites via een firewall</translation>
 <translation id="885701979325669005">Opslag</translation>
@@ -1281,7 +1326,9 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>
+<translation id="95718197892796296">klei</translation>
 <translation id="960719561871045870">Operatorcode</translation>
+<translation id="965918541715156800">geel en groenblauw</translation>
 <translation id="966787709310836684">menu</translation>
 <translation id="979450713603643090">Lichtroze</translation>
 <translation id="982713511914535780">Ontlaadtest uitvoeren</translation>

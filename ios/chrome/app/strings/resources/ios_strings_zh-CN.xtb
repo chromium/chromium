@@ -570,6 +570,7 @@
 <translation id="3922310737605261887">搜索复制的文字</translation>
 <translation id="3928666092801078803">合并我的数据</translation>
 <translation id="3929457972718048006">地址</translation>
+<translation id="3939505428630887612">关于此页</translation>
 <translation id="3948600256434252210">向右滑动即可在无痕模式下浏览内容。</translation>
 <translation id="3955822496205734389">您有安全系数低的密码。</translation>
 <translation id="3958312024468322930">将图标拖动到主屏幕底部的程序坞中</translation>
@@ -585,6 +586,7 @@
 <translation id="4002019827078931033">将地址栏移到顶部</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4004204301268239848">系统会将密码保存在您的 Google 账号中，以便您在任意设备上使用。</translation>
+<translation id="4008355329784586136">检查默认浏览器设置</translation>
 <translation id="4018310736049373830">管理我的活动记录</translation>
 <translation id="4021931095789478915">将 ${url} 添加到阅读清单</translation>
 <translation id="4038354071007134711">此设备上没有可以打开该文件的应用。</translation>
@@ -633,6 +635,7 @@
 <translation id="4277990410970811858">安全浏览</translation>
 <translation id="4279431713294750185">滑动边缘即可前进。</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4282944936010261425">没有需要解决的安全问题。</translation>
 <translation id="4286718549648564014">已将地址迁移到您的账号 <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">新变化</translation>
 <translation id="4293080268407233932">搜索</translation>
@@ -915,7 +918,7 @@
 <translation id="5702108177581350218">当您分享用户名和密码的副本之后，您的家庭成员可以使用 Google 密码管理工具填充这些信息。</translation>
 <translation id="5704908597376970822">无法登录。</translation>
 <translation id="5706552126692816153">1 天前曾有活动</translation>
-<translation id="5718049162805123412">您应立即更改这些密码</translation>
+<translation id="5718049162805123412">您应立即更改密码</translation>
 <translation id="5724941645893276623">若要私密地浏览网页，请添加新标签页</translation>
 <translation id="5728700505257787410">很抱歉，登录您的账号时出现问题。</translation>
 <translation id="5737974891429562743">账号登录详细信息已过期，请进行更新以开始同步。</translation>
@@ -1288,6 +1291,7 @@
 <translation id="7557508262441527045">已退出账号</translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="7564917801238348224">保存…</translation>
+<translation id="7569588934989281656">您可以滑动标签栏以切换标签页。</translation>
 <translation id="7582857256643797524">您的设备已启用此设置</translation>
 <translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁您的无痕式标签页。</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
@@ -1427,6 +1431,7 @@
 <translation id="8248969482078657578">“闲置标签页”功能可帮助您保持专注</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8263336784344783289">为此组命名</translation>
+<translation id="8263809106706527890">您的默认浏览器设置可能发生了变更。您可以在设置中检查这项变更。</translation>
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8271720166617117963">接受并登录</translation>
@@ -1581,6 +1586,7 @@
 <translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>
+<translation id="9025203546212508704">滑动即可了解如何自定义菜单</translation>
 <translation id="9029650858822697271">您已退出账号</translation>
 <translation id="9034759925968272072">您不会因此而退出自己的 Google 账号。您的 Google 账号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="9037965129289936994">显示原始网页</translation>

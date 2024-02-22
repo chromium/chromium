@@ -31,6 +31,7 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">你的裝置由 <ph name="DOMAIN" /> 管理，管理員可以存取裝置上任一設定檔中的資料。</translation>
+<translation id="1022719295563085177">網路預設值</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1026959648338730078">Windows Hello 或外部安全金鑰</translation>
@@ -318,6 +319,7 @@
 <translation id="123578888592755962">磁碟空間已滿</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
 <translation id="1236009322878349843">編輯手機</translation>
+<translation id="1237950098253310325">使用 Ctrl + 向上鍵或向下鍵調整「<ph name="BUTTON_NAME" />」的順序</translation>
 <translation id="1238293488628890871">要切換設定檔嗎？</translation>
 <translation id="1239594683407221485">在「檔案」應用程式中探索裝置內容。</translation>
 <translation id="1239841552505950173">啟動應用程式</translation>
@@ -2311,6 +2313,7 @@
 <translation id="2721695630904737430">你的管理員停用了受監管的使用者。</translation>
 <translation id="2722540561488096675">裝置將於 <ph name="TIME_LEFT" />內關機。請先拔除 USB 再重新開啟裝置的電源，即可開始使用 <ph name="DEVICE_OS" />。</translation>
 <translation id="2722547199758472013">ID：<ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">開啟訪客設定檔</translation>
 <translation id="2723819893410108315">黃金柚色</translation>
 <translation id="2724841811573117416">WebRTC 記錄</translation>
 <translation id="272488616838512378">單位轉換結果</translation>
@@ -2820,6 +2823,7 @@
 <translation id="3101709781009526431">日期與時間</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3103451787721578293">請提供上傳這項資料的原因：</translation>
+<translation id="3103512663951238230">Alt + 滑鼠左鍵</translation>
 <translation id="3105339775057145050">上次更新失敗</translation>
 <translation id="3105796011181310544">要改回 Google 嗎？</translation>
 <translation id="3105820656234755131">已更新密碼</translation>
@@ -3102,6 +3106,7 @@
 <translation id="3342361181740736773">「<ph name="TRIGGERING_EXTENSION_NAME" />」要求移除這個擴充功能。</translation>
 <translation id="3345634917232014253">剛才已執行安全檢查</translation>
 <translation id="3345886924813989455">找不到支援的瀏覽器</translation>
+<translation id="3346306152660142597">運用 AI 自訂這個頁面</translation>
 <translation id="3347086966102161372">複製圖片網址(&amp;O)</translation>
 <translation id="3348038390189153836">偵測到卸除式裝置</translation>
 <translation id="3348131053948466246">已提供表情符號建議。使用向上鍵或向下鍵進行瀏覽，按下 Enter 鍵即可插入表情符號。</translation>
@@ -3215,6 +3220,7 @@
 <translation id="3440663250074896476">更多可對「<ph name="BOOKMARK_NAME" />」執行的動作</translation>
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3441663102605358937">再次登入 <ph name="ACCOUNT" /> 以驗證這個帳戶</translation>
+<translation id="3441824746233675597">讓可存取你網路流量的使用者難以查看你造訪的網站。<ph name="PRODUCT_NAME" /> 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
 <translation id="3442674350323953953">允許 Google 使用硬體資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，這項資料仍會傳送給 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。</translation>
 <translation id="3443744348829035122"><ph name="BRAND" />逾時</translation>
 <translation id="3443754338602062261">你的「<ph name="BRAND" />」中已有這些帳戶的密碼。如果選擇匯入以下其中一個密碼，將會取代現有密碼。</translation>
@@ -3394,6 +3400,7 @@
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
 <translation id="3586931643579894722">隱藏詳細資訊</translation>
+<translation id="3587279952965197737">長度不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個半形字元</translation>
 <translation id="3587438013689771191">進一步瞭解<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">可以安裝付款處理常式</translation>
@@ -4576,6 +4583,7 @@
 <translation id="4490086832405043258">為這個設定檔套用 Chrome OS Proxy 設定。</translation>
 <translation id="4490798467014431984">不允許在這個網站執行擴充功能</translation>
 <translation id="449126573531210296">使用你的 Google 帳戶對已同步處理的密碼進行加密</translation>
+<translation id="4492265221907525667">如要使用這項新的實驗功能，請先登入。</translation>
 <translation id="449232563137139956">網站通常會顯示圖片以提供插圖，例如網路商店或新聞報導的相片</translation>
 <translation id="4492698018379445570">查看已加入購物車的商品，並在選購完成後結帳</translation>
 <translation id="4493167769966437077">將「<ph name="LANGUAGE_NAME" />」從一律不翻譯的語言中移除</translation>
@@ -5140,6 +5148,7 @@
 <translation id="4929386379796360314">列印目的地</translation>
 <translation id="4930447554870711875">開發人員</translation>
 <translation id="4930714375720679147">開啟</translation>
+<translation id="4931347390544064118">使用網路預設值時，有時可能無法使用安全連線。建議你選取其他供應商，確保隨時都能使用安全連線。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4933484234309072027">嵌入至 <ph name="URL" /></translation>
 <translation id="4936042273057045735">設有工作資料夾的手機不支援通知同步功能</translation>
@@ -6272,7 +6281,7 @@
 <translation id="5846749317653566506">調整色彩校正設定，確保顏色呈現明顯變化</translation>
 <translation id="5846807460505171493">安裝更新內容和應用程式。如果您選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，且可能會使用行動數據進行下載。部分應用程式可能會提供內購項目。</translation>
 <translation id="5849212445710944278">已加入過了</translation>
-<translation id="5851461096964823885">如果無法存取 Google 雲端硬碟，系統就無法開啟「<ph name="FILE_NAMES" />」</translation>
+<translation id="5851461096964823885">無法存取 Google 雲端硬碟，因此無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="5851868085455377790">發行者</translation>
 <translation id="5852112051279473187">糟糕！註冊這個裝置時發生嚴重錯誤。請再試一次，或與你的支援代表聯絡。</translation>
 <translation id="5852137567692933493">重新啟動並執行 Powerwash</translation>
@@ -8420,7 +8429,7 @@
 <translation id="7532009420053991888">「<ph name="LINUX_APP_NAME" />」沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7535730537657706072">如要清除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁</translation>
 <translation id="7536815228183532290">目前登入的帳戶：<ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">系統會建議將類似分頁歸到同一個分頁群組。你開啟的分頁和網頁標題會傳送給 Google，並可能交由專人審查，以改善這項功能。</translation>
+<translation id="7537182889548466084">系統會建議將類似分頁歸到同一個分頁群組。你開啟的分頁和標題會傳送給 Google，並可能交由專人審查，以改善這項功能。</translation>
 <translation id="7538013435257102593">這種檔案類型不是常見的下載項目，可能含有危險內容</translation>
 <translation id="7540972813190816353">檢查更新時發生錯誤：<ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> 已將這部裝置復原為先前的版本，請儲存重要檔案後再重新啟動。重新啟動後，裝置上的資料將全數遭到刪除。</translation>
@@ -8978,6 +8987,7 @@
 <translation id="7940265372707990269">按「<ph name="SORT_TYPE" />」排序</translation>
 <translation id="7941179291434537290">網路共用完備性：</translation>
 <translation id="7942349550061667556">紅色</translation>
+<translation id="7942846369224063421">預先載入的 UI 轉譯器</translation>
 <translation id="7943349879009553083">訪客模式不支援這項功能</translation>
 <translation id="7943368935008348579">下載 PDF</translation>
 <translation id="7943837619101191061">新增位置...</translation>
@@ -9203,6 +9213,7 @@
 <translation id="8102139037507939978">移除 system_logs.txt 中的個人識別資訊。</translation>
 <translation id="810362914482827094">搜尋密碼金鑰</translation>
 <translation id="8104088837833760645">下載 eSIM 卡設定檔</translation>
+<translation id="8105273883928376822">如要繼續進行，請登入帳戶。</translation>
 <translation id="8107015733319732394">正在為 <ph name="DEVICE_TYPE" /> 安裝 Google Play 商店。這可能需要幾分鐘時間。</translation>
 <translation id="810728361871746125">螢幕解析度</translation>
 <translation id="8109109153262930486">預設顯示圖片</translation>
@@ -10016,6 +10027,7 @@
 <translation id="8732030010853991079">按一下這個圖示，即可使用這項擴充功能。</translation>
 <translation id="8732212173949624846">讀取及變更你已登入的所有裝置上的瀏覽記錄</translation>
 <translation id="8732844209475700754">更多與隱私權、安全性和資料收集相關的設定</translation>
+<translation id="8733779588180110397">⌥ + 滑鼠左鍵</translation>
 <translation id="8734073480934656039">啟用這項設定後，Kiosk 應用程式會在裝置開機時自動啟動。</translation>
 <translation id="8734755021067981851">未連接任何 USB 裝置。</translation>
 <translation id="8736288397686080465">這個網站已在背景更新。</translation>
@@ -10383,6 +10395,7 @@
 <translation id="9012585441087414258">防範已知的不安全網站、下載內容和擴充功能。如果某個網頁含有可疑內容，系統會將網址和部分網頁內容傳送給「Google 安全瀏覽」功能。</translation>
 <translation id="9013037634206938463">安裝 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空間。如要增加可用空間，請刪除裝置中的檔案。</translation>
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
+<translation id="9014674417732091912">已移至第 <ph name="ROW_NUMBER" /> 列</translation>
 <translation id="901668144954885282">備份到 Google 雲端硬碟</translation>
 <translation id="9016827136585652292">切換隱私保護功能</translation>
 <translation id="90181708067259747">到期日：<ph name="CARD" /></translation>

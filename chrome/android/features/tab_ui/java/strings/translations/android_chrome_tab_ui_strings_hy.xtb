@@ -96,6 +96,7 @@
 <translation id="7559245342362162951">Ցուցադրել խմբի ներդիրները լիաէկրան ցանցի ռեժիմում</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Կիսվել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրով}one{Կիսվել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրով}other{Կիսվել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրներով}}</translation>
 <translation id="7792771145871471484">Դիտել հուշումները։</translation>
+<translation id="7825973332242257878">Ներդիրների խմբեր</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Խմբավորել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Խմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}other{Խմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> կարծիք}one{Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> կարծիք}other{Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> կարծիք}}</translation>
 <translation id="7885132941432959125">Տեղափոխել ներդիրն աջ</translation>

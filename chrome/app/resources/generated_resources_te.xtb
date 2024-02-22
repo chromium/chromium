@@ -2328,6 +2328,7 @@
 <translation id="2721695630904737430">పర్యవేక్షిత వినియోగదారులను మీ నిర్వాహకులు నిలిపివేశారు.</translation>
 <translation id="2722540561488096675">మీ పరికరం <ph name="TIME_LEFT" />లో షట్ డౌన్ అవుతుంది. మీ పరికరాన్ని తిరిగి ఆన్ చేయడానికి ముందే USBని తీసివేయండి. తర్వాత మీరు <ph name="DEVICE_OS" />ను ఉపయోగించడం ప్రారంభించవచ్చు.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">గెస్ట్ ప్రొఫైల్‌ను తెరవండి</translation>
 <translation id="2723819893410108315">సిట్రాన్</translation>
 <translation id="2724841811573117416">WebRTC లాగ్‌లు</translation>
 <translation id="272488616838512378">యూనిట్ మార్పిడి</translation>
@@ -3121,6 +3122,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ఈ ఎక్స్‌టెన్షన్‌ని తీసివేయాలనుకుంటోంది.</translation>
 <translation id="3345634917232014253">ఒక క్షణం క్రితం భద్రతా చెక్ చేయబడింది</translation>
 <translation id="3345886924813989455">మద్దతు గల బ్రౌజర్ కనుగొనబడలేదు</translation>
+<translation id="3346306152660142597">AIతో ఈ పేజీని అనుకూలీకరించండి</translation>
 <translation id="3347086966102161372">చిత్రం అడ్రస్‌ను కా&amp;పీ చేయి</translation>
 <translation id="3348038390189153836">తొలగించగల పరికరం కనుగొనబడింది</translation>
 <translation id="3348131053948466246">సూచించిన ఎమోజి. నావిగేట్ చేయడానికి పైకి లేదా కిందకి నొక్కండి, జొప్పించడానికి 'Enter' నొక్కండి.</translation>
@@ -9016,6 +9018,7 @@
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> వారీగా క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="7941179291434537290">టెథరింగ్ సంసిద్ధత:</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>
+<translation id="7942846369224063421">ప్రీ - లోడెడ్ UI రెండరర్</translation>
 <translation id="7943349879009553083">గెస్ట్ మోడ్‌లో అందుబాటులో లేదు</translation>
 <translation id="7943368935008348579">PDFలను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7943837619101191061">స్థానాన్ని జోడించండి...</translation>

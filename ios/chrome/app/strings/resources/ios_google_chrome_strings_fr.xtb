@@ -13,6 +13,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1180362651362502943">Continuez d'utiliser les données Chrome de votre compte Google.</translation>
 <translation id="1200396280085622191">Utilisez Chrome chaque fois que vous appuyez sur des liens dans des messages et d'autres applis.</translation>
 <translation id="1229222343402087523">Rechercher ${searchPhrase} dans Chrome</translation>
+<translation id="124228879633599436">Votre Chrome est obsolète. Mettez-le à jour pour vous protéger.</translation>
 <translation id="1282031177488366470">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
 <translation id="1320619893013575407">Vous avez désactivé la connexion à Chrome.</translation>
 <translation id="1333745675627230582">Jouer au jeu Chrome Dino</translation>
@@ -293,6 +294,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
 <translation id="878917453316810648">Astuce Chromium : utilisez Chrome par défaut</translation>
 <translation id="8808828119384186784">Paramètres de Chrome</translation>
+<translation id="8850736900032787670">Pour recevoir des contenus personnalisés en fonction de vos centres d'intérêt, connectez-vous à Chrome.</translation>
 <translation id="8855781063981781621">Pour désactiver le mode Blocage dans Chrome, désactivez-le sur votre iPad.</translation>
 <translation id="8856877214925961642">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses.
 

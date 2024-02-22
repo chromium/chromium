@@ -96,6 +96,7 @@
 <translation id="7559245342362162951">Visa gruppens flikar i helskärmsrutnät</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Dela <ph name="TABS_COUNT_ONE" /> vald flik}other{Dela <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="7792771145871471484">Granska förslagen.</translation>
+<translation id="7825973332242257878">Flikgrupper</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Lägg till <ph name="TABS_COUNT_ONE" /> vald flik i gruppen}other{Lägg till <ph name="TABS_COUNT_MANY" /> valda flikar i gruppen}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg med <ph name="REVIEWS_COUNT_ONE" /> recension}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg med <ph name="REVIEWS_COUNT_MANY" /> recensioner}}</translation>
 <translation id="7885132941432959125">Flytta fliken åt höger</translation>
