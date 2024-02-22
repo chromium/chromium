@@ -281,7 +281,8 @@ class DCLayerOverlayTest : public testing::Test {
 TEST_F(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
   InitializeOverlayProcessor();
   auto ProcessForOverlaysSingleVideoRectWithOffset =
-      [&](gfx::Vector2d video_rect_offset, bool is_hdr = false) {
+      [&](gfx::Vector2d video_rect_offset, bool is_hdr = false,
+          bool is_sdr_to_hdr = false) {
         auto pass = CreateRenderPass();
         auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
             resource_provider_.get(), child_resource_provider_.get(),
@@ -319,6 +320,25 @@ TEST_F(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
 
           // Content has HDR10 colorspace.
           video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+        } else if (is_sdr_to_hdr) {
+          // Render Pass has SDR content usage.
+          pass->content_color_usage = gfx::ContentColorUsage::kSRGB;
+
+          // Content is 8bit NV12 content.
+          video_quad->bits_per_channel = 8;
+
+          // Device is not using battery power.
+          overlay_processor_->set_is_on_battery_power_for_testing(false);
+
+          // Device enabled system HDR feature.
+          overlay_processor_->set_system_hdr_enabled_for_testing(true);
+
+          // Device has video processor auto hdr support.
+          overlay_processor_
+              ->set_has_auto_hdr_video_processor_support_for_testing(true);
+
+          // Content has 709 colorspace.
+          video_quad->video_color_space = gfx::ColorSpace::CreateREC709();
         }
 
         OverlayCandidateList dc_layer_list;
@@ -364,6 +384,27 @@ TEST_F(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
       ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size();
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kDisableVideoOverlayIfMoving);
+    // We expect an overlay promotion after a couple frames of no movement
+    for (int i = 0; i < 10; i++) {
+      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/false,
+                                                  /*is_sdr_to_hdr*/ true)
+          .size();
+    }
+    EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset(
+                      {0, 0}, /*is_hdr=*/false, /*is_sdr_to_hdr*/ true)
+                      .size());
+    // We still expect an overlay promotion for SDR video when auto hdr is
+    // enabled and when moving to ensure uniform tone mapping results between
+    // viz and GPU driver.
+    EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset(
+                      {1, 0}, /*is_hdr=*/false, /*is_sdr_to_hdr*/ true)
+                      .size());
   }
 
   {

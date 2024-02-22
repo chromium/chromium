@@ -584,6 +584,91 @@ bool DirectCompositionScaledOverlaysSupported() {
   }
 }
 
+bool VideoProcessorAutoHDRSupported() {
+  if (GetGlWorkarounds().disable_vp_auto_hdr) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kNvidiaVpTrueHDR)) {
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
+  if (!d3d11_device) {
+    LOG(ERROR) << "Failed to get device";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_context;
+  d3d11_device->GetImmediateContext(&d3d11_context);
+  if (!d3d11_context) {
+    DLOG(ERROR) << "Failed to get context";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11VideoContext> d3d11_video_context;
+  if (FAILED(d3d11_context.As(&d3d11_video_context))) {
+    DLOG(ERROR) << "Failed to retrieve video context";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice> d3d11_video_device;
+  if (FAILED(d3d11_device.As(&d3d11_video_device))) {
+    DLOG(ERROR) << "Failed to retrieve video device";
+    return false;
+  }
+
+  D3D11_VIDEO_PROCESSOR_CONTENT_DESC desc;
+  desc.InputFrameFormat = D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE;
+  desc.InputFrameRate.Numerator = 60;
+  desc.InputFrameRate.Denominator = 1;
+  desc.InputWidth = 1920;
+  desc.InputHeight = 1080;
+  desc.OutputFrameRate.Numerator = 60;
+  desc.OutputFrameRate.Denominator = 1;
+  desc.OutputWidth = 1920;
+  desc.OutputHeight = 1080;
+  desc.Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL;
+
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator> d3d11_video_enumerator;
+  if (FAILED(d3d11_video_device->CreateVideoProcessorEnumerator(
+          &desc, &d3d11_video_enumerator))) {
+    DLOG(ERROR) << "Failed to create video processor enumerator";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> d3d11_video_processor;
+  if (FAILED(d3d11_video_device->CreateVideoProcessor(
+          d3d11_video_enumerator.Get(), 0, &d3d11_video_processor))) {
+    DLOG(ERROR) << "Failed to create video processor";
+    return false;
+  }
+
+  constexpr GUID kNvidiaTrueHDRInterfaceGUID = {
+      0xfdd62bb4,
+      0x620b,
+      0x4fd7,
+      {0x9a, 0xb3, 0x1e, 0x59, 0xd0, 0xd5, 0x44, 0xb3}};
+
+  UINT driver_supports_true_hdr = 0;
+  HRESULT hr = d3d11_video_context->VideoProcessorGetStreamExtension(
+      d3d11_video_processor.Get(), 0, &kNvidiaTrueHDRInterfaceGUID,
+      sizeof(driver_supports_true_hdr), &driver_supports_true_hdr);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get stream extension with error 0x" << std::hex
+                << hr;
+    return false;
+  }
+
+  d3d11_video_processor.Reset();
+  d3d11_video_enumerator.Reset();
+  d3d11_video_context.Reset();
+  d3d11_video_device.Reset();
+  d3d11_context.Reset();
+  d3d11_device.Reset();
+  return (driver_supports_true_hdr == 1);
+}
+
 bool CheckVideoProcessorFormatSupport(DXGI_FORMAT dxgi_format) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
   if (!d3d11_device) {

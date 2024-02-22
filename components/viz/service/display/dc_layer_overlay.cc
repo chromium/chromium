@@ -601,21 +601,23 @@ bool IsClearVideoQuad(const QuadList::ConstIterator& it) {
 
 bool AllowRemoveClearVideoQuadCandidatesWhenMoving(
     DisplayResourceProvider* resource_provider,
-    const QuadList::ConstIterator& it) {
+    const QuadList::ConstIterator& it,
+    bool force_overlay_for_auto_hdr) {
   if (!IsClearVideoQuad(it)) {
     return false;
   }
-  // Do not allow remove clear video quad candidates for HDR videos, since there
-  // will always be a huge visual difference between compositor tone-mapping (by
-  // Chrome) and MPO tone-mapping (by Driver).
+  // Do not allow remove clear video quad candidates for HDR videos or SDR to
+  // HDR videos, since there will always be a huge visual difference between
+  // compositor tone-mapping (by Chrome) and MPO tone-mapping (by Driver).
   switch (it->material) {
     case DrawQuad::Material::kYuvVideoContent: {
       const YUVVideoDrawQuad* quad = YUVVideoDrawQuad::MaterialCast(*it);
-      return !quad->video_color_space.IsHDR();
+      return !(quad->video_color_space.IsHDR() || force_overlay_for_auto_hdr);
     }
     case DrawQuad::Material::kTextureContent: {
       const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
-      return !resource_provider->GetColorSpace(quad->resource_id()).IsHDR();
+      return !(resource_provider->GetColorSpace(quad->resource_id()).IsHDR() ||
+               force_overlay_for_auto_hdr);
     }
     default:
       NOTREACHED_NORETURN();
@@ -754,12 +756,16 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     bool skip_initialization_for_testing)
     : has_overlay_support_(skip_initialization_for_testing),
       allowed_yuv_overlay_count_(allowed_yuv_overlay_count),
+      is_on_battery_power_(
+          base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
+              this)),
       no_undamaged_overlay_promotion_(base::FeatureList::IsEnabled(
           features::kNoUndamagedOverlayPromotion)) {
   if (!skip_initialization_for_testing) {
     UpdateHasHwOverlaySupport();
     UpdateSystemHDRStatus();
     UpdateP010VideoProcessorSupport();
+    UpdateAutoHDRVideoProcessorSupport();
     gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
   }
   allow_promotion_hinting_ = media::SupportMediaFoundationClearPlayback();
@@ -767,6 +773,7 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
 
 DCLayerOverlayProcessor::~DCLayerOverlayProcessor() {
   gl::DirectCompositionOverlayCapsMonitor::GetInstance()->RemoveObserver(this);
+  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 void DCLayerOverlayProcessor::UpdateHasHwOverlaySupport() {
@@ -786,12 +793,21 @@ void DCLayerOverlayProcessor::UpdateP010VideoProcessorSupport() {
       gl::CheckVideoProcessorFormatSupport(DXGI_FORMAT_P010);
 }
 
+void DCLayerOverlayProcessor::UpdateAutoHDRVideoProcessorSupport() {
+  has_auto_hdr_video_processor_support_ = gl::VideoProcessorAutoHDRSupported();
+}
+
+void DCLayerOverlayProcessor::OnPowerStateChange(bool on_battery_power) {
+  is_on_battery_power_ = on_battery_power;
+}
+
 // Called on the Viz Compositor thread.
 void DCLayerOverlayProcessor::OnOverlayCapsChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   UpdateHasHwOverlaySupport();
   UpdateSystemHDRStatus();
   UpdateP010VideoProcessorSupport();
+  UpdateAutoHDRVideoProcessorSupport();
 }
 
 void DCLayerOverlayProcessor::RemoveOverlayDamageRect(
@@ -896,8 +912,8 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
     current_overlay_candidate_rects.reserve(
         current_overlay_candidate_rects.size() + candidates.size());
     for (auto candidate_it : candidates) {
-      if (AllowRemoveClearVideoQuadCandidatesWhenMoving(resource_provider,
-                                                        candidate_it)) {
+      if (AllowRemoveClearVideoQuadCandidatesWhenMoving(
+              resource_provider, candidate_it, force_overlay_for_auto_hdr())) {
         gfx::Rect quad_rect_in_target_space =
             ClippedQuadRectangle(*candidate_it);
         gfx::Rect quad_rect_in_root_space =
@@ -927,8 +943,9 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
 
       auto candidate_it = candidates.begin();
       while (candidate_it != candidates.end()) {
-        if (AllowRemoveClearVideoQuadCandidatesWhenMoving(resource_provider,
-                                                          *candidate_it)) {
+        if (AllowRemoveClearVideoQuadCandidatesWhenMoving(
+                resource_provider, *candidate_it,
+                force_overlay_for_auto_hdr())) {
           RecordDCLayerResult(DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED,
                               *candidate_it);
           candidate_it = candidates.erase(candidate_it);
