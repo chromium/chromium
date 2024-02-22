@@ -7,7 +7,7 @@
 -- chrome instance. Chrome instance id needs to be recorded, and used here in
 -- combination with navigation id to uniquely identify page load metrics.
 
-INCLUDE PERFETTO MODULE common.slices;
+INCLUDE PERFETTO MODULE slices.with_context;
 
 CREATE PERFETTO VIEW _fcp_metrics AS
 SELECT

@@ -4,7 +4,6 @@
 
 INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
-INCLUDE PERFETTO MODULE common.slices;
 
 -- Selects EventLatency slices that correspond with janks in a scroll. This is
 -- based on the V3 version of scroll jank metrics.

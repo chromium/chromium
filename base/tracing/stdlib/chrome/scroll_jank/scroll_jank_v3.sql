@@ -2,12 +2,62 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-INCLUDE PERFETTO MODULE common.slices;
+INCLUDE PERFETTO MODULE deprecated.v42.common.slices;
 
 -- Hardware info is useful when using sql metrics for analysis
 -- in BTP.
 INCLUDE PERFETTO MODULE chrome.metadata;
 INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3_cause;
+
+-- Checks if slice has a descendant with provided name.
+CREATE PERFETTO FUNCTION _has_descendant_slice_with_name(
+  -- Id of the slice to check descendants of.
+  id INT,
+  -- Name of potential descendant slice.
+  descendant_name STRING
+)
+-- Whether `descendant_name` is a name of an descendant slice.
+RETURNS BOOL AS
+SELECT EXISTS(
+  SELECT 1
+  FROM descendant_slice($id)
+  WHERE name = $descendant_name
+  LIMIT 1
+);
+
+-- Finds the end timestamp for a given slice's descendant with a given name.
+-- If there are multiple descendants with a given name, the function will return the
+-- first one, so it's most useful when working with a timeline broken down into phases,
+-- where each subphase can happen only once.
+CREATE PERFETTO FUNCTION _descendant_slice_end(
+  -- Id of the parent slice.
+  parent_id INT,
+  -- Name of the child with the desired end TS.
+  child_name STRING
+)
+-- End timestamp of the child or NULL if it doesn't exist.
+RETURNS INT AS
+SELECT
+  CASE WHEN s.dur
+    IS NOT -1 THEN s.ts + s.dur
+    ELSE NULL
+  END
+FROM descendant_slice($parent_id) s
+WHERE s.name = $child_name
+LIMIT 1;
+
+-- Given a slice id, returns the name of the slice.
+CREATE PERFETTO FUNCTION _slice_name_from_id(
+  -- The slice id which we need the name for.
+  id LONG
+)
+-- The name of slice with the given id.
+RETURNS STRING AS
+SELECT
+  name
+FROM slice
+WHERE $id = id;
+
 
 -- Grabs all gesture updates with respective scroll ids and start/end
 -- timestamps, regardless of being coalesced.
@@ -135,8 +185,8 @@ SELECT
   slice.ts,
   slice.id AS event_latency_id,
   slice.dur AS dur,
-  descendant_slice_end(slice.id, "LatchToSwapEnd") AS input_latency_end_ts,
-  descendant_slice_end(slice.id, "SwapEndToPresentationCompositorFrame") AS presentation_timestamp,
+  _descendant_slice_end(slice.id, "LatchToSwapEnd") AS input_latency_end_ts,
+  _descendant_slice_end(slice.id, "SwapEndToPresentationCompositorFrame") AS presentation_timestamp,
   EXTRACT_ARG(arg_set_id, 'event_latency.event_type') AS event_type
 FROM slice
 WHERE name = "EventLatency"
@@ -144,7 +194,7 @@ WHERE name = "EventLatency"
           "GESTURE_SCROLL_UPDATE",
           "FIRST_GESTURE_SCROLL_UPDATE",
           "INERTIAL_GESTURE_SCROLL_UPDATE")
-      AND has_descendant_slice_with_name(slice.id, "SwapEndToPresentationCompositorFrame");
+      AND _has_descendant_slice_with_name(slice.id, "SwapEndToPresentationCompositorFrame");
 
 -- Join presented gesture scrolls with their respective event
 -- latencies based on |LatchToSwapEnd| timestamp, as it's the
@@ -305,26 +355,15 @@ SELECT
   LAG(event_latency_id, 1, -1) OVER (PARTITION BY scroll_id ORDER BY min_start_ts) AS prev_event_latency_id
 FROM chrome_merged_frame_view;
 
--- Calculate |VSYNC_INTERVAL| as the lowest vsync seen in the trace or the
--- minimum delay between frames larger than zero.
---
--- TODO(~M130): Remove the lowest vsync since we should always have vsync_interval_ms.
+-- Calculate |VSYNC_INTERVAL| as the lowest delay between frames larger than
+-- zero.
+-- TODO(b/286222128): Emit this data from Chrome instead of calculating it.
 CREATE PERFETTO VIEW chrome_vsyncs(
   -- The lowest delay between frames larger than zero.
   vsync_interval INT
 ) AS
-WITH
-  trace_vsyncs AS (
-    SELECT EXTRACT_ARG(slice.arg_set_id, 'event_latency.vsync_interval_ms') AS vsync_interval_ms
-    FROM
-      slice JOIN chrome_frame_info_with_delay
-        ON chrome_frame_info_with_delay.event_latency_id = slice.id
-    WHERE EXTRACT_ARG(slice.arg_set_id, 'event_latency.vsync_interval_ms') > 0
-  )
 SELECT
-  COALESCE(
-    (SELECT MIN(vsync_interval_ms) FROM trace_vsyncs),
-    MIN(delay_since_last_frame)) AS vsync_interval
+  MIN(delay_since_last_frame) AS vsync_interval
 FROM chrome_frame_info_with_delay
 WHERE delay_since_last_frame > 0;
 
@@ -395,8 +434,8 @@ CREATE PERFETTO VIEW chrome_janky_frames(
   scroll_id INT
 ) AS
 SELECT
-  slice_name_from_id(cause_id) AS cause_of_jank,
-  slice_name_from_id(
+  _slice_name_from_id(cause_id) AS cause_of_jank,
+  _slice_name_from_id(
     -- Getting sub-cause
     chrome_get_v3_jank_cause_id(
       -- Here the cause itself is the parent.
@@ -405,7 +444,7 @@ SELECT
      (SELECT
       id
       FROM slice
-      WHERE name = slice_name_from_id(cause_id)
+      WHERE name = _slice_name_from_id(cause_id)
         AND parent_id = prev_event_latency_id)
     )) AS sub_cause_of_jank,
   delay_since_last_frame,

@@ -2,7 +2,20 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-INCLUDE PERFETTO MODULE common.slices;
+-- Checks if slice has an ancestor with provided name.
+CREATE PERFETTO FUNCTION _has_parent_slice_with_name(
+  -- Id of the slice to check parents of.
+  id INT,
+  -- Name of potential ancestor slice.
+  parent_name STRING)
+-- Whether `parent_name` is a name of an ancestor slice.
+RETURNS BOOL AS
+SELECT EXISTS(
+  SELECT 1
+  FROM ancestor_slice($id)
+  WHERE name = $parent_name
+  LIMIT 1
+);
 
 -- Returns the mojo ipc hash for a given task, looking it up from the
 -- argument of descendant ScopedSetIpcHash slice.
@@ -229,11 +242,11 @@ SELECT
   s1.*,
   -- While the parent slices are too generic to be used by themselves,
   -- they can provide some useful metadata.
-  has_parent_slice_with_name(
+  _has_parent_slice_with_name(
     s1.id,
     "ViewResourceAdapter:captureWithSoftwareDraw"
   ) AS is_software_screenshot,
-  has_parent_slice_with_name(
+  _has_parent_slice_with_name(
     s1.id,
     "ViewResourceAdapter:captureWithHardwareDraw"
   ) AS is_hardware_screenshot
