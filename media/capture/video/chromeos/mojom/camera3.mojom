@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 8
+// Next min version: 9
 
 module cros.mojom;
 
@@ -311,7 +311,7 @@ interface Camera3CallbackOps {
 //
 //    7. Close() closes the camera device.
 //
-// Next method ID: 10
+// Next method ID: 12
 interface Camera3DeviceOps {
   // Initialize() is called once after the camera device is opened to register
   // the Camera3CallbackOps handle.
@@ -381,4 +381,15 @@ interface Camera3DeviceOps {
   // ProcessCaptureResult() or ReturnStreamBuffers().
   [MinVersion=5]
   SignalStreamFlush@9(array<uint64> stream_ids);
+
+  // Notify the camera HAL a new |buffer| is created in the video capture buffer
+  // pool. Returns 0 if the new buffer is successfully registered in camera HAL,
+  // or a POSIX errnum, e.g. -EINVAL, otherwise.
+  [MinVersion=8]
+  OnNewBuffer@10(CameraBufferHandle buffer) => (int32 result);
+
+  // Notify the camera HAL a buffer is retired from the video capture buffer
+  // pool.
+  [MinVersion=8]
+  OnBufferRetired@11(uint64 buffer_id);
 };

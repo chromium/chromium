@@ -121,6 +121,19 @@ class MockCameraDevice : public cros::mojom::Camera3DeviceOps {
     DoSignalStreamFlush(stream_ids);
   }
   MOCK_METHOD1(DoSignalStreamFlush, void(std::vector<uint64_t> stream_ids));
+
+  void OnNewBuffer(cros::mojom::CameraBufferHandlePtr buffer,
+                   OnNewBufferCallback callback) override {
+    DoOnNewBuffer(std::move(buffer), std::move(callback));
+  }
+  MOCK_METHOD2(DoOnNewBuffer,
+               void(cros::mojom::CameraBufferHandlePtr buffer,
+                    OnNewBufferCallback callback));
+
+  void OnBufferRetired(uint64_t buffer_id) override {
+    DoOnBufferRetired(buffer_id);
+  }
+  MOCK_METHOD1(DoOnBufferRetired, void(uint64_t buffer_id));
 };
 
 constexpr int32_t kJpegMaxBufferSize = 1024;

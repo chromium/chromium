@@ -277,6 +277,19 @@ class CameraDeviceDelegate::StreamCaptureInterfaceImpl final
     }
   }
 
+  void OnNewBuffer(ClientType client_type,
+                   cros::mojom::CameraBufferHandlePtr buffer) final {
+    if (camera_device_delegate_) {
+      camera_device_delegate_->OnNewBuffer(client_type, std::move(buffer));
+    }
+  }
+
+  void OnBufferRetired(ClientType client_type, uint64_t buffer_id) final {
+    if (camera_device_delegate_) {
+      camera_device_delegate_->OnBufferRetired(client_type, buffer_id);
+    }
+  }
+
   void Flush(base::OnceCallback<void(int32_t)> callback) final {
     if (camera_device_delegate_) {
       camera_device_delegate_->Flush(std::move(callback));
@@ -1434,6 +1447,76 @@ bool CameraDeviceDelegate::ShouldUseBlobVideoSnapshot() {
   return level[0] ==
          static_cast<uint8_t>(cros::mojom::AndroidInfoSupportedHardwareLevel::
                                   ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL_FULL);
+}
+
+void CameraDeviceDelegate::OnNewBuffer(
+    ClientType client_type,
+    cros::mojom::CameraBufferHandlePtr buffer) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  uint64_t buffer_id = buffer->buffer_id;
+  device_ops_->OnNewBuffer(
+      std::move(buffer),
+      base::BindOnce(&CameraDeviceDelegate::OnNewBufferResult, GetWeakPtr(),
+                     client_type, buffer_id));
+}
+
+void CameraDeviceDelegate::OnNewBufferResult(ClientType client_type,
+                                             uint64_t buffer_id,
+                                             int32_t result) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  if (result != 0) {
+    device_context_->SetErrorState(
+        media::VideoCaptureError::kCrosHalV3BufferManagerFailedToRegisterBuffer,
+        FROM_HERE,
+        base::StrCat({"On new buffer failed: ", base::safe_strerror(-result)}));
+    return;
+  }
+
+  buffer_ids_known_by_hal_[client_type].insert(buffer_id);
+
+  if (pending_retire_ids_.contains(buffer_id)) {
+    OnBufferRetired(client_type, buffer_id);
+    pending_retire_ids_.erase(buffer_id);
+  }
+}
+
+void CameraDeviceDelegate::OnBufferRetired(ClientType client_type,
+                                           uint64_t buffer_id) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  if (device_context_->GetState() == CameraDeviceContext::State::kError) {
+    return;
+  }
+
+  auto buffer_ids = buffer_ids_known_by_hal_.find(client_type);
+  if (buffer_ids == buffer_ids_known_by_hal_.end() ||
+      !(buffer_ids->second.contains(buffer_id))) {
+    // Buffer has been notified to HAL but still not complete the registration,
+    // so here delay the retiring after the registration is done.
+    pending_retire_ids_.insert(buffer_id);
+    return;
+  }
+
+  device_ops_->OnBufferRetired(buffer_id);
+  buffer_ids->second.erase(buffer_id);
+}
+
+void CameraDeviceDelegate::OnAllBufferRetired(ClientType client_type) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  auto buffer_ids = buffer_ids_known_by_hal_.find(client_type);
+  if (buffer_ids == buffer_ids_known_by_hal_.end()) {
+    // No buffers known by hal for `client_type`.
+    return;
+  }
+
+  for (auto buffer_id : buffer_ids->second) {
+    device_ops_->OnBufferRetired(buffer_id);
+  }
+
+  buffer_ids->second.clear();
 }
 
 void CameraDeviceDelegate::OnResultMetadataAvailable(

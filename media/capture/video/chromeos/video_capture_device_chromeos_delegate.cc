@@ -233,6 +233,10 @@ void VideoCaptureDeviceChromeOSDelegate::StopAndDeAllocate(
   DCHECK(camera_device_delegate_);
   if (device_context_) {
     device_context_->RemoveClient(client_type);
+    camera_device_ipc_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CameraDeviceDelegate::OnAllBufferRetired,
+                       camera_device_delegate_->GetWeakPtr(), client_type));
   }
   if (!HasDeviceClient()) {
     CloseDevice(base::UnguessableToken());

@@ -88,6 +88,27 @@ gfx::Size GetJpegThumbnailSize(
 
 }  // namespace
 
+VideoCaptureBufferObserver::VideoCaptureBufferObserver(
+    base::WeakPtr<RequestManager> request_manager)
+    : request_manager_(std::move(request_manager)) {}
+
+VideoCaptureBufferObserver::~VideoCaptureBufferObserver() = default;
+
+void VideoCaptureBufferObserver::OnNewBuffer(
+    ClientType client_type,
+    cros::mojom::CameraBufferHandlePtr buffer) {
+  if (request_manager_) {
+    request_manager_->OnNewBuffer(client_type, std::move(buffer));
+  }
+}
+
+void VideoCaptureBufferObserver::OnBufferRetired(ClientType client_type,
+                                                 uint64_t buffer_id) {
+  if (request_manager_) {
+    request_manager_->OnBufferRetired(client_type, buffer_id);
+  }
+}
+
 RequestManager::RequestManager(
     const std::string& device_id,
     mojo::PendingReceiver<cros::mojom::Camera3CallbackOps>
@@ -106,10 +127,6 @@ RequestManager::RequestManager(
       device_context_(device_context),
       video_capture_use_gmb_(buffer_type ==
                              VideoCaptureBufferType::kGpuMemoryBuffer),
-      stream_buffer_manager_(
-          new StreamBufferManager(device_context_,
-                                  video_capture_use_gmb_,
-                                  std::move(camera_buffer_factory))),
       blobify_callback_(std::move(blobify_callback)),
       ipc_task_runner_(std::move(ipc_task_runner)),
       capturing_(false),
@@ -120,6 +137,9 @@ RequestManager::RequestManager(
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK(callback_ops_.is_bound());
   DCHECK(device_context_);
+  stream_buffer_manager_ = std::make_unique<StreamBufferManager>(
+      device_context_, video_capture_use_gmb_, std::move(camera_buffer_factory),
+      std::make_unique<VideoCaptureBufferObserver>(GetWeakPtr()));
   // We use base::Unretained() for the StreamBufferManager here since we
   // guarantee |request_buffer_callback| is only used by RequestBuilder. In
   // addition, since C++ destroys member variables in reverse order of
@@ -250,6 +270,20 @@ void RequestManager::RemoveResultMetadataObserver(
   DCHECK(result_metadata_observers_.count(observer));
 
   result_metadata_observers_.erase(observer);
+}
+
+void RequestManager::OnNewBuffer(ClientType client_type,
+                                 cros::mojom::CameraBufferHandlePtr buffer) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  capture_interface_->OnNewBuffer(client_type, std::move(buffer));
+}
+
+void RequestManager::OnBufferRetired(ClientType client_type,
+                                     uint64_t buffer_id) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  capture_interface_->OnBufferRetired(client_type, buffer_id);
 }
 
 void RequestManager::SetCaptureMetadata(cros::mojom::CameraMetadataTag tag,

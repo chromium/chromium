@@ -2217,7 +2217,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
   VideoCaptureDevice::Client::Buffer capture_buffer;
   constexpr int kDummyFrameFeedbackId = 0;
   auto result = client_->ReserveOutputBuffer(
-      texture_size, pixel_format, kDummyFrameFeedbackId, &capture_buffer);
+      texture_size, pixel_format, kDummyFrameFeedbackId, &capture_buffer,
+      /*require_new_buffer_id=*/nullptr, /*retire_old_buffer_id=*/nullptr);
   if (result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
     LOG(ERROR) << "Failed to reserve output capture buffer: " << (int)result;
     return MF_E_UNEXPECTED;
