@@ -420,6 +420,23 @@ bool ShouldFetchCreditCard(const FormData& form,
              CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
 }
 
+// To reduce traffic, only a random sample of browser sessions upload UKM data.
+// This function returns whether we should record autofill UKM events for the
+// current session.
+bool ShouldRecordUkm() {
+  // We only need to generate this random number once while the current process
+  // is running.
+  static const int random_value_per_session = base::RandInt(0, 99);
+
+  const int kSamplingRate =
+      base::FeatureList::IsEnabled(
+          features::kAutofillLogUKMEventsWithSamplingOnSession)
+          ? features::kAutofillLogUKMEventsWithSamplingOnSessionRate.Get()
+          : 0;
+
+  return random_value_per_session < kSamplingRate;
+}
+
 }  // namespace
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
@@ -1758,9 +1775,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSampleRate) &&
-      ShouldUploadUkm(*submitted_form)) {
+  if (ShouldRecordUkm() && ShouldUploadUkm(*submitted_form)) {
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
         client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
   }
@@ -2572,9 +2587,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 
   // ShouldUploadUkm reduces the UKM load by ignoring e.g. search boxes at best
   // effort.
-  bool should_upload_ukm = base::FeatureList::IsEnabled(
-                               features::kAutofillLogUKMEventsWithSampleRate) &&
-                           ShouldUploadUkm(form_structure);
+  bool should_upload_ukm = ShouldRecordUkm() && ShouldUploadUkm(form_structure);
 
   for (const auto& autofill_field : form_structure) {
     if (should_upload_ukm) {
@@ -2584,8 +2597,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     }
 
     // Clear log events.
-    // Not conditions on kAutofillLogUKMEventsWithSampleRate because there may
-    // be other reasons to log events.
+    // Not conditions on kAutofillLogUKMEventsWithSamplingOnSession because
+    // there may be other reasons to log events.
     autofill_field->ClearLogEvents();
   }
 

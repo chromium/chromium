@@ -203,7 +203,10 @@ extern const base::FeatureParam<int>
     kAutofillMoreProminentPopupMaxOffsetToCenterParam;
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillMoreProminentPopup);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillLogUKMEventsWithSampleRate);
+BASE_DECLARE_FEATURE(kAutofillLogUKMEventsWithSamplingOnSession);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillLogUKMEventsWithSamplingOnSessionRate;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseUpdatedRequiredFieldsForAddressImport);
 COMPONENT_EXPORT(AUTOFILL)
