@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -26,7 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/time/time.h"
@@ -79,6 +79,13 @@ class CloudPolicyValidatorTest : public testing::Test {
         validate_by_gaia_id_(true),
         validate_values_(false) {
     policy_.SetDefaultNewSigningKey();
+
+    // Set the verification key to be used for testing by the
+    // CloudPolicyValidator.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(
+        switches::kPolicyVerificationKey,
+        PolicyBuilder::GetEncodedPolicyVerificationKey());
   }
   CloudPolicyValidatorTest(const CloudPolicyValidatorTest&) = delete;
   CloudPolicyValidatorTest& operator=(const CloudPolicyValidatorTest&) = delete;
@@ -450,13 +457,11 @@ TEST_F(CloudPolicyValidatorTest, ErrorInvalidPublicKeySignature) {
   Validate(CheckStatus(CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Validation key is not currently checked on Chrome OS
-// (http://crbug.com/328038).
 TEST_F(CloudPolicyValidatorTest, ErrorInvalidPublicKeyVerificationSignature) {
   policy_.Build();
   policy_.policy().set_new_public_key_verification_signature_deprecated(
       "invalid");
+  policy_.policy().set_new_public_key_verification_data_signature("invalid");
   ValidatePolicy(
       CheckStatus(
           CloudPolicyValidatorBase::VALIDATION_BAD_KEY_VERIFICATION_SIGNATURE),
@@ -504,13 +509,32 @@ TEST_F(CloudPolicyValidatorTest, ErrorInvalidCachedKeySignature) {
   Validate(CheckStatus(
       CloudPolicyValidatorBase::VALIDATION_BAD_KEY_VERIFICATION_SIGNATURE));
 }
-#endif
 
 TEST_F(CloudPolicyValidatorTest, SuccessfulNoDomainValidation) {
   // Don't pass in a domain - this tells the validation code to instead
   // extract the domain from the username.
   owning_domain_ = "";
   Validate(Invoke(this, &CloudPolicyValidatorTest::CheckSuccessfulValidation));
+}
+
+TEST_F(CloudPolicyValidatorTest, SuccessWhenDeprecatedKeySignatureInvalid) {
+  // The case when the deprecated key signature is missing. The validation
+  // should pass based on new_public_key_verification_data
+  policy_.Build();
+  policy_.policy().set_new_public_key_verification_signature_deprecated(
+      "invalid");
+  ValidatePolicy(CheckStatus(CloudPolicyValidatorBase::VALIDATION_OK),
+                 policy_.GetCopy());
+}
+
+// This test is expected to fail when the deprecated signature will be removed.
+TEST_F(CloudPolicyValidatorTest, SuccessWhenNewKeySignatureInvalid) {
+  // The case when the deprecated key signature is missing. The validation
+  // should pass based on new_public_key_verification_data
+  policy_.Build();
+  policy_.policy().set_new_public_key_verification_data_signature("invalid");
+  ValidatePolicy(CheckStatus(CloudPolicyValidatorBase::VALIDATION_OK),
+                 policy_.GetCopy());
 }
 
 TEST_F(CloudPolicyValidatorTest, ErrorNoRotationAllowed) {

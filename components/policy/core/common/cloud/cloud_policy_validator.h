@@ -292,6 +292,9 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
           policy_response,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
+  // Returns the verification key to be used for current process.
+  static std::optional<std::string> GetCurrentPolicyVerificationKey();
+
   // Posts an asynchronous call to PerformValidation of the passed |validator|,
   // which will eventually report its result via |completion_callback|.
   static void PostValidationTask(
@@ -328,13 +331,17 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   // Helper routine that performs a verification-key-based signature check,
   // which includes the domain name associated with this policy. Returns true
   // if the verification succeeds, or if |signature| is empty.
-  bool CheckVerificationKeySignature(const std::string& key_to_verify,
-                                     const std::string& server_key,
-                                     const std::string& signature);
+  bool CheckVerificationKeySignatureDeprecated(const std::string& key_to_verify,
+                                               const std::string& server_key,
+                                               const std::string& signature);
 
   // Returns the domain name from the policy being validated. Returns an
   // empty string if the policy does not contain a username field.
   std::string ExtractDomainFromPolicy();
+
+  // Returns if the domain from the new_public_key_verification_data matches
+  // the domain extracted from the |policy_|.
+  bool CheckDomainInPublicKeyVerificationData();
 
   // Sets the owning domain used to verify new public keys, and ensures that
   // callers don't try to set conflicting values.

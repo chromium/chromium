@@ -85,6 +85,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -248,6 +249,13 @@ class SamlTestBase : public OobeBaseTest {
 
     // TODO(crbug.com/1177416) - Fix this with a proper SSL solution.
     command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
+
+    // This will change the verification key to be used by the
+    // CloudPolicyValidator. It will allow for the policy provided by the
+    // PolicyBuilder to pass the signature validation.
+    command_line->AppendSwitchASCII(
+        policy::switches::kPolicyVerificationKey,
+        policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
   }
 
   void SetUpInProcessBrowserTestFixture() override {

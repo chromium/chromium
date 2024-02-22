@@ -61,6 +61,7 @@
 #include "components/policy/core/common/cloud/mock_signing_service.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
@@ -246,6 +247,13 @@ class DeviceCloudPolicyManagerAshTest
         "{\"access_token\":\"accessToken4Test\","
         "\"expires_in\":1234,"
         "\"refresh_token\":\"refreshToken4Test\"}";
+
+    // Set the verification key to be used for testing by the
+    // CloudPolicyValidator.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(
+        policy::switches::kPolicyVerificationKey,
+        policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
 
     AllowUninterestingRemoteCommandFetches();
   }

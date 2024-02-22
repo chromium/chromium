@@ -24,6 +24,10 @@ const char kChromePolicy[] = "policy";
 // (go/crosman-file-storage-server) to upload log and support packet files.
 const char kFileStorageServerUploadUrl[] = "file-storage-server-upload-url";
 
+// Replace the original verification_key with the one provided by the command
+// line flag. Can be used only for unit tests or browser tests.
+const char kPolicyVerificationKey[] = "policy-verification-key";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Disables the verification of policy signing keys. It just works on Chrome OS
 // test images and crashes otherwise.

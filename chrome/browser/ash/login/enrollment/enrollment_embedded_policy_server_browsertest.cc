@@ -115,6 +115,17 @@ class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {
     OobeBaseTest::SetUpOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OobeBaseTest::SetUpCommandLine(command_line);
+
+    // This will change the verification key to be used by the
+    // CloudPolicyValidator. It will allow for the policy provided by the
+    // PolicyBuilder to pass the signature validation.
+    command_line->AppendSwitchASCII(
+        policy::switches::kPolicyVerificationKey,
+        policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
+  }
+
  protected:
   LoginDisplayHost* host() {
     LoginDisplayHost* host = LoginDisplayHost::default_host();

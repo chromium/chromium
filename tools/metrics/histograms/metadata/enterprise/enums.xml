@@ -812,6 +812,24 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kFailedOnEnqueueingEvent"/>
 </enum>
 
+<enum name="EnterpriseKeySignatureVerification">
+  <summary>
+    Defined as MetricKeySignatureVerification in
+    components/policy/core/common/cloud/cloud_policy_validator.cc.
+  </summary>
+  <int value="0" label="Key signature validation succeeded with new data">
+    The new_public_key_verification_data field worked.
+  </int>
+  <int value="1"
+      label="Key signature validation succeeded with deprecated data">
+    The new_public_key_verification_data field failed but the backup in
+    new_public_key_verification_signature_deprecated worked.
+  </int>
+  <int value="2" label="Key signature validation failed">
+    Both signatures for the key failed to validate.
+  </int>
+</enum>
+
 <enum name="EnterpriseMacMDMStatusNew">
   <summary>
     The Mac MDM enrollment status (new API). See

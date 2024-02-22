@@ -2118,6 +2118,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.KeySignatureVerification"
+    enum="EnterpriseKeySignatureVerification" expires_after="2024-12-14">
+  <owner>igorcov@chromium.org</owner>
+  <owner>emaxx@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>Result of key signature verification from the policy data.</summary>
+</histogram>
+
 <histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Success"
     enum="BooleanSuccess" expires_after="2024-12-31">
   <owner>mpetrisor@chromium.org</owner>

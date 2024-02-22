@@ -100,6 +100,13 @@ void EmbeddedPolicyTestServerMixin::SetUpCommandLine(
   // Specify device management server URL.
   command_line->AppendSwitchASCII(policy::switches::kDeviceManagementUrl,
                                   policy_test_server_->GetServiceURL().spec());
+
+  // This will change the verification key to be used by the
+  // CloudPolicyValidator. It will allow for the policy provided by the
+  // PolicyBuilder to pass the signature validation.
+  command_line->AppendSwitchASCII(
+      policy::switches::kPolicyVerificationKey,
+      policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
 }
 
 void EmbeddedPolicyTestServerMixin::UpdateDevicePolicy(

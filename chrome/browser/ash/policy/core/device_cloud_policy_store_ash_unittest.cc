@@ -25,6 +25,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -61,6 +62,14 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
+
+    // This will change the verification key to be used by the
+    // CloudPolicyValidator. It will allow for the policy provided by the
+    // PolicyBuilder to pass the signature validation.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(
+        switches::kPolicyVerificationKey,
+        PolicyBuilder::GetEncodedPolicyVerificationKey());
 
     ash::InstallAttributesClient::InitializeFake();
     install_attributes_ = std::make_unique<ash::InstallAttributes>(
@@ -231,6 +240,8 @@ TEST_F(DeviceCloudPolicyStoreAshTest, StoreKeyRotationVerificationFailure) {
   device_policy_->Build();
   *device_policy_->policy()
        .mutable_new_public_key_verification_signature_deprecated() = "garbage";
+  *device_policy_->policy()
+       .mutable_new_public_key_verification_data_signature() = "garbage";
   store_->Store(device_policy_->policy());
   FlushDeviceSettings();
   EXPECT_EQ(CloudPolicyStore::STATUS_VALIDATION_ERROR, store_->status());
@@ -246,6 +257,7 @@ TEST_F(DeviceCloudPolicyStoreAshTest, StoreKeyRotationMissingSignatureFailure) {
   device_policy_->Build();
   device_policy_->policy()
       .clear_new_public_key_verification_signature_deprecated();
+  device_policy_->policy().clear_new_public_key_verification_data_signature();
   store_->Store(device_policy_->policy());
   FlushDeviceSettings();
   EXPECT_EQ(CloudPolicyStore::STATUS_VALIDATION_ERROR, store_->status());
@@ -304,6 +316,8 @@ TEST_F(DeviceCloudPolicyStoreAshTest, InstallInitialPolicyVerificationFailure) {
   PrepareNewSigningKey();
   *device_policy_->policy()
        .mutable_new_public_key_verification_signature_deprecated() = "garbage";
+  *device_policy_->policy()
+       .mutable_new_public_key_verification_data_signature() = "garbage";
   store_->InstallInitialPolicy(device_policy_->policy());
   FlushDeviceSettings();
   ExpectFailure(CloudPolicyStore::STATUS_VALIDATION_ERROR);
@@ -317,6 +331,7 @@ TEST_F(DeviceCloudPolicyStoreAshTest,
   PrepareNewSigningKey();
   device_policy_->policy()
       .clear_new_public_key_verification_signature_deprecated();
+  device_policy_->policy().clear_new_public_key_verification_data_signature();
   store_->InstallInitialPolicy(device_policy_->policy());
   FlushDeviceSettings();
   ExpectFailure(CloudPolicyStore::STATUS_VALIDATION_ERROR);
