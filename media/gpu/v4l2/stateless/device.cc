@@ -397,10 +397,9 @@ std::optional<BufferFormat> Device::TrySetOutputFormat(
   return V4L2FormatToBufferFormat(v_format);
 }
 
-std::optional<BufferFormat> Device::TryOutputFormat(
-    const BufferFormat& format) {
+bool Device::TryOutputFormat(const BufferFormat& format) {
   DVLOGF(3);
-  return TrySetOutputFormat(VIDIOC_TRY_FMT, format);
+  return TrySetOutputFormat(VIDIOC_TRY_FMT, format).has_value();
 }
 
 std::optional<BufferFormat> Device::SetOutputFormat(

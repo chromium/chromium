@@ -271,34 +271,36 @@ bool OutputQueue::NegotiateFormat() {
     return false;
   }
 
+  BufferFormat desired_format = *initial_format;
+
   if (!base::Contains(kPreferredFormats, initial_format->fourcc)) {
     for (const auto& preferred_fourcc : kPreferredFormats) {
-      BufferFormat try_format = *initial_format;
-      try_format.fourcc = preferred_fourcc;
-      if (device_->TryOutputFormat(try_format)) {
-        auto chosen_format = device_->SetOutputFormat(try_format);
-        if (chosen_format) {
-          DVLOGF(3) << "Preferred format " << chosen_format->ToString()
-                    << " chosen for output queue through negotiation. "
-                    << "Initial format was " << initial_format->ToString()
-                    << ".";
-          buffer_format_ = *chosen_format;
-          return true;
-        } else {
-          return false;
-        }
+      // Only change the fourcc between tries.
+      desired_format.fourcc = preferred_fourcc;
+      if (device_->TryOutputFormat(desired_format)) {
+        break;
       }
-    }
-  } else {
-    DVLOGF(3) << "Initial format " << initial_format->ToString()
-              << " chosen for output queue.";
-    auto chosen_format = device_->SetOutputFormat(*initial_format);
-    if (chosen_format) {
-      buffer_format_ = *chosen_format;
-      return true;
     }
   }
 
+  // If |initial_format| is not in the list of formats, and all of the formats
+  // tried with |TryOutputFormat| fail, the last format tried will be used
+  // for |SetOutputFormat|. In that case |SetOutputFormat| will fail.
+  std::optional<BufferFormat> chosen_format =
+      device_->SetOutputFormat(desired_format);
+
+  if (chosen_format) {
+    DVLOGF(3) << "Format " << chosen_format->ToString()
+              << " chosen for output queue through negotiation. "
+              << "Initial format was " << initial_format->ToString() << ".";
+    buffer_format_ = *chosen_format;
+    return true;
+  }
+
+  LOG(ERROR) << "Unable to negotiate a format for the output queue with an "
+                "initial format of "
+             << initial_format->ToString() << " and desired format of "
+             << desired_format.ToString();
   return false;
 }
 

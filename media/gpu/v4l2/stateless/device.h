@@ -136,7 +136,7 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // up with the retrieved format, |TryOutputFormat| and |SetOutputFormat| are
   // used.
   std::optional<BufferFormat> GetOutputFormat();
-  std::optional<BufferFormat> TryOutputFormat(const BufferFormat& format);
+  bool TryOutputFormat(const BufferFormat& format);
   std::optional<BufferFormat> SetOutputFormat(const BufferFormat& format);
 
   // Stops streaming on the |type| of buffer using the VIDIOC_STREAMOFF ioctl.
