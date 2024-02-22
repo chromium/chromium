@@ -946,14 +946,15 @@ void PasswordAutofillAgent::FillPasswordFieldAndSave(
   InformBrowserAboutUserInput(GetFormElement(*password_input), *password_input);
 }
 
-bool PasswordAutofillAgent::PreviewSuggestion(
+void PasswordAutofillAgent::PreviewSuggestion(
     const WebFormControlElement& control_element,
     const std::u16string& username,
     const std::u16string& password) {
   // The element in context of the suggestion popup.
   const WebInputElement element = control_element.DynamicTo<WebInputElement>();
-  if (element.IsNull())
-    return false;
+  if (element.IsNull()) {
+    return;
+  }
 
   WebInputElement username_element;
   WebInputElement password_element;
@@ -963,7 +964,7 @@ bool PasswordAutofillAgent::PreviewSuggestion(
                                   &username_element, &password_element,
                                   &password_info) ||
       (!password_element.IsNull() && !IsElementEditable(password_element))) {
-    return false;
+    return;
   }
 
   if (IsUsernameAmendable(username_element,
@@ -976,8 +977,6 @@ bool PasswordAutofillAgent::PreviewSuggestion(
   if (!password_element.IsNull()) {
     DoPreviewField(password_element, password, /*is_password=*/false);
   }
-
-  return true;
 }
 
 void PasswordAutofillAgent::ClearPreviewedForm() {

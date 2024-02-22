@@ -871,9 +871,8 @@ void AutofillAgent::PreviewPasswordSuggestion(const std::u16string& username,
     return;
   }
 
-  bool handled = password_autofill_agent_->PreviewSuggestion(
-      last_queried_element, username, password);
-  DCHECK(handled);
+  password_autofill_agent_->PreviewSuggestion(last_queried_element, username,
+                                              password);
 }
 
 void AutofillAgent::PreviewPasswordGenerationSuggestion(

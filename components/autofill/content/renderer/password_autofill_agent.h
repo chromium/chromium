@@ -167,8 +167,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
 
   // Previews the username and password fields of this form with the given
-  // values. Returns true if the fields were previewed, false otherwise.
-  bool PreviewSuggestion(const blink::WebFormControlElement& node,
+  // values.
+  void PreviewSuggestion(const blink::WebFormControlElement& node,
                          const std::u16string& username,
                          const std::u16string& password);
 
