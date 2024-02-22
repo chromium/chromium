@@ -8761,7 +8761,9 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "IOSDockingPromoExperimentType": "1"
+                        "IOSDockingPromoExperimentType": "1",
+                        "IOSDockingPromoNewUserInactiveThresholdHours": "24",
+                        "IOSDockingPromoOldUserInactiveThresholdHours": "72"
                     },
                     "enable_features": [
                         "IOSDockingPromo"

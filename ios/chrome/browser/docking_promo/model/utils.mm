@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 BOOL IsDockingPromoForcedForDisplay() {
@@ -43,13 +44,15 @@ BOOL CanShowDockingPromo(base::TimeDelta time_since_last_foreground) {
   // but not their second day.
   BOOL second_day_inactive =
       IsFirstRunRecent(base::Days(2) + base::Seconds(1)) &&
-      (time_since_last_foreground > base::Days(1));
+      (time_since_last_foreground >
+       base::Hours(HoursInactiveForNewUsersUntilShowingDockingPromo()));
 
   // For users no older than 14 days, whether they've been inactive for 3
   // consecutive (or more) days.
   BOOL three_or_more_days_inactive =
       IsFirstRunRecent(base::Days(14) + base::Seconds(1)) &&
-      (time_since_last_foreground > base::Days(3));
+      (time_since_last_foreground >
+       base::Hours(HoursInactiveForOldUsersUntilShowingDockingPromo()));
 
   return second_day_inactive || three_or_more_days_inactive;
 }
