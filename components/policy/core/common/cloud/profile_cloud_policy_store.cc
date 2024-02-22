@@ -31,24 +31,27 @@ const base::FilePath::CharType kKeyCache[] =
 ProfileCloudPolicyStore::ProfileCloudPolicyStore(
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    bool is_dasherless)
     : DesktopCloudPolicyStore(policy_path,
                               key_path,
                               PolicyLoadFilter(),
                               background_task_runner,
-                              PolicyScope::POLICY_SCOPE_USER) {}
+                              PolicyScope::POLICY_SCOPE_USER),
+      is_dasherless_(is_dasherless) {}
 
 ProfileCloudPolicyStore::~ProfileCloudPolicyStore() = default;
 
 // static
 std::unique_ptr<ProfileCloudPolicyStore> ProfileCloudPolicyStore::Create(
     const base::FilePath& profile_dir,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    bool is_dasherless) {
   base::FilePath policy_dir = profile_dir.Append(kPolicy);
   base::FilePath policy_cache_file = policy_dir.Append(kPolicyCache);
   base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
   return std::make_unique<ProfileCloudPolicyStore>(
-      policy_cache_file, key_cache_file, background_task_runner);
+      policy_cache_file, key_cache_file, background_task_runner, is_dasherless);
 }
 
 std::unique_ptr<UserCloudPolicyValidator>
@@ -60,8 +63,10 @@ ProfileCloudPolicyStore::CreateValidator(
       std::move(policy_fetch_response), background_task_runner());
   // TODO (crbug/1421330): Once the real policy type is available, replace this
   // validation.
+
   validator->ValidatePolicyType(
-      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+      is_dasherless_ ? dm_protocol::kChromeUserPolicyType
+                     : dm_protocol::kChromeMachineLevelUserCloudPolicyType);
   validator->ValidateAgainstCurrentPolicy(
       policy(), option, CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,
       CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);

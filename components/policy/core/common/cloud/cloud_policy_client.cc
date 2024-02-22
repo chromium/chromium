@@ -68,6 +68,22 @@ DeviceMode TranslateProtobufDeviceMode(
   return DEVICE_MODE_NOT_SET;
 }
 
+// Translates the DeviceRegisterResponse::ThirdPartyIdentityType |identity_type|
+// to the enum used internally to represent different third party identity
+// types.
+ThirdPartyIdentityType TranslateProtobufThirdPartyIdentityType(
+    em::DeviceRegisterResponse::ThirdPartyIdentityType identity_type) {
+  switch (identity_type) {
+    case em::DeviceRegisterResponse::NONE:
+      return NO_THIRD_PARTY_MANAGEMENT;
+    case em::DeviceRegisterResponse::DASHER_BASED:
+      return OIDC_MANAGEMENT_DASHER_BASED;
+    case em::DeviceRegisterResponse::DASHERLESS:
+      return OIDC_MANAGEMENT_DASHERLESS;
+  }
+  return NO_THIRD_PARTY_MANAGEMENT;
+}
+
 bool IsChromePolicy(const std::string& type) {
   return type == dm_protocol::kChromeDevicePolicyType ||
          type == dm_protocol::kChromeUserPolicyType ||
@@ -1254,9 +1270,23 @@ void CloudPolicyClient::OnRegisterCompleted(DMServerJobResult result) {
           result.response.register_response().enrollment_type());
     }
 
+    third_party_identity_type_ = NO_THIRD_PARTY_MANAGEMENT;
+    if (result.response.register_response().has_third_party_identity_type()) {
+      third_party_identity_type_ = TranslateProtobufThirdPartyIdentityType(
+          result.response.register_response().third_party_identity_type());
+    }
+
     user_affiliation_ids_ = std::vector<std::string>(
         result.response.register_response().user_affiliation_ids().begin(),
         result.response.register_response().user_affiliation_ids().end());
+
+    if (result.response.register_response().has_user_display_name()) {
+      oidc_user_display_name_ =
+          result.response.register_response().user_display_name();
+    }
+    if (result.response.register_response().has_user_email()) {
+      oidc_user_email_ = result.response.register_response().user_email();
+    }
 
     if (device_dm_token_callback_) {
       device_dm_token_ = device_dm_token_callback_.Run(user_affiliation_ids_);

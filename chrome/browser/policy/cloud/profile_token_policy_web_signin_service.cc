@@ -56,11 +56,7 @@ ProfileTokenPolicyWebSigninService::ProfileTokenPolicyWebSigninService(
                                   policy_manager,
                                   /*identity_manager=*/nullptr,
                                   system_url_loader_factory),
-      profile_(profile) {
-  if (!CanApplyPolicies(/*check_for_refresh_token=*/false)) {
-    ShutdownCloudPolicyManager();
-  }
-}
+      profile_(profile) {}
 
 ProfileTokenPolicyWebSigninService::~ProfileTokenPolicyWebSigninService() =
     default;
@@ -192,9 +188,11 @@ void ProfileTokenPolicyWebSigninService::InitializeOnProfileReady(
     return;
   }
 
-  InitializeForSignedInUser(AccountId(),
-                            profile->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess());
+  if (CanApplyPolicies(/*check_for_refresh_token=*/false)) {
+    InitializeForSignedInUser(AccountId(),
+                              profile->GetDefaultStoragePartition()
+                                  ->GetURLLoaderFactoryForBrowserProcess());
+  }
 }
 
 }  // namespace policy

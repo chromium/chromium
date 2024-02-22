@@ -21,11 +21,13 @@
 constexpr char kOAuthToken[] = "fake-oauth-token";
 constexpr char kIdToken[] = "fake-id-token";
 
-class OidcManagedProfileCreationDelegateTest : public testing::Test {
+class OidcManagedProfileCreationDelegateTest
+    : public testing::TestWithParam<bool> {
  public:
   OidcManagedProfileCreationDelegateTest()
       : profile_manager_(std::make_unique<TestingProfileManager>(
-            TestingBrowserProcess::GetGlobal())) {}
+            TestingBrowserProcess::GetGlobal())),
+        is_dasher_based_(GetParam()) {}
 
   ~OidcManagedProfileCreationDelegateTest() override = default;
 
@@ -35,17 +37,22 @@ class OidcManagedProfileCreationDelegateTest : public testing::Test {
   }
 
  protected:
+  bool is_dasher_based() { return is_dasher_based_; }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<Profile> profile_;
   bool creator_callback_called_ = false;
+
+ private:
+  bool is_dasher_based_;
 };
 
-TEST_F(OidcManagedProfileCreationDelegateTest,
+TEST_P(OidcManagedProfileCreationDelegateTest,
        CreatesProfileWithManagementInfo) {
   auto delegate = std::make_unique<OidcManagedProfileCreationDelegate>(
-      kOAuthToken, kIdToken);
+      kOAuthToken, kIdToken, is_dasher_based());
 
   auto* entry = TestingBrowserProcess::GetGlobal()
                     ->profile_manager()
@@ -59,9 +66,9 @@ TEST_F(OidcManagedProfileCreationDelegateTest,
   EXPECT_EQ(kIdToken, oidc_tokens.id_token);
 }
 
-TEST_F(OidcManagedProfileCreationDelegateTest, OnManagedProfileInitialized) {
+TEST_P(OidcManagedProfileCreationDelegateTest, OnManagedProfileInitialized) {
   auto delegate = std::make_unique<OidcManagedProfileCreationDelegate>(
-      kOAuthToken, kIdToken);
+      kOAuthToken, kIdToken, is_dasher_based());
   Profile* new_profile =
       profile_manager_->CreateTestingProfile("new_test_profile");
 
@@ -76,3 +83,7 @@ TEST_F(OidcManagedProfileCreationDelegateTest, OnManagedProfileInitialized) {
 
   loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OidcManagedProfileCreationDelegateTest,
+                         testing::Bool());

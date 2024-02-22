@@ -14,7 +14,8 @@ class OidcManagedProfileCreationDelegate
  public:
   OidcManagedProfileCreationDelegate();
   OidcManagedProfileCreationDelegate(const std::string& auth_token,
-                                     const std::string& id_token);
+                                     const std::string& id_token,
+                                     const bool dasher_based);
   OidcManagedProfileCreationDelegate(
       const OidcManagedProfileCreationDelegate&) = delete;
   OidcManagedProfileCreationDelegate& operator=(
@@ -31,6 +32,7 @@ class OidcManagedProfileCreationDelegate
  private:
   const std::string auth_token_;
   const std::string id_token_;
+  const bool dasher_based_ = true;
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_SIGNIN_OIDC_MANAGED_PROFILE_CREATION_DELEGATE_H_

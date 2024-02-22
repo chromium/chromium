@@ -426,7 +426,9 @@
 #include "chrome/browser/enterprise/client_certificates/certificate_store_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor_factory.h"
+#include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/profile_token_policy_web_signin_service_factory.h"
 #endif
 
@@ -1029,6 +1031,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   policy::ProfileTokenPolicyWebSigninServiceFactory::GetInstance();
+  policy::UserPolicyOidcSigninServiceFactory::GetInstance();
 #endif
   policy::UserCloudPolicyInvalidatorFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1070,6 +1073,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   ProfileTokenWebSigninInterceptorFactory::GetInstance();
+  OidcAuthenticationSigninInterceptorFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   PromoServiceFactory::GetInstance();

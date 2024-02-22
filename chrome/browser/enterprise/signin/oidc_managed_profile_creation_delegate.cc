@@ -14,8 +14,11 @@ OidcManagedProfileCreationDelegate::OidcManagedProfileCreationDelegate() =
 
 OidcManagedProfileCreationDelegate::OidcManagedProfileCreationDelegate(
     const std::string& auth_token,
-    const std::string& id_token)
-    : auth_token_(auth_token), id_token_(id_token) {}
+    const std::string& id_token,
+    const bool dasher_based)
+    : auth_token_(auth_token),
+      id_token_(id_token),
+      dasher_based_(dasher_based) {}
 
 OidcManagedProfileCreationDelegate::~OidcManagedProfileCreationDelegate() =
     default;
@@ -26,13 +29,14 @@ void OidcManagedProfileCreationDelegate::SetManagedAttributesForProfile(
   if (!id_token_.empty() && !auth_token_.empty()) {
     entry->SetProfileManagementOidcTokens(ProfileManagementOicdTokens{
         .auth_token = auth_token_, .id_token = id_token_});
+    entry->SetDasherlessManagement(!dasher_based_);
   }
 }
 
 void OidcManagedProfileCreationDelegate::CheckManagedProfileStatus(
     Profile* new_profile) {
-  // TODO(b/319477219): Add full sign in support for OIDC profiles
-  CHECK(!new_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+  CHECK_EQ(new_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed),
+           dasher_based_);
 }
 
 void OidcManagedProfileCreationDelegate::OnManagedProfileInitialized(

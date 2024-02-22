@@ -32,7 +32,7 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::TYPE_REGISTRATION:
       return dm_protocol::kValueRequestRegister;
     case DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION:
-      return dm_protocol::kValueRequestOidcRegister;
+      return dm_protocol::kValueRequestRegisterProfile;
     case DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH:
       return dm_protocol::kValueRequestPolicy;
     case DeviceManagementService::JobConfiguration::TYPE_API_AUTH_CODE_FETCH:

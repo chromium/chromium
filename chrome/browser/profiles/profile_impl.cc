@@ -604,11 +604,13 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
         profile_manager->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(GetPath());
 
-    if (entry && !entry->GetProfileManagementEnrollmentToken().empty()) {
+    if (entry && (!entry->GetProfileManagementEnrollmentToken().empty() ||
+                  entry->IsDasherlessManagement())) {
       profile_cloud_policy_manager_ = policy::ProfileCloudPolicyManager::Create(
           GetPath(), GetPolicySchemaRegistryService()->registry(),
           force_immediate_policy_load, io_task_runner_,
-          base::BindRepeating(&content::GetNetworkConnectionTracker));
+          base::BindRepeating(&content::GetNetworkConnectionTracker),
+          entry->IsDasherlessManagement());
       cloud_policy_manager = profile_cloud_policy_manager_.get();
     } else {
 #else

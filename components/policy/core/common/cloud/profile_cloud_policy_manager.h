@@ -34,8 +34,8 @@ class POLICY_EXPORT ProfileCloudPolicyManager : public CloudPolicyManager {
       const base::FilePath& component_policy_cache_path,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      network::NetworkConnectionTrackerGetter
-          network_connection_tracker_getter);
+      network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
+      bool is_dasherless = false);
   ProfileCloudPolicyManager(const ProfileCloudPolicyManager&) = delete;
   ProfileCloudPolicyManager& operator=(const ProfileCloudPolicyManager&) =
       delete;
@@ -48,8 +48,8 @@ class POLICY_EXPORT ProfileCloudPolicyManager : public CloudPolicyManager {
       SchemaRegistry* schema_registry,
       bool force_immediate_load,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
-      network::NetworkConnectionTrackerGetter
-          network_connection_tracker_getter);
+      network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
+      bool is_dasherless = false);
 
   // ConfigurationPolicyProvider:
   void Shutdown() override;
@@ -66,8 +66,8 @@ class POLICY_EXPORT ProfileCloudPolicyManager : public CloudPolicyManager {
  private:
   raw_ptr<ProfileCloudPolicyStore> profile_store_;
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
-
   const base::FilePath component_policy_cache_path_;
+  bool is_dasherless_;
 };
 
 }  // namespace policy

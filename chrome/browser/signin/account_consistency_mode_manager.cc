@@ -145,11 +145,16 @@ bool AccountConsistencyModeManager::IsDiceEnabledForProfile(Profile* profile) {
 // static
 bool AccountConsistencyModeManager::IsDiceSignInAllowed(
     ProfileAttributesEntry* entry) {
+  // Sign in should only be allowed for OIDC profiles with 3P identities that
+  // are sync-ed to Google. Otherwise, we won't have a valid GAIA ID to sign in
+  // to.
+  bool is_oidc_sign_in_disallowed =
+      entry && !entry->GetProfileManagementOidcTokens().auth_token.empty() &&
+      entry->IsDasherlessManagement();
   return CanEnableDiceForBuild() && IsBrowserSigninAllowedByCommandLine() &&
-         (!entry ||
-          (entry->GetProfileManagementEnrollmentToken().empty() &&
-           // TODO(b/319477219): Add full sign in support for OIDC profiles
-           entry->GetProfileManagementOidcTokens().id_token.empty()));
+         !is_oidc_sign_in_disallowed &&
+         (!entry || entry->GetProfileManagementEnrollmentToken().empty());
+  ;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

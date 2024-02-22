@@ -46,7 +46,7 @@ extern const char kValueRequestPsmHasDeviceState[];
 extern const char kValueCheckUserAccount[];
 extern const char kValueRequestPolicy[];
 extern const char kValueRequestRegister[];
-extern const char kValueRequestOidcRegister[];
+extern const char kValueRequestRegisterProfile[];
 extern const char kValueRequestApiAuthorization[];
 extern const char kValueRequestUnregister[];
 extern const char kValueRequestUploadCertificate[];
@@ -189,6 +189,18 @@ enum DeviceMode {
                          // either enrolled online or setup
                          // offline into demo mode domain -
                          // see kDemoModeDomain.
+};
+
+// List of modes of OIDC management.
+enum ThirdPartyIdentityType {
+  NO_THIRD_PARTY_MANAGEMENT =
+      0,  // The device mode is not managed by a third party identity.
+  OIDC_MANAGEMENT_DASHER_BASED =
+      1,  // The device mode is managed by a third party identity that is
+          // sync-ed to Google.
+  OIDC_MANAGEMENT_DASHERLESS =
+      2,  // The device mode is managed by a third party identity that is
+          // notsync-ed to Google.
 };
 
 // Domain that demo mode devices are enrolled into: cros-demo-mode.com

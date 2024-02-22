@@ -755,7 +755,7 @@ TEST_F(DeviceManagementServiceTest, OidcEnrollmentRequest) {
   auto* request = GetPendingRequest();
   ASSERT_TRUE(request);
 
-  CheckURLAndQueryParams(request, dm_protocol::kValueRequestOidcRegister,
+  CheckURLAndQueryParams(request, dm_protocol::kValueRequestRegisterProfile,
                          kClientID, "");
 
   // Make sure request is properly authorized.

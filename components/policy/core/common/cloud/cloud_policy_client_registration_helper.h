@@ -61,6 +61,17 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
       bool is_mandatory,
       base::OnceClosure callback);
 
+  // Starts the client registration with an OIDC token enrollment process.
+  // `oauth_token` and `id_token` pair is received and extracted from a valid
+  // OIDC authentication redirection response. The `oauth_token` is from a 3P
+  // IdP, different from a refresh_token or access_token from GAIA. `client_id`
+  // is randomized if an empty string is provided. `callback` is invoked when
+  // the registration is complete.
+  void StartRegistrationWithOidcTokens(const std::string& oauth_token,
+                                       const std::string& id_token,
+                                       const std::string& client_id,
+                                       base::OnceClosure callback);
+
  private:
   class IdentityManagerHelper;
 
