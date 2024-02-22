@@ -1414,12 +1414,6 @@ BASE_FEATURE(kHelpAppCrosComponents,
              "HelpAppCrosComponents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the Help App Discover tab notifications on non-stable
-// ChromeOS channels. Used for testing.
-BASE_FEATURE(kHelpAppDiscoverTabNotificationAllChannels,
-             "HelpAppDiscoverTabNotificationAllChannels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the home page of the Help App will show a section containing
 // articles about apps.
 BASE_FEATURE(kHelpAppHomePageAppArticles,
