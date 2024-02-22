@@ -13,25 +13,25 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/backtrace.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/chain.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/context.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/ensure.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/fmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/kind.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/ptr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/src/wrapper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/backtrace.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/chain.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/context.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/ensure.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/kind.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/ptr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/src/wrapper.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.79"
+  cargo_pkg_version = "1.0.80"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "anyhow"
   cargo_pkg_description =
@@ -44,8 +44,8 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "std" ]
   build_root =
-      "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/build.rs"
+      "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/build.rs"
   build_sources =
-      [ "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.79/build.rs" ]
+      [ "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.80/build.rs" ]
   testonly = true
 }

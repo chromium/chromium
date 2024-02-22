@@ -13,30 +13,30 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/buffer/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/common.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/d2s.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/d2s_full_table.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/d2s_intrinsics.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/d2s_small_table.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/digit_table.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/f2s.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/f2s_intrinsics.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/parse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/pretty/exponent.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/pretty/mantissa.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/pretty/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/s2d.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.16/src/s2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/buffer/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/d2s.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/d2s_full_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/d2s_intrinsics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/d2s_small_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/digit_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/f2s.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/f2s_intrinsics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/pretty/exponent.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/pretty/mantissa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/pretty/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/s2d.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src/s2f.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.16"
+  cargo_pkg_version = "1.0.17"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "ryu"
   cargo_pkg_description = "Fast floating point to string conversion"

@@ -13,33 +13,33 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/de/format.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/de/ignored_any.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/de/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/de/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/de/seed.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/de/size_hint.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/de/value.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/integer128.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/private/de.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/private/doc.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/private/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/private/ser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/ser/fmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/ser/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/ser/impossible.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/ser/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/src/std_error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/de/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/de/ignored_any.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/de/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/de/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/de/seed.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/de/size_hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/de/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/integer128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/private/de.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/private/doc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/private/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/private/ser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/ser/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/ser/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/ser/impossible.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/ser/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src/std_error.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.196"
+  cargo_pkg_version = "1.0.197"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde"
   cargo_pkg_description = "A generic serialization/deserialization framework"
@@ -56,7 +56,7 @@ cargo_crate("lib") {
     "std",
   ]
   build_root =
-      "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/build.rs"
+      "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/build.rs"
   build_sources =
-      [ "//third_party/rust/chromium_crates_io/vendor/serde-1.0.196/build.rs" ]
+      [ "//third_party/rust/chromium_crates_io/vendor/serde-1.0.197/build.rs" ]
 }
