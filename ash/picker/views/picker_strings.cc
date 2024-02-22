@@ -4,8 +4,8 @@
 
 #include "ash/picker/views/picker_strings.h"
 
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/views/picker_category_type.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 

@@ -10,9 +10,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"

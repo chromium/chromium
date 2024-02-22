@@ -8,7 +8,6 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_event_filter.h"
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
@@ -19,6 +18,7 @@
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/style/system_shadow.h"
 #include "base/check.h"

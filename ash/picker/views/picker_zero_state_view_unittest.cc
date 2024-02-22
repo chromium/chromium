@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"

@@ -9,8 +9,8 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "ash/picker/model/picker_category.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/picker/picker_category.h"
 
 namespace ash {
 

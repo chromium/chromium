@@ -257,6 +257,7 @@ component("cpp") {
     "personalization_app/enterprise_policy_delegate.h",
     "personalization_app/user_display_info.cc",
     "personalization_app/user_display_info.h",
+    "picker/picker_category.h",
     "picker/picker_client.cc",
     "picker/picker_client.h",
     "picker/picker_search_result.cc",

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/views/picker_caps_nudge_view.h"
 #include "ash/picker/views/picker_category_type.h"
@@ -18,6 +17,7 @@
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_strings.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

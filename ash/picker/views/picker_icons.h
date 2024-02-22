@@ -6,7 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_ICONS_H_
 
 #include "ash/ash_export.h"
-#include "ash/picker/model/picker_category.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 
 namespace ui {

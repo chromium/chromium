@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/views/picker_category_type.h"
+#include "ash/public/cpp/picker/picker_category.h"
 
 namespace ash {
 

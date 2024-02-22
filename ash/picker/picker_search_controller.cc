@@ -11,10 +11,10 @@
 #include <utility>
 #include <vector>
 
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"

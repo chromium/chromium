@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_category_view.h"
@@ -18,6 +17,7 @@
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view.h"

@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/picker/model/picker_category.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_page_view.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
