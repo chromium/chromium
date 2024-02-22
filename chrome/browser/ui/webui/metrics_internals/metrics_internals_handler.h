@@ -10,9 +10,10 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/metrics/metrics_service_observer.h"
+#include "components/metrics/structured/buildflags/buildflags.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 #include "components/metrics/debug/structured/structured_metrics_debug_provider.h"
 #endif
 
@@ -47,10 +48,10 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler {
   void HandleFetchUmaSummary(const base::Value::List& args);
   void HandleFetchUmaLogsData(const base::Value::List& args);
   void HandleIsUsingMetricsServiceObserver(const base::Value::List& args);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
   void HandleFetchStructuredMetricsEvents(const base::Value::List& args);
   void HandleFetchStructuredMetricsSummary(const base::Value::List& args);
-#endif
+#endif  // BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 
   void OnUmaLogCreatedOrEvent();
 
@@ -59,10 +60,10 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler {
   // events since browser startup.
   std::unique_ptr<metrics::MetricsServiceObserver> uma_log_observer_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
   std::unique_ptr<metrics::structured::StructuredMetricsDebugProvider>
       structured_metrics_debug_provider_;
-#endif
+#endif  // BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 
   // The callback subscription to |uma_log_observer_| that notifies the WebUI
   // of changes. When this subscription is destroyed, it is automatically

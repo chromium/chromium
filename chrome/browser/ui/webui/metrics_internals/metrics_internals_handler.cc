@@ -10,10 +10,11 @@
 #include "components/metrics/debug/metrics_internals_utils.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_service_observer.h"
+#include "components/metrics/structured/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 #include "components/metrics/debug/structured/structured_metrics_utils.h"
-#endif
+#endif  // BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 
 MetricsInternalsHandler::MetricsInternalsHandler() {
   if (!ShouldUseMetricsServiceObserver()) {
@@ -23,12 +24,16 @@ MetricsInternalsHandler::MetricsInternalsHandler() {
         uma_log_observer_.get());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  structured_metrics_debug_provider_ =
-      std::make_unique<metrics::structured::StructuredMetricsDebugProvider>(
-          g_browser_process->GetMetricsServicesManager()
-              ->GetStructuredMetricsService());
-#endif
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
+  metrics::structured::StructuredMetricsService* service =
+      g_browser_process->GetMetricsServicesManager()
+          ->GetStructuredMetricsService();
+  if (service) {
+    structured_metrics_debug_provider_ =
+        std::make_unique<metrics::structured::StructuredMetricsDebugProvider>(
+            service);
+  }
+#endif  // BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 }
 
 MetricsInternalsHandler::~MetricsInternalsHandler() {
@@ -69,7 +74,7 @@ void MetricsInternalsHandler::RegisterMessages() {
           &MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver,
           base::Unretained(this)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
   web_ui()->RegisterMessageCallback(
       "fetchStructuredMetricsEvents",
       base::BindRepeating(
@@ -80,7 +85,7 @@ void MetricsInternalsHandler::RegisterMessages() {
       base::BindRepeating(
           &MetricsInternalsHandler::HandleFetchStructuredMetricsSummary,
           base::Unretained(this)));
-#endif
+#endif  // BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 }
 
 bool MetricsInternalsHandler::ShouldUseMetricsServiceObserver() {
@@ -140,13 +145,15 @@ void MetricsInternalsHandler::OnUmaLogCreatedOrEvent() {
   FireWebUIListener("uma-log-created-or-event");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 void MetricsInternalsHandler::HandleFetchStructuredMetricsEvents(
     const base::Value::List& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
-      callback_id, structured_metrics_debug_provider_->events().Clone());
+      callback_id, structured_metrics_debug_provider_
+                       ? structured_metrics_debug_provider_->events().Clone()
+                       : base::Value::List());
 }
 
 void MetricsInternalsHandler::HandleFetchStructuredMetricsSummary(
@@ -159,4 +166,4 @@ void MetricsInternalsHandler::HandleFetchStructuredMetricsSummary(
                                     ->GetStructuredMetricsService()));
 }
 
-#endif
+#endif  // BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)

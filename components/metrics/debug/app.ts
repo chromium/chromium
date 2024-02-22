@@ -12,7 +12,7 @@ import {getTemplate} from './app.html.js';
 import type {KeyValue, Log, LogData, MetricsInternalsBrowserProxy} from './browser_proxy.js';
 import {MetricsInternalsBrowserProxyImpl} from './browser_proxy.js';
 import {getEventsPeekString, logEventToString, sizeToString, timestampToString, umaLogTypeToString} from './log_utils.js';
-// <if expr="chromeos_ash">
+// <if expr="structured_metrics_enabled">
 import type {StructuredMetricEvent, StructuredMetricsSummary} from './structured/structured_utils.js';
 import {updateStructuredMetricsEvents, updateStructuredMetricsSummary} from './structured/structured_utils.js';
 // </if>
@@ -76,10 +76,12 @@ export class MetricsInternalsAppElement extends CustomElement {
     setInterval(() => this.updateUmaSummary_(), 3000);
 
     // Fetch Structured Metrics tab when on ChromeOS
-    // <if expr="chromeos_ash">
     // TODO: Implement a push model as new events are recorded.
-    await this.updateStructuredMetricsEvents_();
+    // <if expr="structured_metrics_enabled">
+    await this.updateStructuredMetricsSummary_();
     setInterval(() => this.updateStructuredMetricsSummary_(), 5000);
+
+    await this.updateStructuredMetricsEvents_();
 
     const eventRefreshButton = this.$('#sm-refresh-events') as HTMLElement;
     eventRefreshButton.addEventListener(
@@ -266,7 +268,7 @@ export class MetricsInternalsAppElement extends CustomElement {
     a.click();
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="structured_metrics_enabled">
   /**
    * Fetches summary information of the Structured Metrics service and renders
    * it.

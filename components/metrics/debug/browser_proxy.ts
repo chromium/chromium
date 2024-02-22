@@ -4,7 +4,7 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-// <if expr="chromeos_ash">
+// <if expr="structured_metrics_enabled">
 import type {StructuredMetricEvent, StructuredMetricsSummary} from './structured/structured_utils.js';
 // </if>
 
@@ -81,7 +81,7 @@ export interface MetricsInternalsBrowserProxy {
    */
   isUsingMetricsServiceObserver(): Promise<boolean>;
 
-  // <if expr="chromeos_ash">
+  // <if expr="structured_metrics_enabled">
   /**
    * Fetches recorded events from Structured Metrics Service.
    */
@@ -112,7 +112,7 @@ export class MetricsInternalsBrowserProxyImpl implements
     return sendWithPromise('isUsingMetricsServiceObserver');
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="structured_metrics_enabled">
   fetchStructuredMetricsEvents(): Promise<StructuredMetricEvent[]> {
     return sendWithPromise('fetchStructuredMetricsEvents');
   }

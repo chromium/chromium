@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/metrics/structured/buildflags/buildflags.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
@@ -16,7 +17,9 @@ build_webui("build") {
     "metrics_internals.ts",
   ]
 
-  if (is_chromeos_ash) {
+  preprocessor_defines =
+      [ "structured_metrics_enabled=$structured_metrics_debug_enabled" ]
+  if (structured_metrics_debug_enabled) {
     non_web_component_files += [ "structured/structured_utils.ts" ]
   }
 

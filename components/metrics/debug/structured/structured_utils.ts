@@ -59,9 +59,13 @@ export function updateStructuredMetricsSummary(
       buildKeyValueRow('Enabled', summary.enabled.toString(), template);
   summaryBody.append(enabled);
 
-  const crosDeviceId =
-      buildKeyValueRow('CrOS Device Id', summary.crosDeviceId || '-', template);
-  summaryBody.append(crosDeviceId);
+  // If we do not get a value, do not display it. This value doesn't make sense
+  // on some platforms.
+  if (summary.crosDeviceId) {
+    const crosDeviceId =
+        buildKeyValueRow('CrOS Device Id', summary.crosDeviceId, template);
+    summaryBody.append(crosDeviceId);
+  }
 }
 
 /**
@@ -76,6 +80,12 @@ export function updateStructuredMetricsEvents(
     eventBody: HTMLElement, events: StructuredMetricEvent[],
     eventTemplate: HTMLTemplateElement, detailsTemplate: HTMLTemplateElement,
     kvTemplate: HTMLTemplateElement): void {
+  // If chrome://metrics-internal is opened on Windows, Mac, or Linux and
+  // Structured Metrics is disabled, we should do nothing.
+  if (events === null) {
+    return;
+  }
+
   eventBody.replaceChildren();
 
   for (const event of events) {
