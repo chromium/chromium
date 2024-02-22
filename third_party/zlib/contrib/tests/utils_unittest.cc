@@ -1080,6 +1080,31 @@ TEST(ZlibTest, DeflateCopy) {
       0);
 }
 
+TEST(ZlibTest, GzipStored) {
+  // Check that deflating uncompressed blocks with a gzip header doesn't write
+  // out of bounds (crbug.com/325990053).
+  z_stream stream;
+  stream.zalloc = Z_NULL;
+  stream.zfree = Z_NULL;
+  static const int kGzipWrapper = 16;
+  int ret = deflateInit2(&stream, Z_NO_COMPRESSION, Z_DEFLATED,
+                         9 + kGzipWrapper, 9, Z_DEFAULT_STRATEGY);
+  ASSERT_EQ(ret, Z_OK);
+
+  const std::vector<uint8_t> src(512 * 1024);
+  stream.next_in = (unsigned char*)src.data();
+  stream.avail_in = src.size();
+
+  std::vector<uint8_t> out(1000);
+  stream.next_out = (unsigned char*)out.data();
+  stream.avail_out = out.size();
+
+  ret = deflate(&stream, Z_NO_FLUSH);
+  ASSERT_EQ(ret, Z_OK);
+
+  deflateEnd(&stream);
+}
+
 // TODO(gustavoa): make these tests run standalone.
 #ifndef CMAKE_STANDALONE_UNITTESTS
 
