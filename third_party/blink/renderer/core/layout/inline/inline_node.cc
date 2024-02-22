@@ -91,31 +91,17 @@ unsigned MismatchFromEnd(const Span1& span1, const Span2& span2) {
   return static_cast<unsigned>(old_new.first - span1.rbegin());
 }
 
-unsigned MismatchFromEnd(const String& old_text,
-                         const String& new_text,
-                         unsigned max_length) {
-  const unsigned old_length = old_text.length();
-  const unsigned new_length = new_text.length();
-  DCHECK_LE(max_length, old_length);
-  DCHECK_LE(max_length, new_length);
-  const unsigned old_start = old_length - max_length;
-  const unsigned new_start = new_length - max_length;
+unsigned MismatchFromEnd(StringView old_text, StringView new_text) {
   if (old_text.Is8Bit()) {
-    const auto old_span8 = old_text.Span8().subspan(old_start, max_length);
     if (new_text.Is8Bit()) {
-      return MismatchFromEnd(old_span8,
-                             new_text.Span8().subspan(new_start, max_length));
+      return MismatchFromEnd(old_text.Span8(), new_text.Span8());
     }
-    return MismatchFromEnd(old_span8,
-                           new_text.Span16().subspan(new_start, max_length));
+    return MismatchFromEnd(old_text.Span8(), new_text.Span16());
   }
-  const auto old_span16 = old_text.Span16().subspan(old_start, max_length);
   if (new_text.Is8Bit()) {
-    return MismatchFromEnd(old_span16,
-                           new_text.Span8().subspan(new_start, max_length));
+    return MismatchFromEnd(old_text.Span16(), new_text.Span8());
   }
-  return MismatchFromEnd(old_span16,
-                         new_text.Span16().subspan(new_start, max_length));
+  return MismatchFromEnd(old_text.Span16(), new_text.Span16());
 }
 
 // Returns sum of |ShapeResult::Width()| in |data.items|. Note: All items
@@ -696,19 +682,13 @@ class InlineNodeDataEditor final {
     const InlineNodeData& new_data = *block_flow_->GetInlineNodeData();
     const String& old_text = data_->text_content;
     const String& new_text = new_data.text_content;
+    const auto [start_offset, end_match_length] =
+        MatchedLengths(old_text, new_text);
     const unsigned old_length = old_text.length();
     const unsigned new_length = new_text.length();
-    const unsigned start_offset = Mismatch(old_text, new_text);
-    //  * "ab cd ef" => delete "cd" => "ab ef"
-    //    We should not reuse " " before "ef"
-    //  * "a bc" => delete "bc" => "a"
-    //    There are no spaces after "a".
-    const unsigned matched_length = MismatchFromEnd(
-        old_text, new_text,
-        std::min(old_length - start_offset, new_length - start_offset));
-    DCHECK_LE(start_offset, old_length - matched_length);
-    DCHECK_LE(start_offset, new_length - matched_length);
-    const unsigned end_offset = old_length - matched_length;
+    DCHECK_LE(start_offset, old_length - end_match_length);
+    DCHECK_LE(start_offset, new_length - end_match_length);
+    const unsigned end_offset = old_length - end_match_length;
     DCHECK_LE(start_offset, end_offset);
     HeapVector<InlineItem> items;
     ClearCollectionScope clear_scope(&items);
@@ -787,6 +767,26 @@ class InlineNodeDataEditor final {
   }
 
  private:
+  // Find the number of characters that match in the two strings, from the start
+  // and from the end.
+  std::pair<unsigned, unsigned> MatchedLengths(const String& old_text,
+                                               const String& new_text) const {
+    // Find how many characters match from the start.
+    const unsigned start_match_length = Mismatch(old_text, new_text);
+
+    // Find from the end, excluding the `start_match_length` characters.
+    const unsigned old_length = old_text.length();
+    const unsigned new_length = new_text.length();
+    const unsigned max_end_length = std::min(old_length - start_match_length,
+                                             new_length - start_match_length);
+    const unsigned end_match_length =
+        MismatchFromEnd(StringView(old_text, old_length - max_end_length),
+                        StringView(new_text, new_length - max_end_length));
+    DCHECK_LE(start_match_length, old_length - end_match_length);
+    DCHECK_LE(start_match_length, new_length - end_match_length);
+    return {start_match_length, end_match_length};
+  }
+
   static unsigned AdjustOffset(unsigned offset, int delta) {
     if (delta > 0)
       return offset + delta;
