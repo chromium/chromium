@@ -75,13 +75,15 @@ bool TestBrowserWindow::TestLocationBar::IsInputTypedUrlWithoutScheme() const {
 
 // TestBrowserWindow ----------------------------------------------------------
 
-TestBrowserWindow::TestBrowserWindow() {}
+TestBrowserWindow::TestBrowserWindow() = default;
 
-TestBrowserWindow::~TestBrowserWindow() {}
+TestBrowserWindow::~TestBrowserWindow() = default;
 
 void TestBrowserWindow::Close() {
-  if (close_callback_)
+  if (close_callback_) {
     std::move(close_callback_).Run();
+  }
+  is_closed_ = true;
 }
 
 bool TestBrowserWindow::IsActive() const {
