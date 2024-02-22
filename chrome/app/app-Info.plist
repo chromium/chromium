@@ -243,6 +243,8 @@
 	<string>${CHROMIUM_MIN_SYSTEM_VERSION}</string>
 	<key>LSRequiresNativeExecution</key>
 	<true/>
+	<key>NSCameraReactionEffectGesturesEnabledDefault</key>
+	<false/>
 	<key>NSPrincipalClass</key>
 	<string>BrowserCrApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
