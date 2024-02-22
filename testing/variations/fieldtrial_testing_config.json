@@ -14360,6 +14360,27 @@
             ]
         }
     ],
+    "ReadAloudAppMenuIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ReadAloudAppMenuIPHEnabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:read_aloud_app_menu_iph_trigger;comparator:==0;window:30;storage:90",
+                        "event_used": "name:read_aloud_app_menu_pressed;comparator:==0;window:30;storage:90",
+                        "session_rate": "any"
+                    },
+                    "enable_features": [
+                        "IPH_ReadAloudAppMenuFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAloudClankStudy": [
         {
             "platforms": [
