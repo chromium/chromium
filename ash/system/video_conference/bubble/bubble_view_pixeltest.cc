@@ -67,7 +67,8 @@ class BubbleViewPixelTest
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features{
         features::kVideoConference, features::kCameraEffectsSupportedByHardware,
-        chromeos::features::kJelly};
+        ::features::kChromeRefresh2023, ::features::kChromeRefreshSecondary2023,
+        ::features::kChromeRefresh2023NTB};
     std::vector<base::test::FeatureRef> disabled_features{};
     if (IsVcDlcUiEnabled()) {
       enabled_features.push_back(features::kVcDlcUi);
@@ -218,7 +219,7 @@ TEST_P(BubbleViewPixelTest, Basic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_basic",
-      /*revision_number=*/8, bubble_view()));
+      /*revision_number=*/9, bubble_view()));
 }
 
 // Pixel test that tests toggled on/off and focused/not focused for the toggle
