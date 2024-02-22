@@ -163,8 +163,7 @@ class BASE_EXPORT BigEndianReader {
   bool ReadU16LengthPrefixed(base::StringPiece* out);
 
  private:
-  // TODO(danakj): Switch to raw_span in its own CL.
-  span<const uint8_t> buffer_;
+  raw_span<const uint8_t> buffer_;
 };
 
 // Allows writing integers in network order (big endian) while iterating over
