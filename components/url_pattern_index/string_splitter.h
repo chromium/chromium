@@ -6,10 +6,10 @@
 #define COMPONENTS_URL_PATTERN_INDEX_STRING_SPLITTER_H_
 
 #include <iterator>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 
 namespace url_pattern_index {
 
@@ -26,32 +26,22 @@ class StringSplitter {
   class Iterator {
    public:
     using iterator_category = std::input_iterator_tag;
-    using value_type = base::StringPiece;
+    using value_type = std::string_view;
     using difference_type = std::ptrdiff_t;
-    using pointer = base::StringPiece*;
-    using reference = base::StringPiece&;
-
-    // Creates an iterator, which points to the leftmost token within the
-    // |splitter|'s |text|, starting from |head|.
-    Iterator(const StringSplitter& splitter,
-             base::StringPiece::const_iterator head)
-        : splitter_(&splitter),
-          current_(head, head),
-          end_(splitter.text_.end()) {
-      DCHECK_GE(head, splitter_->text_.begin());
-      DCHECK_LE(head, end_);
-
-      Advance();
-    }
+    using pointer = std::string_view*;
+    using reference = std::string_view&;
 
     bool operator==(const Iterator& rhs) const {
-      return current_.begin() == rhs.current_.begin();
+      DCHECK_EQ(splitter_, rhs.splitter_);
+      // If `current_` starts at the same position, all the other locations will
+      // match.
+      return current_.data() == rhs.current_.data();
     }
 
     bool operator!=(const Iterator& rhs) const { return !operator==(rhs); }
 
-    base::StringPiece operator*() const { return current_; }
-    const base::StringPiece* operator->() const { return &current_; }
+    std::string_view operator*() const { return current_; }
+    const std::string_view* operator->() const { return &current_; }
 
     Iterator& operator++() {
       Advance();
@@ -65,41 +55,57 @@ class StringSplitter {
     }
 
    private:
+    friend class StringSplitter<IsSeparator>;
+
+    // Creates an iterator, which points to the leftmost token within
+    // `remaining`, which must be a suffix of `splitter`'s `text`.
+    Iterator(const StringSplitter& splitter, std::string_view remaining)
+        : splitter_(&splitter), remaining_(remaining) {
+      DCHECK_LE(splitter_->text_.data(), remaining_.data());
+      DCHECK_EQ(splitter_->text_.data() + splitter_->text_.size(),
+                remaining_.data() + remaining_.size());
+      Advance();
+    }
+
     void Advance() {
-      base::StringPiece::const_iterator begin = current_.end();
-      while (begin != end_ && splitter_->is_separator_(*begin))
+      std::string_view::const_iterator begin = remaining_.begin();
+      while (begin != remaining_.end() && splitter_->is_separator_(*begin)) {
         ++begin;
-      base::StringPiece::const_iterator end = begin;
-      while (end != end_ && !splitter_->is_separator_(*end))
+      }
+      std::string_view::const_iterator end = begin;
+      while (end != remaining_.end() && !splitter_->is_separator_(*end)) {
         ++end;
-      current_ = base::StringPiece(begin, end);
+      }
+      current_ = std::string_view(begin, end);
+      remaining_ = std::string_view(end, remaining_.end());
     }
 
     raw_ptr<const StringSplitter<IsSeparator>> splitter_;
 
     // Contains the token currently pointed to by the iterator.
-    base::StringPiece current_;
-    // Always points to the text_.end().
-    base::StringPiece::const_iterator end_;
+    std::string_view current_;
+    // Contains the remaining text, starting from the current token and ending
+    // at `text_.end()`.
+    std::string_view remaining_;
   };
 
   // Constructs a splitter for iterating over non-empty tokens contained in the
-  // |text|. |is_separator| predicate is used to determine whether a certain
+  // `text`. `is_separator` predicate is used to determine whether a certain
   // character is a separator.
-  StringSplitter(base::StringPiece text,
-                 IsSeparator is_separator = IsSeparator())
+  explicit StringSplitter(std::string_view text,
+                          IsSeparator is_separator = IsSeparator())
       : text_(text), is_separator_(is_separator) {}
 
-  Iterator begin() const { return Iterator(*this, text_.begin()); }
-  Iterator end() const { return Iterator(*this, text_.end()); }
+  Iterator begin() const { return Iterator(*this, text_); }
+  Iterator end() const { return Iterator(*this, text_.substr(text_.size())); }
 
  private:
-  base::StringPiece text_;
+  std::string_view text_;
   IsSeparator is_separator_;
 };
 
 template <typename IsSeparator>
-StringSplitter<IsSeparator> CreateStringSplitter(base::StringPiece text,
+StringSplitter<IsSeparator> CreateStringSplitter(std::string_view text,
                                                  IsSeparator is_separator) {
   return StringSplitter<IsSeparator>(text, is_separator);
 }
