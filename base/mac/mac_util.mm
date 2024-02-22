@@ -412,16 +412,22 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
   NSString* url = nil;
   NSString* pane_file = nil;
   NSData* subpane_data = nil;
-  // Note: On macOS 13 and later, System Settings are implemented with app
-  // extensions found at /System/Library/ExtensionKit/Extensions/. URLs to open
-  // them are constructed with a scheme of "x-apple.systempreferences" and a
-  // body of the the bundle ID of the app extension. (In the Info.plist there is
-  // an EXAppExtensionAttributes dictionary with legacy identifiers, but given
-  // that those are explicitly named "legacy", this code prefers to use the
-  // bundle IDs for the URLs it uses.) It is not yet known how to definitively
-  // identify the query string used to open sub-panes; the ones used below were
+  // On macOS 13 and later, System Settings are implemented with app extensions
+  // found at /System/Library/ExtensionKit/Extensions/. URLs to open them are
+  // constructed with a scheme of "x-apple.systempreferences" and a body of the
+  // the bundle ID of the app extension. (In the Info.plist there is an
+  // EXAppExtensionAttributes dictionary with legacy identifiers, but given that
+  // those are explicitly named "legacy", this code prefers to use the bundle
+  // IDs for the URLs it uses.) It is not yet known how to definitively identify
+  // the query string used to open sub-panes; the ones used below were
   // determined from historical usage, disassembly of related code, and
-  // guessing. Clarity was requested from Apple in FB11753405.
+  // guessing. Clarity was requested from Apple in FB11753405. The current best
+  // guess is to analyze the method named -revealElementForKey:, but because
+  // the extensions are all written in Swift it's hard to confirm this is
+  // correct or to use this knowledge.
+  //
+  // For macOS 12 and earlier, to determine the `subpane_data`, find a method
+  // named -handleOpenParameter: which takes an AEDesc as a parameter.
   switch (pane) {
     case SystemSettingsPane::kAccessibility_Captions:
       if (MacOSMajorVersion() >= 13) {
