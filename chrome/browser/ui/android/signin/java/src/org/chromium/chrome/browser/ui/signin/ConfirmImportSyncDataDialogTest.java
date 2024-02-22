@@ -162,11 +162,21 @@ public class ConfirmImportSyncDataDialogTest {
 
     @Test
     @MediumTest
-    public void testForNonDisplayableAccountEmail() {
-        showConfirmImportSyncDataDialog(
-                (String email) -> {
-                    return false;
+    public void testForNonDisplayableAccountEmail_noSplitStoresAndUPMForLocal() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialogCoordinator =
+                            new ConfirmImportSyncDataDialogCoordinator(
+                                    sActivityTestRule.getActivity(),
+                                    mDialogManager,
+                                    mListenerMock,
+                                    "old.testaccount@gmail.com",
+                                    "new.testaccount@gmail.com",
+                                    /* checkIfDisplayableEmailAddress= */ email -> false,
+                                    /* isCurrentAccountManaged= */ false,
+                                    /* usesSplitStoresAndUPMForLocal= */ false);
                 });
+
         final Activity activity = sActivityTestRule.getActivity();
         final String defaultAccountName =
                 activity.getString(R.string.default_google_account_username);
@@ -176,6 +186,85 @@ public class ConfirmImportSyncDataDialogTest {
                 activity.getString(R.string.sync_import_data_prompt, "old.testaccount@gmail.com");
         onView(withText(expectedString)).check(matches(isDisplayed()));
         onView(withText(unexpectedString)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testForNonDisplayableAccountEmail_usesSplitStoresAndUPMForLocal() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialogCoordinator =
+                            new ConfirmImportSyncDataDialogCoordinator(
+                                    sActivityTestRule.getActivity(),
+                                    mDialogManager,
+                                    mListenerMock,
+                                    "old.testaccount@gmail.com",
+                                    "new.testaccount@gmail.com",
+                                    /* checkIfDisplayableEmailAddress= */ email -> false,
+                                    /* isCurrentAccountManaged= */ false,
+                                    /* usesSplitStoresAndUPMForLocal= */ true);
+                });
+
+        final Activity activity = sActivityTestRule.getActivity();
+        final String defaultAccountName =
+                activity.getString(R.string.default_google_account_username);
+        final String expectedString =
+                activity.getString(
+                        R.string.sync_import_data_prompt_without_passwords, defaultAccountName);
+        final String unexpectedString =
+                activity.getString(
+                        R.string.sync_import_data_prompt_without_passwords,
+                        "old.testaccount@gmail.com");
+        onView(withText(expectedString)).check(matches(isDisplayed()));
+        onView(withText(unexpectedString)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testTextForNonManagedAccount_noSplitStoresAndUPMForLocal() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialogCoordinator =
+                            new ConfirmImportSyncDataDialogCoordinator(
+                                    sActivityTestRule.getActivity(),
+                                    mDialogManager,
+                                    mListenerMock,
+                                    "old.testaccount@gmail.com",
+                                    "new.testaccount@gmail.com",
+                                    /* isCurrentAccountManaged= */ false,
+                                    /* usesSplitStoresAndUPMForLocal= */ false);
+                });
+
+        String expectedText =
+                sActivityTestRule
+                        .getActivity()
+                        .getString(R.string.sync_import_data_prompt, "old.testaccount@gmail.com");
+        onView(withText(expectedText)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testTextForNonManagedAccount_withSplitStoresAndUPMForLocal() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialogCoordinator =
+                            new ConfirmImportSyncDataDialogCoordinator(
+                                    sActivityTestRule.getActivity(),
+                                    mDialogManager,
+                                    mListenerMock,
+                                    "old.testaccount@gmail.com",
+                                    "new.testaccount@gmail.com",
+                                    /* isCurrentAccountManaged= */ false,
+                                    /* usesSplitStoresAndUPMForLocal= */ true);
+                });
+
+        String expectedText =
+                sActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.sync_import_data_prompt_without_passwords,
+                                "old.testaccount@gmail.com");
+        onView(withText(expectedText)).check(matches(isDisplayed()));
     }
 
     private void showConfirmImportSyncDataDialog(boolean isCurrentAccountManaged) {
@@ -188,7 +277,8 @@ public class ConfirmImportSyncDataDialogTest {
                                     mListenerMock,
                                     "old.testaccount@gmail.com",
                                     "new.testaccount@gmail.com",
-                                    isCurrentAccountManaged);
+                                    isCurrentAccountManaged,
+                                    /* usesSplitStoresAndUPMForLocal= */ false);
                 });
     }
 
@@ -203,7 +293,8 @@ public class ConfirmImportSyncDataDialogTest {
                                     "old.testaccount@gmail.com",
                                     "new.testaccount@gmail.com",
                                     checkIfDisplayableEmailAddress,
-                                    false);
+                                    /* isCurrentAccountManaged= */ false,
+                                    /* usesSplitStoresAndUPMForLocal= */ false);
                 });
     }
 }
