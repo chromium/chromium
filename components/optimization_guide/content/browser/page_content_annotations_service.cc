@@ -391,7 +391,8 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
     const BatchAnnotationResult result = batch_result[i];
     DCHECK_EQ(type, result.type());
 
-    if (optimization_guide_logger_) {
+    if (optimization_guide_logger_ &&
+        optimization_guide_logger_->ShouldEnableDebugLogs()) {
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
           optimization_guide_logger_)
@@ -480,7 +481,8 @@ void PageContentAnnotationsService::BatchAnnotate(
           [](BatchAnnotationCallback original_callback,
              OptimizationGuideLogger* optimization_guide_logger,
              const std::vector<BatchAnnotationResult>& batch_result) {
-            if (optimization_guide_logger) {
+            if (optimization_guide_logger &&
+                optimization_guide_logger->ShouldEnableDebugLogs()) {
               for (const BatchAnnotationResult& result : batch_result) {
                 OPTIMIZATION_GUIDE_LOGGER(
                     optimization_guide_common::mojom::LogSource::
@@ -987,7 +989,8 @@ void PageContentAnnotationsService::OnEntityMetadataRetrieved(
         page_entity_collection);
   }
 
-  if (optimization_guide_logger_) {
+  if (optimization_guide_logger_ &&
+      optimization_guide_logger_->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
         optimization_guide_logger_)
