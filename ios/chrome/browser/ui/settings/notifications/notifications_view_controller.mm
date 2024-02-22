@@ -32,10 +32,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // All the items for the price notifications section received by mediator.
 @property(nonatomic, strong) TableViewItem* priceTrackingItem;
 // All the items for the content notifications section received by mediator.
-@property(nonatomic, strong) TableViewSwitchItem* contentNotificationsItem;
-// Content Notifications footer item received by the mediator.
-@property(nonatomic, strong)
-    TableViewHeaderFooterItem* contentNotificationsFooterItem;
+@property(nonatomic, strong) TableViewItem* contentNotificationsItem;
 // All the items for the tips notifications section received by mediator.
 @property(nonatomic, strong) TableViewSwitchItem* tipsNotificationsItem;
 // Tips Notifications footer item received by the mediator.
@@ -78,8 +75,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     [model addSectionWithIdentifier:SectionIdentifierNotificationsContent];
     [model addItem:self.contentNotificationsItem
         toSectionWithIdentifier:SectionIdentifierNotificationsContent];
-    [model setFooter:self.contentNotificationsFooterItem
-        forSectionWithIdentifier:SectionIdentifierNotificationsContent];
   }
   if (IsIOSTipsNotificationsEnabled()) {
     [model addSectionWithIdentifier:SectionIdentifierNotificationsTips];

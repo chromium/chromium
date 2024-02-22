@@ -38,9 +38,7 @@ enum class PushNotificationClientId;
 @property(nonatomic, weak) id<NotificationsNavigationCommands> handler;
 
 // Handler for displaying notification related alerts.
-@property(nonatomic, weak)
-    id<NotificationsAlertPresenter, TipsNotificationsAlertPresenter>
-        presenter;
+@property(nonatomic, weak) id<TipsNotificationsAlertPresenter> presenter;
 
 // Called after a user disallows notification permissions.
 - (void)deniedPermissionsForClientIds:

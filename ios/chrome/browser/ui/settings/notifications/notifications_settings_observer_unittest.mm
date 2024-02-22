@@ -71,4 +71,9 @@ TEST_F(NotificationsSettingsObserverTest,
                                 PushNotificationClientId::kContent]);
   TurnOnNotificationForKey(kContentNotificationKey);
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
+
+  OCMExpect([mock_delegate_ notificationsSettingsDidChangeForClient:
+                                PushNotificationClientId::kSports]);
+  TurnOnNotificationForKey(kSportsNotificationKey);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }

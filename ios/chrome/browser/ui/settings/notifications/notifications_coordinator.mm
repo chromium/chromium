@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
+#import "ios/chrome/browser/ui/settings/notifications/content_notifications/content_notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
@@ -32,6 +33,7 @@
 @interface NotificationsCoordinator () <
     NotificationsNavigationCommands,
     NotificationsViewControllerPresentationDelegate,
+    ContentNotificationsCoordinatorDelegate,
     TrackingPriceCoordinatorDelegate,
     NotificationsOptInAlertCoordinatorDelegate>
 
@@ -39,6 +41,9 @@
 @property(nonatomic, strong) NotificationsViewController* viewController;
 // Notifications settings mediator.
 @property(nonatomic, strong) NotificationsMediator* mediator;
+// Coordinator for Content settings menu.
+@property(nonatomic, strong)
+    ContentNotificationsCoordinator* contentNotificationsCoordinator;
 // Coordinator for Tracking Price settings menu.
 @property(nonatomic, strong) TrackingPriceCoordinator* trackingPriceCoordinator;
 // An observer that tracks whether push notification permission settings have
@@ -99,19 +104,6 @@
 
 #pragma mark - NotificationsAlertPresenter
 
-- (void)presentPushNotificationPermissionAlert {
-  [_optInAlertCoordinator stop];
-  _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  _optInAlertCoordinator.clientIds =
-      std::vector{PushNotificationClientId::kContent};
-  _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
-  _optInAlertCoordinator.delegate = self;
-  [_optInAlertCoordinator start];
-}
-
 - (void)presentTipsNotificationPermissionAlert {
   [_optInAlertCoordinator stop];
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
@@ -126,6 +118,17 @@
 }
 
 #pragma mark - NotificationsNavigationCommands
+
+- (void)showContent {
+  DCHECK(!self.contentNotificationsCoordinator);
+  DCHECK(self.baseNavigationController);
+  self.contentNotificationsCoordinator =
+      [[ContentNotificationsCoordinator alloc]
+          initWithBaseNavigationController:self.baseNavigationController
+                                   browser:self.browser];
+  self.contentNotificationsCoordinator.delegate = self;
+  [self.contentNotificationsCoordinator start];
+}
 
 - (void)showTrackingPrice {
   DCHECK(!self.trackingPriceCoordinator);
@@ -143,6 +146,16 @@
     (NotificationsViewController*)controller {
   DCHECK_EQ(self.viewController, controller);
   [self.delegate notificationsCoordinatorDidRemove:self];
+}
+
+#pragma mark - ContentNotificationsCoordinatorDelegate
+
+- (void)contentNotificationsCoordinatorDidRemove:
+    (ContentNotificationsCoordinator*)coordinator {
+  DCHECK_EQ(self.contentNotificationsCoordinator, coordinator);
+  [self.contentNotificationsCoordinator stop];
+  self.contentNotificationsCoordinator.delegate = nil;
+  self.contentNotificationsCoordinator = nil;
 }
 
 #pragma mark - TrackingPriceCoordinatorDelegate

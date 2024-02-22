@@ -28,6 +28,9 @@
 
   // YES if content notification is enabled.
   BOOL _contentNotificationEnabled;
+
+  // YES if sports notification is enabled.
+  BOOL _sportsNotificationEnabled;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
@@ -50,6 +53,10 @@
     _contentNotificationEnabled =
         _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
             .FindBool(kContentNotificationKey)
+            .value_or(false);
+    _contentNotificationEnabled =
+        _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+            .FindBool(kSportsNotificationKey)
             .value_or(false);
   }
 
@@ -74,6 +81,11 @@
       _contentNotificationEnabled = [self isContentNotificationEnabled];
       [self.delegate notificationsSettingsDidChangeForClient:
                          PushNotificationClientId::kContent];
+    } else if (_sportsNotificationEnabled !=
+               [self isSportsNotificationEnabled]) {
+      _sportsNotificationEnabled = [self isSportsNotificationEnabled];
+      [self.delegate notificationsSettingsDidChangeForClient:
+                         PushNotificationClientId::kSports];
     }
   }
 }
@@ -89,6 +101,12 @@
 - (BOOL)isContentNotificationEnabled {
   return _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
       .FindBool(kContentNotificationKey)
+      .value_or(false);
+}
+
+- (BOOL)isSportsNotificationEnabled {
+  return _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+      .FindBool(kSportsNotificationKey)
       .value_or(false);
 }
 

@@ -20,10 +20,6 @@
 // Initializes the content notifications item.
 - (void)setContentNotificationsItem:(TableViewItem*)contentNotificationsItem;
 
-// Initializes the content notifications footer item.
-- (void)setContentNotificationsFooterItem:
-    (TableViewHeaderFooterItem*)contentNotificationsFooterItem;
-
 // Initializes the tips notifications item.
 - (void)setTipsNotificationsItem:(TableViewItem*)tipsNotificationsItem;
 

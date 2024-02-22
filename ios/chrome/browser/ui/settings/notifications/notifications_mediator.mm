@@ -37,7 +37,6 @@
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTrackingPrice = kItemTypeEnumZero,
   ItemTypeContentNotifications,
-  ItemTypeContentNotificationsFooter,
   ItemTypeTipsNotifications,
   ItemTypeTipsNotificationsFooter,
 };
@@ -47,11 +46,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // All the items for the price notifications section.
 @property(nonatomic, strong, readonly) TableViewItem* priceTrackingItem;
 // Items for the Content Notifications settings.
-@property(nonatomic, strong, readonly)
-    TableViewSwitchItem* contentNotificationsItem;
-// Item for the Content Notifications footer.
-@property(nonatomic, strong)
-    TableViewLinkHeaderFooterItem* contentNotificationsFooterItem;
+@property(nonatomic, strong, readonly) TableViewItem* contentNotificationsItem;
 // Items for the Tips Notifications settings.
 @property(nonatomic, strong, readonly)
     TableViewSwitchItem* tipsNotificationsItem;
@@ -105,43 +100,33 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                l10n_util::GetNSString(
                                    IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE)
                      detailText:nil
-                         symbol:kDownTrendSymbol
+                         symbol:CustomSettingsRootSymbol(kDownTrendSymbol)
+                     symbolTint:UIColor.whiteColor
           symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
         accessibilityIdentifier:kSettingsNotificationsPriceTrackingCellId];
     [self updateDetailTextForItem:_priceTrackingItem
-                     withClientID:PushNotificationClientId::kCommerce];
+                    withClientIDs:{PushNotificationClientId::kCommerce}];
   }
   return _priceTrackingItem;
 }
 
-- (TableViewSwitchItem*)contentNotificationsItem {
+- (TableViewItem*)contentNotificationsItem {
   if (!_contentNotificationsItem) {
     _contentNotificationsItem = [self
-             switchItemWithType:ItemTypeContentNotifications
+             detailItemWithType:ItemTypeContentNotifications
                            text:
                                l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE)
+                     detailText:nil
                          symbol:DefaultSettingsRootSymbol(kNewspaperSFSymbol)
                      symbolTint:UIColor.whiteColor
           symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
-              symbolBorderWidth:0
         accessibilityIdentifier:kSettingsNotificationsContentCellId];
-    _contentNotificationsItem.on = push_notification_settings::
-        GetMobileNotificationPermissionStatusForClient(
-            PushNotificationClientId::kContent, _gaiaID);
+    [self updateDetailTextForItem:_contentNotificationsItem
+                    withClientIDs:{PushNotificationClientId::kContent,
+                                   PushNotificationClientId::kSports}];
   }
   return _contentNotificationsItem;
-}
-
-- (TableViewLinkHeaderFooterItem*)contentNotificationsFooterItem {
-  if (!_contentNotificationsFooterItem) {
-    _contentNotificationsFooterItem = [[TableViewLinkHeaderFooterItem alloc]
-        initWithType:ItemTypeContentNotificationsFooter];
-    _contentNotificationsFooterItem.text = l10n_util::GetNSString(
-        IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_FOOTER_TEXT);
-  }
-
-  return _contentNotificationsFooterItem;
 }
 
 - (TableViewSwitchItem*)tipsNotificationsItem {
@@ -186,8 +171,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _consumer = consumer;
   [_consumer setPriceTrackingItem:self.priceTrackingItem];
   [_consumer setContentNotificationsItem:self.contentNotificationsItem];
-  [_consumer
-      setContentNotificationsFooterItem:self.contentNotificationsFooterItem];
   if (IsIOSTipsNotificationsEnabled()) {
     [_consumer setTipsNotificationsItem:self.tipsNotificationsItem];
     [_consumer setTipsNotificationsFooterItem:self.tipsNotificationsFooterItem];
@@ -200,7 +183,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewDetailIconItem*)detailItemWithType:(NSInteger)type
                                           text:(NSString*)text
                                     detailText:(NSString*)detailText
-                                        symbol:(NSString*)symbol
+                                        symbol:(UIImage*)symbol
+                                    symbolTint:(UIColor*)tint
                          symbolBackgroundColor:(UIColor*)backgroundColor
                        accessibilityIdentifier:
                            (NSString*)accessibilityIdentifier {
@@ -211,8 +195,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   detailItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
-  detailItem.iconImage = CustomSettingsRootSymbol(symbol);
-  detailItem.iconTintColor = UIColor.whiteColor;
+  detailItem.iconImage = symbol;
+  detailItem.iconTintColor = tint;
   detailItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   detailItem.iconBackgroundColor = backgroundColor;
 
@@ -244,13 +228,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // 'On/Off' to match the change to the client's push notification permission
 // state.
 - (void)updateDetailTextForItem:(TableViewItem*)item
-                   withClientID:(PushNotificationClientId)clientID {
+                  withClientIDs:
+                      (std::vector<PushNotificationClientId>)clientIDs {
   DCHECK(item);
   TableViewDetailIconItem* iconItem =
       base::apple::ObjCCastStrict<TableViewDetailIconItem>(item);
-  push_notification_settings::ClientPermissionState permissionState =
-      push_notification_settings::GetClientPermissionState(clientID, _gaiaID,
-                                                           _prefService);
+  push_notification_settings::ClientPermissionState permissionState;
+  permissionState =
+      push_notification_settings::GetClientPermissionStateForMultipleClients(
+          clientIDs, _gaiaID, _prefService);
   NSString* detailText = nil;
   if (permissionState ==
       push_notification_settings::ClientPermissionState::ENABLED) {
@@ -269,17 +255,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)didToggleSwitchItem:(TableViewSwitchItem*)item withValue:(BOOL)value {
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
-    case ItemTypeContentNotifications: {
-      if (value) {
-        [self.presenter presentPushNotificationPermissionAlert];
-      } else {
-        [self disablePreferenceFor:PushNotificationClientId::kContent];
-        self.contentNotificationsItem.on = push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kContent, _gaiaID);
-      }
-      break;
-    }
     case ItemTypeTipsNotifications: {
       if (value) {
         [self.presenter presentTipsNotificationPermissionAlert];
@@ -305,6 +280,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.handler showTrackingPrice];
       break;
     case ItemTypeContentNotifications:
+      [self.handler showContent];
+      break;
     case ItemTypeTipsNotifications:
       break;
     default:
@@ -319,12 +296,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
     (PushNotificationClientId)clientID {
   switch (clientID) {
     case PushNotificationClientId::kCommerce: {
-      [self updateDetailTextForItem:_priceTrackingItem withClientID:clientID];
+      [self updateDetailTextForItem:_priceTrackingItem
+                      withClientIDs:{clientID}];
       break;
     }
-    case PushNotificationClientId::kTips:
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports: {
+      [self updateDetailTextForItem:_contentNotificationsItem
+                      withClientIDs:{PushNotificationClientId::kSports,
+                                     PushNotificationClientId::kContent}];
+      break;
+    }
+    case PushNotificationClientId::kTips: {
       break;
     }
   }
@@ -343,11 +326,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewSwitchItem*)switchItemForClientId:
     (PushNotificationClientId)clientId {
   switch (clientId) {
-    case PushNotificationClientId::kContent:
-      return _contentNotificationsItem;
     case PushNotificationClientId::kTips:
       return _tipsNotificationsItem;
     case PushNotificationClientId::kCommerce:
+    case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
       // Not a switch.
       NOTREACHED_NORETURN();
