@@ -44,10 +44,6 @@
     position: relative;
   }
 
-  :host-context(body.revamp-wayfinding-enabled) #container {
-    padding-top: 8px;
-  }
-
   #left,
   #center,
   #right {
@@ -83,7 +79,9 @@
   }
 
   :host-context(body.revamp-wayfinding-enabled) #center  {
+    box-sizing: border-box;
     height: 100%;
+    padding-top: 8px;
   }
 
   /* Take up all remaining vertical space. */
