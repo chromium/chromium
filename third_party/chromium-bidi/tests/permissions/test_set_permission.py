@@ -39,48 +39,44 @@ async def test_permissions_set_permission(websocket, context_id, example_url):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="See chromium-bidi/issues#1610")
 async def test_permissions_set_permission_in_user_context(
-        websocket, context_id, example_url):
+        websocket, context_id, example_url, create_context):
     await goto_url(websocket, context_id, example_url)
 
-    user_context = await execute_command(websocket, {
+    user_context_id = (await execute_command(websocket, {
         "method": "browser.createUserContext",
         "params": {}
-    })
+    }))["userContext"]
 
-    browsing_context = await execute_command(
-        websocket, {
-            "method": "browsingContext.create",
-            "params": {
-                "type": "tab",
-                "userContext": user_context["userContext"]
-            }
-        })
-
+    another_browsing_context_id = await create_context(
+        user_context_id=user_context_id)
     origin = get_origin(example_url)
 
-    await goto_url(websocket, browsing_context['context'], example_url)
+    await goto_url(websocket, another_browsing_context_id, example_url)
 
+    # Both contexts have the same default permission state (prompt).
     assert await query_permission(websocket, context_id,
                                   'geolocation') == 'prompt'
-    assert await query_permission(websocket, browsing_context['context'],
+    assert await query_permission(websocket, another_browsing_context_id,
                                   'geolocation') == 'prompt'
 
+    # Permission changes in one context do not affect another.
     resp = await set_permission(websocket,
                                 origin, {'name': 'geolocation'},
                                 'granted',
-                                user_context=user_context["userContext"])
+                                user_context=user_context_id)
     assert resp == {}
     assert await query_permission(websocket, context_id,
                                   'geolocation') == 'prompt'
-    assert await query_permission(websocket, browsing_context['context'],
+    assert await query_permission(websocket, another_browsing_context_id,
                                   'geolocation') == 'granted'
 
+    # Permission can be set back to the original value.
     resp = await set_permission(websocket,
                                 origin, {'name': 'geolocation'},
                                 'prompt',
-                                user_context=user_context["userContext"])
+                                user_context=user_context_id)
     assert resp == {}
     assert await query_permission(websocket, context_id,
                                   'geolocation') == 'prompt'
-    assert await query_permission(websocket, browsing_context['context'],
+    assert await query_permission(websocket, another_browsing_context_id,
                                   'geolocation') == 'prompt'
