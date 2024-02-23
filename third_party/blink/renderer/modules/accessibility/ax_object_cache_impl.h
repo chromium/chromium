@@ -473,6 +473,15 @@ class MODULES_EXPORT AXObjectCacheImpl
       AXID id,
       WebAXAutofillSuggestionAvailability suggestion_availability);
 
+  // Plugin support. These could in (along with the tree source/serializer
+  // fields) move to their own subclass of AXObject.
+  void AddPluginTreeToUpdate(ui::AXTreeUpdate* update);
+  ui::AXTreeSource<const ui::AXNode*>* GetPluginTreeSource();
+  void SetPluginTreeSource(ui::AXTreeSource<const ui::AXNode*>* source);
+  ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>*
+  GetPluginTreeSerializer();
+  void MarkPluginDescendantDirty(ui::AXNodeID node_id);
+
   std::pair<ax::mojom::blink::EventFrom, ax::mojom::blink::Action>
   active_event_from_data() const {
     return std::make_pair(active_event_from_, active_event_from_action_);
@@ -517,13 +526,12 @@ class MODULES_EXPORT AXObjectCacheImpl
           ax::mojom::blink::Action::kNone,
       const std::vector<ui::AXEventIntent>& event_intents = {}) override;
 
-  void SerializeDirtyObjectsAndEvents(WebPluginContainer* plugin_container,
-                                      std::vector<ui::AXTreeUpdate>& updates,
-                                      std::vector<ui::AXEvent>& events,
-                                      bool& had_end_of_test_event,
-                                      bool& had_load_complete_messages,
-                                      bool& need_to_send_location_changes,
-                                      bool& mark_plugin_subtree_dirty) override;
+  void SerializeDirtyObjectsAndEvents(
+      std::vector<ui::AXTreeUpdate>& updates,
+      std::vector<ui::AXEvent>& events,
+      bool& had_end_of_test_event,
+      bool& had_load_complete_messages,
+      bool& need_to_send_location_changes) override;
 
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                            std::vector<ui::AXNodeData*>& nodes) override;
@@ -1168,6 +1176,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXID image_data_node_id_ = ui::AXNodeData::kInvalidAXID;
 
   gfx::Size max_image_data_size_;
+
+  using PluginAXTreeSerializer =
+      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
+  // AXTreeSerializer's AXSourceNodeVectorType is not a vector<raw_ptr> due to
+  // performance regressions detected in blink_perf.accessibility tests.
+  RAW_PTR_EXCLUSION std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
+  raw_ptr<ui::AXTreeSource<const ui::AXNode*>> plugin_tree_source_;
 
   // So we can ensure the serialization pipeline never stalls with dirty objects
   // remaining to be serialized.

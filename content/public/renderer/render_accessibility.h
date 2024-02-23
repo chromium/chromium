@@ -19,24 +19,16 @@ class AXTreeID;
 
 namespace content {
 
+class PluginAXTreeActionTargetAdapter;
+
 // This interface exposes the accessibility tree for one RenderFrame.
 class CONTENT_EXPORT RenderAccessibility {
  public:
   virtual bool HasActiveDocument() const = 0;
-  virtual int GenerateAXID() = 0;
   virtual ui::AXMode GetAXMode() const = 0;
-
-  // These APIs allow a page with a single EMBED element to graft an
-  // accessibility tree for the plugin content, implemented as a
-  // PluginAXTreeSource, into the page's accessibility tree.
-
-  // TODO(accessibility): Consider caching the `AXTreeID` and returning a const
-  // reference to it, due to its large object size (128 bytes).
-  virtual ui::AXTreeID GetTreeIDForPluginHost() const = 0;
-  virtual void SetPluginTreeSource(PluginAXTreeSource* source) = 0;
-  virtual void MarkPluginDescendantDirty(ui::AXNodeID node_id) = 0;
-
   virtual void RecordInaccessiblePdfUkm() = 0;
+  virtual void SetPluginAXTreeActionTargetAdapter(
+      PluginAXTreeActionTargetAdapter* adapter) = 0;
 
  protected:
   ~RenderAccessibility() {}

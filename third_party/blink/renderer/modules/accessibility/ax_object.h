@@ -57,7 +57,9 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/gfx/geometry/quad_f.h"
 
 namespace gfx {
@@ -66,6 +68,7 @@ class Transform;
 
 namespace ui {
 struct AXActionData;
+class AXNode;
 struct AXNodeData;
 struct AXRelativeBounds;
 }

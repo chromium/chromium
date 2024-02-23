@@ -26,6 +26,9 @@
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
+#include "third_party/blink/public/web/web_ax_object.h"
+#include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -300,7 +303,10 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
       : PdfAccessibilityTree(render_frame,
                              action_handler,
                              image_fetcher,
-                             /*plugincontainer=*/nullptr) {}
+                             /*plugin_container=*/nullptr) {
+    ForcePluginAXObjectForTesting(blink::WebAXObject::FromWebNode(
+        render_frame->GetWebFrame()->GetDocument().Body()));
+  }
 
   ~TestPdfAccessibilityTree() override = default;
   TestPdfAccessibilityTree(const TestPdfAccessibilityTree&) = delete;
@@ -365,6 +371,14 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     page_info_.text_run_count = 0u;
     page_info_.char_count = 0u;
     page_info_.bounds = gfx::Rect(0, 0, 1, 1);
+  }
+
+  void TearDown() override {
+    // Ensure we clean up the PDF accessibility tree before the page closes
+    // since we directly set a plugin container.
+    pdf_accessibility_tree_->ForcePluginAXObjectForTesting(
+        blink::WebAXObject());
+    content::RenderViewTest::TearDown();
   }
 
   void CreatePdfAccessibilityTree(bool enable_screen_reader) {
@@ -441,6 +455,7 @@ TEST_F(PdfAccessibilityTreeTest, TestAccessibilityDisabledDuringPDFLoad) {
   WaitForThreadTasks();
   // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
   WaitForThreadDelayedTasks();
+  pdf_accessibility_tree_->ForcePluginAXObjectForTesting(blink::WebAXObject());
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
@@ -2309,8 +2324,8 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
     ui::AXActionData action_data;
     action_data.action = ax::mojom::Action::kShowContextMenu;
 
-    // This renderer is not actually attached to a real plugin.
-    EXPECT_FALSE(pdf_action_target->PerformAction(action_data));
+    // This PDF accessibility tree is attached to a body element.
+    EXPECT_TRUE(pdf_action_target->PerformAction(action_data));
   }
 }
 

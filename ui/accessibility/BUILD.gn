@@ -43,7 +43,7 @@ mojom_component("ax_features_mojo") {
 # A tiny subset of accessibility code that's allowed to be
 # included by Blink. The rule of thumb (for now) is that it's
 # anything platform-neutral (no platform/ directory) that
-# relates to a single accessibility node (no trees, etc.).
+# relates to data structs (actions, nodes, trees, etc) and interfaces. No heavy weight logic yet.
 component("ax_base") {
   defines = [ "AX_BASE_IMPLEMENTATION" ]
 
@@ -62,6 +62,7 @@ component("ax_base") {
     "ax_action_handler_base.h",
     "ax_action_handler_registry.cc",
     "ax_action_handler_registry.h",
+    "ax_action_target.h",
     "ax_base_export.h",
     "ax_bit_map.h",
     "ax_enum_util.cc",
@@ -89,6 +90,8 @@ component("ax_base") {
     "ax_tree_data.h",
     "ax_tree_id.cc",
     "ax_tree_id.h",
+    "ax_tree_source.h",
+    "ax_tree_source_observer.h",
     "ax_tree_update.cc",
     "ax_tree_update.h",
     "ax_tree_update_forward.h",
@@ -196,10 +199,8 @@ component("accessibility_internal") {
     "ax_tree_observer.h",
     "ax_tree_serializer.cc",
     "ax_tree_serializer.h",
-    "ax_tree_source.h",
     "ax_tree_source_annotator.h",
     "ax_tree_source_checker.h",
-    "ax_tree_source_observer.h",
     "ax_tree_update_util.cc",
     "ax_tree_update_util.h",
     "null_ax_action_target.cc",

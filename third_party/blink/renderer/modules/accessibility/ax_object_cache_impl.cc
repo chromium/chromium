@@ -118,6 +118,7 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h"
 #if DCHECK_IS_ON()
@@ -5146,13 +5147,11 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
 }
 
 void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
-    WebPluginContainer* plugin_container,
     std::vector<ui::AXTreeUpdate>& updates,
     std::vector<ui::AXEvent>& events,
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
-    bool& need_to_send_location_changes,
-    bool& should_reset_plugin_serializer) {
+    bool& need_to_send_location_changes) {
   HashSet<int32_t> already_serialized_ids;
   int redundant_serialization_count = 0;
 
@@ -5198,17 +5197,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     update.event_from = current_dirty_object->event_from;
     update.event_from_action = current_dirty_object->event_from_action;
     update.event_intents = current_dirty_object->event_intents;
-
-    // If there's a plugin, force the tree data to be generated in every
-    // message so the plugin can merge its own tree data changes.
-    if (plugin_container) {
-      update.has_tree_data = true;
-
-      if (!ax_tree_serializer_->IsInClientTree(
-              Get(plugin_container->GetElement()))) {
-        should_reset_plugin_serializer = true;
-      }
-    }
 
     bool success = ax_tree_serializer_->SerializeChanges(obj, &update);
 
@@ -5312,6 +5300,16 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   }
   updates.back().tree_checks->node_count = included_node_count_;
 #endif  // DCHECK_IS_ON()
+
+  // If there's a plugin, force the tree data to be generated in every
+  // message so the plugin can merge its own tree data changes.
+  // TODO(accessibility): consider moving into above loop if we decide to
+  // include within consistency checks.
+  if (plugin_tree_source_) {
+    for (auto& update : updates) {
+      AddPluginTreeToUpdate(&update);
+    }
+  }
 }
 
 #if DCHECK_IS_ON()
@@ -5835,6 +5833,83 @@ void AXObjectCacheImpl::SetAutofillSuggestionAvailability(
     autofill_suggestion_availability_map_.Set(id, suggestion_availability);
     MarkAXObjectDirty(ObjectFromAXID(id));
   }
+}
+
+void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
+  // Conceptually, a plugin tree "stitches" itself into an existing Blink
+  // accessibility node. For example, the node could be an <embed>. The plugin
+  // tree itself contains a root who's parent is the target of the stitching
+  // (e.g. the <embed> in the Blink accessibility tree). The plugin tree manages
+  // its own tree of nodes and the below logic handles how that gets integrated
+  // into Blink accessibility.
+
+  // If this update clears a subtree, we have to ensure we re-serialize the
+  // entire plugin tree.
+  bool reset_plugin_serializer = update->node_id_to_clear > 0;
+
+  // Search for the Blink accessibility node onto which we want to stitch the
+  // plugin tree.
+  for (ui::AXNodeData& node : update->nodes) {
+    if (node.role == ax::mojom::Role::kEmbeddedObject) {
+      // The plugin tree contains its own tree source, serializer pair. It isn't
+      // using Blink's source, serializer pair because its backing template tree
+      // source type is a pure AXNodeData.
+      CHECK(plugin_tree_source_);
+      CHECK(plugin_serializer_.get());
+      if (reset_plugin_serializer) {
+        plugin_serializer_->Reset();
+      }
+
+      const ui::AXNode* root = plugin_tree_source_->GetRoot();
+      if (!root) {
+        // The tree may not yet be ready.
+        continue;
+      }
+      node.child_ids.push_back(root->id());
+
+      // Serialize changes and integrate them into Blink accessibility's tree
+      // updates.
+      ui::AXTreeUpdate plugin_update;
+      plugin_serializer_->SerializeChanges(root, &plugin_update);
+
+      size_t old_count = update->nodes.size();
+      size_t new_count = plugin_update.nodes.size();
+      update->nodes.resize(old_count + new_count);
+      for (size_t i = 0; i < new_count; ++i) {
+        update->nodes[old_count + i] = plugin_update.nodes[i];
+      }
+
+      if (plugin_tree_source_->GetTreeData(&update->tree_data)) {
+        update->has_tree_data = true;
+      }
+      break;
+    }
+  }
+}
+
+ui::AXTreeSource<const ui::AXNode*>* AXObjectCacheImpl::GetPluginTreeSource() {
+  return plugin_tree_source_.get();
+}
+
+void AXObjectCacheImpl::SetPluginTreeSource(
+    ui::AXTreeSource<const ui::AXNode*>* source) {
+  if (plugin_tree_source_.get() == source) {
+    return;
+  }
+
+  plugin_tree_source_ = source;
+  plugin_serializer_ =
+      source ? std::make_unique<PluginAXTreeSerializer>(source) : nullptr;
+}
+
+ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>*
+AXObjectCacheImpl::GetPluginTreeSerializer() {
+  return plugin_serializer_.get();
+}
+
+void AXObjectCacheImpl::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
+  CHECK(plugin_tree_source_ && plugin_serializer_);
+  plugin_serializer_->MarkSubtreeDirty(node_id);
 }
 
 }  // namespace blink

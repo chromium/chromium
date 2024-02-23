@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/public/renderer/plugin_ax_tree_source.h"
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -97,12 +96,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // RenderAccessibility implementation.
   bool HasActiveDocument() const override;
-  int GenerateAXID() override;
   ui::AXMode GetAXMode() const override;
-  ui::AXTreeID GetTreeIDForPluginHost() const override;
-  void SetPluginTreeSource(PluginAXTreeSource* source) override;
-  void MarkPluginDescendantDirty(ui::AXNodeID node_id) override;
   void RecordInaccessiblePdfUkm() override;
+  void SetPluginAXTreeActionTargetAdapter(
+      PluginAXTreeActionTargetAdapter* adapter) override;
 
   // RenderFrameObserver implementation.
   void DidCreateNewDocument() override;
@@ -212,8 +209,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   bool SerializeUpdatesAndEvents(blink::WebDocument document,
                                  blink::WebAXObject root,
                                  std::vector<ui::AXEvent>& events,
-                                 std::vector<ui::AXTreeUpdate>& updates,
-                                 bool mark_plugin_subtree_dirty);
+                                 std::vector<ui::AXTreeUpdate>& updates);
 
   // The RenderAccessibilityManager that owns us.
   raw_ptr<RenderAccessibilityManager> render_accessibility_manager_;
@@ -227,12 +223,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Manages generated annotations of the AXTree.
   std::unique_ptr<AXAnnotatorsManager> ax_annotators_manager_;
 
-  using PluginAXTreeSerializer =
-      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
-  // AXTreeSerializer's AXSourceNodeVectorType is not a vector<raw_ptr> due to
-  // performance regressions detected in blink_perf.accessibility tests.
-  RAW_PTR_EXCLUSION std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
-  raw_ptr<PluginAXTreeSource> plugin_tree_source_;
+  raw_ptr<PluginAXTreeActionTargetAdapter> plugin_action_target_adapter_;
 
   // Token to return this token in the next IPC, so that RenderFrameHostImpl
   // can discard stale data, when the token does not match the expected token.

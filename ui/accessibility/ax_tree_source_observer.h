@@ -6,7 +6,7 @@
 #define UI_ACCESSIBILITY_AX_TREE_SOURCE_OBSERVER_H_
 
 #include "base/observer_list_types.h"
-#include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_base_export.h"
 
 namespace ui {
 
@@ -15,7 +15,7 @@ class AXTreeSource;
 
 // This is an interface for a class that observes changes to an `AXTreeSource`.
 template <typename AXNodeSource>
-class AX_EXPORT AXTreeSourceObserver : public base::CheckedObserver {
+class AX_BASE_EXPORT AXTreeSourceObserver : public base::CheckedObserver {
  public:
   ~AXTreeSourceObserver() override = default;
 

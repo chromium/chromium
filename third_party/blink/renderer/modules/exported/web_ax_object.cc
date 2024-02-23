@@ -1003,6 +1003,20 @@ void WebAXObject::HandleAutofillSuggestionAvailabilityChanged(
       suggestion_availability);
 }
 
+int WebAXObject::GenerateAXID() {
+  DCHECK(private_->GetDocument() && private_->GetDocument()->IsActive());
+  return private_->AXObjectCache().GenerateAXID();
+}
+
+void WebAXObject::SetPluginTreeSource(
+    ui::AXTreeSource<const ui::AXNode*>* source) {
+  private_->AXObjectCache().SetPluginTreeSource(source);
+}
+
+void WebAXObject::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
+  private_->AXObjectCache().MarkPluginDescendantDirty(node_id);
+}
+
 bool WebAXObject::CanCallAOMEventListenersForTesting() const {
   if (IsDetached())
     return false;
@@ -1070,7 +1084,18 @@ WebAXObject WebAXObject::FromWebNode(const WebNode& web_node) {
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   const Node* node = web_node.ConstUnwrap<Node>();
-  return cache ? WebAXObject(cache->Get(node)) : WebAXObject();
+
+  if (!cache) {
+    return WebAXObject();
+  }
+
+  // TODO: if this shouldn't be done by default, add a parameter passed by the
+  // caller.
+
+  // Since calls into this lookup might happen prior to the cache building
+  // everything from its backing objects like DOM, layout trees, force it here.
+  cache->UpdateAXForAllDocuments();
+  return WebAXObject(cache->Get(node));
 }
 
 // static
