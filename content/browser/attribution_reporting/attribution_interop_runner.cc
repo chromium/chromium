@@ -19,14 +19,14 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ref.h"
-#include "base/notreached.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -52,25 +52,25 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_report_sender.h"
+#include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
-#include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -146,139 +146,74 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
   return list;
 }
 
-class AttributionReportConverter {
- public:
-  explicit AttributionReportConverter(base::Time time_origin)
-      : time_origin_(time_origin) {}
+void AdjustEventLevelBody(base::Value::Dict& report_body,
+                          const base::Time time_origin) {
+  // Report IDs are a source of nondeterminism, so remove them.
+  report_body.Remove("report_id");
 
-  AttributionInteropOutput::Report ToOutput(const AttributionReport& report,
-                                            bool is_debug_report) const {
-    base::Value::Dict report_body = report.ReportBody();
-
-    absl::visit(
-        base::Overloaded{
-            [&](const AttributionReport::AggregatableAttributionData&) {
-              // These fields normally encode a random GUID or the absolute time
-              // and therefore are sources of nondeterminism in the output.
-
-              // Output attribution_destination from the shared_info field.
-              std::optional<base::Value> shared_info =
-                  report_body.Extract("shared_info");
-              CHECK(shared_info.has_value());
-              std::string shared_info_str = shared_info->GetString();
-
-              std::optional<base::Value> shared_info_value =
-                  base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
-              CHECK(shared_info_value.has_value());
-              static constexpr char kKeyAttributionDestination[] =
-                  "attribution_destination";
-              std::optional<base::Value> attribution_destination =
-                  shared_info_value->GetDict().Extract(
-                      kKeyAttributionDestination);
-              CHECK(attribution_destination.has_value());
-              report_body.Set(kKeyAttributionDestination,
-                              std::move(*attribution_destination));
-
-              // The aggregation coordinator may be platform specific.
-              report_body.Remove("aggregation_coordinator_origin");
-
-              report_body.Set(
-                  "histograms",
-                  GetDecryptedPayloads(
-                      report_body.Extract("aggregation_service_payloads"),
-                      shared_info_str));
-            },
-            [&](const AttributionReport::EventLevelData&) {
-              AdjustEventLevelBody(report_body);
-            },
-            [](const AttributionReport::NullAggregatableData&) {
-              NOTREACHED_NORETURN();
-            },
-        },
-        report.data());
-
-    return MakeReport(base::Value(std::move(report_body)),
-                      report.ReportURL(is_debug_report));
+  // This field contains a string encoding seconds from the UNIX epoch. It
+  // needs to be adjusted relative to the simulator's origin time in order
+  // for test output to be consistent.
+  if (std::string* str = report_body.FindString("scheduled_report_time")) {
+    if (int64_t seconds; base::StringToInt64(*str, &seconds)) {
+      *str =
+          base::NumberToString(seconds - TimeOffset(time_origin).InSeconds());
+    }
   }
+}
 
-  AttributionInteropOutput::Report ToOutput(
-      const AttributionDebugReport& report) const {
-    base::Value::List report_body = report.ReportBody().Clone();
-    for (auto& value : report_body) {
-      if (base::Value::Dict* dict = value.GetIfDict()) {
+AttributionInteropOutput::Report MakeReport(const network::ResourceRequest& req,
+                                            const base::Time time_origin) {
+  std::optional<base::Value> value =
+      base::JSONReader::Read(network::GetUploadData(req), base::JSON_PARSE_RFC);
+  CHECK(value.has_value());
+
+  if (base::EndsWith(req.url.path_piece(), "/report-aggregate-attribution")) {
+    base::Value::Dict& report_body = value->GetDict();
+
+    // These fields normally encode a random GUID or the absolute time
+    // and therefore are sources of nondeterminism in the output.
+
+    // Output attribution_destination from the shared_info field.
+    std::optional<base::Value> shared_info = report_body.Extract("shared_info");
+    CHECK(shared_info.has_value());
+    std::string shared_info_str = shared_info->GetString();
+
+    std::optional<base::Value> shared_info_value =
+        base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
+    CHECK(shared_info_value.has_value());
+    static constexpr char kKeyAttributionDestination[] =
+        "attribution_destination";
+    std::optional<base::Value> attribution_destination =
+        shared_info_value->GetDict().Extract(kKeyAttributionDestination);
+    CHECK(attribution_destination.has_value());
+    report_body.Set(kKeyAttributionDestination,
+                    std::move(*attribution_destination));
+
+    // The aggregation coordinator may be platform specific.
+    report_body.Remove("aggregation_coordinator_origin");
+
+    report_body.Set("histograms",
+                    GetDecryptedPayloads(
+                        report_body.Extract("aggregation_service_payloads"),
+                        shared_info_str));
+  } else if (base::EndsWith(req.url.path_piece(),
+                            "/report-event-attribution")) {
+    AdjustEventLevelBody(value->GetDict(), time_origin);
+  } else if (req.url.path_piece() ==
+             "/.well-known/attribution-reporting/debug/verbose") {
+    for (auto& item : value->GetList()) {
+      if (base::Value::Dict* dict = item.GetIfDict()) {
         if (base::Value::Dict* body = dict->FindDict("body")) {
-          AdjustEventLevelBody(*body);
+          AdjustEventLevelBody(*body, time_origin);
         }
       }
     }
-
-    return MakeReport(base::Value(std::move(report_body)), report.ReportUrl());
   }
 
- private:
-  void AdjustEventLevelBody(base::Value::Dict& report_body) const {
-    // Report IDs are a source of nondeterminism, so remove them.
-    report_body.Remove("report_id");
-
-    // This field contains a string encoding seconds from the UNIX epoch. It
-    // needs to be adjusted relative to the simulator's origin time in order
-    // for test output to be consistent.
-    if (std::string* str = report_body.FindString("scheduled_report_time")) {
-      if (int64_t seconds; base::StringToInt64(*str, &seconds)) {
-        *str = base::NumberToString(seconds -
-                                    TimeOffset(time_origin_).InSeconds());
-      }
-    }
-  }
-
-  AttributionInteropOutput::Report MakeReport(base::Value payload,
-                                              const GURL& report_url) const {
-    return AttributionInteropOutput::Report(
-        base::Time::Now() - TimeOffset(time_origin_), report_url,
-        std::move(payload));
-  }
-
-  const base::Time time_origin_;
-};
-
-class FakeReportSender : public AttributionReportSender {
- public:
-  FakeReportSender(std::vector<AttributionInteropOutput::Report>* reports,
-                   base::Time time_origin)
-      : reports_(
-            raw_ref<std::vector<AttributionInteropOutput::Report>>::from_ptr(
-                reports)),
-        converter_(time_origin) {}
-
-  ~FakeReportSender() override = default;
-
-  FakeReportSender(const FakeReportSender&) = delete;
-  FakeReportSender(FakeReportSender&&) = delete;
-
-  FakeReportSender& operator=(const FakeReportSender&) = delete;
-  FakeReportSender& operator=(FakeReportSender&&) = delete;
-
- private:
-  // AttributionManagerImpl::ReportSender:
-  void SendReport(AttributionReport report,
-                  bool is_debug_report,
-                  ReportSentCallback sent_callback) override {
-    reports_->emplace_back(converter_.ToOutput(report, is_debug_report));
-
-    std::move(sent_callback)
-        .Run(std::move(report), SendResult(SendResult::Status::kSent,
-                                           /*http_response_code=*/200));
-  }
-
-  void SendReport(AttributionDebugReport report,
-                  DebugReportSentCallback done) override {
-    reports_->emplace_back(converter_.ToOutput(report));
-    std::move(done).Run(std::move(report), /*status=*/200);
-  }
-
-  raw_ref<std::vector<AttributionInteropOutput::Report>> reports_;
-  const AttributionReportConverter converter_;
-};
+  return AttributionInteropOutput::Report(
+      base::Time::Now() - TimeOffset(time_origin), req.url, std::move(*value));
+}
 
 class FakeCookieChecker : public AttributionCookieChecker {
  public:
@@ -491,6 +426,13 @@ RunAttributionInteropSimulation(base::Value::Dict input,
 
   AttributionInteropOutput output;
 
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        output.reports.emplace_back(MakeReport(req, time_origin));
+        test_url_loader_factory.AddResponse(req.url.spec(), /*content=*/"");
+      }));
+
   auto manager = AttributionManagerImpl::CreateForTesting(
       // Avoid creating an on-disk sqlite DB.
       /*user_data_directory=*/base::FilePath(),
@@ -499,7 +441,8 @@ RunAttributionInteropSimulation(base::Value::Dict input,
       AttributionStorageDelegateImpl::CreateForTesting(
           AttributionNoiseMode::kNone, AttributionDelayMode::kDefault, config),
       std::move(fake_cookie_checker),
-      std::make_unique<FakeReportSender>(&output.reports, time_origin),
+      std::make_unique<AttributionReportNetworkSender>(
+          test_url_loader_factory.GetSafeWeakWrapper()),
       std::make_unique<NoOpAttributionOsLevelManager>(), storage_partition,
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),

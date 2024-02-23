@@ -86,8 +86,7 @@ class AttributionReportNetworkSenderTest : public testing::Test {
   AttributionReportNetworkSenderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         network_sender_(std::make_unique<AttributionReportNetworkSender>(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_))) {}
+            test_url_loader_factory_.GetSafeWeakWrapper())) {}
 
  protected:
   // |task_environment_| must be initialized first.
