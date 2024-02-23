@@ -847,27 +847,35 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     iosurface_backing->EndAccess(readonly);
   }
 
+  // NOTE: If SharedTextureMemory::BeginAccess() succeeds, `texture` is
+  // guaranteed to be non-null.
   iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture_);
   return texture_.Get();
 }
 
 void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   if (!texture_) {
+    // The only valid case in which this could occur is if
+    // SharedTextureMemory::BeginAccess() failed, in which case we already
+    // called EndAccess() on the backing when we detected the failure.
     return;
   }
 
+  // Inform the backing that an access has ended so that it can properly update
+  // its state tracking.
   IOSurfaceImageBacking* iosurface_backing =
       static_cast<IOSurfaceImageBacking*>(backing());
-
+  const bool readonly = (usage_ & ~kReadOnlyUsage) == 0;
+  iosurface_backing->EndAccess(readonly);
   iosurface_backing->DecrementNumberOfOngoingWGPUTextureAccesses(texture_);
+
+  // However, if there is still an ongoing Dawn access on this texture,
+  // short-circuit out of doing any other work. In particular, do not consume
+  // fences or end the access at the level of SharedTextureMemory. That work
+  // will happen when the last ongoing Dawn access finishes.
   if (iosurface_backing->WGPUTextureHasOngoingAccess(texture_)) {
-    // If there is still an ongoing access on this texture, do not consume
-    // fences or end the access at the level of SharedTextureMemory. That work
-    // will happen when the last ongoing access finishes.
     return;
   }
-
-  const bool readonly = (usage_ & ~kReadOnlyUsage) == 0;
 
   wgpu::SharedTextureMemoryEndAccessState end_access_desc;
   CHECK(shared_texture_memory_.EndAccess(texture_.Get(), &end_access_desc));
@@ -917,8 +925,6 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
 
   texture_ = nullptr;
   usage_ = wgpu::TextureUsage::None;
-
-  iosurface_backing->EndAccess(readonly);
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
