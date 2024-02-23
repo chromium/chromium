@@ -32,15 +32,19 @@ const char kPageLoadInternalSoftNavigationOutcome[] =
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
-// "SoftNavigationOutcome" in tools/metrics/histograms/enums.xml.
+// "SoftNavigationOutcome" in tools/metrics/histograms/enums.xml. Note also that
+// these form a bitmask; future conditions should continue this pattern.
 // LINT.IfChange
 enum SoftNavigationOutcome {
   kSoftNavigationDetected = 0,
   kNoAncestorTask = 1,
-  kNoConditionsMet = 2,
-  kOnlyPaintConditionMet = 3,
-  kOnlyDomMoficationConditionMet = 4,
-  kMaxValue = kOnlyDomMoficationConditionMet,
+  kNoPaint = 2,
+  kNoAncestorTaskOrPaint = 3,
+  kNoDomModification = 4,
+  kNoAncestorOrDomModification = 5,
+  kNoPaintOrDomModification = 6,
+  kNoConditionsMet = 7,
+  kMaxValue = kNoConditionsMet,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SoftNavigationOutcome)
 
@@ -147,20 +151,22 @@ void SoftNavigationHeuristics::RecordUmaForNonSoftNavigationInteractions()
     const PerInteractionData& data = *task_id_and_interaction_data.value;
 
     // For all interactions which included a URL modification, log the
-    // criteria which were met.
+    // criteria which were not met. Note that we assume here that an ancestor
+    // task was found when the URL change was made.
     if (data.flag_set.Has(kURLChange)) {
-      if (data.flag_set.Has(FlagType::kMainModification)) {
-        CHECK(!paint_conditions_met_);
-        base::UmaHistogramEnumeration(
-            kPageLoadInternalSoftNavigationOutcome,
-            SoftNavigationOutcome::kOnlyDomMoficationConditionMet);
-      } else if (paint_conditions_met_) {
-        base::UmaHistogramEnumeration(
-            kPageLoadInternalSoftNavigationOutcome,
-            SoftNavigationOutcome::kOnlyPaintConditionMet);
-      } else {
+      if (!data.flag_set.Has(FlagType::kMainModification)) {
+        if (!paint_conditions_met_) {
+          base::UmaHistogramEnumeration(
+              kPageLoadInternalSoftNavigationOutcome,
+              SoftNavigationOutcome::kNoDomModification);
+        } else {
+          base::UmaHistogramEnumeration(
+              kPageLoadInternalSoftNavigationOutcome,
+              SoftNavigationOutcome::kNoPaintOrDomModification);
+        }
+      } else if (!paint_conditions_met_) {
         base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
-                                      SoftNavigationOutcome::kNoConditionsMet);
+                                      SoftNavigationOutcome::kNoPaint);
       }
     }
   }
