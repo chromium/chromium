@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_SCOPED_FORM_INPUT_ACCESSORY_REAUTH_MODULE_OVERRIDE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_SCOPED_FORM_INPUT_ACCESSORY_REAUTH_MODULE_OVERRIDE_H_
 
-#import "base/memory/raw_ptr.h"
+#import <memory>
 
 @protocol ReauthenticationProtocol;
 
@@ -17,6 +17,9 @@ class ScopedFormInputAccessoryReauthModuleOverride {
  public:
   ~ScopedFormInputAccessoryReauthModuleOverride();
 
+  // Returns the override module, if one exists.
+  static id<ReauthenticationProtocol> Get();
+
   // Creates a scoped override so that the provided fake/mock/disarmed/etc
   // reauthentication module will be used in place of the production
   // implementation.
@@ -24,9 +27,6 @@ class ScopedFormInputAccessoryReauthModuleOverride {
   // reauthentication module until the override is destroyed.
   static std::unique_ptr<ScopedFormInputAccessoryReauthModuleOverride>
   MakeAndArmForTesting(id<ReauthenticationProtocol> module);
-
-  // Singleton instance of this class.
-  static raw_ptr<ScopedFormInputAccessoryReauthModuleOverride> instance;
 
   // The module to be used.
   id<ReauthenticationProtocol> module;

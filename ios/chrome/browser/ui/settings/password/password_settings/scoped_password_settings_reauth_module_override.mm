@@ -7,25 +7,33 @@
 #import "base/check.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
-// static
-raw_ptr<ScopedPasswordSettingsReauthModuleOverride>
-    ScopedPasswordSettingsReauthModuleOverride::instance;
+namespace {
+ScopedPasswordSettingsReauthModuleOverride* g_instance = nullptr;
+}
 
 // static
 std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 ScopedPasswordSettingsReauthModuleOverride::MakeAndArmForTesting(
     id<ReauthenticationProtocol> module) {
-  DCHECK(!instance);
+  DCHECK(!g_instance);
   // Using new instead of make_unique to access private constructor.
   std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride> new_instance(
       new ScopedPasswordSettingsReauthModuleOverride);
   new_instance->module = module;
-  instance = new_instance.get();
+  g_instance = new_instance.get();
   return new_instance;
 }
 
 ScopedPasswordSettingsReauthModuleOverride::
     ~ScopedPasswordSettingsReauthModuleOverride() {
-  DCHECK(instance == this);
-  instance = nullptr;
+  DCHECK(g_instance == this);
+  g_instance = nullptr;
+}
+
+// static
+id<ReauthenticationProtocol> ScopedPasswordSettingsReauthModuleOverride::Get() {
+  if (g_instance) {
+    return g_instance->module;
+  }
+  return nil;
 }

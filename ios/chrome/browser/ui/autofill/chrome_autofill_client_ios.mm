@@ -562,13 +562,11 @@ std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClientIOS::GetDeviceAuthenticator() {
   device_reauth::DeviceAuthParams params(
       base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);
-  id<ReauthenticationProtocol> reauthModule;
-  if (ScopedAutofillPaymentReauthModuleOverride::instance) {
-    reauthModule = ScopedAutofillPaymentReauthModuleOverride::instance->module;
-  } else {
+  id<ReauthenticationProtocol> reauthModule =
+      ScopedAutofillPaymentReauthModuleOverride::Get();
+  if (!reauthModule) {
     reauthModule = [[ReauthenticationModule alloc] init];
   }
-
   return CreateIOSDeviceAuthenticator(reauthModule, browser_state_, params);
 }
 VirtualCardEnrollmentManager*

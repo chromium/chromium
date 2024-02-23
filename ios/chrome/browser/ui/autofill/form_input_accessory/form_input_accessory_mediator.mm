@@ -523,9 +523,9 @@ class PasswordCounterDelegateBridge
 // Returns the reauthentication module, which can be an override for testing
 // purposes.
 - (ReauthenticationModule*)reauthenticationModule {
-  return ScopedFormInputAccessoryReauthModuleOverride::instance
-             ? ScopedFormInputAccessoryReauthModuleOverride::instance->module
-             : _reauthenticationModule;
+  id<ReauthenticationProtocol> overrideModule =
+      ScopedFormInputAccessoryReauthModuleOverride::Get();
+  return overrideModule ? overrideModule : _reauthenticationModule;
 }
 
 - (void)updateSuggestionsIfNeeded {

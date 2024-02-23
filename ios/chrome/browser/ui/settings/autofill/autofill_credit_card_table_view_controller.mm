@@ -139,8 +139,10 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 #pragma mark - properties
 
 - (ReauthenticationModule*)reauthenticationModule {
-  if (ScopedAutofillPaymentReauthModuleOverride::instance) {
-    return ScopedAutofillPaymentReauthModuleOverride::instance->module;
+  id<ReauthenticationProtocol> overrideModule =
+      ScopedAutofillPaymentReauthModuleOverride::Get();
+  if (overrideModule) {
+    return overrideModule;
   }
 
   if (!_reauthenticationModule) {

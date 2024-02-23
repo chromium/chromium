@@ -6,25 +6,33 @@
 #import "base/check.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
-// static
-raw_ptr<ScopedAutofillPaymentReauthModuleOverride>
-    ScopedAutofillPaymentReauthModuleOverride::instance;
+namespace {
+ScopedAutofillPaymentReauthModuleOverride* g_instance = nullptr;
+}
 
 // static
 std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 ScopedAutofillPaymentReauthModuleOverride::MakeAndArmForTesting(
     id<ReauthenticationProtocol> module) {
-  CHECK(!instance);
+  CHECK(!g_instance);
   // Using new instead of make_unique to access private constructor.
   std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride> new_instance(
       new ScopedAutofillPaymentReauthModuleOverride);
   new_instance->module = module;
-  instance = new_instance.get();
+  g_instance = new_instance.get();
   return new_instance;
 }
 
 ScopedAutofillPaymentReauthModuleOverride::
     ~ScopedAutofillPaymentReauthModuleOverride() {
-  CHECK(instance == this);
-  instance = nullptr;
+  CHECK(g_instance == this);
+  g_instance = nullptr;
+}
+
+// static
+id<ReauthenticationProtocol> ScopedAutofillPaymentReauthModuleOverride::Get() {
+  if (g_instance) {
+    return g_instance->module;
+  }
+  return nil;
 }

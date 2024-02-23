@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_SCOPED_AUTOFILL_PAYMENT_REAUTH_MODULE_OVERRIDE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_SCOPED_AUTOFILL_PAYMENT_REAUTH_MODULE_OVERRIDE_H_
 
-#import "base/memory/raw_ptr.h"
+#import <memory>
 
 @protocol ReauthenticationProtocol;
 
@@ -15,14 +15,15 @@ class ScopedAutofillPaymentReauthModuleOverride {
  public:
   ~ScopedAutofillPaymentReauthModuleOverride();
 
+  // Returns the override module, if one exists. This will be a
+  // nullptr unless a override is created and set by the above
+  // `MakeAndArmForTesting` call.
+  static id<ReauthenticationProtocol> Get();
+
   // Creates a scoped override so that the provided reauthentication module will
   // be used in place of the production implementation.
   static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   MakeAndArmForTesting(id<ReauthenticationProtocol> module);
-
-  // Singleton instance of this class. This will be a nullptr unless a override
-  // is created and set by the above `MakeAndArmForTesting` call.
-  static raw_ptr<ScopedAutofillPaymentReauthModuleOverride> instance;
 
   // The module to be used.
   id<ReauthenticationProtocol> module;

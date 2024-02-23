@@ -72,10 +72,10 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
             browserState, ServiceAccessType::EXPLICIT_ACCESS);
 
     self.reauthModule =
-        ScopedPasswordSuggestionBottomSheetReauthModuleOverride::instance
-            ? ScopedPasswordSuggestionBottomSheetReauthModuleOverride::instance
-                  ->module
-            : [[ReauthenticationModule alloc] init];
+        ScopedPasswordSuggestionBottomSheetReauthModuleOverride::Get();
+    if (!self.reauthModule) {
+      self.reauthModule = [[ReauthenticationModule alloc] init];
+    }
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
           initWithWebStateList:webStateList
                  faviconLoader:IOSChromeFaviconLoaderFactory::
