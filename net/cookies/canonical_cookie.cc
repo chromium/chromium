@@ -1024,6 +1024,11 @@ void CanonicalCookie::SetSourcePort(int port) {
   source_port_ = ValidateAndAdjustSourcePort(port);
 }
 
+bool CanonicalCookie::IsSecure() const {
+  return SecureAttribute() || (cookie_util::IsSchemeBoundCookiesEnabled() &&
+                               source_scheme_ == CookieSourceScheme::kSecure);
+}
+
 CanonicalCookie::UniqueCookieKey CanonicalCookie::UniqueKey() const {
   std::optional<CookieSourceScheme> source_scheme =
       cookie_util::IsSchemeBoundCookiesEnabled()

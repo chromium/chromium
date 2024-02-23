@@ -311,6 +311,9 @@ class NET_EXPORT CanonicalCookie {
     return UniqueDomainKey() == ecc.UniqueDomainKey();
   }
 
+  // Returns true if this cookie can only be accessed in a secure context.
+  bool IsSecure() const;
+
   StrictlyUniqueCookieKey StrictlyUniqueKey() const {
     return std::make_tuple(partition_key_, name_, domain_, path_,
                            source_scheme_, source_port_);

@@ -259,6 +259,9 @@ NET_EXPORT bool IsPortBoundCookiesEnabled();
 
 NET_EXPORT bool IsSchemeBoundCookiesEnabled();
 
+// Returns true if either portion of OBC is enabled.
+NET_EXPORT bool IsOriginBoundCookiesPartiallyEnabled();
+
 NET_EXPORT bool IsTimeLimitedInsecureCookiesEnabled();
 
 // Returns whether the respective feature is enabled.

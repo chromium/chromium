@@ -874,6 +874,10 @@ bool IsSchemeBoundCookiesEnabled() {
   return base::FeatureList::IsEnabled(features::kEnableSchemeBoundCookies);
 }
 
+bool IsOriginBoundCookiesPartiallyEnabled() {
+  return IsPortBoundCookiesEnabled() || IsSchemeBoundCookiesEnabled();
+}
+
 bool IsTimeLimitedInsecureCookiesEnabled() {
   return IsSchemeBoundCookiesEnabled() &&
          base::FeatureList::IsEnabled(features::kTimeLimitedInsecureCookies);

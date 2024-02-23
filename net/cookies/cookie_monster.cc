@@ -45,6 +45,7 @@
 #include "net/cookies/cookie_monster.h"
 
 #include <functional>
+#include <list>
 #include <numeric>
 #include <optional>
 #include <set>
@@ -66,6 +67,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
@@ -332,6 +334,50 @@ size_t CountCookiesForPossibleDeletion(
     }
   }
   return cookies_count;
+}
+
+struct DeletionCookieLists {
+  std::list<CookieMonster::CookieItList::const_iterator> host_cookies;
+  std::list<CookieMonster::CookieItList::const_iterator> domain_cookies;
+};
+
+// Performs 2 tasks
+// * Counts every cookie at the given `priority` in `cookies`. This is the
+// return value.
+// * Fills in the host & domain lists for `could_be_deleted` with every cookie
+// of the given {secureness, priority} in `cookies`.
+size_t CountCookiesAndGenerateListsForPossibleDeletion(
+    CookiePriority priority,
+    DeletionCookieLists& could_be_deleted,
+    const CookieMonster::CookieItList* cookies,
+    bool generate_for_secure) {
+  size_t total_cookies_at_priority = 0;
+
+  for (auto list_it = cookies->begin(); list_it != cookies->end(); list_it++) {
+    const auto cookiemap_it = *list_it;
+    const auto& cookie = cookiemap_it->second;
+
+    if (cookie->Priority() != priority) {
+      continue;
+    }
+
+    // Because we want to keep a specific number of cookies per priority level,
+    // independent of securness of the cookies, we need to count all the cookies
+    // at the level even if we'll skip adding them to the deletion lists.
+    total_cookies_at_priority++;
+
+    if (cookie->IsSecure() != generate_for_secure) {
+      continue;
+    }
+
+    if (cookie->IsHostCookie()) {
+      could_be_deleted.host_cookies.push_back(list_it);
+    } else {  // Is a domain cookie.
+      could_be_deleted.domain_cookies.push_back(list_it);
+    }
+  }
+
+  return total_cookies_at_priority;
 }
 
 // Records minutes until the expiration date of a cookie to the appropriate
@@ -1952,7 +1998,10 @@ size_t CookieMonster::GarbageCollect(const Time& current,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   size_t num_deleted = 0;
-  Time safe_date(Time::Now() - base::Days(kSafeFromGlobalPurgeDays));
+  const Time safe_date(Time::Now() - base::Days(kSafeFromGlobalPurgeDays));
+
+  const bool obc_behavior_enabled =
+      cookie_util::IsOriginBoundCookiesPartiallyEnabled();
 
   // Collect garbage for this key, minding cookie priorities.
   if (cookies_.count(key) > kDomainMaxCookies) {
@@ -1979,6 +2028,11 @@ size_t CookieMonster::GarbageCollect(const Time& current,
 
       // Sort the cookies by access date, from least-recent to most-recent.
       std::sort(cookie_its->begin(), cookie_its->end(), LRACookieSorter);
+
+      CookieItList cookie_it_list;
+      if (obc_behavior_enabled) {
+        cookie_it_list = CookieItList(cookie_its->begin(), cookie_its->end());
+      }
 
       // Remove all but the kDomainCookiesQuotaLow most-recently accessed
       // cookies with low-priority. Then, if cookies still need to be removed,
@@ -2034,9 +2088,15 @@ size_t CookieMonster::GarbageCollect(const Time& current,
         // path will be taken only if the initial non-secure purge did not evict
         // enough cookies.
         if (purge_goal > 0) {
-          just_deleted = PurgeLeastRecentMatches(
-              cookie_its, purge_round.priority, quota, purge_goal,
-              purge_round.protect_secure_cookies);
+          if (obc_behavior_enabled) {
+            just_deleted = PurgeLeastRecentMatchesForOBC(
+                &cookie_it_list, purge_round.priority, quota, purge_goal,
+                !purge_round.protect_secure_cookies);
+          } else {
+            just_deleted = PurgeLeastRecentMatches(
+                cookie_its, purge_round.priority, quota, purge_goal,
+                purge_round.protect_secure_cookies);
+          }
           DCHECK_LE(just_deleted, purge_goal);
           purge_goal -= just_deleted;
           num_deleted += just_deleted;
@@ -2211,6 +2271,84 @@ size_t CookieMonster::PurgeLeastRecentMatches(CookieItVector* cookies,
     } else {
       current++;
     }
+  }
+  return removed;
+}
+
+size_t CookieMonster::PurgeLeastRecentMatchesForOBC(
+    CookieItList* cookies,
+    CookiePriority priority,
+    size_t to_protect,
+    size_t purge_goal,
+    bool delete_secure_cookies) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // 1. Count number of the cookies at `priority`. Includes both secure and
+  // non-secure cookies.
+  DeletionCookieLists could_be_deleted;
+  size_t total_could_be_deleted_for_priority =
+      CountCookiesAndGenerateListsForPossibleDeletion(
+          priority, could_be_deleted, cookies, delete_secure_cookies);
+
+  // 2. If we have fewer cookies at this priority than we intend to keep/protect
+  // then just skip this round entirely.
+  if (total_could_be_deleted_for_priority <= to_protect) {
+    return 0u;
+  }
+
+  // 3. Calculate the number of cookies that could be deleted for this round.
+  // This number is the lesser of either: The number of cookies that exist at
+  // this {priority, secureness} tuple, or the number of cookies at this
+  // priority less the number to protect. We won't exceed the `purge_goal` even
+  // if this resulting value is larger.
+  size_t total_deletable = could_be_deleted.host_cookies.size() +
+                           could_be_deleted.domain_cookies.size();
+  size_t max_cookies_to_delete_this_round = std::min(
+      total_deletable, total_could_be_deleted_for_priority - to_protect);
+
+  // 4. Remove domain cookies. As per "Origin-Bound Cookies" behavior, domain
+  // cookies should always be deleted before host cookies.
+  size_t removed = 0u;
+  // At this point we have 3 layers of iterators to consider:
+  // * The `could_be_deleted` list's iterator, which points to...
+  // * The `cookies` list's iterator, which points to...
+  // * The CookieMap's iterator which is used to delete the actual cookie from
+  // the backend.
+  // For each cookie deleted all three of these will need to erased, in a bottom
+  // up approach.
+  for (auto domain_list_it = could_be_deleted.domain_cookies.begin();
+       domain_list_it != could_be_deleted.domain_cookies.end() &&
+       removed < purge_goal && max_cookies_to_delete_this_round > 0;) {
+    auto cookies_list_it = *domain_list_it;
+    auto cookie_map_it = *cookies_list_it;
+    // Delete from the cookie store.
+    InternalDeleteCookie(cookie_map_it, /*sync_to_store=*/true,
+                         DELETE_COOKIE_EVICTED_DOMAIN);
+    // Delete from `cookies`.
+    cookies->erase(cookies_list_it);
+    // Delete from `could_be_deleted`.
+    domain_list_it = could_be_deleted.domain_cookies.erase(domain_list_it);
+
+    max_cookies_to_delete_this_round--;
+    removed++;
+  }
+
+  // 5. Remove host cookies
+  for (auto host_list_it = could_be_deleted.host_cookies.begin();
+       host_list_it != could_be_deleted.host_cookies.end() &&
+       removed < purge_goal && max_cookies_to_delete_this_round > 0;) {
+    auto cookies_list_it = *host_list_it;
+    auto cookie_map_it = *cookies_list_it;
+    // Delete from the cookie store.
+    InternalDeleteCookie(cookie_map_it, /*sync_to_store=*/true,
+                         DELETE_COOKIE_EVICTED_DOMAIN);
+    // Delete from `cookies`.
+    cookies->erase(cookies_list_it);
+    // Delete from `could_be_deleted`.
+    host_list_it = could_be_deleted.host_cookies.erase(host_list_it);
+
+    max_cookies_to_delete_this_round--;
+    removed++;
   }
   return removed;
 }

@@ -533,7 +533,10 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
             base::StringPrintf("a%d=b;priority=%s;%s", next_cookie_id,
                                CookiePriorityToString(priority).c_str(),
                                is_secure ? "secure" : "");
-        EXPECT_TRUE(SetCookie(cm, https_www_foo_.url(), cookie));
+
+        EXPECT_TRUE(SetCookie(
+            cm, is_secure ? https_www_foo_.url() : http_www_foo_.url(),
+            cookie));
         cookie_data.emplace_back(is_secure, priority);
         id_list[is_secure][priority].push_back(next_cookie_id);
       }
@@ -545,6 +548,25 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
 
     // Parse the list of cookies
     std::string cookie_str = this->GetCookies(cm, https_www_foo_.url());
+    // If any part of OBC is active then we also need to query the insecure url
+    // and combine the resulting strings.
+    if (cookie_util::IsOriginBoundCookiesPartiallyEnabled()) {
+      std::string cookie_str_insecure =
+          this->GetCookies(cm, http_www_foo_.url());
+
+      std::vector<base::StringPiece> to_be_combined;
+      // The cookie strings may be empty, only add them to our vector if
+      // they're not. Otherwise we'll get an extra separator added which is bad.
+      if (!cookie_str.empty()) {
+        to_be_combined.push_back(cookie_str);
+      }
+      if (!cookie_str_insecure.empty()) {
+        to_be_combined.push_back(cookie_str_insecure);
+      }
+
+      cookie_str = base::JoinString(to_be_combined, /*separator=*/"; ");
+    }
+
     size_t num_nonsecure = 0;
     size_t num_secure = 0;
     for (const std::string& token : base::SplitString(
@@ -948,6 +970,27 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
 };
 
 using CookieMonsterTest = CookieMonsterTestBase<CookieMonsterTestTraits>;
+
+class CookieMonsterTestGarbageCollectionObc
+    : public CookieMonsterTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CookieMonsterTestGarbageCollectionObc() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{net::features::kEnableSchemeBoundCookies, IsSchemeBoundEnabled()},
+         {net::features::kEnablePortBoundCookies, IsPortBoundEnabled()}});
+  }
+
+  bool IsSchemeBoundEnabled() const { return std::get<0>(GetParam()); }
+
+  bool IsPortBoundEnabled() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+using CookieMonsterTestPriorityGarbageCollectionObc =
+    CookieMonsterTestGarbageCollectionObc;
 
 struct CookiesInputInfo {
   const GURL url;
@@ -1722,20 +1765,127 @@ TEST_F(CookieMonsterTest, TestLastAccess) {
   EXPECT_FALSE(last_access_date == GetFirstCookieAccessDate(cm.get()));
 }
 
-TEST_F(CookieMonsterTest, TestHostGarbageCollection) {
+TEST_P(CookieMonsterTestPriorityGarbageCollectionObc,
+       TestHostGarbageCollection) {
   TestHostGarbageCollectHelper();
 }
 
-TEST_F(CookieMonsterTest, TestPriorityAwareGarbageCollectionNonSecure) {
+TEST_P(CookieMonsterTestPriorityGarbageCollectionObc,
+       TestPriorityAwareGarbageCollectionNonSecure) {
   TestPriorityAwareGarbageCollectHelperNonSecure();
 }
 
-TEST_F(CookieMonsterTest, TestPriorityAwareGarbageCollectionSecure) {
+TEST_P(CookieMonsterTestPriorityGarbageCollectionObc,
+       TestPriorityAwareGarbageCollectionSecure) {
   TestPriorityAwareGarbageCollectHelperSecure();
 }
 
-TEST_F(CookieMonsterTest, TestPriorityAwareGarbageCollectionMixed) {
+TEST_P(CookieMonsterTestPriorityGarbageCollectionObc,
+       TestPriorityAwareGarbageCollectionMixed) {
   TestPriorityAwareGarbageCollectHelperMixed();
+}
+
+// Test that domain cookies are always deleted before host cookies for a given
+// {priority, secureness}. In this case, default priority and secure.
+TEST_P(CookieMonsterTestGarbageCollectionObc, DomainCookiesPreferred) {
+  ASSERT_TRUE(cookie_util::IsOriginBoundCookiesPartiallyEnabled());
+  // This test requires the following values.
+  ASSERT_EQ(180U, CookieMonster::kDomainMaxCookies);
+  ASSERT_EQ(150U, CookieMonster::kDomainMaxCookies -
+                      CookieMonster::kDomainPurgeCookies);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  // Insert an extra host cookie so that one will need to be deleted;
+  // demonstrating that host cookies will still be deleted if need be but they
+  // aren't preferred.
+  for (int i = 0; i < 151; i++) {
+    std::string cookie = "host_" + base::NumberToString(i) + "=foo; Secure";
+    EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), cookie));
+  }
+
+  // By adding the domain cookies after the host cookies they are more recently
+  // accessed, which would normally cause these cookies to be preserved. By
+  // showing that they're still deleted before the host cookies we can
+  // demonstrate that domain cookies are preferred for deletion.
+  for (int i = 0; i < 30; i++) {
+    std::string cookie = "domain_" + base::NumberToString(i) +
+                         "=foo; Secure; Domain=" + https_www_foo_.domain();
+    EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), cookie));
+  }
+
+  auto cookie_list = this->GetAllCookiesForURL(cm.get(), https_www_foo_.url());
+
+  int domain_count = 0;
+  int host_count = 0;
+  for (const auto& cookie : cookie_list) {
+    if (cookie.IsHostCookie()) {
+      host_count++;
+    } else {
+      domain_count++;
+    }
+  }
+
+  EXPECT_EQ(host_count, 150);
+  EXPECT_EQ(domain_count, 0);
+}
+
+// Securely set cookies should always be deleted after non-securely set cookies.
+TEST_P(CookieMonsterTestGarbageCollectionObc, SecureCookiesPreferred) {
+  ASSERT_TRUE(cookie_util::IsOriginBoundCookiesPartiallyEnabled());
+  // This test requires the following values.
+  ASSERT_EQ(180U, CookieMonster::kDomainMaxCookies);
+  ASSERT_EQ(150U, CookieMonster::kDomainMaxCookies -
+                      CookieMonster::kDomainPurgeCookies);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  // If scheme binding is enabled then the secure url is enough, otherwise we
+  // need to also add "Secure" to the cookie line.
+  std::string secure_attr =
+      cookie_util::IsSchemeBoundCookiesEnabled() ? "" : "; Secure";
+
+  // These cookies would normally be preferred for deletion because they're 1)
+  // Domain cookies, and 2) they're least recently accessed. But, since they're
+  // securely set they'll be deleted after non-secure cookies.
+  for (int i = 0; i < 151; i++) {
+    std::string cookie = "domain_" + base::NumberToString(i) +
+                         "=foo; Domain=" + https_www_foo_.domain() +
+                         secure_attr;
+    EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), cookie));
+  }
+
+  for (int i = 0; i < 30; i++) {
+    std::string cookie = "host_" + base::NumberToString(i) + "=foo";
+    EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), cookie));
+  }
+
+  auto secure_cookie_list =
+      this->GetAllCookiesForURL(cm.get(), https_www_foo_.url());
+  auto insecure_cookie_list =
+      this->GetAllCookiesForURL(cm.get(), http_www_foo_.url());
+
+  int domain_count = 0;
+  int host_count = 0;
+
+  for (const auto& cookie : secure_cookie_list) {
+    if (cookie.IsHostCookie()) {
+      host_count++;
+    } else {
+      domain_count++;
+    }
+  }
+
+  for (const auto& cookie : insecure_cookie_list) {
+    if (cookie.IsHostCookie()) {
+      host_count++;
+    } else {
+      domain_count++;
+    }
+  }
+
+  EXPECT_EQ(host_count, 0);
+  EXPECT_EQ(domain_count, 150);
 }
 
 TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollection_Memory) {
@@ -7088,5 +7238,16 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
               ElementsAre(MatchesCookieNameValueCreationExpiry(
                   "A", "B", new_creation, new_creation + base::Days(400))));
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         CookieMonsterTestPriorityGarbageCollectionObc,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         CookieMonsterTestGarbageCollectionObc,
+                         testing::ValuesIn(std::vector<std::tuple<bool, bool>>{
+                             {true, false},
+                             {false, true},
+                             {true, true}}));
 
 }  // namespace net

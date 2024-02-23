@@ -103,6 +103,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
       std::multimap<std::string, std::unique_ptr<CanonicalCookie>>;
   using CookieMapItPair = std::pair<CookieMap::iterator, CookieMap::iterator>;
   using CookieItVector = std::vector<CookieMap::iterator>;
+  using CookieItList = std::list<CookieMap::iterator>;
 
   // PartitionedCookieMap only stores cookies that were set with the Partitioned
   // attribute. The map is double-keyed on cookie's partition key and
@@ -625,6 +626,13 @@ class NET_EXPORT CookieMonster : public CookieStore {
                                  size_t to_protect,
                                  size_t purge_goal,
                                  bool protect_secure_cookies);
+  // Same as above except that for a given {priority, secureness} tuple domain
+  // cookies will be deleted before host cookies.
+  size_t PurgeLeastRecentMatchesForOBC(CookieItList* cookies,
+                                       CookiePriority priority,
+                                       size_t to_protect,
+                                       size_t purge_goal,
+                                       bool protect_secure_cookies);
 
   // Helper for GarbageCollect(); can be called directly as well.  Deletes all
   // expired cookies in |itpair|.  If |cookie_its| is non-NULL, all the

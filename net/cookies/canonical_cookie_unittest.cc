@@ -6104,4 +6104,62 @@ TEST(CanonicalCookieTest, IsThirdPartyPartitioned) {
                    ->IsThirdPartyPartitioned());
 }
 
+// Tests that IsSecure returns true if a cookie's secure attribute is true
+// OR if its source_scheme is kSecure when scheme binding is enabled.
+TEST(CanonicalCookieTest, IsSecure) {
+  auto create_cookie = [](bool secure_attribute,
+                          CookieSourceScheme source_scheme) {
+    return CanonicalCookie::CreateUnsafeCookieForTesting(
+        "A", "B", "example.com", "/", base::Time(), base::Time(), base::Time(),
+        base::Time(), secure_attribute, /*httponly=*/false,
+        CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW,
+        /*partition_key=*/std::nullopt, source_scheme, /*source_port=*/1234);
+  };
+
+  auto insecure_attr_unset_scheme =
+      create_cookie(/*secure_attribute=*/false, CookieSourceScheme::kUnset);
+  auto insecure_attr_insecure_scheme =
+      create_cookie(/*secure_attribute=*/false, CookieSourceScheme::kNonSecure);
+  auto insecure_attr_secure_scheme =
+      create_cookie(/*secure_attribute=*/false, CookieSourceScheme::kSecure);
+
+  auto secure_attr_unset_scheme =
+      create_cookie(/*secure_attribute=*/true, CookieSourceScheme::kUnset);
+  auto secure_attr_insecure_scheme =
+      create_cookie(/*secure_attribute=*/true, CookieSourceScheme::kNonSecure);
+  auto secure_attr_secure_scheme =
+      create_cookie(/*secure_attribute=*/true, CookieSourceScheme::kSecure);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kEnableSchemeBoundCookies);
+
+    // When scheme binding is disabled only the secure attribute causes a return
+    // value of true.
+
+    EXPECT_FALSE(insecure_attr_unset_scheme->IsSecure());
+    EXPECT_FALSE(insecure_attr_insecure_scheme->IsSecure());
+    EXPECT_FALSE(insecure_attr_secure_scheme->IsSecure());
+
+    EXPECT_TRUE(secure_attr_unset_scheme->IsSecure());
+    EXPECT_TRUE(secure_attr_insecure_scheme->IsSecure());
+    EXPECT_TRUE(secure_attr_secure_scheme->IsSecure());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kEnableSchemeBoundCookies);
+
+    // When scheme binding is enabled a kSecure scheme also causes a returns
+    // value of true.
+
+    EXPECT_FALSE(insecure_attr_unset_scheme->IsSecure());
+    EXPECT_FALSE(insecure_attr_insecure_scheme->IsSecure());
+    EXPECT_TRUE(insecure_attr_secure_scheme->IsSecure());
+
+    EXPECT_TRUE(secure_attr_unset_scheme->IsSecure());
+    EXPECT_TRUE(secure_attr_insecure_scheme->IsSecure());
+    EXPECT_TRUE(secure_attr_secure_scheme->IsSecure());
+  }
+}
+
 }  // namespace net
