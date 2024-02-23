@@ -7,14 +7,12 @@
 
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
 // This struct holds data relevant to opening a new connection/database while
 // IndexedDBConnectionCoordinator manages queued operations.
-struct CONTENT_EXPORT IndexedDBLockRequestData
-    : public base::SupportsUserData::Data {
+struct IndexedDBLockRequestData : public base::SupportsUserData::Data {
   static const void* const kKey;
 
   IndexedDBLockRequestData(const base::UnguessableToken& client_token);

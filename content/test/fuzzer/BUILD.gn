@@ -250,8 +250,7 @@ fuzzer_test("browser_accessibility_fuzzer") {
 source_set("indexed_db_fuzzer_support") {
   public_deps = [
     "//base",
-    "//content/browser",
-    "//content/public/browser:browser_sources",
+    "//content/browser/indexed_db",
     "//third_party/blink/public/common:headers",
   ]
   testonly = true

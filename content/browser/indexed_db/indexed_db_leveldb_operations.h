@@ -35,11 +35,6 @@ class LevelDBDirectTransaction;
 
 namespace indexed_db {
 
-extern const base::FilePath::CharType kBlobExtension[];
-extern CONTENT_EXPORT const base::FilePath::CharType kIndexedDBExtension[];
-extern const base::FilePath::CharType kIndexedDBFile[];
-extern CONTENT_EXPORT const base::FilePath::CharType kLevelDBExtension[];
-
 base::FilePath ComputeCorruptionFileName(
     const storage::BucketLocator& bucket_locator);
 
