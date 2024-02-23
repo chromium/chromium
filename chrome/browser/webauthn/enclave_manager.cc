@@ -119,6 +119,11 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         })");
 
+// This prefix is the protobuf encoding for a 32-byte value with tag 1024.
+// This means that, with the hash appended, the serialised state file is still a
+// valid protobuf, which is handly for debugging.
+static const uint8_t kHashPrefix[] = {0x82, 0x40, 32};
+
 // Since protobuf maps `bytes` to `std::string` (rather than
 // `std::vector<uint8_t>`), functions for jumping between these representations
 // are needed.
@@ -404,14 +409,14 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
   auto ret = std::make_unique<EnclaveLocalState>();
 
   const base::span<const uint8_t> contents = ToSpan(contents_str);
-  if (contents.size() < crypto::kSHA256Length) {
+  if (contents.size() < crypto::kSHA256Length + sizeof(kHashPrefix)) {
     FIDO_LOG(ERROR) << "Enclave state too small to be valid";
     return ret;
   }
 
   const base::span<const uint8_t> digest = contents.last(crypto::kSHA256Length);
-  const base::span<const uint8_t> payload =
-      contents.first(contents.size() - crypto::kSHA256Length);
+  const base::span<const uint8_t> payload = contents.first(
+      contents.size() - crypto::kSHA256Length - sizeof(kHashPrefix));
   const std::array<uint8_t, crypto::kSHA256Length> calculated =
       crypto::SHA256Hash(payload);
   if (memcmp(calculated.data(), digest.data(), crypto::kSHA256Length) != 0) {
@@ -1932,6 +1937,7 @@ void EnclaveManager::WriteState() {
   local_state_->AppendToString(&serialized);
   const std::array<uint8_t, crypto::kSHA256Length> digest =
       crypto::SHA256Hash(base::as_bytes(base::make_span(serialized)));
+  serialized.append(std::begin(kHashPrefix), std::end(kHashPrefix));
   serialized.append(digest.begin(), digest.end());
 
   if (currently_writing_) {
