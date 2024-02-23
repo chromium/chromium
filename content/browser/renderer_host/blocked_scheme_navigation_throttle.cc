@@ -58,7 +58,7 @@ BlockedSchemeNavigationThrottle::WillStartRequest() {
       !IsExternalMountedFile(request->GetURL()) &&
       (url::Origin::Create(request->GetURL()) ==
        request->GetInitiatorOrigin()) &&
-      content::GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
+      GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
           browser_context, request->GetURL())) {
     return PROCEED;
   }
@@ -125,7 +125,7 @@ BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(
           blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
       (url::Origin::Create(request->GetURL()) ==
        request->GetInitiatorOrigin()) &&
-      content::GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
+      GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
           browser_context, request->GetURL());
   if (!is_navigation_allowed &&
       !base::FeatureList::IsEnabled(

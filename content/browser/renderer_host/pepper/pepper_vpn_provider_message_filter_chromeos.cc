@@ -81,8 +81,7 @@ PepperVpnProviderMessageFilter::PepperVpnProviderMessageFilter(
   browser_context_ = render_process_host->GetBrowserContext();
 
   vpn_service_proxy_ =
-      content::GetContentClient()->browser()->GetVpnServiceProxy(
-          browser_context_);
+      GetContentClient()->browser()->GetVpnServiceProxy(browser_context_);
 }
 
 PepperVpnProviderMessageFilter::~PepperVpnProviderMessageFilter() {
@@ -151,7 +150,7 @@ int32_t PepperVpnProviderMessageFilter::OnBind(
     const std::string& configuration_name) {
   if (!vpn_service_proxy_)
     return PP_ERROR_FAILED;
-  if (!content::GetContentClient()->browser()->IsPepperVpnProviderAPIAllowed(
+  if (!GetContentClient()->browser()->IsPepperVpnProviderAPIAllowed(
           browser_context_, document_url_)) {
     LOG(ERROR) << "Host " << document_url_.host()
                << " cannot use vpnProvider API";

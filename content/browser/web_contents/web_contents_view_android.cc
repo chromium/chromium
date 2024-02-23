@@ -69,7 +69,7 @@ bool ShouldRequestUnbufferedDispatch() {
   static bool should_request_unbuffered_dispatch =
       base::android::BuildInfo::GetInstance()->sdk_int() >=
           base::android::SDK_VERSION_LOLLIPOP &&
-      !content::GetContentClient()->UsingSynchronousCompositing();
+      !GetContentClient()->UsingSynchronousCompositing();
   return should_request_unbuffered_dispatch;
 }
 

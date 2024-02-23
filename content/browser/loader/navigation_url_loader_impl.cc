@@ -1489,10 +1489,8 @@ NavigationURLLoaderImpl::CreateTerminalNonNetworkLoaderFactory(
     bool is_nav_allowed =
         base::FeatureList::IsEnabled(
             blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
-        content::GetContentClient()
-            ->browser()
-            ->IsFileSystemURLNavigationAllowed(
-                storage_partition->browser_context(), url);
+        GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
+            storage_partition->browser_context(), url);
     if (is_nav_allowed ||
         base::FeatureList::IsEnabled(
             blink::features::kFileSystemUrlNavigation) ||

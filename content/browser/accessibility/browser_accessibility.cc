@@ -1306,7 +1306,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
   // to `AXNode` in the foreseeable future because the functionality it provides
   // is not immediately needed in Views.
 
-  ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   int message_id = 0;
   switch (status) {
@@ -1342,7 +1342,7 @@ BrowserAccessibility::GetLocalizedRoleDescriptionForUnlabeledImage() const {
   // to `AXNode` in the foreseeable future because the functionality it provides
   // is not immediately needed in Views.
 
-  ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
   return content_client->GetLocalizedString(
       IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION);
 }
@@ -1350,7 +1350,7 @@ BrowserAccessibility::GetLocalizedRoleDescriptionForUnlabeledImage() const {
 std::u16string BrowserAccessibility::GetLocalizedStringForLandmarkType() const {
   // This method is Web specific and thus cannot be move to `AXNode`.
 
-  ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   switch (GetRole()) {
     case ax::mojom::Role::kBanner:
@@ -1377,7 +1377,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
   // TODO(nektar): Move this method to `AXNode` if possible.
 
   // Localized role description strings live in ui/strings/ax_strings.grd
-  ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   switch (GetRole()) {
     // Things which should never have a role description.
@@ -1792,7 +1792,7 @@ std::u16string BrowserAccessibility::GetStyleNameAttributeAsLocalizedString()
   const BrowserAccessibility* current_node = this;
   while (current_node) {
     if (current_node->GetRole() == ax::mojom::Role::kMark) {
-      ContentClient* content_client = content::GetContentClient();
+      ContentClient* content_client = GetContentClient();
       return content_client->GetLocalizedString(IDS_AX_ROLE_MARK);
     }
     current_node = current_node->PlatformGetParent();

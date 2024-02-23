@@ -278,8 +278,8 @@ void MediaSessionImpl::WebContentsDestroyed() {
 
   AbandonSystemAudioFocusIfNeeded();
 
-  content::GetContentClient()->browser()->RemovePresentationObserver(
-      this, web_contents());
+  GetContentClient()->browser()->RemovePresentationObserver(this,
+                                                            web_contents());
 }
 
 void MediaSessionImpl::RenderFrameDeleted(RenderFrameHost* rfh) {
@@ -965,8 +965,7 @@ void MediaSessionImpl::Initialize() {
   DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(),
                       web_contents()->GetFaviconURLs());
 
-  content::GetContentClient()->browser()->AddPresentationObserver(
-      this, web_contents());
+  GetContentClient()->browser()->AddPresentationObserver(this, web_contents());
 }
 
 void MediaSessionImpl::OnPresentationsChanged(bool has_presentation) {
@@ -1844,7 +1843,7 @@ void MediaSessionImpl::BuildMetadata(
     metadata.title = SanitizeMediaTitle(web_contents()->GetTitle());
   }
 
-  ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
   const GURL& url = web_contents()->GetLastCommittedURL();
 
   // If |url| wraps a chrome extension ID or System Web App, we can display
