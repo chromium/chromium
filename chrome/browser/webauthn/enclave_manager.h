@@ -156,6 +156,7 @@ class EnclaveManager : public KeyedService {
 
  private:
   struct StoreKeysArgs;
+  struct TempState;
   class IdentityObserver;
 
   // The main part of this class is a state machine that uses the following
@@ -290,25 +291,9 @@ class EnclaveManager : public KeyedService {
   std::unique_ptr<StoreKeysArgs> store_keys_args_;
   std::string pending_pin_;
 
-  // These members hold state that only exists for the duration of a sequence of
-  // non-idle states. Every time the state machine idles, all these members are
-  // reset.
-  std::unique_ptr<StoreKeysArgs> store_keys_args_for_joining_;
-  std::unique_ptr<crypto::UserVerifyingSigningKey> user_verifying_key_;
-  std::unique_ptr<crypto::UserVerifyingKeyProvider>
-      user_verifying_key_provider_;
-  std::unique_ptr<crypto::UnexportableSigningKey> hardware_key_;
-  base::flat_map<int32_t, std::vector<uint8_t>> new_security_domain_secrets_;
-  std::unique_ptr<trusted_vault::TrustedVaultConnection::Request> join_request_;
-  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-      access_token_fetcher_;
-  std::unique_ptr<network::SimpleURLLoader> cert_xml_loader_;
-  std::unique_ptr<network::SimpleURLLoader> sig_xml_loader_;
-  std::unique_ptr<network::SimpleURLLoader> upload_loader_;
-  std::optional<std::string> cert_xml_;
-  std::optional<std::string> sig_xml_;
-  std::unique_ptr<HashedPIN> hashed_pin_;
-  std::unique_ptr<trusted_vault_pb::Vault> vault_;
+  // This state only exists for the duration of a sequence of
+  // non-idle states. Every time the state machine idles, this is reset.
+  std::unique_ptr<TempState> temp_state_;
 
   unsigned store_keys_count_ = 0;
   bool want_registration_ = false;
