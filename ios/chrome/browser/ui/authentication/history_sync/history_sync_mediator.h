@@ -54,6 +54,9 @@ class SyncService;
 // Opts in for history sync.
 - (void)enableHistorySyncOptin;
 
+// Starts fetching capabilities to determine minor mode restriction status.
+- (void)startFetchingCapabilities;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_MEDIATOR_H_

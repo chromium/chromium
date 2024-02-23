@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -27,7 +29,11 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
 
 @end
 
-@implementation HistorySyncViewController
+@implementation HistorySyncViewController {
+  // Tracks the duration between when the view appeared with hidden buttons
+  // and when the buttons are shown.
+  std::unique_ptr<base::ElapsedTimer> _userVisibileLatency;
+}
 
 @dynamic delegate;
 
@@ -67,6 +73,11 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
       AddSameConstraints(self.view, self.overlay);
       [self.overlay.indicator startAnimating];
 
+      // Record availability metrics and start the latency timer.
+      base::UmaHistogramBoolean(
+          "Signin.AccountCapabilities.ImmediatelyAvailable", false);
+      _userVisibileLatency = std::make_unique<base::ElapsedTimer>();
+
       // Notify audience.
       [self.audience viewAppearedWithHiddenButtons];
     }
@@ -99,26 +110,49 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
 - (void)displayButtonsWithRestrictionStatus:(BOOL)isRestricted {
   if (base::FeatureList::IsEnabled(
           switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
-    // Fade out the spinner while fading in the title and subtitle.
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:kAnimationDuration.InSecondsF()
-        animations:^{
-          weakSelf.overlay.alpha = 0;
-          // titleLabel is created on-demand and should not be
-          // created with an empty titleText.
-          if (weakSelf.titleText) {
-            weakSelf.titleLabel.alpha = 1;
+    if (self.actionButtonsVisibility == ActionButtonsVisibility::kDefault) {
+      // Buttons are updated without ever being hidden when capabilities are
+      // immediately available.
+      base::UmaHistogramBoolean(
+          "Signin.AccountCapabilities.ImmediatelyAvailable", true);
+      base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                              base::Seconds(0));
+    } else if (self.actionButtonsVisibility ==
+               ActionButtonsVisibility::kHidden) {
+      // Fade out the spinner while fading in the title and subtitle.
+      // The buttons will be shown simultaneously.
+      __weak __typeof(self) weakSelf = self;
+      [UIView animateWithDuration:kAnimationDuration.InSecondsF()
+          animations:^{
+            weakSelf.overlay.alpha = 0;
+            // titleLabel is created on-demand and should not be
+            // created with an empty titleText.
+            if (weakSelf.titleText) {
+              weakSelf.titleLabel.alpha = 1;
+            }
+            weakSelf.subtitleLabel.alpha = 1;
           }
-          weakSelf.subtitleLabel.alpha = 1;
-        }
-        completion:^(BOOL finished) {
-          [weakSelf.overlay removeFromSuperview];
-        }];
+          completion:^(BOOL finished) {
+            [weakSelf.overlay removeFromSuperview];
+            [weakSelf recordLatencyMetrics];
+          }];
+    }
 
-    // Display action buttons.
+    // Show action buttons.
     self.actionButtonsVisibility =
         isRestricted ? ActionButtonsVisibility::kEquallyWeightedButtonShown
                      : ActionButtonsVisibility::kRegularButtonsShown;
+  }
+}
+
+#pragma mark - HistorySyncConsumer
+
+- (void)recordLatencyMetrics {
+  if (_userVisibileLatency) {
+    base::TimeDelta elapsed = _userVisibileLatency->Elapsed();
+    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                            elapsed);
+    base::UmaHistogramTimes("Signin.AccountCapabilities.FetchLatency", elapsed);
   }
 }
 
