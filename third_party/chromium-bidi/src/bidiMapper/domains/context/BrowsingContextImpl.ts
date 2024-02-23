@@ -674,11 +674,11 @@ export class BrowsingContextImpl {
   ): Promise<BrowsingContext.NavigateResult> {
     await this.targetUnblockedOrThrow();
 
+    this.#resetLifecycleIfFinished();
+
     await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
       ignoreCache,
     });
-
-    this.#resetLifecycleIfFinished();
 
     switch (wait) {
       case BrowsingContext.ReadinessState.None:
