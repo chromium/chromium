@@ -26,7 +26,7 @@ TestAutofillManagerWaiter::EventCount* TestAutofillManagerWaiter::State::Get(
 
 TestAutofillManagerWaiter::EventCount&
 TestAutofillManagerWaiter::State::GetOrCreate(Event event,
-                                              base::Location location) {
+                                              const base::Location& location) {
   if (EventCount* e = Get(event)) {
     return *e;
   }
@@ -209,7 +209,7 @@ bool TestAutofillManagerWaiter::IsRelevant(Event event) const {
 }
 
 void TestAutofillManagerWaiter::Increment(Event event,
-                                          base::Location location) {
+                                          const base::Location& location) {
   base::AutoLock lock(state_->lock);
   if (!IsRelevant(event)) {
     VLOG(1) << "Ignoring irrelevant event: " << __func__ << "("
@@ -229,7 +229,7 @@ void TestAutofillManagerWaiter::Increment(Event event,
 }
 
 void TestAutofillManagerWaiter::Decrement(Event event,
-                                          base::Location location) {
+                                          const base::Location& location) {
   base::AutoLock lock(state_->lock);
   if (!IsRelevant(event)) {
     VLOG(1) << "Ignoring irrelevant event: " << __func__ << "("
@@ -253,7 +253,8 @@ void TestAutofillManagerWaiter::Decrement(Event event,
 }
 
 testing::AssertionResult TestAutofillManagerWaiter::Wait(
-    size_t num_awaiting_calls) {
+    size_t num_awaiting_calls,
+    const base::Location& location) {
   base::ReleasableAutoLock lock(&state_->lock);
   if (state_->run_loop.AnyQuitCalled()) {
     return testing::AssertionFailure()
@@ -265,7 +266,7 @@ testing::AssertionResult TestAutofillManagerWaiter::Wait(
                            : 0u;
   if (state_->num_pending_calls() > 0 || num_awaiting_calls > 0) {
     base::test::ScopedRunLoopTimeout run_loop_timeout(
-        FROM_HERE, timeout_,
+        location, timeout_,
         base::BindRepeating(
             [](State* state) {
               state->timed_out = true;
@@ -283,7 +284,8 @@ testing::AssertionResult TestAutofillManagerWaiter::Wait(
 const FormStructure* WaitForMatchingForm(
     AutofillManager* manager,
     base::RepeatingCallback<bool(const FormStructure&)> pred,
-    base::TimeDelta timeout) {
+    base::TimeDelta timeout,
+    const base::Location& location) {
   class Waiter : public AutofillManager::Observer {
    public:
     explicit Waiter(AutofillManager* manager,
@@ -292,13 +294,14 @@ const FormStructure* WaitForMatchingForm(
       observation_.Observe(manager);
     }
 
-    const FormStructure* Wait(base::TimeDelta timeout) {
+    const FormStructure* Wait(base::TimeDelta timeout,
+                              const base::Location& location) {
       DCHECK(observation_.IsObserving());
       DCHECK(!matching_form_);
       matching_form_ = FindForm();
       if (!matching_form_) {
         base::test::ScopedRunLoopTimeout run_loop_timeout(
-            FROM_HERE, timeout,
+            location, timeout,
             base::BindRepeating(
                 [](const Waiter* self) {
                   return std::string("Didn't see a matching form ") +
@@ -352,7 +355,7 @@ const FormStructure* WaitForMatchingForm(
     base::RunLoop run_loop_;
     raw_ptr<const FormStructure> matching_form_ = nullptr;
   };
-  return Waiter(manager, std::move(pred)).Wait(timeout);
+  return Waiter(manager, std::move(pred)).Wait(timeout, location);
 }
 
 }  // namespace autofill

@@ -633,16 +633,8 @@ class AutofillAcrossIframesTest_NestedAndLargeForm
 // Tests that a large and deeply nested form is extracted and filled correctly.
 // The test makes heavy use of abbreviations to make it easier to spot the
 // pattern in the form.
-
-// TODO(crbug.com/1486267): Test is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FillAllFieldsOnTriggeredOrigin \
-  DISABLED_FillAllFieldsOnTriggeredOrigin
-#else
-#define MAYBE_FillAllFieldsOnTriggeredOrigin FillAllFieldsOnTriggeredOrigin
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
-                       MAYBE_FillAllFieldsOnTriggeredOrigin) {
+                       FillAllFieldsOnTriggeredOrigin) {
   // The `n` in `n.html` is the height of the frame sub-tree, i.e., a frame that
   // loads `1.html` is a leaf frame, `2.html` has child frames but no
   // grandchildren, and so on.
@@ -774,16 +766,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
 
 // Tests that a deeply nested form where some iframes don't even contain any
 // fields (but their subframes do) is extracted and filled correctly.
-// TODO(crbug.com/1486516): Test is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FlattenFormEvenAcrossFramesWithoutFields \
-  DISABLED_FlattenFormEvenAcrossFramesWithoutFields
-#else
-#define MAYBE_FlattenFormEvenAcrossFramesWithoutFields \
-  FlattenFormEvenAcrossFramesWithoutFields
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
-                       MAYBE_FlattenFormEvenAcrossFramesWithoutFields) {
+                       FlattenFormEvenAcrossFramesWithoutFields) {
   SetUrlContent("/", MakeCss(3) +
                          R"(<iframe src="$4/3.html"></iframe>
                             <iframe src="$3/3.html"></iframe>

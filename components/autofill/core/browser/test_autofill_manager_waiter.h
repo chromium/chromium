@@ -95,7 +95,9 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
   // Blocks until all pending OnAfterFoo() events have been observed and at
   // least `num_awaiting_calls` relevant events have been observed.
-  [[nodiscard]] testing::AssertionResult Wait(size_t num_awaiting_calls = 0);
+  [[nodiscard]] testing::AssertionResult Wait(
+      size_t num_awaiting_calls = 0,
+      const base::Location& location = FROM_HERE);
 
   // Equivalent to re-initialization.
   void Reset();
@@ -124,7 +126,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
     State& operator=(State&) = delete;
     ~State();
 
-    EventCount& GetOrCreate(Event event, base::Location location);
+    EventCount& GetOrCreate(Event event, const base::Location& location);
     EventCount* Get(Event event);
 
     size_t num_total_calls() const;
@@ -146,8 +148,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   };
 
   bool IsRelevant(Event event) const;
-  void Increment(Event event, base::Location location = FROM_HERE);
-  void Decrement(Event event, base::Location location = FROM_HERE);
+  void Increment(Event event, const base::Location& location = FROM_HERE);
+  void Decrement(Event event, const base::Location& location = FROM_HERE);
 
   void OnAutofillManagerDestroyed(AutofillManager& manager) override;
   void OnAutofillManagerReset(AutofillManager& manager) override;
@@ -218,7 +220,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 const FormStructure* WaitForMatchingForm(
     AutofillManager* manager,
     base::RepeatingCallback<bool(const FormStructure&)> pred,
-    base::TimeDelta timeout = base::Seconds(30));
+    base::TimeDelta timeout = base::Seconds(30),
+    const base::Location& location = FROM_HERE);
 
 namespace internal {
 
