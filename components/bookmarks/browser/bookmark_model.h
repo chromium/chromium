@@ -261,6 +261,19 @@ class BookmarkModel final : public CoreBookmarkModel,
   [[nodiscard]] std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
   GetNodesByURL(const GURL& url) const;
 
+  // Same as above but it only returns the count.
+  // TODO(crbug.com/326185948): Remove this function once the migration of iOS
+  // to a single BookmarkModel instance is complete, as callers can invoke
+  // `GetNodesByURL()` instead.
+  size_t GetNodeCountByURL(const GURL& url) const override;
+
+  // Same as `GetNodesByURL()` but it only returns the titles.
+  // TODO(crbug.com/326185948): Remove this function once the migration of iOS
+  // to a single BookmarkModel instance is complete, as callers can invoke
+  // `GetNodesByURL()` instead.
+  std::vector<std::u16string_view> GetNodeTitlesByURL(
+      const GURL& url) const override;
+
   // Enum determining a subset of bookmark nodes within a BookmarkModel for the
   // purpose of issuing UUID-based lookups. It is needed because, in some
   // advanced scenarios, the same UUID may be used by two BookmarkNode-s, in
@@ -404,13 +417,13 @@ class BookmarkModel final : public CoreBookmarkModel,
   void ClearLastUsedTimeInRange(const base::Time delete_begin,
                                 const base::Time delete_end);
 
-  // Returns up to `max_count` bookmarks containing each term from `query` in
-  // either the title, URL, or the titles of ancestors. `matching_algorithm`
+  // Returns up to `max_count_hint` bookmarks containing each term from `query`
+  // in either the title, URL, or the titles of ancestors. `matching_algorithm`
   // determines the algorithm used by QueryParser internally to parse `query`.
   [[nodiscard]] std::vector<TitledUrlMatch> GetBookmarksMatching(
       const std::u16string& query,
-      size_t max_count,
-      query_parser::MatchingAlgorithm matching_algorithm) const;
+      size_t max_count_hint,
+      query_parser::MatchingAlgorithm matching_algorithm) const override;
 
   // Disables the persistence to disk, useful during testing to speed up
   // testing.

@@ -113,7 +113,7 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
 }
 
 // static
-std::u16string TitledUrlIndex::Normalize(const std::u16string& text) {
+std::u16string TitledUrlIndex::Normalize(std::u16string_view text) {
   UErrorCode status = U_ZERO_ERROR;
   const icu::Normalizer2* normalizer2 =
       icu::Normalizer2::getInstance(nullptr, "nfkc", UNORM2_COMPOSE, status);
@@ -128,7 +128,7 @@ std::u16string TitledUrlIndex::Normalize(const std::u16string& text) {
   if (U_FAILURE(status)) {
     // This should not happen. Log the error and fall back.
     LOG(ERROR) << "normalization failed: " << u_errorName(status);
-    return text;
+    return std::u16string(text);
   }
   return base::i18n::UnicodeStringToString16(unicode_normalized_text);
 }

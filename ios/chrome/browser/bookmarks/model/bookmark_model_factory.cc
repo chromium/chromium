@@ -41,6 +41,29 @@ class MergedBookmarkModel : public bookmarks::CoreBookmarkModel {
     return model1_->IsBookmarked(url) || model2_->IsBookmarked(url);
   }
 
+  size_t GetNodeCountByURL(const GURL& url) const override {
+    return model1_->GetNodeCountByURL(url) || model2_->GetNodeCountByURL(url);
+  }
+
+  std::vector<std::u16string_view> GetNodeTitlesByURL(
+      const GURL& url) const override {
+    std::vector<std::u16string_view> titles = model1_->GetNodeTitlesByURL(url);
+    base::Extend(titles, model2_->GetNodeTitlesByURL(url));
+    return titles;
+  }
+
+  std::vector<bookmarks::TitledUrlMatch> GetBookmarksMatching(
+      const std::u16string& query,
+      size_t max_count_hint,
+      query_parser::MatchingAlgorithm matching_algorithm) const override {
+    std::vector<bookmarks::TitledUrlMatch> matches =
+        model1_->GetBookmarksMatching(query, max_count_hint,
+                                      matching_algorithm);
+    base::Extend(matches, model2_->GetBookmarksMatching(query, max_count_hint,
+                                                        matching_algorithm));
+    return matches;
+  }
+
  private:
   const raw_ptr<bookmarks::CoreBookmarkModel> model1_;
   const raw_ptr<bookmarks::CoreBookmarkModel> model2_;

@@ -7,14 +7,12 @@
 #include <string>
 
 #include "base/strings/string_util.h"
-#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
-
-using bookmarks::BookmarkModel;
 
 void HistoryProvider::DeleteMatch(const AutocompleteMatch& match) {
   DCHECK(done_);
@@ -53,7 +51,7 @@ HistoryProvider::~HistoryProvider() {}
 
 void HistoryProvider::DeleteMatchFromMatches(const AutocompleteMatch& match) {
   bool found = false;
-  BookmarkModel* bookmark_model = client_->GetLocalOrSyncableBookmarkModel();
+  bookmarks::CoreBookmarkModel* bookmark_model = client_->GetBookmarkModel();
   for (auto i(matches_.begin()); i != matches_.end(); ++i) {
     if (i->destination_url == match.destination_url && i->type == match.type) {
       found = true;

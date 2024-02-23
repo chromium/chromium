@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -70,7 +71,7 @@ class TitledUrlIndex {
 
   // Returns a normalized version of the UTF16 string `text`.  If it fails to
   // normalize the string, returns `text` itself as a best-effort.
-  static std::u16string Normalize(const std::u16string& text);
+  static std::u16string Normalize(std::u16string_view text);
 
  private:
   friend class TitledUrlIndexFake;

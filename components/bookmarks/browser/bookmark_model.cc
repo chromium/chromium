@@ -804,6 +804,25 @@ BookmarkModel::GetNodesByURL(const GURL& url) const {
   return nodes;
 }
 
+size_t BookmarkModel::GetNodeCountByURL(const GURL& url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return GetNodesByURL(url).size();
+}
+
+std::vector<std::u16string_view> BookmarkModel::GetNodeTitlesByURL(
+    const GURL& url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+      GetNodesByURL(url);
+  std::vector<std::u16string_view> titles;
+  titles.reserve(nodes.size());
+  for (const BookmarkNode* node : nodes) {
+    titles.push_back(node->GetTitledUrlNodeTitle());
+  }
+  return titles;
+}
+
 const BookmarkNode* BookmarkModel::GetNodeByUuid(
     const base::Uuid& uuid,
     NodeTypeForUuidLookup type) const {
@@ -1049,7 +1068,7 @@ void BookmarkModel::ResetDateFolderModified(const BookmarkNode* node) {
 
 std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
     const std::u16string& query,
-    size_t max_count,
+    size_t max_count_hint,
     query_parser::MatchingAlgorithm matching_algorithm) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1057,7 +1076,7 @@ std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
     return {};
   }
 
-  return titled_url_index_->GetResultsMatching(query, max_count,
+  return titled_url_index_->GetResultsMatching(query, max_count_hint,
                                                matching_algorithm);
 }
 

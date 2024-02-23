@@ -88,7 +88,7 @@ void BookmarkScoringSignalsAnnotatorTest::TearDown() {
 }
 
 void BookmarkScoringSignalsAnnotatorTest::FillBookmarkModelData() {
-  auto* model = client_->GetLocalOrSyncableBookmarkModel();
+  auto* model = client_->GetBookmarkModel();
   const bookmarks::BookmarkNode* other_node = model->other_node();
   for (const auto& test_data : bookmark_test_data) {
     const BookmarksTestInfo& cur(test_data);

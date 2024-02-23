@@ -29,8 +29,7 @@
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
 #import "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -115,15 +114,9 @@ scoped_refptr<history::TopSites> AutocompleteProviderClientImpl::GetTopSites() {
   return ios::TopSitesFactory::GetForBrowserState(browser_state_);
 }
 
-bookmarks::BookmarkModel*
-AutocompleteProviderClientImpl::GetLocalOrSyncableBookmarkModel() {
-  return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-      browser_state_);
-}
-
-bookmarks::BookmarkModel*
-AutocompleteProviderClientImpl::GetAccountBookmarkModel() {
-  return ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_);
+bookmarks::CoreBookmarkModel*
+AutocompleteProviderClientImpl::GetBookmarkModel() {
+  return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
 }
 
 history::URLDatabase* AutocompleteProviderClientImpl::GetInMemoryDatabase() {

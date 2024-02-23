@@ -5,11 +5,21 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_CORE_BOOKMARK_MODEL_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_CORE_BOOKMARK_MODEL_H_
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
 
+namespace query_parser {
+enum class MatchingAlgorithm;
+}  // namespace query_parser
+
 namespace bookmarks {
+
+struct TitledUrlMatch;
 
 // A minimal subset of BookmarkModel API, intended to allow migrating the ios/
 // codebase from having two BookmarkModel instances to having one. One
@@ -29,6 +39,23 @@ class CoreBookmarkModel : public KeyedService {
 
   // Returns true if the specified URL is bookmarked.
   virtual bool IsBookmarked(const GURL& url) const = 0;
+
+  // Returns the set of nodes with the `url`.
+  virtual size_t GetNodeCountByURL(const GURL& url) const = 0;
+
+  // Returns the titles of the nodes with the specified URL.
+  virtual std::vector<std::u16string_view> GetNodeTitlesByURL(
+      const GURL& url) const = 0;
+
+  // Returns up bookmarks containing each term from `query` in either the title,
+  // URL, or the titles of ancestors. `matching_algorithm` determines the
+  // algorithm used by QueryParser internally to parse `query`. `max_count_hint`
+  // is used as approximate maximum count, but implementations are allowed to
+  // exceed this maximum.
+  [[nodiscard]] virtual std::vector<TitledUrlMatch> GetBookmarksMatching(
+      const std::u16string& query,
+      size_t max_count_hint,
+      query_parser::MatchingAlgorithm matching_algorithm) const = 0;
 };
 
 }  // namespace bookmarks

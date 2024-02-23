@@ -43,6 +43,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/common/pref_names.h"
@@ -189,15 +190,9 @@ ChromeAutocompleteProviderClient::GetTopSites() {
   return TopSitesFactory::GetForProfile(profile_);
 }
 
-bookmarks::BookmarkModel*
-ChromeAutocompleteProviderClient::GetLocalOrSyncableBookmarkModel() {
+bookmarks::CoreBookmarkModel*
+ChromeAutocompleteProviderClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
-}
-
-bookmarks::BookmarkModel*
-ChromeAutocompleteProviderClient::GetAccountBookmarkModel() {
-  // TODO(crbug.com/1446620): Plumb factory when available.
-  return nullptr;
 }
 
 history::URLDatabase* ChromeAutocompleteProviderClient::GetInMemoryDatabase() {

@@ -65,8 +65,7 @@ FakeAutocompleteProviderClient::GetHistoryClustersService() {
   return history_clusters_service_;
 }
 
-bookmarks::BookmarkModel*
-FakeAutocompleteProviderClient::GetLocalOrSyncableBookmarkModel() {
+bookmarks::BookmarkModel* FakeAutocompleteProviderClient::GetBookmarkModel() {
   return bookmark_model_.get();
 }
 
